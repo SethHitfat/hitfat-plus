@@ -1572,6 +1572,23 @@ function localBadge(){
   var t=document.querySelector('.topbar'); if(t) t.style.paddingTop='calc(38px + env(safe-area-inset-top,0px))';
 }
 
+/* app.hitfat.io previously hosted a different app that registered a service
+   worker. That worker still sits in the browser of everyone who visited back
+   then, intercepting every request for this origin and serving its own dead
+   shell — a half-drawn white page that fetches /_/index.json and gets a 404.
+   HITFAT+ registers no worker of its own, so unregistering every worker on
+   this origin removes exactly the leftover and nothing else. */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(rs){
+    if(!rs.length) return;
+    Promise.all(rs.map(function(r){ return r.unregister(); })).then(function(){
+      if(window.caches) return caches.keys().then(function(ks){
+        return Promise.all(ks.map(function(k){ return caches.delete(k); }));
+      });
+    }).then(function(){ location.reload(); });
+  }).catch(function(){});
+}
+
 const $=id=>document.getElementById(id);
 /* The signed-in user's access token — never the anon key, which ships in
    this file and therefore identifies nobody. */
