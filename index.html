@@ -5052,9 +5052,15 @@ function renderProgram(){
   if(p.weeks && p.weeks.length>1)
     h+='<div class="filters" style="margin-top:18px;">'+p.weeks.map((w,i)=>
       '<button class="chip'+((i+1)===curWeek?' y':'')+'" onclick="curWeek='+(i+1)+';renderProgram()">Week '+(i+1)+'</button>').join('')+'</div>';
+  /* A single session has no weeks at all — the two checks above already know
+     that, then this block read p.weeks[curWeek-1] anyway and the whole app
+     died on boot with "Cannot read properties of undefined". There is no day
+     list to draw for a single session; the Start button above is the page. */
+  const wk=(p.weeks||[])[curWeek-1];
+  if(wk){
   let offd=0; for(let i=0;i<curWeek-1;i++) offd+=p.weeks[i].days.length;
   h+='<div style="display:flex;flex-direction:column;gap:9px;margin-top:12px;">'+
-    (p.weeks[curWeek-1].days||[]).map((d,di)=>{
+    (wk.days||[]).map((d,di)=>{
       const gi=offd+di, isDone=gi<done;
       return '<div class="wrow'+(isDone?' done':'')+'" onclick="'+(d.rest?('markRest(\''+p.id+'\','+gi+')'):('openDay(\''+p.id+'\','+gi+')'))+'">'+
         '<div class="num'+(isDone?' on':'')+'">'+(gi+1)+'</div>'+
@@ -5062,6 +5068,7 @@ function renderProgram(){
         '<div class="m">'+(d.rest?'Recovery &amp; stretch':((d.ex?d.ex.length:0)+' exercises · '+p.dur+' min'))+'</div>'+
         '</div><div class="chev">'+(isDone?'✓':(d.rest?'😴':'›'))+'</div></div>';
     }).join('')+'</div>';
+  }
   $('pgd-body').innerHTML=h;
 }
 function markRest(pid,gi){
@@ -6494,6 +6501,43 @@ async function onSignedIn(session){
   syncProfile(session);
   if(!_started) startApp(); else { switchTab('home'); if(!HF.data.onboarded) startOnboarding(); }
 }
+/* ── adaptive nav offset ──
+   The CSS already reads var(--navb), but nothing was ever setting it, so the
+   pill always fell back to the default and sat higher than it does in Hybrid.
+
+   Some iOS PWAs get a web view SHORTER than the screen, and where the missing
+   strip sits decides the offset. If the view starts below the status bar
+   (safe-area-top = 0) the strip is at the top and the normal safe-area bottom
+   offset is right. If the view covers the status bar (safe-area-top > 0) the
+   dead strip is at the BOTTOM, so the pill has to hug the app edge instead of
+   leaving a second gap. The probe reads the real env() values rather than
+   guessing from the user agent.
+
+   Ported from Hybrid, which is the behaviour Seth is comparing against. */
+function _standaloneVH(){
+  try{ return window.navigator.standalone===true ||
+       (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches); }
+  catch(e){ return false; }
+}
+window._navDiag={};
+function setNavOffset(){ try{
+  var p=document.createElement('div');
+  p.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;'+
+                  'height:env(safe-area-inset-bottom,0px);width:env(safe-area-inset-top,0px);';
+  document.body.appendChild(p);
+  var sab=p.offsetHeight||0, sat=p.offsetWidth||0;
+  p.parentNode.removeChild(p);
+  var sh=(window.screen&&window.screen.height)||0, ih=window.innerHeight||0;
+  var gap=(sh&&ih)?(sh-ih):0;
+  var navb=Math.max(14,sab);                        // default: clear the home indicator
+  if(_standaloneVH() && gap>20 && sat>0) navb=2;    // dead strip at the bottom → hug the edge
+  document.documentElement.style.setProperty('--navb', navb+'px');
+  window._navDiag={sat:sat, sab:sab, gap:gap, navb:navb};
+}catch(e){} }
+document.addEventListener('DOMContentLoaded', setNavOffset);
+window.addEventListener('resize', setNavOffset);
+window.addEventListener('orientationchange', function(){ setTimeout(setNavOffset,120); });
+
 function boot(){
   setTimeout(hideSplash,4500);
   capturePaidParam();      // before auth — an OAuth redirect would otherwise drop it
