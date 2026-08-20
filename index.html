@@ -5372,7 +5372,7 @@ function renderMe(){
     (sb&&HF.userId?'<button class="bigbtn sec" onclick="signOut()">Sign out</button>':'')+
     '<button class="bigbtn sec" onclick="confirmReset()">Reset progress</button>'+
     '<p style="font-size:11.5px;color:var(--dim2);text-align:center;margin-top:22px;line-height:1.8;">'+
-    '<a href="/privacy" style="color:var(--dim);">Privacy</a> · <a href="/terms" style="color:var(--dim);">Terms</a><br>HITFAT+ · build 2026-08-20f<br>'+'<span style="opacity:.65">'+(function(){var d=window._vhDiag||{},n=window._navDiag||{};return 'vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+' · scr '+((window.screen||{}).height||0)+' · vh '+(d.applied||0)+' · nav '+(n.navb||0)+' · sa '+(n.sat||0)+'/'+(n.sab||0)+' · pwa '+(d.standalone?'y':'n');})()+'</span></p>';
+    '<a href="/privacy" style="color:var(--dim);">Privacy</a> · <a href="/terms" style="color:var(--dim);">Terms</a><br>HITFAT+ · build 2026-08-20</p>';
 }
 function confirmReset(){
   if(!confirm('Reset all progress? Sessions, programs and logs are erased. This cannot be undone.')) return;
@@ -6735,24 +6735,6 @@ function _standaloneVH(){
   catch(e){ return false; }
 }
 window._navDiag={};
-function setAppHeight(){ try{
-  var el=document.documentElement, h=window.innerHeight||0;
-  if(_standaloneVH()){
-    var sh=(window.screen&&window.screen.height)||0, ch=el.clientHeight||0;
-    /* An installed iOS app with a translucent status bar paints from y=0 but
-       reports a viewport shorter by the top inset, so .app ended ~59pt above
-       the screen and left a dead strip under the nav. Correct only that: still
-       portrait, and short by no more than a status bar's worth. Guarding on the
-       size of the shortfall matters — trusting screen.height unconditionally
-       runs the nav off the bottom of the screen instead. */
-    if(sh>h && window.innerWidth<=h && (sh-h)<=80) h=sh;
-    if(ch>h) h=ch;
-  }
-  /* measured for diagnostics only — the layout uses 100dvh, which is right */
-  window._vhDiag={inner:window.innerHeight, screen:(window.screen||{}).height,
-                  client:el.clientHeight, applied:h, standalone:_standaloneVH()};
-}catch(e){} }
-setAppHeight();
 function setNavOffset(){ try{
   var p=document.createElement('div');
   p.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;'+
@@ -6778,16 +6760,16 @@ function setNavOffset(){ try{
   document.documentElement.style.setProperty('--navb', navb+'px');
   window._navDiag={sat:sat, sab:sab, gap:gap, navb:navb};
 }catch(e){} }
-document.addEventListener('DOMContentLoaded', function(){ setAppHeight(); setNavOffset(); });
+document.addEventListener('DOMContentLoaded', function(){ setNavOffset(); });
 /* Two launches on the same phone reported safe-area top as 59 and then 0: the
    env() values are not always settled when DOMContentLoaded fires. Here it cost
    nothing, but the same slip on the BOTTOM inset would drop the bar from 34px to
    14px and put it under the home indicator. Measure again once loading is done,
    and once more shortly after. */
-window.addEventListener('load', function(){ setAppHeight(); setNavOffset(); });
-setTimeout(function(){ setAppHeight(); setNavOffset(); }, 500);
-window.addEventListener('resize', function(){ setAppHeight(); setNavOffset(); });
-window.addEventListener('orientationchange', function(){ window._saMax=null; setTimeout(function(){ setAppHeight(); setNavOffset(); },120); });
+window.addEventListener('load', function(){ setNavOffset(); });
+setTimeout(function(){ setNavOffset(); }, 500);
+window.addEventListener('resize', function(){ setNavOffset(); });
+window.addEventListener('orientationchange', function(){ window._saMax=null; setTimeout(function(){ setNavOffset(); },120); });
 
 function boot(){
   setTimeout(hideSplash,4500);
@@ -6803,47 +6785,4 @@ function boot(){
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
 </script>
 
-<script>
-/* Temporary. The nav lands wrong on one phone and I cannot read that phone's
-   numbers from here; the copy in the Me screen turned out to be hard to reach
-   while the bar itself is misplaced. This puts the same readout at the top,
-   where it cannot be missed. Tap it to hide. Comes out once the nav is right. */
-setTimeout(function(){ try{
-  if(document.getElementById('vpbar')) return;
-  var d=window._vhDiag||{}, n=window._navDiag||{};
-  var b=document.createElement('div');
-  b.id='vpbar';
-  b.style.cssText='position:fixed;left:0;right:0;top:0;z-index:99999;background:#101014;white-space:pre;'+
-    'border-bottom:1px solid #E11D48;color:#7fd6ff;'+
-    'font:11px/1.6 ui-monospace,Menlo,monospace;text-align:center;'+
-    'padding:calc(6px + env(safe-area-inset-top,0px)) 8px 6px;';
-  b.textContent='build 2026-08-20f · vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+
-    ' · scr '+(((window.screen||{}).height)||0)+' · vh '+(d.applied||0)+
-    ' · nav '+(n.navb||0)+' · sa '+(n.sat||0)+'/'+(n.sab||0)+
-    ' · pwa '+(d.standalone?'y':'n');
-  b.onclick=function(){ b.style.display='none'; };
-  /* The reported value used to be a snapshot taken at 1.2s; anything that
-     recomputed after that went unseen. Refresh it so a screenshot shows what
-     is true at the moment it is taken. */
-  /* Six attempts failed because I was reasoning about where the web view sits on
-     the screen instead of measuring it. visualViewport is the one number that
-     settles it: 852 means the view covers the whole screen and the status bar
-     overlays it, 793 means iOS inset the view below the status bar. Everything
-     else follows from that, so report the raw geometry and stop guessing. */
-  setInterval(function(){
-    var d=window._vhDiag||{}, n=window._navDiag||{};
-    var vv=window.visualViewport||{};
-    var app=document.querySelector('.app'), tabs=document.querySelector('.tabs');
-    var ar=app?app.getBoundingClientRect():{}, tr=tabs?tabs.getBoundingClientRect():{};
-    b.textContent =
-      'build 2026-08-20f  nav '+(n.navb||0)+'  sa '+(n.sat||0)+'/'+(n.sab||0)+
-      '  pwa '+(d.standalone?'y':'n')+'\n'+
-      'inner '+(window.innerHeight||0)+'  vv '+Math.round(vv.height||0)+
-      '  doc '+(document.documentElement.clientHeight||0)+'  scr '+(((window.screen||{}).height)||0)+'\n'+
-      'appTop '+Math.round(ar.top||0)+'  appBot '+Math.round(ar.bottom||0)+
-      '  tabsBot '+Math.round(tr.bottom||0);
-  },400);
-  (document.body||document.documentElement).appendChild(b);
-}catch(e){} },1200);
-</script>
 </body></html>
