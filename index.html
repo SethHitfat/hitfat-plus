@@ -1535,7 +1535,7 @@
 
 <div id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
 <script>
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · app
@@ -1560,8 +1560,20 @@
       var s=document.getElementById('splash'); if(s) s.style.display='none';
     }catch(e){}
   }
-  window.addEventListener('error',function(e){ panel('Startup error',(e.message||'?')+'<br>at line '+(e.lineno||'?')+':'+(e.colno||'?')); });
-  window.addEventListener('unhandledrejection',function(e){ var r=e.reason; panel('Startup error (async)',(r&&(r.message||r))||'unknown'); });
+  /* An error is not the same thing as a broken app. This panel exists for the
+     case that tells nobody anything — a blank screen — so errors are only
+     recorded here and reported below IF the app also failed to paint. A
+     survivable throw inside a third-party script used to cover a working app
+     with a red banner. */
+  var errs=[];
+  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function note(t){ if(errs.length<5) errs.push(esc(t)); }
+  window.addEventListener('error',function(e){
+    note((e.message||'?')+'  ['+(e.filename||'?')+':'+(e.lineno||'?')+':'+(e.colno||'?')+']');
+  });
+  window.addEventListener('unhandledrejection',function(e){
+    var r=e.reason; note('promise: '+((r&&(r.message||r))||'unknown'));
+  });
   setTimeout(function(){
     if(shown) return;
     var painted=['home','train','eat','progress','me'].some(function(id){ var el=document.getElementById(id); return el&&el.style.display==='block'; });
@@ -1572,7 +1584,9 @@
       'SUPA_READY   : '+(typeof SUPA_READY!=='undefined'?SUPA_READY:'undefined'),
       'store        : '+(typeof HF!=='undefined'&&!!HF.data),
       'library      : '+(typeof DB!=='undefined'?DB.length+' exercises':'MISSING'),
-      'protocol     : '+location.protocol
+      'protocol     : '+location.protocol,
+      '',
+      (errs.length ? 'errors seen:<br>'+errs.join('<br>') : 'no script errors seen')
     ].join('<br>'));
   },6000);
 })();
