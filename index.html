@@ -5372,7 +5372,7 @@ function renderMe(){
     (sb&&HF.userId?'<button class="bigbtn sec" onclick="signOut()">Sign out</button>':'')+
     '<button class="bigbtn sec" onclick="confirmReset()">Reset progress</button>'+
     '<p style="font-size:11.5px;color:var(--dim2);text-align:center;margin-top:22px;line-height:1.8;">'+
-    '<a href="/privacy" style="color:var(--dim);">Privacy</a> · <a href="/terms" style="color:var(--dim);">Terms</a><br>HITFAT+ · build 2026-08-20e<br>'+'<span style="opacity:.65">'+(function(){var d=window._vhDiag||{},n=window._navDiag||{};return 'vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+' · scr '+((window.screen||{}).height||0)+' · vh '+(d.applied||0)+' · nav '+(n.navb||0)+' · sa '+(n.sat||0)+'/'+(n.sab||0)+' · pwa '+(d.standalone?'y':'n');})()+'</span></p>';
+    '<a href="/privacy" style="color:var(--dim);">Privacy</a> · <a href="/terms" style="color:var(--dim);">Terms</a><br>HITFAT+ · build 2026-08-20f<br>'+'<span style="opacity:.65">'+(function(){var d=window._vhDiag||{},n=window._navDiag||{};return 'vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+' · scr '+((window.screen||{}).height||0)+' · vh '+(d.applied||0)+' · nav '+(n.navb||0)+' · sa '+(n.sat||0)+'/'+(n.sab||0)+' · pwa '+(d.standalone?'y':'n');})()+'</span></p>';
 }
 function confirmReset(){
   if(!confirm('Reset all progress? Sessions, programs and logs are erased. This cannot be undone.')) return;
@@ -6813,11 +6813,11 @@ setTimeout(function(){ try{
   var d=window._vhDiag||{}, n=window._navDiag||{};
   var b=document.createElement('div');
   b.id='vpbar';
-  b.style.cssText='position:fixed;left:0;right:0;top:0;z-index:99999;background:#101014;'+
+  b.style.cssText='position:fixed;left:0;right:0;top:0;z-index:99999;background:#101014;white-space:pre;'+
     'border-bottom:1px solid #E11D48;color:#7fd6ff;'+
     'font:11px/1.6 ui-monospace,Menlo,monospace;text-align:center;'+
     'padding:calc(6px + env(safe-area-inset-top,0px)) 8px 6px;';
-  b.textContent='build 2026-08-20e · vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+
+  b.textContent='build 2026-08-20f · vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+
     ' · scr '+(((window.screen||{}).height)||0)+' · vh '+(d.applied||0)+
     ' · nav '+(n.navb||0)+' · sa '+(n.sat||0)+'/'+(n.sab||0)+
     ' · pwa '+(d.standalone?'y':'n');
@@ -6825,12 +6825,23 @@ setTimeout(function(){ try{
   /* The reported value used to be a snapshot taken at 1.2s; anything that
      recomputed after that went unseen. Refresh it so a screenshot shows what
      is true at the moment it is taken. */
+  /* Six attempts failed because I was reasoning about where the web view sits on
+     the screen instead of measuring it. visualViewport is the one number that
+     settles it: 852 means the view covers the whole screen and the status bar
+     overlays it, 793 means iOS inset the view below the status bar. Everything
+     else follows from that, so report the raw geometry and stop guessing. */
   setInterval(function(){
     var d=window._vhDiag||{}, n=window._navDiag||{};
-    b.textContent='build 2026-08-20e · vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+
-      ' · scr '+(((window.screen||{}).height)||0)+' · vh '+(d.applied||0)+
-      ' · nav '+(n.navb||0)+' · sa '+(n.sat||0)+'/'+(n.sab||0)+
-      ' · pwa '+(d.standalone?'y':'n');
+    var vv=window.visualViewport||{};
+    var app=document.querySelector('.app'), tabs=document.querySelector('.tabs');
+    var ar=app?app.getBoundingClientRect():{}, tr=tabs?tabs.getBoundingClientRect():{};
+    b.textContent =
+      'build 2026-08-20f  nav '+(n.navb||0)+'  sa '+(n.sat||0)+'/'+(n.sab||0)+
+      '  pwa '+(d.standalone?'y':'n')+'\n'+
+      'inner '+(window.innerHeight||0)+'  vv '+Math.round(vv.height||0)+
+      '  doc '+(document.documentElement.clientHeight||0)+'  scr '+(((window.screen||{}).height)||0)+'\n'+
+      'appTop '+Math.round(ar.top||0)+'  appBot '+Math.round(ar.bottom||0)+
+      '  tabsBot '+Math.round(tr.bottom||0);
   },400);
   (document.body||document.documentElement).appendChild(b);
 }catch(e){} },1200);
