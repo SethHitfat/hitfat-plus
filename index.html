@@ -5372,7 +5372,7 @@ function renderMe(){
     (sb&&HF.userId?'<button class="bigbtn sec" onclick="signOut()">Sign out</button>':'')+
     '<button class="bigbtn sec" onclick="confirmReset()">Reset progress</button>'+
     '<p style="font-size:11.5px;color:var(--dim2);text-align:center;margin-top:22px;line-height:1.8;">'+
-    '<a href="/privacy" style="color:var(--dim);">Privacy</a> · <a href="/terms" style="color:var(--dim);">Terms</a><br>HITFAT+ · build 2026-08-20b<br>'+'<span style="opacity:.65">'+(function(){var d=window._vhDiag||{},n=window._navDiag||{};return 'vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+' · scr '+((window.screen||{}).height||0)+' · vh '+(d.applied||0)+' · nav '+(n.navb||0)+' · sa '+(n.sat||0)+'/'+(n.sab||0)+' · pwa '+(d.standalone?'y':'n');})()+'</span></p>';
+    '<a href="/privacy" style="color:var(--dim);">Privacy</a> · <a href="/terms" style="color:var(--dim);">Terms</a><br>HITFAT+ · build 2026-08-20c<br>'+'<span style="opacity:.65">'+(function(){var d=window._vhDiag||{},n=window._navDiag||{};return 'vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+' · scr '+((window.screen||{}).height||0)+' · vh '+(d.applied||0)+' · nav '+(n.navb||0)+' · sa '+(n.sat||0)+'/'+(n.sab||0)+' · pwa '+(d.standalone?'y':'n');})()+'</span></p>';
 }
 function confirmReset(){
   if(!confirm('Reset all progress? Sessions, programs and logs are erased. This cannot be undone.')) return;
@@ -6774,6 +6774,13 @@ function setNavOffset(){ try{
   window._navDiag={sat:sat, sab:sab, gap:gap, navb:navb};
 }catch(e){} }
 document.addEventListener('DOMContentLoaded', function(){ setAppHeight(); setNavOffset(); });
+/* Two launches on the same phone reported safe-area top as 59 and then 0: the
+   env() values are not always settled when DOMContentLoaded fires. Here it cost
+   nothing, but the same slip on the BOTTOM inset would drop the bar from 34px to
+   14px and put it under the home indicator. Measure again once loading is done,
+   and once more shortly after. */
+window.addEventListener('load', function(){ setAppHeight(); setNavOffset(); });
+setTimeout(function(){ setAppHeight(); setNavOffset(); }, 500);
 window.addEventListener('resize', function(){ setAppHeight(); setNavOffset(); });
 window.addEventListener('orientationchange', function(){ setTimeout(function(){ setAppHeight(); setNavOffset(); },120); });
 
@@ -6805,7 +6812,7 @@ setTimeout(function(){ try{
     'border-bottom:1px solid #E11D48;color:#7fd6ff;'+
     'font:11px/1.6 ui-monospace,Menlo,monospace;text-align:center;'+
     'padding:calc(6px + env(safe-area-inset-top,0px)) 8px 6px;';
-  b.textContent='build 2026-08-20b · vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+
+  b.textContent='build 2026-08-20c · vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+
     ' · scr '+(((window.screen||{}).height)||0)+' · vh '+(d.applied||0)+
     ' · nav '+(n.navb||0)+' · sa '+(n.sat||0)+'/'+(n.sab||0)+
     ' · pwa '+(d.standalone?'y':'n');
