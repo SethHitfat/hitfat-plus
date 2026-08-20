@@ -26,7 +26,7 @@
      the height of fixed inset:0 elements (ends ~90pt early → nav floated high on iPhone only). */
   /* 100dvh = the standards-correct "real" viewport height (iOS 15.4+). JS measurements were
      unreliable here: innerHeight read short (nav floated high), screen.height read long (nav clipped). */
-  .app{position:fixed;top:0;right:0;left:0;margin:0 auto;width:100%;max-width:440px;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
+  .app{position:fixed;top:0;right:0;left:0;margin:0 auto;width:100%;max-width:440px;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;height:var(--vh,100dvh);}
   .app, .app *{color:inherit;transform:none !important;writing-mode:horizontal-tb !important;float:none !important;}
   .hgroup h2,.dtitle,.pname,.card .ttl,.catcard .ttl{color:#fff !important;}
   .hgroup .k,.ptar{color:var(--hitfat) !important;}
@@ -5372,7 +5372,7 @@ function renderMe(){
     (sb&&HF.userId?'<button class="bigbtn sec" onclick="signOut()">Sign out</button>':'')+
     '<button class="bigbtn sec" onclick="confirmReset()">Reset progress</button>'+
     '<p style="font-size:11.5px;color:var(--dim2);text-align:center;margin-top:22px;line-height:1.8;">'+
-    '<a href="/privacy" style="color:var(--dim);">Privacy</a> · <a href="/terms" style="color:var(--dim);">Terms</a><br>HITFAT+ · build P2</p>';
+    '<a href="/privacy" style="color:var(--dim);">Privacy</a> · <a href="/terms" style="color:var(--dim);">Terms</a><br>HITFAT+ · build 2026-08-20a<br>'+'<span style="opacity:.65">'+(function(){var d=window._vhDiag||{},n=window._navDiag||{};return 'vp '+(window.innerWidth||0)+'x'+(window.innerHeight||0)+' · scr '+((window.screen||{}).height||0)+' · vh '+(d.applied||0)+' · nav '+(n.navb||0)+' · sa '+(n.sat||0)+'/'+(n.sab||0)+' · pwa '+(d.standalone?'y':'n');})()+'</span></p>';
 }
 function confirmReset(){
   if(!confirm('Reset all progress? Sessions, programs and logs are erased. This cannot be undone.')) return;
@@ -6735,6 +6735,24 @@ function _standaloneVH(){
   catch(e){ return false; }
 }
 window._navDiag={};
+function setAppHeight(){ try{
+  var el=document.documentElement, h=window.innerHeight||0;
+  if(_standaloneVH()){
+    var sh=(window.screen&&window.screen.height)||0, ch=el.clientHeight||0;
+    /* An installed iOS app with a translucent status bar paints from y=0 but
+       reports a viewport shorter by the top inset, so .app ended ~59pt above
+       the screen and left a dead strip under the nav. Correct only that: still
+       portrait, and short by no more than a status bar's worth. Guarding on the
+       size of the shortfall matters — trusting screen.height unconditionally
+       runs the nav off the bottom of the screen instead. */
+    if(sh>h && window.innerWidth<=h && (sh-h)<=80) h=sh;
+    if(ch>h) h=ch;
+  }
+  if(h>0) el.style.setProperty('--vh', h+'px');
+  window._vhDiag={inner:window.innerHeight, screen:(window.screen||{}).height,
+                  client:el.clientHeight, applied:h, standalone:_standaloneVH()};
+}catch(e){} }
+setAppHeight();
 function setNavOffset(){ try{
   var p=document.createElement('div');
   p.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;'+
@@ -6749,9 +6767,9 @@ function setNavOffset(){ try{
   document.documentElement.style.setProperty('--navb', navb+'px');
   window._navDiag={sat:sat, sab:sab, gap:gap, navb:navb};
 }catch(e){} }
-document.addEventListener('DOMContentLoaded', setNavOffset);
-window.addEventListener('resize', setNavOffset);
-window.addEventListener('orientationchange', function(){ setTimeout(setNavOffset,120); });
+document.addEventListener('DOMContentLoaded', function(){ setAppHeight(); setNavOffset(); });
+window.addEventListener('resize', function(){ setAppHeight(); setNavOffset(); });
+window.addEventListener('orientationchange', function(){ setTimeout(function(){ setAppHeight(); setNavOffset(); },120); });
 
 function boot(){
   setTimeout(hideSplash,4500);
