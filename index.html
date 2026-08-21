@@ -97,12 +97,12 @@
      The score is the one dark card on a light page, so it reads as the
      headline rather than one more panel. Everything else reuses the card
      and grid the rest of the app already uses. */
-  .pgscore{background:#111114;color:#fff;border-radius:20px;padding:18px 18px 16px;margin:6px 0 4px;
+  .pgscore{background:#111114;color:#fff !important;border-radius:20px;padding:18px 18px 16px;margin:6px 0 4px;
     --txt:#fff; --dim:rgba(255,255,255,.72); --dim2:rgba(255,255,255,.56);}
   .pgscore .k{font-family:'Oswald';font-size:11px;font-weight:700;letter-spacing:1.8px;
     color:#FF9E9E;text-transform:uppercase;}
   .pgscore .row{display:flex;align-items:baseline;gap:10px;margin-top:6px;}
-  .pgscore .n{font-family:'Oswald';font-size:46px;font-weight:700;line-height:1;}
+  .pgscore .n{font-family:'Oswald';font-size:46px;font-weight:700;line-height:1;color:#fff;}
   .pgscore .n span{font-size:17px;color:rgba(255,255,255,.55);}
   .pgscore .band{margin-left:auto;font-size:11px;font-weight:800;padding:5px 11px;border-radius:99px;
     background:rgba(255,255,255,.12);}
@@ -110,10 +110,11 @@
   .pgscore .bar i{display:block;height:100%;border-radius:9px;background:var(--hitfat-solid);}
   .pgscore .parts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
   .pgscore .p{text-align:center;}
-  .pgscore .p b{display:block;font-family:'Oswald';font-size:19px;font-weight:700;}
+  .pgscore .p b{display:block;font-family:'Oswald';font-size:19px;font-weight:700;color:#fff;}
   .pgscore .p span{display:block;font-size:10px;font-weight:700;color:rgba(255,255,255,.72);margin-top:1px;}
   .pgscore .p small{display:block;font-size:9px;color:rgba(255,255,255,.45);line-height:1.3;margin-top:2px;}
 
+  .pgseg{display:flex;gap:7px;margin:0 0 11px;}
   .pggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
   .pgtile{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:11px 11px 9px;
     box-shadow:var(--lift);}
@@ -6254,7 +6255,7 @@ function progressScore(){
 }
 
 /* A sparkline with no axes — the shape is the whole point at this size. */
-function spark(series, up){
+function spark(series, good){
   if(series.length<2) return '<div style="height:26px;"></div>';
   const w=88,h=26,pad=3, vs=series.map(x=>x.v);
   const lo=Math.min.apply(null,vs), hi=Math.max.apply(null,vs), rng=(hi-lo)||1;
@@ -6264,7 +6265,7 @@ function spark(series, up){
     return px.toFixed(1)+','+py.toFixed(1);
   }).join(' ');
   return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:26px;display:block;overflow:visible;">'+
-         '<polyline points="'+pts+'" fill="none" stroke="'+(up?'var(--ok)':'var(--hitfat)')+
+         '<polyline points="'+pts+'" fill="none" stroke="'+(good?'var(--ok)':'var(--hitfat)')+
          '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 }
 
@@ -6279,7 +6280,7 @@ function pgTile(label, value, unit, sub, series, goodDown){
     '<div class="v">'+value+(unit?'<span class="u"> '+unit+'</span>':'')+'</div>'+
     '<div class="l">'+label+'</div>'+
     (sub?'<div class="s" style="color:'+tone+'">'+sub+'</div>':'')+
-    (series?spark(series,!goodDown):'')+
+    (series?spark(series, d===null?false:(((d<0)===!!goodDown)||d===0)):'')+
   '</div>';
 }
 
@@ -6333,7 +6334,11 @@ function renderProgress(){
     pgTile('Days logged', nu.logged||0, '', 'of '+pgDays()+' days', null, false),
     pgTile('Streak', streak, streak===1?'day':'days', streak?'Keep it up':'Start today', null, false)
   ].filter(Boolean).join('');
-  h+='<div class="sechead">This month</div><div class="pggrid">'+tiles+'</div>';
+  h+='<div class="sechead">'+(pgDays()===7?'This week':'Last 30 days')+'</div>'+
+     '<div class="pgseg">'+
+     '<button class="seg'+(pgDays()===7?' on':'')+'" onclick="setPgP(\'week\')">This week</button>'+
+     '<button class="seg'+(pgDays()===7?'':' on')+'" onclick="setPgP(\'month\')">Last 30 days</button>'+
+     '</div><div class="pggrid">'+tiles+'</div>';
 
   /* ── goal ── */
   if(HF.data.goalKg && wl.length){
@@ -6353,7 +6358,7 @@ function renderProgress(){
 
   /* ── training ── */
   h+='<div class="sechead">Training</div>'+
-     '<div class="acard"><div class="ah"><span>🏋️</span><div class="t">This month</div></div>'+
+     '<div class="acard"><div class="ah"><span>🏋️</span><div class="t">'+(pgDays()===7?'This week':'Last 30 days')+'</div></div>'+
      '<div class="arow" style="margin:6px 0 2px;">'+
      '<div><div class="big">'+tr.sessions+'</div><div class="sub">sessions</div></div>'+
      '<div><div class="big">'+tr.mins+'</div><div class="sub">minutes</div></div>'+
