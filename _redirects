@@ -1,4 +1,4 @@
 # The sources live in this repo so they cannot be lost again, but the repo is
 # also what Netlify publishes — without this they are readable at /src/... .
 # No credentials are in them; the SQL and edge-function code still should not be.
-/src/*  /404.html  404
+/src/*  /404.html  404!
