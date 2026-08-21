@@ -1,0 +1,27 @@
+<div id="auth"><div class="auth-in">
+  <div class="alogo"></div>
+  <h1 id="auth-title">Sign in</h1>
+  <div class="lead" id="auth-lead">Log in to sync your plan and progress across devices.</div>
+
+  <button class="gbtn" onclick="signInGoogle()">
+    <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.5 2.6 30.1 0 24 0 14.6 0 6.4 5.4 2.5 13.2l7.8 6.1C12.2 13.5 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-2.8-.4-4H24v7.6h12.7c-.3 2.1-1.6 5.3-4.7 7.4l7.6 5.9c4.5-4.2 7.1-10.3 7.1-16.9z"/><path fill="#FBBC05" d="M10.3 28.7c-.5-1.5-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.5 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2 1.4-4.8 2.4-8.3 2.4-6.4 0-11.8-4-13.7-9.6l-7.8 6.1C6.4 42.6 14.6 48 24 48z"/></svg>
+    Continue with Google
+  </button>
+
+  <div class="orline">OR</div>
+
+  <input class="inp" id="auth-email" type="email" autocomplete="email" placeholder="Email">
+  <input class="inp" id="auth-pass" type="password" autocomplete="current-password" placeholder="Password">
+  <div class="authmsg" id="auth-msg"></div>
+  <button class="btn" id="auth-submit" onclick="authSubmit()">Sign in</button>
+  <button class="authalt" id="auth-alt" onclick="authToggle()">New here? <b>Create an account</b></button>
+  <button class="authalt" onclick="authForgot()" style="padding-top:0;">Forgot your password?</button>
+
+  <div class="authfoot">
+    <!-- HITFAT+ moved to its own Supabase project, so a Hybrid account no
+         longer signs you in here. Saying otherwise sends people round a
+         loop of failed logins convinced they typed it wrong. -->
+    HITFAT+ uses its own account, separate from HITFAT Hybrid.<br>
+    <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a>
+  </div>
+</div></div>

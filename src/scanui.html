@@ -1,0 +1,42 @@
+<!-- shared dim behind any bottom sheet -->
+<div id="sheetbg" onclick="closeBurn();closeManual();"></div>
+<div class="sheet" id="burnsheet"><div class="sheet-in" id="burn-body"></div></div>
+<div class="sheet" id="mansheet"><div class="sheet-in" id="man-body"></div></div>
+
+<!-- full-screen scan -->
+<div id="scan">
+  <div class="scan-hdr">
+    <button class="scan-back" onclick="closeScan()">←</button>
+    <div style="flex:1;">
+      <div style="font-weight:800;font-size:20px;letter-spacing:-.3px;">Meal Scan</div>
+      <div style="font-size:11px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--hyrox);margin-top:1px;">AI · HITFAT+</div>
+    </div>
+    <div class="scan-dot"></div>
+  </div>
+
+  <div class="scan-img">
+    <div class="scan-grid"></div>
+    <img id="scan-prev" alt="">
+    <div class="scan-badge"><span class="d"></span><span id="scan-live">Ready</span></div>
+    <div class="scan-ph" id="scan-ph">
+      <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+      <div class="hint">Point at your food</div>
+    </div>
+    <div class="scan-frame" id="scan-frame">
+      <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+      <div class="line"></div>
+    </div>
+    <div id="scan-pct"></div>
+  </div>
+
+  <div class="scan-foot">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button class="bigbtn" style="margin:0;" onclick="pickPhoto(true)">📷 Camera</button>
+      <button class="bigbtn sec" style="margin:0;" onclick="pickPhoto(false)">🖼 Gallery</button>
+    </div>
+    <div class="sub" style="text-align:center;margin-top:9px;" id="scan-left"></div>
+    <div id="scan-err"></div>
+  </div>
+
+  <div class="sheet" id="scan-sheet"></div>
+</div>
