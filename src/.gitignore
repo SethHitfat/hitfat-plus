@@ -1,0 +1,3 @@
+# Written by build.py on every run — the harness reads it, git should not carry it.
+plus_body.js
+hitfat-plus.html
