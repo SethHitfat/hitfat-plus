@@ -5624,10 +5624,13 @@ function obAck(){ _ob.ack=!_ob.ack; renderOb(); }
    told us. Real entries from the library, not invented ones. */
 function obMiniMoves(){
   const area=_ob.area&&_ob.area!=='None'?_ob.area:null;
-  let pool=DB.filter(e=>e.eq!=='Bar'&&e.t==='mobility');
-  if(area) { const hit=pool.filter(e=>e.j===area); if(hit.length>=2) pool=hit; }
-  if(pool.length<2) pool=DB.filter(e=>e.t==='mobility');
-  return pool.slice(0,2);
+  const plain=DB.filter(e=>e.eq==='Bodyweight' && !e.j && e.t==='mobility');
+  if(area){
+    const hit=DB.filter(e=>e.j===area && e.eq==='Bodyweight');
+    if(hit.length>=2) return hit.slice(0,2);
+  }
+  if(plain.length>=2) return plain.slice(0,2);
+  return DB.filter(e=>e.eq==='Bodyweight' && !e.j).slice(0,2);
 }
 
 function renderOb(){
@@ -5758,7 +5761,8 @@ function obMiniDone(completed){
    recommendation is a filter over what exists rather than a slogan. */
 function obRecommend(){
   const level=_ob.level||'Beginner', area=_ob.area, goal=_ob.goal;
-  let pool=PROGRAMS.filter(p=>p.weeks);
+  const free=PROGRAMS.filter(p=>p.weeks && FREE_PROGRAMS.indexOf(p.id)>=0);
+  let pool=free.length?free:PROGRAMS.filter(p=>p.weeks);
   if(area && area!=='None'){
     const hit=pool.filter(p=>(p.name||'').toLowerCase().indexOf(area.toLowerCase().split(' ')[0])>=0);
     if(hit.length) return hit[0];
