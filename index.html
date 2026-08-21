@@ -13,6 +13,8 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
   :root{
+    --accent-wash:rgba(185,60,27,.10);
+
     --ok:#177F4D;
 
     --navbg:rgba(255,255,255,.82);
@@ -36,6 +38,8 @@
     --hitfat-ink:#FFFFFF; --hitfat-solid:#B93C1B;
   }
   :root[data-theme="dark"]{
+    --accent-wash:rgba(224,78,42,.06);
+
     --ok:#2EC27E;
 
     --navbg:rgba(24,24,26,.78);
@@ -163,7 +167,7 @@
   .acard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 15px;}
   .acard .ah{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
   .acard .ah .t{flex:1;font-size:15px;font-weight:700;color:var(--txt);}
-  .acard .ah .c{color:#5a5a5a;font-size:17px;line-height:1;}
+  .acard .ah .c{color:var(--dim2);font-size:17px;line-height:1;}
   .acard .big{font-size:20px;font-weight:800;color:var(--txt);letter-spacing:-.3px;}
   .acard .sub{font-size:13px;color:var(--dim);margin-top:3px;}
   .arow{display:flex;gap:10px;margin-top:10px;}
@@ -189,7 +193,7 @@
   /* hero mark: larger than the outline icons; negative margins keep the pill the same height */
   .tab .ticon{width:30px;height:30px;object-fit:contain;opacity:.55;margin:-4px 0 -3px;transition:opacity .15s,transform .15s;}
   .tab.active .ticon{opacity:1;transform:scale(1.06);filter:drop-shadow(0 2px 8px rgba(224,78,42,.35));}
-  .tab.active{color:var(--hyrox);background:rgba(224,78,42,.12);}
+  .tab.active{color:var(--hyrox);background:var(--accent-wash);}
   .tab.emblem{flex:0 0 64px;padding:0;}
   .tab.emblem .em{width:54px;height:54px;border-radius:50%;margin-top:-27px;background:transparent;border:1.5px solid var(--line);padding:0;display:flex;}
   .tab.emblem .em i{flex:1;border-radius:50%;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-style:normal;font-family:'Oswald';font-weight:700;font-size:15px;letter-spacing:1px;color:var(--txt);}
@@ -214,7 +218,7 @@
   .phase-head{display:flex;align-items:center;justify-content:space-between;padding:16px 4px;cursor:pointer;border-top:1px solid var(--line);}
   .phase.open .phase-head .ic{transform:rotate(45deg);}
   .phase-head .ttl{font-family:'Inter',system-ui,sans-serif;font-size:17px;font-weight:700;letter-spacing:-.2px;color:var(--txt);text-transform:none;}
-  .phase-head .ic{color:#5a5a5a;font-size:20px;font-weight:300;transition:transform .2s;}
+  .phase-head .ic{color:var(--dim2);font-size:20px;font-weight:300;transition:transform .2s;}
   .phase-body{display:none;padding:0 0 18px;}
   .phase.open .phase-body{display:block;}
   .phase-desc{color:var(--dim);font-size:13px;line-height:1.55;margin-bottom:18px;}
@@ -264,7 +268,7 @@
   .catcard .body{position:relative;z-index:2;flex:1;min-width:0;}
   .catcard .ttl{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:17px;letter-spacing:-.2px;text-transform:none;line-height:1.2;color:var(--txt);}
   .catcard .cnt{color:var(--dim);font-size:13px;font-weight:500;margin-top:3px;letter-spacing:0;text-transform:none;}
-  .catcard .arr{position:static;transform:none;color:#5a5a5a;font-size:17px;z-index:2;flex:none;margin-left:10px;}
+  .catcard .arr{position:static;transform:none;color:var(--dim2);font-size:17px;z-index:2;flex:none;margin-left:10px;}
 
   /* category tiles with artwork (Workout Library) */
   .gcards{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
@@ -285,7 +289,7 @@
   .wrow .tx .t{font-family:'Inter',system-ui,sans-serif;font-size:15px;font-weight:600;letter-spacing:-.2px;color:var(--txt);line-height:1.25;}
   .wrow .tx .m{font-size:13px;color:var(--dim);margin-top:2px;font-weight:500;}
   .wrow .rpe{flex:none;font-size:11px;font-weight:700;color:var(--hyrox);background:rgba(224,78,42,.10);border:1px solid rgba(224,78,42,.22);padding:4px 9px;border-radius:99px;}
-  .wrow .chev{flex:none;color:#5a5a5a;font-size:17px;}
+  .wrow .chev{flex:none;color:var(--dim2);font-size:17px;}
   .wrow .freepill{flex:none;font-size:11px;font-weight:700;color:var(--ok);background:rgba(46,194,126,.12);border:1px solid rgba(46,194,126,.30);padding:4px 9px;border-radius:99px;}
   .card{position:relative;border-radius:var(--r);overflow:hidden;cursor:pointer;background:linear-gradient(155deg,#1a1a1a 0%,var(--surface) 60%,#080808 100%);aspect-ratio:3/4;border:1px solid var(--line);transition:transform .12s;padding:14px 13px 13px;display:flex;flex-direction:column;justify-content:space-between;}
   .card:active{transform:scale(.97);}
@@ -546,7 +550,7 @@
   .readbox .ri{display:flex;gap:11px;font-size:15px;color:#dcdcdc;line-height:1.5;padding:9px 0;border-bottom:1px solid var(--line);}
   .readbox .ri:last-child{border-bottom:none;}
   .readbox .ri .d{color:var(--hyrox);flex:0 0 auto;}
-  .ackrow{display:flex;gap:12px;align-items:flex-start;cursor:pointer;padding:6px 2px 18px;font-size:15px;color:#ddd;line-height:1.45;}
+  .ackrow{display:flex;gap:12px;align-items:flex-start;cursor:pointer;padding:6px 2px 18px;font-size:15px;color:var(--txt);line-height:1.45;}
   .ackrow .box{width:24px;height:24px;flex:0 0 auto;border-radius:7px;border:1.5px solid #444;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--hyrox-ink);background:transparent;margin-top:1px;}
   .ackrow.on .box{background:var(--hyrox);border-color:var(--hyrox);}
   .ackrow .box span{opacity:0;}.ackrow.on .box span{opacity:1;}
@@ -589,7 +593,7 @@
   .prow .pi{flex:1;min-width:0;}
   .prow .pi .pt{font-size:15px;font-weight:600;letter-spacing:-.2px;color:var(--txt);line-height:1.25;}
   .prow .pi .pm{font-size:13px;color:var(--dim);font-weight:500;margin-top:2px;}
-  .prow .pr{font-family:'Inter',system-ui,sans-serif;font-size:13px;color:#5a5a5a;font-weight:600;}
+  .prow .pr{font-family:'Inter',system-ui,sans-serif;font-size:13px;color:var(--dim2);font-weight:600;}
   .empty{color:var(--dim2);font-size:13px;text-align:center;padding:26px 12px;font-style:italic;line-height:1.5;}
   .noteinput{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:15px;padding:12px 14px;resize:vertical;min-height:70px;line-height:1.5;}
   .noteinput::placeholder{color:var(--dim2);}
@@ -605,7 +609,7 @@
   .pfrow .l{font-size:15px;color:var(--dim);font-weight:500;}
   .pfrow .v{font-size:15px;color:var(--txt);font-weight:600;text-align:right;}
   .pflink{width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);color:var(--txt);border-radius:14px;padding:14px 15px;margin-bottom:8px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
-  .pflink .arr{color:#5a5a5a;font-size:17px;}
+  .pflink .arr{color:var(--dim2);font-size:17px;}
   .pflink.danger{color:#ff6b6b;}
   .attribution{font-size:11px;color:var(--dim2);line-height:1.6;text-align:center;margin:20px 2px 4px;}
   /* modal (mark complete / confirm) */
@@ -720,7 +724,7 @@
   .hdots i.on{width:20px;background:var(--hyrox);}
   .frow .tx .g{font-size:13px;color:var(--dim2);margin-top:3px;line-height:1.35;}
   .frow .tx .g .pop{color:var(--hyrox);font-weight:700;}
-  .frow .chev{flex:none;color:#5a5a5a;font-size:17px;line-height:1;margin-left:2px;}
+  .frow .chev{flex:none;color:var(--dim2);font-size:17px;line-height:1;margin-left:2px;}
   .pcard .info .m{font-size:11px;color:var(--dim);font-weight:600;margin-top:6px;letter-spacing:.2px;}
   .pcard .info .by{font-size:11px;color:var(--dim2);margin-top:5px;}
   .pcard .info .price{position:absolute;bottom:13px;right:14px;font-family:'Oswald';font-weight:700;font-size:15px;color:var(--hyrox);}
@@ -770,7 +774,7 @@
   .pd-hero .body .badge{position:static;display:inline-block;margin-bottom:9px;}
   .pd-hero .body h2{font-family:'Oswald';font-size:24px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;line-height:1;}
   .pd-meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}
-  .chip{background:var(--surface);border:1px solid var(--line);color:#ddd;font-size:11px;font-weight:600;padding:6px 11px;border-radius:99px;}
+  .chip{background:var(--surface);border:1px solid var(--line);color:var(--txt);font-size:11px;font-weight:600;padding:6px 11px;border-radius:99px;}
   .chip b{color:var(--hyrox);}
   .joinbar{display:flex;gap:10px;align-items:center;margin:16px 0 6px;}
   .joinbar .buy{flex:1;background:var(--hyrox-solid);color:var(--hyrox-ink) !important;border:none;border-radius:99px;padding:16px;font-family:'Oswald';font-weight:700;font-size:15px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
