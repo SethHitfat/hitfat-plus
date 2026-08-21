@@ -13,68 +13,50 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
   :root{
-    --lift:0 2px 10px rgba(22,22,26,.06);
-
-    --brand:#7E1220;   /* headings and filled banners — ZUS uses navy here */
-
-    --cardtop:#FFFFFF; --cardbot:#F2EFEA;
-
-    --wash:#F2E7E6; --card-a:#8E1526; --card-b:#6E101C; --card-glow:rgba(255,255,255,.10);
-
-    --nav-on:#C62828;
-
-    --accent-wash:rgba(198,40,40,.10);
-
-    --ok:#177F4D;
-
-    --navbg:rgba(255,255,255,.82);
-
-    --invert:#0C0C0D; --invert-ink:#FAF9F7;
-
-    /* Light is the default. Every colour that differs between themes lives here
-       and is overridden wholesale under [data-theme="dark"] — nothing else in
-       the stylesheet knows which theme is running. */
+    /* Dark is the default again. Palette read off The Prehab Guys: a black page,
+       cards a shade above it, one bright red. Light is kept intact under
+       [data-theme="light"] rather than deleted — it cost a day to get right. */
+    --bg:#000000; --surface:#141414; --surface2:#1F1F1F; --line:#262626;
+    --txt:#FFFFFF; --dim:#9A9A9A; --dim2:#8A8A8A;
+    --hairline:rgba(255,255,255,.09);
+    --tint:rgba(255,255,255,.07);
+    --ink-90:rgba(255,255,255,.90); --ink-72:rgba(255,255,255,.72);
+    --ink-55:rgba(255,255,255,.58); --ink-42:rgba(255,255,255,.46);
+    --r:14px;
+    /* Their own button red measures 3.94 under white text. Bright red carries
+       the accents, a shade deeper carries the fills that hold white type. */
+    --hyrox:#F0392B; --hyrox-ink:#FFFFFF; --hyrox-solid:#D92C1A;
+    --hitfat:#F0392B; --hitfat-deep:#3A0B06;
+    --hitfat-ink:#FFFFFF; --hitfat-solid:#D92C1A;
+    --brand:#FFFFFF;                 /* headings are white; the red is the bar beside them */
+    --nav-on:#F0392B;
+    --navbg:rgba(20,20,20,.86);
+    --accent-wash:rgba(240,57,43,.13);
+    --wash:#1A0603; --card-a:#221008; --card-b:#0C0C0C; --card-glow:rgba(240,57,43,.22);
+    --cardtop:#1A1A1A; --cardbot:#0A0A0A;
+    --ok:#2EC27E;
+    --invert:#FFFFFF; --invert-ink:#0C0C0D;
+    --lift:none;
+  }
+  :root[data-theme="light"]{
     --bg:#F5F4F3; --surface:#FFFFFF; --surface2:#F0EEEC; --line:#E9E6E3;
     --txt:#16161A; --dim:#6B6864; --dim2:#6E6A65;
     --hairline:rgba(12,12,13,.12);
     --tint:rgba(12,12,13,.055);
     --ink-90:rgba(12,12,13,.90); --ink-72:rgba(12,12,13,.72);
     --ink-55:rgba(12,12,13,.58); --ink-42:rgba(12,12,13,.46);
-    --r:14px;
-    /* The accent is darker here than in dark mode so it stays readable as text:
-       #EF4444 measures 3.02 on this page, #C62828 measures 5.34. */
     --hyrox:#C62828; --hyrox-ink:#FFFFFF; --hyrox-solid:#C62828;
     --hitfat:#C62828; --hitfat-deep:#F6DADA;
     --hitfat-ink:#FFFFFF; --hitfat-solid:#C62828;
-  }
-  :root[data-theme="dark"]{
-    --lift:none;
-
-    --brand:#FF8A8A;
-
-    --cardtop:#1a1a1a; --cardbot:#080808;
-
-    --wash:#240B0B; --card-a:#241014; --card-b:#0b0b0d; --card-glow:rgba(239,68,68,.26);
-
-    --nav-on:#F05252;
-
-    --accent-wash:rgba(239,68,68,.07);
-
-    --ok:#2EC27E;
-
-    --navbg:rgba(24,24,26,.78);
-
-    --invert:#FFFFFF; --invert-ink:#0C0C0D;
-
-    --bg:#0A0A0B; --surface:#161618; --surface2:#1F1F22; --line:#2A2A2D;
-    --txt:#F7F5F2; --dim:#A29E98; --dim2:#8E8A84;
-    --hairline:rgba(255,255,255,.10);
-    --tint:rgba(255,255,255,.08);
-    --ink-90:rgba(255,255,255,.90); --ink-72:rgba(255,255,255,.72);
-    --ink-55:rgba(255,255,255,.55); --ink-42:rgba(255,255,255,.42);
-    --hyrox:#EF4444; --hyrox-ink:#FFFFFF; --hyrox-solid:#C62828;
-    --hitfat:#EF4444; --hitfat-deep:#5A0F0F;
-    --hitfat-ink:#FFFFFF; --hitfat-solid:#C62828;
+    --brand:#7E1220;
+    --nav-on:#C62828;
+    --navbg:rgba(255,255,255,.82);
+    --accent-wash:rgba(198,40,40,.10);
+    --wash:#F2E7E6; --card-a:#8E1526; --card-b:#6E101C; --card-glow:rgba(255,255,255,.10);
+    --cardtop:#FFFFFF; --cardbot:#F2EFEA;
+    --ok:#177F4D;
+    --invert:#0C0C0D; --invert-ink:#FAF9F7;
+    --lift:0 2px 10px rgba(22,22,26,.06);
   }
 
   /* The way in stays dark even when the app is light. Pinning the dark token
@@ -114,6 +96,8 @@
   .pgscore .p span{display:block;font-size:10px;font-weight:700;color:rgba(255,255,255,.72);margin-top:1px;}
   .pgscore .p small{display:block;font-size:9px;color:rgba(255,255,255,.45);line-height:1.3;margin-top:2px;}
 
+  .freetag{font-size:10px;font-weight:800;letter-spacing:1px;color:var(--ok);
+    border:1px solid var(--ok);border-radius:99px;padding:3px 9px;margin-left:2px;}
   .pgseg{display:flex;gap:7px;margin:0 0 11px;}
   .pggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
   .pgtile{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:11px 11px 9px;
@@ -570,7 +554,8 @@
   .klinfo .row .ic{width:24px;text-align:center;font-size:15px;flex:0 0 auto;}
   .klinfo .row b{color:var(--txt);font-weight:700;}
 
-  .sechead{font-family:'Inter',system-ui,sans-serif;font-size:20px;font-weight:800;letter-spacing:-.5px;text-transform:none;color:var(--brand);margin:30px 0 14px;display:block;}
+  .sechead{font-family:'Inter',system-ui,sans-serif;font-size:20px;font-weight:800;letter-spacing:-.5px;text-transform:none;color:var(--brand);margin:30px 0 14px;display:flex;align-items:center;gap:10px;}
+  .sechead::before{content:'';flex:none;width:4px;height:20px;border-radius:3px;background:var(--hitfat);}
 
   .trkbar{height:8px;border-radius:99px;background:var(--surface2,#181818);overflow:hidden;margin:0 0 7px;}
   .trkbar > i{display:block;height:100%;background:var(--hyrox);border-radius:99px;transition:width .3s;}
@@ -941,7 +926,7 @@
 .segs::-webkit-scrollbar{display:none;}
 .seg{flex:none;background:var(--surface2);border:none;border-radius:99px;padding:11px 22px;cursor:pointer;
   font-family:'Inter',system-ui,sans-serif;font-size:15px;font-weight:600;color:var(--txt);}
-.seg.on{background:var(--invert);color:var(--invert-ink);}
+.seg.on{background:var(--hitfat-solid);color:var(--hitfat-ink);}
 .fsec{margin:30px 0 14px;}
 .fsec .ft{font-size:24px;font-weight:800;letter-spacing:-.6px;color:var(--txt);display:flex;align-items:center;gap:6px;}
 .fsec .ft .cv{color:var(--dim2);font-weight:400;font-size:24px;}
@@ -5370,7 +5355,7 @@ function renderHome(){
 
   // 6) Quick sessions
   const quick=PROGRAMS.filter(p=>!p.weeks).slice(0,10);
-  $('home-quick').innerHTML='<div class="sechead">Quick Sessions <span style="font-size:11px;color:var(--ok);font-weight:800;letter-spacing:1px;">FREE</span></div>'+
+  $('home-quick').innerHTML='<div class="sechead">Quick Sessions <span class="freetag">FREE</span></div>'+
     '<div class="hscroll">'+quick.map(p=>
       '<div class="plan" style="background-image:url(\''+progImg(p)+'\')" onclick="openProgram(\''+p.id+'\')">'+
       '<div class="ov"></div><div class="pi"><div class="tx">'+
