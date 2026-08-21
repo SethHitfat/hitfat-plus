@@ -13,6 +13,10 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
   :root{
+    --ok:#177F4D;
+
+    --navbg:rgba(255,255,255,.82);
+
     --invert:#0C0C0D; --invert-ink:#FAF9F7;
 
     /* Light is the default. Every colour that differs between themes lives here
@@ -32,6 +36,10 @@
     --hitfat-ink:#FFFFFF; --hitfat-solid:#B93C1B;
   }
   :root[data-theme="dark"]{
+    --ok:#2EC27E;
+
+    --navbg:rgba(24,24,26,.78);
+
     --invert:#FFFFFF; --invert-ink:#0C0C0D;
 
     --bg:#0A0A0B; --surface:#161618; --surface2:#1F1F22; --line:#2A2A2D;
@@ -82,7 +90,7 @@
      JS-measured --vh), so it overlays the content — content scrolls behind it, no black band below.
      absolute-in-.app avoids the iOS position:fixed viewport bug entirely. */
   /* bottom:14px — Apple Fitness+ hugs the very bottom; the home indicator overlaps the pill's lower padding */
-  .tabs{position:absolute;left:0;right:0;bottom:var(--navb, max(14px, env(safe-area-inset-bottom,14px)));margin:0 auto;width:calc(100% - 24px);max-width:414px;z-index:60;display:flex;align-items:center;gap:2px;background:rgba(24,24,26,.78);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);border:1px solid var(--hairline);border-radius:26px;padding:6px 6px 9px;box-shadow:0 12px 40px rgba(0,0,0,.55);}
+  .tabs{position:absolute;left:0;right:0;bottom:var(--navb, max(14px, env(safe-area-inset-bottom,14px)));margin:0 auto;width:calc(100% - 24px);max-width:414px;z-index:60;display:flex;align-items:center;gap:2px;background:var(--navbg);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);border:1px solid var(--hairline);border-radius:26px;padding:6px 6px 9px;box-shadow:0 12px 40px rgba(0,0,0,.55);}
   .tab{flex:1;background:none;border:none;color:var(--dim);font-family:'Inter',system-ui,sans-serif;font-size:11px;font-weight:600;letter-spacing:.1px;text-transform:none;padding:7px 2px 6px;cursor:pointer;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:4px;transition:color .15s,background .15s;}
   .tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
   /* HITFAT Timer home (Spotify-style browse) */
@@ -127,7 +135,7 @@
   #tplay .past .t{font-size:15px;font-weight:600;color:var(--txt);}
   #tplay .past .m{font-size:13px;color:var(--dim);margin-top:1px;}
   #tplay .cur{background:var(--surface);border:1px solid var(--hairline);border-radius:20px;padding:20px 16px 16px;text-align:center;}
-  #tplay .cur .chip{display:inline-block;font-size:13px;font-weight:700;color:#cfcfcf;background:var(--surface2);padding:5px 11px;border-radius:9px;}
+  #tplay .cur .chip{display:inline-block;font-size:13px;font-weight:700;color:var(--txt);background:var(--surface2);padding:5px 11px;border-radius:9px;}
   #tplay .cur .nm{font-size:30px;font-weight:800;letter-spacing:-.6px;color:var(--txt);margin-top:11px;line-height:1.15;}
   #tplay .cur .tg{font-size:17px;color:var(--dim);margin-top:5px;}
   #tplay .cur .clk{font-family:'Oswald';font-size:60px;font-weight:700;color:var(--txt);font-variant-numeric:tabular-nums;line-height:1;margin:12px 0 14px;}
@@ -148,7 +156,7 @@
   .wk2 .d{flex:1;text-align:center;padding:9px 0 10px;border-radius:14px;}
   .wk2 .d small{display:block;font-size:11px;color:var(--dim);font-weight:600;}
   .wk2 .d b{display:block;font-size:15px;font-weight:700;color:var(--txt);margin-top:5px;}
-  .wk2 .d.done b{color:#2ec27e;}
+  .wk2 .d.done b{color:var(--ok);}
   .wk2 .d.on{background:var(--hyrox-solid);color:var(--hyrox-ink);}
   .wk2 .d.on small,.wk2 .d.on b{color:var(--hyrox-ink);}
 
@@ -164,7 +172,7 @@
   .mbar .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
   .mbar .b{width:100%;background:var(--hyrox);border-radius:4px;min-height:4px;}
   .mbar .b.off{background:#2b2b2b;}
-  .mbar .l{font-size:9px;color:var(--dim2);}
+  .mbar .l{font-size:9px;color:var(--dim);}
 
   .plan{position:relative;flex:0 0 auto;width:288px;height:206px;border-radius:20px;overflow:hidden;background:#141414 center/cover no-repeat;cursor:pointer;}
   .plan.wide{width:auto;flex:1 1 auto;display:block;}
@@ -278,7 +286,7 @@
   .wrow .tx .m{font-size:13px;color:var(--dim);margin-top:2px;font-weight:500;}
   .wrow .rpe{flex:none;font-size:11px;font-weight:700;color:var(--hyrox);background:rgba(224,78,42,.10);border:1px solid rgba(224,78,42,.22);padding:4px 9px;border-radius:99px;}
   .wrow .chev{flex:none;color:#5a5a5a;font-size:17px;}
-  .wrow .freepill{flex:none;font-size:11px;font-weight:700;color:#2ec27e;background:rgba(46,194,126,.12);border:1px solid rgba(46,194,126,.30);padding:4px 9px;border-radius:99px;}
+  .wrow .freepill{flex:none;font-size:11px;font-weight:700;color:var(--ok);background:rgba(46,194,126,.12);border:1px solid rgba(46,194,126,.30);padding:4px 9px;border-radius:99px;}
   .card{position:relative;border-radius:var(--r);overflow:hidden;cursor:pointer;background:linear-gradient(155deg,#1a1a1a 0%,var(--surface) 60%,#080808 100%);aspect-ratio:3/4;border:1px solid var(--line);transition:transform .12s;padding:14px 13px 13px;display:flex;flex-direction:column;justify-content:space-between;}
   .card:active{transform:scale(.97);}
   .card::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:var(--hyrox);opacity:.85;}
@@ -682,7 +690,7 @@
   .badge.ibdg{display:inline-block;background:none;border:none;padding:0;margin-left:8px;font-family:'Inter',system-ui,sans-serif;
     font-size:15px;font-weight:700;letter-spacing:-.1px;text-transform:none;white-space:nowrap;}
   .badge.ibdg.paid,.badge.ibdg.free{color:var(--hyrox);}
-  .badge.ibdg.owned{color:#2ec27e;font-size:13px;font-weight:600;}
+  .badge.ibdg.owned{color:var(--ok);font-size:13px;font-weight:600;}
   .badge.ibdg.soon,.badge.ibdg.done{color:var(--dim);font-size:13px;font-weight:600;}
 
   .pcard .info{padding:12px 14px 14px;}
@@ -701,7 +709,7 @@
   .frow .tx .t .ibdg{margin-left:auto;flex:none;}
   .frow .tx .m{font-size:13px;color:var(--dim);margin-top:3px;line-height:1.3;font-weight:500;}
   .frow .tx .m .pz,.pcard .info .m .pz{color:var(--hyrox);font-weight:700;}
-  .frow .tx .m .oz,.pcard .info .m .oz{color:#2ec27e;font-weight:600;}
+  .frow .tx .m .oz,.pcard .info .m .oz{color:var(--ok);font-weight:600;}
   .frow .tx .m .sz,.pcard .info .m .sz{color:#ff6b6b;font-weight:700;letter-spacing:.6px;}
   /* store hero carousel — swipeable, auto-advances until the buyer takes over */
   .heroes{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
@@ -783,7 +791,7 @@
   color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:15px;font-weight:600;margin-bottom:9px;}
 .wrow.done{border-color:rgba(224,78,42,.42);}
 .wrow .num.on{background:var(--hyrox-solid);color:var(--hyrox-ink);}
-.bigbtn.sec{background:transparent;border:1px solid var(--hairline);color:var(--txt);margin-top:9px;}
+.bigbtn.sec{background:transparent;border:1px solid var(--hairline);color:var(--txt) !important;margin-top:9px;}
 #localbar{position:fixed;left:0;right:0;top:0;z-index:70;background:#2a1206;color:#ffb37a;
   font:11px/1.4 'Inter',system-ui,sans-serif;font-weight:700;letter-spacing:.6px;text-align:center;
   padding:calc(5px + env(safe-area-inset-top,0px)) 10px 5px;border-bottom:1px solid rgba(255,179,122,.25);}
@@ -818,7 +826,7 @@
 .orline{display:flex;align-items:center;gap:12px;color:var(--dim2);font-size:13px;font-weight:700;letter-spacing:1.5px;margin:20px 0;}
 .orline::before,.orline::after{content:'';flex:1;height:1px;background:var(--line);}
 .authmsg{font-size:13px;margin:12px 0;color:var(--dim);min-height:18px;}
-.authmsg.err{color:#ff6b6b;} .authmsg.ok{color:#2ec27e;}
+.authmsg.err{color:#ff6b6b;} .authmsg.ok{color:var(--ok);}
 .authalt{background:none;border:none;color:var(--dim);font-family:'Inter',system-ui,sans-serif;font-size:13px;padding:14px 0;cursor:pointer;width:100%;}
 .authalt b{color:var(--hyrox);}
 .authfoot{font-size:13px;color:var(--dim2);text-align:center;margin-top:26px;line-height:1.8;}
@@ -828,7 +836,7 @@
 /* ── TRAIN · Fitness+ structure ── */
 .segs{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;margin:4px -18px 18px;padding:0 18px 2px;}
 .segs::-webkit-scrollbar{display:none;}
-.seg{flex:none;background:#1c1c1e;border:none;border-radius:99px;padding:11px 22px;cursor:pointer;
+.seg{flex:none;background:var(--surface2);border:none;border-radius:99px;padding:11px 22px;cursor:pointer;
   font-family:'Inter',system-ui,sans-serif;font-size:15px;font-weight:600;color:var(--txt);}
 .seg.on{background:var(--invert);color:var(--invert-ink);}
 .fsec{margin:30px 0 14px;}
@@ -840,10 +848,10 @@
 .fland .t{font-size:17px;font-weight:600;color:var(--txt);margin-top:10px;line-height:1.25;}
 .fland .m{font-size:13px;color:var(--dim);margin-top:2px;}
 .fnew{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(8px);
-  backdrop-filter:blur(8px);color:var(--txt);font-size:11px;font-weight:800;letter-spacing:.8px;padding:4px 9px;border-radius:99px;}
+  backdrop-filter:blur(8px);color:#fff;font-size:11px;font-weight:800;letter-spacing:.8px;padding:4px 9px;border-radius:99px;}
 .fact{flex:none;width:150px;border-radius:16px;overflow:hidden;background:var(--surface);cursor:pointer;}
 .fact .im{width:150px;height:170px;background:#e9e9ec center/cover no-repeat;}
-.fact .lb{padding:12px 10px;text-align:center;font-size:15px;font-weight:700;color:#111;background:var(--invert);}
+.fact .lb{padding:12px 10px;text-align:center;font-size:15px;font-weight:700;color:var(--invert-ink);background:var(--invert);}
 .fbig{flex:none;width:300px;height:190px;border-radius:18px;overflow:hidden;position:relative;cursor:pointer;
   background:#141414 center/cover no-repeat;display:flex;align-items:flex-end;}
 .fbig .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.1) 30%,rgba(0,0,0,.85));}
@@ -1251,7 +1259,7 @@
 #fqm{position:fixed;inset:0;background:var(--bg);z-index:9650;display:none;overflow-y:auto;}
 #fqm.on{display:block;}
 .fqwhy{display:flex;flex-direction:column;gap:5px;margin-top:14px;}
-.fqwhy span{font-size:13px;font-weight:600;color:#2ec27e;}
+.fqwhy span{font-size:13px;font-weight:600;color:var(--ok);}
 .fqcta{display:flex;align-items:center;gap:13px;background:var(--surface);border:1px solid var(--line);
   border-radius:16px;padding:15px 16px;cursor:pointer;margin-top:12px;}
 .fqcta .ic{font-size:20px;}
@@ -3171,7 +3179,7 @@ function renderMonthly(){
      '<span>'+Math.max(0,p.target-p.done)+' to go</span></div>';
 
   if(p.complete)
-    h+='<div class="mpnote" style="border-color:rgba(46,194,126,.35);color:#2ec27e;">'+
+    h+='<div class="mpnote" style="border-color:rgba(46,194,126,.35);color:var(--ok);">'+
        'Challenge complete. It is on your shelf below and stays there.</div>';
   else if(!joinedChallenge())
     h+='<button class="bigbtn" onclick="joinChallenge()">Join '+monthName()+'</button>';
@@ -3372,7 +3380,7 @@ function storePrograms(){
        '<div class="go">RM'+BUNDLE_PRICE+' · Get all access</div>'+
        '<div class="lock">WORTH RM'+paid.reduce((s,p)=>s+programPrice(p),0)+' BOUGHT SEPARATELY</div></div>';
   } else {
-    h+='<div class="mpnote" style="border-color:rgba(46,194,126,.35);color:#2ec27e;">You own All Access — every program here is unlocked, including anything added later.</div>';
+    h+='<div class="mpnote" style="border-color:rgba(46,194,126,.35);color:var(--ok);">You own All Access — every program here is unlocked, including anything added later.</div>';
   }
 
   if(mine.length){
@@ -3449,7 +3457,7 @@ function storeBar(){
      '<div class="lock">SAVE RM'+(BAR_WAS-BAR_PRICE)+'</div></div>';
 
   if(bp.length){
-    h+='<div class="mpnote" style="border-color:rgba(46,194,126,.35);color:#2ec27e;">'+
+    h+='<div class="mpnote" style="border-color:rgba(46,194,126,.35);color:var(--ok);">'+
        'All '+bp.length+' BAR sessions are free in this app, whether you own the bar or not.</div>';
     h+=fsec('BAR sessions','Free · built for the bar and bands');
     h+='<div class="hscroll">'+bp.map(p=>flandCard(p,'FREE')).join('')+'</div>';
@@ -3970,7 +3978,7 @@ const _EGG=['egg','eggs','omelette'],
 /* ── CPG MOH 2023 · Asian BMI cut-offs ── */
 function bmiClass(b){
   if(b<18.5) return {label:'Underweight', cls:'under',   c:'#5eb8ff', advice:'Bring your calories up in a healthy way.'};
-  if(b<23)   return {label:'Normal',      cls:'normal',  c:'#2ec27e', advice:'Keep the eating and activity habits you have.'};
+  if(b<23)   return {label:'Normal',      cls:'normal',  c:'var(--ok)', advice:'Keep the eating and activity habits you have.'};
   if(b<27.5) return {label:'Pre-obese',    cls:'preobes', c:'#f59e0b', advice:'Now is the time to start changing habits.'};
   if(b<35)   return {label:'Obese Class I', cls:'obes1',  c:'#ff6b6b', advice:'Seeing a doctor or dietitian is recommended.'};
   if(b<40)   return {label:'Obese Class II',cls:'obes2',  c:'#ff4444', advice:'Seeing a doctor really does matter here.'};
@@ -3980,7 +3988,7 @@ function wcRisk(cm,gender){
   if(!cm) return null;
   const risk=(gender==='male'&&cm>=90)||(gender==='female'&&cm>=80);
   return {risk, label: risk?'Abdominal obesity':'Within range',
-          c: risk?'#ff6b6b':'#2ec27e',
+          c: risk?'#ff6b6b':'var(--ok)',
           note: risk?'Higher cardiovascular risk — worth seeing a doctor.':''};
 }
 /* CPG MOH 2023: floors 1,500 kcal male / 1,200 female; safe deficit 500–750. */
@@ -4016,7 +4024,7 @@ function mdgOk(n){
 }
 /* CPG: 500–750 kcal/day is the safe band; >1 kg/week is over the limit. */
 function deficitVerdict(k){
-  if(k<=400)  return {label:'Relaxed and sustainable', c:'#2ec27e', msg:'Realistic for the long run — 1–2 kg a month.'};
+  if(k<=400)  return {label:'Relaxed and sustainable', c:'var(--ok)', msg:'Realistic for the long run — 1–2 kg a month.'};
   if(k<=750)  return {label:'Smart fat loss',       c:'#E04E2A', msg:'Inside the CPG MOH 2023 band: 500–750 kcal = 0.5–1 kg a week.'};
   if(k<=1000) return {label:'Aggressive',           c:'#f59e0b', msg:'Above the CPG band. Keep protein high and do not skip training.'};
   return           {label:'Too aggressive',      c:'#ff4444', msg:'Past the CPG safe limit (1 kg a week). Give yourself more time instead.'};
@@ -4323,11 +4331,11 @@ function renderPlanView(){
   // macros
   h+=fsec('Daily macros','MDG 2020 · carbs 50–65% · protein 10–20% · fat 25–35%');
   h+='<div class="emacs">'+
-     [['Protein',n.prot,n.pPct,'#fb923c',ok.prot],['Carbs',n.carb,n.cPct,'#38bdf8',ok.cho],['Fat',n.fat,n.fPct,'#2ec27e',ok.fat]]
+     [['Protein',n.prot,n.pPct,'#fb923c',ok.prot],['Carbs',n.carb,n.cPct,'#38bdf8',ok.cho],['Fat',n.fat,n.fPct,'var(--ok)',ok.fat]]
      .map(m=>'<div class="emac"><div class="v" style="color:'+m[3]+';">'+m[1]+
        '<span style="font-size:15px;font-weight:400;letter-spacing:0;">g</span></div>'+
        '<div class="l">'+m[0]+'</div>'+
-       '<div class="g" style="color:'+(m[4]?'#2ec27e':'#f59e0b')+';">'+m[2]+'% '+(m[4]?'✓':'⚠')+'</div>'+
+       '<div class="g" style="color:'+(m[4]?'var(--ok)':'#f59e0b')+';">'+m[2]+'% '+(m[4]?'✓':'⚠')+'</div>'+
        '<div class="b"><i style="width:'+m[2]+'%;background:'+m[3]+';"></i></div></div>').join('')+'</div>';
   if(n.floorHit) h+='<div class="mpnote" style="border-color:rgba(94,184,255,.35);color:#5eb8ff;">Calories were held at the safe minimum of '+n.floor.toLocaleString()+' kcal (CPG MOH 2023). Give yourself more time, or ease the target.</div>';
   if(n.deficit){ const v=deficitVerdict(n.deficit);
@@ -4336,7 +4344,7 @@ function renderPlanView(){
   // days
   h+=fsec('Daily menus','Three options per slot — swap when an ingredient is missing');
   p.days.forEach((d,di)=>{
-    const bal=(good,txt)=>'<span class="mpbal" style="color:'+(good?'#2ec27e':'#f59e0b')+
+    const bal=(good,txt)=>'<span class="mpbal" style="color:'+(good?'var(--ok)':'#f59e0b')+
       ';border-color:'+(good?'rgba(46,194,126,.3)':'rgba(245,158,11,.3)')+';">'+txt+'</span>';
     h+='<div class="mpday'+(di===0?' open':'')+'" id="mpday-'+di+'">'+
       '<button class="mpday-h" onclick="mpDay('+di+')"><div><div class="t">Day '+d.day+'</div>'+
@@ -4364,7 +4372,7 @@ function renderPlanView(){
           '<div class="mpbals" style="margin-top:11px;">'+
             (g.protein?'<span class="mpbal" style="color:#38bdf8;border-color:rgba(56,189,248,.3);">Protein</span>':'')+
             (g.karbo?'<span class="mpbal" style="color:#f59e0b;border-color:rgba(245,158,11,.3);">Carbs</span>':'')+
-            (g.sayur?'<span class="mpbal" style="color:#2ec27e;border-color:rgba(46,194,126,.3);">Veg</span>':'')+
+            (g.sayur?'<span class="mpbal" style="color:var(--ok);border-color:rgba(46,194,126,.3);">Veg</span>':'')+
             (g.buah?'<span class="mpbal" style="color:#fb923c;border-color:rgba(251,146,60,.3);">Fruit</span>':'')+
           '</div>'+
           (o.scale>1?'<div class="mpnote" style="border-color:rgba(94,184,255,.3);color:#5eb8ff;">'+
@@ -5257,7 +5265,7 @@ function renderHome(){
 
   // 6) Quick sessions
   const quick=PROGRAMS.filter(p=>!p.weeks).slice(0,10);
-  $('home-quick').innerHTML='<div class="sechead">Quick Sessions <span style="font-size:11px;color:#2ec27e;font-weight:800;letter-spacing:1px;">FREE</span></div>'+
+  $('home-quick').innerHTML='<div class="sechead">Quick Sessions <span style="font-size:11px;color:var(--ok);font-weight:800;letter-spacing:1px;">FREE</span></div>'+
     '<div class="hscroll">'+quick.map(p=>
       '<div class="plan" style="background-image:url(\''+progImg(p)+'\')" onclick="openProgram(\''+p.id+'\')">'+
       '<div class="ov"></div><div class="pi"><div class="tx">'+
@@ -5538,7 +5546,7 @@ function dayStatus(kcal){
   const n=HF.data.nutrition||{}; if(!n.cal) return {k:'none',t:'NO TARGET',c:'#8a8a8a',s:'Set your daily target first'};
   if(kcal>n.cal)       return {k:'over', t:'OVER BUDGET', c:'#E04E2A', s:'Over by '+(kcal-n.cal)+' kcal today'};
   if(kcal<n.cal*0.5)   return {k:'under',t:'UNDER TARGET',c:'#f59e0b', s:Math.round(n.cal*0.5-kcal)+' kcal below the halfway mark'};
-  return {k:'on', t:'ON TRACK', c:'#2ec27e', s:'Within your daily target'};
+  return {k:'on', t:'ON TRACK', c:'var(--ok)', s:'Within your daily target'};
 }
 
 /* ── EAT SCREEN · Fitness+ structure ──
@@ -5577,7 +5585,7 @@ function eatToday(){
   const t=mealTotals(), burned=burnTotal(), left=Math.max(0,n.cal-t.kcal+burned), net=t.kcal-burned;
   const pct=Math.min(100,Math.round(t.kcal/n.cal*100));
   const st=dayStatus(t.kcal), score=hfScore(t.kcal,t.p,t.c,t.f);
-  const scoreC=score>=70?'#2ec27e':score>=45?'#f59e0b':'#E04E2A';
+  const scoreC=score>=70?'var(--ok)':score>=45?'#f59e0b':'#E04E2A';
   const bySlot={breakfast:0,lunch:0,dinner:0,snack:0}, cntSlot={breakfast:0,lunch:0,dinner:0,snack:0};
   mealsFor().forEach(m=>{ const k=m.slot||'snack'; bySlot[k]+=(m.kcal||0); cntSlot[k]++; });
 
@@ -5609,7 +5617,7 @@ function eatToday(){
   // macros
   h+=fsec('Macros','Against the split from your target');
   h+='<div class="emacs">'+
-     [['Protein',t.p,n.pt,'#fb923c'],['Carbs',t.c,n.ct,'#38bdf8'],['Fat',t.f,n.ft,'#2ec27e']].map(m=>{
+     [['Protein',t.p,n.pt,'#fb923c'],['Carbs',t.c,n.ct,'#38bdf8'],['Fat',t.f,n.ft,'var(--ok)']].map(m=>{
        const w=Math.min(100,Math.round(m[1]/(m[2]||1)*100));
        return '<div class="emac"><div class="v" style="color:'+m[3]+';">'+m[1]+'<span style="font-size:15px;font-weight:400;letter-spacing:0;">g</span></div>'+
          '<div class="l">'+m[0]+'</div><div class="g">of '+m[2]+'g</div>'+
@@ -5621,7 +5629,7 @@ function eatToday(){
   h+='<div class="elog" onclick="openBurn()"><div class="e">🔥</div>'+
      '<div class="tx"><div class="t">Exercise burn</div>'+
      '<div class="m">'+(burnFor().length?burnFor().length+' logged today':'Tap to log an activity')+'</div></div>'+
-     '<div class="k" style="color:#2ec27e;">+'+burned+'</div><div class="chev">›</div></div>';
+     '<div class="k" style="color:var(--ok);">+'+burned+'</div><div class="chev">›</div></div>';
 
   // shortcut into the other two segments
   h+=fsec('Next','');
@@ -5772,14 +5780,14 @@ function delBurn(i){ const d=iso(0); (HF.data.burn[d]||[]).splice(i,1); HF.save(
 function renderBurn(){
   const list=burnFor();
   $('burn-body').innerHTML=
-    '<div style="font-family:\'Oswald\';font-size:30px;color:#2ec27e;line-height:1;">+'+burnTotal()+'</div>'+
+    '<div style="font-family:\'Oswald\';font-size:30px;color:var(--ok);line-height:1;">+'+burnTotal()+'</div>'+
     '<div class="sub" style="margin-bottom:14px;">kcal burned today</div>'+
     '<div class="filters">'+
     [['Walk',30,5],['Run',30,10],['Gym',45,7],['Cycling',45,8],['HIIT',20,11]].map(x=>
       '<button class="chip" onclick="addBurn(\''+x[0]+'\','+x[1]+','+x[2]+')">'+x[0]+' '+x[1]+'m</button>').join('')+'</div>'+
     (list.length?'<div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">'+list.map((x,i)=>
       '<div class="wrow"><div class="tx"><div class="t">'+x.name+'</div><div class="m">'+x.mins+' min</div></div>'+
-      '<div style="font-family:\'Oswald\';font-size:17px;color:#2ec27e;">+'+x.kcal+'</div>'+
+      '<div style="font-family:\'Oswald\';font-size:17px;color:var(--ok);">+'+x.kcal+'</div>'+
       '<div class="chev" onclick="delBurn('+i+')">✕</div></div>').join('')+'</div>'
       :'<div class="empty" style="padding:24px 0;">No activity logged today.</div>')+
     '<button class="bigbtn" onclick="closeBurn()">Done</button>';
@@ -5917,8 +5925,8 @@ function mealBadge(kcal){
   const n=HF.data.nutrition||{}, t=n.cal;
   let label,c;
   const pct = t ? kcal/t : null;
-  if(pct!==null){ if(pct<0.30){label='GOOD TO EAT';c='#2ec27e';} else if(pct<=0.50){label='FINE, BUT ADJUST';c='#f59e0b';} else {label='SKIP IT TODAY';c='#E04E2A';} }
-  else { if(kcal<500){label='GOOD TO EAT';c='#2ec27e';} else if(kcal<=850){label='FINE, BUT ADJUST';c='#f59e0b';} else {label='SKIP IT TODAY';c='#E04E2A';} }
+  if(pct!==null){ if(pct<0.30){label='GOOD TO EAT';c='var(--ok)';} else if(pct<=0.50){label='FINE, BUT ADJUST';c='#f59e0b';} else {label='SKIP IT TODAY';c='#E04E2A';} }
+  else { if(kcal<500){label='GOOD TO EAT';c='var(--ok)';} else if(kcal<=850){label='FINE, BUT ADJUST';c='#f59e0b';} else {label='SKIP IT TODAY';c='#E04E2A';} }
   return {label,c};
 }
 function coachText(kcal,p,c,f){
@@ -5982,7 +5990,7 @@ function renderScanResult(d){
      '<span style="width:7px;height:7px;border-radius:50%;background:'+b.c+';"></span>'+
      '<span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:'+b.c+';">'+b.label+'</span></div>';
   h+='<div class="arow">'+
-     [[kcal,'Calories','#E04E2A'],[p+'g','Protein','#fb923c'],[c+'g','Carbs','#38bdf8'],[f+'g','Fat','#2ec27e']].map(x=>
+     [[kcal,'Calories','#E04E2A'],[p+'g','Protein','#fb923c'],[c+'g','Carbs','#38bdf8'],[f+'g','Fat','var(--ok)']].map(x=>
        '<div class="acard" style="text-align:center;padding:12px 6px;"><div style="font-family:\'Oswald\';font-size:20px;color:'+x[2]+';">'+x[0]+'</div>'+
        '<div class="sub" style="font-size:11px;">'+x[1]+'</div></div>').join('')+'</div>';
   // tabs
@@ -6099,7 +6107,7 @@ function renderProgress(){
     const delta=Math.round((last.kg-first.kg)*10)/10;
     const goal=(HF.data.nutrition&&HF.data.nutrition.goal)||'lose';
     const good=(goal==='lose'&&delta<0)||((goal==='muscle'||goal==='bulk')&&delta>0)||(goal==='maintain'&&Math.abs(delta)<=1);
-    const col=good?'#2ec27e':'#E04E2A';
+    const col=good?'var(--ok)':'#E04E2A';
     h+='<div class="acard"><div class="ah"><span>⚖️</span><div class="t">Weight</div></div>'+
        '<div style="display:flex;align-items:baseline;gap:10px;">'+
        '<div style="font-family:\'Oswald\';font-size:44px;line-height:1;">'+last.kg+'<span style="font-size:17px;color:var(--dim);"> kg</span></div>'+
@@ -6260,7 +6268,7 @@ function drawShareCard(){
     const d=Math.round((wl[wl.length-1].kg-wl[0].kg)*10)/10;
     heroN=(d>0?'+':'')+d; heroL='KG CHANGE';
     const goal=(HF.data.nutrition&&HF.data.nutrition.goal)||'lose';
-    heroC=((goal==='lose'&&d<0)||((goal==='muscle'||goal==='bulk')&&d>0))?'#2ec27e':'#fff';
+    heroC=((goal==='lose'&&d<0)||((goal==='muscle'||goal==='bulk')&&d>0))?'var(--ok)':'#fff';
   } else { heroN=String(tr.sessions); heroL='SESSIONS'; heroC='#E04E2A'; }
   x.fillStyle=heroC; x.font="700 300px 'Oswald',sans-serif";
   x.fillText(heroN, cx, 700);
