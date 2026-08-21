@@ -92,6 +92,57 @@
     --ok:#2EC27E;
     color:var(--txt);
   }
+
+  /* ── Progress ─────────────────────────────────────────────────────
+     The score is the one dark card on a light page, so it reads as the
+     headline rather than one more panel. Everything else reuses the card
+     and grid the rest of the app already uses. */
+  .pgscore{background:#111114;color:#fff;border-radius:20px;padding:18px 18px 16px;margin:6px 0 4px;
+    --txt:#fff; --dim:rgba(255,255,255,.72); --dim2:rgba(255,255,255,.56);}
+  .pgscore .k{font-family:'Oswald';font-size:11px;font-weight:700;letter-spacing:1.8px;
+    color:#FF9E9E;text-transform:uppercase;}
+  .pgscore .row{display:flex;align-items:baseline;gap:10px;margin-top:6px;}
+  .pgscore .n{font-family:'Oswald';font-size:46px;font-weight:700;line-height:1;}
+  .pgscore .n span{font-size:17px;color:rgba(255,255,255,.55);}
+  .pgscore .band{margin-left:auto;font-size:11px;font-weight:800;padding:5px 11px;border-radius:99px;
+    background:rgba(255,255,255,.12);}
+  .pgscore .bar{height:6px;border-radius:9px;background:rgba(255,255,255,.14);margin:12px 0 14px;overflow:hidden;}
+  .pgscore .bar i{display:block;height:100%;border-radius:9px;background:var(--hitfat-solid);}
+  .pgscore .parts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  .pgscore .p{text-align:center;}
+  .pgscore .p b{display:block;font-family:'Oswald';font-size:19px;font-weight:700;}
+  .pgscore .p span{display:block;font-size:10px;font-weight:700;color:rgba(255,255,255,.72);margin-top:1px;}
+  .pgscore .p small{display:block;font-size:9px;color:rgba(255,255,255,.45);line-height:1.3;margin-top:2px;}
+
+  .pggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+  .pgtile{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:11px 11px 9px;
+    box-shadow:var(--lift);}
+  .pgtile .v{font-family:'Oswald';font-size:23px;font-weight:700;line-height:1.05;}
+  .pgtile .v .u{font-size:11px;color:var(--dim);font-weight:600;}
+  .pgtile .l{font-size:11px;font-weight:700;color:var(--dim);margin-top:1px;}
+  .pgtile .s{font-size:10.5px;font-weight:700;margin-top:2px;}
+
+  .pgbar{height:7px;border-radius:9px;background:var(--tint);margin:9px 0 5px;overflow:hidden;}
+  .pgbar i{display:block;height:100%;border-radius:9px;background:var(--hitfat-solid);}
+
+  .pgcal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px;}
+  .pgh{font-size:10px;font-weight:700;color:var(--dim2);text-align:center;font-style:normal;}
+  .pgd{aspect-ratio:1/1;border-radius:8px;background:var(--tint);display:grid;place-items:center;
+    font-style:normal;font-size:10px;font-weight:700;color:var(--dim2);}
+  .pgd.on{background:var(--hitfat-solid);color:#fff;}
+  .pgd.today{outline:2px solid var(--hitfat);outline-offset:1px;}
+  .pgd.future{opacity:.4;}
+  .pgd.blank{background:none;}
+  .pglegend{display:flex;align-items:center;gap:7px;margin-top:10px;font-size:11px;color:var(--dim);}
+  .pglegend .pgd{width:14px;height:14px;aspect-ratio:auto;font-size:0;}
+
+  .pgins{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-top:1px solid var(--line);}
+  .pgins:first-child{border-top:none;padding-top:2px;}
+  .pgins i{width:9px;height:9px;border-radius:50%;flex:none;margin-top:5px;font-style:normal;}
+  .pgins i.ok{background:var(--ok);}
+  .pgins i.warn{background:#E9A23B;}
+  .pgins b{display:block;font-size:13.5px;font-weight:700;}
+  .pgins small{display:block;font-size:12px;color:var(--dim);margin-top:1px;}
   /* Text over photography, and over the panels that stay dark on purpose,
      keeps light ink in both themes. */
   .plan,.hero,.pcard,.scard,.nfcard,.nfhero,.nofilm,.tcard,.trackcard,.cdmini,.coachcard,.ehero,.klbanner,.fbig,.gcard,.ncard,.nhero,.pd-hero,.ftile,.fplan,.mcard,#tplay,#player{
@@ -5002,6 +5053,7 @@ const HF={
   _defaults(){ return { onboarded:false,readiness:false,prefs:{},sessions:{},progress:{},
     weight:[],meals:{},burn:{},favs:[],custom:null,nutrition:{},scanQuota:{used:0,month:''},owned:{},purchases:[],
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
+    body:[],goalKg:null,
     challengeJoined:{},badges:{} }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
@@ -5011,6 +5063,7 @@ const HF={
       d.onboarded=!!o.onboarded; d.readiness=!!o.readiness;
       d.prefs=Object.assign({},o.prefs||{}); d.sessions=Object.assign({},o.sessions||{});
       d.progress=Object.assign({},o.progress||{}); d.weight=Array.isArray(o.weight)?o.weight.slice():[];
+      d.body=Array.isArray(o.body)?o.body.slice():[]; d.goalKg=(typeof o.goalKg==='number')?o.goalKg:null;
       d.meals=Object.assign({},o.meals||{}); d.burn=Object.assign({},o.burn||{});
       d.favs=Array.isArray(o.favs)?o.favs.slice():[]; d.custom=o.custom||null;
       d.nutrition=Object.assign({},o.nutrition||{});
@@ -6148,73 +6201,247 @@ function pgNutrition(){
           avgScore:logged?Math.round(sumScore/logged):0, target:n.cal||0};
 }
 
+/* ── Progress · measurements ───────────────────────────────────────────
+   Body fat and waist ride along with the weigh-in. Every one of them is
+   optional; the screen leaves out whatever has never been entered rather
+   than showing a zero. */
+function bodyLog(){ return (HF.data.body||[]).slice().sort((a,b)=>a.iso<b.iso?-1:1); }
+function logBody(o){
+  const day=iso(0), rest=(HF.data.body||[]).filter(x=>x.iso!==day);
+  const prev=(HF.data.body||[]).filter(x=>x.iso===day)[0]||{};
+  HF.data.body=rest.concat([Object.assign({iso:day}, prev, o)]);
+  HF.save();
+}
+function bodySeries(key){ return bodyLog().filter(x=>typeof x[key]==='number').map(x=>({iso:x.iso, v:x[key]})); }
+function windowDelta(series, days){
+  const from=iso(-(days-1)), win=series.filter(x=>x.iso>=from);
+  if(win.length<2) return null;
+  return Math.round((win[win.length-1].v-win[0].v)*10)/10;
+}
+
+/* ── Progress score ───────────────────────────────────────────────────
+   Four parts of twenty-five, each read from something the user actually
+   did. The breakdown is shown on screen: a score nobody can take apart is
+   a score nobody trusts. */
+function progressScore(){
+  const parts=[];
+  const cons=consistency();                       // % of weekly goal, last 4 weeks
+  parts.push({label:'Training', got:Math.round(Math.min(1,cons/100)*25), max:25,
+              note:cons+'% of your weekly goal'});
+
+  const nu=pgNutrition(), days=pgDays();
+  const logRate=days?Math.min(1,nu.logged/days):0;
+  parts.push({label:'Nutrition', got:Math.round(logRate*25), max:25,
+              note:nu.logged+' of '+days+' days logged'});
+
+  const w=weightLog().map(x=>({iso:x.iso,v:x.kg}));
+  const d=windowDelta(w,30), goal=(HF.data.nutrition&&HF.data.nutrition.goal)||'lose';
+  let trend=0, tnote='Log your weight to score this';
+  if(d!==null){
+    const good=(goal==='lose'&&d<0)||((goal==='muscle'||goal==='bulk')&&d>0)||(goal==='maintain'&&Math.abs(d)<=1);
+    trend=good?25:(Math.abs(d)<=0.5?15:8);
+    tnote=(d>0?'+':'')+d+' kg this month';
+  }
+  parts.push({label:'Trend', got:trend, max:25, note:tnote});
+
+  const st=liveStreak();
+  parts.push({label:'Streak', got:Math.round(Math.min(1,st/14)*25), max:25,
+              note:st?st+' day'+(st===1?'':'s')+' running':'No streak yet'});
+
+  const score=parts.reduce((a,b)=>a+b.got,0);
+  const band=score>=80?'Excellent':score>=60?'Improving':score>=35?'Getting going':'Just started';
+  return {score, band, parts};
+}
+
+/* A sparkline with no axes — the shape is the whole point at this size. */
+function spark(series, up){
+  if(series.length<2) return '<div style="height:26px;"></div>';
+  const w=88,h=26,pad=3, vs=series.map(x=>x.v);
+  const lo=Math.min.apply(null,vs), hi=Math.max.apply(null,vs), rng=(hi-lo)||1;
+  const pts=series.map((x,i)=>{
+    const px=pad+(i/(series.length-1))*(w-pad*2);
+    const py=pad+(1-(x.v-lo)/rng)*(h-pad*2);
+    return px.toFixed(1)+','+py.toFixed(1);
+  }).join(' ');
+  return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:26px;display:block;overflow:visible;">'+
+         '<polyline points="'+pts+'" fill="none" stroke="'+(up?'var(--ok)':'var(--hitfat)')+
+         '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+/* One tile. Returns '' when there is nothing to show, so the grid simply
+   holds fewer tiles rather than a row of dashes. */
+function pgTile(label, value, unit, sub, series, goodDown){
+  if(value===null||value===undefined) return '';
+  const d=series&&series.length>1?windowDelta(series,30):null;
+  let tone='var(--dim)';
+  if(d!==null && d!==0) tone=((d<0)===!!goodDown)?'var(--ok)':'var(--hitfat)';
+  return '<div class="pgtile">'+
+    '<div class="v">'+value+(unit?'<span class="u"> '+unit+'</span>':'')+'</div>'+
+    '<div class="l">'+label+'</div>'+
+    (sub?'<div class="s" style="color:'+tone+'">'+sub+'</div>':'')+
+    (series?spark(series,!goodDown):'')+
+  '</div>';
+}
+
+/* This month's training, as a calendar. Filled = trained, ring = today. */
+function pgCalendar(){
+  const now=new Date(), y=now.getFullYear(), m=now.getMonth();
+  const first=new Date(y,m,1), start=(first.getDay()+6)%7, total=new Date(y,m+1,0).getDate();
+  const trained={};
+  Object.values(HF.data.sessions).forEach(x=>{ const d=sessionISO(x); if(d) trained[d]=1; });
+  let cells='';
+  for(let i=0;i<start;i++) cells+='<i class="pgd blank"></i>';
+  for(let day=1;day<=total;day++){
+    const dISO=y+'-'+('0'+(m+1)).slice(-2)+'-'+('0'+day).slice(-2);
+    const cls='pgd'+(trained[dISO]?' on':'')+(dISO===iso(0)?' today':'')+(dISO>iso(0)?' future':'');
+    cells+='<i class="'+cls+'">'+day+'</i>';
+  }
+  const names=['M','T','W','T','F','S','S'].map(n=>'<i class="pgh">'+n+'</i>').join('');
+  return '<div class="pgcal">'+names+cells+'</div>';
+}
+
 function renderProgress(){
   const tr=pgTraining(), nu=pgNutrition(), wl=weightLog(), streak=liveStreak();
+  const sc=progressScore();
+  const wSeries=wl.map(x=>({iso:x.iso,v:x.kg}));
+  const fSeries=bodySeries('bf'), waistSeries=bodySeries('waist');
+  const goal=(HF.data.nutrition&&HF.data.nutrition.goal)||'lose';
+  const goodDown=(goal!=='muscle'&&goal!=='bulk');
   let h='';
 
-  // hero — weight if the scale is being used, consistency otherwise
-  if(wl.length>=2){
-    const first=wl[0], last=wl[wl.length-1];
-    const delta=Math.round((last.kg-first.kg)*10)/10;
-    const goal=(HF.data.nutrition&&HF.data.nutrition.goal)||'lose';
-    const good=(goal==='lose'&&delta<0)||((goal==='muscle'||goal==='bulk')&&delta>0)||(goal==='maintain'&&Math.abs(delta)<=1);
-    const col=good?'var(--ok)':'#EF4444';
-    h+='<div class="acard"><div class="ah"><span>⚖️</span><div class="t">Weight</div></div>'+
-       '<div style="display:flex;align-items:baseline;gap:10px;">'+
-       '<div style="font-family:\'Oswald\';font-size:44px;line-height:1;">'+last.kg+'<span style="font-size:17px;color:var(--dim);"> kg</span></div>'+
-       '<div style="font-size:13px;font-weight:800;padding:5px 12px;border-radius:99px;color:'+col+';background:'+hexA(col,.12)+';">'+
-       (delta>0?'+':'')+delta+' kg</div></div>'+
-       '<div class="sub" style="margin-top:5px;">'+first.kg+' kg when you started · '+wl.length+' weigh-ins</div>'+
-       weightChart(wl)+'</div>';
-  } else {
-    h+='<div class="acard"><div class="ah"><span>⚡</span><div class="t">Consistency</div></div>'+
-       '<div style="display:flex;align-items:center;gap:14px;">'+
-       '<div style="flex:1;"><div style="font-family:\'Oswald\';font-size:44px;line-height:1;">'+consistency()+'</div>'+
-       '<div class="sub">of your weekly goal, last 4 weeks</div></div>'+donutSVG(consistency(),'#EF4444',72)+'</div>'+
-       '<div class="sub" style="margin-top:10px;">Log your weight to see the transformation chart here.</div></div>';
-  }
-  h+='<button class="bigbtn sec" onclick="askWeight()">＋ Log today\'s weight</button>';
+  /* ── score ── the only dark card on a light page, so it reads as the
+     headline rather than one more panel. */
+  h+='<div class="pgscore">'+
+     '<div class="k">HITFAT PROGRESS SCORE</div>'+
+     '<div class="row"><div class="n">'+sc.score+'<span>/100</span></div>'+
+     '<div class="band">'+sc.band+'</div></div>'+
+     '<div class="bar"><i style="width:'+sc.score+'%"></i></div>'+
+     '<div class="parts">'+sc.parts.map(p=>
+       '<div class="p"><b>'+p.got+'</b><span>'+p.label+'</span><small>'+p.note+'</small></div>').join('')+
+     '</div></div>';
 
-  // period switch
-  h+='<div class="filters" style="margin-top:18px;">'+
-     ['week','month'].map(p=>'<button class="chip'+(_pgP===p?' y':'')+'" onclick="setPgP(\''+p+'\')">'+
-       (p==='week'?'Last 7 days':'Last 30 days')+'</button>').join('')+'</div>';
+  /* ── this month ── every tile is left out when its measurement has never
+     been entered, rather than printed as a dash. */
+  const tiles=[
+    pgTile('Weight', wl.length?wl[wl.length-1].kg:null, 'kg',
+           windowDelta(wSeries,30)!==null?fmtDelta(windowDelta(wSeries,30),'kg'):'', wSeries, goodDown),
+    pgTile('Body fat', fSeries.length?fSeries[fSeries.length-1].v:null, '%',
+           windowDelta(fSeries,30)!==null?fmtDelta(windowDelta(fSeries,30),'%'):'', fSeries, true),
+    pgTile('Waist', waistSeries.length?waistSeries[waistSeries.length-1].v:null, 'cm',
+           windowDelta(waistSeries,30)!==null?fmtDelta(windowDelta(waistSeries,30),'cm'):'', waistSeries, true),
+    pgTile('Workouts', tr.sessions||0, '', tr.mins+' min', null, false),
+    pgTile('Days logged', nu.logged||0, '', 'of '+pgDays()+' days', null, false),
+    pgTile('Streak', streak, streak===1?'day':'days', streak?'Keep it up':'Start today', null, false)
+  ].filter(Boolean).join('');
+  h+='<div class="sechead">This month</div><div class="pggrid">'+tiles+'</div>';
 
-  // training
-  const maxM=Math.max(30,...Object.values(tr.byDay));
-  const bars=tr.days.slice(-7).map(d=>{
-    const v=tr.byDay[d]||0, lbl='MTWTFSS'[(new Date(d+'T00:00:00').getDay()+6)%7];
-    return '<div class="col"><div class="b '+(v?'':'off')+'" style="height:'+Math.max(4,Math.round(v/maxM*46))+'px"></div><div class="l">'+lbl+'</div></div>';
-  }).join('');
-  h+='<div class="sechead">Training</div><div class="acard">'+
-     '<div style="display:flex;align-items:flex-end;gap:14px;">'+
-     '<div style="flex:0 0 auto;"><div class="big">'+tr.sessions+' sessions</div>'+
-     '<div class="sub">'+tr.mins+' min · '+tr.activeDays+' active days</div></div>'+
-     '<div class="mbar">'+bars+'</div></div></div>'+
-     '<div class="arow">'+
-     '<div class="acard"><div class="ah"><span>🔥</span><div class="t">Streak</div></div>'+
-     '<div class="big">'+(streak>0?streak:daysSince())+'</div><div class="sub">'+(streak>0?'days in a row':'days since last')+'</div></div>'+
-     '<div class="acard"><div class="ah"><span>✅</span><div class="t">All time</div></div>'+
-     '<div class="big">'+HF.count()+'</div><div class="sub">sessions logged</div></div></div>';
-
-  // nutrition
-  if(nu.target){
-    h+='<div class="sechead">Nutrition</div><div class="arow">'+
-       '<div class="acard"><div class="ah"><div class="t">Avg intake</div></div>'+
-       '<div class="big">'+(nu.avgKcal||'—')+'</div><div class="sub">of '+nu.target.toLocaleString()+' kcal</div></div>'+
-       '<div class="acard"><div class="ah"><div class="t">On target</div></div>'+
-       '<div class="big">'+nu.onTrack+'<span style="font-size:15px;color:var(--dim);">/'+nu.logged+'</span></div><div class="sub">days logged</div></div>'+
-       '<div class="acard"><div class="ah"><div class="t">HF Score</div></div>'+
-       '<div class="big">'+(nu.avgScore||'—')+'</div><div class="sub">average</div></div></div>';
-    if(!nu.logged) h+='<div class="sub" style="margin-top:8px;">No meals logged in this window yet.</div>';
+  /* ── goal ── */
+  if(HF.data.goalKg && wl.length){
+    const cur=wl[wl.length-1].kg, start=wl[0].kg, target=HF.data.goalKg;
+    const span=Math.abs(start-target)||1, done=Math.abs(start-cur);
+    const pct=Math.max(0,Math.min(100,Math.round(done/span*100)));
+    const left=Math.round(Math.abs(cur-target)*10)/10;
+    h+='<div class="sechead">Goal</div>'+
+       '<div class="acard"><div class="ah"><div class="t">Weight goal</div>'+
+       '<div class="c" onclick="askGoalWeight()" style="cursor:pointer;color:var(--hitfat);font-weight:700;font-size:13px;">Edit</div></div>'+
+       '<div style="display:flex;align-items:baseline;gap:8px;margin-top:4px;">'+
+       '<div class="big">'+cur+'</div><div class="sub">/ '+target+' kg</div></div>'+
+       '<div class="sub">'+left+' kg to go</div>'+
+       '<div class="pgbar"><i style="width:'+pct+'%"></i></div>'+
+       '<div class="sub" style="text-align:right;">'+pct+'%</div></div>';
   }
 
-  // programs in flight
+  /* ── training ── */
+  h+='<div class="sechead">Training</div>'+
+     '<div class="acard"><div class="ah"><span>🏋️</span><div class="t">This month</div></div>'+
+     '<div class="arow" style="margin:6px 0 2px;">'+
+     '<div><div class="big">'+tr.sessions+'</div><div class="sub">sessions</div></div>'+
+     '<div><div class="big">'+tr.mins+'</div><div class="sub">minutes</div></div>'+
+     '<div><div class="big">'+tr.activeDays+'</div><div class="sub">active days</div></div></div>'+
+     pgCalendar()+
+     '<div class="pglegend"><i class="pgd on"></i> trained <i class="pgd"></i> rest</div>'+
+     '</div>';
+
+  /* ── nutrition ── only when there is something logged to describe. */
+  if(nu.logged){
+    const n=HF.data.nutrition||{};
+    const pct=n.cal?Math.min(100,Math.round(nu.avgKcal/n.cal*100)):0;
+    h+='<div class="sechead">Nutrition</div>'+
+       '<div class="acard"><div class="ah"><span>🍽️</span><div class="t">Average intake</div></div>'+
+       '<div style="display:flex;align-items:baseline;gap:8px;">'+
+       '<div class="big">'+nu.avgKcal+'</div><div class="sub">kcal / day'+(n.cal?' · target '+n.cal:'')+'</div></div>'+
+       (n.cal?'<div class="pgbar"><i style="width:'+pct+'%"></i></div>':'')+
+       '<div class="sub" style="margin-top:8px;">'+nu.logged+' of '+pgDays()+' days logged'+
+       (nu.avgScore?' · quality '+nu.avgScore+'/100':'')+'</div></div>';
+  }
+
+  /* ── insights ── each line is a rule over real numbers, so none of them
+     can say something the data does not support. */
+  const ins=[];
+  const wd=windowDelta(wSeries,30);
+  if(wd!==null) ins.push({ok:(wd<0)===goodDown||wd===0, t:'Weight '+(wd<0?'trending down':wd>0?'trending up':'holding'),
+                          s:fmtDelta(wd,'kg')+' over 30 days'});
+  if(tr.sessions) ins.push({ok:tr.sessions>=(HF.data.weekGoal||5)*2, t:'Training',
+                          s:tr.sessions+' sessions, '+tr.mins+' minutes this month'});
+  if(nu.logged) ins.push({ok:nu.logged>=pgDays()*0.6, t:'Food logging',
+                          s:nu.logged+' of '+pgDays()+' days'});
+  if(streak) ins.push({ok:streak>=3, t:'Streak', s:streak+' day'+(streak===1?'':'s')+' running'});
+  if(ins.length){
+    h+='<div class="sechead">Insights</div><div class="acard">'+
+       ins.map(x=>'<div class="pgins"><i class="'+(x.ok?'ok':'warn')+'"></i>'+
+       '<div><b>'+x.t+'</b><small>'+x.s+'</small></div></div>').join('')+'</div>';
+  }
+
+  /* ── achievements ── */
+  const badges=Object.keys(HF.data.badges||{});
+  if(badges.length){
+    h+='<div class="sechead">Achievements</div><div class="pggrid">'+
+       badges.slice(-6).map(k=>'<div class="pgtile" style="text-align:center;">'+
+       '<div style="font-size:26px;">🏅</div><div class="l">'+k+'</div></div>').join('')+'</div>';
+  }
+
+  /* programs in flight */
   const going=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>0&&progDone(p.id)<progDays(p));
   if(going.length) h+='<div class="sechead">Programs</div>'+going.map(frow).join('');
 
-  h+='<button class="bigbtn" onclick="openShare()" style="margin-top:20px;">📤 Share progress card</button>';
+  h+='<button class="bigbtn" onclick="askMeasure()" style="margin-top:20px;">＋ Log measurements</button>'+
+     '<button class="bigbtn sec" onclick="openShare()">📤 Share progress card</button>';
   $('prog-body').innerHTML=h;
+}
+
+function fmtDelta(d,unit){ return (d>0?'+':'')+d+' '+unit; }
+
+function askGoalWeight(){
+  const v=prompt('Goal weight (kg)', HF.data.goalKg||'');
+  if(v===null) return;
+  const kg=parseFloat(v);
+  if(!kg||kg<30||kg>250){ toast('Enter a goal between 30 and 250'); return; }
+  HF.data.goalKg=kg; HF.save(); toast('Goal set'); renderProgress();
+}
+
+/* One sheet for all three, each optional — leaving a field blank keeps
+   whatever was there before rather than wiping it. */
+function askMeasure(){
+  const w=prompt('Weight today (kg) — leave blank to skip');
+  if(w===null) return;
+  if(w.trim()){
+    const kg=parseFloat(w);
+    if(!kg||kg<20||kg>300){ toast('Enter a weight between 20 and 300'); return; }
+    logWeight(kg);
+  }
+  const bf=prompt('Body fat % — leave blank to skip');
+  if(bf!==null && bf.trim()){
+    const v=parseFloat(bf);
+    if(v>0 && v<70) logBody({bf:Math.round(v*10)/10});
+    else { toast('Body fat should be between 1 and 70'); return; }
+  }
+  const wa=prompt('Waist (cm) — leave blank to skip');
+  if(wa!==null && wa.trim()){
+    const v=parseFloat(wa);
+    if(v>40 && v<200) logBody({waist:Math.round(v*10)/10});
+    else { toast('Waist should be between 40 and 200'); return; }
+  }
+  toast('Logged'); renderProgress();
 }
 
 /* Sparkline of every weigh-in — no axes, just the shape of the trend. */
