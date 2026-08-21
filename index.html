@@ -82,6 +82,7 @@
     --hyrox-solid:#C62828; --hitfat-solid:#C62828;
     --hyrox-ink:#FFFFFF; --hitfat-ink:#FFFFFF;
     --ok:#2EC27E;
+    color:var(--txt);
   }
   /* Text over photography, and over the panels that stay dark on purpose,
      keeps light ink in both themes. */
@@ -91,6 +92,7 @@
     --ink-55:rgba(255,255,255,.55); --ink-42:rgba(255,255,255,.42);
     --hairline:rgba(255,255,255,.14);
     --hyrox:#F05252; --hitfat:#F05252; --nav-on:#F05252;
+    color:var(--txt);
   }
 
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -681,7 +683,7 @@
   .auth-in .logo small{display:block;font-size:9px;letter-spacing:4px;color:var(--hyrox);font-weight:600;margin-top:4px;}
   .auth-in h1{font-family:'Oswald';font-weight:700;font-size:24px;letter-spacing:.4px;text-transform:uppercase;text-align:center;margin:26px 0 6px;}
   .auth-in .lead{color:var(--dim);font-size:15px;line-height:1.5;text-align:center;margin-bottom:24px;}
-  .gbtn{display:flex;align-items:center;justify-content:center;gap:11px;width:100%;background:#fff;color:var(--cardtop) !important;border:none;border-radius:12px;padding:14px;font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:15px;cursor:pointer;}
+  .gbtn{display:flex;align-items:center;justify-content:center;gap:11px;width:100%;background:#fff;color:#1a1a1a !important;border:none;border-radius:12px;padding:14px;font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:15px;cursor:pointer;}
   .gbtn:active{transform:scale(.99);}
   .gbtn svg{width:20px;height:20px;}
   .authdiv{display:flex;align-items:center;gap:12px;color:var(--dim2);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin:20px 0;}
@@ -6331,7 +6333,7 @@ function drawShareCard(){
   cards.forEach((s,i)=>{
     const cxx=60+i*(cw+24);
     x.fillStyle='#f5f3ef'; _rr(x,cxx,cy,cw,200,28); x.fill();
-    x.fillStyle='var(--cardtop)'; x.font="700 60px 'Oswald',sans-serif"; x.textAlign='center';
+    x.fillStyle='#1a1a1a'; x.font="700 60px 'Oswald',sans-serif"; x.textAlign='center';
     x.fillText(s[0],cxx+cw/2,cy+102);
     x.fillStyle='rgba(0,0,0,.45)'; x.font="800 19px 'Inter',sans-serif";
     _spaced(x,s[1],cxx+cw/2,cy+150,2);
