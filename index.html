@@ -13,6 +13,8 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
   :root{
+    --nav-on:#B93C1B;
+
     --accent-wash:rgba(185,60,27,.10);
 
     --ok:#177F4D;
@@ -38,6 +40,8 @@
     --hitfat-ink:#FFFFFF; --hitfat-solid:#B93C1B;
   }
   :root[data-theme="dark"]{
+    --nav-on:#EE6A45;
+
     --accent-wash:rgba(224,78,42,.06);
 
     --ok:#2EC27E;
@@ -193,7 +197,7 @@
   /* hero mark: larger than the outline icons; negative margins keep the pill the same height */
   .tab .ticon{width:30px;height:30px;object-fit:contain;opacity:.55;margin:-4px 0 -3px;transition:opacity .15s,transform .15s;}
   .tab.active .ticon{opacity:1;transform:scale(1.06);filter:drop-shadow(0 2px 8px rgba(224,78,42,.35));}
-  .tab.active{color:var(--hyrox);background:var(--accent-wash);}
+  .tab.active{color:var(--nav-on);background:var(--accent-wash);}
   .tab.emblem{flex:0 0 64px;padding:0;}
   .tab.emblem .em{width:54px;height:54px;border-radius:50%;margin-top:-27px;background:transparent;border:1.5px solid var(--line);padding:0;display:flex;}
   .tab.emblem .em i{flex:1;border-radius:50%;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-style:normal;font-family:'Oswald';font-weight:700;font-size:15px;letter-spacing:1px;color:var(--txt);}
