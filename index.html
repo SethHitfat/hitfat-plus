@@ -75,40 +75,6 @@
     color:var(--txt);
   }
 
-
-  /* ── Onboarding ───────────────────────────────────────────────────
-     One question a screen, a dotted rail across the top, and a play
-     button before anything is asked of the user. */
-  .obrail{display:flex;gap:6px;align-items:center;margin:2px 0 22px;}
-  .obrail i{flex:1;height:3px;border-radius:3px;background:var(--tint);}
-  .obrail i.done{background:var(--hitfat);}
-  .obrail i.now{background:var(--hitfat);box-shadow:0 0 0 3px var(--accent-wash);}
-  .obback{font-size:13px;font-weight:700;color:var(--dim);cursor:pointer;margin-bottom:12px;}
-  .obskip{position:absolute;right:22px;top:calc(20px + env(safe-area-inset-top,0px));
-    font-size:14px;font-weight:700;color:var(--dim);cursor:pointer;}
-  .obtag{display:inline-block;font-family:'Oswald';font-size:11px;font-weight:700;letter-spacing:2px;
-    color:var(--hitfat);border:1px solid var(--hitfat);border-radius:99px;padding:5px 13px;margin-bottom:20px;}
-  .obwrap{background:var(--surface);border:1px solid var(--hairline);border-radius:18px;
-    padding:6px 15px;margin:18px 0 22px;}
-  .obrow{display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-top:1px solid var(--hairline);}
-  .obrow:first-child{border-top:none;}
-  .obrow i{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
-    background:var(--accent-wash);color:var(--hitfat);font-style:normal;font-size:16px;}
-  .obrow b{display:block;font-size:15px;font-weight:800;}
-  .obrow small{display:block;font-size:12.5px;color:var(--dim);margin-top:2px;line-height:1.45;}
-  .obplay{width:104px;height:104px;border-radius:50%;background:var(--hitfat-solid);color:#fff;
-    display:grid;place-items:center;font-size:38px;margin:24px auto 20px;
-    box-shadow:0 10px 40px var(--accent-wash);}
-  .obchips{display:flex;gap:10px;justify-content:center;margin-top:16px;}
-  .obchip{background:var(--surface2);border:1px solid var(--hairline);border-radius:99px;
-    padding:9px 15px;font-size:13px;font-weight:700;}
-  .obcount{font-family:'Oswald';font-size:76px;font-weight:700;text-align:center;
-    color:var(--hitfat);line-height:1;margin:26px 0 8px;}
-  .obrec{background:var(--surface);border:1px solid var(--hairline);border-radius:16px;
-    padding:15px 16px;margin:20px 0 6px;}
-  .obrec .k{font-family:'Oswald';font-size:10.5px;font-weight:700;letter-spacing:1.8px;color:var(--hitfat);}
-  .obrec .t{font-size:19px;font-weight:800;margin-top:4px;}
-  .obrec .d{font-size:13px;color:var(--dim);margin-top:3px;}
   /* ── Progress ─────────────────────────────────────────────────────
      The score is the one dark card on a light page, so it reads as the
      headline rather than one more panel. Everything else reuses the card
@@ -5555,231 +5521,56 @@ function confirmReset(){
 
 /* ── ONBOARDING ── */
 let _ob={};
-
-
-
-
-/* ── Onboarding ────────────────────────────────────────────────────────
-   One question per screen with a dotted rail, then a two minute session
-   before anything is asked of the user. Borrowed from The Prehab Guys:
-   letting someone feel the product before they commit is worth more than
-   any amount of copy about it.
-
-   The old flow asked the same questions on one long scroll. Same answers,
-   same store — only the pacing changed, plus one new question that the
-   Recovery programs can actually use. */
-let _obStep=0, _obTimer=null;
-
-const OB_STEPS=[
-  {f:'goal', q:'What are you here for?', opts:[
-    ['Lose fat','Burn more than you eat, keep your muscle'],
-    ['Get stronger','Build strength you can feel day to day'],
-    ['Move better','Mobility, joints and easier movement'],
-    ['Get started','Build the habit first, the rest follows']]},
-  {f:'level', q:'Where are you now?', opts:[
-    ['Beginner','New to this, or coming back after a break'],
-    ['Intermediate','I train regularly and know the moves'],
-    ['Advanced','Strong base, I want a real challenge']]},
-  {f:'days', q:'How many days a week?', opts:[[2,''],[3,''],[4,''],[5,'']], suffix:' days'},
-  {f:'equip', q:'What do you have?', opts:[
-    ['Bodyweight only','Nothing but you and the floor'],
-    ['Home basics','A chair, a towel, water bottles'],
-    ['Dumbbell / Kettlebell','Some real weight at home']]},
-  {f:'area', q:'Anything bothering you?', opts:[
-    ['None','Nothing hurts right now'],
-    ['Knee','Stairs, squats or running bother it'],
-    ['Shoulder','Overhead or pressing bothers it'],
-    ['Lower back','Bending or sitting long bothers it']],
-   note:'This only shapes what we suggest. It is not a diagnosis, and HITFAT+ does not treat injuries.'}
-];
-
-function obRail(){
-  const total=OB_STEPS.length+2;                    // questions + readiness + session
-  let dots='';
-  for(let i=0;i<total;i++) dots+='<i class="'+(i<_obStep?'done':(i===_obStep?'now':''))+'"></i>';
-  return '<div class="obrail">'+dots+'</div>';
-}
-
 function startOnboarding(){
   const p=HF.data.prefs||{};
   _ob={goal:p.goal||null, level:p.level||'Beginner', days:p.days||3,
-       equip:p.equip||'Bodyweight only', area:p.area||'None',
-       ack:!!HF.data.readiness, name:p.name||'', tried:false};
-  _obStep=-1;                                        // -1 is the welcome screen
+       equip:p.equip||'Bodyweight only', ack:!!HF.data.readiness, name:p.name||''};
   $('ob').classList.add('on'); renderOb(); $('ob').scrollTop=0;
 }
-function obNext(){ _obStep++; renderOb(); $('ob').scrollTop=0; }
-function obBack(){ if(_obStep>-1){ _obStep--; renderOb(); $('ob').scrollTop=0; } }
-function obPick(f,v){
-  _ob[f]=v; renderOb();
-  /* Picking is the answer, so move on by itself — one tap per screen rather
-     than tap-then-confirm. */
-  clearTimeout(_obTimer); _obTimer=setTimeout(function(){
-    if(_obStep<OB_STEPS.length-1) obNext(); else renderOb();
-  },260);
-}
+function obPick(f,v){ _ob[f]=v; renderOb(); }
 function obAck(){ _ob.ack=!_ob.ack; renderOb(); }
-
-/* Two moves the user can do on the spot, chosen to suit whatever they just
-   told us. Real entries from the library, not invented ones. */
-function obMiniMoves(){
-  const area=_ob.area&&_ob.area!=='None'?_ob.area:null;
-  const plain=DB.filter(e=>e.eq==='Bodyweight' && !e.j && e.t==='mobility');
-  if(area){
-    const hit=DB.filter(e=>e.j===area && e.eq==='Bodyweight');
-    if(hit.length>=2) return hit.slice(0,2);
-  }
-  if(plain.length>=2) return plain.slice(0,2);
-  return DB.filter(e=>e.eq==='Bodyweight' && !e.j).slice(0,2);
-}
-
 function renderOb(){
-  const total=OB_STEPS.length;
-
-  /* ── welcome ── nothing is asked here; it only says what is coming. */
-  if(_obStep===-1){
-    $('ob-in').innerHTML=
-      '<div class="obtag">MINI SESSION</div>'+
-      '<div class="brand">HITFAT<span class="y">+</span></div>'+
-      '<h1>Welcome to <span class="y">HITFAT+</span></h1>'+
-      '<div class="sub">Five quick questions and a two minute session, so we can point you at the right place to start.</div>'+
-      '<div class="obwrap">'+
-        '<div class="obrow"><i>⏱</i><div><b>Quick start</b><small>Five taps and you are moving.</small></div></div>'+
-        '<div class="obrow"><i>♡</i><div><b>Built around you</b><small>Your goal, your gear, your week.</small></div></div>'+
-        '<div class="obrow"><i>▶</i><div><b>Try before you commit</b><small>A short session first — no account needed.</small></div></div>'+
-      '</div>'+
-      '<button class="bigbtn" onclick="obNext()">Start now →</button>'+
-      '<div class="cnote" style="text-align:center;margin-top:12px;">'+
-      'Have an account? <a onclick="obToSignIn()" style="color:var(--hitfat);font-weight:700;cursor:pointer;">Sign in</a></div>';
-    return;
-  }
-
-  /* ── the five questions ── */
-  if(_obStep<total){
-    const st=OB_STEPS[_obStep];
-    const opts=st.opts.map(o=>{
-      const v=o[0], label=(typeof v==='number')?v+(st.suffix||''):v;
-      const arg=(typeof v==='number')?v:"'"+String(v).replace(/'/g,"\\'")+"'";
-      return '<button class="opt '+(_ob[st.f]===v?'sel':'')+'" onclick="obPick(\''+st.f+'\','+arg+')">'+
-             label+(o[1]?'<small>'+o[1]+'</small>':'')+'</button>';
-    }).join('');
-    $('ob-in').innerHTML=
-      obRail()+
-      '<div class="obback" onclick="obBack()">← Back</div>'+
-      '<h1>'+st.q+'</h1>'+ opts +
-      (st.note?'<div class="cnote" style="margin-top:14px;">'+st.note+'</div>':'')+
-      '<button class="bigbtn" onclick="obNext()" style="margin-top:18px;">Next</button>';
-    return;
-  }
-
-  /* ── readiness ── kept from the old flow and given its own screen, because
-     it is the one thing here that is not a preference. */
-  if(_obStep===total){
-    $('ob-in').innerHTML=
-      obRail()+
-      '<div class="obback" onclick="obBack()">← Back</div>'+
-      '<h1>Before you start</h1>'+
-      '<div class="readbox">'+
-      '<div class="ri"><span class="d">●</span><span>Train to your own ability — scale any movement so it suits you today.</span></div>'+
-      '<div class="ri"><span class="d">●</span><span>Stop if you get chest pain, dizziness, unusual breathlessness or sharp pain.</span></div>'+
-      '<div class="ri"><span class="d">●</span><span>If you have a condition, an injury, or any doubt about starting exercise, get medical advice first.</span></div></div>'+
-      '<div class="ackrow '+(_ob.ack?'on':'')+'" onclick="obAck()"><div class="box"><span>✓</span></div>'+
-      '<div>I have read this and understand I train at my own pace and responsibility.</div></div>'+
-      '<div class="qh">Your name</div>'+
-      '<input class="inp" id="ob-name" maxlength="24" placeholder="What should we call you?" value="'+
-        String(_ob.name||'').replace(/"/g,'&quot;')+'" oninput="_ob.name=this.value">'+
-      '<button class="bigbtn" onclick="obNext()">Continue</button>'+
-      (_ob.ack?'':'<div class="cnote" style="text-align:center;margin-top:10px;">Tick the box to continue.</div>');
-    return;
-  }
-
-  /* ── the session offer ── */
-  const moves=obMiniMoves();
+  const opt=(f,v,label,sub)=>{
+    const arg=(typeof v==='number')?v:"'"+String(v).replace(/'/g,"\\'")+"'";
+    return '<button class="opt '+(_ob[f]===v?'sel':'')+'" onclick="obPick(\''+f+'\','+arg+')">'+label+(sub?'<small>'+sub+'</small>':'')+'</button>';
+  };
   $('ob-in').innerHTML=
-    obRail()+
-    '<div class="obskip" onclick="finishOb()">Skip</div>'+
-    '<div class="obplay"><span>▶</span></div>'+
-    '<h1 style="text-align:center;">Let\'s try a<br>quick session</h1>'+
-    '<div class="sub" style="text-align:center;">'+moves.length+' moves. About 2 minutes.</div>'+
-    '<div class="obchips">'+
-      '<div class="obchip">⏱ ~2 min</div>'+
-      '<div class="obchip">🧍 Follow along</div>'+
-    '</div>'+
-    '<div class="obwrap" style="margin-top:18px;">'+
-      moves.map(m=>'<div class="obrow"><i>•</i><div><b>'+m.n+'</b><small>'+(m.m||'Mobility')+'</small></div></div>').join('')+
-    '</div>'+
-    '<button class="bigbtn" onclick="obRunMini()">Start mini session</button>';
+    '<div class="brand">HITFAT<span class="y">+</span></div>'+
+    '<div class="step">Let\'s set up your plan</div>'+
+    '<h1>Train for the <span class="y">body you want</span></h1>'+
+    '<div class="sub">Four quick answers. You can change any of them later.</div>'+
+    '<div class="qh">What are you here for?</div>'+
+    opt('goal','Lose fat','Lose fat','Burn more than you eat, keep your muscle')+
+    opt('goal','Get stronger','Get stronger','Build strength you can feel day to day')+
+    opt('goal','Move better','Move better','Mobility, joints and easier movement')+
+    opt('goal','Get started','Just get started','Build the habit first, the rest follows')+
+    '<div class="qh">Where are you now?</div>'+
+    opt('level','Beginner','Beginner','New to this, or coming back after a break')+
+    opt('level','Intermediate','Intermediate','I train regularly and know the moves')+
+    opt('level','Advanced','Advanced','Strong base, I want a real challenge')+
+    '<div class="qh">Days a week</div>'+
+    opt('days',2,'2 days')+opt('days',3,'3 days')+opt('days',4,'4 days')+opt('days',5,'5 days')+
+    '<div class="qh">What do you have?</div>'+
+    opt('equip','Bodyweight only','Bodyweight only','Nothing but you and the floor')+
+    opt('equip','Home basics','Home basics','A chair, a towel, water bottles')+
+    opt('equip','Dumbbell / Kettlebell','Dumbbell or kettlebell','Some real weight at home')+
+    '<div class="qh">Before you start</div>'+
+    '<div class="readbox">'+
+    '<div class="ri"><span class="d">●</span><span>Train to your own ability — scale any movement so it suits you today.</span></div>'+
+    '<div class="ri"><span class="d">●</span><span>Stop if you get chest pain, dizziness, unusual breathlessness or sharp pain.</span></div>'+
+    '<div class="ri"><span class="d">●</span><span>If you have a condition, an injury, or any doubt about starting exercise, get medical advice first.</span></div></div>'+
+    '<div class="qh">Your name</div>'+
+    '<input class="inp" id="ob-name" maxlength="24" placeholder="What should we call you?" value="'+String(_ob.name||'').replace(/"/g,'&quot;')+'" oninput="_ob.name=this.value">'+
+    '<div class="ackrow '+(_ob.ack?'on':'')+'" onclick="obAck()"><div class="box"><span>✓</span></div>'+
+    '<div>I have read this and understand I train at my own pace and responsibility.</div></div>'+
+    '<button class="bigbtn" onclick="finishOb()">Start training</button>'+
+    (_ob.goal&&_ob.ack?'':'<div class="cnote" style="text-align:center;margin-top:10px;">Pick a goal and tick the box to continue.</div>');
 }
-
-function obToSignIn(){ $('ob').classList.remove('on'); if(typeof showAuth==='function') showAuth(); }
-
-/* A self-contained two move timer. It deliberately does not touch the main
-   player: this runs before the user has an account, and the player expects a
-   program day behind it. */
-function obRunMini(){
-  const moves=obMiniMoves();
-  let idx=0, left=30, tick=null;
-  function paint(){
-    const m=moves[idx];
-    $('ob-in').innerHTML=
-      '<div class="obcount">'+left+'</div>'+
-      '<h1 style="text-align:center;">'+m.n+'</h1>'+
-      '<div class="sub" style="text-align:center;">Move '+(idx+1)+' of '+moves.length+' · '+(m.m||'Mobility')+'</div>'+
-      '<div class="cnote" style="text-align:center;margin-top:18px;">Move slowly. Stop if anything hurts.</div>'+
-      '<button class="bigbtn sec" onclick="obStopMini()">Stop</button>';
-  }
-  window.obStopMini=function(){ clearInterval(tick); obMiniDone(false); };
-  paint();
-  tick=setInterval(function(){
-    left--;
-    if(left<=0){
-      idx++;
-      if(idx>=moves.length){ clearInterval(tick); obMiniDone(true); return; }
-      left=30;
-    }
-    paint();
-  },1000);
-}
-
-function obMiniDone(completed){
-  _ob.tried=!!completed;
-  const rec=obRecommend();
-  $('ob-in').innerHTML=
-    '<h1 style="text-align:center;">'+(completed?'Well done!':'Good start')+'</h1>'+
-    '<div class="sub" style="text-align:center;">'+
-      (completed?'That is what a session feels like. Here is where we would start you.'
-                :'No problem. Here is where we would start you.')+'</div>'+
-    (rec?'<div class="obrec">'+
-      '<div class="k">RECOMMENDED</div>'+
-      '<div class="t">'+rec.name+'</div>'+
-      '<div class="d">'+(rec.weeks?rec.weeks.length+' weeks · ':'')+rec.dur+' min a day</div>'+
-     '</div>':'')+
-    '<button class="bigbtn" onclick="finishOb()">Start training</button>';
-}
-
-/* Pick from the real catalogue using the answers just given, so the
-   recommendation is a filter over what exists rather than a slogan. */
-function obRecommend(){
-  const level=_ob.level||'Beginner', area=_ob.area, goal=_ob.goal;
-  const free=PROGRAMS.filter(p=>p.weeks && FREE_PROGRAMS.indexOf(p.id)>=0);
-  let pool=free.length?free:PROGRAMS.filter(p=>p.weeks);
-  if(area && area!=='None'){
-    const hit=pool.filter(p=>(p.name||'').toLowerCase().indexOf(area.toLowerCase().split(' ')[0])>=0);
-    if(hit.length) return hit[0];
-  }
-  const byGoal={'Lose fat':'fat','Get stronger':'strength','Move better':'recovery','Get started':'fat'};
-  const want=byGoal[goal]||'';
-  const g=pool.filter(p=>((p.goal||'')+'').toLowerCase().indexOf(want)>=0);
-  if(g.length) return g[0];
-  return pool[0]||null;
-}
-
 function finishOb(){
   if(!_ob.goal){ toast('Pick a goal to continue'); $('ob').scrollTop=0; return; }
   if(!_ob.ack){ toast('Please tick the readiness box'); return; }
   HF.data.prefs=Object.assign({},HF.data.prefs,{goal:_ob.goal,level:_ob.level||'Beginner',
-    days:_ob.days||3,equip:_ob.equip||'Bodyweight only',area:_ob.area||'None',
-    name:(_ob.name||'').trim().slice(0,24)});
+    days:_ob.days||3,equip:_ob.equip||'Bodyweight only',name:(_ob.name||'').trim().slice(0,24)});
   HF.data.readiness=true; HF.data.onboarded=true; HF.save();
   try{ sb && sb.auth.getSession().then(r=>{ if(r&&r.data&&r.data.session) syncProfile(r.data.session); }); }catch(e){}
   updateAvatar();
