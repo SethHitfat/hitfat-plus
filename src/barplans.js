@@ -6,7 +6,7 @@
 
 const BAR_PLANS=[
   PLAN({id:'bar1', name:'BAR Foundations', goal:'Strength', level:'Beginner', dur:20, wk:2,
-    c1:'#241a12', c2:'#0b0906', ac:'#FF8A1E', icon:'🏋️', bar:true,
+    c1:'#22252B', c2:'#0A0B0D', ac:'#C9CFD8', icon:'🏋️', bar:true,
     desc:'Two weeks to learn the five patterns the bar is built around — squat, hinge, press, row, carry. Light bands, clean technique.',
     days:[{n:'Squat & Hinge',t:['squat','hinge'],eq:BAR_EQ,c:5},
           {n:'Press & Pull',t:['push','pull'],eq:BAR_EQ,c:5},
@@ -16,7 +16,7 @@ const BAR_PLANS=[
           {rest:true},{rest:true}]}),
 
   PLAN({id:'bar2', name:'BAR Full Body', goal:'Strength', level:'Intermediate', dur:28, wk:4,
-    c1:'#241a12', c2:'#0b0906', ac:'#FF8A1E', icon:'🏋️', bar:true,
+    c1:'#301109', c2:'#0B0605', ac:'#FF7A45', icon:'🏋️', bar:true,
     desc:'Four weeks, four sessions a week, every session hitting the whole body. The band gets heavier as the weeks go.',
     days:[{n:'Push Focus',t:['push','core'],eq:BAR_EQ,c:6},
           {n:'Pull Focus',t:['pull','core'],eq:BAR_EQ,c:6},
@@ -26,7 +26,7 @@ const BAR_PLANS=[
           {rest:true},{rest:true}]}),
 
   PLAN({id:'bar3', name:'BAR Fat Loss', goal:'Fat Loss', level:'Intermediate', dur:24, wk:4,
-    c1:'#241a12', c2:'#0b0906', ac:'#FF8A1E', icon:'🔥', bar:true,
+    c1:'#33090E', c2:'#0A0405', ac:'#F0392B', icon:'🔥', bar:true,
     desc:'Short rest, big movements, five days a week. The bar keeps the load on while the heart rate stays up.',
     days:[{n:'Full Body Burn',t:['full','squat'],eq:BAR_EQ,c:6},
           {n:'Upper Circuit',t:['push','pull'],eq:BAR_EQ,c:6},
@@ -37,7 +37,7 @@ const BAR_PLANS=[
           {rest:true}]}),
 
   PLAN({id:'bar4', name:'BAR Strength 6', goal:'Strength', level:'Intermediate', dur:32, wk:6,
-    c1:'#241a12', c2:'#0b0906', ac:'#FF8A1E', icon:'💪', bar:true,
+    c1:'#2A1508', c2:'#090604', ac:'#E0A040', icon:'💪', bar:true,
     desc:'Six weeks of heavier bands and lower reps. The closest a folding bar gets to a barbell block.',
     days:[{n:'Lower Strength',t:['squat','hinge'],eq:BAR_EQ,c:5},
           {n:'Upper Push',t:['push'],eq:BAR_EQ,c:5},
@@ -48,7 +48,7 @@ const BAR_PLANS=[
           {rest:true}]}),
 
   PLAN({id:'bar5', name:'BAR Express 15', goal:'Fat Loss', level:'Beginner', dur:15, wk:1,
-    c1:'#241a12', c2:'#0b0906', ac:'#FF8A1E', icon:'⚡', bar:true,
+    c1:'#101C26', c2:'#05080A', ac:'#4CC5E0', icon:'⚡', bar:true,
     desc:'Fifteen minutes, five days. For the weeks where the only honest answer is "no time".',
     days:[{n:'Full Body 15',t:['full'],eq:BAR_EQ,c:4},
           {n:'Upper 15',t:['push','pull'],eq:BAR_EQ,c:4},

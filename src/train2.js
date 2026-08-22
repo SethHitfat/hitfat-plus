@@ -291,26 +291,85 @@ function openActivity(k){
    so putting them behind anything would be working against the sale. */
 function trBar(){
   const bp=PROGRAMS.filter(isBarProgram);
+  const started=bp.filter(p=>progDone(p.id)>0 && progDone(p.id)<progDays(p));
   let h='';
-  h+='<div class="ecta" style="background:'+egrad('#241a12','#0b0906','#FF8A1E')+';" onclick="openStore(\'bar\')">'+
-     '<div class="ic">🏋️</div><div class="t">Train with the HITFAT BAR</div>'+
-     '<div class="s">A bar and five bands — squat, hinge, press, row and carry, in the space of a doorway.</div>'+
-     '<div class="go">See the bar · RM'+BAR_PRICE+'</div>'+
-     '<div class="lock">'+bp.length+' PROGRAMS · FREE FOR EVERYONE</div></div>';
+
+  /* ── the hero ── the bar is a physical product, so the top of this screen
+     has one job: make somebody want it, and give somebody who owns it a way
+     straight back into training. */
+  h+='<div class="barhero" onclick="openStore(\'bar\')">'+
+     '<div class="bh-k">HITFAT BAR</div>'+
+     '<div class="bh-t">A gym that folds<br>into a drawer</div>'+
+     '<div class="bh-s">A bar and five bands. Squat, hinge, press, row and carry — '+
+     'the five patterns, in the space of a doorway.</div>'+
+     '<div class="bh-row">'+
+       (ownsBar()
+         ? '<span class="bh-own">✓ You own the bar</span>'
+         : '<span class="bh-cta">Get the bar · RM'+BAR_PRICE+'</span><span class="bh-was">RM'+BAR_WAS+'</span>')+
+     '</div>'+
+     '<div class="bh-f">'+bp.length+' programs · '+BAR_DB.length+' movements · free for everyone</div>'+
+     '</div>';
+
+  /* Filming is not finished. Saying so here costs a little polish and buys
+     the one thing a training app cannot recover from being wrong about. */
   if(!barFootageReady())
     h+='<div class="mpnote" style="border-color:rgba(245,158,11,.35);color:#f59e0b;">'+
-       'The sessions and sets are ready to follow now. The clips are still being filmed — '+
-       'each exercise says so in the player rather than showing you the wrong movement.</div>';
-  h+=fsec('BAR programs','Free · built around the bar and bands');
-  h+=bp.map(p=>frow(p,'FREE')).join('');
-  h+=fsec('BAR exercises',BAR_DB.length+' movements in the library');
+       'Sets and sessions are ready to follow now. The clips are still being filmed — '+
+       'each movement says so in the player rather than showing you a different exercise.</div>';
+
+  if(started.length){
+    h+=fsec('Pick up where you left off','');
+    h+='<div class="hscroll barrow">'+started.map(p=>barCard(p,true)).join('')+'</div>';
+  }
+
+  h+=fsec('Start here','Two weeks to learn the five patterns');
+  const first=bp.filter(p=>p.id==='bar1');
+  h+='<div class="hscroll barrow">'+(first.length?first:bp.slice(0,1)).map(p=>barCard(p)).join('')+'</div>';
+
+  const byGoal={};
+  bp.forEach(p=>{ (byGoal[p.goal]=byGoal[p.goal]||[]).push(p); });
+  Object.keys(byGoal).forEach(g=>{
+    h+=fsec(g,byGoal[g].length+' program'+(byGoal[g].length===1?'':'s'));
+    h+='<div class="hscroll barrow">'+byGoal[g].map(p=>barCard(p)).join('')+'</div>';
+  });
+
+  h+=fsec('Under 20 minutes','For the days there is no time');
+  const quick=bp.filter(p=>(p.dur||99)<=20);
+  h+= quick.length
+      ? '<div class="hscroll barrow">'+quick.map(p=>barCard(p)).join('')+'</div>'
+      : '<div class="mpnote">No short programs yet.</div>';
+
+  h+=fsec('Every movement',BAR_DB.length+' in the library');
   h+='<div class="flib">'+['hinge','squat','push','pull','full','core'].map(t=>{
       const n=BAR_DB.filter(e=>e.t===t).length; if(!n) return '';
-      const label={hinge:'Hinge',squat:'Squat & lunge',push:'Press',pull:'Row & pull',full:'Full body',core:'Core & carry'}[t];
-      return '<div class="row" onclick="openLibrary(\''+BAR_EQ+'\')"><div class="ic">•</div>'+
-        '<div class="lb">'+label+'</div><div class="ct">'+n+'</div><div class="cv">›</div></div>';
+      const label={hinge:'Hinge',squat:'Squat & lunge',push:'Press',pull:'Row & pull',
+                   full:'Full body',core:'Core & carry'}[t];
+      return '<div class="row" onclick="openLibrary(BAR_EQ)"><b>'+label+'</b>'+
+             '<span>'+n+'</span><i class="chev">›</i></div>';
     }).join('')+'</div>';
+
   $('tr-body').innerHTML=h;
+}
+
+/* One poster. Netflix works because a shelf of distinct covers can be read at
+   a glance; five identical rectangles cannot. Until the shoot happens these
+   are built from each program's own colour and mark rather than the same
+   placeholder photograph repeated five times. */
+function barCard(p,showProgress){
+  const done=progDone(p.id), total=progDays(p);
+  const pct=total?Math.round(done/total*100):0;
+  return '<div class="barcard" onclick="openProgram(\''+p.id+'\')" '+
+    'style="background:linear-gradient(160deg,'+(p.c1||'#241a12')+' 0%,'+(p.c2||'#0b0906')+' 92%);">'+
+    '<div class="bc-ic" style="color:'+(p.ac||'var(--hitfat)')+'">'+(p.icon||'🏋️')+'</div>'+
+    '<div class="bc-b">'+
+      '<div class="bc-k" style="color:'+(p.ac||'var(--hitfat)')+'">'+(p.level||'')+'</div>'+
+      '<div class="bc-n">'+p.name+'</div>'+
+      '<div class="bc-m">'+((p.weeks||[]).length||p.wk||'')+' wk · '+p.dur+' min</div>'+
+      (showProgress
+        ? '<div class="bc-bar"><i style="width:'+pct+'%;background:'+(p.ac||'var(--hitfat)')+'"></i></div>'+
+          '<div class="bc-m">'+done+' of '+total+' days</div>'
+        : '')+
+    '</div></div>';
 }
 
 /* ── RECOVERY ──
