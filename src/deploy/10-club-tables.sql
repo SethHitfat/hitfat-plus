@@ -52,6 +52,12 @@ create table if not exists public.club_sessions (
   starts_at    timestamptz not null,
   ends_at      timestamptz not null,
   capacity     int not null default 20 check (capacity > 0),
+  -- What the member reads before deciding. Without these the detail screen
+  -- has a title and a time and nothing that helps anyone choose.
+  description  text,                           -- what the session actually is
+  level        text,                           -- 'All levels' | 'Beginner' | 'Advanced'
+  location     text default 'HITFAT HQ · Kelantan',
+  bring        text[],                         -- 'Towel', 'Water', 'Training shoes'
   status       text not null default 'scheduled'
                check (status in ('scheduled','cancelled','done')),
   -- Check-in token. Rotated per session and time-boxed, so a photograph

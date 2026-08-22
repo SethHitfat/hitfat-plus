@@ -46,7 +46,7 @@ var Club = {
 
       const now=new Date().toISOString();
       const [ses,bk,pts]=await Promise.all([
-        sb.from('club_sessions').select('id,title,kind,coach_name,starts_at,ends_at,capacity,status')
+        sb.from('club_sessions').select('id,title,kind,coach_name,starts_at,ends_at,capacity,status,description,level,location,bring')
           .gte('starts_at',now).eq('status','scheduled').order('starts_at').limit(60),
         sb.from('club_bookings').select('id,session_id,status').eq('user_id',uid),
         sb.from('club_points').select('amount').eq('user_id',uid)
@@ -226,10 +226,12 @@ function renderClubClasses(){
         btn='<button class="bigbtn" onclick="Club.book(\''+s.id+'\')">Book class</button>'; }
       else { note=taken+' / '+s.capacity+' booked';
         btn='<button class="bigbtn" onclick="Club.book(\''+s.id+'\')">Book class</button>'; }
-      h+='<div class="acard"><div class="ah"><div class="t">'+s.title+'</div>'+
-         (s.kind?'<div class="c" style="font-size:11px;font-weight:800;color:var(--hitfat);">'+s.kind+'</div>':'')+'</div>'+
-         '<div class="big" style="margin-top:2px;">'+clubTime(s.starts_at)+'</div>'+
-         '<div class="sub">'+(s.coach_name||'HITFAT')+' · '+note+'</div>'+btn+'</div>';
+      h+='<div class="acard"><div onclick="openClubSession(\''+s.id+'\')" style="cursor:pointer;">'+
+         '<div class="ah"><div class="t">'+s.title+'</div>'+
+         (s.kind?'<div class="c" style="font-size:11px;font-weight:800;color:var(--hitfat);">'+s.kind+'</div>':'')+
+         '<div class="c">›</div></div>'+
+         '<div class="big" style="margin-top:2px;">'+clubTime(s.starts_at)+' – '+clubTime(s.ends_at)+'</div>'+
+         '<div class="sub">'+(s.coach_name||'HITFAT')+' · '+note+'</div></div>'+btn+'</div>';
     });
   });
   el.innerHTML=h;
@@ -269,4 +271,82 @@ function clubHomeCard(){
     '<div class="ah"><span>🏛️</span><div class="t">'+(n?n.title:'Nothing booked')+'</div><div class="c">›</div></div>'+
     '<div class="sub">'+(n?(clubDayLabel(clubDayKey(n.starts_at))+' · '+clubTime(n.starts_at))
                           :'Tap to book a class')+'</div></div>';
+}
+
+
+/* ── one class, in full ──────────────────────────────────────────
+   The list answers "when"; this answers "should I". Level, what to
+   bring and what the session actually is are the things a member
+   weighs before committing a Tuesday evening. */
+var clubOpenId=null;
+
+function clubMins(s){
+  try{ return Math.max(0, Math.round((new Date(s.ends_at)-new Date(s.starts_at))/60000)); }
+  catch(e){ return 0; }
+}
+
+function openClubSession(id){
+  clubOpenId=id;
+  renderClubSession();
+  $('screen').scrollTop=0;
+}
+function clubBackToList(){ clubOpenId=null; clubSeg('classes'); }
+
+function renderClubSession(){
+  const el=$('club-body'); if(!el) return;
+  const s=Club.sessions.filter(x=>x.id===clubOpenId)[0];
+  if(!s){ clubBackToList(); return; }
+
+  const left=Club.seatsLeft(s), taken=Club.counts[s.id]||0, b=Club.myBooking(s);
+  const mins=clubMins(s);
+  const pct=s.capacity?Math.min(100,Math.round(taken/s.capacity*100)):0;
+
+  let btn;
+  if(b && b.status==='waitlisted')
+    btn='<button class="bigbtn sec" onclick="Club.cancel(\''+s.id+'\')">Leave waitlist</button>';
+  else if(b)
+    btn='<button class="bigbtn sec" onclick="Club.cancel(\''+s.id+'\')">Cancel booking</button>';
+  else if(left<=0)
+    btn='<button class="bigbtn" onclick="Club.book(\''+s.id+'\')">Join waitlist</button>';
+  else
+    btn='<button class="bigbtn" onclick="Club.book(\''+s.id+'\')">Book class</button>';
+
+  let h='<button class="back" onclick="clubBackToList()">← Classes</button>';
+
+  h+='<div class="sechead">'+s.title+'</div>';
+  h+='<div class="acard">'+
+     (s.kind?'<div class="ah"><div class="c" style="font-size:11px;font-weight:800;color:var(--hitfat);">'+s.kind+'</div></div>':'')+
+     '<div class="big">'+clubDayLabel(clubDayKey(s.starts_at))+' · '+clubTime(s.starts_at)+'</div>'+
+     '<div class="sub">'+clubTime(s.starts_at)+' – '+clubTime(s.ends_at)+(mins?' · '+mins+' min':'')+'</div>'+
+     '<div class="sub">'+(s.coach_name||'HITFAT')+'</div>'+
+     '</div>';
+
+  /* Capacity as a bar, because "18 / 25" is a fact and a filling bar is
+     a reason to book now. */
+  h+='<div class="acard"><div class="ah"><div class="t">Spaces</div>'+
+     '<div class="c" style="font-size:13px;font-weight:800;color:'+(left<=3?'var(--hitfat)':'var(--dim)')+';">'+
+     (left<=0?'FULL':left+' left')+'</div></div>'+
+     '<div class="pgbar"><i style="width:'+pct+'%"></i></div>'+
+     '<div class="sub">'+taken+' of '+s.capacity+' booked</div></div>';
+
+  const facts=[];
+  if(s.level) facts.push(['Level', s.level]);
+  if(s.location) facts.push(['Where', s.location]);
+  if(facts.length){
+    h+='<div class="acard">'+facts.map(f=>
+      '<div class="pgins"><i class="ok"></i><div><b>'+f[0]+'</b><small>'+f[1]+'</small></div></div>').join('')+'</div>';
+  }
+
+  if(s.description)
+    h+='<div class="sechead">About this class</div>'+
+       '<div class="acard"><div class="sub" style="line-height:1.6;">'+s.description+'</div></div>';
+
+  const bring=Array.isArray(s.bring)?s.bring.filter(Boolean):[];
+  if(bring.length)
+    h+='<div class="sechead">Bring</div>'+
+       '<div class="acard"><div class="pgseg" style="flex-wrap:wrap;">'+
+       bring.map(x=>'<span class="chip">'+x+'</span>').join('')+'</div></div>';
+
+  h+=btn;
+  el.innerHTML=h;
 }
