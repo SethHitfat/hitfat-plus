@@ -354,7 +354,14 @@ ok("only BAR and Recovery lack clips", DB.filter(function(e){return !e.v;})
 ok("every Recovery exercise awaits footage", REHAB_DB.every(function(e){ return !e.v; }));
 ok("Recovery footage flag is honest", rehabFootageReady()===REHAB_DB.some(function(e){ return !!e.v; }));
 ok("every BAR exercise is awaiting footage", BAR_DB.every(function(e){ return !e.v; }));
-ok("BAR footage flag is honest",  barFootageReady()===BAR_DB.some(function(e){ return !!e.v; }));
+/* The flag must mean "every movement is filmed", not "at least one is" —
+   otherwise the first clip silences a warning that forty others still need. */
+ok("BAR footage flag needs full coverage", barFootageReady()===BAR_DB.every(function(e){ return !!e.v; }));
+ok("footage count matches the library", barFootageCount().total===BAR_DB.length);
+ok("one clip is not a filmed library", (function(){
+  var first=BAR_DB[0], keep=first.v; first.v="123";
+  var still=!barFootageReady(); first.v=keep; return still;
+})());
 ok("embed url is a background player", vimeoSrc('123').indexOf('background=1')>0 &&
    vimeoSrc('123').indexOf('player.vimeo.com/video/123')>0, vimeoSrc('123'));
 

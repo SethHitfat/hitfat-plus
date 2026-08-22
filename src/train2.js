@@ -312,10 +312,16 @@ function trBar(){
 
   /* Filming is not finished. Saying so here costs a little polish and buys
      the one thing a training app cannot recover from being wrong about. */
-  if(!barFootageReady())
+  if(!barFootageReady()){
+    const fc=barFootageCount();
     h+='<div class="mpnote" style="border-color:rgba(245,158,11,.35);color:#f59e0b;">'+
-       'Sets and sessions are ready to follow now. The clips are still being filmed — '+
-       'each movement says so in the player rather than showing you a different exercise.</div>';
+       (fc.have
+         ? fc.have+' of '+fc.total+' movements are filmed. The rest are still being shot — '+
+           'each one says so in the player rather than showing you a different exercise.'
+         : 'Sets and sessions are ready to follow now. The clips are still being filmed — '+
+           'each movement says so in the player rather than showing you a different exercise.')+
+       '</div>';
+  }
 
   if(started.length){
     h+=fsec('Pick up where you left off','');

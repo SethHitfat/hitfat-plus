@@ -80,6 +80,14 @@ function isBarExercise(name){
 }
 /* Nothing here is filmed yet. Used by the player to say so honestly rather
    than leaving whatever clip was on screen still running. */
-function barFootageReady(){ return BAR_DB.some(e => !!e.v); }
+/* One filmed exercise is not a filmed library. The old test was `some`, which
+   would have dropped the warning the moment the first clip landed while forty
+   others still said "coming soon" in the player. Coverage decides, and the
+   count lets the screen say how far along it is instead of going quiet. */
+function barFootageCount(){
+  const total=BAR_DB.length, have=BAR_DB.filter(e => !!e.v).length;
+  return {have:have, total:total};
+}
+function barFootageReady(){ const c=barFootageCount(); return c.total>0 && c.have===c.total; }
 
 
