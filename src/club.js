@@ -12,6 +12,7 @@
    front desk could not see either. localStorage here holds only which
    day of the schedule you were last looking at.
    ═══════════════════════════════════════════════════════════════ */
+var clubOpenId=null;
 var Club = {
   state:'idle',          // idle | loading | ready | nosetup | error
   member:null,           // the club_members row, or null for a general user
@@ -97,7 +98,7 @@ var Club = {
       this.bookings[id]=r.data;
       await this.loadCounts();
       toast(full?'Added to the waitlist':'Booked');
-      renderClub();
+      clubPaint();
     }catch(e){ toast((e&&e.message)||'Could not book that class'); }
   },
 
@@ -109,7 +110,7 @@ var Club = {
       delete this.bookings[id];
       await this.loadCounts();
       toast('Booking cancelled');
-      renderClub();
+      clubPaint();
     }catch(e){ toast((e&&e.message)||'Could not cancel'); }
   }
 };
@@ -128,10 +129,21 @@ function clubDayLabel(k){
   return days[d.getDay()]+' '+d.getDate();
 }
 
+
+/* Every repaint goes through here. A load resolving in the background used to
+   call renderClub() directly, which threw a member out of a class they had
+   just opened. */
+function clubPaint(){
+  if(clubOpenId) return renderClubSession();
+  if(clubSegNow==='classes') return renderClubClasses();
+  return renderClub();
+}
+
 function openClub(){
   hidePanels(); $('club').style.display='block'; $('screen').scrollTop=0;
-  renderClub();
-  Club.load().then(renderClub);
+  clubOpenId=null; clubSegNow='overview';
+  clubPaint();
+  Club.load().then(clubPaint);
 }
 
 function renderClub(){
@@ -152,7 +164,7 @@ function renderClub(){
     el.innerHTML='<div class="sechead">HITFAT Club</div>'+
       '<div class="acard"><div class="ah"><span>⚠️</span><div class="t">Could not load the Club</div></div>'+
       '<div class="sub" style="margin-top:3px;">'+Club.err+'</div>'+
-      '<button class="bigbtn sec" onclick="Club.load(true).then(renderClub)">Try again</button></div>';
+      '<button class="bigbtn sec" onclick="Club.load(true).then(clubPaint)">Try again</button></div>';
     return;
   }
   if(!Club.isMember() && !Club.isStaff()){ el.innerHTML=clubPromoHTML(true); return; }
@@ -244,7 +256,8 @@ function clubSeg(s){
   if(bar) Array.prototype.forEach.call(bar.children,function(b){
     b.classList.toggle('on', b.getAttribute('data-seg')===s);
   });
-  if(s==='classes') renderClubClasses(); else renderClub();
+  clubOpenId=null;
+  clubPaint();
   $('screen').scrollTop=0;
 }
 
@@ -278,7 +291,6 @@ function clubHomeCard(){
    The list answers "when"; this answers "should I". Level, what to
    bring and what the session actually is are the things a member
    weighs before committing a Tuesday evening. */
-var clubOpenId=null;
 
 function clubMins(s){
   try{ return Math.max(0, Math.round((new Date(s.ends_at)-new Date(s.starts_at))/60000)); }
