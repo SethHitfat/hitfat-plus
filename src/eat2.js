@@ -1,3 +1,4 @@
+/* ═══════════════ EAT · Meal Scan ═══════════════
    Ported from the standalone HITFAT Tracker and restyled into the Hybrid design
    language (dark surfaces, red accent, Inter) instead of the original cream cards.
    Logging, coach text, actions and burn-this-meal are Seth's own logic, kept.   */
@@ -561,4 +562,3 @@ function saveFav(){
 }
 
 
-/* ═══════════════ PROGRESS ═══════════════

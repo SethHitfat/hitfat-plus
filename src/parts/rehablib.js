@@ -1,3 +1,4 @@
+/* ═══════════════ RECOVERY · prehab library ═══════════════
    Prehab, not rehab. These build joint resilience and range before something
    goes wrong; they do not treat an injury, and nothing here is presented as
    physiotherapy. The app says so once, plainly, at the top of the section.
@@ -90,4 +91,3 @@ function rehabFor(joint){
 function rehabFootageReady(){ return REHAB_DB.some(e => !!e.v); }
 
 
-/* ═══════════════ HITFAT BAR · exercise library ═══════════════

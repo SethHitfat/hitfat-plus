@@ -139,7 +139,7 @@ function daysThisWeek(){ const ws=weekStartISO(), seen={};
 function doneToday(){ const t=iso(0); return Object.values(HF.data.sessions).some(s=>sessionISO(s)===t); }
 
 /* ── PANELS — never hand-write a hide list ── */
-const PANELS=['home','train','eat','progress','me','progdetail','daydetail','library','mealplan','store','monthly'];
+const PANELS=['home','train','eat','progress','me','progdetail','daydetail','library','mealplan','store','monthly','club'];
 function hidePanels(){ PANELS.forEach(id=>{ const e=$(id); if(e) e.style.display='none'; }); }
 let curTab='home';
 function switchTab(tab){
@@ -161,4 +161,3 @@ function hexA(hex,a){ hex=String(hex||'#EF4444').replace('#','');
 function progDays(p){ let n=0; (p.weeks||[]).forEach(w=>w.days.forEach(()=>n++)); return n; }
 function progDone(id){ return HF.data.progress[id]||0; }
 
-/* ═══════════════ VIEWS · Home v4 layout, ported from HITFAT HYBRID ═══════════════

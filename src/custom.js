@@ -1,3 +1,4 @@
+/* ═══════════════ CUSTOM PLAN ═══════════════
    The Fitness+ builder flow: activities → days → length → equipment → weeks →
    preview. Only the SPEC is stored; the plan itself is regenerated from it on
    every load, so a custom plan costs a few hundred bytes and syncs with the
@@ -159,4 +160,3 @@ function applyCustom(){
 function hasCustom(){ return !!(HF.data && HF.data.custom); }
 
 
-/* ═══════════════ WORKOUT PLAYER ═══════════════

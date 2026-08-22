@@ -1,3 +1,4 @@
+/* ═══════════════ MEAL PLAN ═══════════════
    Ported from Seth's generator. The guideline work is the valuable part and is
    kept exactly: MDG 2020 macro ranges, CPG MOH 2023 calorie floors and safe
    deficit caps, Asian BMI cut-offs, waist-circumference risk.
@@ -431,4 +432,3 @@ function renderPlanView(){
 }
 
 
-/* ═══════════════ CUSTOM PLAN ═══════════════

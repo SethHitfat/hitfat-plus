@@ -1,3 +1,4 @@
+/* ═══════════════ PLANS ═══════════════
    Multi-week plans are generated from the exercise library instead of being typed
    out day by day: a plan is a 7-day shape, repeated, with the exercise pick
    rotating each week so week 4 is not week 1. Selection is deterministic — the
@@ -173,4 +174,3 @@ const NEW_PLANS=[
 PROGRAMS = NEW_PLANS.concat(PROGRAMS);
 
 
-/* ═══════════════ HITFAT BAR · programs ═══════════════

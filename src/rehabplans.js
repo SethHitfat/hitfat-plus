@@ -1,3 +1,4 @@
+/* ═══════════════ RECOVERY · programs ═══════════════
    Joint-by-joint prehab. Built with the same PLAN() generator, but the day
    pools are named explicitly instead of filtered by type — for prehab, which
    exercise appears matters more than which pattern it belongs to.
@@ -89,4 +90,3 @@ const REHAB_PLANS=[
 PROGRAMS = REHAB_PLANS.concat(PROGRAMS);
 
 
-/* ═══════════════ MONTHLY CHALLENGE ═══════════════

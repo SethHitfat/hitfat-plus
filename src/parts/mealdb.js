@@ -1,3 +1,4 @@
+/* ═══════════════ MALAYSIAN MEAL DATABASE ═══════════════
    Seth's own set, written in English. Dishes that have a real English name use
    it ("white rice", "grilled chicken"); the ones that do not are left alone —
    nasi lemak, tomyam, laksa, sambal, tempe and ulam are the names of the food,
@@ -111,4 +112,3 @@ const _EGG=['egg','eggs','omelette'],
 })();
 
 
-/* ═══════════════ MEAL PLAN ═══════════════

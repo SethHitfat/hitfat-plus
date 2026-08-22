@@ -1,3 +1,4 @@
+/* ═══════════════ PROGRESS ═══════════════
    The retention surface: the reason to open the app on a day you did not train.
    Everything here is derived from logged sessions, meals and weigh-ins — nothing
    is estimated or seeded, so a new account honestly reads as empty.            */
@@ -434,4 +435,3 @@ function drawShareCard(){
 }
 
 
-/* ═══════════════ TRAIN · Fitness+ structure ═══════════════

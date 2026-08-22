@@ -1,3 +1,4 @@
+/* ═══════════════ MONTHLY CHALLENGE ═══════════════
    FitON keeps people coming back by having something new every month. The
    cheapest honest way to do that is a calendar rotation: twelve challenges,
    one per month, picked by the date. Nothing to deploy, nothing to remember,
@@ -164,4 +165,3 @@ function renderMonthly(){
 }
 
 
-/* ═══════════════ STORE · one-off ownership ═══════════════

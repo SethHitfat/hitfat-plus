@@ -1,3 +1,4 @@
+/* ═══════════════ VIEWS · Home v4 layout, ported from HITFAT HYBRID ═══════════════
    Same components, same rhythm, same hierarchy: ONE hero (Today), everything else
    compact and scannable, no metric shown twice. Only the content and accent differ. */
 
@@ -181,7 +182,8 @@ function renderHome(){
      report card someone failed before they started. Until there is something to
      chart, show the month's challenge and say plainly what will appear here. */
   if(!HF.count()){
-    $('home-activity').innerHTML='<div class="sechead">This month</div>'+monthlyCard()+
+    const _club = (typeof clubHomeCard==='function') ? clubHomeCard() : '';
+  $('home-activity').innerHTML=_club+'<div class="sechead">This month</div>'+monthlyCard()+
       '<div class="acard" style="margin-top:12px;">'+
       '<div class="ah"><span>\uD83D\uDCC8</span><div class="t">Your progress</div></div>'+
       '<div class="sub" style="margin-top:3px;">Finish your first session and this fills in \u2014 '+
@@ -228,6 +230,13 @@ function renderHome(){
       '<div class="d">'+p.level+' · '+p.dur+' min</div></div>'+
       '<button class="join" onclick="event.stopPropagation();openProgram(\''+p.id+'\')">Start</button>'+
       '</div></div>').join('')+'</div>';
+
+  /* One quiet invitation, only for people who are not already members,
+     and only once the Club has told us which they are. */
+  try{
+    if(typeof Club!=='undefined' && Club.state==='ready' && !Club.isMember() && !Club.isStaff())
+      $('home-quick').innerHTML += clubPromoHTML();
+  }catch(e){}
 }
 function daysSince(){ const l=HF.data.lastISO; return l?daysBetween(l,iso(0)):0; }
 function nextUp(){
@@ -444,4 +453,3 @@ function finishOb(){
 }
 
 
-/* ═══════════════ EAT · Meal Scan ═══════════════

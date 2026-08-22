@@ -1,3 +1,4 @@
+/* ═══════════════ TRAIN · Fitness+ structure ═══════════════
    Four segments behind a pill control, and each section built to the pattern it
    copies: sampler strip, activity tiles, big programs, gradient browse tiles,
    and a workout list. Content is HITFAT+'s own.                               */
@@ -364,4 +365,3 @@ function openJoint(k){
 }
 
 
-/* ═══════════════ AUTH ═══════════════

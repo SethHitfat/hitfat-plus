@@ -3,7 +3,7 @@ shell=open('shell2.html').read()
 def rd(p): return open(p).read()
 subs=[('/*__CSS__*/','parts/hybrid-red.css'),('<!--__AUTH__-->','auth.html'),('<!--__SCANUI__-->','scanui.html'),
  ('/*__DB__*/','parts/db.js'),('/*__PROGRAMS_MULTI__*/','parts/programs_multi.js'),
- ('/*__PROGRAMS__*/','parts/programs.js'),('/*__REHABLIB__*/','parts/rehablib.js'),('/*__BARLIB__*/','parts/barlib.js'),('/*__PLANS__*/','plans2.js'),('/*__BARPLANS__*/','barplans.js'),('/*__REHABPLANS__*/','rehabplans.js'),('/*__MONTHLY__*/','monthly.js'),('/*__STORE__*/','store.js'),('/*__FINDER__*/','finder.js'),('/*__MEALDB__*/','parts/mealdb.js'),('/*__MEALPLAN__*/','mealplan.js'),('/*__CUSTOM__*/','custom.js'),('/*__PLAYER__*/','player.js'),('/*__CHALLENGES__*/','parts/challenges.js'),
+ ('/*__PROGRAMS__*/','parts/programs.js'),('/*__REHABLIB__*/','parts/rehablib.js'),('/*__BARLIB__*/','parts/barlib.js'),('/*__PLANS__*/','plans2.js'),('/*__BARPLANS__*/','barplans.js'),('/*__REHABPLANS__*/','rehabplans.js'),('/*__MONTHLY__*/','monthly.js'),('/*__STORE__*/','store.js'),('/*__FINDER__*/','finder.js'),('/*__MEALDB__*/','parts/mealdb.js'),('/*__MEALPLAN__*/','mealplan.js'),('/*__CUSTOM__*/','custom.js'),('/*__PLAYER__*/','player.js'),('/*__CHALLENGES__*/','parts/challenges.js'),('/*__CLUB__*/','club.js'),
  ('/*__VIEWS__*/','views2.js'),('/*__EAT__*/','eat2.js'),('/*__PROG__*/','prog2.js'),
  ('/*__TRAIN__*/','train2.js'),('/*__AUTHJS__*/','authjs.js')]
 for k,f in subs:
@@ -38,7 +38,7 @@ if miss: sys.exit('classes with no CSS: '+str(miss))
 
 ids=set(re.findall(r'id="([\w-]+)"',shell))
 needids=['home','train','eat','progress','me','tr-segs','tr-body','prog-body','eat-body',
-         'library','lib-body','scan','sharemodal','share-canvas','screen','tabs','cpm','cp-body','play','pl-video','pl-cam','pl-clock','pl-rest','pl-cd','pl-done','pl-ready','pl-modes','pl-camdot','pl-mode','pl-camhide','pl-pill','pl-next','pl-segs','mpm','mp-body','mealplan','mp-view','eat-segs','pwm','pw-body','store','store-segs','store-body','pl-nofilm','pl-nofilm-m','fqm','fq-body','tab-train-logo','monthly','mth-body']
+         'library','lib-body','scan','sharemodal','share-canvas','screen','tabs','cpm','cp-body','play','pl-video','pl-cam','pl-clock','pl-rest','pl-cd','pl-done','pl-ready','pl-modes','pl-camdot','pl-mode','pl-camhide','pl-pill','pl-next','pl-segs','mpm','mp-body','mealplan','mp-view','eat-segs','pwm','pw-body','store','store-segs','store-body','pl-nofilm','pl-nofilm-m','fqm','fq-body','tab-train-logo','monthly','mth-body','club','club-body','club-segs']
 missid=[i for i in needids if i not in ids]
 if missid: sys.exit('ids missing: '+str(missid))
 if 'class="screen" id="screen"' not in shell: sys.exit('scroller lost its .screen class')

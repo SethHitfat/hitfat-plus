@@ -1,3 +1,4 @@
+/* ═══════════════ STORE · one-off ownership ═══════════════
    No subscription. The app is free; individual programs are bought once and
    owned forever, and Meal Scan sells access three ways because its cost is
    the one thing here that recurs.
@@ -412,4 +413,3 @@ function handlePaidRedirect(){
 }
 
 
-/* ═══════════════ FIND MY PROGRAM ═══════════════

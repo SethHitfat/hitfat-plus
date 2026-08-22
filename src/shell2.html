@@ -615,6 +615,15 @@
       <div id="mth-body"></div>
     </div>
 
+    <div id="club" class="pad" style="display:none;">
+      <button class="back" onclick="switchTab('home')">← Back</button>
+      <div class="segs" id="club-segs">
+        <button class="seg on" data-seg="overview" onclick="clubSeg('overview')">Overview</button>
+        <button class="seg" data-seg="classes" onclick="clubSeg('classes')">Classes</button>
+      </div>
+      <div id="club-body"></div>
+    </div>
+
     <div id="store" class="pad" style="display:none;">
       <button class="back" onclick="closeStore()">← Back</button>
       <div class="hgroup"><div class="k">HITFAT+</div><h2>Store</h2><p>Buy a program once and keep it. No subscription, nothing recurring.</p></div>
@@ -840,7 +849,8 @@ async function scanToken(){
 function toast(m){ const t=$('toast'); if(!t) return; t.textContent=m; t.classList.add('on');
   clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('on'),1900); }
 
-/*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__MONTHLY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
+/*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__MONTHLY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
+/*__CLUB__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
 
 function hideSplash(){ const s=$('splash'); if(s&&!s.classList.contains('gone')){ s.classList.add('gone'); setTimeout(()=>{s.style.display='none';},500); } }
 let _started=false;
@@ -915,6 +925,12 @@ window.addEventListener('resize', function(){ setNavOffset(); });
 window.addEventListener('orientationchange', function(){ window._saMax=null; setTimeout(function(){ setNavOffset(); },120); });
 
 function boot(){
+  /* Fire and forget: nothing on screen waits for the Club, and a user
+     with no Club standing never notices it ran. */
+  try{ if(typeof Club!=='undefined') Club.load().then(function(){
+    try{ if($('home') && $('home').style.display!=='none') renderHome(); }catch(e){}
+  }); }catch(e){}
+
   setTimeout(hideSplash,4500);
   capturePaidParam();      // before auth — an OAuth redirect would otherwise drop it
   HF.load();

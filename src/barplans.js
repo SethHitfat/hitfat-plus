@@ -1,3 +1,4 @@
+/* ═══════════════ HITFAT BAR · programs ═══════════════
    Built from BAR_DB with the same PLAN() generator the rest of the app uses,
    so they behave identically — same day shape, same weekly rotation, same
    deterministic pick. bar:true keeps them free and out of the paid catalogue,
@@ -113,4 +114,3 @@ SIG_PLANS.forEach(p => { p.special = true; });
 PROGRAMS = SIG_PLANS.concat(BAR_PLANS, PROGRAMS);
 
 
-/* ═══════════════ RECOVERY · programs ═══════════════

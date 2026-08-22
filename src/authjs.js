@@ -1,3 +1,4 @@
+/* ═══════════════ AUTH ═══════════════
    Same flow as HITFAT HYBRID against the same Supabase project, so an athlete
    who already has a Hybrid account signs straight in — no second sign-up. ── */
 let authMode='in';

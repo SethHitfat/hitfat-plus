@@ -1,3 +1,4 @@
+/* ═══════════════ HITFAT BAR · exercise library ═══════════════
    A bar loaded with resistance bands. The movement patterns are the barbell
    patterns — squat, hinge, press, row, carry — which is exactly why the bar
    sells: it is not a gimmick, it is a barbell that folds into a drawer.
@@ -82,4 +83,3 @@ function isBarExercise(name){
 function barFootageReady(){ return BAR_DB.some(e => !!e.v); }
 
 
-/* ═══════════════ PLANS ═══════════════

@@ -1,3 +1,4 @@
+/* ═══════════════ WORKOUT PLAYER ═══════════════
    Video-guided sessions. Every exercise in the library carries a Vimeo id, so a
    day is playable end to end: clip, clock, rest, next.
 
