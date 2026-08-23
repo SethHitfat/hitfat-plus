@@ -6723,12 +6723,13 @@ function spark(series, good){
 
 /* One tile. Returns '' when there is nothing to show, so the grid simply
    holds fewer tiles rather than a row of dashes. */
-function pgTile(label, value, unit, sub, series, goodDown){
+function pgTile(label, value, unit, sub, series, goodDown, metric){
   if(value===null||value===undefined) return '';
   const d=series&&series.length>1?windowDelta(series,30):null;
   let tone='var(--dim)';
   if(d!==null && d!==0) tone=((d<0)===!!goodDown)?'var(--ok)':'var(--hitfat)';
-  return '<div class="pgtile">'+
+  const tap=metric?' onclick="pgOpenMetric(\''+metric+'\')" style="cursor:pointer;"':'';
+  return '<div class="pgtile"'+tap+'>'+
     '<div class="v">'+value+(unit?'<span class="u"> '+unit+'</span>':'')+'</div>'+
     '<div class="l">'+label+'</div>'+
     (sub?'<div class="s" style="color:'+tone+'">'+sub+'</div>':'')+
@@ -6754,6 +6755,9 @@ function pgCalendar(){
 }
 
 function renderProgress(){
+  /* One measurement open takes the whole panel — same idea as the class
+     detail: the overview answers where you are, this answers which way. */
+  if(pgMetric) return renderMetric();
   const tr=pgTraining(), nu=pgNutrition(), wl=weightLog(), streak=liveStreak();
   const sc=progressScore();
   const wSeries=wl.map(x=>({iso:x.iso,v:x.kg}));
@@ -6777,11 +6781,11 @@ function renderProgress(){
      been entered, rather than printed as a dash. */
   const tiles=[
     pgTile('Weight', wl.length?wl[wl.length-1].kg:null, 'kg',
-           windowDelta(wSeries,30)!==null?fmtDelta(windowDelta(wSeries,30),'kg'):'', wSeries, goodDown),
+           windowDelta(wSeries,30)!==null?fmtDelta(windowDelta(wSeries,30),'kg'):'', wSeries, goodDown, 'weight'),
     pgTile('Body fat', fSeries.length?fSeries[fSeries.length-1].v:null, '%',
-           windowDelta(fSeries,30)!==null?fmtDelta(windowDelta(fSeries,30),'%'):'', fSeries, true),
+           windowDelta(fSeries,30)!==null?fmtDelta(windowDelta(fSeries,30),'%'):'', fSeries, true, 'bf'),
     pgTile('Waist', waistSeries.length?waistSeries[waistSeries.length-1].v:null, 'cm',
-           windowDelta(waistSeries,30)!==null?fmtDelta(windowDelta(waistSeries,30),'cm'):'', waistSeries, true),
+           windowDelta(waistSeries,30)!==null?fmtDelta(windowDelta(waistSeries,30),'cm'):'', waistSeries, true, 'waist'),
     pgTile('Workouts', tr.sessions||0, '', tr.mins+' min', null, false),
     pgTile('Days logged', nu.logged||0, '', 'of '+pgDays()+' days', null, false),
     pgTile('Streak', streak, streak===1?'day':'days', streak?'Keep it up':'Start today', null, false)
@@ -7046,7 +7050,157 @@ function drawShareCard(){
   _spaced(x,'HITFAT.IO',cx,1846,5);
 }
 
+/* ── One measurement, in full ─────────────────────────────────────────
+   A tile answers "where am I". This answers "which way am I going", which
+   is a different and harder question — daily weight swings a kilo on water
+   alone, so the raw line is mostly noise. The moving average is the signal,
+   and the weekly table is how anyone should actually read a scale. */
+var pgMetric=null, pgWin=30;
+const PG_METRICS={
+  weight:{label:'Weight', unit:'kg',  goodDown:true},
+  bf:    {label:'Body fat',unit:'%',  goodDown:true},
+  waist: {label:'Waist',  unit:'cm',  goodDown:true}
+};
 
+function pgSeries(key){
+  if(key==='weight') return weightLog().map(x=>({iso:x.iso, v:x.kg}));
+  return bodySeries(key);
+}
+function pgWindowed(series, days){
+  if(!days) return series;
+  const from=iso(-(days-1));
+  return series.filter(x=>x.iso>=from);
+}
+
+/* A trailing average over real days, not over the last N readings — someone
+   who weighs in twice a week would otherwise get an "average" spanning a
+   month and a line that lags reality badly. */
+function movingAvg(series, days){
+  const out=[];
+  for(let i=0;i<series.length;i++){
+    const end=series[i].iso, start=iso(0);
+    const cutoff=new Date(end+'T00:00:00');
+    cutoff.setDate(cutoff.getDate()-(days-1));
+    const c=cutoff.getFullYear()+'-'+('0'+(cutoff.getMonth()+1)).slice(-2)+'-'+('0'+cutoff.getDate()).slice(-2);
+    const win=series.filter(x=>x.iso>=c && x.iso<=end);
+    if(!win.length) continue;
+    out.push({iso:end, v:win.reduce((a,b)=>a+b.v,0)/win.length});
+  }
+  return out;
+}
+
+function weeklyAverages(series){
+  if(!series.length) return [];
+  const buckets={};
+  series.forEach(x=>{ const k=weekStartISO(x.iso); (buckets[k]=buckets[k]||[]).push(x.v); });
+  const keys=Object.keys(buckets).sort();
+  return keys.map((k,i)=>{
+    const avg=buckets[k].reduce((a,b)=>a+b,0)/buckets[k].length;
+    const prev=i?buckets[keys[i-1]]:null;
+    const pavg=prev?prev.reduce((a,b)=>a+b,0)/prev.length:null;
+    return {week:k, avg:avg, change:(pavg===null?null:avg-pavg), n:buckets[k].length};
+  }).reverse();
+}
+
+/* SVG rather than canvas: it scales with the card, it survives a theme
+   change without redrawing, and the harness can read it. */
+function pgChart(raw, avg, unit){
+  if(raw.length<2)
+    return '<div class="sub" style="padding:22px 0;text-align:center;">'+
+           'Two readings are needed before there is a line to draw.</div>';
+  const W=320,H=150,L=6,R=6,T=14,B=22;
+  const all=raw.map(x=>x.v).concat(avg.map(x=>x.v));
+  let lo=Math.min.apply(null,all), hi=Math.max.apply(null,all);
+  if(hi===lo){ hi+=0.5; lo-=0.5; }
+  const pad=(hi-lo)*0.18; lo-=pad; hi+=pad;
+  const t0=new Date(raw[0].iso+'T00:00:00').getTime();
+  const t1=new Date(raw[raw.length-1].iso+'T00:00:00').getTime();
+  const span=(t1-t0)||1;
+  const X=d=>L+((new Date(d+'T00:00:00').getTime()-t0)/span)*(W-L-R);
+  const Y=v=>T+(1-(v-lo)/(hi-lo))*(H-T-B);
+  const line=s=>s.map((p,i)=>(i?'L':'M')+X(p.iso).toFixed(1)+' '+Y(p.v).toFixed(1)).join(' ');
+  const last=raw[raw.length-1];
+  let g='';
+  for(let i=0;i<=2;i++){ const y=T+(H-T-B)*(i/2);
+    g+='<line x1="'+L+'" y1="'+y.toFixed(1)+'" x2="'+(W-R)+'" y2="'+y.toFixed(1)+
+       '" stroke="var(--hairline)" stroke-width="1"/>'; }
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:150px;display:block;overflow:visible;">'+g+
+    '<path d="'+line(raw)+'" fill="none" stroke="var(--dim2)" stroke-width="1.5" '+
+      'stroke-linejoin="round" stroke-linecap="round" opacity=".7"/>'+
+    (avg.length>1?'<path d="'+line(avg)+'" fill="none" stroke="var(--hitfat)" stroke-width="2.6" '+
+      'stroke-linejoin="round" stroke-linecap="round"/>':'')+
+    '<circle cx="'+X(last.iso).toFixed(1)+'" cy="'+Y(last.v).toFixed(1)+'" r="4" fill="var(--hitfat)"/>'+
+    '<text x="'+L+'" y="'+(T-4)+'" fill="var(--dim2)" font-size="10">'+hi.toFixed(1)+' '+unit+'</text>'+
+    '<text x="'+L+'" y="'+(H-B+12)+'" fill="var(--dim2)" font-size="10">'+lo.toFixed(1)+' '+unit+'</text>'+
+    '<text x="'+(W-R)+'" y="'+(H-B+12)+'" fill="var(--dim2)" font-size="10" text-anchor="end">'+
+      pgShortDate(last.iso)+'</text>'+
+    '</svg>';
+}
+function pgShortDate(d){
+  try{ return new Date(d+'T00:00:00').toLocaleDateString('en-MY',{day:'numeric',month:'short'}); }
+  catch(e){ return d; }
+}
+
+function pgOpenMetric(k){ pgMetric=k; pgWin=30; renderProgress(); $('screen').scrollTop=0; }
+function pgCloseMetric(){ pgMetric=null; renderProgress(); $('screen').scrollTop=0; }
+function pgSetWin(n){ pgWin=n; renderProgress(); }
+
+function renderMetric(){
+  const meta=PG_METRICS[pgMetric], full=pgSeries(pgMetric);
+  const win=pgWindowed(full, pgWin), avg=movingAvg(win,7);
+  const d=win.length>1?win[win.length-1].v-win[0].v:null;
+  const tone=d===null||d===0?'var(--dim)':(((d<0)===meta.goodDown)?'var(--ok)':'var(--hitfat)');
+
+  let h='<button class="back" onclick="pgCloseMetric()">← Progress</button>';
+  h+='<div class="sechead">'+meta.label+'</div>';
+
+  h+='<div class="pgseg">'+[[14,'14 days'],[30,'30 days'],[90,'90 days'],[0,'All']]
+      .map(o=>'<button class="seg'+(pgWin===o[0]?' on':'')+'" onclick="pgSetWin('+o[0]+')">'+o[1]+'</button>')
+      .join('')+'</div>';
+
+  if(!win.length){
+    h+='<div class="acard"><div class="sub">Nothing logged in this window.</div>'+
+       '<button class="bigbtn" onclick="askMeasure()">＋ Log measurements</button></div>';
+    $('prog-body').innerHTML=h; return;
+  }
+
+  h+='<div class="acard">'+
+     '<div style="display:flex;align-items:baseline;gap:10px;">'+
+     '<div class="big">'+win[win.length-1].v+'<span class="sub"> '+meta.unit+'</span></div>'+
+     (d===null?'':'<div style="font-size:13px;font-weight:800;color:'+tone+';">'+
+        (d>0?'+':'')+Math.round(d*10)/10+' '+meta.unit+'</div>')+
+     '</div>'+
+     '<div class="sub">'+win.length+' reading'+(win.length===1?'':'s')+' in this window</div>'+
+     pgChart(win, avg, meta.unit)+
+     /* The two lines mean different things and the difference is the whole
+        point, so the legend is not decoration. */
+     '<div class="pglegend" style="gap:14px;">'+
+       '<span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim);">'+
+       '<i style="width:14px;height:2px;background:var(--dim2);border-radius:2px;"></i>each reading</span>'+
+       '<span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim);">'+
+       '<i style="width:14px;height:3px;background:var(--hitfat);border-radius:2px;"></i>7-day average</span>'+
+     '</div>'+
+     '<div class="sub" style="margin-top:8px;line-height:1.5;">'+
+     'Day to day this moves on water and food. The average is the part that means something.</div>'+
+     '</div>';
+
+  const wk=weeklyAverages(win);
+  if(wk.length){
+    h+='<div class="sechead">Weekly average</div><div class="acard">'+
+      wk.slice(0,8).map(r=>{
+        const c=r.change;
+        const ct=c===null?'var(--dim2)':(((c<0)===meta.goodDown)?'var(--ok)':'var(--hitfat)');
+        return '<div class="pgins"><div style="flex:1;">'+
+          '<b>'+pgShortDate(r.week)+'</b>'+
+          '<small>'+r.n+' reading'+(r.n===1?'':'s')+'</small></div>'+
+          '<div style="text-align:right;">'+
+          '<b>'+(Math.round(r.avg*10)/10)+' '+meta.unit+'</b>'+
+          '<small style="color:'+ct+';">'+(c===null?'first week'
+            :((c>0?'+':'')+(Math.round(c*10)/10)+' '+meta.unit))+'</small></div></div>';
+      }).join('')+'</div>';
+  }
+  $('prog-body').innerHTML=h;
+}
 /* ═══════════════ TRAIN · Fitness+ structure ═══════════════
    Four segments behind a pill control, and each section built to the pattern it
    copies: sampler strip, activity tiles, big programs, gradient browse tiles,

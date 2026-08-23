@@ -203,6 +203,49 @@ noThrow("weight hero renders", function(){ switchTab('progress'); });
 ok("shows the change in the window", document.getElementById('prog-body').innerHTML.indexOf('-2.6 kg')>0);
 ok("draws a sparkline", document.getElementById('prog-body').innerHTML.indexOf('polyline')>0);
 
+/* ── measurement detail ──
+   Daily weight moves on water and food; the moving average is the part that
+   carries meaning. If the average simply traced the raw line there would be
+   no reason to draw two. */
+HF.data.weight=[];
+[[-13,82.0],[-12,81.4],[-11,82.3],[-10,81.9],[-9,81.2],[-8,81.6],[-7,80.9],
+ [-6,81.3],[-5,80.6],[-4,81.0],[-3,80.4],[-2,80.8],[-1,80.1],[0,80.5]]
+  .forEach(function(p){ HF.data.weight.push({iso:iso(p[0]), kg:p[1]}); });
+
+var _w=pgSeries('weight');
+ok("every reading is in the series", _w.length===14, _w.length);
+var _avg=movingAvg(_w,7);
+ok("the average has points to draw", _avg.length>1, _avg.length);
+ok("the average is smoother than the raw line", (function(){
+  function swing(a){ var t=0; for(var i=1;i<a.length;i++) t+=Math.abs(a[i].v-a[i-1].v); return t; }
+  return swing(_avg) < swing(_w); })(), 'average swings as much as the readings');
+ok("the average lands inside the range", (function(){
+  var vs=_w.map(function(x){return x.v;});
+  var lo=Math.min.apply(null,vs), hi=Math.max.apply(null,vs);
+  return _avg.every(function(p){ return p.v>=lo && p.v<=hi; }); })());
+
+/* A window is a span of days, not a count of readings — someone weighing in
+   twice a week must not get a "14 day" view covering seven weeks. */
+ok("the window is measured in days", pgWindowed(_w,7).every(function(x){ return x.iso>=iso(-6); }));
+ok("all means all", pgWindowed(_w,0).length===_w.length);
+
+var _wk=weeklyAverages(_w);
+ok("weeks are grouped",           _wk.length>=2, _wk.length);
+ok("newest week first",           _wk[0].week > _wk[_wk.length-1].week);
+ok("the first week has no change",_wk[_wk.length-1].change===null);
+ok("change is week over week",    (function(){
+  var a=_wk[0], b=_wk[1];
+  return Math.abs(a.change-(a.avg-b.avg))<1e-9; })());
+
+noThrow("the detail view renders", function(){ pgOpenMetric('weight'); });
+ok("it draws both lines",   document.getElementById('prog-body').innerHTML.indexOf('7-day average')>0);
+ok("it offers the windows", document.getElementById('prog-body').innerHTML.indexOf('90 days')>0);
+noThrow("windows switch",   function(){ pgSetWin(14); pgSetWin(0); pgSetWin(30); });
+noThrow("back returns",     function(){ pgCloseMetric(); });
+ok("back really returns",   pgMetric===null);
+ok("two readings are needed for a line",
+   pgChart([{iso:iso(0),v:80}],[],'kg').indexOf('<svg')<0);
+
 /* ── progress score ── it is shown broken into parts on screen, so the parts
    must actually add up to the number beside them. */
 var _sc = progressScore();
