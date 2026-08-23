@@ -32,6 +32,11 @@ function dayPool(d){
        that is the flag. REHAB_PLAN builds its days from named pools and never
        calls this, so excluding them here costs the recovery programs nothing. */
     if(e.j) return false;
+    /* A day may insist on filmed movements only. The BAR programs use it:
+       half that library has no clip yet, and a session that sends someone to
+       four "clip coming soon" cards is worse than a shorter session. Drop the
+       flag once the shoot is complete and the pools widen on their own. */
+    if(d.filmed && !e.v) return false;
     if(d.t   && d.t.indexOf(e.t)<0) return false;
     if(d.m   && d.m.indexOf(e.m)<0) return false;
     return true;
@@ -46,8 +51,9 @@ function PLAN(s){
       // if the equipment filter empties the pool, keep the movement pattern and
       // drop the equipment rather than shipping a day with one filler exercise
       let pool=dayPool(d);
-      if(pool.length<(d.c||5)) pool=dayPool({t:d.t,m:d.m});
-      if(!pool.length)         pool=dayPool({t:d.t});
+      if(pool.length<(d.c||5)) pool=dayPool({t:d.t,m:d.m,eq:d.eq,filmed:d.filmed});
+      if(!pool.length)         pool=dayPool({t:d.t,eq:d.eq,filmed:d.filmed});
+      if(!pool.length && d.filmed) pool=dayPool({eq:d.eq,filmed:true});
       if(!pool.length)         pool=exNames(e=>e.eq==='Bodyweight');
       const ex=pickN(pool, d.c||5, w);
       return {name:d.n, ex};

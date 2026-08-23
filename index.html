@@ -2866,6 +2866,11 @@ function dayPool(d){
        that is the flag. REHAB_PLAN builds its days from named pools and never
        calls this, so excluding them here costs the recovery programs nothing. */
     if(e.j) return false;
+    /* A day may insist on filmed movements only. The BAR programs use it:
+       half that library has no clip yet, and a session that sends someone to
+       four "clip coming soon" cards is worse than a shorter session. Drop the
+       flag once the shoot is complete and the pools widen on their own. */
+    if(d.filmed && !e.v) return false;
     if(d.t   && d.t.indexOf(e.t)<0) return false;
     if(d.m   && d.m.indexOf(e.m)<0) return false;
     return true;
@@ -2880,8 +2885,9 @@ function PLAN(s){
       // if the equipment filter empties the pool, keep the movement pattern and
       // drop the equipment rather than shipping a day with one filler exercise
       let pool=dayPool(d);
-      if(pool.length<(d.c||5)) pool=dayPool({t:d.t,m:d.m});
-      if(!pool.length)         pool=dayPool({t:d.t});
+      if(pool.length<(d.c||5)) pool=dayPool({t:d.t,m:d.m,eq:d.eq,filmed:d.filmed});
+      if(!pool.length)         pool=dayPool({t:d.t,eq:d.eq,filmed:d.filmed});
+      if(!pool.length && d.filmed) pool=dayPool({eq:d.eq,filmed:true});
       if(!pool.length)         pool=exNames(e=>e.eq==='Bodyweight');
       const ex=pickN(pool, d.c||5, w);
       return {name:d.n, ex};
@@ -3015,57 +3021,76 @@ PROGRAMS = NEW_PLANS.concat(PROGRAMS);
    because the bar itself is the product; these sessions sell it.          */
 
 const BAR_PLANS=[
+
+  /* Designed around the twenty-four movements that are actually filmed, not
+     around the fifty-seven in the library. Every day carries filmed:true, so a
+     session never sends someone to a card that says "clip coming soon".
+
+     That constraint also decides which programs exist. The filmed set is
+     twelve upper-body movements against seven for legs, so an upper-body block
+     is well supported and a lower-body one would repeat the same four squats
+     every week. It is missing on purpose until the legs are shot. */
+
   PLAN({id:'bar1', name:'BAR Foundations', goal:'Strength', level:'Beginner', dur:20, wk:2,
-    c1:'#22252B', c2:'#0A0B0D', ac:'#C9CFD8', icon:'🏋️', bar:true,
-    desc:'Two weeks to learn the five patterns the bar is built around — squat, hinge, press, row, carry. Light bands, clean technique.',
-    days:[{n:'Squat & Hinge',t:['squat','hinge'],eq:BAR_EQ,c:5},
-          {n:'Press & Pull',t:['push','pull'],eq:BAR_EQ,c:5},
-          {rest:true},
-          {n:'Full Body',t:['full','squat'],eq:BAR_EQ,c:5},
-          {n:'Core & Carry',t:['core'],eq:BAR_EQ,c:4},
-          {rest:true},{rest:true}]}),
+    c1:'#241a12', c2:'#0b0906', ac:'#FF8A1E', icon:'🏋️', bar:true, rounds:3,
+    desc:'Two weeks to learn what the bar does. Squat, hinge, press, row — light bands, '+
+         'slow reps, nothing you have to be fit to start.',
+    days:[
+      {n:'Squat & Hinge',   t:['squat','hinge'], eq:BAR_EQ, filmed:true, c:4},
+      {rest:true},
+      {n:'Press & Row',     t:['push','pull'],   eq:BAR_EQ, filmed:true, c:4},
+      {rest:true},
+      {n:'Whole Body',      t:['full','squat','pull'], eq:BAR_EQ, filmed:true, c:4},
+      {rest:true},{rest:true}]}),
 
-  PLAN({id:'bar2', name:'BAR Full Body', goal:'Strength', level:'Intermediate', dur:28, wk:4,
-    c1:'#301109', c2:'#0B0605', ac:'#FF7A45', icon:'🏋️', bar:true,
-    desc:'Four weeks, four sessions a week, every session hitting the whole body. The band gets heavier as the weeks go.',
-    days:[{n:'Push Focus',t:['push','core'],eq:BAR_EQ,c:6},
-          {n:'Pull Focus',t:['pull','core'],eq:BAR_EQ,c:6},
-          {rest:true},
-          {n:'Legs',t:['squat','hinge','lunge'],eq:BAR_EQ,c:6},
-          {n:'Full Body',t:['full'],eq:BAR_EQ,c:5},
-          {rest:true},{rest:true}]}),
+  PLAN({id:'bar2', name:'BAR Full Body', goal:'Strength', level:'All levels', dur:30, wk:4,
+    c1:'#2a1608', c2:'#0b0906', ac:'#F97316', icon:'🔥', bar:true, rounds:3,
+    desc:'Three sessions a week, every pattern each time. The one to run if you own the '+
+         'bar and want a single programme to stay on.',
+    days:[
+      {n:'Full Body A', t:['squat','push','pull'],  eq:BAR_EQ, filmed:true, c:6},
+      {rest:true},
+      {n:'Full Body B', t:['hinge','push','pull'],  eq:BAR_EQ, filmed:true, c:6},
+      {rest:true},
+      {n:'Full Body C', t:['full','lunge','core'],  eq:BAR_EQ, filmed:true, c:6},
+      {rest:true},{rest:true}]}),
 
-  PLAN({id:'bar3', name:'BAR Fat Loss', goal:'Fat Loss', level:'Intermediate', dur:24, wk:4,
-    c1:'#33090E', c2:'#0A0405', ac:'#F0392B', icon:'🔥', bar:true,
-    desc:'Short rest, big movements, five days a week. The bar keeps the load on while the heart rate stays up.',
-    days:[{n:'Full Body Burn',t:['full','squat'],eq:BAR_EQ,c:6},
-          {n:'Upper Circuit',t:['push','pull'],eq:BAR_EQ,c:6},
-          {n:'Lower Circuit',t:['squat','hinge','lunge'],eq:BAR_EQ,c:6},
-          {rest:true},
-          {n:'Conditioning',t:['full','core'],eq:BAR_EQ,c:6},
-          {n:'Core Finisher',t:['core'],eq:BAR_EQ,c:5},
-          {rest:true}]}),
+  PLAN({id:'bar3', name:'BAR Upper Body', goal:'Strength', level:'Intermediate', dur:25, wk:4,
+    c1:'#1b1626', c2:'#0a0910', ac:'#A78BFA', icon:'💪', bar:true, rounds:3,
+    desc:'Shoulders, back and arms. The bands are at their best here — constant tension '+
+         'through the whole range, which is exactly what these muscles want.',
+    days:[
+      {n:'Press',          t:['push'], eq:BAR_EQ, filmed:true, c:5},
+      {rest:true},
+      {n:'Pull',           t:['pull'], eq:BAR_EQ, filmed:true, c:5},
+      {rest:true},
+      {n:'Shoulders & Arms', t:['push','pull'], m:['Shoulders','Arms'],
+                           eq:BAR_EQ, filmed:true, c:6},
+      {rest:true},{rest:true}]}),
 
-  PLAN({id:'bar4', name:'BAR Strength 6', goal:'Strength', level:'Intermediate', dur:32, wk:6,
-    c1:'#2A1508', c2:'#090604', ac:'#E0A040', icon:'💪', bar:true,
-    desc:'Six weeks of heavier bands and lower reps. The closest a folding bar gets to a barbell block.',
-    days:[{n:'Lower Strength',t:['squat','hinge'],eq:BAR_EQ,c:5},
-          {n:'Upper Push',t:['push'],eq:BAR_EQ,c:5},
-          {rest:true},
-          {n:'Upper Pull',t:['pull'],eq:BAR_EQ,c:5},
-          {n:'Posterior Chain',t:['hinge','lunge'],eq:BAR_EQ,c:5},
-          {n:'Core',t:['core'],eq:BAR_EQ,c:4},
-          {rest:true}]}),
+  PLAN({id:'bar4', name:'BAR Conditioning', goal:'Fat Loss', level:'Intermediate', dur:20, wk:3,
+    c1:'#2a0f14', c2:'#0b0708', ac:'#EF4444', icon:'⚡', bar:true, rounds:4,
+    desc:'Four rounds, short rests, movements that use the whole body at once. Thrusters '+
+         'and clean presses — you will be breathing hard by round two.',
+    days:[
+      {n:'Circuit A', t:['full','squat'], eq:BAR_EQ, filmed:true, c:5},
+      {rest:true},
+      {n:'Circuit B', t:['full','pull','core'], eq:BAR_EQ, filmed:true, c:5},
+      {rest:true},
+      {n:'Circuit C', t:['full','hinge','push'], eq:BAR_EQ, filmed:true, c:5},
+      {rest:true},{rest:true}]}),
 
-  PLAN({id:'bar5', name:'BAR Express 15', goal:'Fat Loss', level:'Beginner', dur:15, wk:1,
-    c1:'#101C26', c2:'#05080A', ac:'#4CC5E0', icon:'⚡', bar:true,
-    desc:'Fifteen minutes, five days. For the weeks where the only honest answer is "no time".',
-    days:[{n:'Full Body 15',t:['full'],eq:BAR_EQ,c:4},
-          {n:'Upper 15',t:['push','pull'],eq:BAR_EQ,c:4},
-          {n:'Lower 15',t:['squat','hinge'],eq:BAR_EQ,c:4},
-          {n:'Core 15',t:['core'],eq:BAR_EQ,c:4},
-          {n:'Full Body 15',t:['full','lunge'],eq:BAR_EQ,c:4},
-          {rest:true},{rest:true}]})
+  PLAN({id:'bar5', name:'BAR Express 15', goal:'Fat Loss', level:'All levels', dur:15, wk:2,
+    c1:'#0f1b26', c2:'#080b0f', ac:'#38BDF8', icon:'⏱️', bar:true, rounds:3,
+    desc:'Fifteen minutes, four movements, no set-up beyond stepping on the bands. For '+
+         'the days that would otherwise be a rest day by accident.',
+    days:[
+      {n:'Express A', t:['squat','push'],  eq:BAR_EQ, filmed:true, c:4},
+      {n:'Express B', t:['hinge','pull'],  eq:BAR_EQ, filmed:true, c:4},
+      {rest:true},
+      {n:'Express C', t:['full','core'],   eq:BAR_EQ, filmed:true, c:4},
+      {n:'Express D', t:['push','pull'],   eq:BAR_EQ, filmed:true, c:4},
+      {rest:true},{rest:true}]})
 ];
 
 /* ── SIGNATURE · the flagship paid programs ──

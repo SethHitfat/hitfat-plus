@@ -553,6 +553,32 @@ ok("generic plans never pull prehab moves", (function(){
     return PROGRAMS.filter(function(p){ return p.weeks && !isBarProgram(p) && !isRehabProgram(p); })
       .every(function(p){ return p.weeks.every(function(w){ return w.days.every(function(d){
         return d.rest || d.ex.every(function(n){ return !isRehabExercise(n); }); }); }); }); })());
+/* The BAR programmes are built only from movements that have a clip. A session
+   that sends someone to four "clip coming soon" cards is worse than a shorter
+   session, so this must not drift as new movements are added unfilmed. */
+ok("every BAR session uses only filmed movements", (function(){
+  var bad=[];
+  PROGRAMS.filter(isBarProgram).forEach(function(p){
+    p.weeks.forEach(function(w){ w.days.forEach(function(d){
+      if(d.rest) return;
+      d.ex.forEach(function(n){
+        var e=DB.filter(function(x){ return x.n===n; })[0];
+        if(!e || !e.v) bad.push(p.name+': '+n);
+      });
+    }); });
+  });
+  return bad.length===0; })(), 'unfilmed movements inside BAR programmes');
+ok("no BAR session is left short", PROGRAMS.filter(isBarProgram).every(function(p){
+  return p.weeks.every(function(w){ return w.days.every(function(d){
+    return d.rest || d.ex.length>=4; }); }); }));
+/* The filmed flag must actually narrow the pool, or the guarantee above is
+   accidental rather than enforced. */
+ok("filmed:true narrows the pool", (function(){
+  var all=dayPool({eq:BAR_EQ}), only=dayPool({eq:BAR_EQ, filmed:true});
+  return only.length>0 && only.length<all.length &&
+         only.every(function(n){
+           var e=DB.filter(function(x){ return x.n===n; })[0]; return e && !!e.v; });
+})());
 ok("BAR plans still get BAR moves", PROGRAMS.filter(isBarProgram).every(function(p){
     return p.weeks[0].days.some(function(d){ return !d.rest && d.ex.some(isBarExercise); }); }));
 ok("no generic day went empty",  PROGRAMS.filter(function(p){ return p.weeks; })
