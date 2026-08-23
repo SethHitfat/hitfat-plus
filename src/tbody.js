@@ -353,7 +353,16 @@ ok("only BAR and Recovery lack clips", DB.filter(function(e){return !e.v;})
      .map(function(e){return e.n;}).join(', '));
 ok("every Recovery exercise awaits footage", REHAB_DB.every(function(e){ return !e.v; }));
 ok("Recovery footage flag is honest", rehabFootageReady()===REHAB_DB.some(function(e){ return !!e.v; }));
-ok("every BAR exercise is awaiting footage", BAR_DB.every(function(e){ return !e.v; }));
+ok("BAR library is part filmed", (function(){
+  var c=barFootageCount();
+  return c.have>0 && c.have<c.total && c.have===BAR_DB.filter(function(e){return !!e.v;}).length;
+})(), JSON.stringify(barFootageCount()));
+ok("every filmed BAR clip is a vimeo id", BAR_DB.filter(function(e){return !!e.v;})
+   .every(function(e){ return /^\d+$/.test(e.v); }));
+ok("no clip is used for two movements", (function(){
+  var seen={}, dup=0;
+  BAR_DB.forEach(function(e){ if(!e.v) return; if(seen[e.v]) dup++; seen[e.v]=1; });
+  return dup===0; })());
 /* The flag must mean "every movement is filmed", not "at least one is" —
    otherwise the first clip silences a warning that forty others still need. */
 ok("BAR footage flag needs full coverage", barFootageReady()===BAR_DB.every(function(e){ return !!e.v; }));
@@ -745,20 +754,33 @@ ok("BAR weeks differ",           (function(){
 noThrow("BAR segment renders",   function(){ switchTab('train'); setTrSeg('bar'); });
 ok("BAR segment lists them",     bars.every(function(p){
     return document.getElementById('tr-body').innerHTML.indexOf(p.name)>0; }));
-ok("BAR segment admits no film", document.getElementById('tr-body').innerHTML.indexOf('being filmed')>0);
+ok("BAR segment reports its coverage", (function(){
+  var h=document.getElementById('tr-body').innerHTML, c=barFootageCount();
+  return h.indexOf(c.have+' of '+c.total)>0; })(),
+  document.getElementById('tr-body').innerHTML.indexOf('filmed')>0 ? 'has a note' : 'no note at all');
 noThrow("BAR library opens filtered", function(){ openLibrary(BAR_EQ); });
 ok("library filtered to BAR",    libEq===BAR_EQ);
 
 /* the player must not leave the previous clip running under a new name */
+var _noclip=BAR_DB.filter(function(e){ return !e.v; })[0];
+ok("an unfilmed movement still exists to test with", !!_noclip);
 ok("a clipless exercise blanks the video", (function(){
-    playExercise(BAR_DB[0].n);
+    playExercise(_noclip.n);
     var f=document.getElementById('pl-video');
     return String(f.src||'').indexOf('vimeo')<0; })());
 ok("and says so on screen",      document.getElementById('pl-nofilm').style.display==='grid');
 ok("the notice names the move",  document.getElementById('pl-nofilm-m')
-   .textContent.indexOf(BAR_DB[0].n)===0,
+   .textContent.indexOf(_noclip.n)===0,
    document.getElementById('pl-nofilm-m').textContent.slice(0,50));
 noThrow("player closes",         function(){ plClose(); });
+var _filmed=BAR_DB.filter(function(e){ return !!e.v; })[0];
+playExercise(_filmed.n);
+ok("a filmed BAR movement plays its clip",
+   String(document.getElementById('pl-video').src||'').indexOf(_filmed.v)>0,
+   document.getElementById('pl-video').src);
+ok("...and shows no missing-footage notice",
+   document.getElementById('pl-nofilm').style.display!=='grid');
+plClose();
 ok("a filmed exercise still plays", (function(){
     var real=DB.filter(function(e){ return e.v; })[0];
     playExercise(real.n);
