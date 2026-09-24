@@ -12,3 +12,14 @@ the app match `deploy/_shared/catalogue.ts`. Do not hand-edit `index.html`.
 
 Backend lives in Supabase project `ercvaagznsndvrewlvgt` — separate from
 HITFAT Hybrid, which keeps its own project and its own user accounts.
+
+## coach.html
+
+The gym counter's console, and the one page here that is not built. It is a
+staff tool: pick the class being taught, scan a member's QR, and the register
+fills in. Access is a `coach`, `staff` or `admin` role in `club_members` —
+not a shared passcode, so removing someone's access is one row.
+
+It is a separate page from HITFAT+ deliberately. Different device, different
+session, and a different risk: the member app shows you your own numbers,
+this one shows you everyone's.

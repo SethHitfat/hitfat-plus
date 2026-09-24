@@ -618,8 +618,11 @@
     <div id="club" class="pad" style="display:none;">
       <button class="back" onclick="switchTab('home')">← Back</button>
       <div class="segs" id="club-segs">
-        <button class="seg on" data-seg="overview" onclick="clubSeg('overview')">Overview</button>
-        <button class="seg" data-seg="classes" onclick="clubSeg('classes')">Classes</button>
+        <button class="seg on" data-seg="overview" onclick="clubGoOverview()">Overview</button>
+        <button class="seg" data-seg="classes" onclick="clubGoClasses()">Classes</button>
+        <button class="seg" data-seg="checkin" onclick="clubGoCheckin()">Check in</button>
+        <button class="seg" data-seg="body" onclick="clubGoBody()">Body</button>
+        <button class="seg" data-seg="rewards" onclick="clubGoRewards()">Rewards</button>
       </div>
       <div id="club-body"></div>
     </div>
@@ -868,6 +871,18 @@ async function onSignedIn(session){
   applyCustom();            // the spec may have arrived from the cloud
   syncProfile(session);
   if(!_started) startApp(); else { switchTab('home'); if(!HF.data.onboarded) startOnboarding(); }
+
+  /* Load the Club here as well as in boot(). boot() runs before this session
+     exists: on a first sign-in it finds no user, records 'nosetup', and
+     nothing ever asked again — so the Club card never appeared on Home for a
+     real member, and the Club panel is the only way to reach check-in.
+     Forced, because a 'ready' state from a previous account would be kept. */
+  try{
+    if(typeof Club!=='undefined'){
+      await Club.load(true);
+      if($('home') && $('home').style.display!=='none') renderHome();
+    }
+  }catch(e){}
 }
 /* ── adaptive nav offset ──
    The CSS already reads var(--navb), but nothing was ever setting it, so the

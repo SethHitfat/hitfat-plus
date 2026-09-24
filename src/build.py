@@ -32,7 +32,19 @@ need=['app','screen','pad','tabs','tab','hhdr','wk2','plan','ov','pi','join','ac
       'mpopt-h','mpitem','mpgap','mpgap-h','mpgap-s','mpopts','mpo',
       'ehero','estat','eslot','emacs','emac','ecta','elog','hit',
       'pw-in','pwtop','pwx','pwhero','pwmark','pwh','pws','pwlist','pwf','pwprice','pwfine','plocked','plock',
-      'prods','prod','pr','pbig','flat','paychs','paych','sigb','nofilm','fqwhy','fqcta','tabmid','tlogo','splogo','mcard','mtop','me','mtag','mn','mbar','mrow','mgrid','mday','mbadges','mbadge']
+      'prods','prod','pr','pbig','flat','paychs','paych','sigb','nofilm','fqwhy','fqcta','tabmid','tlogo','splogo','mcard','mtop','me','mtag','mn','mbar','mrow','mgrid','mday','mbadges','mbadge',
+      # HITFAT Club — check-in, body and rewards
+      'cstats','cstat','cs-l','cs-v','cs-m','chero','chero-k','chero-s','chero-go',
+      'cacts','cact','cpill','cweek','cwd','cpts','cpts-l','cpts-n','cpts-next','cshield',
+      'cbody-mini','cbm','cbm-l','cbm-v','cd','cloc','ccls','ccls-t','ccls-time','ccls-m',
+      'ccls-n','ccls-c','ccls-k','ccls-s','ccls-go','ctag','cbar','cbtn',
+      'cqr','cqr-lead','cqr-frame','cqr-name','cqr-id','cqr-code','cqr-hint','cqr-note','cqr-wait',
+      'cc','qrsvg','cdone','cdone-i','cdone-t','cdone-s','cdone-p','crow3','cr3',
+      'cscore','cscore-l','cscore-k','cscore-n','cscore-d','cscore-r','cgrid','cib','cib-l','cib-v','cib-d',
+      'ctr-h','ctr-l','ctr-v','ctr-svg','ctr-x','cseg','cseg-l','cseg-b','cseg-v',
+      'chist-r','chist-d','chist-n','chist-v','chist-s','chist-a',
+      'cbal','cbal-n','cbal-l','crtabs','crt','cmis','cpts-tag','crw','crwc','crwc-h','crwc-n',
+      'crwc-c','crwc-p','crwc-b']
 miss=[c for c in need if c not in have]
 if miss: sys.exit('classes with no CSS: '+str(miss))
 

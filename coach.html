@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>HITFAT Coach</title>
+<!--
+  HITFAT CLUB · the coach's console
+
+  A separate page from HITFAT+ on purpose. This is a staff tool that lives
+  on a tablet at the counter, held by whoever is teaching. It has a
+  different shape, a different session, and a different risk: the member
+  app shows you your own numbers, this one shows you everyone's.
+
+  Same Supabase project, same club_* tables, same row level security. The
+  only thing that grants access is a role of coach, staff or admin in
+  club_members — not a passcode shared in a group chat, which is what the
+  prototype used and what stops working the day someone leaves.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000; --surface:#141414; --surface2:#1F1F1F; --line:#262626;
+    --txt:#fff; --dim:#9A9A9A; --dim2:#8A8A8A;
+    --hairline:rgba(255,255,255,.09); --tint:rgba(255,255,255,.07);
+    --red:#F0392B; --red-solid:#D92C1A; --gold:#C9A227; --gold-wash:rgba(201,162,39,.14);
+    --ok:#2EC27E; --ok-wash:rgba(46,194,126,.13);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;
+    -webkit-text-size-adjust:100%;padding-bottom:env(safe-area-inset-bottom);}
+  .wrap{max-width:760px;margin:0 auto;padding:18px 18px 60px;}
+  h1{font-family:'Oswald';font-size:22px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .sub{font-size:13px;color:var(--dim);margin-top:3px;line-height:1.5;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;}
+  .sechead{font-size:18px;font-weight:800;letter-spacing:-.4px;margin:26px 0 12px;
+    display:flex;align-items:center;gap:10px;}
+  .sechead::before{content:'';width:4px;height:19px;border-radius:3px;background:var(--red);}
+  .btn{width:100%;background:var(--red-solid);color:#fff;border:none;border-radius:99px;
+    padding:15px;font-family:'Oswald';font-weight:700;font-size:16px;letter-spacing:1.8px;
+    text-transform:uppercase;cursor:pointer;}
+  .btn.sec{background:transparent;border:1px solid var(--hairline);color:var(--txt);}
+  .btn:active{transform:scale(.99);}
+  .btn:disabled{opacity:.45;}
+  input{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:12px;
+    padding:14px;color:var(--txt);font-family:inherit;font-size:15px;margin-bottom:10px;}
+  input:focus{outline:none;border-color:var(--red);}
+  .top{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+  .top .who{margin-left:auto;text-align:right;font-size:12px;color:var(--dim);}
+  .lnk{color:var(--red);font-size:12.5px;font-weight:700;cursor:pointer;background:none;
+    border:none;font-family:inherit;padding:0;}
+  .err{color:var(--red);font-size:13px;margin:8px 0;}
+
+  /* class picker */
+  .cls{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:14px;
+    background:var(--surface2);border:1px solid transparent;margin-bottom:9px;cursor:pointer;}
+  .cls.on{border-color:var(--gold);background:var(--gold-wash);}
+  .cls b{display:block;font-family:'Oswald';font-size:15px;}
+  .cls small{display:block;font-size:11.5px;color:var(--dim);margin-top:2px;}
+  .cls .n{margin-left:auto;font-size:12px;color:var(--dim);font-weight:700;}
+
+  /* scanner */
+  #camwrap{position:relative;border-radius:18px;overflow:hidden;background:#000;
+    aspect-ratio:4/3;display:none;}
+  #cam{width:100%;height:100%;object-fit:cover;display:block;}
+  .reticle{position:absolute;inset:14%;border-radius:16px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45);}
+  .reticle i{position:absolute;width:26px;height:26px;border:3px solid var(--gold);}
+  .reticle i.tl{top:-2px;left:-2px;border-right:0;border-bottom:0;border-radius:8px 0 0 0;}
+  .reticle i.tr{top:-2px;right:-2px;border-left:0;border-bottom:0;border-radius:0 8px 0 0;}
+  .reticle i.bl{bottom:-2px;left:-2px;border-right:0;border-top:0;border-radius:0 0 0 8px;}
+  .reticle i.br{bottom:-2px;right:-2px;border-left:0;border-top:0;border-radius:0 0 8px 0;}
+
+  .hit{background:var(--ok-wash);border:1px solid rgba(46,194,126,.35);border-radius:18px;
+    padding:18px;margin-bottom:12px;}
+  .hit .nm{font-size:20px;font-weight:800;}
+  .hit .mt{font-size:13px;color:var(--dim);margin-top:3px;}
+  .hit .pt{margin-top:12px;font-size:15px;font-weight:800;color:var(--ok);}
+  .bad{background:rgba(240,57,43,.10);border:1px solid rgba(240,57,43,.35);border-radius:18px;
+    padding:16px;margin-bottom:12px;font-size:14px;}
+
+  /* roster */
+  .r{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);}
+  .r:first-child{border-top:none;}
+  .r .av{width:36px;height:36px;border-radius:50%;background:var(--surface2);flex:none;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:var(--dim);}
+  .r .nm{flex:1;min-width:0;font-size:14.5px;font-weight:600;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .r .nm small{display:block;font-size:11.5px;color:var(--dim2);font-weight:600;}
+  .r.in .av{background:var(--ok);color:#04120b;}
+  .tagbtn{flex:none;border:1px solid var(--hairline);background:transparent;color:var(--dim);
+    border-radius:99px;padding:7px 13px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .tagbtn.in{background:var(--ok);border-color:var(--ok);color:#04120b;}
+  .kpis{display:flex;gap:9px;margin-bottom:14px;}
+  .kpi{flex:1;background:var(--surface2);border-radius:14px;padding:13px 12px;}
+  .kpi b{display:block;font-size:23px;font-weight:800;line-height:1;}
+  .kpi small{display:block;font-size:10px;color:var(--dim2);font-weight:700;letter-spacing:.6px;margin-top:5px;}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
+    background:var(--surface2);border:1px solid var(--line);border-radius:99px;padding:12px 20px;
+    font-size:13.5px;opacity:0;transition:.22s;pointer-events:none;z-index:99;}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+  .hide{display:none !important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>HITFAT Coach</h1>
+    <div class="who" id="who"></div>
+  </div>
+  <div class="sub" id="lead">Sign in with your coach account.</div>
+
+  <!-- ── sign in ── -->
+  <div id="gate" class="card" style="margin-top:16px;">
+    <input id="em" type="email" placeholder="Email" autocomplete="username">
+    <input id="pw" type="password" placeholder="Password" autocomplete="current-password">
+    <div class="err" id="gerr"></div>
+    <button class="btn" id="gbtn" onclick="signIn()">Sign in</button>
+  </div>
+
+  <!-- ── console ── -->
+  <div id="app" class="hide">
+    <div class="sechead">Today</div>
+    <div id="classes"></div>
+
+    <div class="sechead">Check in</div>
+    <div id="result"></div>
+    <div id="camwrap"><video id="cam" playsinline muted></video>
+      <div class="reticle"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
+    </div>
+    <div class="card">
+      <button class="btn" id="scanbtn" onclick="toggleScan()">Scan a member</button>
+      <div class="sub" style="text-align:center;margin:12px 0 8px;">or type the six characters</div>
+      <input id="code" placeholder="e.g. K7M2QX" autocapitalize="characters" autocomplete="off"
+             maxlength="6" style="text-align:center;letter-spacing:6px;font-family:'Oswald';font-size:20px;">
+      <button class="btn sec" onclick="submitCode()">Check in by code</button>
+    </div>
+
+    <div class="sechead">Register</div>
+    <div class="kpis" id="kpis"></div>
+    <div class="card" id="roster"></div>
+    <button class="btn sec" onclick="signOut()" style="margin-top:18px;">Sign out</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
+<!-- jsQR decodes the camera frames. Reading a QR is a great deal harder than
+     drawing one, so this is a library rather than hand-written — and the
+     typed six-character code below the scanner is what keeps the counter
+     working on the day this file does not load. -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" crossorigin="anonymous"></script>
+<script>
+const SUPA_URL='https://ercvaagznsndvrewlvgt.supabase.co';
+const SUPA_KEY='sb_publishable_aZ5NIn03riGJ_ikX0R5-rQ_oOfoS0G7';
+let sb=null;
+try{ sb=window.supabase.createClient(SUPA_URL,SUPA_KEY); }catch(e){}
+
+const $=id=>document.getElementById(id);
+let me=null, sessions=[], picked=null, roster=[], scanning=false, stream=null, rafId=null;
+let lastScan={code:'',at:0};
+
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2400); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function timeOf(iso){
+  try{ return new Date(iso).toLocaleTimeString('en-MY',{hour:'numeric',minute:'2-digit',hour12:true}); }
+  catch(e){ return ''; } }
+function initial(n){ return String(n||'?').trim().charAt(0).toUpperCase()||'?'; }
+
+/* ── sign in ─────────────────────────────────────────────────────
+   Standing is read from club_members, not from what the browser claims.
+   A member who signs in here sees the same refusal as a stranger. */
+async function signIn(){
+  const btn=$('gbtn'); btn.disabled=true; btn.textContent='Checking…'; $('gerr').textContent='';
+  try{
+    const r=await sb.auth.signInWithPassword({email:$('em').value.trim(), password:$('pw').value});
+    if(r.error) throw r.error;
+    await afterAuth();
+  }catch(e){
+    $('gerr').textContent=(e&&e.message)||'Could not sign in.';
+    btn.disabled=false; btn.textContent='Sign in';
+  }
+}
+async function signOut(){
+  stopScan();
+  try{ await sb.auth.signOut(); }catch(e){}
+  me=null; picked=null;
+  $('app').classList.add('hide'); $('gate').classList.remove('hide');
+  $('who').textContent=''; $('lead').textContent='Sign in with your coach account.';
+  $('gbtn').disabled=false; $('gbtn').textContent='Sign in';
+}
+
+async function afterAuth(){
+  const s=await sb.auth.getSession();
+  const uid=s&&s.data&&s.data.session&&s.data.session.user.id;
+  if(!uid) return;
+  const m=await sb.from('club_members').select('user_id,role,status,member_no').eq('user_id',uid).maybeSingle();
+  /* A database without the Club schema is a deploy that is not finished, not
+     a coach without standing. PostgREST answers that with PGRST205 out of its
+     schema cache; Postgres itself would say 42P01. Saying so here is the
+     difference between one SQL file to run and an afternoon spent doubting
+     the coach's account. */
+  if(m.error){
+    const c=m.error.code||'', msg=m.error.message||'';
+    if(c==='42P01'||c==='PGRST205'||/does not exist|schema cache/i.test(msg))
+      throw new Error('The Club schema is not set up on this database yet.');
+    throw new Error('Could not check your access.');
+  }
+  const role=m.data&&m.data.role;
+  if(!m.data || ['coach','staff','admin'].indexOf(role)<0){
+    await sb.auth.signOut();
+    throw new Error('That account is not a coach.');
+  }
+  me=m.data;
+  $('gate').classList.add('hide'); $('app').classList.remove('hide');
+  $('who').textContent=role.toUpperCase();
+  $('lead').textContent='Pick the class you are teaching, then scan.';
+  await loadClasses();
+}
+
+/* ── the classes a coach could be standing in front of ────────── */
+async function loadClasses(){
+  const from=new Date(Date.now()-12*3600e3).toISOString();
+  const to  =new Date(Date.now()+24*3600e3).toISOString();
+  const r=await sb.from('club_sessions')
+    .select('id,title,kind,coach_name,starts_at,ends_at,capacity,status')
+    .gte('starts_at',from).lte('starts_at',to).neq('status','cancelled').order('starts_at');
+  sessions=(r.data)||[];
+  if(!sessions.length){
+    $('classes').innerHTML='<div class="card"><div class="sub">No classes scheduled in the next day.</div></div>';
+    return;
+  }
+  /* Default to whichever class is closest to now, because that is almost
+     always the one being taught. */
+  if(!picked){
+    let best=sessions[0], bd=Infinity;
+    sessions.forEach(s=>{ const d=Math.abs(new Date(s.starts_at)-Date.now());
+      if(d<bd){ bd=d; best=s; } });
+    picked=best.id;
+  }
+  $('classes').innerHTML=sessions.map(s=>
+    '<div class="cls'+(s.id===picked?' on':'')+'" onclick="pick(\''+s.id+'\')">'+
+    '<div><b>'+esc(s.title)+'</b><small>'+timeOf(s.starts_at)+' – '+timeOf(s.ends_at)+
+    ' · '+esc(s.coach_name||'HITFAT')+'</small></div>'+
+    '<div class="n">'+(s.capacity||0)+' cap</div></div>').join('');
+  await loadRoster();
+}
+
+function pick(id){ picked=id; loadClasses(); }
+
+/* ── the register ──
+   club_roster is a security definer function whose guard reads auth.uid(),
+   so it is called with the coach's own session. Routing it through a
+   service-role endpoint would blind that guard and return an empty class. */
+async function loadRoster(){
+  if(!picked){ $('roster').innerHTML=''; return; }
+  const r=await sb.rpc('club_roster',{p_session:picked});
+  if(r.error){ $('roster').innerHTML='<div class="sub">'+esc(r.error.message)+'</div>'; return; }
+  roster=r.data||[];
+  paintRoster();
+}
+
+function paintRoster(){
+  const inCount=roster.filter(x=>x.status==='attended').length;
+  const s=sessions.filter(x=>x.id===picked)[0];
+  $('kpis').innerHTML=
+    '<div class="kpi"><b>'+inCount+'</b><small>CHECKED IN</small></div>'+
+    '<div class="kpi"><b>'+roster.length+'</b><small>BOOKED</small></div>'+
+    '<div class="kpi"><b>'+((s&&s.capacity||0)-roster.length)+'</b><small>SPACES</small></div>';
+  if(!roster.length){
+    $('roster').innerHTML='<div class="sub">Nobody has booked this class yet. '+
+      'Walk-ins are checked in the same way — scan them and they are added.</div>';
+    return;
+  }
+  $('roster').innerHTML=roster.map(x=>{
+    const isIn=x.status==='attended';
+    return '<div class="r'+(isIn?' in':'')+'">'+
+      '<div class="av">'+esc(initial(x.name))+'</div>'+
+      '<div class="nm">'+esc(x.name)+
+        '<small>'+esc(x.member_no||'—')+(isIn&&x.checked_in_at?(' · in at '+timeOf(x.checked_in_at)):'')+'</small></div>'+
+      '<button class="tagbtn'+(isIn?' in':'')+'" onclick="toggleAtt(\''+x.user_id+'\')">'+
+      (isIn?'IN':'MARK IN')+'</button></div>';
+  }).join('');
+}
+
+/* Marking someone in by hand writes the booking directly — the points that
+   go with a scan are deliberately not awarded here, because a coach tapping
+   a name is a correction, not a check-in, and it must not become a way to
+   hand out points. */
+async function toggleAtt(uid){
+  const row=roster.filter(x=>x.user_id===uid)[0];
+  if(!row) return;
+  const next=(row.status==='attended')?'booked':'attended';
+  const r=await sb.from('club_bookings')
+    .update({status:next, checked_in_at:next==='attended'?new Date().toISOString():null})
+    .eq('user_id',uid).eq('session_id',picked);
+  if(r.error){ toast(r.error.message); return; }
+  row.status=next;
+  row.checked_in_at=next==='attended'?new Date().toISOString():null;
+  paintRoster();
+}
+
+/* ── scanning ───────────────────────────────────────────────────── */
+async function toggleScan(){ scanning?stopScan():startScan(); }
+
+async function startScan(){
+  if(typeof jsQR!=='function'){ toast('Scanner did not load — use the code'); return; }
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+  }catch(e){ toast('No camera access — use the code'); return; }
+  const v=$('cam');
+  v.srcObject=stream;
+  await v.play();
+  $('camwrap').style.display='block';
+  $('scanbtn').textContent='Stop scanning';
+  scanning=true;
+  const cv=document.createElement('canvas'), cx=cv.getContext('2d',{willReadFrequently:true});
+  (function loop(){
+    if(!scanning) return;
+    if(v.readyState===v.HAVE_ENOUGH_DATA){
+      /* Downscale the frame before decoding. A 1080p frame decoded thirty
+         times a second heats the tablet and drops the frame rate below what
+         a hand-held phone screen needs. */
+      const w=Math.min(640,v.videoWidth||640), h=Math.round((v.videoHeight||480)*(w/(v.videoWidth||640)));
+      cv.width=w; cv.height=h;
+      cx.drawImage(v,0,0,w,h);
+      const img=cx.getImageData(0,0,w,h);
+      const found=jsQR(img.data,w,h,{inversionAttempts:'dontInvert'});
+      if(found&&found.data) onScan(found.data);
+    }
+    rafId=requestAnimationFrame(loop);
+  })();
+}
+
+function stopScan(){
+  scanning=false;
+  if(rafId) cancelAnimationFrame(rafId);
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  $('camwrap').style.display='none';
+  $('scanbtn').textContent='Scan a member';
+}
+
+/* The camera fires many times a second and will read the same screen on
+   every frame. Without this the same member is submitted twenty times
+   before they have lowered their phone. */
+function onScan(text){
+  const now=Date.now();
+  if(text===lastScan.code && now-lastScan.at<4000) return;
+  lastScan={code:text, at:now};
+  redeem(text);
+}
+
+function submitCode(){
+  const v=$('code').value.trim().toUpperCase();
+  if(v.length<4){ toast('Enter the six characters'); return; }
+  redeem(v);
+}
+
+async function redeem(payload){
+  try{
+    const s=await sb.auth.getSession();
+    const jwt=s&&s.data&&s.data.session&&s.data.session.access_token;
+    if(!jwt){ toast('Sign in again'); return; }
+    const res=await fetch(SUPA_URL+'/functions/v1/club-checkin',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+jwt,'apikey':SUPA_KEY},
+      body:JSON.stringify({action:'redeem', token:payload, session_id:picked})
+    });
+    const j=await res.json();
+    if(!res.ok||!j.ok){
+      $('result').innerHTML='<div class="bad">'+esc(j.error||'Could not check that in.')+'</div>';
+      return;
+    }
+    $('code').value='';
+    $('result').innerHTML='<div class="hit"><div class="nm">'+esc(j.member.name)+'</div>'+
+      '<div class="mt">'+esc(j.member.member_no||'—')+(j.member.plan?' · '+esc(j.member.plan):'')+'</div>'+
+      '<div class="pt">'+(j.already?'Already checked in today':'Checked in · +'+j.points+' HF Points')+
+      ' · balance '+j.balance+'</div></div>';
+    if(navigator.vibrate) navigator.vibrate(40);
+    await loadRoster();
+  }catch(e){
+    $('result').innerHTML='<div class="bad">'+esc((e&&e.message)||'Check-in failed.')+'</div>';
+  }
+}
+
+/* A coach who reloads mid-class should land back in the console, not at
+   the sign-in form. */
+(async function boot(){
+  if(!sb){ $('gerr').textContent='Could not reach the server.'; return; }
+  try{
+    const s=await sb.auth.getSession();
+    if(s&&s.data&&s.data.session) await afterAuth();
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -19,7 +19,7 @@ cd .. && git commit -am "..." && git push               # Netlify deploys from m
 - the scroller still carries `class="screen"`
 - prices in `store.js` match `deploy/_shared/catalogue.ts`
 
-`jsc run_plus.js` runs 595 assertions against the assembled body.
+`jsc run_plus.js` runs 698 assertions against the assembled body.
 
 ## Layout
 
@@ -31,9 +31,40 @@ cd .. && git commit -am "..." && git push               # Netlify deploys from m
 | `deploy/` | Supabase edge functions and SQL — deployed separately, not by this build |
 | `run_plus.js`, `stubp.js`, `tbody.js` | the test harness |
 
-## History
+## HITFAT Club
 
-These sources lived only in a scratch directory under `/private/tmp` and were
-lost when macOS cleaned it on 2026-08-20. They were reconstructed from the
-built file by slicing it at part boundaries, then verified byte-for-byte
-against what was live. They belong in the repository for that reason.
+`club.js` is the gym layer: overview, classes, check-in, body and rewards.
+None of it appears unless the server says the account has Club standing.
+
+Deploy order, once, in project `ercvaagznsndvrewlvgt`:
+
+```
+deploy/10-club-tables.sql      # members, sessions, bookings, points, rewards, inbody
+deploy/11-club-checkin.sql     # check-in tokens, balances view, redeem, roster, missions
+supabase functions deploy club-checkin
+supabase functions deploy club-inbody
+supabase secrets set ANTHROPIC_API_KEY=...     # club-inbody only
+```
+
+Then give yourself a row in `club_members` — the bottom of `10-club-tables.sql`
+has the statement.
+
+### The check-in QR
+
+The member's phone shows a code; the coach scans it with `coach.html`. What
+the QR carries is a token issued by `club-checkin`, good for three minutes and
+destroyed on first use, so a photograph of someone's screen is worth nothing.
+Under it is a six-character code the coach can type, because cameras fail to
+focus and batteries go flat and neither should mean a member cannot be marked
+present.
+
+The QR is drawn by an encoder written out in `club.js` rather than pulled from
+a CDN — the one moment it matters is a member at the counter with the class
+starting, and a script tag that has not loaded is a member who cannot check in.
+It is verified in `tbody.js` against fixtures from python-qrcode. Those
+fixtures are payloads where our mask choice and theirs coincide: the standard
+only says to pick the lowest penalty, and two correct encoders may break that
+tie differently.
+
+Points are awarded by the edge function and nowhere else. A client that can
+write `club_points` can award itself a shirt.

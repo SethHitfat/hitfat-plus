@@ -52,8 +52,16 @@ async function signOut(){
   HF.setUser(null,null); HF.load(); _started=false;
   showAuth();
 }
-/* Name + email into the shared `profiles` table (already live for Hybrid).
-   Wrapped so it is a no-op if the row or policy is not there yet. */
+/* Name + email into a shared `profiles` table. That table is live in Hybrid's
+   project, not in this one — Plus has its own — so today every call here is a
+   no-op the catch swallows, and nothing in Plus reads it back. The Club takes
+   the member's name from auth.users metadata (see club_roster in
+   11-club-checkin.sql), so do not add a read here expecting a row.
+
+   It stays because it costs one request and starts working the day a
+   `profiles` table exists, and because deleting it would look like a decision
+   that names should not be shared across the two apps. That decision has not
+   been made. */
 async function syncProfile(session){
   if(!sb || !session || !session.user) return;
   try{

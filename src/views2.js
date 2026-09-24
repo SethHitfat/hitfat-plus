@@ -181,15 +181,19 @@ function renderHome(){
      0 min trained, consistency 0, streak 0, 0 total. Six zeros stacked is a
      report card someone failed before they started. Until there is something to
      chart, show the month's challenge and say plainly what will appear here. */
+  /* The Club card is the only way into the Club panel, and the Club panel is
+     where check-in lives. It used to sit inside the empty-state branch below,
+     which meant it vanished the moment a member logged their first session —
+     leaving the people who actually train with no way to check in. */
+  const _club = (typeof clubHomeCard==='function') ? clubHomeCard() : '';
   if(!HF.count()){
-    const _club = (typeof clubHomeCard==='function') ? clubHomeCard() : '';
   $('home-activity').innerHTML=_club+'<div class="sechead">This month</div>'+monthlyCard()+
       '<div class="acard" style="margin-top:12px;">'+
       '<div class="ah"><span>\uD83D\uDCC8</span><div class="t">Your progress</div></div>'+
       '<div class="sub" style="margin-top:3px;">Finish your first session and this fills in \u2014 '+
       'days trained, minutes, consistency and streak.</div></div>';
   } else {
-    $('home-activity').innerHTML='<div class="sechead">This month</div>'+monthlyCard()+
+    $('home-activity').innerHTML=_club+'<div class="sechead">This month</div>'+monthlyCard()+
       '<div class="sechead">Recent Activity</div>'+
       '<div class="acard"><div class="ah"><span>🏃</span><div class="t">This Week</div><div class="c">›</div></div>'+
       '<div style="display:flex;align-items:flex-end;gap:14px;">'+

@@ -1351,5 +1351,237 @@ noThrow("switching away is clean", function(){ switchTab('eat'); });
 ok("plan panel hidden again",   document.getElementById('mealplan').style.display==='none');
 
 
+/* ═══════════════════════════════════════════════════════════════
+   HITFAT CLUB
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── the QR encoder ──
+   These matrices came out of python-qrcode, an independent
+   implementation. Comparing against them catches the whole class of bug
+   that produces a code which looks perfectly well formed and that no
+   scanner on the counter will read.
+
+   The specification only says to pick the mask with the lowest penalty,
+   and two conformant encoders can disagree about that on a given
+   payload without either being wrong. These three are ones where our
+   choice and python-qrcode's coincide, so the comparison tests the
+   encoding — data, error correction, placement, format block — rather
+   than a tie-break nobody is bound by. */
+var QR_REF=[
+  ["hitfat",21,"111111100011001111111100000101101001000001101110100111101011101101110100010001011101101110101101101011101100000100011001000001111111101010101111111000000000110000000000101010100110100010010101111000011010101111010111101011011101111001110011001110110010100010111101011101000000000001110001100011111111100010100010111100000100000001100011101110101110101110011101110100101010010010101110101011011110001100000100001110000010111111101101011010011"],
+  ["Ahli HITFAT \u00b7 Kota Bharu \u2014 check in",29,"1111111010011100101110111111110000010111100100100101000001101110100000011010110010111011011101011111111010100101110110111010011111110111001011101100000100010001001010010000011111111010101010101010111111100000000110010110101100000000101101110001010111110010010111110010010110100100011010011111011110010001001110100101110111000001010100110110000010011011001011010011011001100010101010001101000111101111100101110010111000110000011110010110001000111101011111000111101001110111011100100010100000101011110011110001100001001011001001001100001111011001011000000111000110011100000000101110011101101110011110011111110010000000011001000101110001011011111110111000101101101011110100000101001011111001000100001011101000100001001011111100010111010100001011111010101101101110101011001010101011010011000001000111101001011100101011111110101111100001111000110"],
+  ["HFC1:73ab4876-7734-47c1-87fd-e805ec99108d",29,"1111111001100110000100111111110000010000100011010101000001101110101000001100010010111011011101010110100111000101110110111010100000100111101011101100000101010100110001010000011111111010101010101010111111100000000111100100001100000000101111100011010101101011111000111010110101010110100101000101111110110010011010000101010110111010101000110101111100010011111110100101011011010111011111000100011101001011010110001000100111100111001010101001101100100000001100010000001110000110010101111101010101100101101001110000000110010110101010001110001011010000001110010110000101100010010101110010100110110100000111001111111110000000010110100001110001001011111110001111110001101011100100000101000010100101000110001011101011010010111011111011110111010101101000111110100011101110101111111110000010110101000001001010111100110000101011111110100110010100001010100"]
+];
+QR_REF.forEach(function(c){
+  var m=qrEncode(c[0]);
+  ok("QR sizes to v"+((c[1]-17)/4)+" for "+c[0].length+" chars", !!m && m.length===c[1],
+     m?m.length:'null');
+  if(!m) return;
+  var s='';
+  for(var i=0;i<m.length;i++) for(var j=0;j<m.length;j++) s+=m[i][j]?'1':'0';
+  ok("QR matches an independent encoder ("+c[0].slice(0,12)+")", s===c[2],
+     s===c[2]?'':'differs at '+(function(){ for(var k=0;k<s.length;k++) if(s[k]!==c[2][k]) return k; return -1; })());
+});
+ok("QR refuses a payload it cannot hold", qrEncode(new Array(400).join('x'))===null);
+ok("QR survives non-ASCII", (function(){ var m=qrEncode('Aiman · Kota Bharu'); return !!m && m.length>=21; })());
+var _qsvg=qrSVG('HFC1:test',200);
+ok("QR renders one svg path",  _qsvg.indexOf('<svg')===0 && _qsvg.indexOf('<path d="M')>0);
+ok("QR svg carries a quiet zone", _qsvg.indexOf('viewBox="0 0 25 25"')>0 || _qsvg.indexOf('viewBox="0 0 29 29"')>0);
+
+/* ── streaks and weeks ──
+   Fabricate a history rather than reaching for the network. */
+function _sess(daysAgo){
+  var d=new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()-daysAgo);
+  return {status:'attended', checked_in_at:d.toISOString(),
+          club_sessions:{starts_at:d.toISOString(), title:'HIIT', kind:'HIIT'}};
+}
+Club.history=[_sess(0),_sess(2),_sess(4)];
+ok("this week counts only this week", clubThisWeek()>=1);
+Club.history=[];
+ok("no history is a zero streak", clubWeekStreak()===0);
+Club.history=[_sess(1),_sess(8),_sess(15)];
+ok("a three-week run reads as three", clubWeekStreak()>=3, clubWeekStreak());
+/* A member who has not trained yet this week but trained last week still
+   has a streak — the week is not over. */
+Club.history=[_sess(9),_sess(16)];
+ok("an unstarted week does not break the streak", clubWeekStreak()>=2, clubWeekStreak());
+Club.history=[_sess(30)];
+ok("a month off is not a streak", clubWeekStreak()===0, clubWeekStreak());
+ok("attendance window counts back", (function(){ Club.history=[_sess(1),_sess(20)];
+   return clubAttendedIn(7)===1 && clubAttendedIn(30)===2; })());
+
+/* ── the screens render ── */
+Club.state='ready';
+Club.member={user_id:'u1',role:'gym_member',status:'active',member_no:'HF-0001',
+             plan:'Unlimited Class',credits_left:5,expires_on:'2027-01-01'};
+Club.points=334;
+Club.history=[_sess(1),_sess(3)];
+Club.sessions=[{id:'s1',title:'HIIT Blast',kind:'HIIT',coach_name:'Coach Ain',
+  starts_at:new Date(Date.now()+86400000).toISOString(),
+  ends_at:new Date(Date.now()+86400000+2700000).toISOString(),
+  capacity:20,status:'scheduled',description:'Hard.',level:'All levels',
+  location:'HITFAT HQ · Kelantan',bring:['Towel','Water']}];
+Club.counts={s1:18};
+Club.bookings={};
+Club.rewards=[{id:'r1',name:'Mineral Water',category:'drinks',cost_points:20,stock:null,active:true},
+              {id:'r2',name:'HITFAT Shirt',category:'merch',cost_points:450,stock:3,active:true},
+              {id:'r3',name:'Shaker',category:'merch',cost_points:350,stock:0,active:true}];
+Club.redemptions=[];
+Club.missions=[{id:'m1',title:'Three in seven days',detail:'d',kind:'attendance',
+                target:3,reward_points:40,window_days:7,active:true,sort:1},
+               {id:'m2',title:'Know your numbers',detail:'d',kind:'inbody',
+                target:1,reward_points:50,window_days:null,active:true,sort:2}];
+Club.ledger=[{amount:5,kind:'class_attendance',description:'Class attendance',created_at:new Date().toISOString()}];
+Club.scans=[];
+
+noThrow("club overview renders", function(){ clubSegNow='overview'; renderClub(); });
+var _co=document.getElementById('club-body').innerHTML;
+ok("overview shows the points balance", _co.indexOf('334')>0);
+ok("overview shows the next-reward gap", _co.indexOf('more for')>0);
+ok("overview offers a scan when there is none", _co.indexOf('clubGoBody()')>0);
+ok("overview draws seven day cells", (_co.match(/class="cwd/g)||[]).length===7,
+   (_co.match(/class="cwd/g)||[]).length);
+
+noThrow("club classes render", function(){ clubSegNow='classes'; renderClubClasses(); });
+var _cc=document.getElementById('club-body').innerHTML;
+ok("a nearly full class says so",  _cc.indexOf('2 spots left')>0, _cc.indexOf('spots left'));
+ok("class list offers booking",    _cc.indexOf('clubBook(')>0);
+
+noThrow("club session detail renders", function(){ openClubSession('s1'); });
+ok("session detail lists what to bring",
+   document.getElementById('club-body').innerHTML.indexOf('Towel')>0);
+noThrow("back to the list is clean", function(){ clubBackToList(); });
+
+/* Rewards: what is affordable, what is not, and what is gone. */
+noThrow("club rewards render", function(){ clubSegNow='rewards'; clubRwTab='redeem'; renderClubRewards(); });
+var _cr=document.getElementById('club-body').innerHTML;
+ok("an affordable reward can be redeemed", _cr.indexOf('clubRedeem(&#39;r1&#39;)')>0 || _cr.indexOf("clubRedeem('r1')")>0);
+ok("an unaffordable reward shows the gap", _cr.indexOf('116 to go')>0, _cr.indexOf('to go'));
+ok("an out-of-stock reward cannot be bought", _cr.indexOf('Out of stock')>0);
+ok("the shirt is not redeemable at 334 points", _cr.indexOf("clubRedeem('r2')")<0 && _cr.indexOf('clubRedeem(&#39;r2&#39;)')<0);
+
+noThrow("missions render", function(){ clubRwTab='missions'; renderClubRewards(); });
+var _cm=document.getElementById('club-body').innerHTML;
+ok("mission progress is shown",  _cm.indexOf('of 3')>0 || _cm.indexOf('Complete')>0);
+ok("an inbody mission with no scan reads zero", clubMissionProgress(Club.missions[1])===0);
+Club.scans=[{scan_date:'2026-08-01',weight:80,pbf:22,smm:35,score:78,bmi:25,vfa:80,bfm:17.6,
+             segmental:{trunk:{lean:28,fat:6},left_arm:{lean:3.1,fat:.8},right_arm:{lean:3.4,fat:.8},
+                        left_leg:{lean:9.1,fat:2.1},right_leg:{lean:9.3,fat:2.0}}}];
+ok("one scan completes the inbody mission", clubMissionProgress(Club.missions[1])===1);
+
+noThrow("ledger tab renders", function(){ clubRwTab='mine'; renderClubRewards(); });
+ok("ledger shows the class points",
+   document.getElementById('club-body').innerHTML.indexOf('Class attendance')>0);
+
+/* Body: one scan, then two, so the trend has something to draw. */
+noThrow("body renders with one scan", function(){ clubSegNow='body'; renderClubBody(); });
+var _cb=document.getElementById('club-body').innerHTML;
+ok("body shows the InBody score",  _cb.indexOf('78')>0);
+ok("body draws the radar",         _cb.indexOf('Segmental lean mass')>0);
+ok("body lists the segments",      _cb.indexOf('Right arm')>0);
+ok("a single scan draws no trend", _cb.indexOf('ctr-svg')<0);
+Club.scans.unshift({scan_date:'2026-09-01',weight:78,pbf:20,smm:36,score:82,bmi:24.4,vfa:70,bfm:15.6,
+  segmental:{trunk:{lean:28.5,fat:5.4},left_arm:{lean:3.2,fat:.7},right_arm:{lean:3.5,fat:.7},
+             left_leg:{lean:9.3,fat:1.9},right_leg:{lean:9.4,fat:1.8}}});
+noThrow("body renders with two scans", function(){ renderClubBody(); });
+var _cb2=document.getElementById('club-body').innerHTML;
+ok("two scans draw a trend",       _cb2.indexOf('ctr-svg')>0);
+ok("losing fat reads as good",     _cb2.indexOf('cib-d good')>0);
+ok("history lists both scans",     (_cb2.match(/chist-r/g)||[]).length>=2);
+
+/* Check in: the register decides, not the phone. */
+Club.history=[_sess(0)];
+noThrow("check-in shows the done state", function(){ clubSegNow='checkin'; renderClubCheckin(); });
+var _ci=document.getElementById('club-body').innerHTML;
+ok("already checked in says so",   _ci.indexOf('You are checked in')>0);
+ok("done state shows no QR",       _ci.indexOf('cqr-frame')<0);
+
+/* The name on the QR card is what the coach checks against the face. */
+HF.data.prefs=HF.data.prefs||{};
+HF.data.prefs.name='Aiman Rahim';
+ok("QR card uses the member's own name", clubMyName()==='Aiman Rahim', clubMyName());
+HF.data.prefs.name='';
+HF.email='faiz.hassan@example.com';
+ok("no name falls back to the email local part", clubMyName()==='faiz.hassan', clubMyName());
+HF.email=null;
+ok("neither falls back to a safe label", clubMyName()==='HITFAT member', clubMyName());
+Club.history=[];
+noThrow("check-in renders a live QR", function(){ clubSegNow='checkin'; clubCi.token='7f3a9c21-4b5e-4d8a-9f10-2c6b8e4a1d73'; clubCi.code='K7M2QX'; clubCi.expires=Date.now()+180000; renderClubCheckin(); });
+var _cq=document.getElementById('club-body').innerHTML;
+ok("QR card draws a code",        _cq.indexOf('<svg class="qrsvg"')>0);
+ok("QR card shows the typed code",_cq.indexOf('K7M2QX')>0);
+ok("QR card shows the member no", _cq.indexOf('HF-0001')>0);
+clubCiStop(); clubCi.token=null;
+/* Walking out of the Club by the Back button must stop the token refresh;
+   otherwise the app keeps asking the server for a new QR forever. */
+document.getElementById('club').style.display='block';
+clubSegNow='checkin';
+clubCi.tick=1; clubCi.timer=1;
+ok("on-screen check is true inside the Club", clubCiOnScreen()===true);
+switchTab('home');
+ok("Back out of the Club stops the refresh", clubCiOnScreen()===false);
+clubCiStop();
+
+/* The way into the Club must survive the member training. */
+Club.member={user_id:'u1',role:'gym_member',status:'active',member_no:'HF-0001',
+             plan:'Unlimited Class',credits_left:5,expires_on:'2027-01-01'};
+Club.sessions=[]; Club.bookings={};
+var _hadSessions=HF.count();
+renderHome();
+ok("Club card is on Home before the first session",
+   document.getElementById('home-activity').innerHTML.indexOf('openClub()')>0);
+HF.data.sessions['t-club-1']={id:'t-club-1',date:new Date().toISOString(),mins:30,name:'Test'};
+renderHome();
+ok("Club card is still on Home after training once",
+   document.getElementById('home-activity').innerHTML.indexOf('openClub()')>0);
+delete HF.data.sessions['t-club-1'];
+
+/* A general user sees the invitation and nothing else. */
+Club.member=null;
+noThrow("a general user gets the promo", function(){ clubSegNow='overview'; renderClub(); });
+var _cg=document.getElementById('club-body').innerHTML;
+ok("general user sees the invitation", _cg.indexOf('Explore HITFAT Club')>0);
+ok("general user sees no points",      _cg.indexOf('HF Points')<0);
+
+print("\n── CLUB · A DATABASE WITHOUT THE SCHEMA ──");
+/* These are verbatim what the two layers actually send back. The guard used
+   to test 42P01 only, which is what Postgres would say — but the request
+   never reaches Postgres. PostgREST answers PGRST205 from its schema cache
+   first, so the setup state was never recognised and a member read the cache
+   message off the Club screen. Keep the real payloads here: an invented one
+   would have passed the old code too. */
+var _pgrst205={code:'PGRST205',details:null,hint:"Perhaps you meant the table 'public.plus_orders'",
+               message:"Could not find the table 'public.club_members' in the schema cache"};
+ok("PostgREST's missing table is a setup state", clubSchemaMissing(_pgrst205)===true);
+ok("Postgres' own 42P01 still counts",
+   clubSchemaMissing({code:'42P01',message:'relation "club_members" does not exist'})===true);
+ok("a missing function counts too",
+   clubSchemaMissing({code:'PGRST202',message:"Could not find the function public.club_redeem"})===true);
+ok("the message alone is enough without a code",
+   clubSchemaMissing({message:"Could not find the table 'public.club_sessions' in the schema cache"})===true);
+ok("no error is not a missing schema", clubSchemaMissing(null)===false);
+/* The failures that must still reach the member as failures. */
+ok("a denied row is not a missing schema",
+   clubSchemaMissing({code:'42501',message:'permission denied for table club_members'})===false);
+ok("a dropped connection is not a missing schema",
+   clubSchemaMissing({message:'Failed to fetch'})===false);
+
+/* What the member sees when the schema is not there: the quiet card, and no
+   trace of the database's own words. */
+Club.state='nosetup'; Club.err=null; clubSegNow='overview';
+noThrow("the Club renders without a schema", function(){ renderClub(); });
+var _cn=document.getElementById('club-body').innerHTML;
+ok("...and says it is not switched on", _cn.indexOf('Not set up yet')>0);
+ok("...and leaks no PostgREST wording", _cn.indexOf('schema cache')<0 && _cn.indexOf('PGRST')<0);
+ok("...and offers no Try again",        _cn.indexOf('clubReload()')<0);
+/* A real outage keeps the error card — the fix must not swallow those. */
+Club.state='error'; Club.err='Failed to fetch';
+renderClub();
+var _ce=document.getElementById('club-body').innerHTML;
+ok("a real outage still shows the error card", _ce.indexOf('Could not load the Club')>0 &&
+   _ce.indexOf('clubReload()')>0);
+Club.state='ready'; Club.err=null;
+
+
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");
