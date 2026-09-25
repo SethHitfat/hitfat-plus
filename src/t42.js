@@ -1078,31 +1078,47 @@ function t42Stat(label,val){
 function t42HomeCard(){
   if(T42.state==='nosetup'||T42.state==='error') return '';
   if(!T42.challenge) return '';
+
+  var head, sub, cta;
   if(T42.isJoined() && T42.isComplete()){
-    return '<div class="sechead">T42</div>'+
-      '<div class="acard t42-home" onclick="openT42()" style="cursor:pointer;">'+
-      '<div class="ah"><span>🏆</span><div class="t">T42 complete</div><div class="c">›</div></div>'+
-      '<div class="sub">'+(T42.certs&&T42.certs.length?'Your result and certificate are ready':'See your result')+
-      '</div></div>';
-  }
-  if(!T42.isJoined() && !T42.regOpen()) return '';
-
-  if(T42.isJoined()){
+    head='T42 complete';
+    sub = T42.certs&&T42.certs.length ? 'Your result and certificate are ready' : 'See your result';
+    cta='SEE RESULT';
+  } else if(T42.isJoined()){
     var day=T42.dayNo(), to=T42.daysTo();
-    var line = day===0 ? (to===0?'Starts today':'Starts in '+to+(to===1?' day':' days'))
-                       : 'Day '+day+' of '+((T42.challenge.total_days)||42);
-    var need = T42.isOver() ? 'Finished · results are being checked'
-             : (T42.hasBaseline() || day>T42.lockDay()) ? line : 'Finish your baseline';
-    return '<div class="sechead">T42</div>'+
-      '<div class="acard t42-home" onclick="openT42()" style="cursor:pointer;">'+
-      '<div class="ah"><span>🏆</span><div class="t">Transformation 42 Days</div><div class="c">›</div></div>'+
-      '<div class="sub">'+t42Esc(need)+'</div></div>';
+    if(T42.isOver()){
+      head='Finished'; sub='Finished · results are being checked'; cta='OPEN T42';
+    } else if(!T42.hasBaseline() && day<=T42.lockDay()){
+      head='Finish your baseline';
+      sub='Your starting point is what every result is measured from';
+      cta='CONTINUE';
+    } else if(day===0){
+      head = to===0 ? 'Starts today' : 'Starts in '+to+(to===1?' day':' days');
+      sub  = ((t42Track(T42.reg.track)||{}).name||'')+' · '+((t42Mode(T42.reg.mode)||{}).name||'');
+      cta='OPEN T42';
+    } else {
+      head='Day '+day+' of '+((T42.challenge.total_days)||42);
+      /* The one thing still to do today, so the banner is a nudge rather
+         than a label. */
+      sub = !T42.today ? 'Check in for today'
+          : (T42.planDay && !T42.doneToday) ? 'Today: '+T42.planDay.title
+          : 'Today is done';
+      cta='OPEN TODAY';
+    }
+  } else {
+    /* Nobody is invited to a door that is shut. */
+    if(!T42.regOpen()) return '';
+    head='42 Days. One Journey. A Stronger You.';
+    sub = t42WhenLine(T42.challenge)+' · START · TRANSFORM · PERFORM';
+    cta='JOIN T42';
   }
 
-  return '<div class="sechead">T42</div>'+
-    '<div class="acard t42-home" onclick="openT42()" style="cursor:pointer;">'+
-    '<div class="ah"><span>🏆</span><div class="t">T42 · Transformation 42 Days</div><div class="c">›</div></div>'+
-    '<div class="sub">'+t42Esc(t42WhenLine(T42.challenge))+' · START · TRANSFORM · PERFORM</div></div>';
+  return '<div class="t42-banner" onclick="openT42()">'+
+    '<div class="t42-banner-top"><span class="t42-banner-logo">T42</span>'+
+    '<span class="t42-banner-tag">TRANSFORMATION 42 DAYS</span></div>'+
+    '<div class="t42-banner-line">'+t42Esc(head)+'</div>'+
+    '<div class="t42-banner-sub">'+t42Esc(sub)+'</div>'+
+    '<div class="t42-banner-cta">'+t42Esc(cta)+' ›</div></div>';
 }
 
 

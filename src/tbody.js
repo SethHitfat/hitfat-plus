@@ -1765,6 +1765,8 @@ T42.baseline={id:'m1',registration_id:'r1',phase:'baseline',
 t42Resume();
 ok("a finished one resumes on the challenge", t42View==='joined');
 ok("...and Home counts the days", t42HomeCard().indexOf('Starts in 9 days')>0);
+ok("...on the banner, with a way in", t42HomeCard().indexOf('t42-banner')>0 &&
+   t42HomeCard().indexOf('OPEN T42')>0);
 
 /* Gym Duo is registered for, not half-built. The screen must say so. */
 T42.reg.mode='gym_duo';
@@ -1784,16 +1786,35 @@ _t42reset();
 HF.apply(null); HF.data.onboarded=true;
 renderHome();
 ok("T42 reaches an empty Home",
-   document.getElementById('home-activity').innerHTML.indexOf('openT42()')>0);
+   document.getElementById('home-t42').innerHTML.indexOf('openT42()')>0);
 HF.data.sessions['t-t42-1']={id:'t-t42-1',date:new Date().toISOString(),mins:30,name:'Test'};
 renderHome();
 ok("...and a Home with training on it",
-   document.getElementById('home-activity').innerHTML.indexOf('openT42()')>0);
+   document.getElementById('home-t42').innerHTML.indexOf('openT42()')>0);
 /* And must leave without a trace when no edition is open, on both. */
 T42.challenge=null;
 renderHome();
 ok("no edition leaves Home untouched",
-   document.getElementById('home-activity').innerHTML.indexOf('openT42()')<0);
+   document.getElementById('home-t42').innerHTML.indexOf('openT42()')<0);
+/* The bug that hid T42 from everyone: the Home banner only draws once T42
+   has loaded, and the only thing that loaded it was openT42() — behind the
+   banner. Every test above set T42's state by hand, so none of them could
+   see that nothing in the real app ever called load(). These read the shell
+   itself: T42 must load at boot, and again once a session exists. */
+var _shell=readFile('shell2.html');
+var _boot=_shell.slice(_shell.indexOf('function boot(){'));
+_boot=_boot.slice(0,_boot.indexOf('sb.auth.getSession'));
+ok("T42 loads when the app boots", _boot.indexOf('T42.load()')>0);
+var _signin=_shell.slice(0,_shell.indexOf('function boot(){'));
+_signin=_signin.slice(_signin.lastIndexOf('syncProfile(session)'));
+ok("...and again after sign-in, forced", _signin.indexOf('T42.load(true)')>0);
+ok("...in its own try, apart from the Club's",
+   _signin.indexOf('T42.load(true)') > _signin.indexOf('Club.load(true)') &&
+   _signin.slice(_signin.indexOf('Club.load(true)'), _signin.indexOf('T42.load(true)')).indexOf('}catch(e){}')>0);
+/* And the banner is the first thing under the header, not below the fold. */
+ok("the banner sits directly under the Home header",
+   _shell.indexOf('id="home-t42"') > _shell.indexOf('id="home-hdr"') &&
+   _shell.indexOf('id="home-t42"') < _shell.indexOf('id="home-week"'));
 delete HF.data.sessions['t-t42-1'];
 _t42reset();
 

@@ -67,13 +67,16 @@ need=['app','screen','pad','tabs','tab','hhdr','wk2','plan','ov','pi','join','ac
       # T42 — the end
       't42-trophy','t42-score','t42-score-l','t42-score-n','t42-score-r','t42-cert',
       # T42 — gym duo
-      't42-codein','t42-duo','t42-duo-c','t42-duo-n','t42-duo-l','t42-duo-ok','t42-duo-no']
+      't42-codein','t42-duo','t42-duo-c','t42-duo-n','t42-duo-l','t42-duo-ok','t42-duo-no',
+      # T42 — the Home banner
+      't42-banner','t42-banner-top','t42-banner-logo','t42-banner-tag','t42-banner-line',
+      't42-banner-sub','t42-banner-cta']
 miss=[c for c in need if c not in have]
 if miss: sys.exit('classes with no CSS: '+str(miss))
 
 ids=set(re.findall(r'id="([\w-]+)"',shell))
 needids=['home','train','eat','progress','me','tr-segs','tr-body','prog-body','eat-body',
-         'library','lib-body','scan','sharemodal','share-canvas','screen','tabs','cpm','cp-body','play','pl-video','pl-cam','pl-clock','pl-rest','pl-cd','pl-done','pl-ready','pl-modes','pl-camdot','pl-mode','pl-camhide','pl-pill','pl-next','pl-segs','mpm','mp-body','mealplan','mp-view','eat-segs','pwm','pw-body','store','store-segs','store-body','pl-nofilm','pl-nofilm-m','fqm','fq-body','tab-train-logo','monthly','mth-body','club','club-body','club-segs','t42','t42-body','t42-segs']
+         'library','lib-body','scan','sharemodal','share-canvas','screen','tabs','cpm','cp-body','play','pl-video','pl-cam','pl-clock','pl-rest','pl-cd','pl-done','pl-ready','pl-modes','pl-camdot','pl-mode','pl-camhide','pl-pill','pl-next','pl-segs','mpm','mp-body','mealplan','mp-view','eat-segs','pwm','pw-body','store','store-segs','store-body','pl-nofilm','pl-nofilm-m','fqm','fq-body','tab-train-logo','monthly','mth-body','club','club-body','club-segs','t42','t42-body','t42-segs','home-t42']
 missid=[i for i in needids if i not in ids]
 if missid: sys.exit('ids missing: '+str(missid))
 if 'class="screen" id="screen"' not in shell: sys.exit('scroller lost its .screen class')

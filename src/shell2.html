@@ -574,6 +574,10 @@
 
     <div id="home" class="pad" style="display:none;">
       <div id="home-hdr"></div>
+      <!-- T42, above everything else on Home. A running challenge is the most
+           time-sensitive thing on this screen, and it removes itself when no
+           edition is open. -->
+      <div id="home-t42"></div>
       <div id="home-week"></div>
       <div id="home-today"></div>
       <div id="home-activity"></div>
@@ -901,6 +905,18 @@ async function onSignedIn(session){
       if($('home') && $('home').style.display!=='none') renderHome();
     }
   }catch(e){}
+
+  /* T42 the same way, and for the same reason. Its only door is the card on
+     Home, and that card only draws once T42 has loaded — which used to happen
+     only inside openT42(), behind the card. Nothing ever loaded it, so the
+     card never drew, for anyone. Its own try, so a T42 failure cannot cost
+     the member their Club card. */
+  try{
+    if(typeof T42!=='undefined'){
+      await T42.load(true);
+      if($('home') && $('home').style.display!=='none') renderHome();
+    }
+  }catch(e){}
 }
 /* ── adaptive nav offset ──
    The CSS already reads var(--navb), but nothing was ever setting it, so the
@@ -961,6 +977,9 @@ function boot(){
   /* Fire and forget: nothing on screen waits for the Club, and a user
      with no Club standing never notices it ran. */
   try{ if(typeof Club!=='undefined') Club.load().then(function(){
+    try{ if($('home') && $('home').style.display!=='none') renderHome(); }catch(e){}
+  }); }catch(e){}
+  try{ if(typeof T42!=='undefined') T42.load().then(function(){
     try{ if($('home') && $('home').style.display!=='none') renderHome(); }catch(e){}
   }); }catch(e){}
 

@@ -189,7 +189,9 @@ function renderHome(){
   /* T42 sits above the Club card: a running challenge is the most
      time-sensitive thing on this screen, and it disappears on its own
      when no edition is open. */
-  const _t42 = (typeof t42HomeCard==='function') ? t42HomeCard() : '';
+  /* T42 draws at the top of Home, in its own slot under the header. */
+  if($('home-t42')) $('home-t42').innerHTML = (typeof t42HomeCard==='function') ? t42HomeCard() : '';
+  const _t42 = '';
   if(!HF.count()){
   $('home-activity').innerHTML=_t42+_club+'<div class="sechead">This month</div>'+monthlyCard()+
       '<div class="acard" style="margin-top:12px;">'+

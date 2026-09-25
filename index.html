@@ -1342,6 +1342,24 @@
   .t42-duo-ok{color:var(--ok);font-weight:700;}
   .t42-duo-no{color:var(--hyrox);font-weight:700;}
 
+  /* ── T42 · the Home banner ─────────────────────────────────────────
+     The campaign moment the brief asks the neon for: dark, one gradient on
+     the logo, one red call to action. Everything else stays quiet. */
+  .t42-banner{position:relative;overflow:hidden;cursor:pointer;margin:4px 0 16px;
+    padding:16px 16px 14px;border-radius:20px;border:1px solid rgba(31,167,232,.35);
+    background:linear-gradient(135deg,#0A1822 0%,#0D0D10 55%,#240907 100%);color:#fff;}
+  .t42-banner:active{transform:scale(.99);}
+  .t42-banner-top{display:flex;align-items:baseline;gap:10px;}
+  .t42-banner-logo{font-family:'Oswald';font-weight:700;font-size:30px;line-height:1;letter-spacing:-.5px;
+    background:linear-gradient(100deg,var(--t42) 0%,#F0392B 78%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .t42-banner-tag{font-family:'Oswald';font-size:10.5px;font-weight:600;letter-spacing:2.4px;
+    color:rgba(255,255,255,.62);}
+  .t42-banner-line{font-size:18px;font-weight:800;letter-spacing:-.3px;margin-top:10px;line-height:1.25;}
+  .t42-banner-sub{font-size:12.5px;color:rgba(255,255,255,.66);margin-top:4px;line-height:1.45;}
+  .t42-banner-cta{display:inline-block;margin-top:12px;padding:8px 14px;border-radius:99px;
+    background:#D92C1A;color:#fff;font-family:'Oswald';font-weight:700;font-size:12.5px;letter-spacing:1.4px;}
+
 
 /* ── HITFAT+ supplements — the few pieces Hybrid's sheet does not carry ── */
 .pbar{height:6px;background:var(--tint);border-radius:4px;overflow:hidden;}
@@ -1931,6 +1949,10 @@
 
     <div id="home" class="pad" style="display:none;">
       <div id="home-hdr"></div>
+      <!-- T42, above everything else on Home. A running challenge is the most
+           time-sensitive thing on this screen, and it removes itself when no
+           edition is open. -->
+      <div id="home-t42"></div>
       <div id="home-week"></div>
       <div id="home-today"></div>
       <div id="home-activity"></div>
@@ -8225,31 +8247,47 @@ function t42Stat(label,val){
 function t42HomeCard(){
   if(T42.state==='nosetup'||T42.state==='error') return '';
   if(!T42.challenge) return '';
+
+  var head, sub, cta;
   if(T42.isJoined() && T42.isComplete()){
-    return '<div class="sechead">T42</div>'+
-      '<div class="acard t42-home" onclick="openT42()" style="cursor:pointer;">'+
-      '<div class="ah"><span>🏆</span><div class="t">T42 complete</div><div class="c">›</div></div>'+
-      '<div class="sub">'+(T42.certs&&T42.certs.length?'Your result and certificate are ready':'See your result')+
-      '</div></div>';
-  }
-  if(!T42.isJoined() && !T42.regOpen()) return '';
-
-  if(T42.isJoined()){
+    head='T42 complete';
+    sub = T42.certs&&T42.certs.length ? 'Your result and certificate are ready' : 'See your result';
+    cta='SEE RESULT';
+  } else if(T42.isJoined()){
     var day=T42.dayNo(), to=T42.daysTo();
-    var line = day===0 ? (to===0?'Starts today':'Starts in '+to+(to===1?' day':' days'))
-                       : 'Day '+day+' of '+((T42.challenge.total_days)||42);
-    var need = T42.isOver() ? 'Finished · results are being checked'
-             : (T42.hasBaseline() || day>T42.lockDay()) ? line : 'Finish your baseline';
-    return '<div class="sechead">T42</div>'+
-      '<div class="acard t42-home" onclick="openT42()" style="cursor:pointer;">'+
-      '<div class="ah"><span>🏆</span><div class="t">Transformation 42 Days</div><div class="c">›</div></div>'+
-      '<div class="sub">'+t42Esc(need)+'</div></div>';
+    if(T42.isOver()){
+      head='Finished'; sub='Finished · results are being checked'; cta='OPEN T42';
+    } else if(!T42.hasBaseline() && day<=T42.lockDay()){
+      head='Finish your baseline';
+      sub='Your starting point is what every result is measured from';
+      cta='CONTINUE';
+    } else if(day===0){
+      head = to===0 ? 'Starts today' : 'Starts in '+to+(to===1?' day':' days');
+      sub  = ((t42Track(T42.reg.track)||{}).name||'')+' · '+((t42Mode(T42.reg.mode)||{}).name||'');
+      cta='OPEN T42';
+    } else {
+      head='Day '+day+' of '+((T42.challenge.total_days)||42);
+      /* The one thing still to do today, so the banner is a nudge rather
+         than a label. */
+      sub = !T42.today ? 'Check in for today'
+          : (T42.planDay && !T42.doneToday) ? 'Today: '+T42.planDay.title
+          : 'Today is done';
+      cta='OPEN TODAY';
+    }
+  } else {
+    /* Nobody is invited to a door that is shut. */
+    if(!T42.regOpen()) return '';
+    head='42 Days. One Journey. A Stronger You.';
+    sub = t42WhenLine(T42.challenge)+' · START · TRANSFORM · PERFORM';
+    cta='JOIN T42';
   }
 
-  return '<div class="sechead">T42</div>'+
-    '<div class="acard t42-home" onclick="openT42()" style="cursor:pointer;">'+
-    '<div class="ah"><span>🏆</span><div class="t">T42 · Transformation 42 Days</div><div class="c">›</div></div>'+
-    '<div class="sub">'+t42Esc(t42WhenLine(T42.challenge))+' · START · TRANSFORM · PERFORM</div></div>';
+  return '<div class="t42-banner" onclick="openT42()">'+
+    '<div class="t42-banner-top"><span class="t42-banner-logo">T42</span>'+
+    '<span class="t42-banner-tag">TRANSFORMATION 42 DAYS</span></div>'+
+    '<div class="t42-banner-line">'+t42Esc(head)+'</div>'+
+    '<div class="t42-banner-sub">'+t42Esc(sub)+'</div>'+
+    '<div class="t42-banner-cta">'+t42Esc(cta)+' ›</div></div>';
 }
 
 
@@ -10490,7 +10528,9 @@ function renderHome(){
   /* T42 sits above the Club card: a running challenge is the most
      time-sensitive thing on this screen, and it disappears on its own
      when no edition is open. */
-  const _t42 = (typeof t42HomeCard==='function') ? t42HomeCard() : '';
+  /* T42 draws at the top of Home, in its own slot under the header. */
+  if($('home-t42')) $('home-t42').innerHTML = (typeof t42HomeCard==='function') ? t42HomeCard() : '';
+  const _t42 = '';
   if(!HF.count()){
   $('home-activity').innerHTML=_t42+_club+'<div class="sechead">This month</div>'+monthlyCard()+
       '<div class="acard" style="margin-top:12px;">'+
@@ -12454,6 +12494,18 @@ async function onSignedIn(session){
       if($('home') && $('home').style.display!=='none') renderHome();
     }
   }catch(e){}
+
+  /* T42 the same way, and for the same reason. Its only door is the card on
+     Home, and that card only draws once T42 has loaded — which used to happen
+     only inside openT42(), behind the card. Nothing ever loaded it, so the
+     card never drew, for anyone. Its own try, so a T42 failure cannot cost
+     the member their Club card. */
+  try{
+    if(typeof T42!=='undefined'){
+      await T42.load(true);
+      if($('home') && $('home').style.display!=='none') renderHome();
+    }
+  }catch(e){}
 }
 /* ── adaptive nav offset ──
    The CSS already reads var(--navb), but nothing was ever setting it, so the
@@ -12514,6 +12566,9 @@ function boot(){
   /* Fire and forget: nothing on screen waits for the Club, and a user
      with no Club standing never notices it ran. */
   try{ if(typeof Club!=='undefined') Club.load().then(function(){
+    try{ if($('home') && $('home').style.display!=='none') renderHome(); }catch(e){}
+  }); }catch(e){}
+  try{ if(typeof T42!=='undefined') T42.load().then(function(){
     try{ if($('home') && $('home').style.display!=='none') renderHome(); }catch(e){}
   }); }catch(e){}
 
