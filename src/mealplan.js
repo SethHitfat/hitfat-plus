@@ -423,7 +423,7 @@ function renderPlanView(){
   h+='<div class="flib">'+planTips(p.meta).map((t,i)=>
     '<div class="row" style="cursor:default;align-items:flex-start;">'+
     '<div class="ic" style="color:var(--hyrox);font-weight:800;">'+(i+1)+'</div>'+
-    '<div style="flex:1;font-size:15px;line-height:1.6;color:rgba(255,255,255,.8);">'+t+'</div></div>').join('')+'</div>';
+    '<div style="flex:1;font-size:15px;line-height:1.6;color:var(--ink-72);">'+t+'</div></div>').join('')+'</div>';
   h+='<div class="mpnote" style="border-color:rgba(245,158,11,.35);color:#f59e0b;">General guidance based on what you entered. If you have diabetes, kidney disease, severe reflux, are pregnant, or your BMI is 27.5 or above — see a doctor or a registered dietitian.</div>';
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;">'+
      '<button class="bigbtn sec" style="margin:0;" onclick="openMealPlan()">Edit</button>'+

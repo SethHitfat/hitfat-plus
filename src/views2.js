@@ -97,7 +97,7 @@ function greetWord(){ const h=new Date().getHours(); return h<12?'Good morning':
 function donutSVG(pct,color,size){
   const r=size/2-4, C=2*Math.PI*r, off=C*(1-Math.max(0,Math.min(100,pct))/100);
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" style="flex:none;">'+
-    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="6"/>'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" style="stroke:var(--tint)" stroke-width="6"/>'+
     '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round"'+
     ' stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 '+size/2+' '+size/2+')"/></svg>';
 }
@@ -391,6 +391,10 @@ function renderMe(){
     '<div>Days a week · <b style="color:var(--txt);">'+(p.days||'—')+'</b></div>'+
     '<div>Equipment · <b style="color:var(--txt);">'+(p.equip||'—')+'</b></div></div>'+
     '<div class="sechead">Settings</div>'+
+    '<div class="acard"><div class="ah"><span>🎨</span><div class="t">Appearance</div></div>'+
+    '<div class="segs" style="margin-top:10px;">'+
+    '<button class="seg'+(currentTheme()==='light'?' on':'')+'" onclick="setThemeLight()">Light</button>'+
+    '<button class="seg'+(currentTheme()==='dark'?' on':'')+'" onclick="setThemeDark()">Dark</button></div></div>'+
     '<button class="bigbtn sec" onclick="startOnboarding()">Edit my plan</button>'+
     (sb&&HF.userId?'<button class="bigbtn sec" onclick="signOut()">Sign out</button>':'')+
     '<button class="bigbtn sec" onclick="confirmReset()">Reset progress</button>'+
@@ -463,3 +467,23 @@ function finishOb(){
 }
 
 
+/* ── appearance ──
+   The attribute is set in <head> before first paint; this only changes it
+   afterwards and remembers the choice on this device. */
+function currentTheme(){
+  var t=document.documentElement && document.documentElement.getAttribute
+    ? document.documentElement.getAttribute('data-theme') : null;
+  return t==='dark' ? 'dark' : 'light';
+}
+function setTheme(t){
+  t = t==='dark' ? 'dark' : 'light';
+  try{ document.documentElement.setAttribute('data-theme',t); }catch(e){}
+  try{ localStorage.setItem('hitfat_theme',t); }catch(e){}
+  try{
+    var m=document.querySelector('meta[name="theme-color"]');
+    if(m && m.setAttribute) m.setAttribute('content', t==='dark' ? '#000000' : '#F5F4F3');
+  }catch(e){}
+  try{ renderMe(); }catch(e){}
+}
+function setThemeLight(){ setTheme('light'); }
+function setThemeDark(){ setTheme('dark'); }

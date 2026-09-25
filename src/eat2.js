@@ -483,7 +483,7 @@ function renderScanResult(d){
   const name=(d.food_name||'').trim();
   const unknown=!name||/^(n\/a|unknown)$/i.test(name);
   const b=mealBadge(kcal);
-  let h='<div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 14px;"></div>';
+  let h='<div style="width:36px;height:4px;background:var(--hairline);border-radius:2px;margin:0 auto 14px;"></div>';
   h+='<div class="sub" style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">'+
      '<span style="width:6px;height:6px;border-radius:50%;background:var(--hyrox);"></span>AI Meal Scan · HITFAT+</div>';
   h+='<div style="font-size:20px;font-weight:800;line-height:1.2;">'+(unknown?'Could not identify the food':name)+'</div>';
@@ -522,10 +522,10 @@ function renderScanResult(d){
   } else if(_mrt===1){
     h+='<div class="acard"><div class="ah"><div style="width:32px;height:32px;border-radius:50%;background:var(--hyrox);display:grid;place-items:center;font-size:15px;">💪</div>'+
        '<div class="t">Coach says</div></div>'+
-       '<div style="font-size:15px;line-height:1.7;color:rgba(255,255,255,.85);">'+coachText(kcal,p,c,f)+'</div></div>';
+       '<div style="font-size:15px;line-height:1.7;color:var(--ink-90);">'+coachText(kcal,p,c,f)+'</div></div>';
   } else {
     h+='<div style="display:flex;flex-direction:column;gap:8px;">'+coachActions(kcal,p,c,f).map(t=>
-       '<div class="wrow"><div style="font-size:17px;">'+t[0]+'</div><div class="tx"><div class="m" style="color:rgba(255,255,255,.8);font-size:13px;">'+t[1]+'</div></div></div>').join('')+'</div>';
+       '<div class="wrow"><div style="font-size:17px;">'+t[0]+'</div><div class="tx"><div class="m" style="color:var(--ink-72);font-size:13px;">'+t[1]+'</div></div></div>').join('')+'</div>';
     const n=HF.data.nutrition||{};
     if(n.cal){ const eaten=mealTotals().kcal, rem=Math.max(0,n.cal-eaten+burnTotal());
       h+='<div class="acard" style="margin-top:10px;"><div class="ah"><div class="t">Calories left today</div></div>'+

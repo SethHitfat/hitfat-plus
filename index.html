@@ -3,7 +3,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>HITFAT+</title>
-<meta name="theme-color" content="#FAF9F7">
+<meta name="theme-color" content="#F5F4F3">
+<script>
+/* Theme, set before anything paints so there is no black-to-white flash.
+   Light is the default: HITFAT+ is for people starting out, and a black
+   page with a red accent reads as a hardcore gym to exactly the people it
+   is meant to welcome — and is harder to read outdoors, where a morning
+   check-in happens. Anyone who prefers dark switches it in Me, and that
+   choice is kept on the device. */
+(function(){
+  var t='light';
+  try{ var k=localStorage.getItem('hitfat_theme'); if(k==='dark'||k==='light') t=k; }catch(e){}
+  document.documentElement.setAttribute('data-theme',t);
+  var m=document.querySelector('meta[name="theme-color"]');
+  if(m) m.setAttribute('content', t==='dark' ? '#000000' : '#F5F4F3');
+})();
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="HITFAT+">
@@ -5065,7 +5080,7 @@ function renderPlanView(){
   h+='<div class="flib">'+planTips(p.meta).map((t,i)=>
     '<div class="row" style="cursor:default;align-items:flex-start;">'+
     '<div class="ic" style="color:var(--hyrox);font-weight:800;">'+(i+1)+'</div>'+
-    '<div style="flex:1;font-size:15px;line-height:1.6;color:rgba(255,255,255,.8);">'+t+'</div></div>').join('')+'</div>';
+    '<div style="flex:1;font-size:15px;line-height:1.6;color:var(--ink-72);">'+t+'</div></div>').join('')+'</div>';
   h+='<div class="mpnote" style="border-color:rgba(245,158,11,.35);color:#f59e0b;">General guidance based on what you entered. If you have diabetes, kidney disease, severe reflux, are pregnant, or your BMI is 27.5 or above — see a doctor or a registered dietitian.</div>';
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;">'+
      '<button class="bigbtn sec" style="margin:0;" onclick="openMealPlan()">Edit</button>'+
@@ -10494,7 +10509,7 @@ function greetWord(){ const h=new Date().getHours(); return h<12?'Good morning':
 function donutSVG(pct,color,size){
   const r=size/2-4, C=2*Math.PI*r, off=C*(1-Math.max(0,Math.min(100,pct))/100);
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" style="flex:none;">'+
-    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="6"/>'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" style="stroke:var(--tint)" stroke-width="6"/>'+
     '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round"'+
     ' stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 '+size/2+' '+size/2+')"/></svg>';
 }
@@ -10788,6 +10803,10 @@ function renderMe(){
     '<div>Days a week · <b style="color:var(--txt);">'+(p.days||'—')+'</b></div>'+
     '<div>Equipment · <b style="color:var(--txt);">'+(p.equip||'—')+'</b></div></div>'+
     '<div class="sechead">Settings</div>'+
+    '<div class="acard"><div class="ah"><span>🎨</span><div class="t">Appearance</div></div>'+
+    '<div class="segs" style="margin-top:10px;">'+
+    '<button class="seg'+(currentTheme()==='light'?' on':'')+'" onclick="setThemeLight()">Light</button>'+
+    '<button class="seg'+(currentTheme()==='dark'?' on':'')+'" onclick="setThemeDark()">Dark</button></div></div>'+
     '<button class="bigbtn sec" onclick="startOnboarding()">Edit my plan</button>'+
     (sb&&HF.userId?'<button class="bigbtn sec" onclick="signOut()">Sign out</button>':'')+
     '<button class="bigbtn sec" onclick="confirmReset()">Reset progress</button>'+
@@ -10860,6 +10879,26 @@ function finishOb(){
 }
 
 
+/* ── appearance ──
+   The attribute is set in <head> before first paint; this only changes it
+   afterwards and remembers the choice on this device. */
+function currentTheme(){
+  var t=document.documentElement && document.documentElement.getAttribute
+    ? document.documentElement.getAttribute('data-theme') : null;
+  return t==='dark' ? 'dark' : 'light';
+}
+function setTheme(t){
+  t = t==='dark' ? 'dark' : 'light';
+  try{ document.documentElement.setAttribute('data-theme',t); }catch(e){}
+  try{ localStorage.setItem('hitfat_theme',t); }catch(e){}
+  try{
+    var m=document.querySelector('meta[name="theme-color"]');
+    if(m && m.setAttribute) m.setAttribute('content', t==='dark' ? '#000000' : '#F5F4F3');
+  }catch(e){}
+  try{ renderMe(); }catch(e){}
+}
+function setThemeLight(){ setTheme('light'); }
+function setThemeDark(){ setTheme('dark'); }
 /* ═══════════════ EAT · Meal Scan ═══════════════
    Ported from the standalone HITFAT Tracker and restyled into the Hybrid design
    language (dark surfaces, red accent, Inter) instead of the original cream cards.
@@ -11345,7 +11384,7 @@ function renderScanResult(d){
   const name=(d.food_name||'').trim();
   const unknown=!name||/^(n\/a|unknown)$/i.test(name);
   const b=mealBadge(kcal);
-  let h='<div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 14px;"></div>';
+  let h='<div style="width:36px;height:4px;background:var(--hairline);border-radius:2px;margin:0 auto 14px;"></div>';
   h+='<div class="sub" style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">'+
      '<span style="width:6px;height:6px;border-radius:50%;background:var(--hyrox);"></span>AI Meal Scan · HITFAT+</div>';
   h+='<div style="font-size:20px;font-weight:800;line-height:1.2;">'+(unknown?'Could not identify the food':name)+'</div>';
@@ -11384,10 +11423,10 @@ function renderScanResult(d){
   } else if(_mrt===1){
     h+='<div class="acard"><div class="ah"><div style="width:32px;height:32px;border-radius:50%;background:var(--hyrox);display:grid;place-items:center;font-size:15px;">💪</div>'+
        '<div class="t">Coach says</div></div>'+
-       '<div style="font-size:15px;line-height:1.7;color:rgba(255,255,255,.85);">'+coachText(kcal,p,c,f)+'</div></div>';
+       '<div style="font-size:15px;line-height:1.7;color:var(--ink-90);">'+coachText(kcal,p,c,f)+'</div></div>';
   } else {
     h+='<div style="display:flex;flex-direction:column;gap:8px;">'+coachActions(kcal,p,c,f).map(t=>
-       '<div class="wrow"><div style="font-size:17px;">'+t[0]+'</div><div class="tx"><div class="m" style="color:rgba(255,255,255,.8);font-size:13px;">'+t[1]+'</div></div></div>').join('')+'</div>';
+       '<div class="wrow"><div style="font-size:17px;">'+t[0]+'</div><div class="tx"><div class="m" style="color:var(--ink-72);font-size:13px;">'+t[1]+'</div></div></div>').join('')+'</div>';
     const n=HF.data.nutrition||{};
     if(n.cal){ const eaten=mealTotals().kcal, rem=Math.max(0,n.cal-eaten+burnTotal());
       h+='<div class="acard" style="margin-top:10px;"><div class="ah"><div class="t">Calories left today</div></div>'+
@@ -11732,7 +11771,7 @@ function weightChart(wl){
   return '<svg viewBox="0 0 '+w+' '+hh+'" style="width:100%;height:'+hh+'px;margin-top:12px;display:block;">'+
     '<polyline points="'+pts+'" fill="none" stroke="var(--hyrox)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+
     wl.map((x,i)=>{ const px=pad+(i/(wl.length-1))*(w-pad*2), py=pad+(1-(x.kg-lo)/rng)*(hh-pad*2);
-      return '<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="2.6" fill="#fff"/>'; }).join('')+
+      return '<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="2.8" style="fill:var(--surface);stroke:var(--hyrox);stroke-width:1.6"/>'; }).join('')+
     '</svg>';
 }
 

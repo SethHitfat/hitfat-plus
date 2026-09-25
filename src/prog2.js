@@ -306,7 +306,7 @@ function weightChart(wl){
   return '<svg viewBox="0 0 '+w+' '+hh+'" style="width:100%;height:'+hh+'px;margin-top:12px;display:block;">'+
     '<polyline points="'+pts+'" fill="none" stroke="var(--hyrox)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+
     wl.map((x,i)=>{ const px=pad+(i/(wl.length-1))*(w-pad*2), py=pad+(1-(x.kg-lo)/rng)*(hh-pad*2);
-      return '<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="2.6" fill="#fff"/>'; }).join('')+
+      return '<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="2.8" style="fill:var(--surface);stroke:var(--hyrox);stroke-width:1.6"/>'; }).join('')+
     '</svg>';
 }
 

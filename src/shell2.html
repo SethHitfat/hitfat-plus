@@ -3,7 +3,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>HITFAT+</title>
-<meta name="theme-color" content="#FAF9F7">
+<meta name="theme-color" content="#F5F4F3">
+<script>
+/* Theme, set before anything paints so there is no black-to-white flash.
+   Light is the default: HITFAT+ is for people starting out, and a black
+   page with a red accent reads as a hardcore gym to exactly the people it
+   is meant to welcome — and is harder to read outdoors, where a morning
+   check-in happens. Anyone who prefers dark switches it in Me, and that
+   choice is kept on the device. */
+(function(){
+  var t='light';
+  try{ var k=localStorage.getItem('hitfat_theme'); if(k==='dark'||k==='light') t=k; }catch(e){}
+  document.documentElement.setAttribute('data-theme',t);
+  var m=document.querySelector('meta[name="theme-color"]');
+  if(m) m.setAttribute('content', t==='dark' ? '#000000' : '#F5F4F3');
+})();
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="HITFAT+">
