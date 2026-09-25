@@ -2228,9 +2228,20 @@
   });
   setTimeout(function(){
     if(shown) return;
-    var painted=['home','train','eat','progress','me'].some(function(id){ var el=document.getElementById(id); return el&&el.style.display==='block'; });
+    /* "Did the app start" is a question the app answers itself: startApp()
+       sets _started once Home has painted. Asking instead whether one of the
+       five TABS was on screen meant anyone who had opened a panel within six
+       seconds — T42, the Club, the Store — was told the app had not started,
+       over the top of the app working underneath. The T42 banner at the top
+       of Home made that the common case. Any visible panel counts too, for a
+       start that got as far as drawing one. */
+    var started=false;
+    try{ started = (typeof _started!=='undefined') && !!_started; }catch(e){ /* not declared yet: not started */ }
+    var painted=Array.prototype.some.call(document.querySelectorAll('.pad'), function(el){
+      return el.style.display==='block';
+    });
     var authOn=(document.getElementById('auth')||{className:''}).className.indexOf('on')>=0;
-    if(painted||authOn) return;
+    if(started||painted||authOn) return;
     panel('App did not start',[
       'supabase lib : '+(typeof window.supabase!=='undefined'),
       'SUPA_READY   : '+(typeof SUPA_READY!=='undefined'?SUPA_READY:'undefined'),

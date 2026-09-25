@@ -1823,6 +1823,12 @@ ok("...and again after sign-in, forced", _signin.indexOf('T42.load(true)')>0);
 ok("...in its own try, apart from the Club's",
    _signin.indexOf('T42.load(true)') > _signin.indexOf('Club.load(true)') &&
    _signin.slice(_signin.indexOf('Club.load(true)'), _signin.indexOf('T42.load(true)')).indexOf('}catch(e){}')>0);
+/* The start-up watchdog must not cover a working app. It used to accept only
+   the five tabs as proof of life, so a member inside T42 at the six-second
+   mark got "App did not start" across the top of a running app. */
+var _wd=_shell.slice(_shell.indexOf('App did not start')-2600, _shell.indexOf('App did not start'));
+ok("the watchdog trusts the app's own _started flag", _wd.indexOf('_started')>0);
+ok("...and any open panel, not just the five tabs",    _wd.indexOf("querySelectorAll('.pad')")>0);
 /* And the banner is the first thing under the header, not below the fold. */
 ok("the banner sits directly under the Home header",
    _shell.indexOf('id="home-t42"') > _shell.indexOf('id="home-hdr"') &&
