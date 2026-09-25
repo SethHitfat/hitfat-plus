@@ -216,6 +216,11 @@ create policy club_inbody_read_own on public.club_inbody
 -- ═══════════════════════════════════════════════════════════════
 --  Seed: the rewards catalogue from the old app, priced as it was.
 -- ═══════════════════════════════════════════════════════════════
+-- One row per reward name. Without it the ON CONFLICT below had nothing to
+-- conflict on — the only unique key was a random id — and running this file
+-- a second time listed every reward twice.
+create unique index if not exists club_rewards_name on public.club_rewards (name);
+
 insert into public.club_rewards (name, category, cost_points) values
   ('Mineral Water',        'drinks',     20),
   ('Protein Shake',        'drinks',    110),
@@ -228,7 +233,7 @@ insert into public.club_rewards (name, category, cost_points) values
   ('Training Pass · 7 Days',  'training',  600),
   ('Training Pass · 14 Days', 'training', 1100),
   ('Training Pass · 30 Days', 'training', 1800)
-on conflict do nothing;
+on conflict (name) do nothing;
 
 -- ── after running this, make yourself a member ──────────────────
 -- Replace the uuid with your own from Authentication → Users.

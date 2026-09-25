@@ -221,6 +221,11 @@ drop policy if exists club_missions_read on public.club_missions;
 create policy club_missions_read on public.club_missions
   for select using (active or public.club_is_staff());
 
+-- One row per mission title, for the same reason as club_rewards in 10-:
+-- without a real key the ON CONFLICT below never fired, and a second run
+-- listed every mission twice.
+create unique index if not exists club_missions_title on public.club_missions (title);
+
 insert into public.club_missions (title, detail, kind, target, reward_points, window_days, sort)
 values
   ('First class of the week', 'Attend one class between Monday and Sunday.',
@@ -233,4 +238,4 @@ values
    'streak', 14, 100, 14, 4),
   ('Know your numbers',       'Record an InBody scan so your training has a baseline.',
    'inbody', 1, 50, null, 5)
-on conflict do nothing;
+on conflict (title) do nothing;
