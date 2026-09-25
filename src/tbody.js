@@ -2562,6 +2562,7 @@ var _du=document.getElementById('t42-body').innerHTML;
 ok("...offering to create a duo",     _du.indexOf('t42DuoCreate()')>0);
 ok("...or to join with a code",       _du.indexOf('t42-duocode')>0 && _du.indexOf('t42DuoJoin()')>0);
 ok("...and saying who can pair",      _du.indexOf('same gender on the same track')>0);
+ok("...and letting pairing wait",      _du.indexOf('Skip for now')>0);
 T42.challenge=_t42edition(-10); t42Paint();
 ok("after the window there is nothing to create",
    document.getElementById('t42-body').innerHTML.indexOf('Pairing has closed')>0 &&
@@ -2573,6 +2574,13 @@ ok("a duo shows its code",            _du.indexOf('T42-K8F2')>0);
 ok("...both partners",                _du.indexOf('Siti H.')>0);
 ok("...the team's readiness",         _du.indexOf('Team readiness')>0);
 ok("...and a way out while it is open", _du.indexOf('t42DuoLeave()')>0);
+/* The duo screen must never be a dead end: it used to have no way back into
+   T42 at all, only the panel's Back to Home. */
+ok("...and a way back into the challenge", _du.indexOf('t42DuoDone()')>0 && _du.indexOf('CONTINUE TO T42')>0);
+t42DuoDone();
+ok("which lands where opening T42 would", t42View==='joined');
+_t42gym(); T42.challenge=_t42edition(5); t42View='duo'; t42Paint();
+_du=document.getElementById('t42-body').innerHTML;
 T42.duoCard=[T42.duoCard[0]]; t42Paint();
 ok("a partner not yet joined is waited for",
    document.getElementById('t42-body').innerHTML.indexOf('Waiting for them to join')>0);

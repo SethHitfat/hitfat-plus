@@ -10113,6 +10113,9 @@ function t42RenderDuo(){
        '<button class="bigbtn sec" onclick="t42DuoJoin()">JOIN DUO</button></div>';
     h+='<div class="t42-note">A duo is two partners of the same gender on the same track, '+
        'each with their own HITFAT+ account. Pairs can change until day '+T42.lockDay()+'.</div>';
+    /* Pairing can wait. Nothing else in T42 depends on it — the duo only
+       decides who you are ranked with — so it must never be a wall. */
+    h+='<button class="bigbtn sec" onclick="t42DuoDone()">Skip for now</button>';
     el.innerHTML=h; return;
   }
 
@@ -10145,12 +10148,20 @@ function t42RenderDuo(){
     h+='<div class="t42-q">The duo competes once both of you are ready.'+
        (tr?' The InBody is done at HQ with a coach.':'')+'</div>';
 
+  /* The way back into the challenge. This screen used to have none: the
+     only exit was the panel's Back, which leaves T42 altogether, so a member
+     who had just made a duo was stranded on it. */
+  h+='<button class="bigbtn" onclick="t42DuoDone()">'+(T42.dayNo()>0?'BACK TO TODAY':'CONTINUE TO T42')+'</button>';
   if(T42.duoWindowOpen())
     h+='<button class="bigbtn sec" onclick="t42DuoLeave()">Leave this duo</button>';
   else
     h+='<div class="t42-note">Your duo is fixed for this edition.</div>';
   el.innerHTML=h;
 }
+
+/* Wherever the member belongs right now — the baseline, the countdown or
+   today — decided the same way opening T42 decides it. */
+function t42DuoDone(){ t42Resume(); t42Paint(); t42Segs(); $('screen').scrollTop=0; }
 
 var t42DuoBusy=false;
 
