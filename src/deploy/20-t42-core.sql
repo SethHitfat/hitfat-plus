@@ -54,6 +54,21 @@
 -- ═══════════════════════════════════════════════════════════════
 
 
+-- ── run order ───────────────────────────────────────────────────
+-- T42 reads coach, staff and admin roles from club_members rather than
+-- inventing a second role table, and a LANGUAGE sql function is checked
+-- against its tables the moment it is created. Run out of order, this file
+-- used to stop halfway with "relation public.club_members does not exist" —
+-- true, and no help. It now stops on line one and says what to run.
+do $order$
+begin
+  if to_regclass('public.club_members') is null then
+    raise exception 'Run 10-club-tables.sql and 11-club-checkin.sql first — T42 reads staff roles from club_members.';
+  end if;
+end
+$order$;
+
+
 -- ── the edition ─────────────────────────────────────────────────
 -- One row per running of T42. Everything else is scoped to it, so a
 -- second edition is an insert rather than a migration.

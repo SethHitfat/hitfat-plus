@@ -25,6 +25,19 @@
 -- ═══════════════════════════════════════════════════════════════
 
 
+-- ── run order ───────────────────────────────────────────────────
+do $order$
+begin
+  if to_regclass('public.club_bookings') is null or to_regclass('public.club_sessions') is null then
+    raise exception 'Run 10-club-tables.sql and 11-club-checkin.sql first — Gym Duo attendance is Club check-ins.';
+  end if;
+  if to_regprocedure('public.t42_full_name(uuid)') is null then
+    raise exception 'Run 20- to 25- first — this file builds on them.';
+  end if;
+end
+$order$;
+
+
 -- ── attendance, the real one ────────────────────────────────────
 -- Replaces the stub in 24-. Distinct DAYS attended, not classes: three
 -- classes on one Saturday is a long Saturday, not three days of showing up.
