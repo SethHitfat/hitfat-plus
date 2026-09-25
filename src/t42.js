@@ -897,9 +897,31 @@ function t42BasePhysical(){
   return h+t42BaseFoot();
 }
 
+/* What is still missing, in words. A faded button that does not say why
+   left someone on the Physical tab tapping at JOIN with no idea the answer
+   was two tabs to the left. */
+function t42BaseMissing(){
+  var w=parseFloat(t42Base.weight), h=parseFloat(t42Base.height), c=parseFloat(t42Base.waist);
+  var m=[];
+  if(!(w>20 && w<400)) m.push(t42Base.weight?'a real weight':'weight');
+  if(!(h>90 && h<250)) m.push(t42Base.height?'a real height':'height');
+  if(!(c>30 && c<250)) m.push(t42Base.waist?'a real waist':'waist');
+  if(!t42Base.gender)  m.push('Men or Women');
+  return m;
+}
+function t42BaseMissingLine(){
+  var m=t42BaseMissing(); if(!m.length) return '';
+  var list = m.length===1 ? m[0] : m.slice(0,-1).join(', ')+' and '+m[m.length-1];
+  return 'Still needed: '+list+(t42BaseTab!=='basic'?' — on Basic info.':'.');
+}
+
 function t42BaseFoot(){
   var ok=t42BaseValid();
-  return '<button class="bigbtn'+(ok?'':' off')+'" onclick="t42SaveBaseline()">'+
+  var miss=t42BaseMissingLine();
+  return '<div class="t42-q t42-miss" id="t42-basemiss">'+t42Esc(miss)+'</div>'+
+    (miss && t42BaseTab!=='basic'
+      ? '<button class="bigbtn sec" onclick="t42BaseTab1()">Go to Basic info</button>' : '')+
+    '<button class="bigbtn'+(ok?'':' off')+'" onclick="t42SaveBaseline()">'+
     (T42.isJoined()?'SAVE BASELINE':'JOIN T42')+'</button>'+
     (T42.isJoined()?'':'<button class="bigbtn sec" onclick="t42GoTrack()">Back</button>');
 }
@@ -920,7 +942,13 @@ function t42BaseSet(key,val){ t42Base[key]=val; t42RenderBaseline(); }
 function t42BaseFootSync(){
   var el=$('t42-body'); if(!el||!el.querySelectorAll) return;
   var btns=el.querySelectorAll('.bigbtn');
-  if(btns && btns.length) btns[0].classList.toggle('off', !t42BaseValid());
+  /* The JOIN button is the last-but-one primary: find it by its action
+     rather than its position, now that a "Go to Basic info" can sit above. */
+  Array.prototype.forEach.call(btns||[],function(b){
+    if(String(b.getAttribute&&b.getAttribute('onclick')).indexOf('t42SaveBaseline')===0)
+      b.classList.toggle('off', !t42BaseValid());
+  });
+  var m=$('t42-basemiss'); if(m) m.textContent=t42BaseMissingLine();
 }
 
 /* What a baseline must have before it can anchor a score. Height is in
@@ -948,7 +976,11 @@ var t42Saving=false;
 
 async function t42SaveBaseline(){
   if(t42Saving) return;                       // double-tap is one registration
-  if(!t42BaseValid()){ toast('Fill in weight, height, waist and category'); return; }
+  if(!t42BaseValid()){
+    toast(t42BaseMissingLine()||'Fill in your baseline');
+    if(t42BaseTab!=='basic'){ t42BaseTab='basic'; t42RenderBaseline(); }
+    return;
+  }
   if(!sb || !SUPA_READY){ toast('Sign in to join T42'); return; }
   if(!T42.challenge){ toast('No T42 edition is open'); return; }
 

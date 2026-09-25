@@ -1717,6 +1717,18 @@ t42Base={weight:'8.2',height:'174',waist:'95',age:'31',gender:'male'};
 ok("an impossible weight is refused",      t42BaseValid()===false);
 t42Base={weight:'82',height:'17',waist:'95',age:'31',gender:'male'};
 ok("an impossible height is refused",      t42BaseValid()===false);
+/* A faded JOIN must say what it is waiting for, wherever the member is. */
+t42Base={weight:'82',height:'174',waist:'',age:'',gender:''};
+ok("the missing pieces are named",       t42BaseMissing().join('|')==='waist|Men or Women');
+t42BaseTab='physical';
+ok("...and pointed back to Basic info",  t42BaseMissingLine()==='Still needed: waist and Men or Women — on Basic info.');
+t42Base.weight='8.2';
+ok("a wrong number is called out as wrong, not missing", t42BaseMissing()[0]==='a real weight');
+t42View='baseline'; t42Base._ready=true; t42Paint();
+ok("the Physical tab offers the way back", document.getElementById('t42-body').innerHTML.indexOf('Go to Basic info')>0);
+t42Base={weight:'82',height:'174',waist:'95',age:'',gender:'male'};
+ok("nothing missing says nothing",       t42BaseMissingLine()==='');
+t42BaseTab='basic'; t42Base._ready=false;
 
 /* The brief's rule: do not ask for what the app already knows. */
 HF.data.nutrition={gender:'female', a:29, w:61.5, h:165};
