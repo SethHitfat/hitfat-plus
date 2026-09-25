@@ -3,7 +3,7 @@ shell=open('shell2.html').read()
 def rd(p): return open(p).read()
 subs=[('/*__CSS__*/','parts/hybrid-red.css'),('<!--__AUTH__-->','auth.html'),('<!--__SCANUI__-->','scanui.html'),
  ('/*__DB__*/','parts/db.js'),('/*__PROGRAMS_MULTI__*/','parts/programs_multi.js'),
- ('/*__PROGRAMS__*/','parts/programs.js'),('/*__REHABLIB__*/','parts/rehablib.js'),('/*__BARLIB__*/','parts/barlib.js'),('/*__PLANS__*/','plans2.js'),('/*__BARPLANS__*/','barplans.js'),('/*__REHABPLANS__*/','rehabplans.js'),('/*__MONTHLY__*/','monthly.js'),('/*__STORE__*/','store.js'),('/*__FINDER__*/','finder.js'),('/*__MEALDB__*/','parts/mealdb.js'),('/*__MEALPLAN__*/','mealplan.js'),('/*__CUSTOM__*/','custom.js'),('/*__PLAYER__*/','player.js'),('/*__CHALLENGES__*/','parts/challenges.js'),('/*__CLUB__*/','club.js'),
+ ('/*__PROGRAMS__*/','parts/programs.js'),('/*__REHABLIB__*/','parts/rehablib.js'),('/*__BARLIB__*/','parts/barlib.js'),('/*__PLANS__*/','plans2.js'),('/*__BARPLANS__*/','barplans.js'),('/*__REHABPLANS__*/','rehabplans.js'),('/*__MONTHLY__*/','monthly.js'),('/*__STORE__*/','store.js'),('/*__FINDER__*/','finder.js'),('/*__MEALDB__*/','parts/mealdb.js'),('/*__MEALPLAN__*/','mealplan.js'),('/*__CUSTOM__*/','custom.js'),('/*__PLAYER__*/','player.js'),('/*__CHALLENGES__*/','parts/challenges.js'),('/*__CLUB__*/','club.js'),('/*__T42__*/','t42.js'),
  ('/*__VIEWS__*/','views2.js'),('/*__EAT__*/','eat2.js'),('/*__PROG__*/','prog2.js'),
  ('/*__TRAIN__*/','train2.js'),('/*__AUTHJS__*/','authjs.js')]
 for k,f in subs:
@@ -44,13 +44,36 @@ need=['app','screen','pad','tabs','tab','hhdr','wk2','plan','ov','pi','join','ac
       'ctr-h','ctr-l','ctr-v','ctr-svg','ctr-x','cseg','cseg-l','cseg-b','cseg-v',
       'chist-r','chist-d','chist-n','chist-v','chist-s','chist-a',
       'cbal','cbal-n','cbal-l','crtabs','crt','cmis','cpts-tag','crw','crwc','crwc-h','crwc-n',
-      'crwc-c','crwc-p','crwc-b']
+      'crwc-c','crwc-p','crwc-b',
+      # T42 — the 42-day challenge
+      't42-hero','t42-logo','t42-sub','t42-by','t42-line','t42-when',
+      't42-modes','t42-mini','t42-mini-n','t42-mini-t',
+      't42-trackrow','t42-trackicon','t42-trackn',
+      't42-card','t42-card-h','t42-card-n','t42-card-t','t42-radio','t42-bul',
+      't42-note','t42-q','t42-opt','t42-field','t42-pills','t42-pill',
+      't42-photos','t42-photo','t42-photo-i','t42-photo-l','t42-code',
+      't42-count','t42-count-n','t42-count-l',
+      't42-grid','t42-stat','t42-stat-l','t42-stat-v','t42-home',
+      # T42 — the running challenge
+      't42-day','t42-day-l','t42-day-n','t42-day-s',
+      't42-row','t42-row-i','t42-row-b','t42-row-l','t42-row-v',
+      't42-tick','t42-chev','t42-rest','t42-glasses','t42-glass',
+      't42-ex','t42-ex-n','t42-ex-b','t42-ex-s',
+      # T42 — progress
+      't42-meter','t42-meter-h','t42-photo-img',
+      # T42 — leaderboard
+      't42-boards','t42-me','t42-me-l','t42-me-r','t42-me-s','t42-me-n',
+      't42-lb','t42-lb-p','t42-lb-n','t42-lb-s',
+      # T42 — the end
+      't42-trophy','t42-score','t42-score-l','t42-score-n','t42-score-r','t42-cert',
+      # T42 — gym duo
+      't42-codein','t42-duo','t42-duo-c','t42-duo-n','t42-duo-l','t42-duo-ok','t42-duo-no']
 miss=[c for c in need if c not in have]
 if miss: sys.exit('classes with no CSS: '+str(miss))
 
 ids=set(re.findall(r'id="([\w-]+)"',shell))
 needids=['home','train','eat','progress','me','tr-segs','tr-body','prog-body','eat-body',
-         'library','lib-body','scan','sharemodal','share-canvas','screen','tabs','cpm','cp-body','play','pl-video','pl-cam','pl-clock','pl-rest','pl-cd','pl-done','pl-ready','pl-modes','pl-camdot','pl-mode','pl-camhide','pl-pill','pl-next','pl-segs','mpm','mp-body','mealplan','mp-view','eat-segs','pwm','pw-body','store','store-segs','store-body','pl-nofilm','pl-nofilm-m','fqm','fq-body','tab-train-logo','monthly','mth-body','club','club-body','club-segs']
+         'library','lib-body','scan','sharemodal','share-canvas','screen','tabs','cpm','cp-body','play','pl-video','pl-cam','pl-clock','pl-rest','pl-cd','pl-done','pl-ready','pl-modes','pl-camdot','pl-mode','pl-camhide','pl-pill','pl-next','pl-segs','mpm','mp-body','mealplan','mp-view','eat-segs','pwm','pw-body','store','store-segs','store-body','pl-nofilm','pl-nofilm-m','fqm','fq-body','tab-train-logo','monthly','mth-body','club','club-body','club-segs','t42','t42-body','t42-segs']
 missid=[i for i in needids if i not in ids]
 if missid: sys.exit('ids missing: '+str(missid))
 if 'class="screen" id="screen"' not in shell: sys.exit('scroller lost its .screen class')

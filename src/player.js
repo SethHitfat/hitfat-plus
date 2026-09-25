@@ -153,6 +153,11 @@ function plFinish(){
   const m=pl.meta||{};
   if(m.key) HF.markDone(m.key,{name:m.name||'Workout', mins});
   if(m.pid && progDone(m.pid)===m.gi){ HF.data.progress[m.pid]=m.gi+1; HF.save(); }
+  /* A T42 session is logged twice on purpose: once above, in the member's
+     own diary, and once on the server for the scorer. The diary is the
+     member's and is written first — the server copy can fail and be re-sent
+     without anyone losing a session they actually did. */
+  if(m.t42day && typeof t42RecordWorkout==='function') t42RecordWorkout(m, mins);
   $('pl-dn-ex').textContent=pl.exs.length;
   $('pl-dn-min').textContent=mins;
   $('pl-dn-rnd').textContent=pl.rounds;
@@ -160,7 +165,12 @@ function plFinish(){
 }
 function plClose(){
   const back=pl&&pl.meta&&pl.meta.pid;
+  /* Closing a T42 workout returns to T42, not to Home. Dropping someone on
+     the home tab after the session their challenge asked for is the app
+     losing their place for them. */
+  const t42=pl&&pl.meta&&pl.meta.t42day;
   exitPlayer();
+  if(t42 && typeof openT42==='function') return openT42();
   if(back) backToProgram(); else switchTab('home');
 }
 

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>T42 · Admin</title>
+<!--
+  T42 · the review desk
+
+  A separate page for the same reason coach.html is one: the member app
+  shows you your own numbers, and this shows everyone's — names, emails,
+  weights, photos. Different screen, different session, different risk.
+  Desktop first, because verifying forty finals is a job done at a desk.
+
+  What it can do, and who may do it, is decided by the database, not by
+  this page:
+    · coach / staff / admin (club_members.role) can read and verify
+    · only admin can recompute scores or change a participant's status
+  Hiding a button here is a courtesy. The policies in 20- and 24- are
+  what actually say no.
+
+  It never writes a score. It verifies measurements and changes statuses,
+  and every one of those leaves a row in t42_admin_notes — a leaderboard
+  that can be edited silently is not a leaderboard.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000; --surface:#141414; --surface2:#1F1F1F; --line:#262626;
+    --txt:#fff; --dim:#9A9A9A; --dim2:#8A8A8A;
+    --hairline:rgba(255,255,255,.09); --tint:rgba(255,255,255,.07);
+    --red:#F0392B; --red-solid:#D92C1A; --red-wash:rgba(240,57,43,.13);
+    --ok:#2EC27E; --ok-wash:rgba(46,194,126,.13);
+    --warn:#F59E0B; --warn-wash:rgba(245,158,11,.13);
+    --t42:#1FA7E8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 24px 80px;}
+  h1{font-family:'Oswald';font-size:24px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  h1 .t42{background:linear-gradient(100deg,var(--t42),var(--red) 80%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .sub{font-size:13px;color:var(--dim);margin-top:3px;line-height:1.5;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;}
+  .sechead{font-size:17px;font-weight:800;margin:24px 0 12px;display:flex;align-items:center;gap:10px;}
+  .sechead::before{content:'';width:4px;height:18px;border-radius:3px;background:var(--red);}
+  .btn{background:var(--red-solid);color:#fff;border:none;border-radius:99px;padding:11px 20px;
+    font-family:'Oswald';font-weight:700;font-size:14px;letter-spacing:1.4px;text-transform:uppercase;cursor:pointer;}
+  .btn.sec{background:transparent;border:1px solid var(--hairline);color:var(--txt);}
+  .btn.ok{background:var(--ok);color:#04150c;}
+  .btn.warn{background:transparent;border:1px solid var(--warn);color:var(--warn);}
+  .btn.sm{padding:7px 13px;font-size:12px;letter-spacing:1px;}
+  .btn:disabled{opacity:.4;cursor:default;}
+  input,select{background:var(--surface2);border:1px solid var(--line);border-radius:10px;
+    padding:11px 12px;color:var(--txt);font-family:inherit;font-size:14px;}
+  input:focus,select:focus{outline:none;border-color:var(--red);}
+  .gate{max-width:380px;margin:12vh auto 0;}
+  .gate input{width:100%;margin-bottom:10px;}
+  .gate .btn{width:100%;padding:14px;}
+  .err{color:var(--red);font-size:13px;margin:8px 0;min-height:18px;}
+  .hide{display:none !important;}
+
+  .top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .top .who{margin-left:auto;font-size:12px;color:var(--dim);text-align:right;}
+  .lnk{color:var(--red);font-size:12.5px;font-weight:700;cursor:pointer;background:none;border:none;font-family:inherit;}
+
+  .tabs{display:flex;gap:8px;margin:18px 0 4px;flex-wrap:wrap;}
+  .tab{padding:9px 16px;border-radius:99px;background:var(--surface2);color:var(--dim);border:none;
+    font-family:inherit;font-weight:600;font-size:13.5px;cursor:pointer;}
+  .tab.on{background:var(--red-solid);color:#fff;}
+  .tab .n{display:inline-block;margin-left:6px;background:rgba(255,255,255,.18);border-radius:99px;
+    padding:1px 7px;font-size:11px;}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;}
+  .stat .l{font-size:10.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--dim2);}
+  .stat .v{font-family:'Oswald';font-size:26px;font-weight:700;margin-top:4px;}
+  .stat .s{font-size:12px;color:var(--dim);margin-top:2px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+    color:var(--dim2);padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  td{padding:10px;border-bottom:1px solid var(--hairline);vertical-align:top;}
+  tr.dq td{opacity:.5;}
+  .tbl{overflow-x:auto;}
+  .pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;
+    letter-spacing:.4px;background:var(--tint);color:var(--dim);white-space:nowrap;}
+  .pill.ok{background:var(--ok-wash);color:var(--ok);}
+  .pill.warn{background:var(--warn-wash);color:var(--warn);}
+  .pill.bad{background:var(--red-wash);color:var(--red);}
+  .muted{color:var(--dim);font-size:12px;}
+  .num{font-family:'Oswald';font-size:15px;font-weight:600;}
+
+  /* one measurement waiting on a decision */
+  .vq{display:grid;grid-template-columns:1fr auto;gap:16px;}
+  .vq h3{font-size:15px;font-weight:700;}
+  .cmp{display:grid;grid-template-columns:repeat(3,minmax(90px,auto));gap:6px 18px;margin-top:10px;
+    font-size:13px;}
+  .cmp .h{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim2);}
+  .photos{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+  .photos img{width:120px;height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--line);}
+  .acts{display:flex;flex-direction:column;gap:8px;min-width:170px;}
+  .form{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px;}
+  .form label{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim2);
+    display:block;margin-bottom:5px;}
+  .form input,.form select{width:100%;}
+
+  #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+    background:#fff;color:#000;padding:12px 18px;border-radius:12px;font-weight:600;font-size:14px;
+    opacity:0;transition:.25s;pointer-events:none;z-index:9;}
+  #toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="gate" class="gate">
+    <h1><span class="t42">T42</span> · Admin</h1>
+    <div class="sub" id="lead" style="margin:6px 0 18px;">Sign in with a coach, staff or admin account.</div>
+    <input id="em" type="email" placeholder="Email" autocomplete="username">
+    <input id="pw" type="password" placeholder="Password" autocomplete="current-password"
+           onkeydown="if(event.key==='Enter')signIn()">
+    <div class="err" id="gerr"></div>
+    <button class="btn" id="gbtn" onclick="signIn()">Sign in</button>
+  </div>
+
+  <div id="app" class="hide">
+    <div class="top">
+      <h1><span class="t42">T42</span> · Review desk</h1>
+      <select id="edition" onchange="pickEdition(this.value)"></select>
+      <div class="who"><span id="who"></span><br><button class="lnk" onclick="signOut()">Sign out</button></div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-t="overview" onclick="goTab('overview')">Overview</button>
+      <button class="tab" data-t="verify" onclick="goTab('verify')">Verification<span class="n" id="vcount">0</span></button>
+      <button class="tab" data-t="people" onclick="goTab('people')">Participants</button>
+      <button class="tab" data-t="gym" onclick="goTab('gym')">Gym duo</button>
+    </div>
+
+    <div id="body"></div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPA_URL='https://ercvaagznsndvrewlvgt.supabase.co';
+const SUPA_KEY='sb_publishable_aZ5NIn03riGJ_ikX0R5-rQ_oOfoS0G7';
+let sb=null;
+try{ sb=window.supabase.createClient(SUPA_URL,SUPA_KEY); }catch(e){}
+
+const $=id=>document.getElementById(id);
+let me=null, isAdmin=false, editions=[], ed=null, tab='overview';
+let people=[], queue=[], baselines={}, photoUrls={}, filter='';
+
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2600); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmt(n,d){ if(n==null||isNaN(n)) return '—'; return Number(n).toFixed(d==null?1:d); }
+function when(iso){ try{ return new Date(iso).toLocaleString('en-MY',{day:'numeric',month:'short',
+  hour:'numeric',minute:'2-digit'}); }catch(e){ return ''; } }
+function pct(a,b){ if(a==null||b==null||!a) return null; return (b-a)/a*100; }
+const TRACK={start:'START',transform:'TRANSFORM',perform:'PERFORM'};
+const MODE={online_solo:'Online',gym_duo:'Gym duo'};
+
+
+/* ── sign in ─────────────────────────────────────────────────────
+   Standing comes from club_members, the same table coach.html reads. A
+   participant who signs in here gets the same refusal as a stranger. */
+async function signIn(){
+  const btn=$('gbtn'); btn.disabled=true; btn.textContent='Checking…'; $('gerr').textContent='';
+  try{
+    const r=await sb.auth.signInWithPassword({email:$('em').value.trim(), password:$('pw').value});
+    if(r.error) throw r.error;
+    await afterAuth();
+  }catch(e){
+    $('gerr').textContent=(e&&e.message)||'Could not sign in.';
+    btn.disabled=false; btn.textContent='Sign in';
+  }
+}
+async function signOut(){
+  try{ await sb.auth.signOut(); }catch(e){}
+  me=null; isAdmin=false;
+  $('app').classList.add('hide'); $('gate').classList.remove('hide');
+  $('gbtn').disabled=false; $('gbtn').textContent='Sign in';
+}
+
+async function afterAuth(){
+  const s=await sb.auth.getSession();
+  const uid=s&&s.data&&s.data.session&&s.data.session.user.id;
+  if(!uid) return;
+  const m=await sb.from('club_members').select('user_id,role').eq('user_id',uid).maybeSingle();
+  if(m.error){
+    const c=m.error.code||'', msg=m.error.message||'';
+    if(c==='42P01'||c==='PGRST205'||/does not exist|schema cache/i.test(msg))
+      throw new Error('The staff table is not set up on this database yet. Run 10-club-tables.sql.');
+    throw new Error('Could not check your access.');
+  }
+  const role=m.data&&m.data.role;
+  if(!m.data || ['coach','staff','admin'].indexOf(role)<0){
+    await sb.auth.signOut();
+    throw new Error('That account is not staff.');
+  }
+  me={id:uid, role:role}; isAdmin = role==='admin';
+  $('who').textContent=role.toUpperCase();
+  $('gate').classList.add('hide'); $('app').classList.remove('hide');
+  await loadEditions();
+}
+
+
+/* ── editions ─────────────────────────────────────────────────── */
+async function loadEditions(){
+  const r=await sb.from('t42_challenges').select('id,name,status,starts_on,total_days')
+    .order('starts_on',{ascending:false});
+  if(r.error){ $('body').innerHTML='<div class="card">'+esc(r.error.message)+'</div>'; return; }
+  editions=r.data||[];
+  if(!editions.length){
+    $('body').innerHTML='<div class="card"><div class="sub">No T42 edition exists yet. '+
+      'Run 21-t42-seed.sql to create the first one.</div></div>';
+    return;
+  }
+  $('edition').innerHTML=editions.map(e=>'<option value="'+e.id+'">'+esc(e.name)+' · '+esc(e.status)+'</option>').join('');
+  await pickEdition(editions[0].id);
+}
+async function pickEdition(id){
+  ed=editions.find(e=>e.id===id)||null;
+  gymLoaded=false; inbodyFor=null;
+  $('edition').value=id;
+  await loadAll();
+}
+
+function realDay(){
+  if(!ed) return 0;
+  const s=new Date(ed.starts_on+'T00:00:00'), t=new Date(); t.setHours(0,0,0,0);
+  return t<s ? 0 : Math.floor((t-s)/86400000)+1;
+}
+async function finalise(){
+  if(!isAdmin) return;
+  if(!window.confirm('Close '+ed.name+'? Results become final and certificates are issued. This cannot be undone.')) return;
+  const b=$('fnbtn'); if(b){ b.disabled=true; b.textContent='Finalising…'; }
+  try{
+    const r=await sb.rpc('t42_finalise',{p_challenge:ed.id});
+    if(r.error) throw r.error;
+    const d=r.data||{};
+    toast((d.certificates||0)+' certificates issued · '+(d.completed||0)+' finishers');
+    await loadEditions();
+  }catch(e){
+    toast((e&&e.message)||'Could not finalise');
+    if(b){ b.disabled=false; b.textContent='Finalise and issue certificates'; }
+  }
+}
+
+function dayNo(){
+  if(!ed) return 0;
+  const s=new Date(ed.starts_on+'T00:00:00'), t=new Date(); t.setHours(0,0,0,0);
+  if(t<s) return 0;
+  return Math.min(ed.total_days||42, Math.floor((t-s)/86400000)+1);
+}
+
+
+/* ── the data ─────────────────────────────────────────────────────
+   People come through t42_admin_participants, which joins auth.users for
+   names and emails and returns nothing at all to anyone who is not staff.
+   Measurements are read straight from the table: staff can see them under
+   the policies in 20-t42-core.sql. */
+async function loadAll(){
+  $('body').innerHTML='<div class="card"><div class="sub">Loading…</div></div>';
+  photoUrls={};
+  const p=await sb.rpc('t42_admin_participants',{p_challenge:ed.id});
+  if(p.error){ $('body').innerHTML='<div class="card">'+esc(p.error.message)+'</div>'; return; }
+  people=p.data||[];
+
+  const ids=people.map(x=>x.registration_id);
+  queue=[]; baselines={};
+  if(ids.length){
+    const m=await sb.from('t42_measurements').select('*').in('registration_id',ids);
+    if(!m.error){
+      (m.data||[]).forEach(x=>{ if(x.phase==='baseline') baselines[x.registration_id]=x; });
+      queue=(m.data||[]).filter(x=>['pending','flagged','resubmit'].indexOf(x.verify_status)>=0)
+        /* Finals first: those are what the results wait on. */
+        .sort((a,b)=>(a.phase==='final'?0:1)-(b.phase==='final'?0:1) ||
+                      String(a.updated_at).localeCompare(String(b.updated_at)));
+    }
+  }
+  $('vcount').textContent=queue.filter(x=>x.verify_status==='pending').length;
+  render();
+}
+
+function person(regId){ return people.find(p=>p.registration_id===regId)||{}; }
+
+function goTab(t){
+  tab=t;
+  Array.prototype.forEach.call($('tabs').children,b=>b.classList.toggle('on',b.getAttribute('data-t')===t));
+  render();
+}
+function render(){
+  if(tab==='verify') return renderVerify();
+  if(tab==='people') return renderPeople();
+  if(tab==='gym')    return renderGym();
+  return renderOverview();
+}
+
+
+/* ── overview ─────────────────────────────────────────────────── */
+function renderOverview(){
+  const n=people.length;
+  const live=people.filter(p=>['withdrawn','disqualified'].indexOf(p.status)<0);
+  const by=(k,v)=>live.filter(p=>p[k]===v).length;
+  const base=live.filter(p=>p.baseline_ok).length;
+  const fin=live.filter(p=>p.final_status==='verified').length;
+  const finP=live.filter(p=>p.final_status==='pending').length;
+  const ranked=live.filter(p=>p.eligible).length;
+  const pend=queue.filter(x=>x.verify_status==='pending').length;
+  const day=dayNo();
+
+  let h='<div class="sechead">'+esc(ed.name)+'</div>'+
+    '<div class="sub" style="margin:-4px 0 14px;">'+
+      (day?'Day '+day+' of '+(ed.total_days||42):'Starts '+esc(ed.starts_on))+' · '+esc(ed.status)+'</div>'+
+    '<div class="stats">'+
+      stat('Participants', live.length, n>live.length?(n-live.length)+' withdrawn or out':'')+
+      stat('Online solo', by('mode','online_solo'), '')+
+      stat('Gym duo', by('mode','gym_duo'), 'registered interest')+
+      stat('START', by('track','start'), '')+
+      stat('TRANSFORM', by('track','transform'), '')+
+      stat('PERFORM', by('track','perform'), '')+
+      stat('Baseline done', base, live.length?Math.round(base/live.length*100)+'%':'')+
+      stat('Finals verified', fin, finP?finP+' waiting':'')+
+      stat('Ranked', ranked, live.length-ranked?(live.length-ranked)+' not yet':'')+
+      stat('To verify', pend, pend?'see Verification':'queue is clear')+
+    '</div>';
+
+  h+='<div class="sechead">Scores</div><div class="card">'+
+    '<div class="sub">Scores are computed by the database — hourly, if pg_cron is installed, '+
+    'and whenever an admin recomputes. This page never writes a score.</div>'+
+    (isAdmin
+      ? '<button class="btn" style="margin-top:12px;" id="rcbtn" onclick="recompute()">Recompute now</button>'
+      : '<div class="muted" style="margin-top:10px;">Recomputing is admin-only.</div>')+
+    '</div>';
+
+  /* Closing the edition. Only from the last day, only by an admin, and the
+     database refuses on its own if anyone on a podium has a final nobody
+     has checked — the count below is so that refusal is never a surprise. */
+  if(isAdmin && ed.status!=='complete'){
+    const ready=realDay()>=(ed.total_days||42);
+    const podium=people.filter(p=>p.eligible && p.rank_category!=null && p.rank_category<=3 &&
+                                   p.final_status!=='verified').length;
+    h+='<div class="sechead">Close this edition</div><div class="card">'+
+      '<div class="sub">Scores it as final, marks finishers complete and issues every certificate — '+
+      'FINISHER for everyone who completed it, CHAMPION for first place on each board. '+
+      'Certificates are frozen once issued.</div>'+
+      (!ready ? '<div class="muted" style="margin-top:10px;">Available from day '+(ed.total_days||42)+'.</div>'
+       : podium ? '<div class="err" style="margin-top:10px;">'+podium+' podium final'+(podium>1?'s are':' is')+
+                  ' not verified yet. Verify '+(podium>1?'them':'it')+' first.</div>'
+       : '')+
+      '<button class="btn" style="margin-top:12px;" id="fnbtn" onclick="finalise()"'+
+        (ready?'':' disabled')+'>Finalise and issue certificates</button></div>';
+  } else if(ed.status==='complete'){
+    h+='<div class="sechead">Closed</div><div class="card"><div class="sub">This edition is complete. '+
+       'Results and certificates are with the participants.</div></div>';
+  }
+
+  /* The leaders, per category, with the numbers behind them — which is the
+     view a public leaderboard must never show and a reviewer needs. */
+  const cats={};
+  people.filter(p=>p.eligible && p.rank_category!=null).forEach(p=>{ (cats[p.category]=cats[p.category]||[]).push(p); });
+  const names=Object.keys(cats).sort();
+  if(names.length){
+    h+='<div class="sechead">Top three, by category</div><div class="stats">';
+    names.forEach(c=>{
+      const top=cats[c].sort((a,b)=>a.rank_category-b.rank_category).slice(0,3);
+      h+='<div class="stat"><div class="l">'+esc(c.replace(/_/g,' '))+'</div>'+
+        top.map(p=>'<div style="margin-top:7px;font-size:13px;"><b>#'+p.rank_category+'</b> '+
+          esc(p.full_name)+' <span class="muted">'+fmt(p.total)+
+          (p.final_status==='pending'?' · final unverified':'')+'</span></div>').join('')+'</div>';
+    });
+    h+='</div>';
+  }
+  $('body').innerHTML=h;
+}
+function stat(l,v,s){ return '<div class="stat"><div class="l">'+esc(l)+'</div><div class="v">'+v+
+  '</div>'+(s?'<div class="s">'+esc(s)+'</div>':'')+'</div>'; }
+
+async function recompute(){
+  if(!isAdmin) return;
+  const b=$('rcbtn'); if(b){ b.disabled=true; b.textContent='Computing…'; }
+  try{
+    const r=await sb.rpc('t42_recompute',{p_challenge:ed.id});
+    if(r.error) throw r.error;
+    toast(r.data+' participants scored');
+    await loadAll();
+  }catch(e){
+    toast((e&&e.message)||'Could not recompute');
+    if(b){ b.disabled=false; b.textContent='Recompute now'; }
+  }
+}
+
+
+/* ── verification ─────────────────────────────────────────────────
+   Each item shows the baseline beside the measurement being checked, the
+   change between them, and the photos on request. Photos are fetched as
+   signed links that expire in an hour, only when asked for — opening this
+   tab does not pull forty people's bodies onto the screen. */
+function renderVerify(){
+  if(!queue.length){
+    $('body').innerHTML='<div class="sechead">Verification</div><div class="card">'+
+      '<div class="sub">Nothing is waiting. Finals appear here as participants submit them.</div></div>';
+    return;
+  }
+  let h='<div class="sechead">Verification</div>';
+  queue.forEach(m=>{
+    const p=person(m.registration_id), b=baselines[m.registration_id]||{};
+    const dw=pct(b.weight_kg,m.weight_kg), dc=pct(b.waist_cm,m.waist_cm);
+    const st=m.verify_status;
+    const imgs=['front','side','back'].map(s=>m['photo_'+s]).filter(Boolean);
+    const shown=imgs.length && imgs.every(x=>photoUrls[x]);
+    h+='<div class="card vq"><div>'+
+      '<h3>'+esc(p.full_name||'Participant')+' <span class="muted">· '+esc(p.email||'')+'</span></h3>'+
+      '<div class="sub">'+esc((m.phase||'').toUpperCase())+' · '+esc(TRACK[p.track]||'')+' · '+
+        esc(MODE[p.mode]||'')+' · code <b>'+esc(p.verify_code||'—')+'</b> · submitted '+esc(when(m.updated_at))+'</div>'+
+      '<div style="margin-top:8px;"><span class="pill '+(st==='pending'?'warn':st==='flagged'?'bad':'')+'">'+
+        esc(st)+'</span>'+(m.verify_note?' <span class="muted">'+esc(m.verify_note)+'</span>':'')+'</div>'+
+      '<div class="cmp">'+
+        '<div class="h"></div><div class="h">Baseline</div><div class="h">This</div>'+
+        '<div class="muted">Weight</div><div class="num">'+fmt(b.weight_kg)+' kg</div>'+
+          '<div class="num">'+fmt(m.weight_kg)+' kg <span class="muted">'+(dw!=null?(dw>0?'+':'')+fmt(dw)+'%':'')+'</span></div>'+
+        '<div class="muted">Waist</div><div class="num">'+fmt(b.waist_cm)+' cm</div>'+
+          '<div class="num">'+fmt(m.waist_cm)+' cm <span class="muted">'+(dc!=null?(dc>0?'+':'')+fmt(dc)+'%':'')+'</span></div>'+
+      '</div>'+
+      (imgs.length
+        ? (shown
+            ? '<div class="photos">'+imgs.map(x=>'<img src="'+esc(photoUrls[x])+'" alt="">').join('')+'</div>'
+            : '<button class="btn sec sm" style="margin-top:12px;" onclick="showPhotos(\''+m.id+'\')">Show '+imgs.length+' photo'+(imgs.length>1?'s':'')+'</button>')
+        : '<div class="muted" style="margin-top:12px;">No photos submitted.</div>')+
+      '</div><div class="acts">'+
+        '<button class="btn ok sm" onclick="decide(\''+m.id+'\',\'verified\')">Verify</button>'+
+        '<button class="btn warn sm" onclick="decide(\''+m.id+'\',\'resubmit\')">Ask to resubmit</button>'+
+        '<button class="btn sec sm" onclick="decide(\''+m.id+'\',\'flagged\')">Flag</button>'+
+      '</div></div>';
+  });
+  $('body').innerHTML=h;
+}
+
+async function showPhotos(mid){
+  const m=queue.find(x=>x.id===mid); if(!m) return;
+  const paths=['front','side','back'].map(s=>m['photo_'+s]).filter(Boolean);
+  try{
+    const r=await sb.storage.from('t42-photos').createSignedUrls(paths,3600);
+    if(r.error) throw r.error;
+    (r.data||[]).forEach(o=>{ if(o.path&&o.signedUrl) photoUrls[o.path]=o.signedUrl; });
+    renderVerify();
+  }catch(e){ toast((e&&e.message)||'Could not open the photos'); }
+}
+
+/* A decision on a measurement. Verify needs no reason; the other two do,
+   because the participant is the one who has to act on them. */
+async function decide(mid,status){
+  const m=queue.find(x=>x.id===mid); if(!m) return;
+  let note=null;
+  if(status!=='verified'){
+    note=window.prompt(status==='resubmit'
+      ? 'What should they fix? They will see this.'
+      : 'Why is this flagged? Kept for the review record.');
+    if(note===null) return;
+    note=note.trim();
+    if(!note){ toast('A reason is needed'); return; }
+  }
+  try{
+    const before={verify_status:m.verify_status, verify_note:m.verify_note};
+    const patch={verify_status:status, verify_note:note, verified_by:me.id,
+                 verified_at:new Date().toISOString()};
+    const u=await sb.from('t42_measurements').update(patch).eq('id',mid).select().maybeSingle();
+    if(u.error) throw u.error;
+    await sb.from('t42_admin_notes').insert({
+      challenge_id:ed.id, registration_id:m.registration_id,
+      action: status==='verified'?'verify':status==='flagged'?'flag':'resubmit',
+      detail: (m.phase||'')+(note?': '+note:''),
+      before_value:before, after_value:{verify_status:status, verify_note:note},
+      acted_by:me.id
+    });
+    toast(status==='verified'?'Verified':status==='flagged'?'Flagged':'Sent back for resubmission');
+    await loadAll();
+  }catch(e){ toast((e&&e.message)||'Could not save that decision'); }
+}
+
+
+/* ── participants ─────────────────────────────────────────────── */
+function renderPeople(){
+  const q=filter.toLowerCase();
+  const rows=people.filter(p=>!q || [p.full_name,p.email,p.verify_code,p.category,p.track,p.status]
+    .some(v=>String(v||'').toLowerCase().indexOf(q)>=0));
+  let h='<div class="sechead">Participants</div>'+
+    '<input style="width:100%;max-width:360px;margin-bottom:12px;" placeholder="Search name, email, code, track…" '+
+    'value="'+esc(filter)+'" oninput="filter=this.value;renderPeople();this.focus();">'+
+    '<div class="card tbl"><table><thead><tr>'+
+      '<th>Name</th><th>Mode</th><th>Track</th><th>Status</th><th>Baseline</th><th>Final</th>'+
+      '<th>Category</th><th>Rank</th><th>Score</th><th>Note</th>'+(isAdmin?'<th></th>':'')+
+    '</tr></thead><tbody>';
+  rows.forEach(p=>{
+    const out=['withdrawn','disqualified'].indexOf(p.status)>=0;
+    h+='<tr'+(out?' class="dq"':'')+'>'+
+      '<td><b>'+esc(p.full_name)+'</b><div class="muted">'+esc(p.email)+' · '+esc(p.verify_code||'')+'</div></td>'+
+      '<td>'+esc(MODE[p.mode]||p.mode)+'</td>'+
+      '<td>'+esc(TRACK[p.track]||p.track)+'<div class="muted">'+esc(p.gender||'—')+'</div></td>'+
+      '<td><span class="pill '+(out?'bad':p.status==='active'||p.status==='paid'?'ok':'')+'">'+esc(p.status)+'</span></td>'+
+      '<td>'+(p.baseline_ok?'<span class="pill ok">done</span>':'<span class="pill">missing</span>')+'</td>'+
+      '<td>'+(p.final_status?'<span class="pill '+(p.final_status==='verified'?'ok':'warn')+'">'+esc(p.final_status)+'</span>':'<span class="muted">—</span>')+'</td>'+
+      '<td class="muted">'+esc((p.category||'—').replace(/_/g,' '))+'</td>'+
+      '<td class="num">'+(p.rank_category!=null?'#'+p.rank_category:'—')+'</td>'+
+      '<td class="num">'+fmt(p.category==='consistency'?p.consistency_total:p.total)+'</td>'+
+      '<td class="muted">'+esc(p.note||'')+'</td>'+
+      (isAdmin
+        ? '<td>'+(out
+            ? '<button class="btn sec sm" onclick="setStatus(\''+p.registration_id+'\',\'active\')">Reinstate</button>'
+            : '<button class="btn sec sm" onclick="setStatus(\''+p.registration_id+'\',\'disqualified\')">Disqualify</button>')+'</td>'
+        : '')+
+    '</tr>';
+  });
+  h+='</tbody></table>'+(rows.length?'':'<div class="sub" style="padding:14px;">No one matches.</div>')+'</div>';
+  $('body').innerHTML=h;
+}
+
+/* Status changes are admin-only in the database (t42_reg_admin); the
+   button is hidden for anyone else as a courtesy. Each needs a reason and
+   leaves a before/after row, because a disqualification is exactly the
+   decision someone will later ask about. */
+async function setStatus(regId,status){
+  if(!isAdmin) return;
+  const p=person(regId);
+  const why=window.prompt((status==='disqualified'?'Disqualify ':'Reinstate ')+(p.full_name||'this participant')+
+    '? Give the reason — it is kept in the audit log.');
+  if(why===null) return;
+  if(!why.trim()){ toast('A reason is needed'); return; }
+  try{
+    const u=await sb.from('t42_registrations').update({status:status}).eq('id',regId).select().maybeSingle();
+    if(u.error) throw u.error;
+    await sb.from('t42_admin_notes').insert({
+      challenge_id:ed.id, registration_id:regId,
+      action: status==='disqualified'?'disqualify':'reinstate',
+      detail: why.trim(),
+      before_value:{status:p.status}, after_value:{status:status},
+      acted_by:me.id
+    });
+    toast(status==='disqualified'?'Disqualified — recompute to update the ranks':'Reinstated — recompute to update the ranks');
+    await loadAll();
+  }catch(e){ toast((e&&e.message)||'Could not change that'); }
+}
+
+
+/* ── gym duo ─────────────────────────────────────────────────────
+   The gym side of T42, for the people at the counter. Attendance here is
+   read from Club check-ins — the coach scanning a QR is the verification.
+   The InBody is typed in from the machine's printout, onto the member's own
+   baseline or final. Gym access is a Club membership for the length of the
+   edition, and only an admin can grant one. */
+let gym=[], gymLoaded=false, inbodyFor=null;
+
+async function loadGym(){
+  const r=await sb.rpc('t42_gym_roster',{p_challenge:ed.id});
+  if(r.error){
+    const msg=r.error.message||'';
+    gym=[]; gymLoaded='error:'+(/t42_gym_roster|schema cache|does not exist/i.test(msg)
+      ? 'The gym functions are not installed. Run 26-t42-gym.sql, after the Club schema.' : msg);
+  } else { gym=r.data||[]; gymLoaded=true; }
+}
+
+async function renderGym(){
+  if(!gymLoaded){ $('body').innerHTML='<div class="card"><div class="sub">Loading the gym register…</div></div>';
+                  await loadGym(); }
+  if(typeof gymLoaded==='string'){
+    $('body').innerHTML='<div class="sechead">Gym duo</div><div class="card"><div class="sub">'+
+      esc(gymLoaded.slice(6))+'</div></div>';
+    return;
+  }
+  const today=gym.filter(g=>g.attended_today).length;
+  const noAccess=gym.filter(g=>!g.club_member || g.club_status!=='active').length;
+  const noInbody=gym.filter(g=>g.track==='transform' && !g.baseline_inbody).length;
+  const solo=gym.filter(g=>!g.duo_code).length;
+
+  let h='<div class="sechead">Gym duo</div><div class="stats">'+
+    stat('Gym participants', gym.length, '')+
+    stat('In today', today, 'checked in at the counter')+
+    stat('Not paired', solo, solo?'cannot be ranked':'')+
+    stat('Need gym access', noAccess, noAccess?'Club check-in will refuse them':'')+
+    stat('Need baseline InBody', noInbody, noInbody?'TRANSFORM only':'')+
+  '</div>';
+
+  if(inbodyFor){
+    const g=gym.find(x=>x.registration_id===inbodyFor)||{};
+    h+='<div class="card" style="margin-top:14px;border-color:var(--t42);">'+
+      '<b>InBody · '+esc(g.full_name||'')+'</b>'+
+      '<div class="sub">Type it from the machine\'s printout. This goes onto their own measurement; '+
+      'they can never change it themselves.</div>'+
+      '<div class="form">'+
+        '<div><label>Checkpoint</label><select id="ib-phase"><option value="baseline">Baseline</option>'+
+          '<option value="final">Final</option></select></div>'+
+        '<div><label>Weight kg</label><input id="ib-w" type="number" step="0.1"></div>'+
+        '<div><label>Body fat %</label><input id="ib-bf" type="number" step="0.1"></div>'+
+        '<div><label>Muscle kg (SMM)</label><input id="ib-mm" type="number" step="0.1"></div>'+
+        '<div><label>Visceral fat</label><input id="ib-vf" type="number" step="0.5"></div>'+
+        '<div><label>InBody score</label><input id="ib-sc" type="number" step="1"></div>'+
+      '</div>'+
+      '<div style="display:flex;gap:8px;margin-top:12px;">'+
+        '<button class="btn sm" onclick="saveInbody()">Save InBody</button>'+
+        '<button class="btn sec sm" onclick="inbodyFor=null;renderGym();">Cancel</button></div></div>';
+  }
+
+  h+='<div class="card tbl" style="margin-top:14px;"><table><thead><tr>'+
+    '<th>Name</th><th>Duo</th><th>Track</th><th>Baseline</th><th>InBody</th><th>Gym days</th>'+
+    '<th>Today</th><th>Gym access</th><th></th></tr></thead><tbody>';
+  gym.forEach(g=>{
+    const access=g.club_member && g.club_status==='active';
+    h+='<tr>'+
+      '<td><b>'+esc(g.full_name)+'</b><div class="muted">'+esc(g.email)+'</div></td>'+
+      '<td>'+(g.duo_code?'<b>'+esc(g.duo_code)+'</b><div class="muted">'+esc(g.partner_name||'waiting for partner')+'</div>'
+                        :'<span class="pill warn">not paired</span>')+'</td>'+
+      '<td>'+esc(TRACK[g.track]||g.track)+'<div class="muted">'+esc(g.gender||'—')+'</div></td>'+
+      '<td>'+(g.baseline_ok?'<span class="pill ok">done</span>':'<span class="pill">missing</span>')+'</td>'+
+      '<td><span class="pill '+(g.baseline_inbody?'ok':'')+'">start '+(g.baseline_inbody?'✓':'—')+'</span> '+
+          '<span class="pill '+(g.final_inbody?'ok':'')+'">final '+(g.final_inbody?'✓':'—')+'</span></td>'+
+      '<td class="num">'+(g.attended||0)+'</td>'+
+      '<td>'+(g.attended_today?'<span class="pill ok">in</span>':'<span class="muted">—</span>')+'</td>'+
+      '<td>'+(access?'<span class="pill ok">active</span>'
+                    :'<span class="pill bad">'+esc(g.club_member?g.club_status:'none')+'</span>')+'</td>'+
+      '<td style="white-space:nowrap;">'+
+        '<button class="btn sec sm" onclick="openInbody(\''+g.registration_id+'\')">InBody</button> '+
+        (isAdmin && !access ? '<button class="btn sm" onclick="grantGym(\''+g.registration_id+'\')">Give access</button>':'')+
+      '</td></tr>';
+  });
+  h+='</tbody></table>'+(gym.length?'':'<div class="sub" style="padding:14px;">No one has chosen Gym Duo in this edition.</div>')+'</div>';
+  $('body').innerHTML=h;
+}
+
+function openInbody(regId){ inbodyFor=regId; renderGym(); window.scrollTo(0,0); }
+
+/* The InBody lands on the member's own baseline or final row. If that row
+   does not exist yet it is created — with nothing but the InBody on it —
+   and the member fills in the rest from the app. Verification status is
+   left alone: a coach typing a printout is not a reviewer checking a
+   final, and the two are different jobs. */
+async function saveInbody(){
+  const regId=inbodyFor; if(!regId) return;
+  const phase=$('ib-phase').value;
+  const num=id=>{ const v=parseFloat($(id).value); return isNaN(v)?null:v; };
+  const bf=num('ib-bf');
+  if(bf==null || bf<3 || bf>70){ toast('Enter the body fat % from the printout'); return; }
+  const patch={body_fat_pct:bf, muscle_mass_kg:num('ib-mm'), visceral_fat:num('ib-vf'),
+               inbody_score:num('ib-sc'), source:'inbody'};
+  const w=num('ib-w'); if(w!=null) patch.weight_kg=w;
+  try{
+    const ex=await sb.from('t42_measurements').select('id,body_fat_pct')
+      .eq('registration_id',regId).eq('phase',phase).maybeSingle();
+    if(ex.error) throw ex.error;
+    let r;
+    if(ex.data){
+      r=await sb.from('t42_measurements').update(patch).eq('id',ex.data.id);
+    } else {
+      r=await sb.from('t42_measurements').insert(Object.assign({registration_id:regId, phase:phase,
+        verify_status: phase==='final'?'pending':'none'}, patch));
+    }
+    if(r.error) throw r.error;
+    await sb.from('t42_admin_notes').insert({
+      challenge_id:ed.id, registration_id:regId, action:'inbody',
+      detail: phase+' InBody: '+bf+'% body fat',
+      before_value: ex.data?{body_fat_pct:ex.data.body_fat_pct}:null,
+      after_value: patch, acted_by:me.id });
+    toast('InBody saved');
+    inbodyFor=null; gymLoaded=false;
+    await renderGym();
+  }catch(e){ toast((e&&e.message)||'Could not save the InBody'); }
+}
+
+async function grantGym(regId){
+  if(!isAdmin) return;
+  const g=gym.find(x=>x.registration_id===regId)||{};
+  if(!window.confirm('Give '+(g.full_name||'this participant')+' gym access for the length of '+ed.name+
+                     '? This creates a Club membership so the counter can check them in.')) return;
+  try{
+    const r=await sb.rpc('t42_gym_enrol',{p_registration:regId});
+    if(r.error) throw r.error;
+    toast(r.data||'Gym access granted');
+    gymLoaded=false; await renderGym();
+  }catch(e){ toast((e&&e.message)||'Could not grant gym access'); }
+}
+
+
+/* A reload keeps the session: staff should not sign in again mid-review. */
+(async function boot(){
+  if(!sb){ $('gerr').textContent='Could not reach the server.'; return; }
+  try{
+    const s=await sb.auth.getSession();
+    if(s&&s.data&&s.data.session) await afterAuth();
+  }catch(e){ $('gerr').textContent=(e&&e.message)||''; }
+})();
+</script>
+</body>
+</html>

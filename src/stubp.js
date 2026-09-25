@@ -6,6 +6,7 @@ function _ctx2d(){
   return {
     fillRect:function(a,b,c,d){chk(a,b,c,d);_canvas.rects++;},
     clearRect:function(a,b,c,d){chk(a,b,c,d);},
+    strokeRect:function(a,b,c,d){chk(a,b,c,d);_canvas.strokes++;},
     fillText:function(t,a,b){chk(a,b);_canvas.texts++;},
     measureText:function(t){return {width:String(t).length*9};},
     createRadialGradient:function(){return {addColorStop:function(){}};},

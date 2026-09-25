@@ -1119,3 +1119,212 @@
     font-weight:700;color:var(--dim);background:var(--tint);border:none;font-family:inherit;}
   .crwc-b.go{background:var(--hitfat-solid);color:var(--hitfat-ink);cursor:pointer;}
   .crwc-b.out{color:var(--dim2);}
+
+  /* ── T42 · TRANSFORMATION 42 DAYS ─────────────────────────────────
+     A campaign identity, not a second design system. The tokens below are
+     the app's own — the only thing T42 adds is one blue, used on the logo
+     and on a selected card and nowhere else. The brief asked for a navy
+     page and an electric blue; a whole second palette would make T42 read
+     as a different app inside the app it is supposed to belong to.
+
+     Light theme is handled the way everything else here handles it: by
+     using tokens rather than literals, so the block below needs no
+     [data-theme="light"] twin. --t42 is the one exception and is legible
+     on both grounds.                                                    */
+  :root{ --t42:#1FA7E8; --t42-ink:#FFFFFF; }
+
+  .t42-hero{text-align:center;padding:26px 8px 20px;}
+  /* inline-block on purpose: background-clip:text paints the ELEMENT's box,
+     and a full-width block centres three glyphs in the middle of it — so the
+     blue at 0% landed on empty margin and the logo came out plain red. The
+     box has to hug the letters for the gradient to cross them. */
+  .t42-logo{display:inline-block;font-family:'Oswald';font-weight:700;font-size:62px;
+    line-height:.9;letter-spacing:-1px;color:var(--txt);
+    background:linear-gradient(100deg,var(--t42) 0%,var(--hyrox) 78%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .t42-sub{font-family:'Oswald';font-size:12px;font-weight:600;letter-spacing:3.5px;
+    color:var(--ink-72);margin-top:6px;text-transform:uppercase;}
+  .t42-by{font-size:10.5px;font-weight:700;letter-spacing:2.4px;color:var(--dim2);
+    margin-top:10px;text-transform:uppercase;}
+  .t42-line{font-size:14.5px;color:var(--ink-72);margin-top:13px;line-height:1.55;}
+  .t42-when{text-align:center;font-family:'Oswald';font-size:13px;font-weight:600;
+    letter-spacing:1.6px;text-transform:uppercase;color:var(--hyrox);margin-bottom:16px;}
+
+  /* the two experiences, side by side on the landing screen */
+  .t42-modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .t42-mini{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 12px;}
+  .t42-mini-n{font-family:'Oswald';font-size:14px;font-weight:700;letter-spacing:1.2px;color:var(--txt);}
+  .t42-mini-t{font-size:12px;color:var(--dim);margin-top:5px;line-height:1.45;}
+
+  .t42-trackrow{display:flex;align-items:center;gap:12px;padding:11px 0;
+    border-bottom:1px solid var(--hairline);}
+  .t42-trackrow:last-child{border-bottom:none;}
+  .t42-trackicon{font-size:20px;line-height:1;}
+  .t42-trackn{font-family:'Oswald';font-size:15px;font-weight:700;letter-spacing:1.2px;color:var(--txt);}
+
+  /* a choosable card — mode, track, and the assessment result */
+  .t42-card{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;
+    padding:15px 14px;margin-bottom:11px;cursor:pointer;box-shadow:var(--lift);}
+  .t42-card.on{border-color:var(--hyrox);background:var(--accent-wash);}
+  .t42-card-h{display:flex;align-items:center;gap:10px;}
+  .t42-card-n{font-family:'Oswald';font-size:18px;font-weight:700;letter-spacing:1.6px;
+    color:var(--txt);flex:1;}
+  .t42-card-t{font-size:13px;color:var(--ink-72);margin-top:7px;line-height:1.5;}
+  .t42-radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--hairline);flex:0 0 auto;}
+  .t42-radio.on{border-color:var(--hyrox);background:radial-gradient(circle at center,
+    var(--hyrox) 0 5px,transparent 6px);}
+  .t42-bul{margin:10px 0 0;padding-left:17px;}
+  .t42-bul li{font-size:12.5px;color:var(--dim);line-height:1.7;}
+
+  /* Quiet supporting text. `.sub` only exists inside .acard and .ovl — used
+     bare it inherits 16px white, which put the small print above the heading
+     it was meant to sit under. T42 draws cards outside .acard, so it needs
+     its own. */
+  .t42-q{font-size:12.5px;color:var(--dim);line-height:1.5;margin-top:6px;}
+
+  .t42-note{font-size:12.5px;color:var(--dim);line-height:1.6;background:var(--tint);
+    border-radius:12px;padding:11px 12px;margin:12px 0;}
+
+  /* one answer in the 60-second assessment */
+  .t42-opt{display:block;width:100%;text-align:left;background:var(--surface);
+    border:1px solid var(--line);border-radius:14px;padding:15px 14px;margin-top:9px;
+    font-family:inherit;font-size:14.5px;color:var(--txt);cursor:pointer;}
+  .t42-opt:active{transform:scale(.99);border-color:var(--hyrox);}
+
+  .t42-field{margin-top:14px;}
+  .t42-field label{display:block;font-size:11px;font-weight:700;letter-spacing:1.1px;
+    text-transform:uppercase;color:var(--dim2);margin-bottom:6px;}
+  .t42-pills{display:flex;gap:9px;}
+  .t42-pill{flex:1;padding:13px;border-radius:12px;border:1.5px solid var(--line);
+    background:var(--surface);color:var(--dim);font-family:inherit;font-size:14px;
+    font-weight:600;cursor:pointer;}
+  .t42-pill.on{border-color:var(--hyrox);color:var(--txt);background:var(--accent-wash);}
+
+  .t42-photos{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:12px;}
+  .t42-photo{aspect-ratio:3/4;border:1.5px dashed var(--hairline);border-radius:12px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    background:var(--surface);}
+  .t42-photo-i{font-size:22px;color:var(--dim2);line-height:1;}
+  .t42-photo-l{font-size:11px;color:var(--dim2);font-weight:600;}
+
+  .t42-code{font-family:'Oswald';font-size:26px;font-weight:700;letter-spacing:3px;
+    color:var(--txt);background:var(--tint);border-radius:12px;padding:13px;
+    text-align:center;margin-top:11px;}
+
+  .t42-count{text-align:center;margin:4px 0 14px;}
+  .t42-count-n{font-family:'Oswald';font-size:44px;font-weight:700;line-height:1;color:var(--txt);}
+  .t42-count-l{font-size:12px;font-weight:600;letter-spacing:1.6px;text-transform:uppercase;
+    color:var(--dim2);margin-top:6px;}
+
+  .t42-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .t42-stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 12px;}
+  .t42-stat-l{font-size:10.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;
+    color:var(--dim2);}
+  .t42-stat-v{font-family:'Oswald';font-size:21px;font-weight:700;color:var(--txt);margin-top:5px;}
+
+  .t42-home .ah span{color:var(--t42);}
+
+  /* A primary button that is not ready yet. Disabled would be wrong — the
+     button still responds and says what is missing, which is how someone
+     finds out they have not picked a track. */
+  .bigbtn.off{opacity:.45;}
+
+  /* ── T42 · the running challenge ────────────────────────────────── */
+  .t42-day{display:flex;align-items:center;gap:14px;margin:2px 0 12px;}
+  .t42-day-l{flex:1;}
+  .t42-day-n{font-family:'Oswald';font-size:32px;font-weight:700;line-height:1;color:var(--txt);}
+  .t42-day-s{font-size:12.5px;color:var(--dim);margin-top:6px;}
+
+  /* One line of today. Tall enough to hit with a thumb, quiet enough that
+     six of them stacked do not read as an alarm. */
+  .t42-row{display:flex;align-items:center;gap:12px;background:var(--surface);
+    border:1px solid var(--line);border-radius:14px;padding:13px 13px;margin-bottom:8px;
+    cursor:pointer;box-shadow:var(--lift);}
+  .t42-row.done{border-color:rgba(46,194,126,.32);}
+  .t42-row-i{font-size:18px;line-height:1;flex:0 0 auto;}
+  .t42-row-b{flex:1;min-width:0;}
+  .t42-row-l{font-size:14px;font-weight:600;color:var(--txt);}
+  .t42-row-v{font-size:12.5px;color:var(--dim);margin-top:3px;}
+  .t42-tick{color:var(--ok);font-size:16px;font-weight:700;flex:0 0 auto;}
+  .t42-chev{color:var(--dim2);font-size:18px;flex:0 0 auto;}
+  .t42-rest{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+    color:var(--dim2);background:var(--tint);border-radius:99px;padding:4px 9px;flex:0 0 auto;}
+
+  /* Water in glasses. A slider on a phone is a fight for a number that only
+     ever moves 250ml at a time. */
+  .t42-glasses{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;}
+  .t42-glass{aspect-ratio:1;border-radius:10px;border:1.5px solid var(--line);
+    background:var(--surface);color:var(--dim2);font-size:15px;line-height:1;
+    font-family:inherit;cursor:pointer;padding:0;}
+  .t42-glass.on{border-color:var(--t42);background:rgba(31,167,232,.13);}
+
+  .t42-ex{display:flex;align-items:center;gap:12px;padding:11px 2px;
+    border-bottom:1px solid var(--hairline);}
+  .t42-ex:last-of-type{border-bottom:none;}
+  .t42-ex-n{width:22px;height:22px;border-radius:50%;background:var(--tint);
+    color:var(--dim);font-size:11px;font-weight:700;display:flex;align-items:center;
+    justify-content:center;flex:0 0 auto;}
+  .t42-ex-b{flex:1;font-size:14px;color:var(--txt);}
+  .t42-ex-s{font-size:12.5px;color:var(--dim);font-weight:600;flex:0 0 auto;}
+
+  /* ── T42 · progress ─────────────────────────────────────────────── */
+  .t42-meter{margin-bottom:13px;}
+  .t42-meter-h{display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:6px;font-size:12.5px;color:var(--dim);}
+  .t42-meter-h span:last-child{font-family:'Oswald';font-weight:700;font-size:14px;color:var(--txt);}
+
+  /* A filled photo slot shows the photo, so the dashed "add me" border
+     would draw a box around someone's body. */
+  .t42-photo.has{border-style:solid;border-color:var(--line);overflow:hidden;position:relative;padding:0;}
+  .t42-photo-img{width:100%;height:100%;object-fit:cover;display:block;}
+  .t42-photo.has .t42-photo-l{position:absolute;left:0;right:0;bottom:0;padding:5px 0;
+    background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;text-align:center;}
+
+  /* ── T42 · leaderboard ──────────────────────────────────────────── */
+  .t42-boards{flex-wrap:wrap;margin:12px 0 14px;}
+  .t42-boards .t42-pill{flex:0 0 auto;padding:9px 13px;font-size:12.5px;border-radius:99px;}
+
+  /* Your own place, pinned above the list whether or not you are in it. */
+  .t42-me{display:flex;align-items:center;gap:12px;background:var(--accent-wash);
+    border:1.5px solid var(--hyrox);border-radius:14px;padding:13px 14px;margin-bottom:12px;}
+  .t42-me-l{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--dim);flex:1;}
+  .t42-me-r{font-family:'Oswald';font-size:24px;font-weight:700;color:var(--txt);}
+  .t42-me-s{font-family:'Oswald';font-size:16px;font-weight:600;color:var(--dim);min-width:44px;text-align:right;}
+  .t42-me-n{font-size:12.5px;color:var(--dim);text-align:right;flex:2;}
+
+  .t42-lb{display:flex;align-items:center;gap:12px;padding:12px 4px;
+    border-bottom:1px solid var(--hairline);}
+  .t42-lb.me{background:var(--accent-wash);border-radius:10px;border-bottom-color:transparent;padding:12px 8px;}
+  .t42-lb-p{width:26px;font-family:'Oswald';font-size:16px;font-weight:700;color:var(--dim);text-align:center;}
+  .t42-lb-p.top{color:var(--hyrox);}
+  .t42-lb-n{flex:1;font-size:14px;color:var(--txt);min-width:0;overflow:hidden;
+    text-overflow:ellipsis;white-space:nowrap;}
+  .t42-lb-s{font-family:'Oswald';font-size:16px;font-weight:700;color:var(--txt);}
+
+  /* ── T42 · the end ──────────────────────────────────────────────── */
+  .t42-trophy{font-size:52px;line-height:1;margin-bottom:10px;}
+  .t42-score{text-align:center;background:var(--accent-wash);border:1.5px solid var(--hyrox);
+    border-radius:18px;padding:18px 14px;margin:14px 0;}
+  .t42-score-l{font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--dim);}
+  .t42-score-n{font-family:'Oswald';font-size:54px;font-weight:700;line-height:1.05;color:var(--txt);margin-top:4px;}
+  .t42-score-r{font-size:13px;font-weight:600;color:var(--ink-72);margin-top:4px;}
+  /* The certificate is a photograph of paper; a shadow is what makes it
+     read as one on a black page. */
+  .t42-cert{display:block;width:100%;border-radius:10px;margin:4px 0 10px;
+    box-shadow:0 10px 34px rgba(0,0,0,.45);}
+
+  /* ── T42 · gym duo ─────────────────────────────────────────────── */
+  .t42-codein{text-transform:uppercase;letter-spacing:3px;font-family:'Oswald';font-size:20px;
+    text-align:center;margin-top:10px;}
+  /* You and your partner, side by side: the same four lines, so the gap
+     between the two columns is the thing you read. */
+  .t42-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .t42-duo-c{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;}
+  .t42-duo-n{font-weight:700;font-size:14px;color:var(--txt);margin-bottom:6px;overflow:hidden;
+    text-overflow:ellipsis;white-space:nowrap;}
+  .t42-duo-l{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;
+    color:var(--dim);padding:4px 0;}
+  .t42-duo-l b{color:var(--txt);font-weight:700;}
+  .t42-duo-ok{color:var(--ok);font-weight:700;}
+  .t42-duo-no{color:var(--hyrox);font-weight:700;}

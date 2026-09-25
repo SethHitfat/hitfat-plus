@@ -627,6 +627,24 @@
       <div id="club-body"></div>
     </div>
 
+    <!-- T42 · the challenge runs inside the app, as a panel like the Club,
+         not as a second page. One back button, one auth session, one
+         design system. -->
+    <div id="t42" class="pad" style="display:none;">
+      <button class="back" onclick="switchTab('home')">← Back</button>
+      <!-- Hidden until the member is registered and the edition has begun.
+           Before that T42 is a wizard, and three tabs that all refuse is
+           worse than no tabs. t42Segs() owns the display. -->
+      <div class="segs" id="t42-segs" style="display:none;">
+        <button class="seg on" data-seg="dash" onclick="t42GoDash()">Today</button>
+        <button class="seg" data-seg="train" onclick="t42GoTrain()">Train</button>
+        <button class="seg" data-seg="checkin" onclick="t42GoCheckin()">Check in</button>
+        <button class="seg" data-seg="progress" onclick="t42GoProgress()">Progress</button>
+        <button class="seg" data-seg="rank" onclick="t42GoRank()">Rank</button>
+      </div>
+      <div id="t42-body"></div>
+    </div>
+
     <div id="store" class="pad" style="display:none;">
       <button class="back" onclick="closeStore()">← Back</button>
       <div class="hgroup"><div class="k">HITFAT+</div><h2>Store</h2><p>Buy a program once and keep it. No subscription, nothing recurring.</p></div>
@@ -853,7 +871,7 @@ function toast(m){ const t=$('toast'); if(!t) return; t.textContent=m; t.classLi
   clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('on'),1900); }
 
 /*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__MONTHLY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
-/*__CLUB__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
+/*__CLUB__*//*__T42__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
 
 function hideSplash(){ const s=$('splash'); if(s&&!s.classList.contains('gone')){ s.classList.add('gone'); setTimeout(()=>{s.style.display='none';},500); } }
 let _started=false;

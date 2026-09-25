@@ -186,14 +186,18 @@ function renderHome(){
      which meant it vanished the moment a member logged their first session —
      leaving the people who actually train with no way to check in. */
   const _club = (typeof clubHomeCard==='function') ? clubHomeCard() : '';
+  /* T42 sits above the Club card: a running challenge is the most
+     time-sensitive thing on this screen, and it disappears on its own
+     when no edition is open. */
+  const _t42 = (typeof t42HomeCard==='function') ? t42HomeCard() : '';
   if(!HF.count()){
-  $('home-activity').innerHTML=_club+'<div class="sechead">This month</div>'+monthlyCard()+
+  $('home-activity').innerHTML=_t42+_club+'<div class="sechead">This month</div>'+monthlyCard()+
       '<div class="acard" style="margin-top:12px;">'+
       '<div class="ah"><span>\uD83D\uDCC8</span><div class="t">Your progress</div></div>'+
       '<div class="sub" style="margin-top:3px;">Finish your first session and this fills in \u2014 '+
       'days trained, minutes, consistency and streak.</div></div>';
   } else {
-    $('home-activity').innerHTML=_club+'<div class="sechead">This month</div>'+monthlyCard()+
+    $('home-activity').innerHTML=_t42+_club+'<div class="sechead">This month</div>'+monthlyCard()+
       '<div class="sechead">Recent Activity</div>'+
       '<div class="acard"><div class="ah"><span>🏃</span><div class="t">This Week</div><div class="c">›</div></div>'+
       '<div style="display:flex;align-items:flex-end;gap:14px;">'+
