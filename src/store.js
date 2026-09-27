@@ -147,7 +147,7 @@ function storePrograms(){
 
   if(!ownsAll()){
     h+='<div class="ecta" style="background:'+egrad('#2a1016','#0b0b0d','#EF4444')+';" onclick="openProduct(\''+BUNDLE_SKU+'\')">'+
-       '<div class="ic">✦</div><div class="t">Every program, one payment</div>'+
+       '<div class="ic">'+glyph('spark')+'</div><div class="t">Every program, one payment</div>'+
        '<div class="s">All '+paid.length+' paid programs, and every one added later. No subscription — buy it once, it is yours.</div>'+
        '<div class="go">RM'+BUNDLE_PRICE+' · Get all access</div>'+
        '<div class="lock">WORTH RM'+paid.reduce((s,p)=>s+programPrice(p),0)+' BOUGHT SEPARATELY</div></div>';
@@ -213,7 +213,7 @@ function storeScan(){
       ['📷',SCAN_FREE_TIER+' scans a month','Resets on the first of the month'],
       ['📊','Your daily target and dashboard','Calories, macros, burn, the lot'],
       ['🍽️','Meal plans up to '+FREE_PLAN_DAYS+' days','Full 14-day plans come with All Access']
-    ].map(x=>'<div class="row" style="cursor:default;"><div class="ic">'+x[0]+'</div>'+
+    ].map(x=>'<div class="row" style="cursor:default;"><div class="ic">'+ic(x[0])+'</div>'+
       '<div style="flex:1;"><div style="font-size:15px;font-weight:600;color:var(--txt);">'+x[1]+'</div>'+
       '<div style="font-size:13px;color:var(--dim);margin-top:3px;">'+x[2]+'</div></div></div>').join('')+'</div>';
   $('store-body').innerHTML=h;
@@ -223,7 +223,7 @@ function storeBar(){
   const bp=PROGRAMS.filter(isBarProgram);
   let h='';
   h+='<div class="ecta" style="background:'+egrad('#1a1410','#0b0b0d','#FF8A1E')+';" onclick="openBarSite()">'+
-     '<div class="ic">🏋️</div><div class="t">HITFAT BAR</div>'+
+     '<div class="ic">'+glyph('workout')+'</div><div class="t">HITFAT BAR</div>'+
      '<div class="s">A bar and five resistance bands. What a gym gives you for the parts that matter, in the space of a doorway.</div>'+
      '<div class="go">RM'+BAR_PRICE+' <s style="opacity:.5;font-weight:400;">RM'+BAR_WAS+'</s></div>'+
      '<div class="lock">SAVE RM'+(BAR_WAS-BAR_PRICE)+'</div></div>';
@@ -248,7 +248,7 @@ function storeBar(){
       ['🎯','Five resistance bands','Stack them for the load you need'],
       ['📱','This app','Every BAR session, free'],
       ['🎥','Video for every move','No guessing at form']
-    ].map(x=>'<div class="row" style="cursor:default;"><div class="ic">'+x[0]+'</div>'+
+    ].map(x=>'<div class="row" style="cursor:default;"><div class="ic">'+ic(x[0])+'</div>'+
       '<div style="flex:1;"><div style="font-size:15px;font-weight:600;color:var(--txt);">'+x[1]+'</div>'+
       '<div style="font-size:13px;color:var(--dim);margin-top:3px;">'+x[2]+'</div></div></div>').join('')+'</div>';
   h+='<button class="bigbtn" onclick="openBarSite()">Get the HITFAT BAR · RM'+BAR_PRICE+'</button>';
@@ -296,7 +296,7 @@ function openProduct(sku){
     '<div class="pwhero"><div class="pwmark">HITFAT<span>+</span></div>'+
     '<div class="pwh">'+title+'</div><div class="pws">'+sub+'</div></div>'+
     '<div class="pwlist">'+bullets.map(b=>
-      '<div class="pwf"><div class="ic">'+b[0]+'</div><div><div class="t">'+b[1]+'</div>'+
+      '<div class="pwf"><div class="ic">'+ic(b[0])+'</div><div><div class="t">'+b[1]+'</div>'+
       '<div class="m">'+b[2]+'</div></div></div>').join('')+'</div>'+
     (sku.indexOf('prog_')===0 ? weekPhases(PROGRAMS.filter(x=>'prog_'+x.id===sku)[0]) : '')+
     '<div class="pwprice"><div class="p">RM'+price+'</div><div class="per">one payment</div></div>'+

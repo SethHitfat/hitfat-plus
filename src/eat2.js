@@ -74,7 +74,7 @@ function egrad(c1,c2,ac){
 }
 function ecta(o){
   return '<div class="ecta" onclick="'+o.go+'" style="background:'+egrad(o.c1,o.c2,o.ac)+';">'+
-    '<div class="ic">'+o.ic+'</div><div class="t">'+o.t+'</div><div class="s">'+o.s+'</div>'+
+    '<div class="ic">'+glyph(o.ic)+'</div><div class="t">'+o.t+'</div><div class="s">'+o.s+'</div>'+
     '<div class="go">'+o.btn+'</div>'+(o.note?'<div class="lock">'+o.note+'</div>':'')+'</div>';
 }
 
@@ -117,7 +117,7 @@ function eatToday(){
   h+='<div class="hscroll">'+SLOTS.map(s=>{
       const v=bySlot[s.k], share=Math.min(100,Math.round(v/(n.cal||1)*100*2.6));
       return '<div class="eslot'+(v>0?' hit':'')+'" onclick="openManualAt(\''+s.k+'\')">'+
-        '<div class="e">'+s.e+'</div><div class="n">'+s.n+'</div>'+
+        '<div class="e">'+glyph(s.e)+'</div><div class="n">'+s.n+'</div>'+
         '<div class="v">'+(v||'—')+'</div>'+
         '<div class="m">'+(cntSlot[s.k]?cntSlot[s.k]+(cntSlot[s.k]>1?' items':' item'):'Nothing yet')+'</div>'+
         '<div class="b"><i style="width:'+(v>0?Math.max(6,share):0)+'%"></i></div></div>';
@@ -135,7 +135,7 @@ function eatToday(){
 
   // burn
   h+=fsec('Moved today','Training buys back calories — logged, not guessed');
-  h+='<div class="elog" onclick="openBurn()"><div class="e">🔥</div>'+
+  h+='<div class="elog" onclick="openBurn()"><div class="e">'+glyph('flame')+'</div>'+
      '<div class="tx"><div class="t">Exercise burn</div>'+
      '<div class="m">'+(burnFor().length?burnFor().length+' logged today':'Tap to log an activity')+'</div></div>'+
      '<div class="k" style="color:var(--ok);">+'+burned+'</div><div class="chev">›</div></div>';
@@ -169,7 +169,7 @@ function eatPlan(){
     h+=fsec('Your plans','Saved as a spec — reopens identical every time');
     h+='<div class="flib">'+mpl.map((p,i)=>
       '<div class="row" onclick="mpLoad('+i+')">'+
-      '<div class="ic">📋</div>'+
+      '<div class="ic">'+glyph('clipboard')+'</div>'+
       '<div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:600;color:var(--txt);">'+
         p.days+(p.days===1?' day · ':' days · ')+p.cal.toLocaleString()+' kcal</div>'+
       '<div style="font-size:13px;color:var(--dim2);margin-top:3px;">'+
@@ -189,7 +189,7 @@ function eatPlan(){
       '<div style="font-size:13px;color:var(--dim);margin-top:3px;line-height:1.45;">'+x[2]+'</div></div></div>').join('')+'</div>';
 
   if(!ownsAll()) h+='<div class="wrow" style="margin-top:14px;" onclick="openProduct(BUNDLE_SKU)">'+
-     '<div style="font-size:20px;">✦</div><div class="tx"><div class="t">All Access · one payment</div>'+
+     '<div style="font-size:20px;">'+glyph('spark')+'</div><div class="tx"><div class="t">All Access · one payment</div>'+
      '<div class="m">14-day plans, every program, yours to keep</div></div><div class="chev">›</div></div>';
   if(n.cal) h+='<div class="mpnote">Your current target is '+n.cal.toLocaleString()+' kcal. The plan recalculates from whatever you enter in the wizard.</div>';
   $('eat-body').innerHTML=h;
@@ -206,7 +206,7 @@ function eatLog(){
        btn:'Scan now',c1:'#2a1016',c2:'#0b0b0d',ac:'#EF4444',
        note:scanAccess().label.toUpperCase()})+
      '</div>';
-  h+='<div class="elog" style="margin-top:14px;" onclick="openManual()"><div class="e">✏️</div>'+
+  h+='<div class="elog" style="margin-top:14px;" onclick="openManual()"><div class="e">'+glyph('pencil')+'</div>'+
      '<div class="tx"><div class="t">Add manually</div><div class="m">Always free, unlimited</div></div>'+
      '<div class="chev">›</div></div>';
 
@@ -214,14 +214,14 @@ function eatLog(){
     h+=fsec('Your usuals','One tap — no scan spent');
     h+='<div class="hscroll">'+favs.map((f,i)=>
       '<div class="eslot" onclick="logFav('+i+')" style="width:170px;">'+
-      '<div class="e">⭐</div><div class="n" style="line-height:1.25;">'+f.name+'</div>'+
+      '<div class="e">'+glyph('star')+'</div><div class="n" style="line-height:1.25;">'+f.name+'</div>'+
       '<div class="v">'+f.kcal+'</div><div class="m">kcal · P '+(f.p||0)+'g</div></div>').join('')+'</div>';
   }
 
   h+=fsec("Today's log", list.length ? list.length+(list.length>1?' meals':' meal')+' · '+mealTotals().kcal.toLocaleString()+' kcal' : '');
   h+= list.length
     ? '<div class="flib">'+list.map((m,i)=>
-        '<div class="elog"><div class="e">'+(slotOf[m.slot]||'🍽️')+'</div>'+
+        '<div class="elog"><div class="e">'+glyph((slotOf[m.slot]||'🍽️'))+'</div>'+
         '<div class="tx"><div class="t">'+(m.bm||m.name)+'</div>'+
         '<div class="m">'+m.time+' · P '+m.p+'g · C '+m.c+'g · F '+m.f+'g</div></div>'+
         '<div class="k">'+m.kcal+'</div>'+
@@ -516,16 +516,16 @@ function renderScanResult(d){
       }).join('')+'</div>';
     }
     h+='<div class="qh">To burn this meal</div><div style="display:flex;flex-direction:column;gap:8px;">'+
-       burnOptions(kcal).map(x=>'<div class="wrow"><div style="font-size:17px;">'+x[0]+'</div>'+
+       burnOptions(kcal).map(x=>'<div class="wrow">'+ic(x[0])+''+
        '<div class="tx"><div class="t">'+x[1]+'</div><div class="m">'+x[2]+'</div></div></div>').join('')+'</div>'+
        '<div class="sub" style="font-size:11px;text-align:center;margin-top:8px;">Estimated from your body weight</div>';
   } else if(_mrt===1){
-    h+='<div class="acard"><div class="ah"><div style="width:32px;height:32px;border-radius:50%;background:var(--hyrox);display:grid;place-items:center;font-size:15px;">💪</div>'+
+    h+='<div class="acard"><div class="ah"><div style="width:32px;height:32px;border-radius:50%;background:var(--hyrox);display:grid;place-items:center;font-size:15px;color:#fff;">'+glyph('workout')+'</div>'+
        '<div class="t">Coach says</div></div>'+
        '<div style="font-size:15px;line-height:1.7;color:var(--ink-90);">'+coachText(kcal,p,c,f)+'</div></div>';
   } else {
     h+='<div style="display:flex;flex-direction:column;gap:8px;">'+coachActions(kcal,p,c,f).map(t=>
-       '<div class="wrow"><div style="font-size:17px;">'+t[0]+'</div><div class="tx"><div class="m" style="color:var(--ink-72);font-size:13px;">'+t[1]+'</div></div></div>').join('')+'</div>';
+       '<div class="wrow">'+ic(t[0])+'<div class="tx"><div class="m" style="color:var(--ink-72);font-size:13px;">'+t[1]+'</div></div></div>').join('')+'</div>';
     const n=HF.data.nutrition||{};
     if(n.cal){ const eaten=mealTotals().kcal, rem=Math.max(0,n.cal-eaten+burnTotal());
       h+='<div class="acard" style="margin-top:10px;"><div class="ah"><div class="t">Calories left today</div></div>'+
@@ -533,7 +533,7 @@ function renderScanResult(d){
          '<div class="big" style="color:var(--hyrox);margin-top:6px;">'+rem.toLocaleString()+' kcal</div></div>'; }
   }
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;">'+
-     '<button class="bigbtn sec" style="margin:0;" onclick="saveFav()">☆ Save as usual</button>'+
+     '<button class="bigbtn sec" style="margin:0;" onclick="saveFav()">Save as usual</button>'+
      '<button class="bigbtn" style="margin:0;" onclick="logScanned()">Log this meal</button></div>'+
      '<div class="sub" style="font-size:11px;text-align:center;margin-top:10px;">AI estimate — treat it as a guide, not a measurement.</div>';
   $('scan-sheet').innerHTML=h;

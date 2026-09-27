@@ -612,10 +612,10 @@ function clubStateCard(){
   if(Club.state==='loading'||Club.state==='idle')
     return '<div class="acard"><div class="sub">Loading your Club…</div></div>';
   if(Club.state==='nosetup')
-    return '<div class="acard"><div class="ah"><span>🏛️</span><div class="t">Not set up yet</div></div>'+
+    return '<div class="acard"><div class="ah">'+ic('building')+'<div class="t">Not set up yet</div></div>'+
       '<div class="sub" style="margin-top:3px;">The Club is not switched on for this account.</div></div>';
   if(Club.state==='error')
-    return '<div class="acard"><div class="ah"><span>⚠️</span><div class="t">Could not load the Club</div></div>'+
+    return '<div class="acard"><div class="ah">'+ic('warning')+'<div class="t">Could not load the Club</div></div>'+
       '<div class="sub" style="margin-top:3px;">'+clubEsc(Club.err)+'</div>'+
       '<button class="bigbtn sec" onclick="clubReload()">Try again</button></div>';
   return null;
@@ -711,7 +711,7 @@ function renderClub(){
        '</div>';
   }else{
     h+='<div class="sechead">Your numbers</div>'+
-       '<div class="acard"><div class="ah"><span>📄</span><div class="t">No InBody scan yet</div></div>'+
+       '<div class="acard"><div class="ah">'+ic('doc')+'<div class="t">No InBody scan yet</div></div>'+
        '<div class="sub" style="margin-top:3px;">Photograph the printout and the app will read it, '+
        'then chart every scan after it.</div>'+
        '<button class="bigbtn sec" onclick="clubGoBody()">Add a scan</button></div>';
@@ -773,7 +773,7 @@ function clubIcon(k){
    Kelantan. One card, below their own content, never a nav item. */
 function clubPromoHTML(full){
   return '<div class="sechead">Train with us</div>'+
-    '<div class="acard"><div class="ah"><span>🏛️</span><div class="t">HITFAT HQ · Kelantan</div></div>'+
+    '<div class="acard"><div class="ah">'+ic('building')+'<div class="t">HITFAT HQ · Kelantan</div></div>'+
     '<div class="sub" style="margin-top:3px;line-height:1.5;">Coach-led classes, structured training and a real '+
     'community. If you are near Kota Bharu, come and train with us in person.</div>'+
     '<button class="bigbtn sec" onclick="clubEnquire()">Explore HITFAT Club</button></div>';
@@ -788,7 +788,7 @@ function clubHomeCard(){
   const n=mine[0];
   return '<div class="sechead">HITFAT Club</div>'+
     '<div class="acard" onclick="openClub()" style="cursor:pointer;">'+
-    '<div class="ah"><span>🏛️</span><div class="t">'+(n?clubEsc(n.title):'Nothing booked')+'</div><div class="c">›</div></div>'+
+    '<div class="ah">'+ic('building')+'<div class="t">'+(n?clubEsc(n.title):'Nothing booked')+'</div><div class="c">›</div></div>'+
     '<div class="sub">'+(n?(clubDayLabel(clubDayKey(n.starts_at))+' · '+clubTime(n.starts_at))
                           :'Tap to book a class')+'</div></div>';
 }
@@ -1010,7 +1010,7 @@ function renderClubCheckin(){
   }
 
   if(clubCi.err){
-    h+='<div class="acard"><div class="ah"><span>⚠️</span><div class="t">No code yet</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('warning')+'<div class="t">No code yet</div></div>'+
        '<div class="sub" style="margin-top:3px;">'+clubEsc(clubCi.err)+'</div>'+
        '<button class="bigbtn sec" onclick="clubCiRefresh()">Try again</button></div>';
     el.innerHTML=h;
@@ -1088,12 +1088,12 @@ function renderClubBody(){
   let h='<div class="sechead">Body</div>';
 
   if(clubIb.busy){
-    h+='<div class="acard"><div class="ah"><span>📄</span><div class="t">Reading your sheet…</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('doc')+'<div class="t">Reading your sheet…</div></div>'+
        '<div class="sub" style="margin-top:3px;">This takes a few seconds.</div></div>';
     el.innerHTML=h; return;
   }
   if(clubIb.err){
-    h+='<div class="acard"><div class="ah"><span>⚠️</span><div class="t">Could not read that</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('warning')+'<div class="t">Could not read that</div></div>'+
        '<div class="sub" style="margin-top:3px;">'+clubEsc(clubIb.err)+'</div>'+
        '<button class="bigbtn sec" onclick="clubIbPick()">Try another photo</button></div>';
     clubIb.err=null;
@@ -1101,7 +1101,7 @@ function renderClubBody(){
   }
 
   if(!s){
-    h+='<div class="acard"><div class="ah"><span>📄</span><div class="t">No scan yet</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('doc')+'<div class="t">No scan yet</div></div>'+
        '<div class="sub" style="margin-top:3px;line-height:1.55;">Photograph the InBody printout. '+
        'The app reads the numbers off it and keeps the trend, so the next scan means something.</div>'+
        '<button class="bigbtn" onclick="clubIbPick()">Scan a printout</button></div>';

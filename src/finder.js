@@ -55,7 +55,7 @@ function renderFinder(){
       REHAB_JOINTS.map(j=>'<button class="cprow'+(fq.joint===j.k?' on':'')+'" onclick="fqSet(\'joint\',\''+j.k+'\')">'+
         '<span class="t">'+j.e+' '+j.n+'</span><span class="s">'+j.d+'</span></button>').join('')+
       '<button class="cprow'+(fq.joint==='all'?' on':'')+'" onclick="fqSet(\'joint\',\'all\')">'+
-      '<span class="t">🌿 Everywhere</span><span class="s">A bit of everything, ten minutes a day</span></button>'+
+      '<span class="t">Everywhere</span><span class="s">A bit of everything, ten minutes a day</span></button>'+
       '<div class="cpnote">This asks what you want to train, not what is wrong with you. '+
       'If something is actually painful, see a doctor or physiotherapist first.</div>';
   } else if(s===2){
@@ -153,7 +153,7 @@ function fqResult(){
   const top=scored[0], rest=scored.slice(1,7);
   let h='<div class="ecta" style="background:'+egrad('#2a1016','#0b0b0d','#EF4444')+
         ';" onclick="openProgram(\''+top.p.id+'\')">'+
-    '<div class="ic">'+(top.p.icon||'✦')+'</div>'+
+    '<div class="ic">'+glyph((top.p.icon||'✦'))+'</div>'+
     '<div class="lock" style="margin:10px 0 0;">YOUR MATCH</div>'+
     '<div class="t">'+top.p.name+'</div>'+
     '<div class="s">'+(top.p.desc||'')+'</div>'+

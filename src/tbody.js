@@ -2629,7 +2629,9 @@ ok("...the duo score and team rank",    _dg.indexOf('82.2')>0 && _dg.indexOf('#7
 ok("...and the way to the QR",          _dg.indexOf('t42GymCheckin()')>0);
 ok("...with no second, individual standing under it", _dg.indexOf('Your rank appears')<0);
 /* The partner card carries ticks and steps, nothing more personal. */
-ok("the dashboard never shows the partner's kilograms", _dg.indexOf('kg')<0 || _dg.split('kg').length-1===0);
+/* A weight is a number followed by kg. Looking for the letters "kg" alone
+   started failing on "background:" once icons carried a tile colour. */
+ok("the dashboard never shows the partner's kilograms", !/\d\s*kg\b/.test(_dg), (_dg.match(/\d\s*kg\b/)||[''])[0]);
 T42.reg.duo_id=null; T42.duoCard=[]; T42.duoScore=null; T42.challenge=_t42edition(-17);
 t42Paint();
 ok("an unpaired member past the window is told pairing has closed",

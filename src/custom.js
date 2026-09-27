@@ -82,7 +82,7 @@ function renderCP(){
       '<div class="cpsub">Pick as many as you like — they get spread across your week.</div>'+
       '<div class="cpgrid">'+CP_ACTS.map(a=>
         '<button class="cpo'+(cp.acts.indexOf(a.k)>=0?' on':'')+'" onclick="cpToggle(\'acts\',\''+a.k+'\')">'+
-        '<span class="e">'+a.e+'</span><span class="n">'+a.n+'</span></button>').join('')+'</div>';
+        '<span class="e">'+glyph(a.e)+'</span><span class="n">'+a.n+'</span></button>').join('')+'</div>';
   } else if(s===1){
     body='<div class="cph">Which days?</div>'+
       '<div class="cpsub">Everything else becomes a rest day.</div>'+

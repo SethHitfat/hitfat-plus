@@ -201,17 +201,17 @@ function renderHome(){
   } else {
     $('home-activity').innerHTML=_t42+_club+'<div class="sechead">This month</div>'+monthlyCard()+
       '<div class="sechead">Recent Activity</div>'+
-      '<div class="acard"><div class="ah"><span>🏃</span><div class="t">This Week</div><div class="c">›</div></div>'+
+      '<div class="acard"><div class="ah">'+ic('run')+'<div class="t">This Week</div><div class="c">›</div></div>'+
       '<div style="display:flex;align-items:flex-end;gap:14px;">'+
       '<div style="flex:0 0 auto;"><div class="big">'+days+' of '+wgoal+' days</div>'+
       '<div class="sub">'+weekMinutes()+' min trained</div></div>'+
       '<div class="mbar">'+bars+'</div></div></div>'+
       '<div class="arow">'+
       '<div class="acard" onclick="switchTab(\'me\')" style="cursor:pointer;">'+
-      '<div class="ah"><span>⚡</span><div class="t">Consistency</div><div class="c">›</div></div>'+
+      '<div class="ah">'+ic('bolt')+'<div class="t">Consistency</div><div class="c">›</div></div>'+
       '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;"><div class="big">'+consistency()+'</div>'+
       '<div class="sub">last 4 weeks</div></div>'+donutSVG(consistency(),'#EF4444',54)+'</div></div>'+
-      '<div class="acard"><div class="ah"><span>🔥</span><div class="t">Streak</div><div class="c">›</div></div>'+
+      '<div class="acard"><div class="ah">'+ic('flame')+'<div class="t">Streak</div><div class="c">›</div></div>'+
       '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;"><div class="big">'+
       (streak>0?streak+' days':daysSince()+' d ago')+'</div>'+
       '<div class="sub">'+HF.count()+' total</div></div>'+donutSVG(Math.min(100,streak*14),'#FF9500',54)+'</div></div></div>';
@@ -304,7 +304,7 @@ function renderProgram(){
         '<div class="num'+(isDone?' on':'')+'">'+(gi+1)+'</div>'+
         '<div class="tx"><div class="t">'+(d.rest?'Rest day':(d.name||'Workout'))+'</div>'+
         '<div class="m">'+(d.rest?'Recovery &amp; stretch':((d.ex?d.ex.length:0)+' exercises · '+p.dur+' min'))+'</div>'+
-        '</div><div class="chev">'+(isDone?'✓':(d.rest?'😴':'›'))+'</div></div>';
+        '</div><div class="chev">'+(isDone?'✓':(d.rest?glyph('moon'):'›'))+'</div></div>';
     }).join('')+'</div>';
   }
   $('pgd-body').innerHTML=h;
@@ -375,10 +375,10 @@ function renderMe(){
     '<div class="s">'+(HF.email||'Local preview')+'</div></div>'+
     '<div class="chip" onclick="startOnboarding()"><span style="font-size:13px;font-weight:700;">Edit</span></div></div>'+
     '<div class="arow">'+
-    '<div class="acard"><div class="ah"><span>🔥</span><div class="t">Streak</div></div><div class="big">'+(streak>0?streak:daysSince())+'</div><div class="sub">'+(streak>0?'days':'days since')+'</div></div>'+
-    '<div class="acard"><div class="ah"><span>✅</span><div class="t">Sessions</div></div><div class="big">'+HF.count()+'</div><div class="sub">all time</div></div>'+
-    '<div class="acard"><div class="ah"><span>⚖️</span><div class="t">Weight</div></div><div class="big">'+(w?w.kg:'—')+'</div><div class="sub">kg</div></div></div>'+
-    '<div class="wrow" onclick="openStore(\'programs\')"><div style="font-size:20px;">🛍️</div>'+
+    '<div class="acard"><div class="ah">'+ic('flame')+'<div class="t">Streak</div></div><div class="big">'+(streak>0?streak:daysSince())+'</div><div class="sub">'+(streak>0?'days':'days since')+'</div></div>'+
+    '<div class="acard"><div class="ah">'+ic('check')+'<div class="t">Sessions</div></div><div class="big">'+HF.count()+'</div><div class="sub">all time</div></div>'+
+    '<div class="acard"><div class="ah">'+ic('scale')+'<div class="t">Weight</div></div><div class="big">'+(w?w.kg:'—')+'</div><div class="sub">kg</div></div></div>'+
+    '<div class="wrow" onclick="openStore(\'programs\')">'+ic('bag')+''+
     '<div class="tx"><div class="t">Store</div><div class="m">'+
       (ownsAll() ? 'All Access · every program unlocked'
                  : PROGRAMS.filter(isPaidProgram).filter(ownsProgram).length+' of '+
@@ -391,7 +391,7 @@ function renderMe(){
     '<div>Days a week · <b style="color:var(--txt);">'+(p.days||'—')+'</b></div>'+
     '<div>Equipment · <b style="color:var(--txt);">'+(p.equip||'—')+'</b></div></div>'+
     '<div class="sechead">Settings</div>'+
-    '<div class="acard"><div class="ah"><span>🎨</span><div class="t">Appearance</div></div>'+
+    '<div class="acard"><div class="ah">'+ic('palette')+'<div class="t">Appearance</div></div>'+
     '<div class="segs" style="margin-top:10px;">'+
     '<button class="seg'+(currentTheme()==='light'?' on':'')+'" onclick="setThemeLight()">Light</button>'+
     '<button class="seg'+(currentTheme()==='dark'?' on':'')+'" onclick="setThemeDark()">Dark</button></div></div>'+

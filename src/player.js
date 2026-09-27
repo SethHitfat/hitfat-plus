@@ -207,13 +207,13 @@ function plSetMode(m){
   plCam.mode=m;
   const r=$('play'); if(!r) return;
   r.classList.toggle('mirrormode', m==='mirror');
-  const b=$('pl-mode'); if(b) b.textContent = m==='mirror' ? '👤' : '🪞';
+  const b=$('pl-mode'); if(b) b.innerHTML = glyph(m==='mirror' ? 'person' : 'mirror');
 }
 function plToggleMode(){ plSetMode(plCam.mode==='mirror'?'coach':'mirror'); }
 function plToggleCam(){
   plCam.off=!plCam.off;
   $('play').classList.toggle('camoff', plCam.off);
-  const b=$('pl-camhide'); if(b) b.textContent = plCam.off ? '🚫' : '📷';
+  const b=$('pl-camhide'); if(b) b.innerHTML = glyph(plCam.off ? 'photo' : 'eyeoff');
 }
 
 function plStopCam(){
@@ -285,7 +285,7 @@ function plRenderModes(){
   const el=$('pl-modes'); if(!el) return;
   el.innerHTML=[['mirror','🪞','Mirror','See yourself'],['coach','👤','Coach','Follow along']]
     .map(m=>'<button class="pl-mo'+(plCam.mode===m[0]?' on':'')+'" onclick="plPickMode(\''+m[0]+'\')">'+
-      '<span class="e">'+m[1]+'</span><span class="n">'+m[2]+'</span><span class="s">'+m[3]+'</span></button>').join('');
+      '<span class="e">'+glyph(m[1])+'</span><span class="n">'+m[2]+'</span><span class="s">'+m[3]+'</span></button>').join('');
 }
 function plBegin(){
   plAskCam(()=>plStart());

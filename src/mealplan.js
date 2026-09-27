@@ -226,20 +226,20 @@ function mpNum(id,k){ const e=$(id); if(e) mp[k]=parseFloat(e.value)||mp[k]; }
 const MP_RATES={loss:[[0.25,'Relaxed — 0.25 kg a week'],[0.5,'Standard — 0.5 kg a week'],[0.75,'Faster — 0.75 kg a week'],[1.0,'Safe maximum — 1.0 kg a week']],
                 gain:[[0.25,'Relaxed — +0.25 kg a week'],[0.5,'Standard — +0.5 kg a week']],
                 maintain:[[0,'Hold your current weight']]};
-const MP_STYLES=[['hiprotein','💪 High protein','Capped at 20% of calories or 2g/kg'],['lowcarb','🌾 Controlled carbs','Carbs stay, just tidier'],
-                 ['budget','💰 Budget','Cheap food that actually works'],['simple','✂️ Simple','Fewer ingredients, easy to cook'],
-                 ['eatout','🍱 Eating out','You eat out often'],['mealprep','📦 Meal prep','Cook ahead, save time']];
-const MP_PREFS=[['noegg','🚫 No egg'],['noseafood','🚫 No seafood'],['nomeat','🚫 No meat'],
-                ['lovenasi','🍚 I like rice'],['lessnasi','⬇️ Less rice'],['loveroti','🍞 I like bread'],
-                ['lovemee','🍜 I like noodles'],['family','👨‍👩‍👧 Family friendly']];
+const MP_STYLES=[['hiprotein','High protein','Capped at 20% of calories or 2g/kg'],['lowcarb','Controlled carbs','Carbs stay, just tidier'],
+                 ['budget','Budget','Cheap food that actually works'],['simple','Simple','Fewer ingredients, easy to cook'],
+                 ['eatout','Eating out','You eat out often'],['mealprep','Meal prep','Cook ahead, save time']];
+const MP_PREFS=[['noegg','No egg'],['noseafood','No seafood'],['nomeat','No meat'],
+                ['lovenasi','I like rice'],['lessnasi','Less rice'],['loveroti','I like bread'],
+                ['lovemee','I like noodles'],['family','Family friendly']];
 
 function renderMP(){
   const s=mp.step; let b='';
   if(s===0){
     b='<div class="cph">What are you aiming for?</div><div class="cpsub">This is what sets your daily calories.</div>'+
-      [['loss','⬇️ Lose weight','A deficit you can actually keep to'],
+      [['loss','Lose weight','A deficit you can actually keep to'],
        ['maintain','↔️ Maintain','Hold your weight with balanced eating'],
-       ['gain','⬆️ Gain weight','Add calories in a controlled way']]
+       ['gain','Gain weight','Add calories in a controlled way']]
       .map(g=>'<button class="cprow'+(mp.goal===g[0]?' on':'')+'" onclick="mp.rate='+(0.5)+';mpSet(\'goal\',\''+g[0]+'\')">'+
         '<span class="t">'+g[1]+'</span><span class="s">'+g[2]+'</span></button>').join('')+
       '<div class="qh">Pace</div>'+
@@ -263,9 +263,9 @@ function renderMP(){
         '<span class="t">'+a[1]+'</span><span class="s">'+a[2]+'</span></button>').join('');
   } else if(s===2){
     b='<div class="cph">How you eat</div><div class="cpsub">Pick the one you find easiest to stick to.</div>'+
-      [['3x','🍽️ Three meals','Breakfast, lunch, dinner'],
-       ['333','🥗 Quarter-quarter-half','Half vegetables, quarter protein, quarter carbs'],
-       ['6x','🕑 Six small meals','Smaller plates, more often'],
+      [['3x','Three meals','Breakfast, lunch, dinner'],
+       ['333','Quarter-quarter-half','Half vegetables, quarter protein, quarter carbs'],
+       ['6x','Six small meals','Smaller plates, more often'],
        ['if','⏳ Intermittent fasting 16:8','Everything inside an 8-hour window']]
       .map(x=>'<button class="cprow'+(mp.struct===x[0]?' on':'')+'" onclick="mpSet(\'struct\',\''+x[0]+'\')">'+
         '<span class="t">'+x[1]+'</span><span class="s">'+x[2]+'</span></button>').join('');
@@ -275,7 +275,7 @@ function renderMP(){
         const locked = n>maxPlanDays();
         return '<button class="cpd wide'+(mp.days===n?' on':'')+(locked?' plocked':'')+'" onclick="'+
           (locked?'openProduct(BUNDLE_SKU)':'mpSet(\'days\','+n+')')+'">'+n+(n===1?' day':' days')+
-          (locked?' 🔒':'')+'</button>';
+          (locked?' '+glyph('lock'):'')+'</button>';
       }).join('')+'</div>'+
       (ownsAll()?'':'<div class="cpnote">Free builds up to '+FREE_PLAN_DAYS+' days. All Access builds 14.</div>');
   } else {
@@ -292,7 +292,7 @@ function renderMP(){
     '<div class="cpfoot">'+
       '<button class="bigbtn sec" style="margin:0;" onclick="mpGo(-1)">'+(s===0?'Cancel':'Back')+'</button>'+
       (s===MP_STEPS.length-1
-        ? '<button class="bigbtn" style="margin:0;" onclick="mpGenerate()">🔥 Build my plan</button>'
+        ? '<button class="bigbtn" style="margin:0;" onclick="mpGenerate()">Build my plan</button>'
         : '<button class="bigbtn" style="margin:0;" onclick="mpGo(1)">Next</button>')+
     '</div>';
 }
@@ -382,9 +382,9 @@ function renderPlanView(){
       '<div class="m">'+d.total.toLocaleString()+' kcal · '+d.pct+'% of target</div></div><span class="ar">⌄</span></button>'+
       '<div class="mpday-b">'+
       '<div class="mpbals">'+
-        bal(d.bal.buah>0,'🍎 Fruit')+ bal(d.bal.sayur>=2,'🥗 Veg')+
-        bal(d.bal.protein>=d.slots.length-1,'🍗 Protein')+ bal(d.bal.karbo>=1,'🍚 Carbs')+
-        bal(d.ok,'⚡ '+d.total.toLocaleString()+' kcal')+
+        bal(d.bal.buah>0,'Fruit')+ bal(d.bal.sayur>=2,'Veg')+
+        bal(d.bal.protein>=d.slots.length-1,'Protein')+ bal(d.bal.karbo>=1,'Carbs')+
+        bal(d.ok,''+d.total.toLocaleString()+' kcal')+
       '</div>';
     d.slots.forEach((s,si)=>{
       const sid='mps-'+di+'-'+si;
@@ -427,7 +427,7 @@ function renderPlanView(){
   h+='<div class="mpnote" style="border-color:rgba(245,158,11,.35);color:#f59e0b;">General guidance based on what you entered. If you have diabetes, kidney disease, severe reflux, are pregnant, or your BMI is 27.5 or above — see a doctor or a registered dietitian.</div>';
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;">'+
      '<button class="bigbtn sec" style="margin:0;" onclick="openMealPlan()">Edit</button>'+
-     '<button class="bigbtn" style="margin:0;" onclick="mpSavePlan()">💾 Save</button></div>';
+     '<button class="bigbtn" style="margin:0;" onclick="mpSavePlan()">Save</button></div>';
   $('mp-view').innerHTML=h;
 }
 

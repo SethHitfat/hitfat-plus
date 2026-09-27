@@ -202,7 +202,7 @@ function renderProgress(){
 
   /* ── training ── */
   h+='<div class="sechead">Training</div>'+
-     '<div class="acard"><div class="ah"><span>🏋️</span><div class="t">'+(pgDays()===7?'This week':'Last 30 days')+'</div></div>'+
+     '<div class="acard"><div class="ah">'+ic('workout')+'<div class="t">'+(pgDays()===7?'This week':'Last 30 days')+'</div></div>'+
      '<div class="arow" style="margin:6px 0 2px;">'+
      '<div><div class="big">'+tr.sessions+'</div><div class="sub">sessions</div></div>'+
      '<div><div class="big">'+tr.mins+'</div><div class="sub">minutes</div></div>'+
@@ -216,7 +216,7 @@ function renderProgress(){
     const n=HF.data.nutrition||{};
     const pct=n.cal?Math.min(100,Math.round(nu.avgKcal/n.cal*100)):0;
     h+='<div class="sechead">Nutrition</div>'+
-       '<div class="acard"><div class="ah"><span>🍽️</span><div class="t">Average intake</div></div>'+
+       '<div class="acard"><div class="ah">'+ic('food')+'<div class="t">Average intake</div></div>'+
        '<div style="display:flex;align-items:baseline;gap:8px;">'+
        '<div class="big">'+nu.avgKcal+'</div><div class="sub">kcal / day'+(n.cal?' · target '+n.cal:'')+'</div></div>'+
        (n.cal?'<div class="pgbar"><i style="width:'+pct+'%"></i></div>':'')+
@@ -246,7 +246,7 @@ function renderProgress(){
   if(badges.length){
     h+='<div class="sechead">Achievements</div><div class="pggrid">'+
        badges.slice(-6).map(k=>'<div class="pgtile" style="text-align:center;">'+
-       '<div style="font-size:26px;">🏅</div><div class="l">'+k+'</div></div>').join('')+'</div>';
+       '<div style="font-size:26px;">'+glyph('trophy')+'</div><div class="l">'+k+'</div></div>').join('')+'</div>';
   }
 
   /* programs in flight */
@@ -254,7 +254,7 @@ function renderProgress(){
   if(going.length) h+='<div class="sechead">Programs</div>'+going.map(frow).join('');
 
   h+='<button class="bigbtn" onclick="askMeasure()" style="margin-top:20px;">＋ Log measurements</button>'+
-     '<button class="bigbtn sec" onclick="openShare()">📤 Share progress card</button>';
+     '<button class="bigbtn sec" onclick="openShare()">Share progress card</button>';
   $('prog-body').innerHTML=h;
 }
 
@@ -403,7 +403,7 @@ function drawShareCard(){
   _spaced(x,heroL,cx,760,5);
 
   // streak pill
-  const pill=streak>0?('🔥 '+streak+' DAY STREAK'):'🔥 START YOUR STREAK';
+  const pill=streak>0?(streak+' DAY STREAK'):'START YOUR STREAK';
   x.font="800 32px 'Inter',sans-serif";
   const pw=x.measureText(pill).width+72, ph=74, py=850, px=cx-pw/2;
   x.fillStyle='rgba(239,68,68,.14)'; _rr(x,px,py,pw,ph,37); x.fill();

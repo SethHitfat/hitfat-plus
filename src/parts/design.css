@@ -218,3 +218,60 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .arow .acard .big{font-size:24px;}
 .arow .acard .sub{font-size:12px;}
 .hhdr .chip, .hhdr .chip *{text-transform:none !important;letter-spacing:0 !important;}
+
+/* ── icons ── (icons.js)
+   ic(): a glyph in a tinted tile, for rows and card titles.
+   glyph(): the bare line glyph at the size of the text around it, in its
+   colour — for artwork cards and anywhere an emoji used to sit inline. */
+.uic{width:30px;height:30px;border-radius:8px;display:inline-grid;place-items:center;
+  flex:0 0 auto;vertical-align:middle;}
+.uic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;}
+.acard .ah .uic{width:28px;height:28px;border-radius:7px;}
+.acard .ah .uic svg{width:16px;height:16px;}
+.arow .acard .ah .uic{width:22px;height:22px;border-radius:6px;}
+.arow .acard .ah .uic svg{width:13px;height:13px;}
+.gly{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round;vertical-align:-.12em;}
+
+/* Tiles inside the old emoji slots: the slots were sized for a 17–20px
+   character, so the tile takes their place instead of their width. */
+.flib .ic, .pwf .ic{width:auto;font-size:inherit;}
+.flib .ic .uic, .pwf .ic .uic, .row .ic .uic{width:26px;height:26px;border-radius:7px;}
+.flib .ic .uic svg, .pwf .ic .uic svg, .row .ic .uic svg{width:15px;height:15px;}
+.wrow > .uic{width:32px;height:32px;border-radius:9px;}
+.t42-trophy .gly{width:52px;height:52px;stroke-width:1.5;color:#FFCC00;}
+.t42-glass .gly{color:#0A84FF;}
+
+/* Three-up tiles: the icon above its label, as Health's summary cards do,
+   so the label gets the tile's full width — beside it, "Sessions" was cut
+   to "Sessio…". */
+.arow .acard .ah{flex-direction:column;align-items:flex-start;gap:6px;}
+.arow .acard .ah .t{width:100%;}
+
+/* ── dark islands ──
+   Cards whose background is dark in BOTH themes — the Store and BAR heroes,
+   the Recovery hero, anything laid over a photo — but whose text asked the
+   theme for its colour. In the light theme that answer is near-black, and
+   an audit of every screen measured contrast of 1.04–1.8 on them: the
+   prices, the All Access offer and the BAR price could not be read.
+   Inside an island the theme's text tokens are declared again with their
+   dark-theme values, so everything in it that uses a token turns white
+   without a rule per element. */
+.ecta, .im{
+  --txt:#FFFFFF; --dim:rgba(235,235,245,.66); --dim2:rgba(235,235,245,.48);
+  --ink-90:rgba(255,255,255,.92); --ink-72:rgba(255,255,255,.76);
+  --ink-55:rgba(255,255,255,.58); --ink-42:rgba(255,255,255,.48);
+  --tint:rgba(255,255,255,.16); --line:rgba(255,255,255,.14); --hairline:rgba(255,255,255,.16);
+  color:#FFFFFF;
+}
+.im .pr, .im .est{text-shadow:0 1px 8px rgba(0,0,0,.45);}
+
+/* Notes coloured for a dark page — amber and sky — are too pale on a light
+   one (about 2:1). Same hue, a deeper shade in light. */
+:root{ --note-amber:#F59E0B; --note-sky:#5EB8FF; }
+:root[data-theme="light"]{ --note-amber:#A16207; --note-sky:#0369A1; }
+
+/* The outlined "Top 10" numerals: in dark their stroke (#3A3A3C on black)
+   measured about 1.7:1 — decorative, but a rank should still be legible. */
+:root:not([data-theme="light"]) .rk{-webkit-text-stroke-color:rgba(255,255,255,.38);}

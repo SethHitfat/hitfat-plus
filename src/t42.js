@@ -462,11 +462,11 @@ function t42StateCard(){
   if(T42.state==='loading'||T42.state==='idle')
     return '<div class="acard"><div class="sub">Loading T42…</div></div>';
   if(T42.state==='nosetup')
-    return '<div class="acard"><div class="ah"><span>🗓️</span><div class="t">Not open yet</div></div>'+
+    return '<div class="acard"><div class="ah">'+ic('calendar')+'<div class="t">Not open yet</div></div>'+
       '<div class="sub" style="margin-top:3px;">T42 is not running on this account yet. '+
       'Watch this space — the next edition will appear here.</div></div>';
   if(T42.state==='error')
-    return '<div class="acard"><div class="ah"><span>⚠️</span><div class="t">Could not load T42</div></div>'+
+    return '<div class="acard"><div class="ah">'+ic('warning')+'<div class="t">Could not load T42</div></div>'+
       '<div class="sub" style="margin-top:3px;">'+t42Esc(T42.err)+'</div>'+
       '<button class="bigbtn sec" onclick="t42Reload()">Try again</button></div>';
   return null;
@@ -543,7 +543,7 @@ function t42RenderLanding(){
 
   if(!c){
     el.innerHTML=t42Hero()+
-      '<div class="acard"><div class="ah"><span>🗓️</span><div class="t">No edition open</div></div>'+
+      '<div class="acard"><div class="ah">'+ic('calendar')+'<div class="t">No edition open</div></div>'+
       '<div class="sub" style="margin-top:3px;">There is no T42 running right now. '+
       'The next one will show up here the moment registration opens.</div></div>';
     return;
@@ -557,21 +557,21 @@ function t42RenderLanding(){
 
   if(joined){
     var tr=t42Track(T42.reg.track);
-    h+='<div class="acard"><div class="ah"><span>✅</span><div class="t">You are in</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('check')+'<div class="t">You are in</div></div>'+
       '<div class="sub" style="margin-top:3px;">'+
       t42Esc((t42Mode(T42.reg.mode)||{}).name||'')+' · '+t42Esc((tr||{}).name||'')+'</div>'+
       '<button class="bigbtn" onclick="t42Continue()">Continue</button></div>';
   } else if(T42.regOpen()){
     h+='<button class="bigbtn" onclick="t42Begin()">Join T42</button>';
   } else {
-    h+='<div class="acard"><div class="ah"><span>🔒</span><div class="t">Registration closed</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('lock')+'<div class="t">Registration closed</div></div>'+
        '<div class="sub">This edition is no longer taking new participants. '+
        'The next one will open here.</div></div>';
   }
 
   if(T42.past && T42.past.challenge){
     h+='<div class="acard" onclick="t42OpenPast()" style="cursor:pointer;">'+
-       '<div class="ah"><span>🏆</span><div class="t">Your '+t42Esc(T42.past.challenge.edition||T42.past.challenge.name)+
+       '<div class="ah">'+ic('trophy')+'<div class="t">Your '+t42Esc(T42.past.challenge.edition||T42.past.challenge.name)+
        ' result</div><div class="c">›</div></div>'+
        '<div class="sub">Your result and certificate from the last T42.</div></div>';
   }
@@ -587,7 +587,7 @@ function t42RenderLanding(){
 
   h+='<div class="sechead">The tracks</div>';
   T42_TRACKS.forEach(function(t){
-    h+='<div class="t42-trackrow"><span class="t42-trackicon">'+t.icon+'</span>'+
+    h+='<div class="t42-trackrow"><span class="t42-trackicon">'+glyph(t.icon)+'</span>'+
        '<div><div class="t42-trackn">'+t42Esc(t.name)+'</div>'+
        '<div class="t42-q">'+t42Esc(t.line)+'</div></div></div>';
   });
@@ -677,14 +677,14 @@ function t42RenderTrack(){
   T42_TRACKS.forEach(function(t){
     var on=t42Draft.track===t.id;
     h+='<div class="t42-card'+(on?' on':'')+'" onclick="t42PickTrack(\''+t.id+'\')">'+
-       '<div class="t42-card-h"><span class="t42-trackicon">'+t.icon+'</span>'+
+       '<div class="t42-card-h"><span class="t42-trackicon">'+glyph(t.icon)+'</span>'+
        '<div class="t42-card-n">'+t42Esc(t.name)+'</div>'+
        '<div class="t42-radio'+(on?' on':'')+'"></div></div>'+
        '<div class="t42-card-t">'+t42Esc(t.line)+'</div>'+
        '<div class="t42-q">'+t42Esc(t.who)+'</div></div>';
   });
 
-  h+='<div class="acard"><div class="ah"><span>🧭</span><div class="t">Not sure which track?</div></div>'+
+  h+='<div class="acard"><div class="ah">'+ic('compass')+'<div class="t">Not sure which track?</div></div>'+
      '<div class="sub" style="margin-top:3px;">Six questions, about a minute. '+
      'It recommends — you still choose.</div>'+
      '<button class="bigbtn sec" onclick="t42StartAssess()">Take the Assessment</button></div>';
@@ -759,7 +759,7 @@ function t42RenderAssessResult(){
   var id=t42Recommend(t42Quiz.score), t=t42Track(id);
   var h='<div class="hgroup"><div class="k">Your result</div><h2>We suggest '+t42Esc(t.name)+'</h2>'+
         '<p>'+t42Esc(t.line)+'</p></div>'+
-        '<div class="t42-card on"><div class="t42-card-h"><span class="t42-trackicon">'+t.icon+'</span>'+
+        '<div class="t42-card on"><div class="t42-card-h"><span class="t42-trackicon">'+glyph(t.icon)+'</span>'+
         '<div class="t42-card-n">'+t42Esc(t.name)+'</div></div>'+
         '<div class="t42-q">'+t42Esc(t.who)+'</div></div>'+
         '<div class="t42-note">This is a suggestion, not a decision. Pick whichever '+
@@ -862,7 +862,7 @@ function t42BasePhotos(){
         'leaderboard, never visible to another participant, and are used only to verify '+
         'your own before-and-after.</div>';
   if(!saved){
-    h+='<div class="acard"><div class="ah"><span>📸</span><div class="t">Save your basics first</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('photo')+'<div class="t">Save your basics first</div></div>'+
        '<div class="sub" style="margin-top:3px;">Fill in Basic info and save. '+
        'Photo upload opens as soon as your baseline exists.</div></div>';
   } else {
@@ -881,12 +881,12 @@ function t42BasePhysical(){
   var code=(T42.reg&&T42.reg.verify_code)||null;
   var h='';
   if(t42Draft.mode==='gym_duo' || (T42.reg&&T42.reg.mode==='gym_duo')){
-    h+='<div class="acard"><div class="ah"><span>🧪</span><div class="t">InBody at HQ</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('lab')+'<div class="t">InBody at HQ</div></div>'+
        '<div class="sub" style="margin-top:3px;">Your body composition is measured on the '+
        'gym\'s InBody and signed off by a coach. Nothing to type here — it appears once '+
        'your scan is done.</div></div>';
   } else {
-    h+='<div class="acard"><div class="ah"><span>🔐</span><div class="t">Your verification code</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('lock')+'<div class="t">Your verification code</div></div>'+
        '<div class="sub" style="margin-top:3px;">Top finishers are asked to show a photo of '+
        'their scale with this code written beside it. It is yours alone and never changes.</div>'+
        (code ? '<div class="t42-code">'+t42Esc(code)+'</div>'
@@ -1073,7 +1073,7 @@ function t42RenderJoined(){
   }
 
   h+='<div class="sechead">Your challenge</div>'+
-     '<div class="acard"><div class="ah"><span>'+(tr.icon||'🔥')+'</span>'+
+     '<div class="acard"><div class="ah">'+ic((tr.icon||'🔥'))+''+
      '<div class="t">'+t42Esc(tr.name||'')+'</div></div>'+
      '<div class="sub" style="margin-top:3px;">'+t42Esc(md.name||'')+' · '+t42Esc(tr.line||'')+'</div></div>';
 
@@ -1185,14 +1185,14 @@ function t42RenderDash(){
 
   /* The two states that outrank today's list. */
   if(!T42.hasBaseline()){
-    h+='<div class="acard"><div class="ah"><span>📏</span><div class="t">Not ranked this time</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('measure')+'<div class="t">Not ranked this time</div></div>'+
        '<div class="sub">The baseline closed on day '+T42.lockDay()+' without one, so there is no '+
        'starting point to measure a result from. Keep training and checking in — it all still counts '+
        'for you, just not on the leaderboard.</div></div>';
   } else if(t42OpenPhase()==='final'){
     var left=t42FinalItems().filter(function(i){ return i.done===false && !i.optional && !i.coach; }).length;
     h+='<div class="acard" onclick="t42GoFinal()" style="cursor:pointer;border-color:var(--hyrox);">'+
-       '<div class="ah"><span>🏁</span><div class="t">Final assessment is open</div><div class="c">›</div></div>'+
+       '<div class="ah">'+ic('flag')+'<div class="t">Final assessment is open</div><div class="c">›</div></div>'+
        '<div class="sub">'+(left ? left+' thing'+(left===1?'':'s')+' left to submit'
                                  : 'Everything is in. Waiting on verification.')+'</div></div>';
   }
@@ -1249,7 +1249,7 @@ function t42RenderDash(){
   /* The mini challenge, if the week carries one. */
   if(T42.week && T42.week.mini_title){
     h+='<div class="sechead">This week</div>'+
-       '<div class="acard"><div class="ah"><span>🎯</span><div class="t">'+
+       '<div class="acard"><div class="ah">'+ic('target')+'<div class="t">'+
        t42Esc(T42.week.mini_title)+'</div></div>'+
        '<div class="sub">'+t42Esc(T42.week.mini_detail||'')+'</div></div>';
   }
@@ -1380,7 +1380,7 @@ function t42RenderCheckin(){
      '<div class="t42-glasses">'+
      [1,2,3,4,5,6,7,8].map(function(n){
        return '<button class="t42-glass'+(n<=glasses?' on':'')+
-              '" onclick="t42CkWater('+n+')">'+(n<=glasses?'💧':'·')+'</button>';
+              '" onclick="t42CkWater('+n+')">'+(n<=glasses?glyph('water'):'·')+'</button>';
      }).join('')+'</div>'+
      '<div class="t42-q">Each glass is 250ml. Tap the same one again to go back.</div></div>';
 
@@ -1505,7 +1505,7 @@ function t42RenderTrain(){
     var why = T42.challenge ? 'Today is a rest day. Move, eat well, sleep.' : '';
     el.innerHTML='<div class="hgroup"><div class="k">Day '+day+'</div><h2>Rest day</h2>'+
       '<p>'+why+'</p></div>'+
-      '<div class="acard"><div class="ah"><span>😌</span><div class="t">Nothing scheduled</div></div>'+
+      '<div class="acard"><div class="ah">'+ic('moon')+'<div class="t">Nothing scheduled</div></div>'+
       '<div class="sub">Recovery is part of the plan, not a gap in it. '+
       'Your streak is kept by checking in, not by training.</div>'+
       '<button class="bigbtn sec" onclick="t42GoCheckin()">Check in for today</button></div>'+
@@ -1523,7 +1523,7 @@ function t42RenderTrain(){
   if(p.focus) h+='<div class="t42-note">'+t42Esc(p.focus)+'</div>';
 
   if(done){
-    h+='<div class="acard"><div class="ah"><span>✅</span><div class="t">Done today</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('check')+'<div class="t">Done today</div></div>'+
        '<div class="sub">'+(T42.doneToday.minutes?T42.doneToday.minutes+' min':'Logged')+
        '. Play it again if you want — it counts once.</div></div>';
   }
@@ -1696,7 +1696,7 @@ function t42ProgGo(t){ t42ProgTab=t; t42RenderProgress(); $('screen').scrollTop=
 /* ── BODY ── */
 function t42ProgBody(){
   var b=T42.baseline;
-  if(!b) return '<div class="acard"><div class="ah"><span>📏</span><div class="t">No baseline yet</div></div>'+
+  if(!b) return '<div class="acard"><div class="ah">'+ic('measure')+'<div class="t">No baseline yet</div></div>'+
     '<div class="sub">Your progress is measured from a starting point. '+
     'Fill one in and this fills up.</div>'+
     '<button class="bigbtn sec" onclick="t42GoBaseline()">Complete baseline</button></div>';
@@ -1752,7 +1752,7 @@ function t42ProgBody(){
        'trend appears here. This is yours — it is not what you are scored on.</div>'+
        '<button class="bigbtn sec" onclick="t42LogWeight()">Log weight</button></div>';
   } else {
-    h+='<div class="acard"><div class="ah"><span>⚖️</span><div class="t">'+
+    h+='<div class="acard"><div class="ah">'+ic('scale')+'<div class="t">'+
        wl[wl.length-1].kg+' kg</div></div>'+
        '<div class="sub">'+wl.length+' entries · not scored</div>'+
        ((typeof weightChart==='function')?weightChart(wl):'')+
@@ -1797,7 +1797,7 @@ function t42ProgFitness(){
 
   var h='';
   if(!any){
-    h+='<div class="acard"><div class="ah"><span>💪</span><div class="t">No test taken yet</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('workout')+'<div class="t">No test taken yet</div></div>'+
        '<div class="sub">Four movements, about ten minutes, no equipment. '+
        'Take it once now and again at each checkpoint — the improvement is '+
        'what the PERFORM track is scored on.</div>'+
@@ -2026,7 +2026,7 @@ function t42RenderMeasure(){
   if(!t42MeasReady) return t42Go('progress');
 
   if(p!==open && !t42PhaseRow(p)){
-    el.innerHTML='<div class="acard"><div class="ah"><span>🔒</span><div class="t">Not open yet</div></div>'+
+    el.innerHTML='<div class="acard"><div class="ah">'+ic('lock')+'<div class="t">Not open yet</div></div>'+
       '<div class="sub">The '+t42PhaseLabel(p).toLowerCase()+' checkpoint opens later in the challenge.</div>'+
       '<button class="bigbtn sec" onclick="t42GoProgress()">Back</button></div>';
     return;
@@ -2278,7 +2278,7 @@ function t42RenderReview(){
     if(!st) guessed++;
     var meta=T42.week && T42.week.week_no===w ? T42.week : null;
     var score = st ? Math.round(st.week_score) : s.score;
-    h+='<div class="acard"><div class="ah"><span>'+(s.complete?'✅':'⏳')+'</span>'+
+    h+='<div class="acard"><div class="ah">'+ic((s.complete?'✅':'⏳'))+''+
        '<div class="t">Week '+w+(meta&&meta.theme?' · '+t42Esc(meta.theme):'')+'</div>'+
        '<div class="c">'+(score!=null?score+'%':'')+'</div></div>'+
        '<div class="sub">'+(s.complete?'Complete':'In progress — day '+
@@ -2423,7 +2423,7 @@ function t42RenderRank(){
     h+='<div class="acard"><div class="sub">Could not load this leaderboard.</div>'+
        '<button class="bigbtn sec" onclick="t42RankReload()">Try again</button></div>';
   } else if(!rows.length){
-    h+='<div class="acard"><div class="ah"><span>🏁</span><div class="t">No ranking yet</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('flag')+'<div class="t">No ranking yet</div></div>'+
        '<div class="sub">Scores are worked out on the server every hour once the challenge '+
        'is running. The first ranking appears here.</div></div>';
   } else {
@@ -2470,7 +2470,7 @@ async function t42LoadBoard(id){
 
 function t42Finished(what){
   var el=$('t42-body'); if(!el) return;
-  el.innerHTML='<div class="acard"><div class="ah"><span>🏁</span><div class="t">T42 has finished</div></div>'+
+  el.innerHTML='<div class="acard"><div class="ah">'+ic('flag')+'<div class="t">T42 has finished</div></div>'+
     '<div class="sub">'+t42Esc(what)+' closed with the last day. Everything you logged is in — '+
     'and HITFAT+ carries on without the challenge.</div>'+
     '<button class="bigbtn sec" onclick="t42GoDash()">See where you finished</button></div>';
@@ -2552,8 +2552,7 @@ function t42RenderFinal(){
   h+='</div>';
   if(f){
     var vs=f.verify_status;
-    h+='<div class="acard" style="margin-top:12px;"><div class="ah"><span>'+
-       (vs==='verified'?'✅':vs==='resubmit'?'↩️':vs==='flagged'?'⚠️':'🔍')+'</span>'+
+    h+='<div class="acard" style="margin-top:12px;"><div class="ah">'+ic(vs==='verified'?'check':vs==='resubmit'?'repeat':vs==='flagged'?'warning':'clock')+''+
        '<div class="t">'+(vs==='verified'?'Your final is verified'
                         :vs==='resubmit'?'Please resubmit'
                         :vs==='flagged'?'Your final is under review'
@@ -2606,7 +2605,7 @@ function t42RenderResult(){
   var fit=t42FitImprove();
 
   var h='<div class="t42-hero" style="padding-bottom:6px;">'+
-        '<div class="t42-trophy">🏆</div>'+
+        '<div class="t42-trophy">'+glyph('trophy')+'</div>'+
         '<div class="t42-logo" style="font-size:44px;">T42 COMPLETE</div>'+
         '<div class="t42-sub">'+total+' / '+total+' DAYS · '+
         t42Esc((T42.challenge.edition||T42.challenge.name||'').toUpperCase())+'</div></div>';
@@ -2628,7 +2627,7 @@ function t42RenderResult(){
        '<div class="t42-score-n">'+t42Fmt(v)+'</div>'+
        (rk?'<div class="t42-score-r">#'+rk+' · '+t42Esc(bn)+'</div>':'')+'</div>';
   } else {
-    h+='<div class="acard"><div class="ah"><span>📋</span><div class="t">Not ranked</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('clipboard')+'<div class="t">Not ranked</div></div>'+
        '<div class="sub">'+t42Esc(sc&&sc.note ? sc.note+'.' :
          'A ranked result needs a baseline and a final assessment.')+
        ' Everything above is still yours.</div></div>';
@@ -2698,7 +2697,7 @@ function t42RenderCert(){
     /* Drawn once, failed once — said, not retried. Retrying from here is
        what used to loop: render, draw, fail, render again, until the stack
        gave out and the screen froze. */
-    h+='<div class="acard"><div class="ah"><span>⚠️</span><div class="t">'+
+    h+='<div class="acard"><div class="ah">'+ic('warning')+'<div class="t">'+
        t42Esc(T42_CERT_TITLE[c.kind]||'Certificate')+'</div></div>'+
        '<div class="sub">'+t42Esc(c.participant_name)+' · '+t42Esc(c.edition||'')+
        '. This phone could not draw the image — your certificate is issued and safe.</div></div>';
@@ -2863,7 +2862,7 @@ function t42RenderNext(){
 
   /* The next edition, if one is open — otherwise a promise that it will
      show up in the one place they already look. */
-  h+='<div class="acard"><div class="ah"><span>🔁</span><div class="t">The next T42</div></div>'+
+  h+='<div class="acard"><div class="ah">'+ic('repeat')+'<div class="t">The next T42</div></div>'+
      '<div class="sub">When the next edition opens it appears on your Home screen. '+
      'Same account, a new starting line.</div>'+
      '<button class="bigbtn sec" onclick="t42Reload()">Check for a new edition</button></div>';
@@ -2873,7 +2872,7 @@ function t42RenderNext(){
 }
 
 function t42NextCard(icon,title,sub,go,label){
-  return '<div class="acard"><div class="ah"><span>'+icon+'</span><div class="t">'+t42Esc(title)+'</div></div>'+
+  return '<div class="acard"><div class="ah">'+ic(icon)+'<div class="t">'+t42Esc(title)+'</div></div>'+
     '<div class="sub">'+t42Esc(sub)+'</div>'+
     '<button class="bigbtn sec" onclick="'+go+'">'+t42Esc(label)+'</button></div>';
 }
@@ -2943,15 +2942,15 @@ function t42RenderDuo(){
 
   if(!T42.reg.duo_id){
     if(!T42.duoWindowOpen()){
-      h+='<div class="acard"><div class="ah"><span>🔒</span><div class="t">Pairing has closed</div></div>'+
+      h+='<div class="acard"><div class="ah">'+ic('lock')+'<div class="t">Pairing has closed</div></div>'+
          '<div class="sub">Duos were fixed when the baseline closed on day '+T42.lockDay()+
          '. You can still train, check in and log everything — the duo board is for pairs.</div></div>';
       el.innerHTML=h; return;
     }
-    h+='<div class="acard"><div class="ah"><span>➕</span><div class="t">Invite a partner</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('plus')+'<div class="t">Invite a partner</div></div>'+
        '<div class="sub">Create the duo and get a code to give your partner.</div>'+
        '<button class="bigbtn" onclick="t42DuoCreate()">Create Duo</button></div>';
-    h+='<div class="acard"><div class="ah"><span>🔑</span><div class="t">Enter your partner\'s code</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('key')+'<div class="t">Enter your partner\'s code</div></div>'+
        '<div class="sub">They created the duo? Type the code they gave you.</div>'+
        '<input class="inp t42-codein" id="t42-duocode" maxlength="8" placeholder="T42-K8F2" '+
        'autocapitalize="characters" autocomplete="off" spellcheck="false">'+
@@ -2965,7 +2964,7 @@ function t42RenderDuo(){
   }
 
   var code=T42.duo&&T42.duo.code;
-  h+='<div class="acard"><div class="ah"><span>👥</span><div class="t">Your duo code</div></div>'+
+  h+='<div class="acard"><div class="ah">'+ic('people')+'<div class="t">Your duo code</div></div>'+
      '<div class="t42-code">'+t42Esc(code||'—')+'</div>'+
      '<div class="sub" style="margin-top:8px;">Give this to your partner. Both of you must finish registration.</div>'+
      (code?'<button class="bigbtn sec" onclick="t42DuoShare()">Send the code</button>':'')+'</div>';
@@ -3078,12 +3077,12 @@ function t42DuoShare(){
 function t42DuoSummaryCard(){
   if(!T42.reg.duo_id){
     return '<div class="acard" onclick="t42GoDuo()" style="cursor:pointer;">'+
-      '<div class="ah"><span>👥</span><div class="t">Set up your duo</div><div class="c">›</div></div>'+
+      '<div class="ah">'+ic('people')+'<div class="t">Set up your duo</div><div class="c">›</div></div>'+
       '<div class="sub">Create a duo and send the code, or enter your partner\'s.</div></div>';
   }
   var p=t42DuoPartner();
   return '<div class="acard" onclick="t42GoDuo()" style="cursor:pointer;">'+
-    '<div class="ah"><span>👥</span><div class="t">'+(p?'Your duo with '+t42Esc(p.display_name):'Waiting for your partner')+
+    '<div class="ah">'+ic('people')+'<div class="t">'+(p?'Your duo with '+t42Esc(p.display_name):'Waiting for your partner')+
     '</div><div class="c">›</div></div>'+
     '<div class="sub">Team readiness '+t42DuoReadiness()+'%'+(T42.duo&&T42.duo.code?' · code '+t42Esc(T42.duo.code):'')+'</div></div>';
 }
@@ -3097,7 +3096,7 @@ function t42DuoDashCard(){
   if(!T42.reg.duo_id){
     return '<div class="sechead">Your duo</div>'+
       '<div class="acard" onclick="t42GoDuo()" style="cursor:pointer;">'+
-      '<div class="ah"><span>👥</span><div class="t">Not in a duo</div><div class="c">›</div></div>'+
+      '<div class="ah">'+ic('people')+'<div class="t">Not in a duo</div><div class="c">›</div></div>'+
       '<div class="sub">'+(T42.duoWindowOpen()?'Pair up before day '+T42.lockDay()+' to compete as a team.'
                                               :'Pairing has closed for this edition.')+'</div></div>';
   }
@@ -3140,7 +3139,7 @@ function t42ProgDuo(){
   var line=function(m,label){
     if(!m) return '<div class="acard"><div class="ah"><div class="t">'+label+'</div></div>'+
                   '<div class="sub">Not joined yet.</div></div>';
-    return '<div class="acard"><div class="ah"><span>'+(m.is_me?'🙋':'🤝')+'</span><div class="t">'+
+    return '<div class="acard"><div class="ah">'+ic((m.is_me?'🙋':'🤝'))+'<div class="t">'+
       t42Esc(m.is_me?'You':m.display_name)+'</div><div class="c">'+
       (m.total!=null?t42Fmt(m.total):'')+'</div></div>'+
       '<div class="t42-grid" style="margin-top:10px;">'+
@@ -3209,7 +3208,7 @@ function t42DuoBoard(){
     h+='<div class="acard"><div class="sub">Could not load this leaderboard.</div>'+
        '<button class="bigbtn sec" onclick="t42DuoBoardReload()">Try again</button></div>';
   } else if(!rows.length){
-    h+='<div class="acard"><div class="ah"><span>🏁</span><div class="t">No duos ranked yet</div></div>'+
+    h+='<div class="acard"><div class="ah">'+ic('flag')+'<div class="t">No duos ranked yet</div></div>'+
        '<div class="sub">A duo is ranked once both partners are ready and the first scores are in.</div></div>';
   } else {
     h+='<div class="sechead">Top '+rows.length+'</div>';

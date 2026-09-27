@@ -702,8 +702,8 @@
     <div class="share-wrap"><img id="share-img" alt="HITFAT+ progress"><div id="share-load">Generating…</div></div>
     <canvas id="share-canvas" width="1080" height="1920" style="display:none;"></canvas>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;">
-      <button class="bigbtn" style="margin:0;" onclick="shareImage()">📤 Share</button>
-      <button class="bigbtn sec" style="margin:0;" onclick="saveShare()">⬇ Save</button>
+      <button class="bigbtn" style="margin:0;" onclick="shareImage()">Share</button>
+      <button class="bigbtn sec" style="margin:0;" onclick="saveShare()">Save</button>
     </div>
     <div class="sub" style="text-align:center;">Tekan &amp; tahan gambar untuk simpan, atau Share terus ke IG story / WhatsApp.</div>
   </div>
@@ -714,7 +714,7 @@
   <iframe id="pl-video" allow="autoplay; picture-in-picture" frameborder="0"></iframe>
   <video id="pl-cam" autoplay playsinline muted></video>
   <div class="nofilm" id="pl-nofilm" style="display:none;">
-    <div><div class="e">🏋️</div><div class="t">Clip coming soon</div>
+    <div><div class="e"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg></div><div class="t">Clip coming soon</div>
     <div class="m" id="pl-nofilm-m"></div></div>
   </div>
   <div class="pl-scrim"></div>
@@ -722,8 +722,8 @@
   <div class="pl-top">
     <button class="pl-x" onclick="plClose()">✕</button>
     <div class="pl-hd"><div class="pl-pill" id="pl-pill"></div></div>
-    <button class="pl-ic" id="pl-mode" onclick="plToggleMode()" title="Switch view">🪞</button>
-    <button class="pl-ic" id="pl-camhide" onclick="plToggleCam()" title="Hide camera">📷</button>
+    <button class="pl-ic" id="pl-mode" onclick="plToggleMode()" title="Switch view"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h10v17H7z"/><path d="M10 7l4-2M10 11l5-3"/></svg></button>
+    <button class="pl-ic" id="pl-camhide" onclick="plToggleCam()" title="Hide camera"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.5H15L17 8h3v11h-1.5M6.5 19H4V8h2.5"/><path d="M14.3 14.8a3.4 3.4 0 0 1-4.9-4.6"/></svg></button>
   </div>
   <div class="pl-dot" id="pl-camdot"></div>
 
@@ -903,7 +903,7 @@ function toast(m){ const t=$('toast'); if(!t) return; t.textContent=m; t.classLi
   clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('on'),1900); }
 
 /*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__MONTHLY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
-/*__CLUB__*//*__T42__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
+/*__ICONS__*//*__CLUB__*//*__T42__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
 
 function hideSplash(){ const s=$('splash'); if(s&&!s.classList.contains('gone')){ s.classList.add('gone'); setTimeout(()=>{s.style.display='none';},500); } }
 let _started=false;

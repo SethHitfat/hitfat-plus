@@ -41,7 +41,7 @@ function fbigCard(p){
 /* gradient browse tile — the coloured Strength / Pilates blocks */
 function ftile(p){
   return '<div class="ftile" onclick="openProgram(\''+p.id+'\')" style="background:'+grad(p)+'">'+
-    '<div class="t">'+p.name+'</div><div class="ic">'+(p.icon||'')+'</div></div>';
+    '<div class="t">'+p.name+'</div><div class="ic">'+glyph((p.icon||''))+'</div></div>';
 }
 
 const ACTIVITIES=[
@@ -76,7 +76,7 @@ function renderTrain(){
 
 /* ── FOR YOU ── */
 function fqCard(){
-  return '<div class="fqcta" onclick="openFinder()"><div class="ic">🎯</div>'+
+  return '<div class="fqcta" onclick="openFinder()"><div class="ic">'+glyph('target')+'</div>'+
     '<div style="flex:1;"><div class="t">Find my program</div>'+
     '<div class="m">Four questions, one match — from '+PROGRAMS.filter(p=>p.weeks).length+' programs</div></div>'+
     '<div class="chev">›</div></div>';
@@ -148,7 +148,7 @@ function ncard(p,rank){
     (rank?'<div class="rk">'+rank+'</div>':'')+
     '<div class="im" style="background-image:url(\''+progImg(p)+'\')">'+
       '<div class="ov"></div>'+
-      '<div class="ic">'+(p.icon||'')+'</div>'+
+      '<div class="ic">'+glyph((p.icon||''))+'</div>'+
       (done>0?'<div class="pb"><i style="width:'+pct+'%"></i></div>':'')+
       '<div class="in"><div class="t">'+p.name+'</div>'+
       '<div class="m">'+p.weeks.length+' wk · '+p.dur+' min</div></div>'+
@@ -188,7 +188,7 @@ function trPlans(){
 
   let h='<div class="nhero" style="background-image:url(\''+progImg(hero)+'\')">'+
     '<div class="ov"></div><div class="in">'+
-    '<div class="ic">'+(hero.icon||'')+'</div>'+
+    '<div class="ic">'+glyph((hero.icon||''))+'</div>'+
     '<div class="t">'+hero.name+'</div>'+
     '<div class="tags">'+hero.goal+' · '+hero.level+' · '+hero.weeks.length+' weeks · '+hero.dur+' min a day</div>'+
     '<div class="d">'+hero.desc+'</div>'+
@@ -244,13 +244,13 @@ function trLibrary(){
     ['✅','Sessions logged',HF.count(),"switchTab('progress')"]
   ];
   let h='<div class="flib">'+rows.map(r=>
-    '<div class="row" onclick="'+r[3]+'"><span class="ic">'+r[0]+'</span>'+
+    '<div class="row" onclick="'+r[3]+'"><span class="ic">'+ic(r[0])+'</span>'+
     '<span class="lb">'+r[1]+'</span><span class="ct">'+r[2]+'</span><span class="cv">›</span></div>').join('')+'</div>';
   h+=fsec('By equipment','Everything you can train with today');
   const eqs=Array.from(new Set(DB.map(e=>e.eq)));
   h+='<div class="flib">'+eqs.map(q=>{
     const n=DB.filter(e=>e.eq===q).length;
-    return '<div class="row" onclick="libEq=\''+q+'\';openLibrary()"><span class="ic">🎽</span>'+
+    return '<div class="row" onclick="libEq=\''+q+'\';openLibrary()"><span class="ic">'+glyph('workout')+'</span>'+
       '<span class="lb">'+q+'</span><span class="ct">'+n+'</span><span class="cv">›</span></div>';
   }).join('')+'</div>';
   if(!started.length) h+='<div class="empty">Start a program and it shows up here.</div>';
@@ -304,7 +304,7 @@ function trBar(){
      'the five patterns, in the space of a doorway.</div>'+
      '<div class="bh-row">'+
        (ownsBar()
-         ? '<span class="bh-own">✓ You own the bar</span>'
+         ? '<span class="bh-own">You own the bar</span>'
          : '<span class="bh-cta">Get the bar · RM'+BAR_PRICE+'</span><span class="bh-was">RM'+BAR_WAS+'</span>')+
      '</div>'+
      '<div class="bh-f">'+bp.length+' programs · '+BAR_DB.length+' movements · free for everyone</div>'+
@@ -314,7 +314,7 @@ function trBar(){
      the one thing a training app cannot recover from being wrong about. */
   if(!barFootageReady()){
     const fc=barFootageCount();
-    h+='<div class="mpnote" style="border-color:rgba(245,158,11,.35);color:#f59e0b;">'+
+    h+='<div class="mpnote" style="border-color:rgba(245,158,11,.35);color:var(--note-amber);">'+
        (fc.have
          ? fc.have+' of '+fc.total+' movements are filmed. The rest are still being shot — '+
            'each one says so in the player rather than showing you a different exercise.'
@@ -366,7 +366,7 @@ function barCard(p,showProgress){
   const pct=total?Math.round(done/total*100):0;
   return '<div class="barcard" onclick="openProgram(\''+p.id+'\')" '+
     'style="background:linear-gradient(160deg,'+(p.c1||'#241a12')+' 0%,'+(p.c2||'#0b0906')+' 92%);">'+
-    '<div class="bc-ic" style="color:'+(p.ac||'var(--hitfat)')+'">'+(p.icon||'🏋️')+'</div>'+
+    '<div class="bc-ic" style="color:'+(p.ac||'var(--hitfat)')+'">'+glyph((p.icon||'🏋️'))+'</div>'+
     '<div class="bc-b">'+
       '<div class="bc-k" style="color:'+(p.ac||'var(--hitfat)')+'">'+(p.level||'')+'</div>'+
       '<div class="bc-n">'+p.name+'</div>'+
@@ -386,14 +386,14 @@ function trRecovery(){
   const rh=PROGRAMS.filter(isRehabProgram);
   let h='';
   h+='<div class="ecta" style="background:'+egrad('#0f1f22','#07090a','#38bdf8')+';">'+
-     '<div class="ic">🧘</div><div class="t">Recovery &amp; prehab</div>'+
+     '<div class="ic">'+glyph('leaf')+'</div><div class="t">Recovery &amp; prehab</div>'+
      '<div class="s">Joint-by-joint work for knees, shoulders, hips, ankles and the back a desk gives you. '+
      REHAB_DB.length+' movements, '+rh.length+' programs.</div></div>';
-  h+='<div class="mpnote" style="border-color:rgba(56,189,248,.35);color:#5eb8ff;">'+
+  h+='<div class="mpnote" style="border-color:rgba(56,189,248,.35);color:var(--note-sky);">'+
      'This is training to build resilience, not treatment for an injury. If a movement hurts, '+
      'stop doing it — and if something is already painful, see a doctor or physiotherapist first.</div>';
   if(!rehabFootageReady())
-    h+='<div class="mpnote" style="border-color:rgba(245,158,11,.35);color:#f59e0b;">'+
+    h+='<div class="mpnote" style="border-color:rgba(245,158,11,.35);color:var(--note-amber);">'+
        'Sets and reps are ready to follow. Most clips are still being filmed — the player says which, '+
        'rather than showing you a different movement.</div>';
 
@@ -401,7 +401,7 @@ function trRecovery(){
   h+=fsec('Where does it bother you?','Pick the joint, not the workout');
   h+='<div class="hscroll">'+REHAB_JOINTS.map(j=>
     '<div class="eslot" onclick="openJoint(\''+j.k+'\')" style="width:172px;">'+
-    '<div class="e">'+j.e+'</div><div class="n">'+j.n+'</div>'+
+    '<div class="e">'+glyph(j.e)+'</div><div class="n">'+j.n+'</div>'+
     '<div class="v" style="font-size:20px;">'+rehabFor(j.k).length+'</div>'+
     '<div class="m" style="line-height:1.35;">'+j.d+'</div></div>').join('')+'</div>';
 
@@ -417,7 +417,7 @@ function openJoint(k){
   hidePanels(); $('library').style.display='block';
   $('lib-body').innerHTML='<div class="hgroup"><div class="k">Recovery</div><h2>'+j.n+'</h2>'+
     '<p>'+j.d+'.</p></div>'+
-    '<div class="mpnote" style="border-color:rgba(56,189,248,.35);color:#5eb8ff;">'+
+    '<div class="mpnote" style="border-color:rgba(56,189,248,.35);color:var(--note-sky);">'+
     'If a movement hurts, stop. Prehab should feel like work, never like pain.</div>'+
     '<div class="flib">'+names.map(n=>{
       const e=DB.filter(x=>x.n===n)[0]; if(!e) return '';

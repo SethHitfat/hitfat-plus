@@ -83,7 +83,7 @@ function earnedBadges(){
 function monthlyCard(){
   const p=challengeProgress(), left=daysLeftInMonth();
   return '<div class="mcard" onclick="openMonthly()">'+
-    '<div class="mtop"><span class="me">'+p.c.e+'</span>'+
+    '<div class="mtop"><span class="me">'+glyph(p.c.e)+'</span>'+
     '<span class="mtag">'+monthName().toUpperCase()+' CHALLENGE</span></div>'+
     '<div class="mn">'+p.c.n+'</div>'+
     '<div class="mbar"><i style="width:'+p.pct+'%"></i></div>'+
@@ -139,7 +139,7 @@ function renderMonthly(){
       ['🏃','Any session counts','Program day, single session, BAR, recovery — all of it'],
       ['🎖️','Finish it and keep it','Completed months stay on your shelf'],
       ['🆓','Free for everyone','No purchase, nothing locked']
-    ].map(x=>'<div class="row" style="cursor:default;"><div class="ic">'+x[0]+'</div>'+
+    ].map(x=>'<div class="row" style="cursor:default;"><div class="ic">'+ic(x[0])+'</div>'+
       '<div style="flex:1;"><div style="font-size:15px;font-weight:600;color:var(--txt);">'+x[1]+'</div>'+
       '<div style="font-size:13px;color:var(--dim);margin-top:3px;">'+x[2]+'</div></div></div>').join('')+'</div>';
 
@@ -147,7 +147,7 @@ function renderMonthly(){
   if(b.length){
     h+=fsec('Your shelf',b.length+' challenge'+(b.length>1?'s':'')+' finished');
     h+='<div class="mbadges">'+b.map(x=>
-      '<div class="mbadge"><div class="e">'+x.icon+'</div><div class="t">'+x.name+'</div>'+
+      '<div class="mbadge"><div class="e">'+glyph(x.icon)+'</div><div class="t">'+x.name+'</div>'+
       '<div class="m">'+x.days+'/'+x.target+' days</div></div>').join('')+'</div>';
   }
 
@@ -155,8 +155,8 @@ function renderMonthly(){
   h+='<div class="flib">'+MONTHLY.map((c,i)=>{
       const cur=i===new Date().getMonth();
       return '<div class="row" style="cursor:default;'+(cur?'':'opacity:.55;')+'">'+
-        '<div class="ic">'+c.e+'</div>'+
-        '<div style="flex:1;"><div style="font-size:15px;font-weight:600;color:'+(cur?'var(--hyrox)':'#fff')+';">'+
+        '<div class="ic">'+glyph(c.e)+'</div>'+
+        '<div style="flex:1;"><div style="font-size:15px;font-weight:600;color:'+(cur?'var(--hyrox)':'var(--txt)')+';">'+
         new Date(2000,i,1).toLocaleDateString('en-MY',{month:'long'})+' · '+c.n+'</div></div>'+
         '<div class="ct">'+c.target+'d</div></div>';
     }).join('')+'</div>';
