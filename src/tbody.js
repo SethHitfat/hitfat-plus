@@ -1402,9 +1402,18 @@ ok("no history is a zero streak", clubWeekStreak()===0);
 Club.history=[_sess(1),_sess(8),_sess(15)];
 ok("a three-week run reads as three", clubWeekStreak()>=3, clubWeekStreak());
 /* A member who has not trained yet this week but trained last week still
-   has a streak — the week is not over. */
-Club.history=[_sess(9),_sess(16)];
+   has a streak — the week is not over.
+   The fixture counts from Monday, not from today. It used to be "9 and 16
+   days ago", which is last week from Wednesday on but TWO weeks ago on a
+   Monday or Tuesday — so every Monday the suite failed on a function that
+   was right: last week really was empty. */
+var _dsm=(new Date().getDay()+6)%7;                 // days since this Monday
+Club.history=[_sess(_dsm+3),_sess(_dsm+10)];        // mid last week, mid the week before
 ok("an unstarted week does not break the streak", clubWeekStreak()>=2, clubWeekStreak());
+/* And the function's own answer on the case the old fixture built by
+   accident: nothing this week or last, so the streak is over. */
+Club.history=[_sess(_dsm+10),_sess(_dsm+17)];
+ok("...but an empty last week does", clubWeekStreak()===0, clubWeekStreak());
 Club.history=[_sess(30)];
 ok("a month off is not a streak", clubWeekStreak()===0, clubWeekStreak());
 ok("attendance window counts back", (function(){ Club.history=[_sess(1),_sess(20)];
@@ -1626,7 +1635,7 @@ ok("...but not a denied row",
 /* ── landing ── */
 noThrow("the landing screen renders", function(){ t42View='landing'; t42Paint(); });
 var _t4=document.getElementById('t42-body').innerHTML;
-ok("landing offers the way in",      _t4.indexOf('JOIN T42')>0);
+ok("landing offers the way in",      _t4.indexOf('Join T42')>0);
 ok("landing counts down to the start", _t4.indexOf('Starts in 9 days')>0);
 ok("landing names both modes",       _t4.indexOf('ONLINE SOLO')>0 && _t4.indexOf('GYM DUO')>0);
 ok("landing names all three tracks", _t4.indexOf('START')>0 && _t4.indexOf('TRANSFORM')>0 &&
@@ -1778,7 +1787,7 @@ t42Resume();
 ok("a finished one resumes on the challenge", t42View==='joined');
 ok("...and Home counts the days", t42HomeCard().indexOf('Starts in 9 days')>0);
 ok("...on the banner, with a way in", t42HomeCard().indexOf('t42-banner')>0 &&
-   t42HomeCard().indexOf('OPEN T42')>0);
+   t42HomeCard().indexOf('Open T42')>0);
 
 /* Gym Duo is registered for, not half-built. The screen must say so. */
 T42.reg.mode='gym_duo';
@@ -1967,7 +1976,7 @@ ok("...titled",              _tr.indexOf('FULL BODY 01')>0);
 ok("...with its detail",     _tr.indexOf('35 min')>0 && _tr.indexOf('Intermediate')>0);
 ok("...listing the movements", _tr.indexOf('Bodyweight Squat')>0 && _tr.indexOf('Plank')>0);
 ok("...and their sets",      _tr.indexOf('3 × 15')>0);
-ok("...offering the player", _tr.indexOf('START WORKOUT')>0);
+ok("...offering the player", _tr.indexOf('Start Workout')>0);
 
 /* The plan names exercises; the library owns them. A name that is not in
    the library is DROPPED, never substituted — pickEx would have fallen back
@@ -1985,7 +1994,7 @@ ok("nothing planned resolves to nothing", t42PlanExercises(null).length===0);
 T42.doneToday={day_no:18,title:'FULL BODY 01',minutes:34};
 t42Paint();
 ok("a finished workout says so",  document.getElementById('t42-body').innerHTML.indexOf('Done today')>0);
-ok("...and still offers a replay", document.getElementById('t42-body').innerHTML.indexOf('PLAY AGAIN')>0);
+ok("...and still offers a replay", document.getElementById('t42-body').innerHTML.indexOf('Play Again')>0);
 T42.doneToday=null;
 
 /* A rest day is not an empty screen. */
@@ -2038,7 +2047,7 @@ ok("reopening lands straight on the dashboard", t42View==='dash');
 ok("...and the panel is the one on screen",
    document.getElementById('t42').style.display==='block');
 ok("...with no trace of the join hero",
-   document.getElementById('t42-body').innerHTML.indexOf('JOIN T42')<0);
+   document.getElementById('t42-body').innerHTML.indexOf('Join T42')<0);
 _t42reset();
 
 print("\n── T42 · PROGRESS ──");
@@ -2219,7 +2228,7 @@ T42.challenge.reg_closes_on=_t42day(-1);
 ok("...until the day after it closes",   T42.regOpen()===false);
 t42View='landing'; t42Paint();
 var _lc=document.getElementById('t42-body').innerHTML;
-ok("a closed edition offers no JOIN",    _lc.indexOf('JOIN T42')<0);
+ok("a closed edition offers no JOIN",    _lc.indexOf('Join T42')<0);
 ok("...and says why",                    _lc.indexOf('Registration closed')>0);
 ok("...and Home stops advertising it",   t42HomeCard()==='');
 /* Someone already in keeps their way back, closed or not. */
@@ -2441,7 +2450,7 @@ _t42done();
 ok("...and the waist change",      _rr.indexOf('-6cm')>0);
 ok("...the score",                 _rr.indexOf('87.4')>0);
 ok("...and the place",             _rr.indexOf('#2 · Transform · Women')>0);
-ok("...offering the certificate",  _rr.indexOf('CLAIM CERTIFICATE')>0);
+ok("...offering the certificate",  _rr.indexOf('Claim Certificate')>0);
 ok("...and what comes next",       _rr.indexOf('t42GoNext()')>0);
 T42.score={category:'transform_female',eligible:false,note:'No final assessment',total:0};
 t42Paint();
@@ -2515,7 +2524,7 @@ T42.past={challenge:{id:'old',name:'T42 November 2026',edition:'November 2026',s
 t42View='landing'; t42Paint();
 var _lp=document.getElementById('t42-body').innerHTML;
 ok("the landing offers last edition's result", _lp.indexOf('Your November 2026 result')>0);
-ok("...beside the new invitation",             _lp.indexOf('JOIN T42')>0);
+ok("...beside the new invitation",             _lp.indexOf('Join T42')>0);
 _t42reset(); T42.past=null; T42.certs=[];
 
 print("\n── T42 · GYM DUO ──");
@@ -2576,7 +2585,7 @@ ok("...the team's readiness",         _du.indexOf('Team readiness')>0);
 ok("...and a way out while it is open", _du.indexOf('t42DuoLeave()')>0);
 /* The duo screen must never be a dead end: it used to have no way back into
    T42 at all, only the panel's Back to Home. */
-ok("...and a way back into the challenge", _du.indexOf('t42DuoDone()')>0 && _du.indexOf('CONTINUE TO T42')>0);
+ok("...and a way back into the challenge", _du.indexOf('t42DuoDone()')>0 && _du.indexOf('Continue to T42')>0);
 t42DuoDone();
 ok("which lands where opening T42 would", t42View==='joined');
 _t42gym(); T42.challenge=_t42edition(5); t42View='duo'; t42Paint();

@@ -1,7 +1,7 @@
 import re,sys,os
 shell=open('shell2.html').read()
 def rd(p): return open(p).read()
-subs=[('/*__CSS__*/','parts/hybrid-red.css'),('<!--__AUTH__-->','auth.html'),('<!--__SCANUI__-->','scanui.html'),
+subs=[('/*__CSS__*/','parts/hybrid-red.css'),('/*__DESIGN__*/','parts/design.css'),('<!--__AUTH__-->','auth.html'),('<!--__SCANUI__-->','scanui.html'),
  ('/*__DB__*/','parts/db.js'),('/*__PROGRAMS_MULTI__*/','parts/programs_multi.js'),
  ('/*__PROGRAMS__*/','parts/programs.js'),('/*__REHABLIB__*/','parts/rehablib.js'),('/*__BARLIB__*/','parts/barlib.js'),('/*__PLANS__*/','plans2.js'),('/*__BARPLANS__*/','barplans.js'),('/*__REHABPLANS__*/','rehabplans.js'),('/*__MONTHLY__*/','monthly.js'),('/*__STORE__*/','store.js'),('/*__FINDER__*/','finder.js'),('/*__MEALDB__*/','parts/mealdb.js'),('/*__MEALPLAN__*/','mealplan.js'),('/*__CUSTOM__*/','custom.js'),('/*__PLAYER__*/','player.js'),('/*__CHALLENGES__*/','parts/challenges.js'),('/*__CLUB__*/','club.js'),('/*__T42__*/','t42.js'),
  ('/*__VIEWS__*/','views2.js'),('/*__EAT__*/','eat2.js'),('/*__PROG__*/','prog2.js'),
@@ -70,7 +70,9 @@ need=['app','screen','pad','tabs','tab','hhdr','wk2','plan','ov','pi','join','ac
       't42-codein','t42-duo','t42-duo-c','t42-duo-n','t42-duo-l','t42-duo-ok','t42-duo-no',
       # T42 — the Home banner
       't42-banner','t42-banner-top','t42-banner-logo','t42-banner-tag','t42-banner-line',
-      't42-banner-sub','t42-banner-cta','t42-miss']
+      't42-banner-sub','t42-banner-cta','t42-miss',
+      # T42 — grouped lists and icon tiles
+      't42-list','t42-ic']
 miss=[c for c in need if c not in have]
 if miss: sys.exit('classes with no CSS: '+str(miss))
 

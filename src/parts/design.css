@@ -1,0 +1,220 @@
+/* ═══════════════════════════════════════════════════════════════
+   HITFAT+ · design layer
+
+   Loaded LAST, over everything, so the whole app changes in one place and
+   comes back out in one place: delete the DESIGN marker near the end of
+   the style block in shell2.html and the app is what it was before.
+
+   The direction is Apple's — Fitness, Health, Settings — because that is
+   what "calm and expensive" looks like to most people holding a phone:
+
+     · the system typeface (SF Pro on an iPhone), sentence case, weight
+       for hierarchy instead of capitals and letter-spacing
+     · grouped surfaces on a quiet grey ground, no borders, no shadows
+     · colour spent on meaning — the one action, the one achievement —
+       and not on decoration
+     · one set of radii, one set of type sizes, used everywhere
+
+   The poster voice (Oswald, condensed capitals) is kept only where it is
+   a mark: the T42 wordmark and the splash.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root{
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter",
+          system-ui, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --r-card: 20px;       /* every card */
+  --r-ctl: 14px;        /* every button and field */
+}
+
+/* ── dark: Apple's grouped dark palette ── */
+:root:not([data-theme="light"]){
+  --bg:#000000; --surface:#1C1C1E; --surface2:#2C2C2E;
+  --line:rgba(84,84,88,.36); --hairline:rgba(84,84,88,.55); --sep:rgba(84,84,88,.6);
+  --tint:rgba(118,118,128,.24);
+  --txt:#FFFFFF; --dim:rgba(235,235,245,.60); --dim2:rgba(235,235,245,.42);
+  --ink-90:rgba(255,255,255,.92); --ink-72:rgba(235,235,245,.72);
+  --ink-55:rgba(235,235,245,.55); --ink-42:rgba(235,235,245,.42);
+  --brand:#FFFFFF; --wash:transparent; --lift:none;
+}
+/* ── light: systemGroupedBackground and friends ── */
+:root[data-theme="light"]{
+  --bg:#F2F2F7; --surface:#FFFFFF; --surface2:rgba(118,118,128,.12);
+  --line:rgba(60,60,67,.10); --hairline:rgba(60,60,67,.16); --sep:rgba(60,60,67,.16);
+  --tint:rgba(118,118,128,.12);
+  --txt:#111113; --dim:rgba(60,60,67,.64); --dim2:rgba(60,60,67,.46);
+  --ink-90:rgba(17,17,19,.92); --ink-72:rgba(60,60,67,.80);
+  --ink-55:rgba(60,60,67,.60); --ink-42:rgba(60,60,67,.46);
+  --brand:#111113; --wash:transparent; --lift:none;
+  --accent-wash:rgba(198,40,40,.08);
+}
+
+/* ── type ── */
+body{background:var(--bg) !important;font-family:var(--font);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+html body *{font-family:var(--font) !important;}
+/* the marks keep their face */
+html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
+  font-family:'Oswald', var(--font) !important;}
+/* numbers line up, the way they do on a watch face */
+.big,.t42-stat-v,.t42-day-n,.t42-count-n,.t42-score-n,.t42-lb-s,.t42-lb-p,.t42-me-r,
+.t42-me-s,.cs-v,.cscore-n,.cbal-n,.pgscore .n,#play{font-variant-numeric:tabular-nums;}
+
+/* ── page titles ── */
+.hgroup{margin:10px 2px 18px;}
+.hgroup .k{font-size:13px !important;font-weight:600;letter-spacing:0;text-transform:none;}
+.hgroup h2{font-size:30px;font-weight:800;letter-spacing:-.7px;line-height:1.08;margin-top:4px;}
+.hgroup p{font-size:15px;line-height:1.45;margin-top:8px;}
+
+/* ── section headers: a bold title, nothing beside it ── */
+.sechead{font-size:22px !important;font-weight:700 !important;letter-spacing:-.45px !important;
+  color:var(--txt) !important;margin:30px 2px 12px !important;text-transform:none !important;}
+.sechead::before{display:none !important;}
+
+/* ── cards: grouped surfaces, no borders, no shadows ── */
+.acard{border:none;border-radius:var(--r-card);padding:16px;box-shadow:none;}
+.acard .ah{margin-bottom:8px;}
+.acard .ah .t{font-size:17px;font-weight:600;letter-spacing:-.3px;}
+.acard .sub{font-size:14px;line-height:1.45;}
+.acard .big{font-size:26px;font-weight:700;letter-spacing:-.6px;}
+.arow{gap:12px;}
+.wrow{border:none;border-radius:16px;}
+.hhdr .chip{border:none;background:var(--surface);}
+.hhdr .av2{border:none;}
+
+/* ── buttons: sentence case, one radius, one weight ── */
+.bigbtn{border-radius:var(--r-ctl);padding:16px;font-size:17px;font-weight:600;
+  letter-spacing:-.2px;text-transform:none;}
+.bigbtn.sec{background:var(--surface2);border:none;color:var(--txt) !important;}
+.bigbtn.off{opacity:.35;}
+.pill{text-transform:none;letter-spacing:0;}
+
+/* ── the segmented chips: selected is ink, not brand red ── */
+.seg{background:var(--surface2);color:var(--txt);font-size:15px;font-weight:600;padding:9px 16px;}
+.seg.on{background:var(--txt);color:var(--bg);}
+
+/* ── fields: filled, borderless, 17pt so iOS does not zoom ── */
+.inp{background:var(--surface2);border:none;border-radius:12px;padding:14px;font-size:17px;}
+.inp:focus{outline:none;box-shadow:0 0 0 2px var(--hitfat);}
+
+/* ── the tab bar: a tint, not a highlight box ── */
+.tab.active{background:none;}
+.tab.active .ticon{filter:none;transform:none;}
+.tabs{border:none;box-shadow:0 8px 30px rgba(0,0,0,.10);}
+:root:not([data-theme="light"]) .tabs{box-shadow:0 8px 30px rgba(0,0,0,.5);}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   T42
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Grouped lists: today, the checkpoints, the final checklist, the team.
+   One surface, hairlines between rows inset past the icon — Settings, not
+   a stack of separate boxes. */
+.t42-list{background:var(--surface);border-radius:var(--r-card);overflow:hidden;margin-bottom:12px;}
+.t42-list .t42-row{background:none;border:none;border-radius:0;margin:0;box-shadow:none;
+  padding:12px 14px;position:relative;min-height:56px;}
+.t42-list .t42-row + .t42-row::before{content:'';position:absolute;top:0;right:0;left:58px;
+  height:.5px;background:var(--sep);}
+.t42-list .t42-row:active{background:var(--tint);}
+.t42-row{border:none;}
+.t42-row.done{border:none;}
+.t42-row-l{font-size:16px;font-weight:500;letter-spacing:-.2px;}
+.t42-row-v{font-size:14px;}
+
+/* The icon: a glyph in a rounded tile of its own colour, as in Settings and
+   Health. Colour here says what the row IS, so the list reads at a glance. */
+.t42-ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto;
+  background:#8E8E93;color:#fff;}
+.t42-ic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;}
+.t42-ic.workout{background:#FF9500;}
+.t42-ic.steps{background:#FF375F;}
+.t42-ic.food{background:#34C759;}
+.t42-ic.water{background:#0A84FF;}
+.t42-ic.check{background:#5E5CE6;}
+.t42-ic.gym{background:#BF5AF2;}
+.t42-ic.rush{background:#FFCC00;color:#1C1C1E;}
+.t42-ic.measure{background:#64D2FF;color:#003142;}
+.t42-ic.flag{background:#FF3B30;}
+.t42-ic.person{background:#8E8E93;}
+
+.t42-tick{color:#34C759;}
+.t42-rest{background:var(--surface2);letter-spacing:.2px;font-size:11px;}
+
+/* Today's heading: a large title and the ring beside it. */
+.t42-day-n{font-size:40px;font-weight:800;letter-spacing:-1.2px;}
+.t42-day-s{font-size:15px;}
+
+/* Tiles: numbers first, labels quiet. */
+.t42-stat{border:none;border-radius:var(--r-card);padding:14px;}
+.t42-stat-l{font-size:12px;font-weight:600;letter-spacing:.1px;text-transform:none;color:var(--dim);}
+.t42-stat-v{font-size:24px;font-weight:700;letter-spacing:-.5px;margin-top:4px;}
+
+/* Footnotes read as footnotes: small, grey, no box. */
+.t42-note{background:none;padding:2px 4px;margin:8px 0 14px;font-size:13px;line-height:1.5;}
+
+/* Choosable cards. */
+.t42-card{border:none;border-radius:var(--r-card);padding:16px;box-shadow:none;
+  outline:2px solid transparent;transition:outline-color .15s;}
+.t42-card.on{background:var(--surface);outline-color:var(--hitfat);}
+.t42-card-n{font-size:20px;font-weight:700;letter-spacing:-.4px;}
+.t42-mini{border:none;border-radius:var(--r-card);}
+.t42-mini-n{font-size:15px;font-weight:700;letter-spacing:-.2px;}
+.t42-trackn{font-size:16px;font-weight:700;letter-spacing:-.2px;}
+.t42-pill{border:none;background:var(--surface2);border-radius:12px;font-size:16px;}
+.t42-pill.on{background:var(--txt);color:var(--bg);}
+.t42-opt{border:none;border-radius:var(--r-ctl);font-size:16px;}
+.t42-field label{font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--dim);}
+.t42-code{letter-spacing:4px;border-radius:var(--r-ctl);}
+.t42-count-n{font-size:56px;font-weight:800;letter-spacing:-2px;}
+.t42-count-l{letter-spacing:.2px;text-transform:none;font-size:15px;}
+.t42-sub{letter-spacing:2.5px;}
+.t42-when{letter-spacing:.3px;text-transform:none;font-size:15px;font-weight:600;}
+.t42-meter-h{font-size:14px;}
+.t42-meter-h span:last-child{font-size:15px;font-weight:700;}
+.t42-glass{border:none;background:var(--surface2);border-radius:10px;}
+.t42-glass.on{background:rgba(10,132,255,.16);}
+.t42-duo-c{border:none;border-radius:var(--r-card);}
+.t42-duo-n{font-size:16px;}
+.t42-me{border:none;border-radius:var(--r-card);background:var(--surface);outline:2px solid var(--hitfat);}
+.t42-me-l{letter-spacing:.1px;text-transform:none;font-size:13px;}
+.t42-lb{padding:13px 4px;}
+.t42-lb.me{border-radius:12px;}
+.t42-score{border:none;border-radius:var(--r-card);background:var(--surface);}
+.t42-score-l{letter-spacing:.1px;text-transform:none;font-size:13px;}
+.t42-score-n{font-size:60px;letter-spacing:-2px;}
+.t42-photo{border-style:solid;border-width:0;background:var(--surface2);border-radius:14px;}
+.t42-ex{border-bottom-color:var(--sep);}
+
+/* The banner: Fitness+ artwork. Dark in both themes, white type, and a
+   white button — the one bright thing on it is the thing to press. */
+.t42-banner{border:none;border-radius:24px;padding:20px 18px 18px;
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(240,57,43,.45) 0%, transparent 55%),
+    radial-gradient(90% 80% at 0% 100%, rgba(31,167,232,.30) 0%, transparent 60%),
+    #0B0B0F;}
+.t42-banner-logo{font-size:34px;}
+.t42-banner-tag{letter-spacing:2px;font-size:11px;}
+.t42-banner-line{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-top:14px;}
+.t42-banner-sub{font-size:14px;color:rgba(235,235,245,.72);}
+.t42-banner-cta{background:#FFFFFF;color:#0B0B0F;font-size:15px;font-weight:600;
+  letter-spacing:-.1px;padding:10px 18px;margin-top:16px;}
+
+/* The avatar in the top bar had no style of its own — the .av2 rules only
+   reach the large one on Home — so it drew as a floating letter. */
+.topbar .av2{width:34px;height:34px;border-radius:50%;background:var(--surface);
+  display:grid;place-items:center;font-size:15px;font-weight:700;color:var(--hitfat);
+  overflow:hidden;cursor:pointer;}
+.topbar .av2 img{width:100%;height:100%;object-fit:cover;}
+
+/* Tiles in a row of three are narrow — 105pt on a 375pt phone, 73pt inside.
+   A 17pt card title does not fit ("Sessions" alone is 93pt), so tiles take
+   the Health-app shape instead: a small grey label over a large number. */
+.arow .acard{padding:14px 12px;}
+.arow .acard .ah{gap:5px;margin-bottom:6px;min-width:0;}
+.arow .acard .ah span{font-size:13px;}
+.arow .acard .ah .t{font-size:13px;font-weight:600;color:var(--dim);letter-spacing:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.arow .acard .big{font-size:24px;}
+.arow .acard .sub{font-size:12px;}
+.hhdr .chip, .hhdr .chip *{text-transform:none !important;letter-spacing:0 !important;}
