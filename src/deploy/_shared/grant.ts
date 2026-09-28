@@ -4,8 +4,19 @@
    up giving away a program the other charges for. */
 
 import { entitlementFor } from './catalogue.ts';
+import { isT42Sku, t42Grant } from './t42.ts';
 
 export async function grant(admin: any, user_id: string, sku: string, order_number: string, tx: string) {
+  /* T42 is paid per edition and granted on the registration, never as a
+     HITFAT+ entitlement — see _shared/t42.ts. */
+  if (isT42Sku(sku)) {
+    if (!(await t42Grant(admin, user_id, sku))) return false;
+    await admin.from('plus_orders')
+      .update({ status: 'paid', transaction_id: tx || null, paid_at: new Date().toISOString() })
+      .eq('order_number', order_number);
+    return true;
+  }
+
   const row = entitlementFor(sku, order_number);
   if (!row) { console.error('grant for unknown sku', sku); return false; }
 

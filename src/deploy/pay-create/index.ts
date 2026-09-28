@@ -19,6 +19,7 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { createHmac } from 'node:crypto';
 import { CATALOGUE, CHANNELS, BC_API, SITE, CORS, json } from '../_shared/catalogue.ts';
+import { isT42Sku, t42Offer } from '../_shared/t42.ts';
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
@@ -52,14 +53,20 @@ Deno.serve(async (req: Request) => {
     try { body = await req.json(); } catch { /* empty body is a missing sku */ }
 
     const sku  = String(body?.sku || '');
-    const item = CATALOGUE[sku];
+    /* A T42 edition is priced on its own row, not in the catalogue. */
+    let item = CATALOGUE[sku];
+    if (isT42Sku(sku)) {
+      const offer = await t42Offer(admin, sku, user.id);
+      if (!offer.ok) return json({ error: offer.error, code: offer.code }, offer.status);
+      item = { price: offer.price, kind: 'program' };
+    }
     if (!item) return json({ error: 'Unknown item.' }, 400);
 
     const channel = CHANNELS.indexOf(Number(body?.channel)) > -1 ? Number(body.channel) : 1;
 
     /* Buying something you already own is a refund request waiting to happen.
        Credits and passes may be bought again; a program may not. */
-    if (item.kind === 'program' || item.kind === 'bar') {
+    if ((item.kind === 'program' || item.kind === 'bar') && !isT42Sku(sku)) {
       const { data: had } = await admin
         .from('plus_entitlements')
         .select('id').eq('user_id', user.id).eq('sku', sku).maybeSingle();

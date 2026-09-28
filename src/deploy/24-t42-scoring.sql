@@ -34,6 +34,14 @@ alter table public.t42_scores add column if not exists rush_improve_pct  numeric
 alter table public.t42_scores add column if not exists eligible          boolean not null default false;
 -- Why someone is not ranked, in words an admin can act on.
 alter table public.t42_scores add column if not exists note              text;
+-- Scoring model v2 (Sept 2026): the four components the challenge is sold on.
+--   compliance_pct  daily actions done, day by day          (Consistency)
+--   progress_pct    body/fitness change against target      (Progress)
+--   missions_pct    weekly missions met, checked by rule    (Missions)
+--   fitness_pct     already here — fitness test improvement (Fitness)
+alter table public.t42_scores add column if not exists compliance_pct    numeric(6,2);
+alter table public.t42_scores add column if not exists progress_pct      numeric(6,2);
+alter table public.t42_scores add column if not exists missions_pct      numeric(6,2);
 create index if not exists t42_scores_consistency
   on public.t42_scores (challenge_id, consistency_total desc);
 
@@ -68,17 +76,25 @@ end $$;
 -- duo, and with a code the server chose.
 create or replace function public.t42_guard_registration()
 returns trigger language plpgsql security definer set search_path = public as $$
-declare v_status text; v_closes date;
+declare v_status text; v_closes date; v_tracks text[]; v_modes text[];
 begin
   if auth.uid() is null or public.t42_is_staff() then return new; end if;
 
-  select status, reg_closes_on into v_status, v_closes
+  select status, reg_closes_on, tracks, modes into v_status, v_closes, v_tracks, v_modes
     from public.t42_challenges where id = new.challenge_id;
   if v_status is null or v_status not in ('registration','running') then
     raise exception 'Registration for this T42 is closed' using errcode = 'check_violation';
   end if;
-  if v_closes is not null and current_date > v_closes then
+  if v_closes is not null and public.t42_today() > v_closes then
     raise exception 'Registration for this T42 closed on %', v_closes using errcode = 'check_violation';
+  end if;
+  -- Only what this edition offers. November 2026 is online-only with no
+  -- START track; a browser that sends 'gym_duo' anyway is refused here.
+  if v_tracks is not null and not (new.track = any(v_tracks)) then
+    raise exception 'The % track is not part of this T42', new.track using errcode = 'check_violation';
+  end if;
+  if v_modes is not null and not (new.mode = any(v_modes)) then
+    raise exception 'That mode is not part of this T42' using errcode = 'check_violation';
   end if;
 
   new.status       := 'pending';
@@ -104,18 +120,23 @@ create trigger t42_guard_registration_ins
 -- the challenge ended, and a member could keep topping it up in December.
 create or replace function public.t42_guard_day()
 returns trigger language plpgsql security definer set search_path = public as $$
-declare v_start date; v_total int; v_status text; v_day int;
+declare v_start date; v_total int; v_status text; v_day int; v_ch uuid;
 begin
   if auth.uid() is null or public.t42_is_staff() then return new; end if;
 
-  select ch.starts_on, ch.total_days, ch.status into v_start, v_total, v_status
+  select ch.id, ch.starts_on, ch.total_days, ch.status into v_ch, v_start, v_total, v_status
     from public.t42_registrations r
     join public.t42_challenges ch on ch.id = r.challenge_id
    where r.id = new.registration_id;
-  if v_status = 'complete' then
+  if v_status = 'complete' or not public.t42_access_open(v_ch) then
     raise exception 'This T42 has finished' using errcode = 'check_violation';
   end if;
-  v_day := current_date - v_start + 1;
+  -- The programme is what was paid for. A registration that has not been
+  -- paid may hold a baseline, but it does not check in or log workouts.
+  if not public.t42_reg_entitled(new.registration_id) then
+    raise exception 'Complete your T42 payment to start' using errcode = 'check_violation';
+  end if;
+  v_day := public.t42_today() - v_start + 1;
 
   if v_day < 1 then
     raise exception 'T42 has not started yet' using errcode = 'check_violation';
@@ -156,6 +177,10 @@ begin
   if auth.uid() is null or public.t42_is_staff() then return new; end if;
 
   select challenge_id into v_ch from public.t42_registrations where id = new.registration_id;
+  if not public.t42_access_open(v_ch) or not public.t42_reg_entitled(new.registration_id) then
+    raise exception 'RUSH results are open to paid participants while T42 is running'
+      using errcode = 'check_violation';
+  end if;
   v_day := coalesce(public.t42_day_no(v_ch), 0);
   if v_day = 0 or new.week_no > ceil(v_day / 7.0) then
     raise exception 'That RUSH week has not started' using errcode = 'check_violation';
@@ -205,8 +230,9 @@ begin
     from public.t42_registrations r
     join public.t42_challenges ch on ch.id = r.challenge_id
    where r.id = new.registration_id;
-  -- Once the results are out, the numbers behind them are closed.
-  if v_status = 'complete' then
+  -- Once the results are out, or the edition's access has closed, the
+  -- numbers behind them are closed.
+  if v_status = 'complete' or not public.t42_access_open(v_ch) then
     raise exception 'This T42 has finished' using errcode = 'check_violation';
   end if;
   v_day      := coalesce(public.t42_day_no(v_ch), 0);
@@ -222,7 +248,7 @@ begin
     new.verified_by    := null;  new.verified_at    := null;  new.verify_note := null;
     -- A final goes straight into the verification queue.
     new.verify_status  := case when new.phase = 'final' then 'pending' else 'none' end;
-    new.taken_on       := current_date;
+    new.taken_on       := public.t42_today();
     new.created_at     := now();
     v_body := true;
     v_fit  := coalesce(new.fitness, '{}'::jsonb) <> '{}'::jsonb;
@@ -246,7 +272,7 @@ begin
             or new.photo_side  is distinct from old.photo_side
             or new.photo_back  is distinct from old.photo_back;
 
-    new.taken_on := case when v_body then current_date else old.taken_on end;
+    new.taken_on := case when v_body then public.t42_today() else old.taken_on end;
     -- Something sent back for resubmission, and then changed, is back in
     -- the queue. Anything else keeps the status a reviewer gave it.
     new.verify_status := case
@@ -325,6 +351,8 @@ declare
   v_sc    jsonb;
   v_tg    jsonb;
   v_steps int;
+  v_water int;
+  v_model text;
   v_bad   text;
   v_n     int;
 begin
@@ -334,14 +362,23 @@ begin
   v_day := coalesce(public.t42_day_no(p_challenge), 0);
   if v_day = 0 then return 0; end if;           -- nothing to score before day 1
   v_week  := ceil(v_day / 7.0)::int;
-  v_final := ch.status in ('assessment','complete');
+  v_final := ch.status in ('assessment','complete') or public.t42_today() > ch.ends_on;
   v_sc    := coalesce(ch.config -> 'scoring', '{}'::jsonb);
   v_tg    := coalesce(ch.config -> 'targets', '{}'::jsonb);
   v_steps := coalesce((ch.config ->> 'step_target')::int, 8000);
+  v_water := coalesce((ch.config ->> 'water_target_ml')::int, 2000);
+  -- v1 is the per-track formula below; v2 is the four-component challenge
+  -- score (consistency · progress · missions · fitness). The model is the
+  -- edition's choice, so a finished edition keeps the formula it ran under.
+  v_model := coalesce(ch.config ->> 'scoring_model', 'v1');
 
   -- Refuse, loudly, rather than rank people by weights nobody chose.
-  if not (v_sc ? 'online_transform' and v_sc ? 'gym_transform'
-          and v_sc ? 'perform' and v_sc ? 'consistency') then
+  if v_model = 'v2' then
+    if not (v_sc ? 'v2') then
+      raise exception 'T42 scoring config is missing the v2 weight set';
+    end if;
+  elsif not (v_sc ? 'online_transform' and v_sc ? 'gym_transform'
+             and v_sc ? 'perform' and v_sc ? 'consistency') then
     raise exception 'T42 scoring config is missing a weight set';
   end if;
   select string_agg(t.k || ' = ' || t.total, ', ') into v_bad
@@ -360,11 +397,23 @@ begin
   -- score 100 without training on its rest days.
   insert into public.t42_weekly_reviews
     (registration_id, week_no, workouts_done, workouts_target, checkins_done,
-     steps_total, nutrition_days, rush_completed, week_score, computed_at)
+     steps_total, nutrition_days, rush_completed, mission_done, week_score, computed_at)
   select r.id, wk.week_no,
          coalesce(wd.cnt, 0), coalesce(pl.cnt, 0), coalesce(ck.cnt, 0),
          coalesce(ck.steps, 0), coalesce(ck.nut, 0),
          coalesce(ru.done, false),
+         -- The week's mission, checked against the week's own rows. No rule,
+         -- no mission: null, and the scorer does not count the week.
+         case tw.mission_rule ->> 'type'
+           when 'step_days'      then coalesce(ck.stepdays, 0)  >= coalesce((tw.mission_rule ->> 'min')::int, 5)
+           when 'water_days'     then coalesce(ck.waterdays, 0) >= coalesce((tw.mission_rule ->> 'min')::int, 7)
+           when 'nutrition_days' then coalesce(ck.nut, 0)       >= coalesce((tw.mission_rule ->> 'min')::int, 5)
+           when 'checkin_days'   then coalesce(ck.cnt, 0)       >= coalesce((tw.mission_rule ->> 'min')::int, 7)
+           when 'workouts'       then coalesce(wd.cnt, 0)       >= coalesce((tw.mission_rule ->> 'min')::int, 4)
+           when 'full_days'      then coalesce(fd.cnt, 0)       >= coalesce((tw.mission_rule ->> 'min')::int, 5)
+           when 'rush'           then coalesce(ru.done, false)
+           when 'rush_beat'      then coalesce(ru.beat, false)
+         end,
          round(100 * (
              0.4 * case when coalesce(pl.cnt, 0) = 0 then 1
                         else least(1, coalesce(wd.cnt, 0)::numeric / pl.cnt) end
@@ -389,17 +438,40 @@ begin
       select count(*) as cnt from public.t42_workout_completions x
        where x.registration_id = r.id and x.day_no between wk.d_from and wk.d_to
     ) wd on true
+    left join public.t42_weeks tw on tw.challenge_id = ch.id and tw.week_no = wk.week_no
     left join lateral (
       select count(*) as cnt,
              sum(coalesce(x.steps, 0)) as steps,
              count(*) filter (where x.nutrition = 'on_track') as nut,
-             count(*) filter (where x.steps >= coalesce(tw.step_target, v_steps)) as stepdays
+             count(*) filter (where x.steps >= coalesce(tw.step_target, v_steps)) as stepdays,
+             count(*) filter (where x.water_ml >= v_water) as waterdays
         from public.t42_daily_checkins x
-        left join public.t42_weeks tw on tw.challenge_id = ch.id and tw.week_no = wk.week_no
        where x.registration_id = r.id and x.day_no between wk.d_from and wk.d_to
     ) ck on true
+    -- Days on which every daily action was done: checked in, steps, water,
+    -- nutrition on track, and the day's workout (a rest day needs none).
     left join lateral (
-      select bool_or(x.completed and x.verify_status <> 'flagged') as done
+      select count(*) as cnt
+        from public.t42_daily_checkins x
+       where x.registration_id = r.id and x.day_no between wk.d_from and wk.d_to
+         and x.steps >= coalesce(tw.step_target, v_steps)
+         and x.water_ml >= v_water
+         and x.nutrition = 'on_track'
+         and (exists (select 1 from public.t42_workout_completions w
+                       where w.registration_id = r.id and w.day_no = x.day_no)
+              or not exists (select 1 from public.t42_plan_days pd
+                              where pd.challenge_id = ch.id and pd.track = r.track
+                                and pd.day_no = x.day_no))
+    ) fd on true
+    left join lateral (
+      select bool_or(x.completed and x.verify_status <> 'flagged') as done,
+             -- This week's best against the very first race of the edition.
+             min(x.time_sec) filter (where x.completed and x.time_sec > 0
+                                       and x.verify_status <> 'flagged')
+               < (select rr.time_sec from public.t42_rush_results rr
+                   where rr.registration_id = r.id and rr.completed and rr.time_sec > 0
+                     and rr.verify_status <> 'flagged' and rr.week_no < wk.week_no
+                   order by rr.week_no limit 1) as beat
         from public.t42_rush_results x
        where x.registration_id = r.id and x.week_no = wk.week_no
     ) ru on true
@@ -412,6 +484,7 @@ begin
     steps_total     = excluded.steps_total,
     nutrition_days  = excluded.nutrition_days,
     rush_completed  = excluded.rush_completed,
+    mission_done    = excluded.mission_done,
     week_score      = excluded.week_score,
     computed_at     = now();
 
@@ -423,7 +496,7 @@ begin
            lt.weight_kg as l_w, lt.waist_cm as l_c, lt.body_fat_pct as l_bf,
            fn.id as f_id, fn.verify_status as f_vs, fn.body_fat_pct as f_bf,
            act.wk_done, act.wk_plan, act.ck_done, act.step_days, act.rush_done, act.good_weeks,
-           act.gym_att,
+           act.gym_att, act.comp_sum, act.mis_done, act.mis_den,
            ri.imp as rush_imp, fi.imp as fit_imp
       from public.t42_registrations r
       left join public.t42_measurements b
@@ -462,9 +535,41 @@ begin
           -- Classes attended at HQ during the challenge. Each one is a coach
           -- scanning the member's QR at the counter, so it is verified by the
           -- act of being recorded.
+          -- v2 · daily compliance. Each day that has happened scores the share
+          -- of its five actions that were done: checked in, steps, water,
+          -- nutrition (partly = half), and the day's workout — a rest day
+          -- needs none. A missed day is a zero, not a reset: day 20 still
+          -- counts in full however day 19 went.
+          (select coalesce(sum((
+                   (ck.day_no is not null)::int
+                 + (coalesce(ck.steps, 0)    >= coalesce(tw.step_target, v_steps))::int
+                 + (coalesce(ck.water_ml, 0) >= v_water)::int
+                 + case ck.nutrition when 'on_track' then 1 when 'partly' then 0.5 else 0 end
+                 + (wc.day_no is not null or pd.day_no is null)::int
+                 )::numeric / 5), 0)
+             from generate_series(1, v_day) d(day_no)
+             left join public.t42_daily_checkins ck
+                    on ck.registration_id = r.id and ck.day_no = d.day_no
+             left join public.t42_weeks tw
+                    on tw.challenge_id = ch.id and tw.week_no = ceil(d.day_no / 7.0)::int
+             left join lateral (select w.day_no from public.t42_workout_completions w
+                                 where w.registration_id = r.id and w.day_no = d.day_no
+                                 limit 1) wc on true
+             left join lateral (select p.day_no from public.t42_plan_days p
+                                 where p.challenge_id = ch.id and p.track = r.track
+                                   and p.day_no = d.day_no limit 1) pd on true
+          )                                                                         as comp_sum,
+          -- v2 · missions. Weeks whose rule was met, out of weeks that have a
+          -- rule and are either over or already met — the week in progress
+          -- does not count against anyone until it ends.
+          (select count(*) from public.t42_weekly_reviews w
+            where w.registration_id = r.id and w.mission_done)                      as mis_done,
+          (select count(*) from public.t42_weekly_reviews w
+            where w.registration_id = r.id and w.mission_done is not null
+              and (w.week_no < v_week or w.mission_done))                           as mis_den,
           case when r.mode = 'gym_duo'
                then public.t42_gym_attended(r.user_id, ch.starts_on,
-                      least(current_date, ch.starts_on + ch.total_days - 1)) end as gym_att
+                      least(public.t42_today(), ch.starts_on + ch.total_days - 1)) end as gym_att
       ) act
       -- RUSH improvement: the first recorded time against the best since.
       left join lateral (
@@ -504,6 +609,8 @@ begin
       least(100, step_days * 100.0 / v_day)  as steps_s,
       least(100, rush_done * 100.0 / v_week) as rush_s,
       case when v_week > 1 then least(100, good_weeks * 100.0 / (v_week - 1)) else 0 end as weekly_s,
+      least(100, comp_sum * 100.0 / v_day) as compliance_s,
+      case when mis_den = 0 then 0 else least(100, mis_done * 100.0 / mis_den) end as missions_s,
       -- Against the sessions a week the edition asks for, pro-rated to today.
       case when gym_att is null then null
            else least(100, gym_att * 100.0 /
@@ -520,17 +627,38 @@ begin
       public.t42_clamp(coalesce(rush_imp, 0) / coalesce((v_tg ->> 'rush_improve_pct')::numeric, 10)    * 100) as rushimp_s
     from pcts
   ),
-  totals as (
+  -- v2 · progress: more than the scale. TRANSFORM (and START) weigh body
+  -- change; PERFORM weighs its fitness test first. The mix is the edition's.
+  prog as (
     select scored.*,
+      case when track = 'perform' then
+        ( fitness_s * coalesce((ch.config -> 'progress_mix' -> 'perform' ->> 'fitness_pct')::numeric, 60)
+        + weight_s  * coalesce((ch.config -> 'progress_mix' -> 'perform' ->> 'weight_pct')::numeric, 20)
+        + waist_s   * coalesce((ch.config -> 'progress_mix' -> 'perform' ->> 'waist_pct')::numeric, 20) ) / 100
+      else
+        ( weight_s  * coalesce((ch.config -> 'progress_mix' -> 'transform' ->> 'weight_pct')::numeric, 50)
+        + waist_s   * coalesce((ch.config -> 'progress_mix' -> 'transform' ->> 'waist_pct')::numeric, 50) ) / 100
+      end as progress_s
+    from scored
+  ),
+  totals as (
+    select prog.*,
       -- Everyone has a consistency score: it is its own leaderboard, and it
-      -- is START's only one.
+      -- is START's only one. Under v2 it is the daily compliance itself.
+      case when v_model = 'v2' then compliance_s else
       ( workout_s * public.t42_w(v_sc, 'consistency', 'workout_pct')
       + checkin_s * public.t42_w(v_sc, 'consistency', 'checkin_pct')
       + steps_s   * public.t42_w(v_sc, 'consistency', 'steps_pct')
       + rush_s    * public.t42_w(v_sc, 'consistency', 'rush_pct')
-      + weekly_s  * public.t42_w(v_sc, 'consistency', 'weekly_pct') ) / 100 as cons_total,
+      + weekly_s  * public.t42_w(v_sc, 'consistency', 'weekly_pct') ) / 100 end as cons_total,
       case
         when track = 'start' then null
+        -- v2 · one formula for every ranked track, weights from the edition.
+        when v_model = 'v2' then
+          ( compliance_s * public.t42_w(v_sc, 'v2', 'consistency_pct')
+          + progress_s   * public.t42_w(v_sc, 'v2', 'progress_pct')
+          + missions_s   * public.t42_w(v_sc, 'v2', 'missions_pct')
+          + fitness_s    * public.t42_w(v_sc, 'v2', 'fitness_pct') ) / 100
         -- PERFORM is judged on improvement from the participant's own
         -- baseline, so the fittest person on day one has no head start.
         when track = 'perform' then
@@ -554,7 +682,7 @@ begin
           + checkin_s * public.t42_w(v_sc, 'online_transform', 'consistency_pct')
           + rush_s    * public.t42_w(v_sc, 'online_transform', 'rush_pct') ) / 100
       end as main_total
-    from scored
+    from prog
   ),
   placed as (
     select totals.*,
@@ -566,6 +694,8 @@ begin
       end as cat,
       case
         when status in ('withdrawn','disqualified') then 'Status is ' || status
+        -- Only a paid registration is in the competition.
+        when not public.t42_reg_entitled(reg_id)     then 'Payment not completed'
         when b_w is null or b_c is null             then 'No complete baseline'
         when gender is null                          then 'No category chosen'
         when mode = 'gym_duo' and attendance_s is null then 'Gym attendance is not connected yet'
@@ -583,11 +713,13 @@ begin
   insert into public.t42_scores
     (registration_id, challenge_id, weight_pct, waist_pct, bodyfat_pct, workout_pct,
      consistency_pct, attendance_pct, rush_pct, fitness_pct, steps_pct, rush_improve_pct,
+     compliance_pct, progress_pct, missions_pct,
      total, consistency_total, category, eligible, note, is_final, computed_at)
   select reg_id, ch.id,
          round(weight_s, 2), round(waist_s, 2), round(bodyfat_s, 2), round(workout_s, 2),
          round(checkin_s, 2), round(attendance_s, 2), round(rush_s, 2), round(fitness_s, 2),
          round(steps_s, 2), round(rushimp_s, 2),
+         round(compliance_s, 2), round(progress_s, 2), round(missions_s, 2),
          round(coalesce(case when track = 'start' then cons_total else main_total end, 0), 2),
          round(cons_total, 2),
          cat, why is null, why, v_final, now()
@@ -603,6 +735,9 @@ begin
     fitness_pct       = excluded.fitness_pct,
     steps_pct         = excluded.steps_pct,
     rush_improve_pct  = excluded.rush_improve_pct,
+    compliance_pct    = excluded.compliance_pct,
+    progress_pct      = excluded.progress_pct,
+    missions_pct      = excluded.missions_pct,
     total             = excluded.total,
     consistency_total = excluded.consistency_total,
     category          = excluded.category,
@@ -689,7 +824,13 @@ create or replace function public.t42_compute_all()
 returns int language plpgsql security definer set search_path = public as $$
 declare v_ch record; v_sum int := 0;
 begin
-  for v_ch in select id from public.t42_challenges where status in ('running','assessment') loop
+  -- By date, not by a status someone has to remember to flip on day 1: an
+  -- edition is scored from its first day until its access closes, unless it
+  -- is still a draft or has been finalised.
+  for v_ch in select id from public.t42_challenges
+               where status not in ('draft','complete','archived')
+                 and public.t42_today() >= starts_on
+                 and public.t42_today() <= coalesce(access_ends_on, results_on, ends_on) loop
     v_sum := v_sum + public.t42_compute_scores(v_ch.id);
   end loop;
   return v_sum;

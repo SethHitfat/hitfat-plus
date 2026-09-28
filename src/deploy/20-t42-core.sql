@@ -95,6 +95,32 @@ create table if not exists public.t42_challenges (
 );
 create index if not exists t42_challenges_status on public.t42_challenges (status);
 
+-- ── the challenge engine (Sept 2026) ────────────────────────────
+-- Every edition is its own product with its own dates. These columns are
+-- what let a new edition be an INSERT rather than a deploy.
+--
+--   price            ringgit, read by pay-create on the SERVER. Null or 0
+--                    means the edition is free and every registration is
+--                    entitled — which is how T42 behaved before payment was
+--                    wired, so running this on a live database changes
+--                    nothing until an admin sets a price.
+--   results_on       when results are expected out (display only).
+--   access_ends_on   the day the active programme closes. Null falls back
+--                    to results_on, then ends_on. After it, only the
+--                    participant's history remains: result, certificate.
+--   tracks / modes   what this edition offers. November 2026 is online
+--                    only, TRANSFORM and PERFORM; the engine keeps START and
+--                    Gym Duo for editions that want them.
+alter table public.t42_challenges add column if not exists subtitle       text;
+alter table public.t42_challenges add column if not exists cover_url      text;
+alter table public.t42_challenges add column if not exists price          numeric(10,2);
+alter table public.t42_challenges add column if not exists results_on     date;
+alter table public.t42_challenges add column if not exists access_ends_on date;
+alter table public.t42_challenges add column if not exists tracks text[] not null
+  default array['start','transform','perform'];
+alter table public.t42_challenges add column if not exists modes  text[] not null
+  default array['online_solo','gym_duo'];
+
 
 -- ── a duo ───────────────────────────────────────────────────────
 -- Gym mode only. Created by the first partner; the second joins with the
@@ -216,6 +242,19 @@ create table if not exists public.t42_weeks (
   rush_target     text,                          -- 'Complete 1 race'
   unique (challenge_id, week_no)
 );
+
+-- The week's mission, as a rule the scorer checks against the week's own
+-- check-ins — never a box the participant ticks. Missions are 20% of the
+-- score, and a claim a browser can make is a claim a browser can fake.
+--   {"type":"step_days","min":5}       steps target hit on N days
+--   {"type":"water_days","min":7}      water target hit on N days
+--   {"type":"nutrition_days","min":5}  nutrition on track on N days
+--   {"type":"checkin_days","min":7}    checked in on N days
+--   {"type":"workouts","min":4}        N workouts logged this week
+--   {"type":"full_days","min":5}       every daily action done on N days
+--   {"type":"rush"}                    a RUSH race completed this week
+--   {"type":"rush_beat"}               this week's best beats the first race
+alter table public.t42_weeks add column if not exists mission_rule jsonb;
 
 
 -- ── a measurement, at whatever moment it was taken ──────────────
@@ -367,6 +406,8 @@ create table if not exists public.t42_weekly_reviews (
   computed_at     timestamptz not null default now(),
   unique (registration_id, week_no)
 );
+-- Whether the week's mission rule was met. Null when the week has no rule.
+alter table public.t42_weekly_reviews add column if not exists mission_done boolean;
 
 
 -- ── the score ───────────────────────────────────────────────────
@@ -503,6 +544,98 @@ $$;
 
 
 -- ═══════════════════════════════════════════════════════════════
+--  THE CHALLENGE ENGINE · dates, entitlement, access
+--
+--  T42 is a challenge, not a library. A participant is entitled to ONE
+--  edition — the one they paid for — and only until that edition's
+--  access_ends_on. After it, the programme is closed to them and only
+--  their history remains (scores, certificates, their own measurements).
+--  Nothing here depends on an admin remembering to change a status: every
+--  window is worked out from the edition's dates.
+-- ═══════════════════════════════════════════════════════════════
+
+-- Today in Malaysia. The database clock is UTC, so current_date turned
+-- over at 8am local: a check-in at 7am was refused as "not today", and
+-- day 1 did not begin until breakfast. Every T42 window asks this instead.
+create or replace function public.t42_today()
+returns date language sql stable as $$
+  select (now() at time zone 'Asia/Kuala_Lumpur')::date;
+$$;
+
+-- The last day the active programme is open.
+create or replace function public.t42_access_ends(p_challenge uuid)
+returns date language sql stable set search_path = public as $$
+  select coalesce(c.access_ends_on, c.results_on, c.ends_on)
+    from public.t42_challenges c where c.id = p_challenge;
+$$;
+
+create or replace function public.t42_access_open(p_challenge uuid)
+returns boolean language sql stable set search_path = public as $$
+  select coalesce(
+    (select c.status not in ('draft','archived')
+            and public.t42_today() <= coalesce(c.access_ends_on, c.results_on, c.ends_on)
+       from public.t42_challenges c where c.id = p_challenge), false);
+$$;
+
+-- Is this registration paid for? A free edition (no price) entitles every
+-- registration, which is what T42 did before payment was wired. Withdrawn
+-- and disqualified never are.
+create or replace function public.t42_reg_entitled(p_reg uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select coalesce(
+    (select r.status not in ('withdrawn','disqualified')
+            and (r.status in ('paid','active','completed')
+                 or coalesce(c.price, 0) = 0)
+       from public.t42_registrations r
+       join public.t42_challenges c on c.id = r.challenge_id
+      where r.id = p_reg), false);
+$$;
+
+-- Which day is it? (explained in full at the bottom of this file)
+create or replace function public.t42_day_no(p_challenge uuid)
+returns int language sql stable set search_path = public as $$
+  select case
+           when public.t42_today() < c.starts_on then 0
+           else least(c.total_days, (public.t42_today() - c.starts_on) + 1)
+         end
+    from public.t42_challenges c where c.id = p_challenge;
+$$;
+
+-- May I read this day of the plan? Only a paid participant on that track,
+-- only up to today (no reading ahead, no day 1 before the start), and only
+-- while the edition's access is open. Staff always.
+create or replace function public.t42_can_read_plan(p_challenge uuid, p_track text, p_day int)
+returns boolean language sql stable security definer set search_path = public as $$
+  select public.t42_is_staff() or (
+    public.t42_access_open(p_challenge)
+    and p_day <= coalesce(public.t42_day_no(p_challenge), 0)
+    and exists (
+      select 1 from public.t42_registrations r
+       where r.challenge_id = p_challenge and r.user_id = auth.uid()
+         and r.track = p_track and public.t42_reg_entitled(r.id)));
+$$;
+
+-- Where an edition is in its life, from its dates. The stored status is
+-- what an admin sets (draft, and complete via t42_finalise); this is what
+-- every screen and job reads. Values:
+--   draft · registration · upcoming · active · completed · closed
+create or replace function public.t42_phase(p_challenge uuid)
+returns text language sql stable set search_path = public as $$
+  select case
+    when c.status = 'draft'                                         then 'draft'
+    when c.status = 'archived'                                      then 'closed'
+    when public.t42_today() > coalesce(c.access_ends_on, c.results_on, c.ends_on) then 'closed'
+    when c.status = 'complete' or public.t42_today() > c.ends_on    then 'completed'
+    when public.t42_today() >= c.starts_on                          then 'active'
+    when (c.reg_opens_on is null or public.t42_today() >= c.reg_opens_on)
+     and (c.reg_closes_on is null or public.t42_today() <= c.reg_closes_on) then 'registration'
+    else 'upcoming'
+  end
+  from public.t42_challenges c where c.id = p_challenge;
+$$;
+
+
+-- ═══════════════════════════════════════════════════════════════
 --  ROW LEVEL SECURITY
 --
 --  Default deny on every table. A participant reaches their own rows; a
@@ -528,8 +661,10 @@ alter table public.t42_duo_scores         enable row level security;
 alter table public.t42_certificates       enable row level security;
 alter table public.t42_admin_notes        enable row level security;
 
--- The edition, the plan and the weeks are the challenge's public face.
--- Anyone signed in may read them; only an admin writes them.
+-- The edition and its weeks are the challenge's public face: anyone signed
+-- in may read them, only an admin writes them. The PLAN is not — it is the
+-- paid programme, readable only by an entitled participant, a day at a
+-- time, while the edition is open (t42_can_read_plan above).
 drop policy if exists t42_challenges_read on public.t42_challenges;
 create policy t42_challenges_read on public.t42_challenges
   for select using (auth.uid() is not null and status <> 'draft');
@@ -539,7 +674,7 @@ create policy t42_challenges_admin on public.t42_challenges
 
 drop policy if exists t42_plan_read on public.t42_plan_days;
 create policy t42_plan_read on public.t42_plan_days
-  for select using (auth.uid() is not null);
+  for select using (public.t42_can_read_plan(challenge_id, track, day_no));
 drop policy if exists t42_plan_admin on public.t42_plan_days;
 create policy t42_plan_admin on public.t42_plan_days
   for all using (public.t42_is_admin()) with check (public.t42_is_admin());
@@ -689,11 +824,13 @@ create policy t42_notes_insert on public.t42_admin_notes
 --  day 1. Clamping that up to 1 would hand someone day one's workout a
 --  week early and start their streak against an empty challenge.
 -- ═══════════════════════════════════════════════════════════════
-create or replace function public.t42_day_no(p_challenge uuid)
-returns int language sql stable set search_path = public as $$
-  select case
-           when current_date < c.starts_on then 0
-           else least(c.total_days, (current_date - c.starts_on) + 1)
-         end
-    from public.t42_challenges c where c.id = p_challenge;
-$$;
+-- Defined with the engine helpers above, because t42_can_read_plan() needs it.
+
+
+-- ── who may call the engine helpers ─────────────────────────────
+-- The policies above run them as the signed-in user, so `authenticated`
+-- needs EXECUTE. Nobody signed out does.
+revoke all   on function public.t42_reg_entitled(uuid)             from public, anon;
+grant execute on function public.t42_reg_entitled(uuid)            to authenticated;
+revoke all   on function public.t42_can_read_plan(uuid, text, int)  from public, anon;
+grant execute on function public.t42_can_read_plan(uuid, text, int) to authenticated;
