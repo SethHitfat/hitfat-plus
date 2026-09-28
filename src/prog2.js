@@ -178,7 +178,7 @@ function renderProgress(){
     pgTile('Days logged', nu.logged||0, '', 'of '+pgDays()+' days', null, false),
     pgTile('Streak', streak, streak===1?'day':'days', streak?'Keep it up':'Start today', null, false)
   ].filter(Boolean).join('');
-  h+='<div class="sechead">'+(pgDays()===7?'This week':'Last 30 days')+'</div>'+
+  h+='<div class="sechead">Highlights</div>'+
      '<div class="pgseg">'+
      '<button class="seg'+(pgDays()===7?' on':'')+'" onclick="setPgP(\'week\')">This week</button>'+
      '<button class="seg'+(pgDays()===7?'':' on')+'" onclick="setPgP(\'month\')">Last 30 days</button>'+
@@ -203,12 +203,12 @@ function renderProgress(){
   /* ── training ── */
   h+='<div class="sechead">Training</div>'+
      '<div class="acard"><div class="ah">'+ic('workout')+'<div class="t">'+(pgDays()===7?'This week':'Last 30 days')+'</div></div>'+
-     '<div class="arow" style="margin:6px 0 2px;">'+
+     '<div class="arow pgstats">'+
      '<div><div class="big">'+tr.sessions+'</div><div class="sub">sessions</div></div>'+
      '<div><div class="big">'+tr.mins+'</div><div class="sub">minutes</div></div>'+
      '<div><div class="big">'+tr.activeDays+'</div><div class="sub">active days</div></div></div>'+
      pgCalendar()+
-     '<div class="pglegend"><i class="pgd on"></i> trained <i class="pgd"></i> rest</div>'+
+     '<div class="pglegend"><i class="pgd on"></i><span>Trained</span><i class="pgd"></i><span>Rest</span></div>'+
      '</div>';
 
   /* ── nutrition ── only when there is something logged to describe. */

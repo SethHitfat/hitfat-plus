@@ -1958,7 +1958,7 @@
   --bg:#F2F2F7; --surface:#FFFFFF; --surface2:rgba(118,118,128,.12);
   --line:rgba(60,60,67,.10); --hairline:rgba(60,60,67,.16); --sep:rgba(60,60,67,.16);
   --tint:rgba(118,118,128,.12);
-  --txt:#111113; --dim:rgba(60,60,67,.64); --dim2:rgba(60,60,67,.46);
+  --txt:#111113; --dim:rgba(60,60,67,.68); --dim2:rgba(60,60,67,.60);
   --ink-90:rgba(17,17,19,.92); --ink-72:rgba(60,60,67,.80);
   --ink-55:rgba(60,60,67,.60); --ink-42:rgba(60,60,67,.46);
   --brand:#111113; --wash:transparent; --lift:none;
@@ -2351,12 +2351,184 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 
 /* Notes coloured for a dark page — amber and sky — are too pale on a light
    one (about 2:1). Same hue, a deeper shade in light. */
-:root{ --note-amber:#F59E0B; --note-sky:#5EB8FF; }
+:root{ --note-amber:#F59E0B; --note-sky:#5EB8FF; --mac-p:#FB923C; --mac-c:#38BDF8; }
+:root[data-theme="light"]{ --mac-p:#C2410C; --mac-c:#0369A1; }
 :root[data-theme="light"]{ --note-amber:#A16207; --note-sky:#0369A1; }
 
 /* The outlined "Top 10" numerals: in dark their stroke (#3A3A3C on black)
    measured about 1.7:1 — decorative, but a rank should still be legible. */
 :root:not([data-theme="light"]) .rk{-webkit-text-stroke-color:rgba(255,255,255,.38);}
+
+/* ═══════════════════════════════════════════════════════════════
+   App-wide polish
+   The same few decisions applied everywhere the older screens made
+   their own: no borders on surfaces, heavy numbers (not hairline ones),
+   grouped lists for rows, one back button.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── the back button: a chevron and a word, in the tint ── */
+.back{font-size:17px;font-weight:500;letter-spacing:-.2px;gap:6px;padding:8px 0 10px;text-transform:none;}
+.back .bk-c{width:10px;height:10px;border-left:2.5px solid currentColor;border-bottom:2.5px solid currentColor;
+  transform:rotate(45deg);border-radius:1px;margin-left:3px;}
+
+/* ── grouped lists (Me, and anything that is a list of settings) ── */
+.glist{background:var(--surface);border-radius:var(--r-card);overflow:hidden;}
+.grow{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;padding:10px 14px;position:relative;
+  background:none;border:none;text-align:left;font-family:inherit;color:var(--txt);cursor:pointer;}
+.grow + .grow::before{content:'';position:absolute;top:0;right:0;left:56px;height:.5px;background:var(--sep);}
+.grow:active{background:var(--tint);}
+.grow .uic{width:30px;height:30px;}
+.grow-l{flex:1;min-width:0;font-size:16px;font-weight:500;letter-spacing:-.2px;}
+.grow-v{font-size:15px;color:var(--dim);text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%;}
+.grow .chev{color:var(--dim2);font-size:20px;line-height:1;}
+.grow-ctl{cursor:default;}
+.grow-ctl:active{background:none;}
+.grow-seg{margin:0;flex:0 0 auto;gap:6px;}
+.grow-seg .seg{padding:7px 14px;font-size:14px;}
+.grow-act{justify-content:center;font-size:17px;font-weight:500;color:var(--hitfat);}
+.grow-act + .grow-act::before{left:0;}
+.grow-act.danger{color:#FF3B30;}
+:root[data-theme="light"] .grow-act.danger{color:#D70015;}
+
+/* ── Me ── */
+.mehead{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r-card);
+  padding:14px 16px;margin:6px 0 12px;cursor:pointer;}
+.mehead .w2{flex:1;min-width:0;}
+.mehead .n{font-size:21px;font-weight:700;letter-spacing:-.4px;color:var(--txt);}
+.mehead .s{font-size:14px;color:var(--dim);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mehead .chev{color:var(--dim2);font-size:22px;}
+.hhdr .av2, .mehead .av2{border:none;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(135deg,#FF6A5C,#C62828);color:#FFFFFF;font-weight:700;}
+.hhdr .av2 img, .mehead .av2 img{width:100%;height:100%;object-fit:cover;}
+.mefoot{font-size:13px;color:var(--dim2);text-align:center;margin-top:24px;line-height:1.8;}
+.mefoot a{color:var(--dim);}
+#me .arow{margin-top:0;}
+
+/* ── Home: the week, then two tiles side by side ── */
+.hweek{cursor:pointer;}
+.hweek-n{display:flex;align-items:baseline;gap:2px;}
+.hweek-n .u{font-size:15px;color:var(--dim);font-weight:500;}
+.hweek-m{margin-left:auto;font-size:15px;font-weight:600;color:var(--dim);}
+.hweek .mbar{height:60px;margin-top:12px;background:none;padding:0;border-radius:0;}
+.mbar .l{font-size:11px;font-weight:600;color:var(--dim2);}
+.mbar .b.off{background:var(--tint);}
+.hpair .ah{flex-direction:row !important;align-items:center !important;}
+.hpair .ah .t{width:auto !important;}
+.htile{cursor:pointer;flex:1;min-width:0;}
+.htile-b{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;}
+.htile .big{font-size:26px !important;white-space:nowrap;}
+.htile .big .u{font-size:14px;font-weight:600;color:var(--dim);letter-spacing:0;}
+.htile .sub{font-size:12.5px;}
+.htile svg{flex:0 0 auto;}
+/* A tile's chevron sits on its own line once the label is stacked; the
+   whole tile is the button, so the chevron is noise. */
+.arow .acard .ah .c{display:none;}
+.big .u{font-weight:600;}
+
+/* ── surfaces that still drew a border ── */
+.pgtile,.emac,.eslot,.paych,.hhdr .chip{border:none;}
+.eslot.hit{box-shadow:inset 0 0 0 1.5px rgba(239,68,68,.35);}
+
+/* ── numbers: one weight across the app ── */
+.ehero .n{font-weight:700;letter-spacing:-2.6px;}
+.ehero .sp .v{font-weight:650;letter-spacing:-.6px;}
+.ehero .sp{gap:18px;}
+.ehero .sp .l{letter-spacing:.6px;white-space:nowrap;}
+.eslot .v,.emac .v,.elog .k{font-weight:700;letter-spacing:-.8px;}
+.emac .l{letter-spacing:.6px;}
+.pgtile{border-radius:16px;padding:14px 12px 12px;}
+.pgtile .v{font-weight:800;letter-spacing:-.6px;font-size:26px;}
+.pgtile .l{font-size:12.5px;font-weight:600;margin-top:3px;}
+.pgtile .s{font-size:12px;font-weight:600;}
+
+/* ── Eat: rows live in a grouped list, not loose on the page ── */
+.elist{background:var(--surface);border-radius:var(--r-card);padding:0 14px;}
+.elist .elog{border-bottom:.5px solid var(--sep);padding:13px 0;}
+.elist .elog:last-child{border-bottom:none;}
+.elist .elog .e{background:var(--surface2);}
+
+/* ── Progress ── */
+/* Two across, and the first tile wide when the count is odd, so the grid
+   never ends on a lone tile. */
+.pggrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.pggrid > .pgtile:first-child:nth-last-child(odd){grid-column:1 / -1;}
+/* The calendar: fixed-height cells in columns that cannot grow. With
+   aspect-ratio in 1fr columns, a two-digit date widened its column and the
+   row under it overlapped the legend. */
+.pgcal{grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;}
+.pgd{aspect-ratio:auto;height:36px;border-radius:10px;font-size:12px;font-weight:600;}
+.pgh{font-size:11px;font-weight:600;padding-bottom:2px;}
+.pglegend{gap:6px;margin-top:14px;font-size:12.5px;}
+.pglegend .pgd{width:12px;height:12px;border-radius:4px;flex:0 0 auto;}
+.pglegend span{margin-right:10px;}
+
+/* ── stacked cards always breathe ── */
+.arow > .acard{margin-top:0 !important;}
+.acard + .acard, .wrow + .acard, .acard + .wrow, .arow + .wrow, .arow + .glist{margin-top:12px;}
+#store .flib + *, .fqcta + *{margin-top:12px;}
+
+/* Three numbers in a row inside a card: equal columns, number over label. */
+.pgstats{margin:6px 0 4px;gap:8px;}
+.pgstats > div{flex:1;min-width:0;}
+.pgstats .big{font-size:26px;}
+.pgstats .sub{margin-top:2px;}
+
+/* ── program rows: a run of them reads as one grouped list ──
+   frow() is emitted in runs straight onto the page. The first and last of
+   each run round the corners, and a hairline separates the rest, so eight
+   rows are one surface instead of eight loose lines. */
+.frow{background:var(--surface);padding:10px 14px;gap:12px;position:relative;}
+.frow .th{flex:0 0 96px;width:96px;height:64px;border-radius:12px;}
+.frow + .frow::before{content:'';position:absolute;top:0;right:0;left:122px;height:.5px;background:var(--sep);}
+.frow:first-child, :not(.frow) + .frow{border-top-left-radius:var(--r-card);border-top-right-radius:var(--r-card);padding-top:12px;}
+.frow:last-child, .frow:has(+ :not(.frow)){border-bottom-left-radius:var(--r-card);border-bottom-right-radius:var(--r-card);padding-bottom:12px;}
+.frow:active{opacity:1;background:var(--tint);}
+.frow .tx .t{font-size:16px;}
+
+/* ── onboarding and every choice list ──
+   .opt was written for the dark page: #eee labels, a brown selected fill
+   and a gold subtitle. On the light default that was near-white text on
+   white — the first screen a new member ever sees. Tokens now, and the
+   selected state is a tint ring, the way every other choice looks. */
+.ovl h1{text-transform:none;font-size:32px;font-weight:800;letter-spacing:-.9px;line-height:1.08;}
+.ovl .qh, #mpm .qh, .qh{font-size:13px;font-weight:600;letter-spacing:.2px;text-transform:uppercase;
+  color:var(--dim);margin:24px 4px 8px;}
+.opt{color:var(--txt);border:none;background:var(--surface);border-radius:var(--r-ctl);font-size:16px;}
+.opt.sel{background:var(--accent-wash);box-shadow:inset 0 0 0 2px var(--hitfat);color:var(--txt);border:none;}
+.opt small{color:var(--dim);}
+.opt.sel small{color:var(--dim);}
+.cprow{border:none;}
+.cprow.on{box-shadow:inset 0 0 0 2px var(--hitfat);background:var(--accent-wash);}
+
+/* ── colours the dark page fixed in place ──
+   Surfaces and text that were written as literal dark-theme values (#111
+   sheets, #cfcfcf and #dcdcdc text, #0d0d0d panels). On the light default
+   they drew black-on-black or white-on-white: the Add a meal and Exercise
+   burn sheets, the safety notes in onboarding, the RPE scale. Tokens, so
+   each follows the theme. Cards laid over a photograph keep their light
+   text — they are dark in both themes. */
+.sheet{background:var(--surface);}
+.readbox{border:none;}
+.readbox .ri{color:var(--ink-72);}
+.chk{color:var(--ink-72);}
+.today .go.sec{color:var(--txt) !important;border-color:var(--hairline);}
+.rpescale button{color:var(--txt);border:none;background:var(--surface2);}
+.badge.soon{color:var(--dim);}
+.sbar .l{color:var(--ink-72);}
+.sbar .t{background:var(--tint);}
+.joinbar .buy.soon{background:var(--surface2);}
+.klwk{background:var(--surface);border:none;}
+.klwk .klses{background:var(--surface2);}
+.klinfo .row{color:var(--ink-72);}
+.wcell.ddone b{color:#FFFFFF;}
+.qtile{background:var(--surface);border:none;}
+.qtile span{color:var(--txt);}
+.scalebox{--txt:#FFFFFF;--dim:rgba(235,235,245,.66);color:#FFFFFF;}
+
+/* ── chips: sentence case, filled, the selected one in ink ── */
+.filters .chip{text-transform:none;letter-spacing:-.1px;font-size:14px;font-weight:600;border:none;
+  background:var(--surface2);color:var(--txt);padding:9px 14px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+.filters .chip.y{background:var(--txt);color:var(--bg);}
 
 </style>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
@@ -2443,22 +2615,22 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
     </div>
 
     <div id="progdetail" class="pad" style="display:none;">
-      <button class="back" onclick="closeProgramDetail()">← Back</button>
+      <button class="back" onclick="closeProgramDetail()"><span class="bk-c" aria-hidden="true"></span>Back</button>
       <div id="pgd-body"></div>
     </div>
 
     <div id="daydetail" class="pad" style="display:none;">
-      <button class="back" onclick="backToProgram()">← Back</button>
+      <button class="back" onclick="backToProgram()"><span class="bk-c" aria-hidden="true"></span>Back</button>
       <div id="dd-body"></div>
     </div>
 
     <div id="monthly" class="pad" style="display:none;">
-      <button class="back" onclick="switchTab('home')">← Back</button>
+      <button class="back" onclick="switchTab('home')"><span class="bk-c" aria-hidden="true"></span>Back</button>
       <div id="mth-body"></div>
     </div>
 
     <div id="club" class="pad" style="display:none;">
-      <button class="back" onclick="switchTab('home')">← Back</button>
+      <button class="back" onclick="switchTab('home')"><span class="bk-c" aria-hidden="true"></span>Back</button>
       <div class="segs" id="club-segs">
         <button class="seg on" data-seg="overview" onclick="clubGoOverview()">Overview</button>
         <button class="seg" data-seg="classes" onclick="clubGoClasses()">Classes</button>
@@ -2473,7 +2645,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
          not as a second page. One back button, one auth session, one
          design system. -->
     <div id="t42" class="pad" style="display:none;">
-      <button class="back" onclick="switchTab('home')">← Back</button>
+      <button class="back" onclick="switchTab('home')"><span class="bk-c" aria-hidden="true"></span>Back</button>
       <!-- The tabs follow the stage of the challenge — before the start,
            during it, after it — and are hidden while T42 is a wizard
            (sign-up, payment). t42Segs() draws them and owns the display. -->
@@ -2482,20 +2654,20 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
     </div>
 
     <div id="store" class="pad" style="display:none;">
-      <button class="back" onclick="closeStore()">← Back</button>
+      <button class="back" onclick="closeStore()"><span class="bk-c" aria-hidden="true"></span>Back</button>
       <div class="hgroup"><div class="k">HITFAT+</div><h2>Store</h2><p>Buy a program once and keep it. No subscription, nothing recurring.</p></div>
       <div id="store-segs"></div>
       <div id="store-body"></div>
     </div>
 
     <div id="mealplan" class="pad" style="display:none;">
-      <button class="back" onclick="switchTab('eat')">← Back</button>
+      <button class="back" onclick="switchTab('eat')"><span class="bk-c" aria-hidden="true"></span>Back</button>
       <div class="hgroup"><div class="k">Meal plan</div><h2>Plan makan anda</h2><p>Menu Malaysia, kalori dikira ikut profil anda — MDG 2020 &amp; CPG MOH 2023.</p></div>
       <div id="mp-view"></div>
     </div>
 
     <div id="library" class="pad" style="display:none;">
-      <button class="back" onclick="switchTab('train')">← Back</button>
+      <button class="back" onclick="switchTab('train')"><span class="bk-c" aria-hidden="true"></span>Back</button>
       <div id="lib-body"></div>
     </div>
   </div>
@@ -4293,7 +4465,7 @@ function renderMonthly(){
   let h='';
   h+='<div class="ehero"><div class="k">'+monthName().toUpperCase()+' CHALLENGE</div>'+
      '<div class="row"><div style="flex:1;min-width:0;">'+
-     '<div class="n" style="font-size:46px;">'+p.c.e+' '+p.c.n+'</div>'+
+     '<div class="n" style="font-size:46px;">'+p.c.n+'</div>'+
      '<div class="u">'+p.c.d+'</div></div></div>'+
      '<div class="sp">'+
      [[p.done,'Days done'],[p.target,'Target'],[p.complete?'✓':left,p.complete?'Complete':'Days left']]
@@ -4543,7 +4715,7 @@ function prodCard(p){
     (isSignature(p)?'<span class="sigb">SIGNATURE</span>':'')+
     '<span class="pr">RM'+programPrice(p)+'</span></div>'+
     '<div class="in"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+p.weeks.length+' weeks · '+tot+' days · '+p.level+'</div>'+
+    '<div class="m">'+wks(p.weeks.length)+' · '+tot+' days · '+p.level+'</div>'+
     (done>0?'<div class="m" style="color:var(--hyrox);">'+Math.round(done/tot*100)+'% started</div>':'')+
     '</div></div>';
 }
@@ -4637,8 +4809,8 @@ function openProduct(sku){
   } else {
     const p=PROGRAMS.filter(x=>'prog_'+x.id===sku)[0]; if(!p) return;
     title=p.name; price=programPrice(p);
-    sub=p.desc||(p.weeks.length+' weeks of structured training, yours to keep.');
-    bullets=[['📅',p.weeks.length+' weeks · '+progDays(p)+' sessions','Follow it day by day'],
+    sub=p.desc||(wks(p.weeks.length)+' of structured training, yours to keep.');
+    bullets=[['📅',wks(p.weeks.length)+' · '+progDays(p)+' sessions','Follow it day by day'],
              ['🎥','Video for every exercise','Filmed, not described'],
              ['📈','Progress saved as you go','Pick up where you left off on any device'],
              ['♾️','Yours forever','Buy once, no subscription']];
@@ -4821,12 +4993,12 @@ function renderFinder(){
     b='<div class="cph">What are you here for?</div>'+
       '<div class="cpsub">One answer. You can change it later.</div>'+
       FQ_GOALS.map(g=>'<button class="cprow'+(fq.goal===g.k?' on':'')+'" onclick="fqSet(\'goal\',\''+g.k+'\')">'+
-        '<span class="t">'+g.e+' '+g.n+'</span><span class="s">'+g.d+'</span></button>').join('');
+        '<span class="t">'+g.n+'</span><span class="s">'+g.d+'</span></button>').join('');
   } else if(s===1){
     b='<div class="cph">Where does it bother you?</div>'+
       '<div class="cpsub">Pick the one that nags most. If nothing does, choose Everywhere.</div>'+
       REHAB_JOINTS.map(j=>'<button class="cprow'+(fq.joint===j.k?' on':'')+'" onclick="fqSet(\'joint\',\''+j.k+'\')">'+
-        '<span class="t">'+j.e+' '+j.n+'</span><span class="s">'+j.d+'</span></button>').join('')+
+        '<span class="t">'+j.n+'</span><span class="s">'+j.d+'</span></button>').join('')+
       '<button class="cprow'+(fq.joint==='all'?' on':'')+'" onclick="fqSet(\'joint\',\'all\')">'+
       '<span class="t">Everywhere</span><span class="s">A bit of everything, ten minutes a day</span></button>'+
       '<div class="cpnote">This asks what you want to train, not what is wrong with you. '+
@@ -4843,7 +5015,7 @@ function renderFinder(){
     b='<div class="cph">What have you got?</div>'+
       '<div class="cpsub">No equipment is a real answer — most of the library needs none.</div>'+
       FQ_EQUIP.map(x=>'<button class="cprow'+(fq.equip===x.k?' on':'')+'" onclick="fqSet(\'equip\',\''+x.k+'\')">'+
-        '<span class="t">'+x.e+' '+x.n+'</span><span class="s">'+x.d+'</span></button>').join('');
+        '<span class="t">'+x.n+'</span><span class="s">'+x.d+'</span></button>').join('');
   }
   const canNext = (s===0&&fq.goal) || (s===1&&fq.joint) || s===2 || (s===3&&fq.equip);
   $('fq-body').innerHTML=
@@ -5337,7 +5509,7 @@ function renderMP(){
   if(s===0){
     b='<div class="cph">What are you aiming for?</div><div class="cpsub">This is what sets your daily calories.</div>'+
       [['loss','Lose weight','A deficit you can actually keep to'],
-       ['maintain','↔️ Maintain','Hold your weight with balanced eating'],
+       ['maintain','Maintain','Hold your weight with balanced eating'],
        ['gain','Gain weight','Add calories in a controlled way']]
       .map(g=>'<button class="cprow'+(mp.goal===g[0]?' on':'')+'" onclick="mp.rate='+(0.5)+';mpSet(\'goal\',\''+g[0]+'\')">'+
         '<span class="t">'+g[1]+'</span><span class="s">'+g[2]+'</span></button>').join('')+
@@ -5365,7 +5537,7 @@ function renderMP(){
       [['3x','Three meals','Breakfast, lunch, dinner'],
        ['333','Quarter-quarter-half','Half vegetables, quarter protein, quarter carbs'],
        ['6x','Six small meals','Smaller plates, more often'],
-       ['if','⏳ Intermittent fasting 16:8','Everything inside an 8-hour window']]
+       ['if','Intermittent fasting 16:8','Everything inside an 8-hour window']]
       .map(x=>'<button class="cprow'+(mp.struct===x[0]?' on':'')+'" onclick="mpSet(\'struct\',\''+x[0]+'\')">'+
         '<span class="t">'+x[1]+'</span><span class="s">'+x[2]+'</span></button>').join('');
   } else if(s===3){
@@ -5461,11 +5633,11 @@ function renderPlanView(){
   // macros
   h+=fsec('Daily macros','MDG 2020 · carbs 50–65% · protein 10–20% · fat 25–35%');
   h+='<div class="emacs">'+
-     [['Protein',n.prot,n.pPct,'#fb923c',ok.prot],['Carbs',n.carb,n.cPct,'#38bdf8',ok.cho],['Fat',n.fat,n.fPct,'var(--ok)',ok.fat]]
+     [['Protein',n.prot,n.pPct,'var(--mac-p)',ok.prot],['Carbs',n.carb,n.cPct,'var(--mac-c)',ok.cho],['Fat',n.fat,n.fPct,'var(--ok)',ok.fat]]
      .map(m=>'<div class="emac"><div class="v" style="color:'+m[3]+';">'+m[1]+
        '<span style="font-size:15px;font-weight:400;letter-spacing:0;">g</span></div>'+
        '<div class="l">'+m[0]+'</div>'+
-       '<div class="g" style="color:'+(m[4]?'var(--ok)':'#f59e0b')+';">'+m[2]+'% '+(m[4]?'✓':'⚠')+'</div>'+
+       '<div class="g" style="color:'+(m[4]?'var(--ok)':'var(--note-amber)')+';">'+m[2]+'% '+(m[4]?'✓':'⚠')+'</div>'+
        '<div class="b"><i style="width:'+m[2]+'%;background:'+m[3]+';"></i></div></div>').join('')+'</div>';
   if(n.floorHit) h+='<div class="mpnote" style="border-color:rgba(94,184,255,.35);color:#5eb8ff;">Calories were held at the safe minimum of '+n.floor.toLocaleString()+' kcal (CPG MOH 2023). Give yourself more time, or ease the target.</div>';
   if(n.deficit){ const v=deficitVerdict(n.deficit);
@@ -5500,10 +5672,10 @@ function renderPlanView(){
           o.items.map(it=>'<div class="mpitem"><div><div class="t">'+it.food+'</div>'+
             '<div class="m">'+it.portion+'</div></div><div class="k">'+it.kcal+'</div></div>').join('')+
           '<div class="mpbals" style="margin-top:11px;">'+
-            (g.protein?'<span class="mpbal" style="color:#38bdf8;border-color:rgba(56,189,248,.3);">Protein</span>':'')+
+            (g.protein?'<span class="mpbal" style="color:var(--mac-c);border-color:rgba(56,189,248,.3);">Protein</span>':'')+
             (g.karbo?'<span class="mpbal" style="color:#f59e0b;border-color:rgba(245,158,11,.3);">Carbs</span>':'')+
             (g.sayur?'<span class="mpbal" style="color:var(--ok);border-color:rgba(46,194,126,.3);">Veg</span>':'')+
-            (g.buah?'<span class="mpbal" style="color:#fb923c;border-color:rgba(251,146,60,.3);">Fruit</span>':'')+
+            (g.buah?'<span class="mpbal" style="color:var(--mac-p);border-color:rgba(251,146,60,.3);">Fruit</span>':'')+
           '</div>'+
           (o.scale>1?'<div class="mpnote" style="border-color:rgba(94,184,255,.3);color:#5eb8ff;">'+
             'Portion scaled ×'+o.scale.toFixed(1)+' to reach the '+s.target+' kcal this slot needs.</div>':'')+
@@ -6255,6 +6427,7 @@ var ICON_PATH={
   dot:     '<circle cx="12" cy="12" r="3.2"/>',
   chevleft:'<path d="M15 5l-7 7 7 7"/>',
   medal:   '<circle cx="12" cy="15" r="5"/><path d="M8.5 3.5l2.5 7M15.5 3.5l-2.5 7M12 13v4"/>',
+  sunrise: '<path d="M3 18h18M6.5 18a5.5 5.5 0 0 1 11 0M12 4.5V8M5 9.5l2 2M19 9.5l-2 2M8.5 21h7"/>',
   card:    '<rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 14.5h4"/>'
 };
 
@@ -6269,7 +6442,7 @@ var ICON_TINT={
   moon:'#5E5CE6', clipboard:'#8E8E93', repeat:'#34C759', leaf:'#34C759', pencil:'#8E8E93', star:'#FFCC00',
   spark:'#FF2D55', heart:'#FF375F', home:'#0A84FF', chair:'#A2845E', laptop:'#8E8E93', rocket:'#FF6B00',
   sun:'#FF9F0A', bell:'#FF9500', mirror:'#64D2FF', share:'#0A84FF', eyeoff:'#8E8E93', dot:'#8E8E93',
-  chevleft:'#8E8E93', medal:'#FF9F0A', card:'#30B0C7'
+  chevleft:'#8E8E93', medal:'#FF9F0A', sunrise:'#FF9500', card:'#30B0C7'
 };
 /* Tiles light enough that a white glyph would vanish get a dark one. */
 var ICON_DARK_GLYPH={bolt:1, trophy:1, key:1, star:1, measure:1};
@@ -6288,7 +6461,7 @@ var EMOJI_ICON={
   '💻':'laptop','💥':'bolt','🎓':'trophy','🎒':'workout','🍑':'workout','🌋':'flame','🌀':'repeat',
   '⚙️':'workout','🙋':'person','🤝':'people','⏳':'clock','📍':'gym','👟':'steps','🥗':'food',
   '🍎':'food','🍗':'food','🍚':'food',
-  '✨':'spark','❄️':'water','⬇️':'scale','⬆️':'scale','🌅':'sun','🌤️':'sun','🌧️':'water',
+  '✨':'spark','❄️':'water','⬇️':'scale','⬆️':'scale','🌅':'sunrise','🌤️':'sun','🌧️':'water',
   '📷':'photo','🕺':'run','🛒':'bag','🛠️':'clipboard','🦶':'steps','🧱':'building',
   '🪞':'mirror','👤':'person','📤':'share',
   '🚶':'steps','🚴':'run','🥚':'food','🍳':'food','🚫':'warning','📊':'chart','📱':'laptop',
@@ -11805,15 +11978,24 @@ function progImg(p){
 function frow(p,badge){
   const done=progDone(p.id), tot=progDays(p), pct=tot?Math.round(done/tot*100):0;
   return '<div class="frow" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="th" style="background-image:url(\''+progImg(p)+'\')">'+
+    '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name)+'">'+
     (badge?'<span class="fnew">'+badge+'</span>':'')+'</div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+(p.weeks?p.weeks.length+' weeks · '+tot+' days':(p.level+' · '+p.dur+' min'))+'</div>'+
+    '<div class="m">'+(p.weeks?wks(p.weeks.length)+' · '+tot+' days':(p.level+' · '+p.dur+' min'))+'</div>'+
     (done>0?'<div class="m" style="color:var(--hyrox);">'+pct+'% done</div>'
            :'<div class="m">'+(p.goal||'')+'</div>')+
     '</div><div class="chev">›</div></div>';
 }
 
+/* The library has fewer photographs than programs, so rows that share one
+   are framed differently — a different part of the same frame — instead of
+   repeating the identical thumbnail five times in a column. */
+function thumbCrop(name){
+  let h=0; const n=String(name||'');
+  for(let i=0;i<n.length;i++) h=(h*31+n.charCodeAt(i))>>>0;
+  const x=[50,28,72,40,62][h%5], y=[40,55,30][(h>>3)%3], z=[100,135,150][(h>>5)%3];
+  return 'background-size:'+(z===100?'cover':z+'%')+';background-position:'+x+'% '+y+'%;';
+}
 function updateAvatar(){
   const a=$('topav'); if(!a) return;
   const p=HF.data.prefs||{}, n=(p.name||'').trim();
@@ -11859,8 +12041,8 @@ function renderHome(){
   // 1) header — avatar · greeting · chip
   $('home-hdr').innerHTML='<div class="hhdr">'+
     '<div onclick="switchTab(\'me\')" style="cursor:pointer;flex:none;">'+avatarHTML(46)+'</div>'+
-    '<div class="w2"><div class="n">Hi'+(nm?', '+nm:'')+'</div>'+
-    '<div class="s">'+greetWord()+' — '+goal+'</div></div>'+
+    '<div class="w2"><div class="n">'+greetWord()+(nm?', '+hesc(nm.split(/\s+/)[0]):'')+'</div>'+
+    '<div class="s">Goal · '+hesc(goal)+'</div></div>'+
     (HF.count()?'<div class="chip" onclick="switchTab(\'me\')">'+
     '<b style="font-family:\'Oswald\';font-size:17px;color:var(--hyrox);line-height:1;">'+consistency()+'</b>'+
     '<span style="font-size:11px;color:var(--dim);font-weight:600;">Consistency</span></div>':'')+'</div>';
@@ -11932,25 +12114,28 @@ function renderHome(){
   } else {
     $('home-activity').innerHTML=_t42+_club+'<div class="sechead">This month</div>'+monthlyCard()+
       '<div class="sechead">Recent Activity</div>'+
-      '<div class="acard"><div class="ah">'+ic('run')+'<div class="t">This Week</div><div class="c">›</div></div>'+
-      '<div style="display:flex;align-items:flex-end;gap:14px;">'+
-      '<div style="flex:0 0 auto;"><div class="big">'+days+' of '+wgoal+' days</div>'+
-      '<div class="sub">'+weekMinutes()+' min trained</div></div>'+
-      '<div class="mbar">'+bars+'</div></div></div>'+
-      '<div class="arow">'+
-      '<div class="acard" onclick="switchTab(\'me\')" style="cursor:pointer;">'+
-      '<div class="ah">'+ic('bolt')+'<div class="t">Consistency</div><div class="c">›</div></div>'+
-      '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;"><div class="big">'+consistency()+'</div>'+
-      '<div class="sub">last 4 weeks</div></div>'+donutSVG(consistency(),'#EF4444',54)+'</div></div>'+
-      '<div class="acard"><div class="ah">'+ic('flame')+'<div class="t">Streak</div><div class="c">›</div></div>'+
-      '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;"><div class="big">'+
-      (streak>0?streak+' days':daysSince()+' d ago')+'</div>'+
-      '<div class="sub">'+HF.count()+' total</div></div>'+donutSVG(Math.min(100,streak*14),'#FF9500',54)+'</div></div></div>';
+      '<div class="acard hweek" onclick="switchTab(\'progress\')"><div class="ah">'+ic('run')+'<div class="t">This week</div><div class="c">›</div></div>'+
+      '<div class="hweek-n"><span class="big">'+days+'</span><span class="u"> of '+wgoal+' days</span>'+
+      '<span class="hweek-m">'+weekMinutes()+' min</span></div>'+
+      '<div class="mbar">'+bars+'</div></div>'+
+      '<div class="arow hpair">'+
+      homeTile('bolt','Consistency', consistency()+'<span class="u">%</span>', 'last 4 weeks',
+               donutSVG(consistency(),'#EF4444',44), "switchTab('progress')")+
+      homeTile('flame','Streak', streak+'<span class="u"> '+(streak===1?'day':'days')+'</span>',
+               streak>0 ? 'in a row' : lastTrainedLine(),
+               donutSVG(Math.min(100,streak*14),'#FF9500',44), "switchTab('progress')")+
+      '</div>';
   }
 
   // 5) Trending plans
   const going=PROGRAMS.filter(p=>p.weeks && progDone(p.id)>0 && progDone(p.id)<progDays(p));
-  const rest=PROGRAMS.filter(p=>p.weeks && going.indexOf(p)<0);
+  /* What suits this person first: their goal, then their level; recovery
+     programs last — a beginner's first "trending" card should not be a
+     knee rehab plan. */
+  const want=/strong/i.test(goal)?'Strength':/move/i.test(goal)?'Recovery':'Fat Loss';
+  const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
+  const rank=p=>(p.goal===want?0:4)+(p.level===lvl||p.level==='All levels'?0:2)+(p.goal==='Recovery'&&want!=='Recovery'?8:0);
+  const rest=PROGRAMS.filter(p=>p.weeks && going.indexOf(p)<0).sort((a,b)=>rank(a)-rank(b));
   const plans=going.concat(rest).slice(0,5);
   $('home-plans').innerHTML='<div class="sechead">Trending Plans</div><div class="hscroll">'+
     plans.map(p=>{ const started=progDone(p.id)>0;
@@ -11980,6 +12165,19 @@ function renderHome(){
   }catch(e){}
 }
 function daysSince(){ const l=HF.data.lastISO; return l?daysBetween(l,iso(0)):0; }
+/* A two-up Home tile: label, one number, one line, and a ring. */
+function homeTile(icon,label,value,sub,ring,go){
+  return '<div class="acard htile" onclick="'+go+'"><div class="ah">'+ic(icon)+'<div class="t">'+label+'</div></div>'+
+    '<div class="htile-b"><div><div class="big">'+value+'</div><div class="sub">'+sub+'</div></div>'+ring+'</div></div>';
+}
+/* When a streak is zero, the useful thing is when the last session was. */
+function lastTrainedLine(){
+  if(!HF.count()) return 'Train today to start';
+  const d=daysSince();
+  return d===0 ? 'Last session today' : d===1 ? 'Last session yesterday' : 'Last session '+d+' days ago';
+}
+function hesc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function wks(n){ return n+(n===1?' week':' weeks'); }
 function nextUp(){
   const started=PROGRAMS.filter(p=>p.weeks && progDone(p.id)>0 && progDone(p.id)<progDays(p));
   const p=started[0]; if(!p) return null;
@@ -12010,7 +12208,7 @@ function renderProgram(){
     '<div class="ov"></div><div class="pi"><div class="tx">'+
     '<div class="k">'+(p.goal||'Program')+(p.level?' · '+p.level:'')+'</div>'+
     '<div class="t" style="font-size:24px;">'+p.name+'</div>'+
-    '<div class="d">'+(p.weeks?p.weeks.length+' weeks · ':'')+tot+' days · '+p.dur+' min a day</div></div></div></div>';
+    '<div class="d">'+(p.weeks?wks(p.weeks.length)+' · ':'')+tot+' days · '+p.dur+' min a day</div></div></div></div>';
   h+='<p style="font-size:15px;color:var(--dim);line-height:1.6;margin:16px 0 18px;">'+(p.desc||'')+'</p>';
   h+='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;">'+
      '<div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);">'+done+' / '+tot+' days</div>'+
@@ -12100,37 +12298,68 @@ function renderLibrary(){
 function renderMe(){
   const p=HF.data.prefs||{}, streak=liveStreak();
   const w=(HF.data.weight||[]).slice(-1)[0];
-  $('me-body').innerHTML=
-    '<div class="hhdr" style="margin-top:4px;">'+avatarHTML(54)+
-    '<div class="w2"><div class="n">'+((p.name||'').trim()||'Set your name')+'</div>'+
-    '<div class="s">'+(HF.email||'Local preview')+'</div></div>'+
-    '<div class="chip" onclick="startOnboarding()"><span style="font-size:13px;font-weight:700;">Edit</span></div></div>'+
-    '<div class="arow">'+
-    '<div class="acard"><div class="ah">'+ic('flame')+'<div class="t">Streak</div></div><div class="big">'+(streak>0?streak:daysSince())+'</div><div class="sub">'+(streak>0?'days':'days since')+'</div></div>'+
-    '<div class="acard"><div class="ah">'+ic('check')+'<div class="t">Sessions</div></div><div class="big">'+HF.count()+'</div><div class="sub">all time</div></div>'+
-    '<div class="acard"><div class="ah">'+ic('scale')+'<div class="t">Weight</div></div><div class="big">'+(w?w.kg:'—')+'</div><div class="sub">kg</div></div></div>'+
-    '<div class="wrow" onclick="openStore(\'programs\')">'+ic('bag')+''+
-    '<div class="tx"><div class="t">Store</div><div class="m">'+
-      (ownsAll() ? 'All Access · every program unlocked'
-                 : PROGRAMS.filter(isPaidProgram).filter(ownsProgram).length+' of '+
-                   PROGRAMS.filter(isPaidProgram).length+' programs owned')+
-    '</div></div><div class="chev">›</div></div>'+
-    '<div class="sechead">Your plan</div>'+
-    '<div class="acard" style="font-size:15px;line-height:2.1;color:var(--dim);">'+
-    '<div>Goal · <b style="color:var(--txt);">'+(p.goal||'—')+'</b></div>'+
-    '<div>Level · <b style="color:var(--txt);">'+(p.level||'—')+'</b></div>'+
-    '<div>Days a week · <b style="color:var(--txt);">'+(p.days||'—')+'</b></div>'+
-    '<div>Equipment · <b style="color:var(--txt);">'+(p.equip||'—')+'</b></div></div>'+
-    '<div class="sechead">Settings</div>'+
-    '<div class="acard"><div class="ah">'+ic('palette')+'<div class="t">Appearance</div></div>'+
-    '<div class="segs" style="margin-top:10px;">'+
+  const paid=PROGRAMS.filter(isPaidProgram), owned=paid.filter(ownsProgram).length;
+  const signedIn=!!(sb&&HF.userId);
+
+  let h='<div class="mehead" onclick="startOnboarding()">'+avatarHTML(60)+
+    '<div class="w2"><div class="n">'+hesc((p.name||'').trim()||'Set your name')+'</div>'+
+    '<div class="s">'+hesc(HF.email||'Local preview')+'</div></div><span class="chev">›</span></div>';
+
+  /* Three numbers, each one that means something on its own. */
+  h+='<div class="arow">'+
+    '<div class="acard"><div class="ah">'+ic('flame')+'<div class="t">Streak</div></div>'+
+      '<div class="big">'+streak+'</div><div class="sub">'+(streak===1?'day in a row':'days in a row')+'</div></div>'+
+    '<div class="acard"><div class="ah">'+ic('check')+'<div class="t">Sessions</div></div>'+
+      '<div class="big">'+HF.count()+'</div><div class="sub">all time</div></div>'+
+    '<div class="acard"><div class="ah">'+ic('scale')+'<div class="t">Weight</div></div>'+
+      '<div class="big">'+(w?w.kg:'—')+'</div><div class="sub">'+(w?'kg':'not logged')+'</div></div></div>';
+
+  h+='<div class="sechead">Your plan</div><div class="glist">'+
+    grow('target','Goal', p.goal||'Not set', 'startOnboarding()')+
+    grow('chart','Level', p.level||'Not set', 'startOnboarding()')+
+    grow('calendar','Days a week', p.days?p.days+' days':'Not set', 'startOnboarding()')+
+    grow('workout','Equipment', p.equip||'Not set', 'startOnboarding()')+
+    '</div>';
+
+  /* Everything else this account can open, in one place. */
+  h+='<div class="sechead">Programs & challenges</div><div class="glist">'+
+    grow('bag','Store', ownsAll() ? 'All Access' : owned+' of '+paid.length+' owned', "openStore('programs')");
+  if(typeof T42!=='undefined' && T42.state==='ready' && (T42.challenge||T42.past))
+    h+=grow('trophy','T42 Challenge', meT42Line(), 'openT42()');
+  if(typeof openClub==='function' && typeof Club!=='undefined' && Club.state==='ready' && (Club.isMember()||Club.isStaff()))
+    h+=grow('building','HITFAT Club', Club.isStaff()?'Staff':'Member', 'openClub()');
+  h+='</div>';
+
+  h+='<div class="sechead">Settings</div><div class="glist">'+
+    '<div class="grow grow-ctl">'+ic('palette')+'<div class="grow-l">Appearance</div>'+
+    '<div class="segs grow-seg">'+
     '<button class="seg'+(currentTheme()==='light'?' on':'')+'" onclick="setThemeLight()">Light</button>'+
     '<button class="seg'+(currentTheme()==='dark'?' on':'')+'" onclick="setThemeDark()">Dark</button></div></div>'+
-    '<button class="bigbtn sec" onclick="startOnboarding()">Edit my plan</button>'+
-    (sb&&HF.userId?'<button class="bigbtn sec" onclick="signOut()">Sign out</button>':'')+
-    '<button class="bigbtn sec" onclick="confirmReset()">Reset progress</button>'+
-    '<p style="font-size:13px;color:var(--dim2);text-align:center;margin-top:22px;line-height:1.8;">'+
-    '<a href="/privacy" style="color:var(--dim);">Privacy</a> · <a href="/terms" style="color:var(--dim);">Terms</a><br>HITFAT+ · build 2026-08-20</p>';
+    '</div>';
+
+  h+='<div class="glist" style="margin-top:22px;">'+
+    (signedIn?'<button class="grow grow-act" onclick="signOut()">Sign out</button>':'')+
+    '<button class="grow grow-act danger" onclick="confirmReset()">Reset progress</button></div>';
+
+  h+='<p class="mefoot"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a><br>HITFAT+</p>';
+  $('me-body').innerHTML=h;
+}
+
+/* One row of a grouped list: a tile, a label, the value on the right. */
+function grow(icon,label,value,go){
+  return '<div class="grow" onclick="'+go+'">'+ic(icon)+'<div class="grow-l">'+hesc(label)+'</div>'+
+    '<div class="grow-v">'+hesc(value)+'</div><span class="chev">›</span></div>';
+}
+function meT42Line(){
+  try{
+    const st=T42.stage();
+    if(st==='active')   return 'Day '+T42.dayNo()+' of '+((T42.challenge&&T42.challenge.total_days)||42);
+    if(st==='upcoming') return 'Starts in '+T42.daysTo()+' days';
+    if(st==='unpaid')   return 'Payment pending';
+    if(st==='closing')  return 'Results coming';
+    if(st==='finished') return 'Completed';
+    return T42.past ? 'My T42 Journey' : 'Join';
+  }catch(e){ return ''; }
 }
 function confirmReset(){
   if(!confirm('Reset all progress? Sessions, programs and logs are erased. This cannot be undone.')) return;
@@ -12346,7 +12575,7 @@ function eatToday(){
   // macros
   h+=fsec('Macros','Against the split from your target');
   h+='<div class="emacs">'+
-     [['Protein',t.p,n.pt,'#fb923c'],['Carbs',t.c,n.ct,'#38bdf8'],['Fat',t.f,n.ft,'var(--ok)']].map(m=>{
+     [['Protein',t.p,n.pt,'var(--mac-p)'],['Carbs',t.c,n.ct,'var(--mac-c)'],['Fat',t.f,n.ft,'var(--ok)']].map(m=>{
        const w=Math.min(100,Math.round(m[1]/(m[2]||1)*100));
        return '<div class="emac"><div class="v" style="color:'+m[3]+';">'+m[1]+'<span style="font-size:15px;font-weight:400;letter-spacing:0;">g</span></div>'+
          '<div class="l">'+m[0]+'</div><div class="g">of '+m[2]+'g</div>'+
@@ -12355,10 +12584,10 @@ function eatToday(){
 
   // burn
   h+=fsec('Moved today','Training buys back calories — logged, not guessed');
-  h+='<div class="elog" onclick="openBurn()"><div class="e">'+glyph('flame')+'</div>'+
+  h+='<div class="elist"><div class="elog" onclick="openBurn()"><div class="e">'+glyph('flame')+'</div>'+
      '<div class="tx"><div class="t">Exercise burn</div>'+
      '<div class="m">'+(burnFor().length?burnFor().length+' logged today':'Tap to log an activity')+'</div></div>'+
-     '<div class="k" style="color:var(--ok);">+'+burned+'</div><div class="chev">›</div></div>';
+     '<div class="k" style="color:var(--ok);">+'+burned+'</div><div class="chev">›</div></div></div>';
 
   // shortcut into the other two segments
   h+=fsec('Next','');
@@ -12426,9 +12655,9 @@ function eatLog(){
        btn:'Scan now',c1:'#2a1016',c2:'#0b0b0d',ac:'#EF4444',
        note:scanAccess().label.toUpperCase()})+
      '</div>';
-  h+='<div class="elog" style="margin-top:14px;" onclick="openManual()"><div class="e">'+glyph('pencil')+'</div>'+
+  h+='<div class="elist" style="margin-top:14px;"><div class="elog" onclick="openManual()"><div class="e">'+glyph('pencil')+'</div>'+
      '<div class="tx"><div class="t">Add manually</div><div class="m">Always free, unlimited</div></div>'+
-     '<div class="chev">›</div></div>';
+     '<div class="chev">›</div></div></div>';
 
   if(favs.length){
     h+=fsec('Your usuals','One tap — no scan spent');
@@ -12440,7 +12669,7 @@ function eatLog(){
 
   h+=fsec("Today's log", list.length ? list.length+(list.length>1?' meals':' meal')+' · '+mealTotals().kcal.toLocaleString()+' kcal' : '');
   h+= list.length
-    ? '<div class="flib">'+list.map((m,i)=>
+    ? '<div class="elist">'+list.map((m,i)=>
         '<div class="elog"><div class="e">'+glyph((slotOf[m.slot]||'🍽️'))+'</div>'+
         '<div class="tx"><div class="t">'+(m.bm||m.name)+'</div>'+
         '<div class="m">'+m.time+' · P '+m.p+'g · C '+m.c+'g · F '+m.f+'g</div></div>'+
@@ -12536,7 +12765,7 @@ function renderManual(){
     (favs.length?'<div class="qh">Quick pick</div><div class="filters">'+favs.map((f,i)=>
       '<button class="chip" onclick="fillFav('+i+')">'+f.name+' · '+f.kcal+'</button>').join('')+'</div>':'')+
     '<div class="qh">Meal</div><div class="filters">'+SLOTS.map(s=>
-      '<button class="chip'+(_slot===s.k?' y':'')+'" onclick="setSlot(\''+s.k+'\')">'+s.e+' '+s.n+'</button>').join('')+'</div>'+
+      '<button class="chip'+(_slot===s.k?' y':'')+'" onclick="setSlot(\''+s.k+'\')">'+glyph(s.e)+' '+s.n+'</button>').join('')+'</div>'+
     '<input class="inp" id="m-name" placeholder="What did you eat? e.g. Nasi lemak">'+
     '<input class="inp" id="m-kcal" type="number" inputmode="numeric" placeholder="Calories (kcal)">'+
     '<div class="qh">Macros (optional)</div>'+
@@ -12719,7 +12948,7 @@ function renderScanResult(d){
      '<span style="width:7px;height:7px;border-radius:50%;background:'+b.c+';"></span>'+
      '<span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:'+b.c+';">'+b.label+'</span></div>';
   h+='<div class="arow">'+
-     [[kcal,'Calories','#EF4444'],[p+'g','Protein','#fb923c'],[c+'g','Carbs','#38bdf8'],[f+'g','Fat','var(--ok)']].map(x=>
+     [[kcal,'Calories','#EF4444'],[p+'g','Protein','var(--mac-p)'],[c+'g','Carbs','var(--mac-c)'],[f+'g','Fat','var(--ok)']].map(x=>
        '<div class="acard" style="text-align:center;padding:12px 6px;"><div style="font-family:\'Oswald\';font-size:20px;color:'+x[2]+';">'+x[0]+'</div>'+
        '<div class="sub" style="font-size:11px;">'+x[1]+'</div></div>').join('')+'</div>';
   // tabs
@@ -12962,7 +13191,7 @@ function renderProgress(){
     pgTile('Days logged', nu.logged||0, '', 'of '+pgDays()+' days', null, false),
     pgTile('Streak', streak, streak===1?'day':'days', streak?'Keep it up':'Start today', null, false)
   ].filter(Boolean).join('');
-  h+='<div class="sechead">'+(pgDays()===7?'This week':'Last 30 days')+'</div>'+
+  h+='<div class="sechead">Highlights</div>'+
      '<div class="pgseg">'+
      '<button class="seg'+(pgDays()===7?' on':'')+'" onclick="setPgP(\'week\')">This week</button>'+
      '<button class="seg'+(pgDays()===7?'':' on')+'" onclick="setPgP(\'month\')">Last 30 days</button>'+
@@ -12987,12 +13216,12 @@ function renderProgress(){
   /* ── training ── */
   h+='<div class="sechead">Training</div>'+
      '<div class="acard"><div class="ah">'+ic('workout')+'<div class="t">'+(pgDays()===7?'This week':'Last 30 days')+'</div></div>'+
-     '<div class="arow" style="margin:6px 0 2px;">'+
+     '<div class="arow pgstats">'+
      '<div><div class="big">'+tr.sessions+'</div><div class="sub">sessions</div></div>'+
      '<div><div class="big">'+tr.mins+'</div><div class="sub">minutes</div></div>'+
      '<div><div class="big">'+tr.activeDays+'</div><div class="sub">active days</div></div></div>'+
      pgCalendar()+
-     '<div class="pglegend"><i class="pgd on"></i> trained <i class="pgd"></i> rest</div>'+
+     '<div class="pglegend"><i class="pgd on"></i><span>Trained</span><i class="pgd"></i><span>Rest</span></div>'+
      '</div>';
 
   /* ── nutrition ── only when there is something logged to describe. */
@@ -13494,7 +13723,7 @@ function trExplore(){
   const rotated=singles.map((_,i)=>singles[(wk+i)%singles.length]);
 
   let h='';
-  h+=fsec('Free This Week','Try these one time — everything here is free.');
+  h+=fsec('Free This Week','A new set every week — no purchase needed.');
   h+='<div class="hscroll">'+take(rotated,4).map(p=>flandCard(p)).join('')+'</div>';
 
   h+=fsec('Activity Types');
@@ -13565,7 +13794,7 @@ function trPlans(){
     '<div class="ov"></div><div class="in">'+
     '<div class="ic">'+glyph((hero.icon||''))+'</div>'+
     '<div class="t">'+hero.name+'</div>'+
-    '<div class="tags">'+hero.goal+' · '+hero.level+' · '+hero.weeks.length+' weeks · '+hero.dur+' min a day</div>'+
+    '<div class="tags">'+hero.goal+' · '+hero.level+' · '+wks(hero.weeks.length)+' · '+hero.dur+' min a day</div>'+
     '<div class="d">'+hero.desc+'</div>'+
     '<div class="btns">'+
       '<button class="pl" onclick="event.stopPropagation();openProgram(\''+hero.id+'\')">▶  '+
@@ -13800,7 +14029,7 @@ function openJoint(k){
         '<div class="ic">'+(e.v?'▶':'○')+'</div><div class="lb">'+n+'</div>'+
         '<div class="ct">'+e.sets+'×'+e.reps+'</div><div class="cv">›</div></div>';
     }).join('')+'</div>'+
-    '<button class="bigbtn sec" onclick="switchTab(\'train\')">← Back to Recovery</button>';
+    '<button class="bigbtn sec" onclick="switchTab(\'train\')">Back to Recovery</button>';
   $('screen').scrollTop=0;
 }
 

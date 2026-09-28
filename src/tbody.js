@@ -83,7 +83,7 @@ ok("day marked complete",  progDone(mprog.id)===1, progDone(mprog.id));
 ok("session logged",       HF.count()===1, HF.count());
 ok("streak moved",         HF.data.streak===1, HF.data.streak);
 ok("home activity reflects it", (function(){ switchTab('home');
-  var h=document.getElementById('home-activity').innerHTML; return h.indexOf('1 total')>0 && h.indexOf('This Week')>0; })());
+  var h=document.getElementById('home-activity').innerHTML; return h.indexOf('1<span class="u"> day</span>')>0 && h.indexOf('in a row')>0 && h.indexOf('This week')>0; })());
 ok("today hero switches to Continue", document.getElementById('home-today').innerHTML.indexOf('Day 2')>0);
 ok("photos are used, not gradients", document.getElementById('home-plans').innerHTML.indexOf('background-image')>0);
 

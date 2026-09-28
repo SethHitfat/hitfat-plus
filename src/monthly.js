@@ -106,7 +106,7 @@ function renderMonthly(){
   let h='';
   h+='<div class="ehero"><div class="k">'+monthName().toUpperCase()+' CHALLENGE</div>'+
      '<div class="row"><div style="flex:1;min-width:0;">'+
-     '<div class="n" style="font-size:46px;">'+p.c.e+' '+p.c.n+'</div>'+
+     '<div class="n" style="font-size:46px;">'+p.c.n+'</div>'+
      '<div class="u">'+p.c.d+'</div></div></div>'+
      '<div class="sp">'+
      [[p.done,'Days done'],[p.target,'Target'],[p.complete?'✓':left,p.complete?'Complete':'Days left']]

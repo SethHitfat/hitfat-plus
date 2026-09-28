@@ -126,7 +126,7 @@ function eatToday(){
   // macros
   h+=fsec('Macros','Against the split from your target');
   h+='<div class="emacs">'+
-     [['Protein',t.p,n.pt,'#fb923c'],['Carbs',t.c,n.ct,'#38bdf8'],['Fat',t.f,n.ft,'var(--ok)']].map(m=>{
+     [['Protein',t.p,n.pt,'var(--mac-p)'],['Carbs',t.c,n.ct,'var(--mac-c)'],['Fat',t.f,n.ft,'var(--ok)']].map(m=>{
        const w=Math.min(100,Math.round(m[1]/(m[2]||1)*100));
        return '<div class="emac"><div class="v" style="color:'+m[3]+';">'+m[1]+'<span style="font-size:15px;font-weight:400;letter-spacing:0;">g</span></div>'+
          '<div class="l">'+m[0]+'</div><div class="g">of '+m[2]+'g</div>'+
@@ -135,10 +135,10 @@ function eatToday(){
 
   // burn
   h+=fsec('Moved today','Training buys back calories — logged, not guessed');
-  h+='<div class="elog" onclick="openBurn()"><div class="e">'+glyph('flame')+'</div>'+
+  h+='<div class="elist"><div class="elog" onclick="openBurn()"><div class="e">'+glyph('flame')+'</div>'+
      '<div class="tx"><div class="t">Exercise burn</div>'+
      '<div class="m">'+(burnFor().length?burnFor().length+' logged today':'Tap to log an activity')+'</div></div>'+
-     '<div class="k" style="color:var(--ok);">+'+burned+'</div><div class="chev">›</div></div>';
+     '<div class="k" style="color:var(--ok);">+'+burned+'</div><div class="chev">›</div></div></div>';
 
   // shortcut into the other two segments
   h+=fsec('Next','');
@@ -206,9 +206,9 @@ function eatLog(){
        btn:'Scan now',c1:'#2a1016',c2:'#0b0b0d',ac:'#EF4444',
        note:scanAccess().label.toUpperCase()})+
      '</div>';
-  h+='<div class="elog" style="margin-top:14px;" onclick="openManual()"><div class="e">'+glyph('pencil')+'</div>'+
+  h+='<div class="elist" style="margin-top:14px;"><div class="elog" onclick="openManual()"><div class="e">'+glyph('pencil')+'</div>'+
      '<div class="tx"><div class="t">Add manually</div><div class="m">Always free, unlimited</div></div>'+
-     '<div class="chev">›</div></div>';
+     '<div class="chev">›</div></div></div>';
 
   if(favs.length){
     h+=fsec('Your usuals','One tap — no scan spent');
@@ -220,7 +220,7 @@ function eatLog(){
 
   h+=fsec("Today's log", list.length ? list.length+(list.length>1?' meals':' meal')+' · '+mealTotals().kcal.toLocaleString()+' kcal' : '');
   h+= list.length
-    ? '<div class="flib">'+list.map((m,i)=>
+    ? '<div class="elist">'+list.map((m,i)=>
         '<div class="elog"><div class="e">'+glyph((slotOf[m.slot]||'🍽️'))+'</div>'+
         '<div class="tx"><div class="t">'+(m.bm||m.name)+'</div>'+
         '<div class="m">'+m.time+' · P '+m.p+'g · C '+m.c+'g · F '+m.f+'g</div></div>'+
@@ -316,7 +316,7 @@ function renderManual(){
     (favs.length?'<div class="qh">Quick pick</div><div class="filters">'+favs.map((f,i)=>
       '<button class="chip" onclick="fillFav('+i+')">'+f.name+' · '+f.kcal+'</button>').join('')+'</div>':'')+
     '<div class="qh">Meal</div><div class="filters">'+SLOTS.map(s=>
-      '<button class="chip'+(_slot===s.k?' y':'')+'" onclick="setSlot(\''+s.k+'\')">'+s.e+' '+s.n+'</button>').join('')+'</div>'+
+      '<button class="chip'+(_slot===s.k?' y':'')+'" onclick="setSlot(\''+s.k+'\')">'+glyph(s.e)+' '+s.n+'</button>').join('')+'</div>'+
     '<input class="inp" id="m-name" placeholder="What did you eat? e.g. Nasi lemak">'+
     '<input class="inp" id="m-kcal" type="number" inputmode="numeric" placeholder="Calories (kcal)">'+
     '<div class="qh">Macros (optional)</div>'+
@@ -499,7 +499,7 @@ function renderScanResult(d){
      '<span style="width:7px;height:7px;border-radius:50%;background:'+b.c+';"></span>'+
      '<span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:'+b.c+';">'+b.label+'</span></div>';
   h+='<div class="arow">'+
-     [[kcal,'Calories','#EF4444'],[p+'g','Protein','#fb923c'],[c+'g','Carbs','#38bdf8'],[f+'g','Fat','var(--ok)']].map(x=>
+     [[kcal,'Calories','#EF4444'],[p+'g','Protein','var(--mac-p)'],[c+'g','Carbs','var(--mac-c)'],[f+'g','Fat','var(--ok)']].map(x=>
        '<div class="acard" style="text-align:center;padding:12px 6px;"><div style="font-family:\'Oswald\';font-size:20px;color:'+x[2]+';">'+x[0]+'</div>'+
        '<div class="sub" style="font-size:11px;">'+x[1]+'</div></div>').join('')+'</div>';
   // tabs

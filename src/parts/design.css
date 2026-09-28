@@ -41,7 +41,7 @@
   --bg:#F2F2F7; --surface:#FFFFFF; --surface2:rgba(118,118,128,.12);
   --line:rgba(60,60,67,.10); --hairline:rgba(60,60,67,.16); --sep:rgba(60,60,67,.16);
   --tint:rgba(118,118,128,.12);
-  --txt:#111113; --dim:rgba(60,60,67,.64); --dim2:rgba(60,60,67,.46);
+  --txt:#111113; --dim:rgba(60,60,67,.68); --dim2:rgba(60,60,67,.60);
   --ink-90:rgba(17,17,19,.92); --ink-72:rgba(60,60,67,.80);
   --ink-55:rgba(60,60,67,.60); --ink-42:rgba(60,60,67,.46);
   --brand:#111113; --wash:transparent; --lift:none;
@@ -434,9 +434,181 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 
 /* Notes coloured for a dark page — amber and sky — are too pale on a light
    one (about 2:1). Same hue, a deeper shade in light. */
-:root{ --note-amber:#F59E0B; --note-sky:#5EB8FF; }
+:root{ --note-amber:#F59E0B; --note-sky:#5EB8FF; --mac-p:#FB923C; --mac-c:#38BDF8; }
+:root[data-theme="light"]{ --mac-p:#C2410C; --mac-c:#0369A1; }
 :root[data-theme="light"]{ --note-amber:#A16207; --note-sky:#0369A1; }
 
 /* The outlined "Top 10" numerals: in dark their stroke (#3A3A3C on black)
    measured about 1.7:1 — decorative, but a rank should still be legible. */
 :root:not([data-theme="light"]) .rk{-webkit-text-stroke-color:rgba(255,255,255,.38);}
+
+/* ═══════════════════════════════════════════════════════════════
+   App-wide polish
+   The same few decisions applied everywhere the older screens made
+   their own: no borders on surfaces, heavy numbers (not hairline ones),
+   grouped lists for rows, one back button.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── the back button: a chevron and a word, in the tint ── */
+.back{font-size:17px;font-weight:500;letter-spacing:-.2px;gap:6px;padding:8px 0 10px;text-transform:none;}
+.back .bk-c{width:10px;height:10px;border-left:2.5px solid currentColor;border-bottom:2.5px solid currentColor;
+  transform:rotate(45deg);border-radius:1px;margin-left:3px;}
+
+/* ── grouped lists (Me, and anything that is a list of settings) ── */
+.glist{background:var(--surface);border-radius:var(--r-card);overflow:hidden;}
+.grow{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;padding:10px 14px;position:relative;
+  background:none;border:none;text-align:left;font-family:inherit;color:var(--txt);cursor:pointer;}
+.grow + .grow::before{content:'';position:absolute;top:0;right:0;left:56px;height:.5px;background:var(--sep);}
+.grow:active{background:var(--tint);}
+.grow .uic{width:30px;height:30px;}
+.grow-l{flex:1;min-width:0;font-size:16px;font-weight:500;letter-spacing:-.2px;}
+.grow-v{font-size:15px;color:var(--dim);text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%;}
+.grow .chev{color:var(--dim2);font-size:20px;line-height:1;}
+.grow-ctl{cursor:default;}
+.grow-ctl:active{background:none;}
+.grow-seg{margin:0;flex:0 0 auto;gap:6px;}
+.grow-seg .seg{padding:7px 14px;font-size:14px;}
+.grow-act{justify-content:center;font-size:17px;font-weight:500;color:var(--hitfat);}
+.grow-act + .grow-act::before{left:0;}
+.grow-act.danger{color:#FF3B30;}
+:root[data-theme="light"] .grow-act.danger{color:#D70015;}
+
+/* ── Me ── */
+.mehead{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r-card);
+  padding:14px 16px;margin:6px 0 12px;cursor:pointer;}
+.mehead .w2{flex:1;min-width:0;}
+.mehead .n{font-size:21px;font-weight:700;letter-spacing:-.4px;color:var(--txt);}
+.mehead .s{font-size:14px;color:var(--dim);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mehead .chev{color:var(--dim2);font-size:22px;}
+.hhdr .av2, .mehead .av2{border:none;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(135deg,#FF6A5C,#C62828);color:#FFFFFF;font-weight:700;}
+.hhdr .av2 img, .mehead .av2 img{width:100%;height:100%;object-fit:cover;}
+.mefoot{font-size:13px;color:var(--dim2);text-align:center;margin-top:24px;line-height:1.8;}
+.mefoot a{color:var(--dim);}
+#me .arow{margin-top:0;}
+
+/* ── Home: the week, then two tiles side by side ── */
+.hweek{cursor:pointer;}
+.hweek-n{display:flex;align-items:baseline;gap:2px;}
+.hweek-n .u{font-size:15px;color:var(--dim);font-weight:500;}
+.hweek-m{margin-left:auto;font-size:15px;font-weight:600;color:var(--dim);}
+.hweek .mbar{height:60px;margin-top:12px;background:none;padding:0;border-radius:0;}
+.mbar .l{font-size:11px;font-weight:600;color:var(--dim2);}
+.mbar .b.off{background:var(--tint);}
+.hpair .ah{flex-direction:row !important;align-items:center !important;}
+.hpair .ah .t{width:auto !important;}
+.htile{cursor:pointer;flex:1;min-width:0;}
+.htile-b{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;}
+.htile .big{font-size:26px !important;white-space:nowrap;}
+.htile .big .u{font-size:14px;font-weight:600;color:var(--dim);letter-spacing:0;}
+.htile .sub{font-size:12.5px;}
+.htile svg{flex:0 0 auto;}
+/* A tile's chevron sits on its own line once the label is stacked; the
+   whole tile is the button, so the chevron is noise. */
+.arow .acard .ah .c{display:none;}
+.big .u{font-weight:600;}
+
+/* ── surfaces that still drew a border ── */
+.pgtile,.emac,.eslot,.paych,.hhdr .chip{border:none;}
+.eslot.hit{box-shadow:inset 0 0 0 1.5px rgba(239,68,68,.35);}
+
+/* ── numbers: one weight across the app ── */
+.ehero .n{font-weight:700;letter-spacing:-2.6px;}
+.ehero .sp .v{font-weight:650;letter-spacing:-.6px;}
+.ehero .sp{gap:18px;}
+.ehero .sp .l{letter-spacing:.6px;white-space:nowrap;}
+.eslot .v,.emac .v,.elog .k{font-weight:700;letter-spacing:-.8px;}
+.emac .l{letter-spacing:.6px;}
+.pgtile{border-radius:16px;padding:14px 12px 12px;}
+.pgtile .v{font-weight:800;letter-spacing:-.6px;font-size:26px;}
+.pgtile .l{font-size:12.5px;font-weight:600;margin-top:3px;}
+.pgtile .s{font-size:12px;font-weight:600;}
+
+/* ── Eat: rows live in a grouped list, not loose on the page ── */
+.elist{background:var(--surface);border-radius:var(--r-card);padding:0 14px;}
+.elist .elog{border-bottom:.5px solid var(--sep);padding:13px 0;}
+.elist .elog:last-child{border-bottom:none;}
+.elist .elog .e{background:var(--surface2);}
+
+/* ── Progress ── */
+/* Two across, and the first tile wide when the count is odd, so the grid
+   never ends on a lone tile. */
+.pggrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.pggrid > .pgtile:first-child:nth-last-child(odd){grid-column:1 / -1;}
+/* The calendar: fixed-height cells in columns that cannot grow. With
+   aspect-ratio in 1fr columns, a two-digit date widened its column and the
+   row under it overlapped the legend. */
+.pgcal{grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;}
+.pgd{aspect-ratio:auto;height:36px;border-radius:10px;font-size:12px;font-weight:600;}
+.pgh{font-size:11px;font-weight:600;padding-bottom:2px;}
+.pglegend{gap:6px;margin-top:14px;font-size:12.5px;}
+.pglegend .pgd{width:12px;height:12px;border-radius:4px;flex:0 0 auto;}
+.pglegend span{margin-right:10px;}
+
+/* ── stacked cards always breathe ── */
+.arow > .acard{margin-top:0 !important;}
+.acard + .acard, .wrow + .acard, .acard + .wrow, .arow + .wrow, .arow + .glist{margin-top:12px;}
+#store .flib + *, .fqcta + *{margin-top:12px;}
+
+/* Three numbers in a row inside a card: equal columns, number over label. */
+.pgstats{margin:6px 0 4px;gap:8px;}
+.pgstats > div{flex:1;min-width:0;}
+.pgstats .big{font-size:26px;}
+.pgstats .sub{margin-top:2px;}
+
+/* ── program rows: a run of them reads as one grouped list ──
+   frow() is emitted in runs straight onto the page. The first and last of
+   each run round the corners, and a hairline separates the rest, so eight
+   rows are one surface instead of eight loose lines. */
+.frow{background:var(--surface);padding:10px 14px;gap:12px;position:relative;}
+.frow .th{flex:0 0 96px;width:96px;height:64px;border-radius:12px;}
+.frow + .frow::before{content:'';position:absolute;top:0;right:0;left:122px;height:.5px;background:var(--sep);}
+.frow:first-child, :not(.frow) + .frow{border-top-left-radius:var(--r-card);border-top-right-radius:var(--r-card);padding-top:12px;}
+.frow:last-child, .frow:has(+ :not(.frow)){border-bottom-left-radius:var(--r-card);border-bottom-right-radius:var(--r-card);padding-bottom:12px;}
+.frow:active{opacity:1;background:var(--tint);}
+.frow .tx .t{font-size:16px;}
+
+/* ── onboarding and every choice list ──
+   .opt was written for the dark page: #eee labels, a brown selected fill
+   and a gold subtitle. On the light default that was near-white text on
+   white — the first screen a new member ever sees. Tokens now, and the
+   selected state is a tint ring, the way every other choice looks. */
+.ovl h1{text-transform:none;font-size:32px;font-weight:800;letter-spacing:-.9px;line-height:1.08;}
+.ovl .qh, #mpm .qh, .qh{font-size:13px;font-weight:600;letter-spacing:.2px;text-transform:uppercase;
+  color:var(--dim);margin:24px 4px 8px;}
+.opt{color:var(--txt);border:none;background:var(--surface);border-radius:var(--r-ctl);font-size:16px;}
+.opt.sel{background:var(--accent-wash);box-shadow:inset 0 0 0 2px var(--hitfat);color:var(--txt);border:none;}
+.opt small{color:var(--dim);}
+.opt.sel small{color:var(--dim);}
+.cprow{border:none;}
+.cprow.on{box-shadow:inset 0 0 0 2px var(--hitfat);background:var(--accent-wash);}
+
+/* ── colours the dark page fixed in place ──
+   Surfaces and text that were written as literal dark-theme values (#111
+   sheets, #cfcfcf and #dcdcdc text, #0d0d0d panels). On the light default
+   they drew black-on-black or white-on-white: the Add a meal and Exercise
+   burn sheets, the safety notes in onboarding, the RPE scale. Tokens, so
+   each follows the theme. Cards laid over a photograph keep their light
+   text — they are dark in both themes. */
+.sheet{background:var(--surface);}
+.readbox{border:none;}
+.readbox .ri{color:var(--ink-72);}
+.chk{color:var(--ink-72);}
+.today .go.sec{color:var(--txt) !important;border-color:var(--hairline);}
+.rpescale button{color:var(--txt);border:none;background:var(--surface2);}
+.badge.soon{color:var(--dim);}
+.sbar .l{color:var(--ink-72);}
+.sbar .t{background:var(--tint);}
+.joinbar .buy.soon{background:var(--surface2);}
+.klwk{background:var(--surface);border:none;}
+.klwk .klses{background:var(--surface2);}
+.klinfo .row{color:var(--ink-72);}
+.wcell.ddone b{color:#FFFFFF;}
+.qtile{background:var(--surface);border:none;}
+.qtile span{color:var(--txt);}
+.scalebox{--txt:#FFFFFF;--dim:rgba(235,235,245,.66);color:#FFFFFF;}
+
+/* ── chips: sentence case, filled, the selected one in ink ── */
+.filters .chip{text-transform:none;letter-spacing:-.1px;font-size:14px;font-weight:600;border:none;
+  background:var(--surface2);color:var(--txt);padding:9px 14px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+.filters .chip.y{background:var(--txt);color:var(--bg);}

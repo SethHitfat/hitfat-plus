@@ -68,6 +68,7 @@ var ICON_PATH={
   dot:     '<circle cx="12" cy="12" r="3.2"/>',
   chevleft:'<path d="M15 5l-7 7 7 7"/>',
   medal:   '<circle cx="12" cy="15" r="5"/><path d="M8.5 3.5l2.5 7M15.5 3.5l-2.5 7M12 13v4"/>',
+  sunrise: '<path d="M3 18h18M6.5 18a5.5 5.5 0 0 1 11 0M12 4.5V8M5 9.5l2 2M19 9.5l-2 2M8.5 21h7"/>',
   card:    '<rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 14.5h4"/>'
 };
 
@@ -82,7 +83,7 @@ var ICON_TINT={
   moon:'#5E5CE6', clipboard:'#8E8E93', repeat:'#34C759', leaf:'#34C759', pencil:'#8E8E93', star:'#FFCC00',
   spark:'#FF2D55', heart:'#FF375F', home:'#0A84FF', chair:'#A2845E', laptop:'#8E8E93', rocket:'#FF6B00',
   sun:'#FF9F0A', bell:'#FF9500', mirror:'#64D2FF', share:'#0A84FF', eyeoff:'#8E8E93', dot:'#8E8E93',
-  chevleft:'#8E8E93', medal:'#FF9F0A', card:'#30B0C7'
+  chevleft:'#8E8E93', medal:'#FF9F0A', sunrise:'#FF9500', card:'#30B0C7'
 };
 /* Tiles light enough that a white glyph would vanish get a dark one. */
 var ICON_DARK_GLYPH={bolt:1, trophy:1, key:1, star:1, measure:1};
@@ -101,7 +102,7 @@ var EMOJI_ICON={
   '💻':'laptop','💥':'bolt','🎓':'trophy','🎒':'workout','🍑':'workout','🌋':'flame','🌀':'repeat',
   '⚙️':'workout','🙋':'person','🤝':'people','⏳':'clock','📍':'gym','👟':'steps','🥗':'food',
   '🍎':'food','🍗':'food','🍚':'food',
-  '✨':'spark','❄️':'water','⬇️':'scale','⬆️':'scale','🌅':'sun','🌤️':'sun','🌧️':'water',
+  '✨':'spark','❄️':'water','⬇️':'scale','⬆️':'scale','🌅':'sunrise','🌤️':'sun','🌧️':'water',
   '📷':'photo','🕺':'run','🛒':'bag','🛠️':'clipboard','🦶':'steps','🧱':'building',
   '🪞':'mirror','👤':'person','📤':'share',
   '🚶':'steps','🚴':'run','🥚':'food','🍳':'food','🚫':'warning','📊':'chart','📱':'laptop',

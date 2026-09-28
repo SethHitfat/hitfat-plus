@@ -74,15 +74,24 @@ function progImg(p){
 function frow(p,badge){
   const done=progDone(p.id), tot=progDays(p), pct=tot?Math.round(done/tot*100):0;
   return '<div class="frow" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="th" style="background-image:url(\''+progImg(p)+'\')">'+
+    '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name)+'">'+
     (badge?'<span class="fnew">'+badge+'</span>':'')+'</div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+(p.weeks?p.weeks.length+' weeks · '+tot+' days':(p.level+' · '+p.dur+' min'))+'</div>'+
+    '<div class="m">'+(p.weeks?wks(p.weeks.length)+' · '+tot+' days':(p.level+' · '+p.dur+' min'))+'</div>'+
     (done>0?'<div class="m" style="color:var(--hyrox);">'+pct+'% done</div>'
            :'<div class="m">'+(p.goal||'')+'</div>')+
     '</div><div class="chev">›</div></div>';
 }
 
+/* The library has fewer photographs than programs, so rows that share one
+   are framed differently — a different part of the same frame — instead of
+   repeating the identical thumbnail five times in a column. */
+function thumbCrop(name){
+  let h=0; const n=String(name||'');
+  for(let i=0;i<n.length;i++) h=(h*31+n.charCodeAt(i))>>>0;
+  const x=[50,28,72,40,62][h%5], y=[40,55,30][(h>>3)%3], z=[100,135,150][(h>>5)%3];
+  return 'background-size:'+(z===100?'cover':z+'%')+';background-position:'+x+'% '+y+'%;';
+}
 function updateAvatar(){
   const a=$('topav'); if(!a) return;
   const p=HF.data.prefs||{}, n=(p.name||'').trim();
@@ -128,8 +137,8 @@ function renderHome(){
   // 1) header — avatar · greeting · chip
   $('home-hdr').innerHTML='<div class="hhdr">'+
     '<div onclick="switchTab(\'me\')" style="cursor:pointer;flex:none;">'+avatarHTML(46)+'</div>'+
-    '<div class="w2"><div class="n">Hi'+(nm?', '+nm:'')+'</div>'+
-    '<div class="s">'+greetWord()+' — '+goal+'</div></div>'+
+    '<div class="w2"><div class="n">'+greetWord()+(nm?', '+hesc(nm.split(/\s+/)[0]):'')+'</div>'+
+    '<div class="s">Goal · '+hesc(goal)+'</div></div>'+
     (HF.count()?'<div class="chip" onclick="switchTab(\'me\')">'+
     '<b style="font-family:\'Oswald\';font-size:17px;color:var(--hyrox);line-height:1;">'+consistency()+'</b>'+
     '<span style="font-size:11px;color:var(--dim);font-weight:600;">Consistency</span></div>':'')+'</div>';
@@ -201,25 +210,28 @@ function renderHome(){
   } else {
     $('home-activity').innerHTML=_t42+_club+'<div class="sechead">This month</div>'+monthlyCard()+
       '<div class="sechead">Recent Activity</div>'+
-      '<div class="acard"><div class="ah">'+ic('run')+'<div class="t">This Week</div><div class="c">›</div></div>'+
-      '<div style="display:flex;align-items:flex-end;gap:14px;">'+
-      '<div style="flex:0 0 auto;"><div class="big">'+days+' of '+wgoal+' days</div>'+
-      '<div class="sub">'+weekMinutes()+' min trained</div></div>'+
-      '<div class="mbar">'+bars+'</div></div></div>'+
-      '<div class="arow">'+
-      '<div class="acard" onclick="switchTab(\'me\')" style="cursor:pointer;">'+
-      '<div class="ah">'+ic('bolt')+'<div class="t">Consistency</div><div class="c">›</div></div>'+
-      '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;"><div class="big">'+consistency()+'</div>'+
-      '<div class="sub">last 4 weeks</div></div>'+donutSVG(consistency(),'#EF4444',54)+'</div></div>'+
-      '<div class="acard"><div class="ah">'+ic('flame')+'<div class="t">Streak</div><div class="c">›</div></div>'+
-      '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;"><div class="big">'+
-      (streak>0?streak+' days':daysSince()+' d ago')+'</div>'+
-      '<div class="sub">'+HF.count()+' total</div></div>'+donutSVG(Math.min(100,streak*14),'#FF9500',54)+'</div></div></div>';
+      '<div class="acard hweek" onclick="switchTab(\'progress\')"><div class="ah">'+ic('run')+'<div class="t">This week</div><div class="c">›</div></div>'+
+      '<div class="hweek-n"><span class="big">'+days+'</span><span class="u"> of '+wgoal+' days</span>'+
+      '<span class="hweek-m">'+weekMinutes()+' min</span></div>'+
+      '<div class="mbar">'+bars+'</div></div>'+
+      '<div class="arow hpair">'+
+      homeTile('bolt','Consistency', consistency()+'<span class="u">%</span>', 'last 4 weeks',
+               donutSVG(consistency(),'#EF4444',44), "switchTab('progress')")+
+      homeTile('flame','Streak', streak+'<span class="u"> '+(streak===1?'day':'days')+'</span>',
+               streak>0 ? 'in a row' : lastTrainedLine(),
+               donutSVG(Math.min(100,streak*14),'#FF9500',44), "switchTab('progress')")+
+      '</div>';
   }
 
   // 5) Trending plans
   const going=PROGRAMS.filter(p=>p.weeks && progDone(p.id)>0 && progDone(p.id)<progDays(p));
-  const rest=PROGRAMS.filter(p=>p.weeks && going.indexOf(p)<0);
+  /* What suits this person first: their goal, then their level; recovery
+     programs last — a beginner's first "trending" card should not be a
+     knee rehab plan. */
+  const want=/strong/i.test(goal)?'Strength':/move/i.test(goal)?'Recovery':'Fat Loss';
+  const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
+  const rank=p=>(p.goal===want?0:4)+(p.level===lvl||p.level==='All levels'?0:2)+(p.goal==='Recovery'&&want!=='Recovery'?8:0);
+  const rest=PROGRAMS.filter(p=>p.weeks && going.indexOf(p)<0).sort((a,b)=>rank(a)-rank(b));
   const plans=going.concat(rest).slice(0,5);
   $('home-plans').innerHTML='<div class="sechead">Trending Plans</div><div class="hscroll">'+
     plans.map(p=>{ const started=progDone(p.id)>0;
@@ -249,6 +261,19 @@ function renderHome(){
   }catch(e){}
 }
 function daysSince(){ const l=HF.data.lastISO; return l?daysBetween(l,iso(0)):0; }
+/* A two-up Home tile: label, one number, one line, and a ring. */
+function homeTile(icon,label,value,sub,ring,go){
+  return '<div class="acard htile" onclick="'+go+'"><div class="ah">'+ic(icon)+'<div class="t">'+label+'</div></div>'+
+    '<div class="htile-b"><div><div class="big">'+value+'</div><div class="sub">'+sub+'</div></div>'+ring+'</div></div>';
+}
+/* When a streak is zero, the useful thing is when the last session was. */
+function lastTrainedLine(){
+  if(!HF.count()) return 'Train today to start';
+  const d=daysSince();
+  return d===0 ? 'Last session today' : d===1 ? 'Last session yesterday' : 'Last session '+d+' days ago';
+}
+function hesc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function wks(n){ return n+(n===1?' week':' weeks'); }
 function nextUp(){
   const started=PROGRAMS.filter(p=>p.weeks && progDone(p.id)>0 && progDone(p.id)<progDays(p));
   const p=started[0]; if(!p) return null;
@@ -279,7 +304,7 @@ function renderProgram(){
     '<div class="ov"></div><div class="pi"><div class="tx">'+
     '<div class="k">'+(p.goal||'Program')+(p.level?' · '+p.level:'')+'</div>'+
     '<div class="t" style="font-size:24px;">'+p.name+'</div>'+
-    '<div class="d">'+(p.weeks?p.weeks.length+' weeks · ':'')+tot+' days · '+p.dur+' min a day</div></div></div></div>';
+    '<div class="d">'+(p.weeks?wks(p.weeks.length)+' · ':'')+tot+' days · '+p.dur+' min a day</div></div></div></div>';
   h+='<p style="font-size:15px;color:var(--dim);line-height:1.6;margin:16px 0 18px;">'+(p.desc||'')+'</p>';
   h+='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;">'+
      '<div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);">'+done+' / '+tot+' days</div>'+
@@ -369,37 +394,68 @@ function renderLibrary(){
 function renderMe(){
   const p=HF.data.prefs||{}, streak=liveStreak();
   const w=(HF.data.weight||[]).slice(-1)[0];
-  $('me-body').innerHTML=
-    '<div class="hhdr" style="margin-top:4px;">'+avatarHTML(54)+
-    '<div class="w2"><div class="n">'+((p.name||'').trim()||'Set your name')+'</div>'+
-    '<div class="s">'+(HF.email||'Local preview')+'</div></div>'+
-    '<div class="chip" onclick="startOnboarding()"><span style="font-size:13px;font-weight:700;">Edit</span></div></div>'+
-    '<div class="arow">'+
-    '<div class="acard"><div class="ah">'+ic('flame')+'<div class="t">Streak</div></div><div class="big">'+(streak>0?streak:daysSince())+'</div><div class="sub">'+(streak>0?'days':'days since')+'</div></div>'+
-    '<div class="acard"><div class="ah">'+ic('check')+'<div class="t">Sessions</div></div><div class="big">'+HF.count()+'</div><div class="sub">all time</div></div>'+
-    '<div class="acard"><div class="ah">'+ic('scale')+'<div class="t">Weight</div></div><div class="big">'+(w?w.kg:'—')+'</div><div class="sub">kg</div></div></div>'+
-    '<div class="wrow" onclick="openStore(\'programs\')">'+ic('bag')+''+
-    '<div class="tx"><div class="t">Store</div><div class="m">'+
-      (ownsAll() ? 'All Access · every program unlocked'
-                 : PROGRAMS.filter(isPaidProgram).filter(ownsProgram).length+' of '+
-                   PROGRAMS.filter(isPaidProgram).length+' programs owned')+
-    '</div></div><div class="chev">›</div></div>'+
-    '<div class="sechead">Your plan</div>'+
-    '<div class="acard" style="font-size:15px;line-height:2.1;color:var(--dim);">'+
-    '<div>Goal · <b style="color:var(--txt);">'+(p.goal||'—')+'</b></div>'+
-    '<div>Level · <b style="color:var(--txt);">'+(p.level||'—')+'</b></div>'+
-    '<div>Days a week · <b style="color:var(--txt);">'+(p.days||'—')+'</b></div>'+
-    '<div>Equipment · <b style="color:var(--txt);">'+(p.equip||'—')+'</b></div></div>'+
-    '<div class="sechead">Settings</div>'+
-    '<div class="acard"><div class="ah">'+ic('palette')+'<div class="t">Appearance</div></div>'+
-    '<div class="segs" style="margin-top:10px;">'+
+  const paid=PROGRAMS.filter(isPaidProgram), owned=paid.filter(ownsProgram).length;
+  const signedIn=!!(sb&&HF.userId);
+
+  let h='<div class="mehead" onclick="startOnboarding()">'+avatarHTML(60)+
+    '<div class="w2"><div class="n">'+hesc((p.name||'').trim()||'Set your name')+'</div>'+
+    '<div class="s">'+hesc(HF.email||'Local preview')+'</div></div><span class="chev">›</span></div>';
+
+  /* Three numbers, each one that means something on its own. */
+  h+='<div class="arow">'+
+    '<div class="acard"><div class="ah">'+ic('flame')+'<div class="t">Streak</div></div>'+
+      '<div class="big">'+streak+'</div><div class="sub">'+(streak===1?'day in a row':'days in a row')+'</div></div>'+
+    '<div class="acard"><div class="ah">'+ic('check')+'<div class="t">Sessions</div></div>'+
+      '<div class="big">'+HF.count()+'</div><div class="sub">all time</div></div>'+
+    '<div class="acard"><div class="ah">'+ic('scale')+'<div class="t">Weight</div></div>'+
+      '<div class="big">'+(w?w.kg:'—')+'</div><div class="sub">'+(w?'kg':'not logged')+'</div></div></div>';
+
+  h+='<div class="sechead">Your plan</div><div class="glist">'+
+    grow('target','Goal', p.goal||'Not set', 'startOnboarding()')+
+    grow('chart','Level', p.level||'Not set', 'startOnboarding()')+
+    grow('calendar','Days a week', p.days?p.days+' days':'Not set', 'startOnboarding()')+
+    grow('workout','Equipment', p.equip||'Not set', 'startOnboarding()')+
+    '</div>';
+
+  /* Everything else this account can open, in one place. */
+  h+='<div class="sechead">Programs & challenges</div><div class="glist">'+
+    grow('bag','Store', ownsAll() ? 'All Access' : owned+' of '+paid.length+' owned', "openStore('programs')");
+  if(typeof T42!=='undefined' && T42.state==='ready' && (T42.challenge||T42.past))
+    h+=grow('trophy','T42 Challenge', meT42Line(), 'openT42()');
+  if(typeof openClub==='function' && typeof Club!=='undefined' && Club.state==='ready' && (Club.isMember()||Club.isStaff()))
+    h+=grow('building','HITFAT Club', Club.isStaff()?'Staff':'Member', 'openClub()');
+  h+='</div>';
+
+  h+='<div class="sechead">Settings</div><div class="glist">'+
+    '<div class="grow grow-ctl">'+ic('palette')+'<div class="grow-l">Appearance</div>'+
+    '<div class="segs grow-seg">'+
     '<button class="seg'+(currentTheme()==='light'?' on':'')+'" onclick="setThemeLight()">Light</button>'+
     '<button class="seg'+(currentTheme()==='dark'?' on':'')+'" onclick="setThemeDark()">Dark</button></div></div>'+
-    '<button class="bigbtn sec" onclick="startOnboarding()">Edit my plan</button>'+
-    (sb&&HF.userId?'<button class="bigbtn sec" onclick="signOut()">Sign out</button>':'')+
-    '<button class="bigbtn sec" onclick="confirmReset()">Reset progress</button>'+
-    '<p style="font-size:13px;color:var(--dim2);text-align:center;margin-top:22px;line-height:1.8;">'+
-    '<a href="/privacy" style="color:var(--dim);">Privacy</a> · <a href="/terms" style="color:var(--dim);">Terms</a><br>HITFAT+ · build 2026-08-20</p>';
+    '</div>';
+
+  h+='<div class="glist" style="margin-top:22px;">'+
+    (signedIn?'<button class="grow grow-act" onclick="signOut()">Sign out</button>':'')+
+    '<button class="grow grow-act danger" onclick="confirmReset()">Reset progress</button></div>';
+
+  h+='<p class="mefoot"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a><br>HITFAT+</p>';
+  $('me-body').innerHTML=h;
+}
+
+/* One row of a grouped list: a tile, a label, the value on the right. */
+function grow(icon,label,value,go){
+  return '<div class="grow" onclick="'+go+'">'+ic(icon)+'<div class="grow-l">'+hesc(label)+'</div>'+
+    '<div class="grow-v">'+hesc(value)+'</div><span class="chev">›</span></div>';
+}
+function meT42Line(){
+  try{
+    const st=T42.stage();
+    if(st==='active')   return 'Day '+T42.dayNo()+' of '+((T42.challenge&&T42.challenge.total_days)||42);
+    if(st==='upcoming') return 'Starts in '+T42.daysTo()+' days';
+    if(st==='unpaid')   return 'Payment pending';
+    if(st==='closing')  return 'Results coming';
+    if(st==='finished') return 'Completed';
+    return T42.past ? 'My T42 Journey' : 'Join';
+  }catch(e){ return ''; }
 }
 function confirmReset(){
   if(!confirm('Reset all progress? Sessions, programs and logs are erased. This cannot be undone.')) return;

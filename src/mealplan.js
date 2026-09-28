@@ -238,7 +238,7 @@ function renderMP(){
   if(s===0){
     b='<div class="cph">What are you aiming for?</div><div class="cpsub">This is what sets your daily calories.</div>'+
       [['loss','Lose weight','A deficit you can actually keep to'],
-       ['maintain','↔️ Maintain','Hold your weight with balanced eating'],
+       ['maintain','Maintain','Hold your weight with balanced eating'],
        ['gain','Gain weight','Add calories in a controlled way']]
       .map(g=>'<button class="cprow'+(mp.goal===g[0]?' on':'')+'" onclick="mp.rate='+(0.5)+';mpSet(\'goal\',\''+g[0]+'\')">'+
         '<span class="t">'+g[1]+'</span><span class="s">'+g[2]+'</span></button>').join('')+
@@ -266,7 +266,7 @@ function renderMP(){
       [['3x','Three meals','Breakfast, lunch, dinner'],
        ['333','Quarter-quarter-half','Half vegetables, quarter protein, quarter carbs'],
        ['6x','Six small meals','Smaller plates, more often'],
-       ['if','⏳ Intermittent fasting 16:8','Everything inside an 8-hour window']]
+       ['if','Intermittent fasting 16:8','Everything inside an 8-hour window']]
       .map(x=>'<button class="cprow'+(mp.struct===x[0]?' on':'')+'" onclick="mpSet(\'struct\',\''+x[0]+'\')">'+
         '<span class="t">'+x[1]+'</span><span class="s">'+x[2]+'</span></button>').join('');
   } else if(s===3){
@@ -362,11 +362,11 @@ function renderPlanView(){
   // macros
   h+=fsec('Daily macros','MDG 2020 · carbs 50–65% · protein 10–20% · fat 25–35%');
   h+='<div class="emacs">'+
-     [['Protein',n.prot,n.pPct,'#fb923c',ok.prot],['Carbs',n.carb,n.cPct,'#38bdf8',ok.cho],['Fat',n.fat,n.fPct,'var(--ok)',ok.fat]]
+     [['Protein',n.prot,n.pPct,'var(--mac-p)',ok.prot],['Carbs',n.carb,n.cPct,'var(--mac-c)',ok.cho],['Fat',n.fat,n.fPct,'var(--ok)',ok.fat]]
      .map(m=>'<div class="emac"><div class="v" style="color:'+m[3]+';">'+m[1]+
        '<span style="font-size:15px;font-weight:400;letter-spacing:0;">g</span></div>'+
        '<div class="l">'+m[0]+'</div>'+
-       '<div class="g" style="color:'+(m[4]?'var(--ok)':'#f59e0b')+';">'+m[2]+'% '+(m[4]?'✓':'⚠')+'</div>'+
+       '<div class="g" style="color:'+(m[4]?'var(--ok)':'var(--note-amber)')+';">'+m[2]+'% '+(m[4]?'✓':'⚠')+'</div>'+
        '<div class="b"><i style="width:'+m[2]+'%;background:'+m[3]+';"></i></div></div>').join('')+'</div>';
   if(n.floorHit) h+='<div class="mpnote" style="border-color:rgba(94,184,255,.35);color:#5eb8ff;">Calories were held at the safe minimum of '+n.floor.toLocaleString()+' kcal (CPG MOH 2023). Give yourself more time, or ease the target.</div>';
   if(n.deficit){ const v=deficitVerdict(n.deficit);
@@ -401,10 +401,10 @@ function renderPlanView(){
           o.items.map(it=>'<div class="mpitem"><div><div class="t">'+it.food+'</div>'+
             '<div class="m">'+it.portion+'</div></div><div class="k">'+it.kcal+'</div></div>').join('')+
           '<div class="mpbals" style="margin-top:11px;">'+
-            (g.protein?'<span class="mpbal" style="color:#38bdf8;border-color:rgba(56,189,248,.3);">Protein</span>':'')+
+            (g.protein?'<span class="mpbal" style="color:var(--mac-c);border-color:rgba(56,189,248,.3);">Protein</span>':'')+
             (g.karbo?'<span class="mpbal" style="color:#f59e0b;border-color:rgba(245,158,11,.3);">Carbs</span>':'')+
             (g.sayur?'<span class="mpbal" style="color:var(--ok);border-color:rgba(46,194,126,.3);">Veg</span>':'')+
-            (g.buah?'<span class="mpbal" style="color:#fb923c;border-color:rgba(251,146,60,.3);">Fruit</span>':'')+
+            (g.buah?'<span class="mpbal" style="color:var(--mac-p);border-color:rgba(251,146,60,.3);">Fruit</span>':'')+
           '</div>'+
           (o.scale>1?'<div class="mpnote" style="border-color:rgba(94,184,255,.3);color:#5eb8ff;">'+
             'Portion scaled ×'+o.scale.toFixed(1)+' to reach the '+s.target+' kcal this slot needs.</div>':'')+

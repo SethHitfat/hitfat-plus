@@ -48,12 +48,12 @@ function renderFinder(){
     b='<div class="cph">What are you here for?</div>'+
       '<div class="cpsub">One answer. You can change it later.</div>'+
       FQ_GOALS.map(g=>'<button class="cprow'+(fq.goal===g.k?' on':'')+'" onclick="fqSet(\'goal\',\''+g.k+'\')">'+
-        '<span class="t">'+g.e+' '+g.n+'</span><span class="s">'+g.d+'</span></button>').join('');
+        '<span class="t">'+g.n+'</span><span class="s">'+g.d+'</span></button>').join('');
   } else if(s===1){
     b='<div class="cph">Where does it bother you?</div>'+
       '<div class="cpsub">Pick the one that nags most. If nothing does, choose Everywhere.</div>'+
       REHAB_JOINTS.map(j=>'<button class="cprow'+(fq.joint===j.k?' on':'')+'" onclick="fqSet(\'joint\',\''+j.k+'\')">'+
-        '<span class="t">'+j.e+' '+j.n+'</span><span class="s">'+j.d+'</span></button>').join('')+
+        '<span class="t">'+j.n+'</span><span class="s">'+j.d+'</span></button>').join('')+
       '<button class="cprow'+(fq.joint==='all'?' on':'')+'" onclick="fqSet(\'joint\',\'all\')">'+
       '<span class="t">Everywhere</span><span class="s">A bit of everything, ten minutes a day</span></button>'+
       '<div class="cpnote">This asks what you want to train, not what is wrong with you. '+
@@ -70,7 +70,7 @@ function renderFinder(){
     b='<div class="cph">What have you got?</div>'+
       '<div class="cpsub">No equipment is a real answer — most of the library needs none.</div>'+
       FQ_EQUIP.map(x=>'<button class="cprow'+(fq.equip===x.k?' on':'')+'" onclick="fqSet(\'equip\',\''+x.k+'\')">'+
-        '<span class="t">'+x.e+' '+x.n+'</span><span class="s">'+x.d+'</span></button>').join('');
+        '<span class="t">'+x.n+'</span><span class="s">'+x.d+'</span></button>').join('');
   }
   const canNext = (s===0&&fq.goal) || (s===1&&fq.joint) || s===2 || (s===3&&fq.equip);
   $('fq-body').innerHTML=

@@ -189,7 +189,7 @@ function prodCard(p){
     (isSignature(p)?'<span class="sigb">SIGNATURE</span>':'')+
     '<span class="pr">RM'+programPrice(p)+'</span></div>'+
     '<div class="in"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+p.weeks.length+' weeks · '+tot+' days · '+p.level+'</div>'+
+    '<div class="m">'+wks(p.weeks.length)+' · '+tot+' days · '+p.level+'</div>'+
     (done>0?'<div class="m" style="color:var(--hyrox);">'+Math.round(done/tot*100)+'% started</div>':'')+
     '</div></div>';
 }
@@ -283,8 +283,8 @@ function openProduct(sku){
   } else {
     const p=PROGRAMS.filter(x=>'prog_'+x.id===sku)[0]; if(!p) return;
     title=p.name; price=programPrice(p);
-    sub=p.desc||(p.weeks.length+' weeks of structured training, yours to keep.');
-    bullets=[['📅',p.weeks.length+' weeks · '+progDays(p)+' sessions','Follow it day by day'],
+    sub=p.desc||(wks(p.weeks.length)+' of structured training, yours to keep.');
+    bullets=[['📅',wks(p.weeks.length)+' · '+progDays(p)+' sessions','Follow it day by day'],
              ['🎥','Video for every exercise','Filmed, not described'],
              ['📈','Progress saved as you go','Pick up where you left off on any device'],
              ['♾️','Yours forever','Buy once, no subscription']];

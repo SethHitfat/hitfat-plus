@@ -119,7 +119,7 @@ function trExplore(){
   const rotated=singles.map((_,i)=>singles[(wk+i)%singles.length]);
 
   let h='';
-  h+=fsec('Free This Week','Try these one time — everything here is free.');
+  h+=fsec('Free This Week','A new set every week — no purchase needed.');
   h+='<div class="hscroll">'+take(rotated,4).map(p=>flandCard(p)).join('')+'</div>';
 
   h+=fsec('Activity Types');
@@ -190,7 +190,7 @@ function trPlans(){
     '<div class="ov"></div><div class="in">'+
     '<div class="ic">'+glyph((hero.icon||''))+'</div>'+
     '<div class="t">'+hero.name+'</div>'+
-    '<div class="tags">'+hero.goal+' · '+hero.level+' · '+hero.weeks.length+' weeks · '+hero.dur+' min a day</div>'+
+    '<div class="tags">'+hero.goal+' · '+hero.level+' · '+wks(hero.weeks.length)+' · '+hero.dur+' min a day</div>'+
     '<div class="d">'+hero.desc+'</div>'+
     '<div class="btns">'+
       '<button class="pl" onclick="event.stopPropagation();openProgram(\''+hero.id+'\')">▶  '+
@@ -425,7 +425,7 @@ function openJoint(k){
         '<div class="ic">'+(e.v?'▶':'○')+'</div><div class="lb">'+n+'</div>'+
         '<div class="ct">'+e.sets+'×'+e.reps+'</div><div class="cv">›</div></div>';
     }).join('')+'</div>'+
-    '<button class="bigbtn sec" onclick="switchTab(\'train\')">← Back to Recovery</button>';
+    '<button class="bigbtn sec" onclick="switchTab(\'train\')">Back to Recovery</button>';
   $('screen').scrollTop=0;
 }
 
