@@ -612,3 +612,91 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .filters .chip{text-transform:none;letter-spacing:-.1px;font-size:14px;font-weight:600;border:none;
   background:var(--surface2);color:var(--txt);padding:9px 14px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
 .filters .chip.y{background:var(--txt);color:var(--bg);}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT · SPORT PREMIUM
+   The light theme as a training brand draws it, not a settings page:
+   white cards that sit ON the page (a soft two-layer shadow, not a flat
+   grey block), black as the premium action colour, red kept for energy —
+   progress, the active tab, today — and heavier, tighter type. Dark is
+   untouched; everything here is scoped to [data-theme="light"].
+   ═══════════════════════════════════════════════════════════════ */
+:root[data-theme="light"]{
+  --bg:#F3F3F5;
+  --hitfat:#D7261E; --hyrox:#D7261E; --hyrox-solid:#D7261E;
+  --accent-wash:rgba(215,38,30,.08);
+  --ink:#0B0B0D;
+  --lift-1:0 1px 2px rgba(16,16,24,.05), 0 6px 20px rgba(16,16,24,.06);
+  --lift-2:0 2px 6px rgba(16,16,24,.06), 0 16px 40px rgba(16,16,24,.12);
+}
+
+/* ── depth: every surface sits on the page ── */
+:root[data-theme="light"] :is(.acard,.glist,.t42-list,.elist,.pgtile,.emac,.eslot,.t42-stat,.t42-jcard,
+  .mehead,.wrow,.t42-wk,.t42-price,.t42-mile,.t42-card,.t42-mini,.opt,.cprow,.paych,.fqcta){
+  box-shadow:var(--lift-1);}
+:root[data-theme="light"] .frow{box-shadow:none;}
+/* photo cards and campaign cards lift further — they are the posters */
+:root[data-theme="light"] :is(.plan,.t42-stage,.t42-banner,.ehero,.ecta,.pgscore,.mcard,.prod,.scard){
+  box-shadow:var(--lift-2);}
+:root[data-theme="light"] .hscroll{padding-bottom:18px;margin-bottom:-8px;}
+/* the selected choice: a ring and its shadow together */
+:root[data-theme="light"] .opt.sel,:root[data-theme="light"] .cprow.on{box-shadow:inset 0 0 0 2px var(--hitfat), var(--lift-1);}
+
+/* ── type: heavier and tighter, the way a training app shouts ── */
+:root[data-theme="light"] .sechead{font-size:24px !important;font-weight:800 !important;letter-spacing:-.7px !important;}
+:root[data-theme="light"] .hgroup h2{font-size:32px;letter-spacing:-1px;}
+:root[data-theme="light"] .fsec .ft{font-weight:800;letter-spacing:-.7px;}
+:root[data-theme="light"] .big{font-weight:800;letter-spacing:-.8px;}
+:root[data-theme="light"] .hhdr .w2 .n{font-size:20px;font-weight:800;letter-spacing:-.5px;}
+
+/* ── the primary action is black; red is energy, not every button ── */
+:root[data-theme="light"] .bigbtn:not(.sec):not(.t42-stage-cta){background:var(--ink);color:#FFFFFF !important;
+  box-shadow:0 8px 20px rgba(11,11,13,.18);}
+:root[data-theme="light"] .bigbtn:not(.sec):active{transform:scale(.985);}
+:root[data-theme="light"] .bigbtn.sec{background:#FFFFFF;box-shadow:var(--lift-1);}
+:root[data-theme="light"] .plan .join{box-shadow:0 6px 16px rgba(215,38,30,.35);}
+
+/* ── the week strip: today in ink, trained days marked in red ── */
+:root[data-theme="light"] .wk2 .d{position:relative;}
+:root[data-theme="light"] .wk2 .d.on{background:var(--ink);box-shadow:0 8px 18px rgba(11,11,13,.22);}
+:root[data-theme="light"] .wk2 .d.on small,:root[data-theme="light"] .wk2 .d.on b{color:#FFFFFF;}
+:root[data-theme="light"] .wk2 .d.done:not(.on) b{color:var(--txt);}
+:root[data-theme="light"] .wk2 .d.done::after{content:'';position:absolute;left:50%;bottom:3px;width:5px;height:5px;
+  margin-left:-2.5px;border-radius:50%;background:var(--hitfat);}
+:root[data-theme="light"] .wk2 .d.on.done::after{background:#FF5A4F;}
+
+/* ── header ── */
+:root[data-theme="light"] .hhdr .chip{background:#FFFFFF;box-shadow:var(--lift-1);}
+:root[data-theme="light"] .topbar .av2{background:#FFFFFF;box-shadow:var(--lift-1);}
+
+/* ── tab bar: frosted white glass, the active tab in ink with a red dot ── */
+:root[data-theme="light"] .tabs{background:rgba(255,255,255,.80);border:none;
+  -webkit-backdrop-filter:blur(24px) saturate(1.8);backdrop-filter:blur(24px) saturate(1.8);
+  box-shadow:0 1px 0 rgba(16,16,24,.04), 0 12px 34px rgba(16,16,24,.14);}
+:root[data-theme="light"] .tab.active:not(.tabmid){background:none;color:var(--ink);position:relative;}
+:root[data-theme="light"] .tab.active:not(.tabmid)::after{content:'';position:absolute;left:50%;bottom:1px;width:5px;height:5px;
+  margin-left:-2.5px;border-radius:50%;background:var(--hitfat);}
+:root[data-theme="light"] .tab.active .ticon{filter:none;}
+
+/* ── segments and chips: ink when chosen, white when not ── */
+:root[data-theme="light"] .seg{background:#FFFFFF;box-shadow:var(--lift-1);}
+:root[data-theme="light"] .seg.on{background:var(--ink);color:#FFFFFF;box-shadow:0 6px 14px rgba(11,11,13,.2);}
+:root[data-theme="light"] .filters .chip{background:#FFFFFF;box-shadow:var(--lift-1);}
+:root[data-theme="light"] .filters .chip.y{background:var(--ink);color:#FFFFFF;}
+
+/* ── rings and bars: the brand red, a touch brighter on white ── */
+:root[data-theme="light"] .pgbar i,:root[data-theme="light"] .pbar i{background:var(--hitfat);}
+
+/* ── campaign cards share one look: black, one red light, white type ──
+   The monthly challenge was a burgundy block next to a black T42 banner;
+   two campaign styles on one screen read as two brands. */
+:root[data-theme="light"] .mcard{
+  --txt:#FFFFFF; --dim:rgba(235,235,245,.66); --tint:rgba(255,255,255,.16);
+  border:none;color:#FFFFFF;border-radius:22px;
+  background:radial-gradient(110% 90% at 100% 0%, rgba(215,38,30,.55) 0%, transparent 60%), #0A0A0C;}
+:root[data-theme="light"] .mcard .mtag{color:#FF6A5C;}
+:root[data-theme="light"] .mcard .me{color:#FF6A5C;}
+:root[data-theme="light"] .mday{border:none;box-shadow:var(--lift-1);}
+:root[data-theme="light"] .mbadge{border:none;box-shadow:var(--lift-1);}
+.hhdr .w2 .s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+:root[data-theme="light"] .pgscore{background:radial-gradient(110% 90% at 100% 0%, rgba(215,38,30,.38) 0%, transparent 58%), #0A0A0C;}

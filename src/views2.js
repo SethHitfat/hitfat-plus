@@ -137,8 +137,8 @@ function renderHome(){
   // 1) header — avatar · greeting · chip
   $('home-hdr').innerHTML='<div class="hhdr">'+
     '<div onclick="switchTab(\'me\')" style="cursor:pointer;flex:none;">'+avatarHTML(46)+'</div>'+
-    '<div class="w2"><div class="n">'+greetWord()+(nm?', '+hesc(nm.split(/\s+/)[0]):'')+'</div>'+
-    '<div class="s">Goal · '+hesc(goal)+'</div></div>'+
+    '<div class="w2"><div class="n">'+(nm?'Hi, '+hesc(nm.split(/\s+/)[0]):'Hi there')+'</div>'+
+    '<div class="s">'+greetWord()+'</div></div>'+
     (HF.count()?'<div class="chip" onclick="switchTab(\'me\')">'+
     '<b style="font-family:\'Oswald\';font-size:17px;color:var(--hyrox);line-height:1;">'+consistency()+'</b>'+
     '<span style="font-size:11px;color:var(--dim);font-weight:600;">Consistency</span></div>':'')+'</div>';
