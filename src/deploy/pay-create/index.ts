@@ -18,7 +18,7 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { createHmac } from 'node:crypto';
-import { CATALOGUE, CHANNELS, BC_API, SITE, CORS, json } from '../_shared/catalogue.ts';
+import { CATALOGUE, CHANNELS, BC_API, SITE, CORS, json, t42Slug } from '../_shared/catalogue.ts';
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
@@ -52,14 +52,36 @@ Deno.serve(async (req: Request) => {
     try { body = await req.json(); } catch { /* empty body is a missing sku */ }
 
     const sku  = String(body?.sku || '');
-    const item = CATALOGUE[sku];
-    if (!item) return json({ error: 'Unknown item.' }, 400);
+    const slug = t42Slug(sku);
+    const item = slug ? null : CATALOGUE[sku];
+    if (!slug && !item) return json({ error: 'Unknown item.' }, 400);
+    let price = item ? item.price : 0;
 
     const channel = CHANNELS.indexOf(Number(body?.channel)) > -1 ? Number(body.channel) : 1;
 
+    /* A T42 place: one edition, priced on its own row. The buyer must have
+       signed up (the pending registration) and not already be in. */
+    if (slug) {
+      const { data: ch } = await admin.from('t42_challenges')
+        .select('id, status, price_rm, reg_closes_on').eq('slug', slug).maybeSingle();
+      if (!ch || ['registration', 'running'].indexOf(ch.status) < 0) {
+        return json({ error: 'This T42 is not taking new participants.' }, 400);
+      }
+      const today = new Date().toISOString().slice(0, 10);
+      if (ch.reg_closes_on && today > String(ch.reg_closes_on)) {
+        return json({ error: 'Registration for this T42 has closed.' }, 400);
+      }
+      if (!(Number(ch.price_rm) > 0)) return json({ error: 'Payment for this T42 is not open yet.' }, 400);
+      const { data: reg } = await admin.from('t42_registrations')
+        .select('id, status').eq('challenge_id', ch.id).eq('user_id', user.id).maybeSingle();
+      if (!reg) return json({ error: 'Finish your T42 sign-up first.' }, 400);
+      if (reg.status !== 'pending') return json({ error: 'You are already in this T42.', code: 'already_owned' }, 409);
+      price = Number(ch.price_rm);
+    }
+
     /* Buying something you already own is a refund request waiting to happen.
        Credits and passes may be bought again; a program may not. */
-    if (item.kind === 'program' || item.kind === 'bar') {
+    if (item && (item.kind === 'program' || item.kind === 'bar')) {
       const { data: had } = await admin
         .from('plus_entitlements')
         .select('id').eq('user_id', user.id).eq('sku', sku).maybeSingle();
@@ -78,13 +100,13 @@ Deno.serve(async (req: Request) => {
                        + Math.random().toString(36).slice(2, 6).toUpperCase();
 
     const { error: oErr } = await admin.from('plus_orders').insert({
-      order_number, user_id: user.id, sku, amount: item.price, status: 'pending', channel,
+      order_number, user_id: user.id, sku, amount: price, status: 'pending', channel,
     });
     if (oErr) return json({ error: 'Could not start the order.', detail: oErr.message }, 500);
 
     /* Ringgit with two decimals. Bayarcash reads a bare 19 as ambiguous, and
        the existing Hybrid forms all send "199.00". */
-    const amount = Number(item.price).toFixed(2);
+    const amount = Number(price).toFixed(2);
     const payer_name = String(body?.name || '').trim().slice(0, 60) || 'HITFAT athlete';
 
     const intent: Record<string, unknown> = {

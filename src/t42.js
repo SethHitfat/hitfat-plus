@@ -13,15 +13,22 @@
    comes from its own tables, and the one thing it never writes is a
    score — t42_scores is computed server-side and is read-only to the app.
 
-   Phase 1 is here: entry, mode, track, the 60-second assessment,
-   registration and baseline. The dashboard, the daily check-in and the
-   leaderboard are Phase 2 and land against the same state object.
+   T42 is a CHALLENGE, not a program you own. Each edition — November,
+   Ramadan, Merdeka — is its own product with its own dates, bought on its
+   own. The lifecycle every screen follows is T42.stage():
 
-   Gym Duo is deliberately not finished. Its check-in, coach verification
-   and InBody are what HITFAT Club already models, and the Club schema has
-   not been run on this database yet. Rather than build a second QR and a
-   second roster for a coach to keep in step by hand, Gym Duo registers
-   interest and says so plainly.
+     discover  → no place in the open edition: the invitation
+     unpaid    → signed up, payment not confirmed: secure your spot
+     upcoming  → paid, before day 1: countdown and a checklist
+     active    → day 1 to 42: today, train, check in, progress, rank
+     closing   → after day 42, results being checked: the final
+     finished  → results out: result, certificate, My T42 Journey
+
+   When an edition ends its content closes — the database enforces that in
+   27-t42-engine.sql — and what the member keeps is the trophy cabinet:
+   result, score, certificate. Nothing here unlocks HITFAT+.
+
+   Gym Duo is built but switched off per edition (config.gym_enabled).
    ═══════════════════════════════════════════════════════════════ */
 
 var T42_MODES = [
@@ -95,8 +102,43 @@ var T42 = {
   duoCard:[],                   // t42_duo_card(): me first, then my partner
   duoScore:null,                // my duo's t42_duo_scores row
   past:null,                    // {challenge, reg} of a finished edition beside an open one
+  open:null,                    // the edition taking people now, whatever is on screen
+  weeks:[],                     // every t42_weeks row of the edition, for the timeline
+  journey:null,                 // every registration I have ever had, for My T42 Journey
 
   isJoined(){ return !!this.reg; },
+
+  /* ── the lifecycle ── */
+  isPaid(){ var s=this.reg&&this.reg.status; return s==='paid'||s==='active'||s==='completed'; },
+  isOut(){ var s=this.reg&&this.reg.status; return s==='withdrawn'||s==='disqualified'; },
+  /* The last day the challenge content is open: access_ends_on when the
+     edition sets one, otherwise its final day. */
+  lastDay(){
+    var c=this.challenge; if(!c) return null;
+    var d=t42Date(c.access_ends_on); if(d) return d;
+    var s=t42Date(c.starts_on); if(!s) return null;
+    s.setDate(s.getDate()+((c.total_days||42)-1));
+    return s;
+  },
+  accessEnded(){
+    var d=this.lastDay(); if(!d) return false;
+    var t=new Date(); t.setHours(0,0,0,0);
+    return t>d;
+  },
+  stage(){
+    if(!this.challenge) return 'none';
+    if(!this.reg)       return 'discover';
+    if(this.isOut())    return 'out';
+    if(!this.isPaid())  return 'unpaid';
+    if(this.isComplete()) return 'finished';
+    if(this.isOver())   return 'closing';
+    if(!this.dayNo())   return 'upcoming';
+    return 'active';
+  },
+  daysLeft(){
+    var c=this.challenge; if(!c) return 0;
+    return Math.max(0, (c.total_days||42)-this.dayNo());
+  },
   /* Baseline is complete when it exists AND carries the three numbers the
      score is computed from. A row with a weight and no waist would let
      someone into the leaderboard with half a starting point. */
@@ -277,6 +319,25 @@ var T42 = {
     return cfg.water_target_ml||2000;
   },
 
+  /* The six weeks, for the timeline on the invitation and the dashboard.
+     Themes are the challenge's public face; the plan behind them is not. */
+  async loadWeeks(){
+    this.weeks=[];
+    if(!this.challenge) return;
+    var w=await sb.from('t42_weeks').select('week_no,theme,focus,step_target')
+      .eq('challenge_id',this.challenge.id).order('week_no',{ascending:true});
+    this.weeks=(w.error?[]:w.data)||[];
+  },
+
+  /* Every edition I have been part of, with what each one left me. */
+  async loadJourney(){
+    var uid=await this.uid(); if(!uid){ this.journey=[]; return; }
+    var r=await sb.from('t42_registrations')
+      .select('*, t42_challenges(*), t42_scores(*), t42_certificates(id,kind), t42_measurements(phase,weight_kg,waist_cm)')
+      .eq('user_id',uid).order('joined_at',{ascending:false});
+    this.journey=(r.error?[]:r.data)||[];
+  },
+
   async uid(){
     try{ var r=await sb.auth.getSession();
       return (r&&r.data&&r.data.session&&r.data.session.user.id)||null; }
@@ -294,14 +355,18 @@ var T42 = {
       /* The open edition. More than one can exist — November's is archived
          while Ramadan's is in registration — so the app asks for the one
          accepting people, newest first, rather than assuming a single row. */
+      /* '*' rather than a column list: the engine's columns (price_rm,
+         access_ends_on…) arrive with 27-t42-engine.sql, and naming them here
+         would break the whole screen on a database that has not run it. */
       var ch=await sb.from('t42_challenges')
-        .select('id,slug,name,edition,starts_on,ends_on,reg_opens_on,reg_closes_on,status,total_days,config')
+        .select('*')
         .in('status',['registration','running','assessment'])
         .order('starts_on',{ascending:false}).limit(1).maybeSingle();
       if(t42SchemaMissing(ch.error)){ this.state='nosetup'; return; }
       if(ch.error) throw ch.error;
       this.challenge=ch.data||null;
-      this.reg=null; this.past=null;
+      this.open=this.challenge;
+      this.reg=null; this.past=null; this.journey=null; this.viewingPast=false;
 
       if(this.challenge){
         var rg=await sb.from('t42_registrations').select('*')
@@ -317,8 +382,8 @@ var T42 = {
          becomes the screen; with one, it sits beside the invitation. */
       if(!this.reg){
         var pr=await sb.from('t42_registrations')
-          .select('*, t42_challenges!inner(id,slug,name,edition,starts_on,ends_on,reg_opens_on,reg_closes_on,status,total_days,config)')
-          .eq('user_id',uid).eq('t42_challenges.status','complete')
+          .select('*, t42_challenges!inner(*)')
+          .eq('user_id',uid).in('t42_challenges.status',['complete','archived'])
           .order('joined_at',{ascending:false}).limit(1);
         var row=(!pr.error && pr.data && pr.data[0]) || null;
         if(row){
@@ -329,8 +394,8 @@ var T42 = {
       }
 
       if(!this.challenge){ this.baseline=null; this.mid=null; this.final=null;
-                           this.t42ClearDay(); this.state='ready'; return; }
-      await this.loadReg();
+                           this.t42ClearDay(); this.weeks=[]; this.state='ready'; return; }
+      await Promise.all([this.loadReg(), this.loadWeeks()]);
       this.state='ready';
     }catch(e){
       if(t42SchemaMissing(e)){ this.state='nosetup'; return; }
@@ -368,6 +433,34 @@ function t42Mode(id){
   for(var i=0;i<T42_MODES.length;i++) if(T42_MODES[i].id===id) return T42_MODES[i];
   return null;
 }
+
+/* ── what this edition offers ──
+   Read from the edition's own config, so the next one can change them
+   without a release. START stays defined for anyone who already chose it;
+   it is simply not offered unless an edition lists it. */
+function t42Cfg(){ return (T42.challenge&&T42.challenge.config)||{}; }
+function t42Tracks(){
+  var ids=t42Cfg().tracks;
+  if(!ids || !ids.length) ids=['transform','perform'];
+  return T42_TRACKS.filter(function(t){ return ids.indexOf(t.id)>=0; });
+}
+function t42GymOpen(){ return t42Cfg().gym_enabled===true; }
+function t42Steps(){ return t42GymOpen() ? 3 : 2; }
+
+var T42_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+/* "3 Nov" — and the year only when it is not this one. */
+function t42Day(d,withYear){
+  if(!d) return '';
+  return d.getDate()+' '+T42_MONTHS[d.getMonth()]+(withYear?' '+d.getFullYear():'');
+}
+function t42Range(c){
+  if(!c) return '';
+  var a=t42Date(c.starts_on), b=t42Date(c.ends_on);
+  if(!a||!b) return '';
+  return t42Day(a)+' – '+t42Day(b,true);
+}
+/* The short name of an edition: "November 2026" for "T42 November 2026". */
+function t42EdName(c){ return (c&&(c.edition||c.name))||'T42'; }
 
 
 /* ═══════════════════════════════════════════════════════════════
@@ -412,7 +505,9 @@ function t42Paint(){
   if(t42View==='track')    return t42RenderTrack();
   if(t42View==='assess')   return t42RenderAssess();
   if(t42View==='baseline') return t42RenderBaseline();
+  if(t42View==='pay')      return t42RenderPay();
   if(t42View==='joined')   return t42RenderJoined();
+  if(t42View==='rules')    return t42RenderRules();
   if(t42View==='dash')     return t42RenderDash();
   if(t42View==='checkin')  return t42RenderCheckin();
   if(t42View==='train')    return t42RenderTrain();
@@ -425,34 +520,51 @@ function t42Paint(){
   if(t42View==='result')   return t42RenderResult();
   if(t42View==='cert')     return t42RenderCert();
   if(t42View==='next')     return t42RenderNext();
+  if(t42View==='journey')  return t42RenderJourney();
   if(t42View==='duo')      return t42RenderDuo();
   return t42RenderLanding();
 }
 
-/* The segment bar only belongs to a participant in a running edition.
-   Before that there is nothing to segment — the onboarding is a wizard,
-   and a nav bar above it would offer three tabs that all refuse. */
+/* The tabs follow the stage. Before the start there are two things to look
+   at; during it, five; after it, the result and the cabinet. Onboarding and
+   payment are a wizard, and a nav bar above a wizard offers exits that all
+   refuse. */
+var T42_SEGS={
+  upcoming:[['joined','Overview','t42GoJoined'],['rules','Rules','t42GoRules']],
+  active:  [['dash','Today','t42GoDash'],['train','Train','t42GoTrain'],['checkin','Check in','t42GoCheckin'],
+            ['progress','Progress','t42GoProgress'],['rank','Rank','t42GoRank']],
+  closing: [['final','Final','t42GoFinal'],['progress','Progress','t42GoProgress'],
+            ['rank','Rank','t42GoRank'],['journey','My T42','t42GoJourney']],
+  finished:[['result','Result','t42GoResult'],['rank','Rank','t42GoRank'],['journey','My T42','t42GoJourney']]
+};
+function t42SegFor(v,stage){
+  if(v==='measure'||v==='fitness'||v==='review') return 'progress';
+  if(v==='cert'||v==='next') return stage==='finished'?'result':'dash';
+  if(v==='duo') return stage==='upcoming'?'joined':'dash';
+  if(v==='dash' && stage==='closing') return 'final';
+  if(v==='dash' && stage==='finished') return 'result';
+  if(v==='dash' && stage==='upcoming') return 'joined';
+  return v;
+}
 function t42Segs(){
   var bar=$('t42-segs'); if(!bar) return;
+  var stage=T42.state==='ready' ? T42.stage() : 'none';
+  var list=T42_SEGS[stage];
   /* Past the baseline lock, a member without one still gets the tabs —
      they can train and check in, they just are not ranked. */
-  var on = T42.state==='ready' && T42.isJoined() && T42.dayNo()>0 &&
-           (T42.hasBaseline() || T42.dayNo()>T42.lockDay());
+  var on = !!list && (stage!=='active' || T42.hasBaseline() || T42.dayNo()>T42.lockDay())
+                  && (stage!=='upcoming' || T42.hasBaseline())
+                  && !(t42View==='baseline' && !T42.hasBaseline());
   bar.style.display = on ? 'flex' : 'none';
-  if(!on || !bar.children) return;
-  var v=t42View;
-  if(v==='measure'||v==='fitness'||v==='review') v='progress';
-  if(v==='final'||v==='result'||v==='cert'||v==='next'||v==='duo') v='dash';
-  var live=null;
-  Array.prototype.forEach.call(bar.children,function(b){
-    var on=b.getAttribute('data-seg')===v;
-    b.classList.toggle('on', on);
-    if(on) live=b;
-  });
-  /* The bar scrolls — four tabs do not fit a 375px phone and Rank will make
-     five. Tapping a tab you can see is fine; the problem is the app moving
-     you itself, after a check-in or a finished workout, to a tab sitting off
-     the right edge. Then the highlight is somewhere you cannot see. */
+  if(!on) return;
+  var cur=t42SegFor(t42View,stage);
+  bar.innerHTML=list.map(function(t){
+    return '<button class="seg'+(t[0]===cur?' on':'')+'" data-seg="'+t[0]+'" onclick="'+t[2]+'()">'+t[1]+'</button>';
+  }).join('');
+  /* The bar scrolls — five tabs do not fit a 375px phone. The app moving
+     you itself, after a check-in or a finished workout, to a tab sitting
+     off the right edge must bring the highlight into view. */
+  var live=bar.querySelector ? bar.querySelector('.seg.on') : null;
   if(live && typeof live.scrollIntoView==='function'){
     try{ live.scrollIntoView({block:'nearest', inline:'nearest'}); }catch(e){}
   }
@@ -460,7 +572,7 @@ function t42Segs(){
 
 function t42StateCard(){
   if(T42.state==='loading'||T42.state==='idle')
-    return '<div class="acard"><div class="sub">Loading T42…</div></div>';
+    return '<div class="t42-skel"><div></div><div></div><div></div></div>';
   if(T42.state==='nosetup')
     return '<div class="acard"><div class="ah">'+ic('calendar')+'<div class="t">Not open yet</div></div>'+
       '<div class="sub" style="margin-top:3px;">T42 is not running on this account yet. '+
@@ -475,7 +587,7 @@ function t42StateCard(){
 function openT42(){
   hidePanels(); $('t42').style.display='block'; $('screen').scrollTop=0;
   t42DraftLoad();
-  t42CkReady=false;
+  t42CkReady=false; t42CkFor=null;
   /* Resume BEFORE the first paint when the state is already loaded. Opening
      on the landing hero and correcting it when the promise settles meant a
      member walking back from a finished workout saw "JOIN T42" flash at
@@ -485,23 +597,20 @@ function openT42(){
   T42.load().then(function(){ t42Resume(); t42Paint(); t42Segs(); });
 }
 
-/* Where someone lands depends on how far they got last time. A participant
-   who has registered but never filled a baseline should open on the
-   baseline, not on a hero that invites them to join something they are
-   already in. */
+/* Where someone lands is decided by the stage, and by one exception: a
+   baseline still to give, while it can still be given. */
 function t42Resume(){
   if(T42.state!=='ready') return;
-  /* The results are out: that is the only screen that matters now. */
-  if(T42.isJoined() && T42.isComplete()){ t42View='result'; return; }
-  /* No baseline, but only while one can still be given. After the lock,
-     the baseline form would be a form the server refuses — so the member
-     goes to the dashboard, which says plainly why they are not ranked. */
-  if(T42.isJoined() && !T42.hasBaseline() && T42.dayNo()<=T42.lockDay()){ t42View='baseline'; return; }
-  /* Once the edition is running, the dashboard is the screen. A registered
-     member on day 18 opening onto a hero that says JOIN is being shown the
-     one thing they no longer need. */
-  if(T42.isJoined() && T42.dayNo()>0){ t42View='dash'; return; }
-  if(T42.isJoined()){ t42View='joined'; return; }
+  var st=T42.stage();
+  var needBase = T42.isJoined() && !T42.hasBaseline();
+  if(st==='unpaid'){ t42View = (needBase && T42.regOpen()) ? 'baseline' : 'pay'; return; }
+  if(st==='finished'){ t42View='result'; return; }
+  if(st==='closing'){  t42View='final'; return; }
+  /* After the lock, the baseline form would be a form the server refuses —
+     so the member goes to the dashboard, which says why they are not ranked. */
+  if(needBase && T42.dayNo()<=T42.lockDay() && (st==='upcoming'||st==='active')){ t42View='baseline'; return; }
+  if(st==='active'){   t42View='dash'; return; }
+  if(st==='upcoming'){ t42View='joined'; return; }
   t42View='landing';
 }
 
@@ -509,10 +618,10 @@ function t42Go(v){
   /* Leaving the check-in throws away the half-filled form. It is rebuilt
      from the saved row next time, so an abandoned edit does not quietly
      become the answer two screens later. */
-  if(t42View==='checkin' && v!=='checkin') t42CkReady=false;
+  if(t42View==='checkin' && v!=='checkin'){ t42CkReady=false; t42CkFor=null; }
   t42View=v; t42Paint(); t42Segs(); $('screen').scrollTop=0;
 }
-function t42Reload(){ T42.load(true).then(function(){ t42Paint(); t42Segs(); }); }
+function t42Reload(){ T42.load(true).then(function(){ t42Resume(); t42Paint(); t42Segs(); }); }
 
 /* Named wrappers, because build.py checks that every onclick resolves to a
    real function and a bare T42.method would slip past it. */
@@ -520,6 +629,9 @@ function t42GoLanding(){ t42Go('landing'); }
 function t42GoMode(){ t42Go('mode'); }
 function t42GoTrack(){ t42Go('track'); }
 function t42GoBaseline(){ t42Go('baseline'); }
+function t42GoPay(){ t42Go('pay'); }
+function t42GoJoined(){ t42Go('joined'); }
+function t42GoRules(){ t42Go('rules'); }
 function t42GoDash(){ t42Go('dash'); }
 function t42GoCheckin(){ t42Go('checkin'); }
 function t42GoTrain(){ t42Go('train'); }
@@ -530,7 +642,22 @@ function t42GoResult(){ t42Go('result'); }
 function t42GoCert(){ t42Go('cert'); }
 function t42GoNext(){ t42Go('next'); }
 function t42GoDuo(){ t42Go('duo'); }
+function t42GoHome(){ t42Resume(); t42Paint(); t42Segs(); $('screen').scrollTop=0; }
 function t42GoPhotos(){ t42ProgTab='photos'; t42Go('progress'); }
+function t42GoJourney(){
+  t42Go('journey');
+  if(T42.journey===null || T42.journey===undefined){
+    T42.loadJourney().then(function(){ if(t42View==='journey') t42RenderJourney(); },
+                           function(){ T42.journey=[]; if(t42View==='journey') t42RenderJourney(); });
+  }
+}
+
+/* A way back for the screens that sit outside the tabs — photos before the
+   start, the rules, a past edition's result. */
+function t42Back(label,go){
+  return '<button class="t42-back" onclick="'+(go||'t42GoHome')+'()">'+glyph('chevleft')+
+         '<span>'+t42Esc(label||'T42')+'</span></button>';
+}
 
 
 /* ═══════════════════════════════════════════════════════════════
@@ -545,54 +672,118 @@ function t42RenderLanding(){
     el.innerHTML=t42Hero()+
       '<div class="acard"><div class="ah">'+ic('calendar')+'<div class="t">No edition open</div></div>'+
       '<div class="sub" style="margin-top:3px;">There is no T42 running right now. '+
-      'The next one will show up here the moment registration opens.</div></div>';
+      'The next one will show up here the moment registration opens.</div></div>'+
+      t42JourneyLink();
     return;
   }
 
-  var joined=T42.isJoined();
-  var when=t42WhenLine(c);
-  var h=t42Hero();
+  var joined=T42.isJoined(), open=T42.regOpen();
+  var price=Number(c.price_rm)||0;
 
-  h+='<div class="t42-when">'+t42Esc(when)+'</div>';
+  /* ── the poster ── */
+  var h='<div class="t42-stage">'+
+    '<div class="t42-stage-top"><span class="t42-logo t42-logo-s">T42</span>'+
+    '<span class="t42-stage-tag">TRANSFORMATION 42 DAYS</span></div>'+
+    '<div class="t42-stage-ed">'+t42Esc(t42EdName(c))+'</div>'+
+    '<div class="t42-stage-h">'+t42Esc(c.subtitle||'42 days. One transformation.')+'</div>'+
+    '<div class="t42-stage-dates">'+glyph('calendar')+'<span>'+t42Esc(t42Range(c))+'</span></div>'+
+    '<div class="t42-when">'+t42Esc(t42WhenLine(c))+'</div>';
+  if(joined && !T42.isOut()){
+    h+='<button class="t42-stage-cta" onclick="t42Continue()">Continue</button>';
+  } else if(!joined && open){
+    h+='<button class="t42-stage-cta" onclick="t42Begin()">Join T42</button>'+
+       (price ? '<div class="t42-stage-fine">RM'+t42Money(price)+' · this edition only</div>' : '');
+  }
+  h+='</div>';
 
-  if(joined){
-    var tr=t42Track(T42.reg.track);
-    h+='<div class="acard"><div class="ah">'+ic('check')+'<div class="t">You are in</div></div>'+
-      '<div class="sub" style="margin-top:3px;">'+
-      t42Esc((t42Mode(T42.reg.mode)||{}).name||'')+' · '+t42Esc((tr||{}).name||'')+'</div>'+
-      '<button class="bigbtn" onclick="t42Continue()">Continue</button></div>';
-  } else if(T42.regOpen()){
-    h+='<button class="bigbtn" onclick="t42Begin()">Join T42</button>';
-  } else {
+  if(T42.isOut()){
+    h+='<div class="acard"><div class="ah">'+ic('lock')+'<div class="t">Your place has ended</div></div>'+
+       '<div class="sub">Your registration for '+t42Esc(t42EdName(c))+' was '+t42Esc(T42.reg.status)+
+       '. If you think that is a mistake, message HITFAT.</div></div>';
+  }
+  if(!joined && !open){
     h+='<div class="acard"><div class="ah">'+ic('lock')+'<div class="t">Registration closed</div></div>'+
        '<div class="sub">This edition is no longer taking new participants. '+
        'The next one will open here.</div></div>';
   }
 
   if(T42.past && T42.past.challenge){
-    h+='<div class="acard" onclick="t42OpenPast()" style="cursor:pointer;">'+
-       '<div class="ah">'+ic('trophy')+'<div class="t">Your '+t42Esc(T42.past.challenge.edition||T42.past.challenge.name)+
-       ' result</div><div class="c">›</div></div>'+
-       '<div class="sub">Your result and certificate from the last T42.</div></div>';
+    h+='<div class="t42-list"><div class="t42-row" onclick="t42GoJourney()">'+t42Ic('trophy')+
+       '<div class="t42-row-b"><div class="t42-row-l">Your '+t42Esc(t42EdName(T42.past.challenge))+' result</div>'+
+       '<div class="t42-row-v">Result and certificate · My T42 Journey</div></div>'+
+       '<span class="t42-chev">›</span></div></div>';
   }
 
-  /* The two experiences, shown before the choice is asked for. Someone
-     deciding whether to join at all needs to know a gym option exists. */
-  h+='<div class="sechead">Two ways to do it</div><div class="t42-modes">';
-  T42_MODES.forEach(function(m){
-    h+='<div class="t42-mini"><div class="t42-mini-n">'+t42Esc(m.name)+'</div>'+
-       '<div class="t42-mini-t">'+t42Esc(m.tag)+'</div></div>';
+  /* ── what it is, in four lines a beginner reads in five seconds ── */
+  h+='<div class="sechead">How it works</div><div class="t42-list">'+
+     t42Info('calendar','One start line','Everyone starts '+t42Day(t42Date(c.starts_on))+
+             ' and finishes together, '+((c.total_days)||42)+' days later.')+
+     t42Info('workout','A plan for every day','A workout, a step goal, water and one food habit — '+
+             'about five things a day.')+
+     t42Info('chart','Scored on more than the scale','Consistency, progress, missions and fitness. '+
+             'Never kilograms alone.')+
+     t42Info('trophy','Leaderboard and certificate','Ranked separately for men and women. '+
+             'Every finisher gets a certificate.')+
+     '</div>';
+
+  h+=t42WeeksBlock('Six weeks');
+
+  var tracks=t42Tracks();
+  h+='<div class="sechead">'+(tracks.length===2?'Two tracks':'The tracks')+'</div><div class="t42-list">';
+  tracks.forEach(function(t){
+    h+='<div class="t42-row t42-info">'+ic(t.icon)+'<div class="t42-row-b">'+
+       '<div class="t42-row-l t42-trackn">'+t42Esc(t.name)+'</div>'+
+       '<div class="t42-row-v">'+t42Esc(t.line)+' '+t42Esc(t.who)+'</div></div></div>';
   });
   h+='</div>';
 
-  h+='<div class="sechead">The tracks</div>';
-  T42_TRACKS.forEach(function(t){
-    h+='<div class="t42-trackrow"><span class="t42-trackicon">'+glyph(t.icon)+'</span>'+
-       '<div><div class="t42-trackn">'+t42Esc(t.name)+'</div>'+
-       '<div class="t42-q">'+t42Esc(t.line)+'</div></div></div>';
-  });
+  /* The two experiences, but only when the edition runs both. */
+  if(t42GymOpen()){
+    h+='<div class="sechead">Two ways to do it</div><div class="t42-modes">';
+    T42_MODES.forEach(function(m){
+      h+='<div class="t42-mini"><div class="t42-mini-n">'+t42Esc(m.name)+'</div>'+
+         '<div class="t42-mini-t">'+t42Esc(m.tag)+'</div></div>';
+    });
+    h+='</div>';
+  }
+
+  h+='<div class="sechead">Good to know</div><div class="t42-list">'+
+     t42Info('lock','This edition only',
+             'Your place is for '+t42EdName(c)+'. The next T42 is a new challenge and a new sign-up.')+
+     t42Info('clock','Access ends with the challenge',
+             'Daily content closes on '+t42Day(T42.lastDay(),true)+'. Your result, score and certificate stay with you.')+
+     t42Info('eyeoff','Your numbers stay private',
+             'The leaderboard shows your name and points — never your weight, waist or photos.')+
+     '</div>';
+
+  if(!joined && open)
+    h+='<button class="bigbtn" onclick="t42Begin()">Join T42</button>';
 
   el.innerHTML=h;
+}
+
+/* One line of explanation, as a grouped-list row without a chevron. */
+function t42Info(icon,title,sub){
+  return '<div class="t42-row t42-info">'+t42Ic(icon)+'<div class="t42-row-b">'+
+    '<div class="t42-row-l">'+t42Esc(title)+'</div><div class="t42-row-v">'+t42Esc(sub)+'</div></div></div>';
+}
+function t42Money(n){ n=Number(n)||0; return n%1 ? n.toFixed(2) : String(n); }
+
+/* The six weeks as one strip: the week we are in lit, the ones done filled.
+   Before day 1 every week is ahead, which is the point of showing it. */
+var T42_WEEK_FALLBACK=['Build the Habit','Move More','Eat Better','Build Fitness','Push Performance','Finish Strong'];
+function t42WeeksBlock(title){
+  var total=(T42.challenge&&T42.challenge.total_days)||42;
+  var n=Math.ceil(total/7), wk=T42.weekNo();
+  var h=(title?'<div class="sechead">'+t42Esc(title)+'</div>':'')+'<div class="t42-weeks">';
+  for(var i=1;i<=n;i++){
+    var row=(T42.weeks||[]).filter(function(w){ return w.week_no===i; })[0];
+    var name=(row&&row.theme)||T42_WEEK_FALLBACK[i-1]||('Week '+i);
+    var cls = wk>i ? ' done' : wk===i ? ' now' : '';
+    h+='<div class="t42-wk'+cls+'"><div class="t42-wk-n">Week '+i+'</div>'+
+       '<div class="t42-wk-t">'+t42Esc(name)+'</div></div>';
+  }
+  return h+'</div>';
 }
 
 function t42Hero(){
@@ -607,12 +798,13 @@ function t42Hero(){
    "Starts in 9 days" is the thing someone actually wants to know. */
 function t42WhenLine(c){
   var d=T42.daysTo(), day=T42.dayNo();
+  if(c.status==='complete') return 'This edition has finished';
   if(c.status==='registration'||day===0){
     if(d===0) return 'Starts today';
     if(d===1) return 'Starts tomorrow';
     return 'Starts in '+d+' days';
   }
-  if(c.status==='complete') return 'This edition has finished';
+  if(T42.isOver()) return 'Finished · results coming';
   return 'Day '+day+' of '+(c.total_days||42);
 }
 
@@ -620,11 +812,14 @@ function t42Begin(){
   if(!T42.challenge){ toast('No T42 edition is open'); return; }
   if(!T42.regOpen()){ toast('Registration for this T42 is closed'); return; }
   t42DraftLoad();
-  t42Go(t42Draft.mode ? 'track' : 'mode');
+  if(!t42GymOpen()) t42Draft.mode='online_solo';
+  t42Go(t42GymOpen() && !t42Draft.mode ? 'mode' : 'track');
 }
-function t42Continue(){
-  if(!T42.hasBaseline()) return t42Go('baseline');
-  t42Go('joined');
+function t42Continue(){ t42Resume(); t42Paint(); t42Segs(); $('screen').scrollTop=0; }
+
+/* The way into the cabinet, for someone with no open edition to look at. */
+function t42JourneyLink(){
+  return '<button class="bigbtn sec" onclick="t42GoJourney()">My T42 Journey</button>';
 }
 
 
@@ -634,7 +829,8 @@ function t42Continue(){
 
 function t42RenderMode(){
   var el=$('t42-body'); if(!el) return;
-  var h='<div class="hgroup"><div class="k">Step 1 of 3</div><h2>Choose your mode</h2>'+
+  var h=t42Back('T42','t42GoLanding')+
+        '<div class="hgroup"><div class="k">Step 1 of 3</div><h2>Choose your mode</h2>'+
         '<p>Same challenge. Different experience.</p></div>';
 
   T42_MODES.forEach(function(m){
@@ -653,8 +849,7 @@ function t42RenderMode(){
      'one partner of the same gender on the same track, you check in at the gym by QR, '+
      'and your body fat is measured on the gym\'s InBody at the start and the end.</div>';
 
-  h+='<button class="bigbtn'+(t42Draft.mode?'':' off')+'" onclick="t42ModeNext()">Next</button>'+
-     '<button class="bigbtn sec" onclick="t42GoLanding()">Back</button>';
+  h+='<button class="bigbtn'+(t42Draft.mode?'':' off')+'" onclick="t42ModeNext()">Next</button>';
   el.innerHTML=h;
 }
 
@@ -671,10 +866,12 @@ function t42ModeNext(){
 
 function t42RenderTrack(){
   var el=$('t42-body'); if(!el) return;
-  var h='<div class="hgroup"><div class="k">Step 2 of 3</div><h2>Choose your track</h2>'+
+  var n=t42Steps();
+  var h=t42Back('T42',n===3?'t42GoMode':'t42GoLanding')+
+        '<div class="hgroup"><div class="k">Step '+(n-1)+' of '+n+'</div><h2>Choose your track</h2>'+
         '<p>Different goals. Same 42 days. Which track is for you?</p></div>';
 
-  T42_TRACKS.forEach(function(t){
+  t42Tracks().forEach(function(t){
     var on=t42Draft.track===t.id;
     h+='<div class="t42-card'+(on?' on':'')+'" onclick="t42PickTrack(\''+t.id+'\')">'+
        '<div class="t42-card-h"><span class="t42-trackicon">'+glyph(t.icon)+'</span>'+
@@ -689,14 +886,16 @@ function t42RenderTrack(){
      'It recommends — you still choose.</div>'+
      '<button class="bigbtn sec" onclick="t42StartAssess()">Take the Assessment</button></div>';
 
-  h+='<button class="bigbtn'+(t42Draft.track?'':' off')+'" onclick="t42TrackNext()">Next</button>'+
-     '<button class="bigbtn sec" onclick="t42GoMode()">Back</button>';
+  h+='<button class="bigbtn'+(t42Draft.track?'':' off')+'" onclick="t42TrackNext()">Next</button>';
   el.innerHTML=h;
 }
 
 function t42PickTrack(t){ t42Draft.track=t; t42DraftSave(); t42RenderTrack(); }
 function t42TrackNext(){
-  if(!t42Draft.track){ toast('Pick a track first'); return; }
+  /* A track this edition does not offer — a draft kept from an older one —
+     is not a choice. */
+  var ok=t42Tracks().some(function(x){ return x.id===t42Draft.track; });
+  if(!t42Draft.track || !ok){ toast('Pick a track first'); return; }
   t42Go('baseline');
 }
 
@@ -749,9 +948,11 @@ function t42AssessBack(){
    come to a 42-day fat-loss challenge, and pushing a returning beginner
    into PERFORM is how someone gets hurt in week one. */
 function t42Recommend(score){
-  if(score<=6)  return 'start';
-  if(score<=15) return 'transform';
-  return 'perform';
+  var id = score<=6 ? 'start' : score<=15 ? 'transform' : 'perform';
+  /* An edition without START sends its beginners to TRANSFORM, which is
+     built to be started from zero. */
+  if(!t42Tracks().some(function(t){ return t.id===id; })) id='transform';
+  return id;
 }
 
 function t42RenderAssessResult(){
@@ -804,8 +1005,11 @@ function t42RenderBaseline(){
   var el=$('t42-body'); if(!el) return;
   if(!t42Base._ready){ t42BasePrefill(); t42Base._ready=true; }
 
-  var h='<div class="hgroup"><div class="k">Step 3 of 3</div><h2>Complete your baseline</h2>'+
-        '<p>Track your starting point. Every number you beat is measured from here.</p></div>';
+  var n=t42Steps(), joined=T42.isJoined();
+  var h=(!joined ? t42Back('Track','t42GoTrack') : T42.isPaid() ? t42Back('T42') : t42Back('T42','t42GoLanding'))+
+        '<div class="hgroup"><div class="k">'+(joined?'Your starting point':'Step '+n+' of '+n)+'</div>'+
+        '<h2>'+(joined?'Your baseline':'Your starting point')+'</h2>'+
+        '<p>Every number you beat is measured from here. Weigh in the morning, before eating.</p></div>';
 
   h+='<div class="segs" id="t42-basetabs">'+
      '<button class="seg'+(t42BaseTab==='basic'?' on':'')+'" onclick="t42BaseTab1()">Basic info</button>'+
@@ -866,13 +1070,10 @@ function t42BasePhotos(){
        '<div class="sub" style="margin-top:3px;">Fill in Basic info and save. '+
        'Photo upload opens as soon as your baseline exists.</div></div>';
   } else {
-    h+='<div class="t42-photos">'+
-       ['front','side','back'].map(function(s){
-         return '<div class="t42-photo"><div class="t42-photo-i">＋</div>'+
-                '<div class="t42-photo-l">'+s.charAt(0).toUpperCase()+s.slice(1)+'</div></div>';
-       }).join('')+'</div>'+
-       '<div class="t42-q">Photo upload lands in the next release — '+
-       'your baseline numbers are already saved and counted.</div>';
+    h+='<div class="acard"><div class="ah">'+ic('photo')+'<div class="t">Front, side and back</div></div>'+
+       '<div class="sub" style="margin-top:3px;">Stand in the same spot, same light, same clothes '+
+       'you will wear on day 42.</div>'+
+       '<button class="bigbtn sec" onclick="t42GoPhotos()">Add starting photos</button></div>';
   }
   return h+t42BaseFoot();
 }
@@ -923,7 +1124,7 @@ function t42BaseFoot(){
       ? '<button class="bigbtn sec" onclick="t42BaseTab1()">Go to Basic info</button>' : '')+
     '<button class="bigbtn'+(ok?'':' off')+'" onclick="t42SaveBaseline()">'+
     (T42.isJoined()?'Save Baseline':'Join T42')+'</button>'+
-    (T42.isJoined()?'':'<button class="bigbtn sec" onclick="t42GoTrack()">Back</button>');
+    (T42.isJoined()?'':'<div class="t42-q" style="text-align:center;">Next: confirm your place.</div>');
 }
 
 function t42BaseTab1(){ t42BaseTab='basic';    t42RenderBaseline(); }
@@ -1029,8 +1230,8 @@ async function t42SaveBaseline(){
 
     t42DraftClear();
     t42Base._ready=false;
-    toast('You are in — baseline saved');
-    t42Go('joined');
+    toast(T42.isPaid() ? 'Baseline saved' : 'Signed up — one step left');
+    t42Go(T42.isPaid() ? (T42.dayNo()>0 ? 'dash' : 'joined') : 'pay');
     try{ renderHome(); }catch(e){}
   }catch(e){
     toast(t42SchemaMissing(e) ? 'T42 is not switched on for this account yet'
@@ -1057,41 +1258,289 @@ function t42RenderJoined(){
   var el=$('t42-body'); if(!el) return;
   var c=T42.challenge, r=T42.reg;
   if(!r) return t42RenderLanding();
+  if(!T42.isPaid()) return t42RenderPay();
+  if(T42.dayNo()>0) return t42RenderDash();
   var tr=t42Track(r.track)||{}, md=t42Mode(r.mode)||{};
-  var day=T42.dayNo(), to=T42.daysTo();
+  var to=T42.daysTo(), b=T42.baseline;
 
-  var h=t42Hero();
+  var h='<div class="t42-stage">'+
+    '<div class="t42-stage-top"><span class="t42-logo t42-logo-s">T42</span>'+
+    '<span class="t42-stage-tag">'+t42Esc(t42EdName(c).toUpperCase())+'</span></div>'+
+    '<div class="t42-stage-h t42-in">You\'re in.</div>'+
+    '<div class="t42-stage-k">'+t42Esc(t42EdName(c))+' starts in</div>'+
+    '<div class="t42-count" id="t42-cd">'+t42Countdown()+'</div>'+
+    '<div class="t42-stage-dates">'+glyph('calendar')+'<span>'+t42Esc(t42Range(c))+'</span></div>'+
+    '</div>';
 
-  if(day===0){
-    h+='<div class="t42-count"><div class="t42-count-n">'+to+'</div>'+
-       '<div class="t42-count-l">'+(to===1?'day to go':'days to go')+'</div></div>';
-  } else {
-    var pct=Math.round((day/((c&&c.total_days)||42))*100);
-    h+='<div class="t42-count"><div class="t42-count-n">Day '+day+'</div>'+
-       '<div class="t42-count-l">of '+((c&&c.total_days)||42)+'</div></div>'+
-       '<div class="pbar"><i style="width:'+pct+'%"></i></div>';
-  }
-
-  h+='<div class="sechead">Your challenge</div>'+
-     '<div class="acard"><div class="ah">'+ic((tr.icon||'🔥'))+''+
-     '<div class="t">'+t42Esc(tr.name||'')+'</div></div>'+
-     '<div class="sub" style="margin-top:3px;">'+t42Esc(md.name||'')+' · '+t42Esc(tr.line||'')+'</div></div>';
+  /* ── the checklist ── */
+  var items=t42PrepItems(), done=items.filter(function(i){ return i.done; }).length;
+  h+='<div class="sechead">Get ready <span class="t42-sec-n">'+done+' of '+items.length+'</span></div>'+
+     '<div class="t42-list">';
+  items.forEach(function(it){
+    h+=t42Row(it.icon, t42Esc(it.label), t42Esc(it.value), it.done?'done':(it.go?'todo':'info'), it.go||'t42Noop()');
+  });
+  h+='</div>';
 
   if(r.mode==='gym_duo') h+=t42DuoSummaryCard();
 
-  h+='<div class="sechead">Your baseline</div><div class="t42-grid">'+
-     t42Stat('Weight', (T42.baseline&&T42.baseline.weight_kg)+' kg')+
-     t42Stat('Waist',  (T42.baseline&&T42.baseline.waist_cm)+' cm')+
-     t42Stat('Height', (T42.baseline&&T42.baseline.height_cm)+' cm')+
-     t42Stat('Code',   (r.verify_code||'—'))+
-     '</div>'+
-     '<button class="bigbtn sec" onclick="t42GoBaseline()">Edit baseline</button>';
+  h+='<div class="sechead">Your challenge</div><div class="t42-grid">'+
+     t42Stat('Track', tr.name||'—')+
+     t42Stat('Mode',  r.mode==='gym_duo' ? 'Gym duo' : 'Online')+
+     t42Stat('Starts', t42Day(t42Date(c.starts_on)))+
+     t42Stat('Code',  r.verify_code||'—')+
+     '</div>';
+  if(b) h+='<div class="t42-grid" style="margin-top:10px;">'+
+     t42Stat('Weight', b.weight_kg+' kg')+t42Stat('Waist', b.waist_cm+' cm')+'</div>';
 
-  h+='<div class="t42-note">Your daily check-in, today\'s workout and the leaderboard '+
-     'open when the edition starts.</div>';
+  h+='<div class="t42-note">Day 1\'s workout, the daily check-in and the leaderboard open on '+
+     t42Day(t42Date(c.starts_on))+'. Nothing to do until then except get ready.</div>';
+
+  el.innerHTML=h;
+  t42Tick();
+}
+
+/* ── the countdown ──
+   Days and hours to midnight of day 1, redrawn once a minute while the
+   screen is up. Seconds would be a slot machine; this is a date. */
+function t42Countdown(){
+  var c=T42.challenge, s=c&&t42Date(c.starts_on);
+  if(!s) return '';
+  var ms=Math.max(0, s-new Date());
+  var d=Math.floor(ms/86400000), hr=Math.floor((ms%86400000)/3600000);
+  return '<div class="t42-cd"><b>'+d+'</b><span>'+(d===1?'day to go':'days to go')+'</span></div>'+
+         '<div class="t42-cd"><b>'+('0'+hr).slice(-2)+'</b><span>'+(hr===1?'hour':'hours')+'</span></div>';
+}
+var t42Timer=null;
+function t42Tick(){
+  if(t42Timer || typeof setInterval!=='function') return;
+  t42Timer=setInterval(function(){
+    var el=$('t42-cd');
+    if(!el || t42View!=='joined'){ clearInterval(t42Timer); t42Timer=null; return; }
+    el.innerHTML=t42Countdown();
+    if(T42.dayNo()>0){ clearInterval(t42Timer); t42Timer=null; t42Resume(); t42Paint(); t42Segs(); }
+  },60000);
+}
+
+/* What to have done before day 1. Each line opens the screen that does it;
+   the ticks are read from what exists, never from a box someone ticked. */
+function t42PrepItems(){
+  var r=T42.reg||{}, b=T42.baseline, tr=t42Track(r.track)||{};
+  var photos=!!(b && (b.photo_front||b.photo_side||b.photo_back));
+  var items=[
+    {icon:'check',   label:'Place confirmed', value:'Paid · '+t42EdName(T42.challenge), done:T42.isPaid()},
+    {icon:'person',  label:'Profile', value:(b&&b.age?b.age+' yrs · ':'')+(r.gender==='female'?'Women':r.gender==='male'?'Men':'Category not set'),
+                     done:!!(b && r.gender), go:'t42GoBaseline()'},
+    {icon:'target',  label:'Track', value:tr.name||'—', done:!!tr.name},
+    {icon:'measure', label:'Starting weight & waist',
+                     value:T42.hasBaseline() ? b.weight_kg+' kg · '+b.waist_cm+' cm' : 'Add them',
+                     done:T42.hasBaseline(), go:'t42GoBaseline()'},
+    {icon:'photo',   label:'Starting photos', value:photos?'Saved — private to you':'Front, side, back',
+                     done:photos, go:'t42GoPhotos()'},
+    {icon:'doc',     label:'Rules & scoring', value:t42RulesRead()?'Read':'Two minutes to read',
+                     done:t42RulesRead(), go:'t42GoRules()'}
+  ];
+  var url=t42Cfg().community_url;
+  if(url) items.push({icon:'people', label:'Join the community', value:'The T42 group',
+                      done:false, go:'t42Community()'});
+  return items;
+}
+function t42Community(){
+  var url=t42Cfg().community_url;
+  if(url && /^https:\/\//.test(url)) window.open(url,'_blank');
+}
+function t42RulesKey(){ return 't42_rules_'+((T42.challenge&&T42.challenge.id)||''); }
+function t42RulesRead(){ try{ return localStorage.getItem(t42RulesKey())==='1'; }catch(e){ return false; } }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   Secure your spot
+
+   Signed up is not in. The registration row exists from the baseline on,
+   as 'pending'; payment turns it 'paid' on the server (pay-callback, or
+   pay-status on the way back), and only then does anything count. The
+   browser never names a price — it sends "t42:<edition>" and the server
+   reads the price off the edition's own row.
+   ═══════════════════════════════════════════════════════════════ */
+
+var t42Paying=false;
+
+function t42RenderPay(){
+  var el=$('t42-body'); if(!el) return;
+  var c=T42.challenge, r=T42.reg;
+  if(!r) return t42RenderLanding();
+  if(T42.isPaid()) return t42RenderJoined();
+  var tr=t42Track(r.track)||{}, price=Number(c.price_rm)||0;
+  var open=T42.regOpen() && !T42.isOver();
+
+  var h='<div class="hgroup"><div class="k">'+(open?'Last step':t42EdName(c))+'</div>'+
+        '<h2>'+(open?'Secure your spot':'Registration closed')+'</h2>'+
+        '<p>'+(open?'Your sign-up is saved. Your place is confirmed the moment payment clears.'
+                   :'This edition is no longer taking payments, so your place was not confirmed.')+
+        '</p></div>';
+
+  h+='<div class="t42-list">'+
+     t42Row('calendar', t42Esc(t42EdName(c)), t42Esc(t42Range(c)), 'info', 't42Noop()')+
+     t42Row('target', 'Track', t42Esc(tr.name||'—'), 'done', 't42Noop()')+
+     t42Row('measure', 'Starting point', T42.hasBaseline()
+        ? T42.baseline.weight_kg+' kg · '+T42.baseline.waist_cm+' cm' : 'Not added yet',
+        T42.hasBaseline()?'done':'todo', 't42GoBaseline()')+
+     '</div>';
+
+  if(!open){
+    h+=t42JourneyLink();
+    el.innerHTML=h; return;
+  }
+
+  if(price>0){
+    h+='<div class="t42-price"><div class="t42-price-n">RM'+t42Money(price)+'</div>'+
+       '<div class="t42-price-l">One payment · '+t42Esc(t42EdName(c))+' only</div></div>';
+    if(typeof PAY_CHANNELS!=='undefined'){
+      h+='<div class="paychs">'+PAY_CHANNELS.map(function(ch){
+        return '<button class="paych'+(ch[0]===payChannel?' on':'')+'" onclick="setPayChannel('+ch[0]+')">'+
+               '<b>'+ch[1]+'</b><small>'+ch[2]+'</small></button>';
+      }).join('')+'</div>';
+    }
+    h+='<button class="bigbtn" id="t42-pay-go" onclick="t42PayNow()">Pay RM'+t42Money(price)+'</button>'+
+       '<div class="t42-note">Secure payment by Bayarcash — FPX or DuitNow. This covers '+
+       t42Esc(t42EdName(c))+' only: daily content closes on '+t42Day(T42.lastDay(),true)+
+       ', your result and certificate stay with you. It is not a HITFAT+ subscription.</div>';
+  } else {
+    h+='<div class="acard"><div class="ah">'+ic('clock')+'<div class="t">Payment opens soon</div></div>'+
+       '<div class="sub">Your spot is held. Online payment for this edition is not open yet — '+
+       'message HITFAT and we will confirm your place.</div>'+
+       '<button class="bigbtn sec" onclick="t42AskPay()">Message HITFAT</button></div>';
+  }
+  h+='<button class="bigbtn sec" onclick="t42Reload()">I have paid — check again</button>';
+  el.innerHTML=h;
+}
+
+function t42AskPay(){
+  var c=T42.challenge, r=T42.reg||{};
+  window.open('https://wa.me/60176132170?text='+encodeURIComponent(
+    'Hi HITFAT, I signed up for '+t42EdName(c)+' (code '+(r.verify_code||'-')+') and would like to pay.'),'_blank');
+}
+
+async function t42PayNow(){
+  if(t42Paying) return;
+  var c=T42.challenge; if(!c || !T42.reg) return;
+  if(typeof PAY_CREATE==='undefined'){ toast('Payment is not available here'); return; }
+  var sku='t42:'+c.slug;
+  var btn=$('t42-pay-go');
+  t42Paying=true;
+  if(btn){ btn.classList.add('off'); btn.textContent='Opening secure payment…'; }
+  try{
+    var tk=await scanToken();
+    if(!tk){ toast('Sign in first.'); return; }
+    var r=await fetch(PAY_CREATE,{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk,'apikey':SUPA_KEY},
+      body:JSON.stringify({sku:sku, channel:payChannel, name:(HF.data.prefs&&HF.data.prefs.name)||''})});
+    var d=await r.json();
+    if(r.ok && d && d.url){ localStorage.setItem('hf_plus_pending', sku); location.href=d.url; return; }
+    if(d && d.code==='already_owned'){ toast('You are already in'); t42Reload(); return; }
+    toast((d&&d.error)||'Could not start payment. Try again.');
+  }catch(e){ toast('Could not start payment — check your connection.'); }
+  finally{
+    t42Paying=false;
+    if(btn){ btn.classList.remove('off'); btn.textContent='Pay RM'+t42Money(c.price_rm); }
+  }
+}
+
+/* Back from the gateway. The callback usually lands first; pay-status is
+   the backstop that asks Bayarcash directly. Either way the answer is the
+   registration row, read again. */
+function t42AwaitPayment(){
+  var tries=0;
+  toast('Confirming your T42 payment…');
+  var t=setInterval(async function(){
+    tries++;
+    try{
+      var tk=await scanToken();
+      if(tk) await fetch(PAY_STATUS,{headers:{'Authorization':'Bearer '+tk,'apikey':SUPA_KEY}});
+    }catch(e){}
+    try{ await T42.load(true); }catch(e){}
+    if(T42.isPaid() || tries>=8){
+      clearInterval(t);
+      if(T42.isPaid()){ toast('Payment confirmed — you\'re in'); openT42(); try{ renderHome(); }catch(e){} }
+      else toast('Not confirmed yet — your place is confirmed by itself once it clears.');
+    }
+  },3000);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   The rules, in plain words
+
+   Everything a participant should know before day 1, on one page, read
+   from the edition — dates, weights, categories — so the page cannot say
+   one thing while the scorer does another.
+   ═══════════════════════════════════════════════════════════════ */
+
+var T42_WEIGHT_NAME={
+  weight_pct:'Weight change', waist_pct:'Waist change', bodyfat_pct:'Body fat change',
+  weight_waist_pct:'Weight & waist', workout_pct:'Workouts completed', consistency_pct:'Daily consistency',
+  attendance_pct:'Gym attendance', rush_pct:'RUSH missions', fitness_pct:'Fitness tests',
+  checkin_pct:'Daily check-ins', steps_pct:'Step goal', weekly_pct:'Weekly reviews'
+};
+function t42WeightSet(){
+  var sc=t42Cfg().scoring||{}, r=T42.reg||{};
+  var key = r.track==='perform' ? 'perform' : r.track==='start' ? 'consistency'
+          : r.mode==='gym_duo' ? 'gym_transform' : 'online_transform';
+  return sc[key] || sc.online_transform || null;
+}
+
+function t42RenderRules(){
+  var el=$('t42-body'); if(!el) return;
+  var c=T42.challenge; if(!c) return t42RenderLanding();
+  try{ localStorage.setItem(t42RulesKey(),'1'); }catch(e){}
+  var tr=t42Track((T42.reg||{}).track);
+  var h=(T42.stage()==='upcoming' ? '' : t42Back('T42'))+
+        '<div class="hgroup"><div class="k">'+t42Esc(t42EdName(c))+'</div><h2>How T42 works</h2>'+
+        '<p>Two minutes. Everything that decides your result.</p></div>';
+
+  h+='<div class="sechead">The dates</div><div class="t42-list">'+
+     t42Info('calendar','Day 1', t42Day(t42Date(c.starts_on),true))+
+     t42Info('flag','Day '+(c.total_days||42), t42Day(t42Date(c.ends_on),true))+
+     (c.results_on ? t42Info('trophy','Results', t42Day(t42Date(c.results_on),true)) : '')+
+     t42Info('lock','Content closes', t42Day(T42.lastDay(),true)+'. Your result stays.')+
+     '</div>';
+
+  h+='<div class="sechead">Every day</div><div class="t42-list">'+
+     t42Info('workout','Do the workout','Or rest, on a rest day. It plays in the HITFAT+ player.')+
+     t42Info('steps','Walk your steps','The goal grows each week, from '+t42Num(T42.stepTarget())+'.')+
+     t42Info('food','One food habit','Keep portions controlled and include a good protein source in your main meals.')+
+     t42Info('check','Check in','Thirty seconds. The app works out your score — you never add anything up.')+
+     '</div>';
+
+  var ws=t42WeightSet();
+  if(ws){
+    h+='<div class="sechead">How you are scored</div>'+
+       '<div class="acard"><div class="sub" style="margin-bottom:10px;">'+
+       (tr?t42Esc(tr.name)+' is':'Your track is')+' scored out of 100, and never on kilograms alone:</div>';
+    Object.keys(ws).forEach(function(k){
+      var v=Number(ws[k])||0; if(!v) return;
+      h+=t42Bar(T42_WEIGHT_NAME[k]||k.replace(/_pct$/,'').replace(/_/g,' '), v);
+    });
+    h+='</div>';
+  }
+
+  h+='<div class="sechead">The leaderboard</div><div class="t42-list">'+
+     t42Info('people','Ranked separately','Transform and Perform, men and women — plus a Consistency award.')+
+     t42Info('eyeoff','Private by design','Your name and points only. Never your weight, waist or photos.')+
+     t42Info('lock','Verified finishers','Top finishers show a scale photo with their code before results are announced.')+
+     '</div>';
+
+  h+='<div class="sechead">If you miss a day</div>'+
+     '<div class="acard"><div class="sub">Nothing resets. You stay on the same day as everyone else '+
+     'and carry on with today. A missed day counts against consistency — one day never ruins 42.</div></div>';
+
+  h+='<div class="sechead">After day '+(c.total_days||42)+'</div>'+
+     '<div class="acard"><div class="sub">The daily plan, check-ins and leaderboard close with the challenge. '+
+     'Your result, score, badges and certificate stay in My T42 Journey. The next T42 is a new '+
+     'challenge and a new sign-up.</div></div>';
 
   el.innerHTML=h;
 }
+
 
 function t42Stat(label,val){
   return '<div class="t42-stat"><div class="t42-stat-l">'+t42Esc(label)+'</div>'+
@@ -1111,45 +1560,53 @@ function t42HomeCard(){
   if(T42.state==='nosetup'||T42.state==='error') return '';
   if(!T42.challenge) return '';
 
-  var head, sub, cta;
-  if(T42.isJoined() && T42.isComplete()){
+  var head, sub, cta, st=T42.stage(), day=T42.dayNo(), to=T42.daysTo();
+  var tn=((t42Track(T42.reg&&T42.reg.track)||{}).name||'');
+  if(st==='out') return '';
+  if(st==='finished'){
     head='T42 complete';
     sub = T42.certs&&T42.certs.length ? 'Your result and certificate are ready' : 'See your result';
     cta='See Result';
-  } else if(T42.isJoined()){
-    var day=T42.dayNo(), to=T42.daysTo();
-    if(T42.isOver()){
-      head='Finished'; sub='Finished · results are being checked'; cta='Open T42';
-    } else if(!T42.hasBaseline() && day<=T42.lockDay()){
-      head='Finish your baseline';
-      sub='Your starting point is what every result is measured from';
-      cta='Continue';
-    } else if(day===0){
-      head = to===0 ? 'Starts today' : 'Starts in '+to+(to===1?' day':' days');
-      sub  = ((t42Track(T42.reg.track)||{}).name||'')+' · '+((t42Mode(T42.reg.mode)||{}).name||'');
-      cta='Open T42';
+  } else if(st==='closing'){
+    head='Finished'; sub='Finished · results are being checked'; cta='Open T42';
+  } else if(st==='unpaid'){
+    if(!T42.hasBaseline() && T42.regOpen()){
+      head='Finish your sign-up'; sub='Your starting point, then your place'; cta='Continue';
     } else {
-      head='Day '+day+' of '+((T42.challenge.total_days)||42);
-      /* The one thing still to do today, so the banner is a nudge rather
-         than a label. */
-      sub = !T42.today ? 'Check in for today'
-          : (T42.planDay && !T42.doneToday) ? 'Today: '+T42.planDay.title
-          : 'Today is done';
-      cta='Open Today';
+      head='Secure your spot'; sub='One step left — confirm your place in '+t42EdName(T42.challenge); cta='Continue';
     }
+  } else if((st==='upcoming'||st==='active') && !T42.hasBaseline() && day<=T42.lockDay()){
+    head='Finish your baseline';
+    sub='Your starting point is what every result is measured from';
+    cta='Continue';
+  } else if(st==='upcoming'){
+    head = to===0 ? 'Starts today' : 'Starts in '+to+(to===1?' day':' days');
+    sub  = 'You\'re in · '+tn;
+    cta='Open T42';
+  } else if(st==='active'){
+    head='Day '+day+' of '+((T42.challenge.total_days)||42);
+    /* The one thing still to do today, so the banner is a nudge rather
+       than a label. */
+    sub = !T42.today ? 'Check in for today'
+        : (T42.planDay && !T42.doneToday) ? 'Today: '+T42.planDay.title
+        : 'Today is done';
+    cta='Open Today';
   } else {
     /* Nobody is invited to a door that is shut. */
     if(!T42.regOpen()) return '';
-    head='42 Days. One Journey. A Stronger You.';
-    sub = t42WhenLine(T42.challenge)+' · START · TRANSFORM · PERFORM';
+    head=T42.challenge.subtitle||'42 days. One transformation.';
+    sub = t42WhenLine(T42.challenge)+' · '+t42Tracks().map(function(t){ return t.name; }).join(' · ');
     cta='Join T42';
   }
 
+  var ed=t42EdName(T42.challenge).toUpperCase();
+  var bar = st==='active'
+    ? '<div class="t42-banner-bar"><i style="width:'+Math.round(day/((T42.challenge.total_days)||42)*100)+'%"></i></div>' : '';
   return '<div class="t42-banner" onclick="openT42()">'+
     '<div class="t42-banner-top"><span class="t42-banner-logo">T42</span>'+
-    '<span class="t42-banner-tag">TRANSFORMATION 42 DAYS</span></div>'+
+    '<span class="t42-banner-tag">'+t42Esc(ed)+'</span></div>'+
     '<div class="t42-banner-line">'+t42Esc(head)+'</div>'+
-    '<div class="t42-banner-sub">'+t42Esc(sub)+'</div>'+
+    '<div class="t42-banner-sub">'+t42Esc(sub)+'</div>'+bar+
     '<div class="t42-banner-cta">'+t42Esc(cta)+'</div></div>';
 }
 
@@ -1167,21 +1624,46 @@ function t42RenderDash(){
   var el=$('t42-body'); if(!el) return;
   var c=T42.challenge, day=T42.dayNo();
   if(!T42.reg) return t42RenderLanding();
+  if(!T42.isPaid()) return t42RenderPay();
   if(!day)     return t42RenderJoined();          // still counting down
   if(T42.isComplete()) return t42RenderResult();  // the results are out
   if(T42.isOver())     return t42RenderFinal();   // over, results being checked
 
-  var total=(c&&c.total_days)||42;
-  var pct=Math.round((day/total)*100);
+  var total=(c&&c.total_days)||42, left=T42.daysLeft();
+  var wk=T42.weekNo(), theme=T42.week&&T42.week.theme;
 
-  var h='<div class="t42-day"><div class="t42-day-l">'+
-        '<div class="t42-day-n">Day '+day+'</div>'+
-        '<div class="t42-day-s">of '+total+
-        (T42.week ? ' · Week '+T42.weekNo()+' · '+t42Esc(T42.week.theme) : '')+'</div></div>'+
-        donutSVG(pct,'#F0392B',62)+'</div>';
+  /* ── where I am: one number, one bar, one line ── */
+  var h='<div class="t42-stage t42-today">'+
+    '<div class="t42-stage-top"><span class="t42-logo t42-logo-s">T42</span>'+
+    '<span class="t42-stage-tag">'+t42Esc(t42EdName(c).toUpperCase())+'</span></div>'+
+    '<div class="t42-day"><div class="t42-day-l">'+
+      '<div class="t42-day-n">Day '+day+'</div>'+
+      '<div class="t42-day-s">of '+total+(wk?' · Week '+wk+(theme?' · '+t42Esc(theme):''):'')+'</div></div>'+
+      '<div class="t42-left"><b>'+left+'</b><span>'+(left===1?'day left':'days left')+'</span></div></div>'+
+    t42Journey(day,total)+
+    '</div>';
 
   if(T42.week && T42.week.focus)
-    h+='<div class="t42-q" style="margin-bottom:14px;">'+t42Esc(T42.week.focus)+'</div>';
+    h+='<div class="t42-q t42-focus">'+t42Esc(T42.week.focus)+'</div>';
+
+  /* ── the one button: what to do next, before anything else ── */
+  var nx=t42NextAction();
+  h+='<button class="bigbtn t42-go'+(nx.done?' sec':'')+'" onclick="'+nx.go+'">'+t42Esc(nx.label)+'</button>';
+
+  /* ── the moments worth stopping for ── */
+  var ms=t42Milestone(day,total);
+  if(ms) h+='<div class="t42-mile"><div class="t42-mile-i">'+glyph(ms.icon)+'</div>'+
+            '<div><div class="t42-mile-t">'+t42Esc(ms.title)+'</div>'+
+            '<div class="t42-mile-s">'+t42Esc(ms.sub)+'</div></div></div>';
+
+  /* A missed day is said once, kindly, with the one thing that helps: the
+     check-in for yesterday is still open until tonight. */
+  if(t42MissedYesterday()){
+    h+='<div class="acard t42-missed"><div class="ah">'+ic('heart')+'<div class="t">You missed yesterday</div></div>'+
+       '<div class="sub">That is fine — nothing resets. Today\'s plan is ready. '+
+       'If you did train or walk yesterday, you can still log it this morning.</div>'+
+       '<button class="bigbtn sec" onclick="t42CheckYesterday()">Log yesterday</button></div>';
+  }
 
   /* The two states that outrank today's list. */
   if(!T42.hasBaseline()){
@@ -1190,11 +1672,15 @@ function t42RenderDash(){
        'starting point to measure a result from. Keep training and checking in — it all still counts '+
        'for you, just not on the leaderboard.</div></div>';
   } else if(t42OpenPhase()==='final'){
-    var left=t42FinalItems().filter(function(i){ return i.done===false && !i.optional && !i.coach; }).length;
-    h+='<div class="acard" onclick="t42GoFinal()" style="cursor:pointer;border-color:var(--hyrox);">'+
+    var fl=t42FinalItems().filter(function(i){ return i.done===false && !i.optional && !i.coach; }).length;
+    h+='<div class="acard t42-alert" onclick="t42GoFinal()" style="cursor:pointer;">'+
        '<div class="ah">'+ic('flag')+'<div class="t">Final assessment is open</div><div class="c">›</div></div>'+
-       '<div class="sub">'+(left ? left+' thing'+(left===1?'':'s')+' left to submit'
-                                 : 'Everything is in. Waiting on verification.')+'</div></div>';
+       '<div class="sub">'+(fl ? fl+' thing'+(fl===1?'':'s')+' left to submit'
+                               : 'Everything is in. Waiting on verification.')+'</div></div>';
+  } else if(t42OpenPhase()==='mid' && !T42.mid){
+    h+='<div class="acard t42-alert" onclick="t42GoProgress()" style="cursor:pointer;">'+
+       '<div class="ah">'+ic('measure')+'<div class="t">Halfway check-in is open</div><div class="c">›</div></div>'+
+       '<div class="sub">Weight, waist and photos — the same way as day 1.</div></div>';
   }
 
   /* ── today ── */
@@ -1205,22 +1691,22 @@ function t42RenderDash(){
   var planned=T42.planDay;
 
   h+=t42Row('workout','Workout',
-        wDone ? (T42.doneToday.title||'Completed')
-              : (planned ? t42Esc(planned.title) : 'Rest day'),
+        wDone ? t42Esc(T42.doneToday.title||'Completed')
+              : (planned ? t42Esc(planned.title)+(planned.est_minutes?' · '+planned.est_minutes+' min':'') : 'Rest day'),
         wDone ? 'done' : (planned?'todo':'rest'), 't42GoTrain()');
 
   h+=t42Row('steps','Steps',
         ck&&ck.steps!=null ? (t42Num(ck.steps)+' / '+t42Num(T42.stepTarget()))
-                           : ('— / '+t42Num(T42.stepTarget())),
+                           : ('Goal '+t42Num(T42.stepTarget())),
         ck&&ck.steps>=T42.stepTarget() ? 'done' : 'todo', 't42GoCheckin()');
 
   h+=t42Row('food','Nutrition',
-        ck&&ck.nutrition ? t42NutLabel(ck.nutrition) : 'Not logged',
+        ck&&ck.nutrition ? t42NutLabel(ck.nutrition) : 'Protein with each main meal',
         ck&&ck.nutrition==='on_track' ? 'done' : 'todo', 't42GoCheckin()');
 
   h+=t42Row('water','Water',
         ck&&ck.water_ml!=null ? ((ck.water_ml/1000).toFixed(1)+'L / '+(T42.waterTarget()/1000).toFixed(1)+'L')
-                              : ('— / '+(T42.waterTarget()/1000).toFixed(1)+'L'),
+                              : ('Goal '+(T42.waterTarget()/1000).toFixed(1)+'L'),
         ck&&ck.water_ml>=T42.waterTarget() ? 'done' : 'todo', 't42GoCheckin()');
 
   h+=t42Row('check','Daily check-in', ck ? 'Completed' : 'Not yet',
@@ -1240,11 +1726,20 @@ function t42RenderDash(){
   h+='</div>';                                   // end of today's list
   if(T42.isGym()) h+=t42DuoDashCard();
 
-  /* ── the two numbers that are actually earned ── */
-  h+='<div class="t42-grid" style="margin-top:14px;">'+
+  /* ── how it is going: four numbers, all earned ── */
+  var sc=T42.score, pts = sc && sc.eligible ? t42Fmt(t42MyBoard()==='consistency'?sc.consistency_total:sc.total) : '—';
+  h+='<div class="sechead">Your progress</div><div class="t42-grid">'+
      t42Stat('Streak', T42.streak()+(T42.streak()===1?' day':' days'))+
-     t42Stat('Consistency', T42.consistency()+'%')+
+     t42Stat('Compliance', T42.consistency()+'%')+
+     t42Stat('Workouts', T42.workoutPct()+'%')+
+     t42Stat('Points', pts)+
      '</div>';
+  var dw=t42Delta('weight_kg'), dc=t42Delta('waist_cm');
+  if(dw!=null || dc!=null){
+    h+='<div class="t42-grid" style="margin-top:10px;">'+
+       t42Change('Weight', dw, 'kg', t42DeltaPct('weight_kg'))+
+       t42Change('Waist',  dc, 'cm', t42DeltaPct('waist_cm'))+'</div>';
+  }
 
   /* The mini challenge, if the week carries one. */
   if(T42.week && T42.week.mini_title){
@@ -1255,27 +1750,68 @@ function t42RenderDash(){
   }
 
   /* The rank is the server's. Until it has run there is none, and saying so
-     beats a zero that looks like a result. */
-  var sc=T42.score, rk=t42MyRank();
-  /* A gym member competes as a duo, and the duo card above already carries
-     the score and rank that matter. A second, individual one under it
-     would be two answers to one question. */
+     beats a zero that looks like a result. A gym member competes as a duo,
+     and the duo card above already carries the standing that matters. */
+  var rk=t42MyRank();
   if(T42.isGym()){
     /* nothing — the duo card is the standing */
   } else if(sc && sc.eligible && rk){
-    h+='<div class="sechead">Standing</div><div class="t42-grid">'+
-       t42Stat('Rank', '#'+rk)+
-       t42Stat('Score', t42Fmt(t42MyBoard()==='consistency'?sc.consistency_total:sc.total))+
-       '</div>'+
-       '<button class="bigbtn sec" onclick="t42GoRank()">Leaderboard</button>';
+    h+='<div class="t42-list" style="margin-top:14px;"><div class="t42-row" onclick="t42GoRank()">'+
+       t42Ic('trophy')+'<div class="t42-row-b"><div class="t42-row-l">Leaderboard</div>'+
+       '<div class="t42-row-v">'+t42Esc((T42_BOARDS.filter(function(x){ return x.id===t42MyBoard(); })[0]||{}).n||'')+
+       '</div></div><span class="t42-lb-s">'+String.fromCharCode(35)+rk+'</span><span class="t42-chev">›</span></div></div>';
   } else if(sc && !sc.eligible && sc.note){
     h+='<div class="t42-note">Not ranked yet — '+t42Esc(sc.note.charAt(0).toLowerCase()+sc.note.slice(1))+'.</div>';
   } else {
-    h+='<div class="t42-note">Your rank appears once the first scores are in. '+
+    h+='<div class="t42-note">Your place on the leaderboard appears once the first scores are in. '+
        'They are worked out on the server every hour.</div>';
   }
 
   el.innerHTML=h;
+}
+
+/* The 42 days as six weeks, filled up to today, with the milestones on it.
+   Built from divs so it scales with the card instead of a fixed SVG. */
+function t42Journey(day,total){
+  var n=Math.ceil(total/7), h='<div class="t42-jbar">';
+  for(var i=1;i<=n;i++){
+    var from=(i-1)*7, span=Math.min(7,total-from);
+    var fill=Math.max(0,Math.min(1,(day-from)/span));
+    h+='<div class="t42-jseg'+(fill>=1?' full':'')+'"><i style="width:'+Math.round(fill*100)+'%"></i></div>';
+  }
+  h+='</div><div class="t42-jlab">';
+  for(var j=1;j<=n;j++) h+='<span'+(j===T42.weekNo()?' class="on"':'')+'>W'+j+'</span>';
+  return h+'</div>';
+}
+
+var T42_MILESTONES={
+  7: {title:'7 days complete',   sub:'One week of showing up. That is the habit starting.', icon:'star'},
+  14:{title:'Two weeks strong',  sub:'Fourteen days in. Most people never get this far.',   icon:'flame'},
+  21:{title:'Halfway there',     sub:'Twenty-one down, twenty-one to go. Time for your halfway check-in.', icon:'target'},
+  28:{title:'4 weeks complete',  sub:'Four weeks of work. You can feel it now.',           icon:'bolt'},
+  35:{title:'Final week',        sub:'Seven days left. Finish the way you started.',        icon:'flag'},
+  42:{title:'You did it.',       sub:'Day 42. Finish today, then your final assessment.',   icon:'trophy'}
+};
+function t42Milestone(day,total){
+  if(day===total && total!==42) return T42_MILESTONES[42];
+  return T42_MILESTONES[day]||null;
+}
+
+/* Yesterday had no check-in, today has none yet, and it is not day 1. */
+function t42MissedYesterday(){
+  var day=T42.dayNo(); if(day<2 || T42.today) return false;
+  return !T42.checkins.some(function(c){ return c.day_no===day-1; });
+}
+function t42CheckYesterday(){
+  var day=T42.dayNo(); if(day<2) return;
+  t42CkReady=false; t42Go('checkin'); t42CkFor=day-1; t42CkReady=false; t42RenderCheckin();
+}
+
+/* What "Continue today" means right now. */
+function t42NextAction(){
+  if(T42.planDay && !T42.doneToday) return {label:'Continue Today · Start Workout', go:'t42PlayToday()'};
+  if(!T42.today)                     return {label:'Continue Today · Check In', go:'t42GoCheckin()'};
+  return {label:'Today is done — see your progress', go:'t42GoProgress()', done:true};
 }
 
 
@@ -1298,6 +1834,8 @@ var T42_ICON={
   person: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.6 4-5 7-5s5.8 1.4 7 5"/>'
 };
 function t42Ic(kind){
+  /* Anything T42 does not draw itself comes from the app's own set. */
+  if(!T42_ICON[kind] && typeof ic==='function') return ic(kind);
   var cls = kind==='photo' ? 'check' : kind==='clock' ? 'rush' : kind;
   return '<span class="t42-ic '+cls+'"><svg viewBox="0 0 24 24" aria-hidden="true">'+
          (T42_ICON[kind]||T42_ICON.check)+'</svg></span>';
@@ -1306,11 +1844,18 @@ function t42Ic(kind){
 function t42Row(icon,label,value,state,go){
   var mark = state==='done' ? '<span class="t42-tick">✓</span>'
            : state==='rest' ? '<span class="t42-rest">rest</span>'
+           : state==='info' ? ''
            : '<span class="t42-chev">›</span>';
-  return '<div class="t42-row'+(state==='done'?' done':'')+'" onclick="'+go+'">'+
+  return '<div class="t42-row'+(state==='done'?' done':'')+(state==='info'?' t42-info':'')+'" onclick="'+go+'">'+
     t42Ic(icon)+
     '<div class="t42-row-b"><div class="t42-row-l">'+label+'</div>'+
     '<div class="t42-row-v">'+value+'</div></div>'+mark+'</div>';
+}
+/* A row that ends in a result rather than a chevron: start → finish, change. */
+function t42ResRow(icon,label,value,res){
+  return '<div class="t42-row t42-info">'+t42Ic(icon)+
+    '<div class="t42-row-b"><div class="t42-row-l">'+t42Esc(label)+'</div>'+
+    '<div class="t42-row-v">'+t42Esc(value)+'</div></div><span class="t42-res">'+t42Esc(res)+'</span></div>';
 }
 function t42Num(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
 function t42NutLabel(v){
@@ -1332,14 +1877,19 @@ function t42Rush(){
 
 var t42Ck={energy:0, sleep:'', nutrition:'', water_ml:0, steps:'', workout:'', mood:''};
 var t42CkReady=false;
+/* The day being checked in. Null is today; yesterday is allowed until the
+   server's morning-after window closes, so a missed evening is not lost. */
+var t42CkFor=null;
+function t42CkDay(){ return t42CkFor || T42.dayNo(); }
 
 function t42CkLoad(){
-  var c=T42.today;
+  var d=t42CkDay();
+  var c=t42CkFor ? (T42.checkins.filter(function(x){ return x.day_no===d; })[0]||null) : T42.today;
   t42Ck = c ? {energy:c.energy||0, sleep:c.sleep||'', nutrition:c.nutrition||'',
                water_ml:c.water_ml||0, steps:c.steps!=null?String(c.steps):'',
                workout:c.workout||'', mood:c.mood||''}
             : {energy:0, sleep:'', nutrition:'', water_ml:0, steps:'',
-               workout:T42.doneToday?'completed':'', mood:''};
+               workout:(!t42CkFor && T42.doneToday)?'completed':'', mood:''};
   t42CkReady=true;
 }
 
@@ -1349,10 +1899,12 @@ function t42RenderCheckin(){
   if(T42.isOver() || T42.isComplete()) return t42Finished('Check-ins');
   if(!t42CkReady) t42CkLoad();
 
-  var day=T42.dayNo();
-  var h='<div class="hgroup"><div class="k">Day '+day+'</div><h2>Daily check-in</h2>'+
-        '<p>'+(T42.today?'Already saved today. Change anything you like.'
-                        :'Thirty seconds. Then you are done for the day.')+'</p></div>';
+  var day=t42CkDay(), past=!!t42CkFor;
+  var saved=past ? T42.checkins.some(function(x){ return x.day_no===day; }) : !!T42.today;
+  var h='<div class="hgroup"><div class="k">Day '+day+(past?' · Yesterday':'')+'</div><h2>Daily check-in</h2>'+
+        '<p>'+(saved?'Already saved. Change anything you like.'
+               :past?'Log what you did yesterday. It closes tonight.'
+                    :'Thirty seconds. Then you are done for the day.')+'</p></div>';
 
   h+='<div class="t42-field"><label>Energy</label><div class="t42-pills">'+
      [1,2,3,4,5].map(function(n){
@@ -1398,7 +1950,7 @@ function t42RenderCheckin(){
      }).join('')+'</div></div>';
 
   h+='<button class="bigbtn'+(t42CkValid()?'':' off')+'" onclick="t42SaveCheckin()">'+
-     (T42.today?'Update Check-in':'Save Check-in')+'</button>'+
+     (saved?'Update Check-in':'Save Check-in')+'</button>'+
      '<button class="bigbtn sec" onclick="t42GoDash()">Back</button>';
 
   el.innerHTML=h;
@@ -1440,7 +1992,7 @@ async function t42SaveCheckin(){
   if(t42CkSaving) return;
   if(!t42CkValid()){ toast('Answer at least one thing'); return; }
   if(!sb || !SUPA_READY || !T42.reg){ toast('Sign in to check in'); return; }
-  var day=T42.dayNo();
+  var day=t42CkDay(), today=T42.dayNo();
   if(!day){ toast('T42 has not started yet'); return; }
 
   t42CkSaving=true;
@@ -1465,10 +2017,11 @@ async function t42SaveCheckin(){
       .upsert(row,{onConflict:'registration_id,day_no'}).select().maybeSingle();
     if(r.error) throw r.error;
 
-    T42.today=r.data;
+    if(day===today) T42.today=r.data;
     T42.checkins=T42.checkins.filter(function(c){ return c.day_no!==day; });
     T42.checkins.unshift(r.data);
-    toast(T42.today?'Checked in for day '+day:'Saved');
+    T42.checkins.sort(function(a,b){ return b.day_no-a.day_no; });
+    toast('Checked in for day '+day);
     t42Go('dash');
     try{ renderHome(); }catch(e){}
   }catch(e){
@@ -1674,7 +2227,10 @@ function t42RenderProgress(){
   var el=$('t42-body'); if(!el) return;
   if(!T42.reg) return t42RenderLanding();
 
-  var h='<div class="segs" id="t42-progtabs">'+
+  /* Before day 1 this is only reached for the starting photos, from the
+     checklist — and the tabs above do not list it, so it needs its own way back. */
+  var h=(T42.stage()==='upcoming' ? t42Back('Overview','t42GoJoined') : '')+
+        '<div class="segs" id="t42-progtabs">'+
     [['body','Body'],['fitness','Fitness'],['consistency','Consistency'],['photos','Photos']]
       .concat(T42.isGym()?[['duo','Duo']]:[])
       .map(function(t){
@@ -2468,21 +3024,179 @@ async function t42LoadBoard(id){
    After the last day
    ═══════════════════════════════════════════════════════════════ */
 
+/* A closed door, drawn as an achievement rather than an error: what closed,
+   what stays, and where to go next. Reached from any screen that belongs to
+   the running challenge once it is over. */
 function t42Finished(what){
   var el=$('t42-body'); if(!el) return;
-  el.innerHTML='<div class="acard"><div class="ah">'+ic('flag')+'<div class="t">T42 has finished</div></div>'+
-    '<div class="sub">'+t42Esc(what)+' closed with the last day. Everything you logged is in — '+
-    'and HITFAT+ carries on without the challenge.</div>'+
-    '<button class="bigbtn sec" onclick="t42GoDash()">See where you finished</button></div>';
+  var c=T42.challenge, done=T42.isComplete();
+  var h='<div class="t42-stage t42-locked">'+
+    '<div class="t42-lock-i">'+glyph(done?'trophy':'lock')+'</div>'+
+    '<div class="t42-stage-ed">'+t42Esc(t42EdName(c))+'</div>'+
+    '<div class="t42-stage-h">'+(done?'Challenge completed':'T42 has finished')+'</div>'+
+    '<div class="t42-stage-k">'+t42Esc(what)+' closed with the last day. Your achievement stays in your T42 Journey.</div>'+
+    '</div>';
+  h+='<div class="t42-list">'+
+     t42Row('trophy', done?'View my result':'See where you finished', done?'Score, rank and changes':'Final assessment and results',
+            'todo', done?'t42GoResult()':'t42GoFinal()')+
+     (T42.certs && T42.certs.length ? t42Row('medal','View certificate','T42 Finisher','todo','t42GoCert()') : '')+
+     t42Row('clock','My T42 Journey','Every edition you have taken part in','todo','t42GoJourney()')+
+     '</div>';
+  h+=t42NextBlock();
+  el.innerHTML=h;
 }
 
-async function t42OpenPast(){
-  var p=T42.past; if(!p) return;
-  T42.challenge=p.challenge; T42.reg=p.reg; T42.past=null;
+/* "Ready for another 42 days?" — the next edition if one is taking people,
+   and HITFAT+ for training without a challenge. Neither is unlocked by the
+   edition just finished; both are invitations. */
+function t42NextBlock(){
+  var o=T42.open, cur=T42.challenge;
+  var h='<div class="sechead">Ready for another 42 days?</div>';
+  if(o && (!cur || o.id!==cur.id)){
+    h+='<div class="t42-stage t42-next" onclick="t42JoinOpen()">'+
+       '<div class="t42-stage-top"><span class="t42-logo t42-logo-s">T42</span>'+
+       '<span class="t42-stage-tag">REGISTRATION OPEN</span></div>'+
+       '<div class="t42-stage-h">'+t42Esc(t42EdName(o))+'</div>'+
+       '<div class="t42-stage-dates">'+glyph('calendar')+'<span>'+t42Esc(t42Range(o))+'</span></div>'+
+       '<button class="t42-stage-cta">Join the next challenge</button></div>';
+  } else {
+    h+='<div class="acard"><div class="ah">'+ic('repeat')+'<div class="t">The next T42</div></div>'+
+       '<div class="sub">Every T42 is a new challenge and a new sign-up. When the next edition opens, '+
+       'it appears here and on your Home screen.</div>'+
+       '<button class="bigbtn sec" onclick="t42Reload()">Check for a new edition</button></div>';
+  }
+  h+='<div class="acard"><div class="ah">'+ic('workout')+'<div class="t">Continue with HITFAT+</div></div>'+
+     '<div class="sub">Programs and filmed workouts on your own schedule, outside the challenge. '+
+     'Sold separately — T42 does not include them.</div>'+
+     '<button class="bigbtn sec" onclick="t42NextStore()">Explore HITFAT+</button></div>';
+  return h;
+}
+/* Go to the open edition from wherever we are — a past result included. */
+function t42JoinOpen(){
+  T42.load(true).then(function(){ t42View='landing'; t42Resume(); t42Paint(); t42Segs(); $('screen').scrollTop=0; });
+}
+
+/* A past edition, opened from My T42 Journey: its result, its certificate,
+   and nothing that would let the old plan back in. */
+async function t42OpenReg(id){
+  var row=(T42.journey||[]).filter(function(x){ return x.id===id; })[0]; if(!row) return;
+  var ch=row.t42_challenges, reg={};
+  Object.keys(row).forEach(function(k){ if(k.indexOf('t42_')!==0) reg[k]=row[k]; });
+  T42.challenge=ch; T42.reg=reg; T42.viewingPast=true;
   T42.state='loading'; t42Go('result');
   try{ await T42.loadReg(); }catch(e){}
   T42.state='ready';
-  t42Paint(); t42Segs();
+  t42Resume(); t42Paint(); t42Segs();
+}
+function t42OpenPast(){ t42GoJourney(); }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   My T42 Journey
+
+   The trophy cabinet. Every edition this account has joined, newest
+   first, with what it left behind — the change, the score, the
+   certificate — and the state of its access, said plainly. Opening one
+   shows its result; it never reopens its plan.
+   ═══════════════════════════════════════════════════════════════ */
+
+function t42RenderJourney(){
+  var el=$('t42-body'); if(!el) return;
+  var rows=T42.journey;
+  var h=(T42_SEGS[T42.stage()] ? '' : t42Back('T42'))+
+        '<div class="hgroup"><div class="k">T42</div><h2>My T42 Journey</h2>'+
+        '<p>Every challenge you have taken on, and what you did with it.</p></div>';
+
+  if(rows===null || rows===undefined){
+    el.innerHTML=h+'<div class="t42-skel"><div></div><div></div></div>'; return;
+  }
+
+  var o=T42.open;
+  var inOpen = o && rows.some(function(r){ return r.challenge_id===o.id; });
+  if(o && !inOpen && t42RegOpenFor(o)){
+    h+='<div class="t42-jcard t42-jopen" onclick="t42JoinOpen()">'+
+       '<div class="t42-jtop"><div class="t42-jname">'+t42Esc(o.name||t42EdName(o))+'</div>'+
+       '<span class="t42-chip open">Registration open</span></div>'+
+       '<div class="t42-jsub">New challenge · '+t42Esc(t42Range(o))+'</div>'+
+       '<button class="bigbtn">Join now</button></div>';
+  }
+
+  if(!rows.length){
+    h+='<div class="acard"><div class="ah">'+ic('trophy')+'<div class="t">Nothing here yet</div></div>'+
+       '<div class="sub">Finish a T42 and it lives here — your result, your score and your certificate.</div></div>';
+  }
+  rows.forEach(function(r){ h+=t42JourneyCard(r); });
+
+  h+=t42NextBlock();
+  el.innerHTML=h;
+}
+
+function t42RegOpenFor(c){
+  if(!c || (c.status!=='registration' && c.status!=='running')) return false;
+  var cl=t42Date(c.reg_closes_on), t=new Date(); t.setHours(0,0,0,0);
+  return !(cl && t>cl);
+}
+
+function t42One(x){ return Array.isArray(x) ? (x[0]||null) : (x||null); }
+
+function t42JourneyCard(r){
+  var c=r.t42_challenges||{}, sc=t42One(r.t42_scores), certs=r.t42_certificates||[];
+  var ms=r.t42_measurements||[];
+  var pick=function(p){ return ms.filter(function(m){ return m.phase===p; })[0]||null; };
+  var b=pick('baseline'), l=pick('final')||pick('mid');
+  var paid=['paid','active','completed'].indexOf(r.status)>=0;
+  var total=c.total_days||42;
+  var start=t42Date(c.starts_on), t=new Date(); t.setHours(0,0,0,0);
+  var day=start && t>=start ? Math.min(total, Math.floor((t-start)/86400000)+1) : 0;
+  var last=t42Date(c.access_ends_on) || (start ? new Date(start.getTime()+(total-1)*86400000) : null);
+  var ended=last && t>last;
+
+  var chip, cls;
+  if(r.status==='withdrawn'||r.status==='disqualified'){ chip=r.status==='withdrawn'?'Withdrawn':'Disqualified'; cls='out'; }
+  else if(!paid){ chip='Payment pending'; cls='wait'; }
+  else if(c.status==='complete'||c.status==='archived'){ chip='Completed'; cls='done'; }
+  else if(day>total || c.status==='assessment'){ chip='Results pending'; cls='wait'; }
+  else if(day>0){ chip='Active · Day '+day; cls='live'; }
+  else { chip='Upcoming'; cls='wait'; }
+
+  var h='<div class="t42-jcard"><div class="t42-jtop"><div class="t42-jname">'+t42Esc(c.name||t42EdName(c))+'</div>'+
+        '<span class="t42-chip '+cls+'">'+t42Esc(chip)+'</span></div>'+
+        '<div class="t42-jsub">'+t42Esc(t42Range(c))+' · '+t42Esc(((t42Track(r.track)||{}).name)||'')+'</div>';
+
+  if(cls==='done'){
+    var dw = b&&l&&b.weight_kg!=null&&l.weight_kg!=null ? Math.round((l.weight_kg-b.weight_kg)*10)/10 : null;
+    var dc = b&&l&&b.waist_cm!=null&&l.waist_cm!=null ? Math.round((l.waist_cm-b.waist_cm)*10)/10 : null;
+    var rk = sc && (sc.category==='consistency'||r.track==='start') ? sc.rank_consistency : sc&&sc.rank_category;
+    h+='<div class="t42-jgrid">'+
+       t42JStat('Days', total+' / '+total)+
+       t42JStat('Weight', t42Signed(dw,' kg'))+
+       t42JStat('Waist', t42Signed(dc,' cm'))+
+       t42JStat('Compliance', sc&&sc.consistency_pct!=null ? Math.round(Number(sc.consistency_pct))+'%' : '—')+
+       t42JStat('Score', sc&&sc.eligible ? t42Fmt(r.track==='start'?sc.consistency_total:sc.total) : '—')+
+       t42JStat('Rank', sc&&sc.eligible&&rk ? String.fromCharCode(35)+rk : '—')+
+       '</div>';
+    if(certs.length) h+='<div class="t42-badges">'+certs.map(function(x){
+      return '<span class="t42-badge">'+glyph('medal')+t42Esc(T42_CERT_TITLE[x.kind]||x.kind)+'</span>'; }).join('')+'</div>';
+  }
+
+  h+='<div class="t42-jaccess">'+glyph(ended?'lock':'clock')+'<span>Program access: '+
+     (ended ? 'Ended' : last ? 'Open until '+t42Day(last,true) : 'Open')+'</span></div>';
+
+  var btns='';
+  if(cls==='done'){
+    btns+='<button class="bigbtn sec" onclick="t42OpenReg(\''+r.id+'\')">View result</button>';
+    if(certs.length) btns+='<button class="bigbtn sec" onclick="t42OpenCert(\''+r.id+'\')">Certificate</button>';
+  } else if(cls!=='out'){
+    btns+='<button class="bigbtn sec" onclick="t42JoinOpen()">Open</button>';
+  }
+  if(btns) h+='<div class="t42-jbtns">'+btns+'</div>';
+  return h+'</div>';
+}
+function t42JStat(l,v){
+  return '<div><div class="t42-jstat-v">'+t42Esc(v)+'</div><div class="t42-jstat-l">'+t42Esc(l)+'</div></div>';
+}
+function t42OpenCert(id){
+  t42OpenReg(id).then(function(){ t42Go('cert'); });
 }
 
 
@@ -2604,20 +3318,30 @@ function t42RenderResult(){
   var steps=T42.checkins.reduce(function(a,c){ return a+(c.steps||0); },0);
   var fit=t42FitImprove();
 
-  var h='<div class="t42-hero" style="padding-bottom:6px;">'+
+  var h=(T42.viewingPast ? t42Back('My T42 Journey','t42BackToJourney') : '')+
+        '<div class="t42-stage t42-finish">'+
         '<div class="t42-trophy">'+glyph('trophy')+'</div>'+
-        '<div class="t42-logo" style="font-size:44px;">T42 COMPLETE</div>'+
+        '<div class="t42-stage-h">You did it.</div>'+
+        '<div class="t42-logo t42-logo-m">T42 COMPLETE</div>'+
         '<div class="t42-sub">'+total+' / '+total+' DAYS · '+
-        t42Esc((T42.challenge.edition||T42.challenge.name||'').toUpperCase())+'</div></div>';
+        t42Esc((T42.challenge.edition||T42.challenge.name||'').toUpperCase())+'</div>'+
+        '<div class="t42-badge t42-badge-lg">'+glyph('medal')+'T42 Finisher</div></div>';
 
   var dw=t42Delta('weight_kg'), dc=t42Delta('waist_cm');
-  h+='<div class="t42-grid">'+
-     t42Change('Weight', dw, 'kg', t42DeltaPct('weight_kg'))+
-     t42Change('Waist',  dc, 'cm', t42DeltaPct('waist_cm'))+
+  var b=T42.baseline||{}, l=t42Latest()||{};
+  h+='<div class="sechead">Your body</div><div class="t42-list">'+
+     t42ResRow('scale','Weight', (b.weight_kg!=null?b.weight_kg+' kg':'—')+' → '+(l!==b&&l.weight_kg!=null?l.weight_kg+' kg':'—'),
+               t42Signed(dw,' kg'))+
+     t42ResRow('measure','Waist', (b.waist_cm!=null?b.waist_cm+' cm':'—')+' → '+(l!==b&&l.waist_cm!=null?l.waist_cm+' cm':'—'),
+               t42Signed(dc,' cm'))+
+     '</div>';
+  h+='<div class="sechead">Your 42 days</div><div class="t42-grid">'+
      t42Stat('Workouts',    T42.workoutPct()+'%')+
+     t42Stat('Check-ins',   T42.checkins.length+' / '+total)+
+     t42Stat('Longest streak', t42BestStreak()+(t42BestStreak()===1?' day':' days'))+
+     t42Stat('Compliance',  T42.consistency()+'%')+
      t42Stat('Steps',       t42Num(steps))+
      t42Stat('Fitness',     fit!=null ? t42Signed(fit,'%') : '—')+
-     t42Stat('Consistency', T42.consistency()+'%')+
      '</div>';
 
   if(sc && sc.eligible){
@@ -2638,7 +3362,13 @@ function t42RenderResult(){
        (T42.certs.length>1?'Claim Your Certificates':'Claim Certificate')+'</button>';
   h+='<button class="bigbtn sec" onclick="t42GoRank()">Final leaderboard</button>'+
      '<button class="bigbtn sec" onclick="t42GoNext()">What\'s next</button>';
+  if(T42.accessEnded())
+    h+='<div class="t42-jaccess" style="justify-content:center;">'+glyph('lock')+
+       '<span>Program access ended '+t42Day(T42.lastDay(),true)+' · your result stays here</span></div>';
   el.innerHTML=h;
+}
+function t42BackToJourney(){
+  T42.load(true).then(function(){ t42GoJourney(); });
 }
 
 
@@ -2845,14 +3575,13 @@ function t42SaveCert(){
 
 function t42RenderNext(){
   var el=$('t42-body'); if(!el) return;
-  var h='<div class="hgroup"><div class="k">After T42</div><h2>What\'s next?</h2>'+
+  var h=t42Back('Result','t42GoResult')+
+        '<div class="hgroup"><div class="k">After T42</div><h2>What\'s next?</h2>'+
         '<p>You have a routine now. Here is where to keep it.</p></div>';
 
-  h+=t42NextCard('💪','Keep training in HITFAT+',
-      'Every program and all 310 filmed exercises you have used here, on your own schedule.',
-      't42NextTrain()','Open programs');
-  h+=t42NextCard('🛒','Pick your next program',
-      'Programs you buy once and keep — no subscription.', 't42NextStore()','Open the store');
+  h+=t42NextBlock();
+
+  h+='<div class="sechead">Keep going</div>';
   h+=t42NextCard('⚡','HITFAT RUSH',
       'Keep racing. Your times carry on at rush.hitfat.io.', 't42Rush()','Open RUSH');
   h+=t42NextCard('🏛️','Train with us at HITFAT HQ',
@@ -2860,14 +3589,6 @@ function t42RenderNext(){
   h+=t42NextCard('🏃','HYROX training',
       'Structured HYROX preparation with the HITFAT coaches.', 't42NextHyrox()','Ask about HYROX');
 
-  /* The next edition, if one is open — otherwise a promise that it will
-     show up in the one place they already look. */
-  h+='<div class="acard"><div class="ah">'+ic('repeat')+'<div class="t">The next T42</div></div>'+
-     '<div class="sub">When the next edition opens it appears on your Home screen. '+
-     'Same account, a new starting line.</div>'+
-     '<button class="bigbtn sec" onclick="t42Reload()">Check for a new edition</button></div>';
-
-  h+='<button class="bigbtn sec" onclick="t42GoResult()">Back to my result</button>';
   el.innerHTML=h;
 }
 

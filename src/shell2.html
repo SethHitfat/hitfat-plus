@@ -653,16 +653,10 @@
          design system. -->
     <div id="t42" class="pad" style="display:none;">
       <button class="back" onclick="switchTab('home')">← Back</button>
-      <!-- Hidden until the member is registered and the edition has begun.
-           Before that T42 is a wizard, and three tabs that all refuse is
-           worse than no tabs. t42Segs() owns the display. -->
-      <div class="segs" id="t42-segs" style="display:none;">
-        <button class="seg on" data-seg="dash" onclick="t42GoDash()">Today</button>
-        <button class="seg" data-seg="train" onclick="t42GoTrain()">Train</button>
-        <button class="seg" data-seg="checkin" onclick="t42GoCheckin()">Check in</button>
-        <button class="seg" data-seg="progress" onclick="t42GoProgress()">Progress</button>
-        <button class="seg" data-seg="rank" onclick="t42GoRank()">Rank</button>
-      </div>
+      <!-- The tabs follow the stage of the challenge — before the start,
+           during it, after it — and are hidden while T42 is a wizard
+           (sign-up, payment). t42Segs() draws them and owns the display. -->
+      <div class="segs" id="t42-segs" style="display:none;"></div>
       <div id="t42-body"></div>
     </div>
 

@@ -94,6 +94,15 @@ function entitlementFor(sku: string, order: string) {
   return row;
 }
 
+/* A T42 edition is sold as "t42:<slug>" — 't42:t42-nov-2026'. Its price is
+   NOT in the catalogue above: it lives on the edition's own row
+   (t42_challenges.price_rm), read with the service role, so a new edition
+   is an insert and not a redeploy. The browser still names only the SKU. */
+function t42Slug(sku: string): string | null {
+  const m = /^t42:([a-z0-9-]{3,60})$/.exec(String(sku || ''));
+  return m ? m[1] : null;
+}
+
 /* Bayarcash transaction status: 3 = Success (0 New · 1 Pending · 2 Failed · 4 Cancelled) */
 function isPaidStatus(s: unknown) {
   return String(s) === '3' || String(s).toLowerCase() === 'success';
@@ -107,6 +116,23 @@ function isPaidStatus(s: unknown) {
 
 
 async function grant(admin: any, user_id: string, sku: string, order_number: string, tx: string) {
+  /* A T42 place is not a plus_entitlements row. The registration IS the
+     entitlement — one edition, one person — so paying turns that row from
+     pending to paid, and nothing else in HITFAT+ changes. */
+  const slug = t42Slug(sku);
+  if (slug) {
+    const { data: ch } = await admin.from('t42_challenges').select('id').eq('slug', slug).maybeSingle();
+    if (!ch) { console.error('grant for unknown T42 edition', slug); return false; }
+    const { error: rErr } = await admin.from('t42_registrations')
+      .update({ status: 'paid', product_sku: sku })
+      .eq('challenge_id', ch.id).eq('user_id', user_id).eq('status', 'pending');
+    if (rErr) { console.error('T42 grant failed', rErr.message); return false; }
+    await admin.from('plus_orders')
+      .update({ status: 'paid', transaction_id: tx || null, paid_at: new Date().toISOString() })
+      .eq('order_number', order_number);
+    return true;
+  }
+
   const row = entitlementFor(sku, order_number);
   if (!row) { console.error('grant for unknown sku', sku); return false; }
 

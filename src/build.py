@@ -107,4 +107,13 @@ _drift = sorted(set([k for k in _app if k not in _server]
 if _drift:
     sys.exit('price drift between store.js and deploy/_shared/catalogue.ts: ' + ', '.join(_drift[:10]))
 print('prices match the server catalogue (%d skus)' % len(_app))
+# ── the dashboard copies must match their sources ──
+# deploy/dashboard/*.ts is what gets pasted into Supabase. A change to
+# pay-create or _shared that is not regenerated there ships the old code.
+sys.dont_write_bytecode = True
+sys.path.insert(0, 'deploy'); import dashboard as _dash
+_stale = [f for f in _dash.FUNCS
+          if open('deploy/dashboard/%s.ts' % f).read() != _dash.build('deploy', f)]
+if _stale:
+    sys.exit('deploy/dashboard is stale for %s: cd deploy && python3 dashboard.py' % ', '.join(_stale))
 print('assembled',len(shell),'bytes — all guards passed')

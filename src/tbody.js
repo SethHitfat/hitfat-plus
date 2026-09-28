@@ -1637,9 +1637,18 @@ noThrow("the landing screen renders", function(){ t42View='landing'; t42Paint();
 var _t4=document.getElementById('t42-body').innerHTML;
 ok("landing offers the way in",      _t4.indexOf('Join T42')>0);
 ok("landing counts down to the start", _t4.indexOf('Starts in 9 days')>0);
-ok("landing names both modes",       _t4.indexOf('ONLINE SOLO')>0 && _t4.indexOf('GYM DUO')>0);
-ok("landing names all three tracks", _t4.indexOf('START')>0 && _t4.indexOf('TRANSFORM')>0 &&
-                                     _t4.indexOf('PERFORM')>0);
+/* Online only unless the edition says otherwise: no Gym Duo on the poster. */
+ok("an online edition does not offer Gym Duo", _t4.indexOf('GYM DUO')<0);
+ok("landing names the two tracks",   _t4.indexOf('TRANSFORM')>0 && _t4.indexOf('PERFORM')>0);
+ok("...and not START, which this edition does not run", _t4.indexOf('>START<')<0);
+ok("landing shows the six weeks",    _t4.indexOf('Week 6')>0 && _t4.indexOf('Finish Strong')>0);
+ok("landing says access ends with the challenge", _t4.indexOf('Access ends with the challenge')>0);
+ok("...and that the leaderboard keeps numbers private", _t4.indexOf('never your weight')>0);
+T42.challenge.config={gym_enabled:true, tracks:['start','transform','perform']};
+t42Paint(); _t4=document.getElementById('t42-body').innerHTML;
+ok("an edition that runs both modes names both", _t4.indexOf('ONLINE SOLO')>0 && _t4.indexOf('GYM DUO')>0);
+ok("...and every track it lists",    _t4.indexOf('START')>0);
+T42.challenge.config={};
 
 /* No edition open is not an error — it is an app that should not be
    advertising a challenge nobody can join. */
@@ -1681,8 +1690,11 @@ ok("a reload keeps the mode",     t42Draft.mode==='online_solo');
 ok("...and the track",            t42Draft.track==='transform');
 
 /* ── the 60-second assessment ── */
-ok("an inactive beginner is sent to START",     t42Recommend(0)==='start');
-ok("...and so is someone barely training",      t42Recommend(6)==='start');
+ok("without START, a beginner is sent to TRANSFORM", t42Recommend(0)==='transform');
+T42.challenge.config={tracks:['start','transform','perform']};
+ok("an edition with START sends a beginner there", t42Recommend(0)==='start');
+ok("...and someone barely training",            t42Recommend(6)==='start');
+T42.challenge.config={};
 ok("the middle is TRANSFORM",                   t42Recommend(7)==='transform');
 ok("...across most of the range",               t42Recommend(15)==='transform');
 ok("only the fittest get PERFORM",              t42Recommend(16)==='perform');
@@ -1760,7 +1772,7 @@ ok("...and are not all the same", Object.keys(_codes).length>150, Object.keys(_c
 
 /* ── registered ── */
 T42.reg={id:'r1',challenge_id:'ch1',mode:'online_solo',track:'transform',
-         gender:'female',status:'pending',verify_code:'T42-84921'};
+         gender:'female',status:'paid',verify_code:'T42-84921'};
 T42.baseline={id:'m1',registration_id:'r1',phase:'baseline',
               weight_kg:61.5,height_cm:165,waist_cm:72};
 ok("a full baseline counts as complete", T42.hasBaseline()===true);
@@ -2032,8 +2044,13 @@ T42.challenge=_t42edition(-17); t42Segs();                      // day 18
 ok("...and a member past the lock without one still gets them",
    document.getElementById('t42-segs').style.display==='flex');
 _t42running();
-T42.challenge=_t42edition(9); t42Segs();
-ok("...and not before the edition starts",
+T42.challenge=_t42edition(9); t42View='joined'; t42Segs();
+ok("before the start the tabs are Overview and Rules",
+   document.getElementById('t42-segs').style.display==='flex' &&
+   document.getElementById('t42-segs').innerHTML.indexOf('Overview')>0 &&
+   document.getElementById('t42-segs').innerHTML.indexOf('Check in')<0);
+T42.reg.status='pending'; t42View='pay'; t42Segs();
+ok("...and an unpaid place gets none",
    document.getElementById('t42-segs').style.display==='none');
 
 /* ── coming back from a workout ──
@@ -2439,7 +2456,7 @@ noThrow("the result renders", function(){ t42Paint(); });
 var _rr=document.getElementById('t42-body').innerHTML;
 ok("...headed T42 COMPLETE",       _rr.indexOf('T42 COMPLETE')>0);
 ok("...counting 42 of 42",         _rr.indexOf('42 / 42 DAYS')>0);
-ok("...with the weight change",    _rr.indexOf('-5.4kg')>0);
+ok("...with the weight change",    _rr.indexOf('-5.4 kg')>0);
 /* START trains three days a week. Counting workouts against every day of
    the challenge would tell someone who did all of them they did 43%. */
 T42.score.workout_pct=100; T42.completions=[{day_no:1},{day_no:3}];
@@ -2447,7 +2464,7 @@ ok("workouts use the plan-based number once the server has one", T42.workoutPct(
 T42.score.workout_pct=null;
 ok("...and the app's own count before that", T42.workoutPct()===Math.round(2/42*100));
 _t42done();
-ok("...and the waist change",      _rr.indexOf('-6cm')>0);
+ok("...and the waist change",      _rr.indexOf('-6 cm')>0);
 ok("...the score",                 _rr.indexOf('87.4')>0);
 ok("...and the place",             _rr.indexOf('#2 · Transform · Women')>0);
 ok("...offering the certificate",  _rr.indexOf('Claim Certificate')>0);
@@ -2506,7 +2523,7 @@ _t42done();
 t42View='next';
 noThrow("what's next renders", function(){ t42Paint(); });
 var _nx=document.getElementById('t42-body').innerHTML;
-ok("...back into HITFAT+",       _nx.indexOf('t42NextTrain()')>0);
+ok("...back into HITFAT+",       _nx.indexOf('t42NextStore()')>0 && _nx.indexOf('Explore HITFAT+')>0);
 ok("...the store",               _nx.indexOf('t42NextStore()')>0);
 ok("...RUSH",                    _nx.indexOf('t42Rush()')>0);
 ok("...the gym",                 _nx.indexOf('t42NextGym()')>0);
@@ -2526,6 +2543,224 @@ var _lp=document.getElementById('t42-body').innerHTML;
 ok("the landing offers last edition's result", _lp.indexOf('Your November 2026 result')>0);
 ok("...beside the new invitation",             _lp.indexOf('Join T42')>0);
 _t42reset(); T42.past=null; T42.certs=[];
+
+print("\n── T42 · THE CHALLENGE ENGINE ──");
+/* ── the lifecycle every screen follows ── */
+_t42reset();
+ok("no place is the invitation",        T42.stage()==='discover');
+T42.reg={id:'r1',challenge_id:'ch1',mode:'online_solo',track:'transform',gender:'male',status:'pending',verify_code:'T42-1'};
+ok("signed up but unpaid is unpaid",    T42.stage()==='unpaid');
+ok("...and pending is not paid",        T42.isPaid()===false);
+T42.reg.status='paid';
+ok("paid before day 1 is upcoming",     T42.stage()==='upcoming');
+T42.challenge=_t42edition(-17);
+ok("paid on day 18 is active",          T42.stage()==='active');
+T42.reg.status='active';
+ok("...and 'active' is paid too",       T42.isPaid()===true);
+T42.challenge=_t42edition(-45);
+ok("after the last day it is closing",  T42.stage()==='closing');
+T42.challenge.status='complete';
+ok("results out is finished",           T42.stage()==='finished');
+T42.reg.status='disqualified';
+ok("a disqualified place is out",       T42.stage()==='out');
+ok("...and Home stays quiet about it",  t42HomeCard()==='');
+T42.challenge=null;
+ok("no edition is none",                T42.stage()==='none');
+_t42reset();
+
+/* ── access ends with the challenge, or when the edition says ── */
+T42.challenge=_t42edition(-50);
+ok("content closes after the last day by default", T42.accessEnded()===true);
+T42.challenge=_t42edition(-41);
+ok("...but not on the last day itself",            T42.accessEnded()===false);
+T42.challenge=_t42edition(-50); T42.challenge.access_ends_on=_t42day(2);
+ok("an edition can set a later close",             T42.accessEnded()===false);
+_t42reset();
+
+/* ── what the edition offers ── */
+ok("two tracks by default",           t42Tracks().map(function(t){ return t.id; }).join()==='transform,perform');
+T42.challenge.config={tracks:['perform']};
+ok("...or whatever the edition lists", t42Tracks().length===1 && t42Tracks()[0].id==='perform');
+T42.challenge.config={};
+ok("online only by default",          t42GymOpen()===false && t42Steps()===2);
+t42Draft.mode=null; t42Begin();
+ok("joining skips the mode step",     t42View==='track' && t42Draft.mode==='online_solo');
+ok("...and the track step says 1 of 2", document.getElementById('t42-body').innerHTML.indexOf('Step 1 of 2')>0);
+t42Draft.track='start';
+t42TrackNext();
+ok("a track the edition does not run cannot be taken", t42View==='track');
+_t42reset();
+
+/* ── securing the spot ── */
+T42.reg={id:'r1',challenge_id:'ch1',mode:'online_solo',track:'transform',gender:'male',status:'pending',verify_code:'T42-77001'};
+T42.baseline={id:'m1',phase:'baseline',weight_kg:82,height_cm:174,waist_cm:95};
+t42Resume();
+ok("an unpaid sign-up resumes on payment", t42View==='pay');
+T42.challenge.price_rm=99;
+noThrow("the payment screen renders", function(){ t42Paint(); });
+var _pp=document.getElementById('t42-body').innerHTML;
+ok("...titled secure your spot",    _pp.indexOf('Secure your spot')>0);
+ok("...with the edition's price",   _pp.indexOf('RM99')>0 && _pp.indexOf('Pay RM99')>0);
+ok("...both ways to pay",           _pp.indexOf('FPX')>0 && _pp.indexOf('DuitNow')>0);
+ok("...saying it covers this edition only", _pp.indexOf('November 2026 only')>0);
+ok("...and that it is not HITFAT+", _pp.indexOf('not a HITFAT+ subscription')>0);
+T42.challenge.price_rm=null; t42Paint();
+_pp=document.getElementById('t42-body').innerHTML;
+ok("no price yet says payment opens soon", _pp.indexOf('Payment opens soon')>0 && _pp.indexOf('Pay RM')<0);
+ok("...with a way to pay by message",      _pp.indexOf('t42AskPay()')>0);
+t42View='dash'; t42Paint();
+ok("an unpaid place cannot reach the dashboard",
+   document.getElementById('t42-body').innerHTML.indexOf('Secure your spot')>0);
+t42View='joined'; t42Paint();
+ok("...nor the countdown",
+   document.getElementById('t42-body').innerHTML.indexOf('Secure your spot')>0);
+ok("Home asks for the last step", t42HomeCard().indexOf('Secure your spot')>0);
+T42.baseline=null;
+ok("...or the sign-up before it", t42HomeCard().indexOf('Finish your sign-up')>0);
+t42Resume();
+ok("...and resumes on the baseline while it can be given", t42View==='baseline');
+T42.challenge.reg_closes_on=_t42day(-1); t42Resume();
+ok("...and on payment once registration has closed",      t42View==='pay');
+t42Paint();
+ok("a closed edition says the place was not confirmed",
+   document.getElementById('t42-body').innerHTML.indexOf('Registration closed')>0);
+_t42reset();
+
+/* ── before day 1 ── */
+T42.reg={id:'r1',challenge_id:'ch1',mode:'online_solo',track:'perform',gender:'female',status:'paid',verify_code:'T42-5'};
+T42.baseline={id:'m1',phase:'baseline',weight_kg:61.5,height_cm:165,waist_cm:72,age:29};
+try{ localStorage.removeItem(t42RulesKey()); }catch(e){}
+t42View='joined'; t42Paint();
+var _up=document.getElementById('t42-body').innerHTML;
+ok("the countdown says you are in",  _up.indexOf('You\'re in.')>0);
+ok("...counts days and hours",       _up.indexOf('days to go')>0 && _up.indexOf('hours')>0);
+ok("...lists what to get ready",     _up.indexOf('Get ready')>0 && _up.indexOf('Starting photos')>0 &&
+                                     _up.indexOf('Rules &amp; scoring')>0);
+var _pi=t42PrepItems();
+ok("the checklist ticks what exists", _pi.filter(function(i){ return i.done; }).length===4, _pi.filter(function(i){ return i.done; }).length);
+t42GoRules();
+ok("reading the rules ticks the rules", t42RulesRead()===true &&
+   t42PrepItems().filter(function(i){ return i.done; }).length===5);
+var _ru=document.getElementById('t42-body').innerHTML;
+ok("the rules give the dates",       _ru.indexOf('Day 1')>0 && _ru.indexOf('Content closes')>0);
+ok("...say a missed day resets nothing", _ru.indexOf('Nothing resets')>0);
+T42.challenge.config={scoring:{perform:{fitness_pct:50,rush_pct:25,workout_pct:15,consistency_pct:10}}};
+t42Paint(); _ru=document.getElementById('t42-body').innerHTML;
+ok("...and the weights come from the edition", _ru.indexOf('Fitness tests')>0 && _ru.indexOf('50%')>0);
+T42.challenge.config={community_url:'https://chat.whatsapp.com/abc'};
+ok("a community link is a checklist line when the edition has one",
+   t42PrepItems().some(function(i){ return i.label==='Join the community'; }));
+_t42reset();
+
+/* ── the running dashboard ── */
+_t42running();
+t42View='dash'; t42Paint();
+var _dd=document.getElementById('t42-body').innerHTML;
+ok("the dashboard says how long is left", _dd.indexOf('24</b>')>0 && _dd.indexOf('days left')>0);
+ok("...draws the six weeks",              (_dd.match(/t42-jseg/g)||[]).length===6);
+ok("...and one button to carry on",       _dd.indexOf('Continue Today')>0 && _dd.indexOf('t42PlayToday()')>0);
+ok("...with progress as four numbers",    _dd.indexOf('Compliance')>0 && _dd.indexOf('Points')>0);
+ok("day 18 is not a milestone",           _dd.indexOf('t42-mile')<0);
+T42.checkins=[{day_no:16}];
+t42Paint(); _dd=document.getElementById('t42-body').innerHTML;
+ok("a missed yesterday is said kindly",   _dd.indexOf('You missed yesterday')>0 && _dd.indexOf('nothing resets')>0);
+T42.checkins=[{day_no:17}]; t42Paint();
+ok("...and not when yesterday was done",
+   document.getElementById('t42-body').innerHTML.indexOf('You missed yesterday')<0);
+T42.checkins=[]; T42.challenge=_t42edition(-20); t42Paint();   // day 21
+ok("day 21 is halfway there",
+   document.getElementById('t42-body').innerHTML.indexOf('Halfway there')>0);
+T42.challenge=_t42edition(-6); t42Paint();                      // day 7
+ok("day 7 is seven days complete",
+   document.getElementById('t42-body').innerHTML.indexOf('7 days complete')>0);
+_t42running();
+T42.doneToday={day_no:18,title:'FULL BODY 01'};
+ok("with the workout done, carrying on means the check-in", t42NextAction().go==='t42GoCheckin()');
+T42.today={day_no:18,energy:3};
+ok("...and with both, the day is done",   t42NextAction().done===true);
+_t42running();
+
+/* Yesterday can still be logged the morning after. */
+T42.checkins=[{day_no:16}];
+t42CheckYesterday();
+ok("logging yesterday checks in day 17",  t42CkDay()===17 &&
+   document.getElementById('t42-body').innerHTML.indexOf('Day 17 · Yesterday')>0);
+t42Go('dash');
+ok("...and leaving goes back to today",   t42CkFor===null && t42CkDay()===18);
+_t42running();
+
+/* ── after the end: a closed door with somewhere to go ── */
+_t42done();
+T42.open={id:'ch2',slug:'t42-ramadan-2027',name:'T42 Ramadan 2027',edition:'Ramadan 2027',
+          starts_on:_t42day(30),ends_on:_t42day(71),status:'registration',total_days:42,config:{}};
+t42Finished('The plan');
+var _lk=document.getElementById('t42-body').innerHTML;
+ok("a finished edition's content is closed",  _lk.indexOf('Challenge completed')>0 && _lk.indexOf('Your achievement stays')>0);
+ok("...pointing at the result and certificate", _lk.indexOf('t42GoResult()')>0 && _lk.indexOf('t42GoCert()')>0);
+ok("...and at the next edition",             _lk.indexOf('Ramadan 2027')>0 && _lk.indexOf('Join the next challenge')>0);
+ok("...with HITFAT+ as an upsell, not a gift", _lk.indexOf('Sold separately')>0);
+T42.open=null;
+t42View='result'; t42Paint();
+var _rs=document.getElementById('t42-body').innerHTML;
+ok("the result is the finish line",       _rs.indexOf('You did it.')>0 && _rs.indexOf('T42 Finisher')>0);
+ok("...with the longest streak",          _rs.indexOf('Longest streak')>0 && _rs.indexOf('2 days')>0);
+ok("...and says access has ended",        _rs.indexOf('Program access ended')>0);
+_t42reset();
+
+/* ── My T42 Journey ── */
+T42.open=_t42edition(9); T42.challenge=T42.open;
+T42.journey=[
+  {id:'r-old',challenge_id:'old',status:'completed',track:'transform',
+   t42_challenges:{id:'old',name:'T42 November 2026',edition:'November 2026',status:'complete',
+                   starts_on:_t42day(-80),ends_on:_t42day(-39),total_days:42,config:{}},
+   t42_scores:{total:92,consistency_total:88,consistency_pct:91,eligible:true,rank_category:3,category:'transform_male'},
+   t42_certificates:[{id:'c9',kind:'finisher'}],
+   t42_measurements:[{phase:'baseline',weight_kg:91.2,waist_cm:101},{phase:'final',weight_kg:85.8,waist_cm:94}]},
+  {id:'r-p',challenge_id:'xx',status:'pending',track:'perform',
+   t42_challenges:{id:'xx',name:'T42 Merdeka 2027',starts_on:_t42day(200),ends_on:_t42day(241),status:'registration',total_days:42},
+   t42_scores:[],t42_certificates:[],t42_measurements:[]}
+];
+t42View='journey'; t42Paint();
+var _jy=document.getElementById('t42-body').innerHTML;
+ok("the journey lists every edition",      _jy.indexOf('T42 November 2026')>0 && _jy.indexOf('T42 Merdeka 2027')>0);
+ok("...a finished one as completed",       _jy.indexOf('>Completed<')>0);
+ok("...with its changes",                  _jy.indexOf('-5.4 kg')>0 && _jy.indexOf('-7 cm')>0);
+ok("...its compliance, score and rank",    _jy.indexOf('91%')>0 && _jy.indexOf('>92.0<')>0 && _jy.indexOf('>#3<')>0);
+ok("...its certificate",                   _jy.indexOf("t42OpenCert('r-old')")>0 && _jy.indexOf('FINISHER')>0);
+ok("...and program access, ended",         _jy.indexOf('Program access: Ended')>0);
+ok("an unpaid one says so",                _jy.indexOf('Payment pending')>0);
+ok("the open edition invites a new sign-up", _jy.indexOf('Registration open')>0 && _jy.indexOf('Join now')>0);
+T42.journey=[];
+t42Paint();
+ok("an empty journey says what will live there",
+   document.getElementById('t42-body').innerHTML.indexOf('Nothing here yet')>0);
+T42.journey=null; T42.open=null;
+_t42reset();
+
+/* ── the server side of the same rules ── */
+var _sql27=readFile('deploy/27-t42-engine.sql');
+ok("the plan is readable only with access",
+   /create policy t42_plan_read[\s\S]*?t42_has_access\(challenge_id\)/.test(_sql27));
+ok("...which needs a paid place in that edition, inside its window",
+   _sql27.indexOf("t42_is_paid_status(r.status)")>0 && _sql27.indexOf('r.challenge_id = p_challenge')>0 &&
+   _sql27.indexOf('coalesce(c.access_ends_on, c.starts_on + c.total_days - 1)')>0);
+ok("scoring rows need a confirmed place",
+   ['t42_daily_checkins','t42_workout_completions','t42_rush_results','t42_measurements'].every(function(t){
+     return _sql27.indexOf('create trigger t42_guard_paid before insert or update on public.'+t)>0; }));
+ok("an unpaid registration is never ranked", _sql27.indexOf("new.eligible := false")>0);
+ok("the edition advances by date on the hourly job",
+   /create or replace function public\.t42_compute_all\(\)[\s\S]*?perform public\.t42_advance\(\)/.test(_sql27));
+ok("...and nobody can call that by hand",
+   _sql27.indexOf('revoke all on function public.t42_advance()     from public, anon, authenticated')>0);
+ok("the price is never invented in a migration", !/set\s+price_rm\s*=/.test(_sql27.replace(/--.*$/mg,'')));
+var _grant=readFile('deploy/_shared/grant.ts'), _pc=readFile('deploy/pay-create/index.ts');
+ok("paying for T42 confirms that registration, not a store entitlement",
+   _grant.indexOf("update({ status: 'paid', product_sku: sku })")>0 && _grant.indexOf(".eq('status', 'pending')")>0);
+ok("pay-create prices T42 from the edition's row",
+   _pc.indexOf("price = Number(ch.price_rm)")>0 && _pc.indexOf('amount: price')>0);
+ok("...and refuses a second payment",  _pc.indexOf("You are already in this T42.")>0);
+ok("coming back from paying for T42 waits on T42",
+   readFile('store.js').indexOf("sku.indexOf('t42:')===0 && typeof t42AwaitPayment==='function'")>0);
 
 print("\n── T42 · GYM DUO ──");
 function _t42gym(){

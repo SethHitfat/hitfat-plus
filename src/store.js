@@ -407,6 +407,10 @@ function capturePaidParam(){
 function handlePaidRedirect(){
   try{
     const sku=localStorage.getItem('hf_plus_pending');
+    /* A T42 place is confirmed on its registration, not in the store's
+       entitlements — T42 waits for it itself. */
+    if(sku && sku.indexOf('t42:')===0 && typeof t42AwaitPayment==='function'){
+      localStorage.removeItem('hf_plus_pending'); t42AwaitPayment(); return; }
     if(sku){ localStorage.removeItem('hf_plus_pending'); awaitPayment(); return; }
     refreshPurchases();
   }catch(e){}

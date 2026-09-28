@@ -506,7 +506,7 @@ function renderPeople(){
       '<td><b>'+esc(p.full_name)+'</b><div class="muted">'+esc(p.email)+' · '+esc(p.verify_code||'')+'</div></td>'+
       '<td>'+esc(MODE[p.mode]||p.mode)+'</td>'+
       '<td>'+esc(TRACK[p.track]||p.track)+'<div class="muted">'+esc(p.gender||'—')+'</div></td>'+
-      '<td><span class="pill '+(out?'bad':p.status==='active'||p.status==='paid'?'ok':'')+'">'+esc(p.status)+'</span></td>'+
+      '<td><span class="pill '+(out?'bad':p.status==='active'||p.status==='paid'?'ok':p.status==='pending'?'warn':'')+'">'+esc(p.status==='pending'?'unpaid':p.status)+'</span></td>'+
       '<td>'+(p.baseline_ok?'<span class="pill ok">done</span>':'<span class="pill">missing</span>')+'</td>'+
       '<td>'+(p.final_status?'<span class="pill '+(p.final_status==='verified'?'ok':'warn')+'">'+esc(p.final_status)+'</span>':'<span class="muted">—</span>')+'</td>'+
       '<td class="muted">'+esc((p.category||'—').replace(/_/g,' '))+'</td>'+
@@ -516,7 +516,10 @@ function renderPeople(){
       (isAdmin
         ? '<td>'+(out
             ? '<button class="btn sec sm" onclick="setStatus(\''+p.registration_id+'\',\'active\')">Reinstate</button>'
-            : '<button class="btn sec sm" onclick="setStatus(\''+p.registration_id+'\',\'disqualified\')">Disqualify</button>')+'</td>'
+            : (p.status==='pending'
+                ? '<button class="btn sm" onclick="setStatus(\''+p.registration_id+'\',\'paid\')">Mark paid</button> '
+                : '')+
+              '<button class="btn sec sm" onclick="setStatus(\''+p.registration_id+'\',\'disqualified\')">Disqualify</button>')+'</td>'
         : '')+
     '</tr>';
   });
@@ -531,8 +534,12 @@ function renderPeople(){
 async function setStatus(regId,status){
   if(!isAdmin) return;
   const p=person(regId);
-  const why=window.prompt((status==='disqualified'?'Disqualify ':'Reinstate ')+(p.full_name||'this participant')+
-    '? Give the reason — it is kept in the audit log.');
+  /* Mark paid is for a payment taken outside the app — bank transfer,
+     cash at HQ. The reason is the receipt: where the money went. */
+  const verb=status==='disqualified'?'Disqualify ':status==='paid'?'Confirm payment for ':'Reinstate ';
+  const why=window.prompt(verb+(p.full_name||'this participant')+
+    (status==='paid' ? '? How was it paid (e.g. bank transfer, ref no.) — kept in the audit log.'
+                     : '? Give the reason — it is kept in the audit log.'));
   if(why===null) return;
   if(!why.trim()){ toast('A reason is needed'); return; }
   try{
@@ -540,12 +547,14 @@ async function setStatus(regId,status){
     if(u.error) throw u.error;
     await sb.from('t42_admin_notes').insert({
       challenge_id:ed.id, registration_id:regId,
-      action: status==='disqualified'?'disqualify':'reinstate',
+      action: status==='disqualified'?'disqualify':status==='paid'?'mark_paid':'reinstate',
       detail: why.trim(),
       before_value:{status:p.status}, after_value:{status:status},
       acted_by:me.id
     });
-    toast(status==='disqualified'?'Disqualified — recompute to update the ranks':'Reinstated — recompute to update the ranks');
+    toast(status==='disqualified'?'Disqualified — recompute to update the ranks'
+        : status==='paid'?'Payment confirmed — their place is open'
+        : 'Reinstated — recompute to update the ranks');
     await loadAll();
   }catch(e){ toast((e&&e.message)||'Could not change that'); }
 }

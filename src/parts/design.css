@@ -191,14 +191,179 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .t42-banner{border:none;border-radius:24px;padding:20px 18px 18px;
   background:
     radial-gradient(120% 90% at 100% 0%, rgba(240,57,43,.45) 0%, transparent 55%),
-    radial-gradient(90% 80% at 0% 100%, rgba(31,167,232,.30) 0%, transparent 60%),
-    #0B0B0F;}
-.t42-banner-logo{font-size:34px;}
+    radial-gradient(90% 80% at 0% 100%, rgba(240,57,43,.12) 0%, transparent 60%),
+    #0A0A0C;}
+.t42-banner-logo{font-size:34px;
+  background:linear-gradient(100deg,#FFFFFF 0%,#FF6A5C 90%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
 .t42-banner-tag{letter-spacing:2px;font-size:11px;}
 .t42-banner-line{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-top:14px;}
 .t42-banner-sub{font-size:14px;color:rgba(235,235,245,.72);}
 .t42-banner-cta{background:#FFFFFF;color:#0B0B0F;font-size:15px;font-weight:600;
   letter-spacing:-.1px;padding:10px 18px;margin-top:16px;}
+
+/* ── T42 · the stage ──
+   The campaign surface: black in both themes, white type, one red light in
+   the corner. It is a dark island, so the theme's text tokens are declared
+   again inside it and everything that uses them turns white. */
+.t42-stage{
+  --txt:#FFFFFF; --dim:rgba(235,235,245,.66); --dim2:rgba(235,235,245,.48);
+  --ink-72:rgba(255,255,255,.76); --tint:rgba(255,255,255,.14);
+  --line:rgba(255,255,255,.14); --hairline:rgba(255,255,255,.16);
+  position:relative;overflow:hidden;color:#FFFFFF;border-radius:24px;
+  padding:20px 18px 20px;margin:4px 0 14px;
+  background:
+    radial-gradient(110% 80% at 100% 0%, rgba(240,57,43,.42) 0%, transparent 58%),
+    radial-gradient(80% 70% at 0% 100%, rgba(240,57,43,.12) 0%, transparent 60%),
+    #0A0A0C;
+  animation:t42rise .35s ease-out both;}
+@keyframes t42rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.t42-stage-top{display:flex;align-items:baseline;gap:10px;}
+.t42-logo.t42-logo-s{font-size:30px;letter-spacing:-.5px;
+  background:linear-gradient(100deg,#FFFFFF 0%,#FF6A5C 90%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.t42-logo.t42-logo-m{font-size:40px;margin-top:6px;
+  background:linear-gradient(100deg,#FFFFFF 0%,#FF6A5C 90%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.t42-jopen .bigbtn{margin:14px 0 0;}
+.t42-stage-tag{font-size:11px;font-weight:700;letter-spacing:1.8px;color:rgba(255,255,255,.58);}
+.t42-stage-ed{font-size:15px;font-weight:600;color:rgba(255,255,255,.72);margin-top:18px;}
+.t42-stage-h{font-size:30px;font-weight:800;letter-spacing:-.9px;line-height:1.08;margin-top:4px;}
+.t42-stage-h.t42-in{font-size:40px;letter-spacing:-1.4px;margin-top:18px;}
+.t42-stage-k{font-size:15px;color:rgba(255,255,255,.72);margin-top:8px;line-height:1.45;}
+.t42-stage-dates{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;
+  color:rgba(255,255,255,.80);margin-top:14px;}
+.t42-stage-dates .gly{color:#FF6A5C;}
+.t42-stage .t42-when{text-align:left;color:#FF6A5C;margin:6px 0 0;font-size:14px;}
+.t42-stage-cta{display:block;width:100%;margin-top:18px;border:none;border-radius:var(--r-ctl);
+  background:#FFFFFF;color:#0A0A0C;font-size:17px;font-weight:700;padding:15px;cursor:pointer;
+  font-family:inherit;}
+.t42-stage-cta:active{transform:scale(.99);}
+.t42-stage-fine{text-align:center;font-size:13px;color:rgba(255,255,255,.62);margin-top:9px;}
+.t42-stage .t42-count{text-align:left;display:flex;gap:22px;margin:10px 0 0;}
+.t42-cd b{display:block;font-size:56px;font-weight:800;letter-spacing:-2.2px;line-height:1;
+  font-variant-numeric:tabular-nums;}
+.t42-cd span{display:block;font-size:13px;font-weight:600;color:rgba(255,255,255,.62);margin-top:4px;}
+
+/* Today: the day number and what is left, on the stage. */
+.t42-today .t42-day{margin:16px 0 14px;}
+.t42-today .t42-day-n{font-size:52px;letter-spacing:-1.8px;}
+.t42-today .t42-day-s{color:rgba(255,255,255,.70);}
+.t42-left{text-align:right;flex:0 0 auto;}
+.t42-left b{display:block;font-size:30px;font-weight:800;letter-spacing:-.8px;line-height:1;
+  font-variant-numeric:tabular-nums;}
+.t42-left span{display:block;font-size:12.5px;color:rgba(255,255,255,.62);margin-top:4px;}
+
+/* The journey bar: six weeks, filled to today. */
+.t42-jbar{display:flex;gap:4px;}
+.t42-jseg{flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden;}
+.t42-jseg i{display:block;height:100%;background:#FF3B30;border-radius:99px;transition:width .6s ease;}
+.t42-jseg.full i{background:#FFFFFF;}
+.t42-jlab{display:flex;gap:4px;margin-top:7px;}
+.t42-jlab span{flex:1;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.45);}
+.t42-jlab span.on{color:#FFFFFF;}
+.t42-focus{margin:-4px 4px 14px;font-size:14px;}
+
+/* The one button under the stage. */
+.bigbtn.t42-go{margin:0 0 14px;}
+.t42-missed .bigbtn{padding:12px;font-size:15px;margin-top:12px;}
+
+/* A milestone: warm, brief, and gone tomorrow. */
+.t42-mile{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r-card);
+  padding:16px;margin-bottom:12px;animation:t42pop .5s cubic-bezier(.2,1.4,.4,1) both;}
+@keyframes t42pop{from{opacity:0;transform:scale(.96);}to{opacity:1;transform:none;}}
+.t42-mile-i{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;flex:0 0 auto;
+  background:linear-gradient(135deg,#FF3B30,#FF9500);color:#FFFFFF;}
+.t42-mile-i .gly{width:24px;height:24px;stroke-width:2;}
+.t42-mile-t{font-size:18px;font-weight:800;letter-spacing:-.4px;color:var(--txt);}
+.t42-mile-s{font-size:14px;color:var(--dim);margin-top:3px;line-height:1.4;}
+.t42-alert{outline:2px solid var(--hitfat);}
+
+/* The six weeks, before and during. */
+.t42-weeks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.t42-wk{background:var(--surface);border-radius:16px;padding:12px 11px;min-height:66px;}
+.t42-wk-n{font-size:12px;font-weight:600;color:var(--dim);}
+.t42-wk-t{font-size:14px;font-weight:700;color:var(--txt);margin-top:4px;line-height:1.25;letter-spacing:-.2px;}
+.t42-wk.done{opacity:.55;}
+.t42-wk.now{background:var(--txt);}
+.t42-wk.now .t42-wk-n,.t42-wk.now .t42-wk-t{color:var(--bg);}
+
+/* A row that only informs. */
+.t42-info{cursor:default;}
+.t42-list .t42-info:active{background:none;}
+.t42-info .t42-row-v{line-height:1.4;}
+.t42-res{font-size:16px;font-weight:700;color:var(--txt);flex:0 0 auto;font-variant-numeric:tabular-nums;}
+.t42-sec-n{font-size:15px;font-weight:600;color:var(--dim);letter-spacing:0;margin-left:6px;}
+
+/* The price, the way a receipt says it. */
+.t42-price{text-align:center;background:var(--surface);border-radius:var(--r-card);padding:20px 14px;margin:14px 0 4px;}
+.t42-price-n{font-size:44px;font-weight:800;letter-spacing:-1.6px;color:var(--txt);}
+.t42-price-l{font-size:14px;color:var(--dim);margin-top:4px;}
+
+/* The way back, where there are no tabs. */
+.t42-back{display:inline-flex;align-items:center;gap:3px;background:none;border:none;padding:6px 2px;
+  margin:0 0 2px;color:var(--hitfat);font-size:17px;font-weight:500;cursor:pointer;font-family:inherit;}
+.t42-back .gly{width:20px;height:20px;stroke-width:2.4;}
+
+/* Loading: the shapes of what is coming, not a sentence about it. */
+.t42-skel div{height:120px;border-radius:var(--r-card);background:var(--surface);margin-bottom:12px;
+  animation:t42pulse 1.2s ease-in-out infinite;}
+.t42-skel div:first-child{height:210px;}
+@keyframes t42pulse{0%,100%{opacity:.55;}50%{opacity:1;}}
+
+/* The finish line and the closed door. */
+.t42-finish{text-align:center;}
+.t42-finish .t42-stage-h{font-size:38px;margin-top:0;}
+.t42-finish .t42-trophy{margin-bottom:6px;}
+.t42-locked{text-align:center;}
+.t42-lock-i{width:56px;height:56px;border-radius:18px;margin:0 auto;display:grid;place-items:center;
+  background:rgba(255,255,255,.12);}
+.t42-lock-i .gly{width:28px;height:28px;color:#FFCC00;}
+.t42-locked .t42-stage-ed{margin-top:12px;}
+.t42-next{cursor:pointer;}
+
+/* Badges: earned, so they get the gold. */
+.t42-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.t42-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:99px;
+  background:rgba(255,204,0,.16);color:var(--txt);font-size:13px;font-weight:700;}
+.t42-badge .gly{color:#FF9F0A;}
+.t42-badge-lg{margin-top:14px;font-size:14px;padding:8px 14px;background:rgba(255,204,0,.20);color:#FFFFFF;}
+
+/* My T42 Journey: one card per edition. */
+.t42-jcard{background:var(--surface);border-radius:var(--r-card);padding:16px;margin-bottom:12px;}
+.t42-jopen{outline:2px solid var(--hitfat);cursor:pointer;}
+.t42-jtop{display:flex;align-items:flex-start;gap:10px;}
+.t42-jname{flex:1;font-size:18px;font-weight:800;letter-spacing:-.4px;color:var(--txt);line-height:1.2;}
+.t42-jsub{font-size:14px;color:var(--dim);margin-top:4px;}
+.t42-chip{flex:0 0 auto;font-size:12px;font-weight:700;padding:5px 10px;border-radius:99px;
+  background:var(--surface2);color:var(--dim);}
+.t42-chip.done{background:rgba(52,199,89,.16);color:#1F9D48;}
+.t42-chip.live{background:rgba(255,59,48,.14);color:var(--hitfat);}
+.t42-chip.open{background:var(--hitfat);color:#FFFFFF;}
+.t42-chip.out{background:rgba(142,142,147,.2);}
+.t42-jgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 8px;margin-top:14px;
+  padding-top:14px;border-top:.5px solid var(--sep);}
+.t42-jstat-v{font-size:19px;font-weight:800;letter-spacing:-.5px;color:var(--txt);font-variant-numeric:tabular-nums;}
+.t42-jstat-l{font-size:12px;color:var(--dim);margin-top:2px;}
+.t42-jaccess{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--dim);margin-top:12px;}
+.t42-jbtns{display:flex;gap:8px;margin-top:12px;}
+.t42-jbtns .bigbtn{margin:0;padding:12px;font-size:15px;}
+
+/* The Home banner: a day bar under the line while the challenge runs. */
+.t42-banner-bar{height:5px;border-radius:99px;background:rgba(255,255,255,.16);margin-top:12px;overflow:hidden;}
+.t42-banner-bar i{display:block;height:100%;background:#FF3B30;border-radius:99px;}
+
+/* Light theme: Apple's green and the tertiary grey are too pale on white
+   for a tick and a chevron that carry meaning (2.2–2.5:1). A deeper green
+   and the secondary grey read at 3:1 and above. */
+:root[data-theme="light"] .t42-tick{color:#1F9D48;}
+:root[data-theme="light"] .t42-chev,
+:root[data-theme="light"] .acard .ah .c{color:var(--dim);}
+:root[data-theme="light"] .paych small{color:var(--dim);}
+
+@media (prefers-reduced-motion: reduce){
+  .t42-stage,.t42-mile,.t42-skel div{animation:none;}
+}
 
 /* The avatar in the top bar had no style of its own — the .av2 rules only
    reach the large one on Home — so it drew as a floating letter. */

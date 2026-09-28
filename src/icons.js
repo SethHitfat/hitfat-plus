@@ -65,7 +65,10 @@ var ICON_PATH={
   mirror:  '<path d="M7 3.5h10v17H7z"/><path d="M10 7l4-2M10 11l5-3"/>',
   eyeoff:  '<path d="M3 3l18 18M10.6 5.5H15L17 8h3v11h-1.5M6.5 19H4V8h2.5"/><path d="M14.3 14.8a3.4 3.4 0 0 1-4.9-4.6"/>',
   share:   '<path d="M12 15V3.5M8 7.5l4-4 4 4M5.5 12v8.5h13V12"/>',
-  dot:     '<circle cx="12" cy="12" r="3.2"/>'
+  dot:     '<circle cx="12" cy="12" r="3.2"/>',
+  chevleft:'<path d="M15 5l-7 7 7 7"/>',
+  medal:   '<circle cx="12" cy="15" r="5"/><path d="M8.5 3.5l2.5 7M15.5 3.5l-2.5 7M12 13v4"/>',
+  card:    '<rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 14.5h4"/>'
 };
 
 /* A colour for each kind — Apple's system palette, so the tiles sit
@@ -78,7 +81,8 @@ var ICON_TINT={
   key:'#FFCC00', plus:'#34C759', trophy:'#FFCC00', target:'#FF3B30', compass:'#0A84FF', lab:'#30B0C7',
   moon:'#5E5CE6', clipboard:'#8E8E93', repeat:'#34C759', leaf:'#34C759', pencil:'#8E8E93', star:'#FFCC00',
   spark:'#FF2D55', heart:'#FF375F', home:'#0A84FF', chair:'#A2845E', laptop:'#8E8E93', rocket:'#FF6B00',
-  sun:'#FF9F0A', bell:'#FF9500', mirror:'#64D2FF', share:'#0A84FF', eyeoff:'#8E8E93', dot:'#8E8E93'
+  sun:'#FF9F0A', bell:'#FF9500', mirror:'#64D2FF', share:'#0A84FF', eyeoff:'#8E8E93', dot:'#8E8E93',
+  chevleft:'#8E8E93', medal:'#FF9F0A', card:'#30B0C7'
 };
 /* Tiles light enough that a white glyph would vanish get a dark one. */
 var ICON_DARK_GLYPH={bolt:1, trophy:1, key:1, star:1, measure:1};

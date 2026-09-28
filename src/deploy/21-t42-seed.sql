@@ -85,29 +85,29 @@ on conflict (slug) do update set
 -- ── the six weeks ───────────────────────────────────────────────
 -- The arc the brief describes. A week with no row still works — the app
 -- falls back to the day number — but the weekly review has nothing to
--- call itself, and "WEEK 3" is a worse heading than "PROGRESS".
+-- call itself, and "WEEK 3" is a worse heading than "Eat Better".
 insert into public.t42_weeks
   (challenge_id, week_no, theme, focus, step_target, mini_title, mini_detail, rush_title, rush_target)
 select c.id, w.week_no, w.theme, w.focus, w.step_target,
        w.mini_title, w.mini_detail, w.rush_title, w.rush_target
   from public.t42_challenges c
   cross join (values
-    (1, 'RESET',        'Baseline. Movement. Hydration. Steps. Simple food.',      7000,
+    (1, 'Build the Habit',  'Start consistently. Small, every day, beats big once a week.', 7000,
         'Step Challenge',        'Hit your step target five days out of seven.',
         'City Circuit',          'Complete 1 race'),
-    (2, 'BUILD',        'Routine. Strength. Protein. Showing up.',                 8000,
+    (2, 'Move More',        'Daily movement. Walk more, sit less — steps count.',          8000,
         'Hydration Challenge',   'Two litres a day, every day this week.',
         'City Circuit',          'Complete 1 race'),
-    (3, 'PROGRESS',     'Conditioning. Strength endurance. First progress review.', 8000,
+    (3, 'Eat Better',       'A good protein source with every main meal, portions under control.', 8000,
         'RUSH Challenge',        'Beat your week 1 race time.',
         'Night Run',             'Beat your previous time'),
-    (4, 'PUSH',         'Leaderboard week. Community push.',                        9000,
+    (4, 'Build Fitness',    'Harder sessions, better recovery. Your body can do more than week one.', 9000,
         'Consistency Challenge', 'Every check-in, every day, no gaps.',
         'Night Run',             'Complete 1 race'),
-    (5, 'BREAKTHROUGH', 'Visible progress. Keep the discipline.',                   9000,
+    (5, 'Push Performance', 'Better quality in every session. Beat last week.',            9000,
         'Workout Streak',        'Four sessions, no missed days between them.',
         'Hill Sprint',           'Complete 1 race'),
-    (6, 'FINISH STRONG','Final push. Final assessment. Final result.',             10000,
+    (6, 'Finish Strong',    'Every day to the line. Final assessment, final result.',     10000,
         'Final Push',            'Everything you have, for seven days.',
         'Hill Sprint',           'Post your best time of the challenge')
   ) as w(week_no, theme, focus, step_target, mini_title, mini_detail, rush_title, rush_target)
