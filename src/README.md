@@ -94,6 +94,86 @@ deploy/25-t42-finalise.sql # closing an edition and issuing certificates
 deploy/26-t42-gym.sql      # Gym Duo — needs the Club schema (10-, 11-) first
 ```
 
+### The challenge engine (Sept 2026)
+
+T42 is a **challenge, not a library**. Every edition — November, Ramadan,
+Merdeka — is its own product with its own dates and its own price. Paying
+for one registers you for that edition only: not HITFAT+, not the next
+edition. When the edition's access closes, the programme closes with it and
+what stays is the history — result, score, certificate — in **My T42 Journey**.
+
+**Where each rule lives** (the app knows them too, but the database says no):
+
+| rule | server | app |
+|---|---|---|
+| today, in Malaysia (the DB clock is UTC) | `t42_today()` | device date |
+| paid for this edition, or the edition is free | `t42_reg_entitled()` | `T42.entitled()` |
+| the programme is still open | `t42_access_open()` | `T42.accessOpen()` |
+| draft · registration · upcoming · active · completed · closed | `t42_phase()` | `T42.phase()` |
+| read a plan day: paid, on that track, not ahead of today, while open | `t42_can_read_plan()` (RLS on `t42_plan_days`) | `t42Gate()` |
+| check-ins, workouts, RUSH: paid and open | `t42_guard_day()`, `t42_guard_rush()` | `t42Gate()` |
+| only the tracks and modes the edition offers | `t42_guard_registration()` | `T42.offers()` |
+
+**An edition's columns** (`t42_challenges`, added by `20-`):
+
+- `price` — ringgit, read by `pay-create` on the server. **NULL = free**,
+  which is how T42 ran before payment; running the migration changes nothing
+  until a price is set.
+- `results_on`, `access_ends_on` — the programme closes after
+  `access_ends_on` (else `results_on`). An edition with neither never closes by
+  date, as before — archive it instead.
+- `tracks`, `modes` — what the edition offers. November 2026 is
+  `{transform,perform}` / `{online_solo}`. START and Gym Duo stay in the engine.
+- `subtitle`, `cover_url` — the discovery screen.
+- `config.scoring_model = 'v2'` — consistency 40 · progress 25 · missions 20 ·
+  fitness 15 (`config.scoring.v2`, must total 100); `config.progress_mix`
+  says what "progress" means per track; `config.community_url` adds a
+  community button before day 1. v1 is still there for older editions.
+- `t42_weeks.mission_rule` — the weekly mission, checked by the scorer from
+  the week's own rows (types listed in `20-`). Never a box a browser ticks.
+
+**Paying.** The SKU is `t42:<slug>`. `pay-create` prices it from the edition
+row (`_shared/t42.ts` — not the catalogue, so a new edition is not a
+deploy), refuses a closed, free or already-paid edition and anyone who has not
+signed up, and the grant marks the **registration** `paid`. Nothing goes into
+`plus_entitlements`. The app's join flow saves the baseline first, then asks
+for payment; the gateway returns to `?paid=t42:…` and `t42AwaitPayment()`
+confirms it.
+
+**Launching a new edition** is SQL, not code:
+
+```sql
+insert into public.t42_challenges
+  (slug, name, edition, subtitle, starts_on, ends_on, reg_opens_on, reg_closes_on,
+   results_on, access_ends_on, price, tracks, modes, status, total_days, config)
+select 't42-ramadan-2027', 'T42 Ramadan 2027', 'Ramadan 2027', '42 days. One transformation.',
+       date '2027-02-08', date '2027-03-21', date '2027-01-10', date '2027-02-07',
+       date '2027-03-28', date '2027-03-28', 99, tracks, modes, 'registration', 42, config
+  from public.t42_challenges where slug = 't42-nov-2026';
+-- then copy the weeks (t42_weeks) and the plan (t42_plan_days) for the new id
+```
+
+**Deploying the engine onto the live database** — every file is safe to run
+again:
+
+```
+deploy/20-t42-core.sql      # new columns + helpers + the gated plan policy
+deploy/24-t42-scoring.sql   # guards + scorer v2 + scoring by date
+deploy/21-t42-seed.sql      # November: online only, two tracks, v2, missions, dates
+update public.t42_challenges set price = <RM> where slug = 't42-nov-2026';
+supabase functions deploy pay-create pay-callback pay-status
+```
+
+(or paste `deploy/dashboard/*.ts` into the dashboard editor — regenerate them
+with `python3 deploy/gen-dashboard.py` after changing `deploy/*/index.ts` or
+`_shared/`). The app falls back to the old columns until `20-` has run, so
+the order of app and SQL deploys does not matter.
+
+`deploy/test/run.sh` checks all of this against a local PostgreSQL: it
+builds the schema as it was before the engine, upgrades it, and diffs a
+scenario (paid/unpaid, reading ahead, access ending, the v2 score) against
+`expected.out`.
+
 ### The score
 
 `24-` is two things, and the first matters more than the second.
@@ -194,8 +274,9 @@ every gym participant is marked "Gym attendance is not connected yet" rather
 than scored on a zero. A gym participant also needs a duo, and on TRANSFORM
 a baseline InBody, to be ranked.
 
-Payment is not wired to T42 either: registrations stay `pending`, and the
-scorer ranks every status except withdrawn and disqualified.
+Payment is wired per edition (see *The challenge engine* above): an edition
+with a price ranks only paid registrations; a free edition (no price) ranks
+every status except withdrawn and disqualified, as before.
 
 Gym Duo registers interest and says so on screen. Its check-in, coach
 verification and InBody are what HITFAT Club already models, and the Club

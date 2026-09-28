@@ -106,8 +106,11 @@ create index if not exists t42_challenges_status on public.t42_challenges (statu
 --                    nothing until an admin sets a price.
 --   results_on       when results are expected out (display only).
 --   access_ends_on   the day the active programme closes. Null falls back
---                    to results_on, then ends_on. After it, only the
---                    participant's history remains: result, certificate.
+--                    to results_on. After it, only the participant's
+--                    history remains: result, certificate. An edition with
+--                    NEITHER date never closes by date — how every edition
+--                    behaved before this column existed — and is closed by
+--                    being archived instead.
 --   tracks / modes   what this edition offers. November 2026 is online
 --                    only, TRANSFORM and PERFORM; the engine keeps START and
 --                    Gym Duo for editions that want them.
@@ -562,10 +565,10 @@ returns date language sql stable as $$
   select (now() at time zone 'Asia/Kuala_Lumpur')::date;
 $$;
 
--- The last day the active programme is open.
+-- The last day the active programme is open. Null: no date closes it.
 create or replace function public.t42_access_ends(p_challenge uuid)
 returns date language sql stable set search_path = public as $$
-  select coalesce(c.access_ends_on, c.results_on, c.ends_on)
+  select coalesce(c.access_ends_on, c.results_on)
     from public.t42_challenges c where c.id = p_challenge;
 $$;
 
@@ -573,7 +576,8 @@ create or replace function public.t42_access_open(p_challenge uuid)
 returns boolean language sql stable set search_path = public as $$
   select coalesce(
     (select c.status not in ('draft','archived')
-            and public.t42_today() <= coalesce(c.access_ends_on, c.results_on, c.ends_on)
+            and (coalesce(c.access_ends_on, c.results_on) is null
+                 or public.t42_today() <= coalesce(c.access_ends_on, c.results_on))
        from public.t42_challenges c where c.id = p_challenge), false);
 $$;
 
@@ -624,7 +628,7 @@ returns text language sql stable set search_path = public as $$
   select case
     when c.status = 'draft'                                         then 'draft'
     when c.status = 'archived'                                      then 'closed'
-    when public.t42_today() > coalesce(c.access_ends_on, c.results_on, c.ends_on) then 'closed'
+    when public.t42_today() > coalesce(c.access_ends_on, c.results_on, 'infinity'::date) then 'closed'
     when c.status = 'complete' or public.t42_today() > c.ends_on    then 'completed'
     when public.t42_today() >= c.starts_on                          then 'active'
     when (c.reg_opens_on is null or public.t42_today() >= c.reg_opens_on)

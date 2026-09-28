@@ -275,3 +275,64 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 /* The outlined "Top 10" numerals: in dark their stroke (#3A3A3C on black)
    measured about 1.7:1 — decorative, but a rank should still be legible. */
 :root:not([data-theme="light"]) .rk{-webkit-text-stroke-color:rgba(255,255,255,.38);}
+
+/* ── T42 challenge engine (Sept 2026) ──
+   The edition, payment, the countdown, milestones, the closed state and
+   the Journey. Every colour is a token, so light and dark both hold. */
+.t42-ed{background:var(--surface);border-radius:var(--r-card);padding:16px;margin:0 0 12px;}
+.t42-ed-n{font-weight:800;font-size:13px;letter-spacing:1.4px;color:var(--hyrox);}
+.t42-ed-s{font-size:15px;color:var(--dim);margin:4px 0 10px;}
+.t42-ed .t42-grid{margin:10px 0 0;}
+.t42-ed-p{margin-top:10px;font-weight:700;font-size:15px;}
+
+.t42-price{text-align:center;background:var(--surface);border-radius:var(--r-card);padding:18px 16px;margin:6px 0 12px;}
+.t42-price-n{font-size:48px;font-weight:800;letter-spacing:-1.5px;line-height:1.05;}
+.t42-price-l{font-size:13px;color:var(--dim);margin-top:4px;}
+
+.t42-in{text-align:center;background:var(--surface);border-radius:var(--r-card);padding:24px 16px 20px;margin:0 0 14px;}
+.t42-in-k{font-size:30px;font-weight:800;letter-spacing:-.5px;}
+.t42-in-t{font-size:14px;color:var(--dim);margin-top:4px;}
+.t42-cd{display:flex;justify-content:center;gap:22px;margin:14px 0 8px;}
+.t42-cd b{display:block;font-size:56px;font-weight:800;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums;}
+.t42-cd span{display:block;font-size:12px;color:var(--dim);letter-spacing:.8px;text-transform:uppercase;margin-top:4px;}
+.t42-in-s{font-size:13px;color:var(--dim);}
+.t42-row.static{cursor:default;}
+.t42-tick.on{color:#34C759;}
+
+.t42-weights{display:grid;gap:10px;margin:0 0 12px;}
+.t42-w{background:var(--surface);border-radius:var(--r-card);padding:12px 14px;}
+.t42-w-h{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;}
+.t42-w-h b{font-size:22px;font-weight:800;}
+.t42-w .pbar{margin:8px 0 6px;}
+.t42-w-s{font-size:13px;color:var(--dim);}
+
+.t42-left{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;
+  font-size:13px;color:var(--dim);letter-spacing:.3px;}
+.t42-left b{color:var(--txt);font-weight:800;}
+.t42-missed{border-left:3px solid var(--note-amber);}
+.t42-done-day{text-align:center;}
+
+/* A milestone: one card, one short rise, then still. Honours reduced motion. */
+.t42-ms{position:relative;text-align:center;border-radius:var(--r-card);padding:22px 16px 16px;margin:0 0 14px;
+  background:linear-gradient(160deg,var(--hyrox),#7F1D1D);color:#FFFFFF;
+  animation:t42-ms-in .55s cubic-bezier(.2,.8,.2,1) both;}
+.t42-ms-n{font-size:12px;font-weight:800;letter-spacing:2px;opacity:.85;}
+.t42-ms-t{font-size:30px;font-weight:800;letter-spacing:-.5px;margin:4px 0 6px;}
+.t42-ms-s{font-size:14px;opacity:.9;}
+.t42-ms-x{margin-top:14px;border:none;border-radius:var(--r-ctl);padding:10px 22px;font-weight:700;
+  background:rgba(255,255,255,.18);color:#FFFFFF;font-size:15px;cursor:pointer;}
+@keyframes t42-ms-in{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:reduce){.t42-ms{animation:none;}}
+
+.t42-jr{background:var(--surface);border-radius:var(--r-card);padding:16px;margin:0 0 12px;}
+.t42-jr-h{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.t42-jr-n{font-weight:800;font-size:15px;letter-spacing:.6px;}
+.t42-jr-s{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:4px 8px;
+  border-radius:999px;background:var(--tint);color:var(--dim);white-space:nowrap;}
+.t42-jr-s.live{background:rgba(52,199,89,.16);color:#34C759;}
+.t42-jr-s.warn{background:rgba(245,158,11,.16);color:var(--note-amber);}
+.t42-jr-s.done{background:var(--accent-wash,rgba(198,40,40,.12));color:var(--hyrox);}
+.t42-jr-m{font-size:13px;color:var(--dim);margin:6px 0 10px;}
+.t42-jr .t42-grid{margin-bottom:10px;}
+.t42-jr-a{font-size:12px;color:var(--dim2);margin-top:8px;letter-spacing:.3px;}
+.t42-next{border:1.5px solid var(--hyrox);}

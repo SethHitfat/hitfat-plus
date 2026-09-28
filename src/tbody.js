@@ -2683,5 +2683,162 @@ ok("gym check-in opens the Club's own QR",
 clubCiStop(); clubSegNow='overview';
 _t42reset();
 
+
+print("\n── T42 · THE CHALLENGE ENGINE ──");
+/* One edition is one product: its own dates, its own price, and access that
+   ends. These drive the app's half of the rules the database enforces. */
+function _t42ed(o){
+  var e=_t42edition(-17); e.status='running';
+  for(var k in (o||{})) e[k]=o[k];
+  return e;
+}
+function _t42paidReg(o){
+  var r={id:'r1',challenge_id:'ch1',mode:'online_solo',track:'transform',
+         gender:'female',status:'paid',verify_code:'T42-84921'};
+  for(var k in (o||{})) r[k]=o[k];
+  return r;
+}
+_t42running();
+
+/* ── what the edition offers ── */
+T42.challenge=_t42ed({tracks:['transform','perform'], modes:['online_solo']});
+ok("an edition offers only its tracks", T42.offers('tracks','transform') && !T42.offers('tracks','start'));
+ok("...and only its modes", T42.offers('modes','online_solo') && !T42.offers('modes','gym_duo'));
+T42.challenge=_t42ed();
+ok("an edition that says nothing offers everything, as before",
+   T42.offers('tracks','start') && T42.offers('modes','gym_duo'));
+
+/* ── entitlement ── */
+T42.challenge=_t42ed({price:99});
+T42.reg=_t42paidReg({status:'pending'});
+ok("a priced edition, unpaid, is not entitled", !T42.entitled() && T42.needsPayment());
+T42.reg.status='paid';
+ok("...paid, it is", T42.entitled() && !T42.needsPayment());
+T42.challenge=_t42ed({price:null}); T42.reg.status='pending';
+ok("a free edition entitles a pending registration", T42.entitled());
+T42.reg.status='withdrawn';
+ok("...but never a withdrawn one", !T42.entitled());
+
+/* ── the gate: an unpaid participant sees payment, not the programme ── */
+T42.challenge=_t42ed({price:99, reg_closes_on:_t42day(3)});
+T42.reg=_t42paidReg({status:'pending'});
+T42.baseline={id:'m1',registration_id:'r1',phase:'baseline',weight_kg:61.5,height_cm:165,waist_cm:72};
+t42Resume();
+ok("an unpaid participant resumes on payment", t42View==='pay');
+t42View='train'; t42Paint();
+var _pay=document.getElementById('t42-body').innerHTML;
+ok("...and cannot open the plan", _pay.indexOf('Pay RM99')>0 && _pay.indexOf('FULL BODY')<0);
+ok("...told it is this edition only", _pay.indexOf('this edition only')>0);
+ok("...and that HITFAT+ is not included", _pay.indexOf('does not include HITFAT+')>0);
+ok("Home asks them to complete payment", t42HomeCard().indexOf('Complete payment')>0);
+t42Segs();
+ok("the challenge tabs stay hidden until paid", document.getElementById('t42-segs').style.display==='none');
+
+/* ── access ends: history, not the library ── */
+T42.challenge=_t42ed({price:99, starts_on:_t42day(-60), ends_on:_t42day(-19),
+                      results_on:_t42day(-12), access_ends_on:_t42day(-12)});
+T42.reg=_t42paidReg();
+ok("after access ends it is closed", !T42.accessOpen() && T42.phase()==='closed');
+t42Resume();
+ok("a closed edition resumes on the ended screen", t42View==='ended');
+t42View='checkin'; t42Paint();
+var _end=document.getElementById('t42-body').innerHTML;
+ok("...and a programme screen shows the locked state instead",
+   _end.indexOf('Your challenge access has ended')>0 && _end.indexOf('T42 Journey')>0);
+ok("...with HITFAT+ offered, not given", _end.indexOf('Explore HITFAT+')>0);
+t42View='cert'; t42Paint();
+ok("...but the certificate screen is still reachable", t42View==='cert');
+ok("Home says the result is in the journey", t42HomeCard().indexOf('T42 Journey')>0);
+
+/* An edition with no access date behaves as every edition did before. */
+T42.challenge=_t42ed({starts_on:_t42day(-60), ends_on:_t42day(-19)});
+ok("no access date: the edition does not close by date", T42.accessOpen());
+
+/* ── the lifecycle, from dates ── */
+ok("phase: registration", T42.phase(_t42ed({status:'registration', starts_on:_t42day(9), ends_on:_t42day(50),
+                                             reg_opens_on:_t42day(-5), reg_closes_on:_t42day(8)}))==='registration');
+ok("phase: upcoming once registration closes", T42.phase(_t42ed({status:'registration', starts_on:_t42day(9),
+                                             ends_on:_t42day(50), reg_closes_on:_t42day(-1)}))==='upcoming');
+ok("phase: active", T42.phase(_t42ed())==='active');
+ok("phase: completed after the last day", T42.phase(_t42ed({starts_on:_t42day(-50), ends_on:_t42day(-9),
+                                             access_ends_on:_t42day(5)}))==='completed');
+ok("phase: draft", T42.phase(_t42ed({status:'draft'}))==='draft');
+
+/* ── joining an online-only edition ── */
+T42.challenge=_t42ed({status:'registration', starts_on:_t42day(9), ends_on:_t42day(50),
+                      tracks:['transform','perform'], modes:['online_solo']});
+T42.reg=null; t42DraftClear(); t42Draft.mode='gym_duo'; t42Draft.track='start';
+t42Begin();
+ok("one mode: the mode step is skipped", t42View==='track' && t42Draft.mode==='online_solo');
+ok("...a stale START or Gym Duo draft is dropped", t42Draft.track===null);
+var _trk=document.getElementById('t42-body').innerHTML;
+ok("...and START is not offered", _trk.indexOf('TRANSFORM')>0 && _trk.indexOf('PERFORM')>0 && _trk.indexOf("t42PickTrack('start')")<0);
+ok("...counted as step 1 of 2", _trk.indexOf('Step 1 of 2')>0);
+t42Quiz={i:T42_QUIZ.length, score:2, answers:[]};
+t42View='assess'; t42Paint();
+ok("a beginner's suggestion maps to an offered track",
+   document.getElementById('t42-body').innerHTML.indexOf("t42TakeSuggested('transform')")>0);
+t42View='landing'; t42Paint();
+var _lnd=document.getElementById('t42-body').innerHTML;
+ok("the landing shows the edition's dates", _lnd.indexOf('Challenge starts')>0);
+ok("...and no mode choice when there is only one", _lnd.indexOf('Two ways to do it')<0);
+
+/* ── before day 1: countdown and checklist ── */
+T42.challenge=_t42ed({status:'registration', starts_on:_t42day(9), ends_on:_t42day(50), price:null});
+T42.reg=_t42paidReg({status:'pending'});
+t42View='joined'; t42Paint();
+var _up=document.getElementById('t42-body').innerHTML;
+ok("before day 1: You're in", _up.indexOf("You\'re in.")>=0 || _up.indexOf("You're in.")>=0);
+ok("...a checklist with the starting weight", _up.indexOf('Add your starting weight')>0);
+ok("...and the rules to read", _up.indexOf('Read the rules and scoring')>0);
+t42View='rules'; t42Paint();
+var _rl=document.getElementById('t42-body').innerHTML;
+ok("the rules show the four weights", _rl.indexOf('Consistency')>0 && _rl.indexOf('Missions')>0);
+ok("...and say a missed day resets nothing", _rl.indexOf('Nothing resets')>0);
+t42View='joined'; t42Paint();
+ok("...and reading them ticks the checklist", t42RulesRead());
+
+/* ── the running dashboard ── */
+_t42running(); T42.challenge.price=99; T42.reg.status='paid';
+T42.checkins=[{day_no:16}];                       // yesterday (17) missed
+t42View='dash'; t42Paint();
+var _ds=document.getElementById('t42-body').innerHTML;
+ok("the dashboard says how many days are left", _ds.indexOf('24 days left')>0);
+ok("...says kindly that yesterday was missed", _ds.indexOf('You missed yesterday')>0);
+ok("...and never that the challenge restarted", _ds.indexOf('Day 1 of')<0);
+ok("...with one next action", _ds.indexOf('Continue today')>0);
+ok("day 18 has passed the 14-day milestone", _ds.indexOf('Two weeks strong')>0);
+t42DismissMilestone(14);
+t42Paint();
+ok("...shown once", document.getElementById('t42-body').innerHTML.indexOf('Two weeks strong')<0);
+
+/* ── the journey ── */
+T42.history=[
+  {reg:_t42paidReg({id:'rA'}), challenge:_t42ed({id:'old', name:'T42 November 2026',
+     starts_on:_t42day(-200), ends_on:_t42day(-159), status:'complete', access_ends_on:_t42day(-150)}),
+   score:{total:92, eligible:true, rank_category:3, compliance_pct:91}, certs:[{id:'c1'}]},
+  {reg:_t42paidReg({id:'rB', status:'pending'}), challenge:_t42ed({id:'new', name:'T42 Ramadan 2027',
+     status:'registration', starts_on:_t42day(20), ends_on:_t42day(61), price:99})}
+];
+t42JourneyLoaded=true; t42View='journey'; t42Paint();
+var _jr=document.getElementById('t42-body').innerHTML;
+ok("the journey lists every edition", _jr.indexOf('T42 NOVEMBER 2026')>0 && _jr.indexOf('T42 RAMADAN 2027')>0);
+ok("...a finished one with its score and certificate",
+   _jr.indexOf('92')>0 && _jr.indexOf("'cert')")>0 && _jr.indexOf('Program access: ENDED')>0);
+ok("...and an unpaid one as payment pending", _jr.indexOf('Payment pending')>0);
+
+/* ── a database without the migration ── */
+t42Legacy=false;
+ok("the new columns are asked for", t42ChallengeCols().indexOf('access_ends_on')>0);
+ok("a missing column is recognised", t42MissingColumn({code:'42703',message:'column t42_challenges.price does not exist'}));
+t42Legacy=true;
+ok("...and the app falls back to the original columns", t42ChallengeCols().indexOf('price')<0);
+t42Legacy=false;
+
+/* ── the gateway's return goes to T42's own confirmation ── */
+ok("store hands a T42 payment to T42", handlePaidRedirect.toString().indexOf('t42AwaitPayment')>0);
+
+_t42reset(); T42.history=[];
+
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

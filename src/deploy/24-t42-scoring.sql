@@ -830,7 +830,7 @@ begin
   for v_ch in select id from public.t42_challenges
                where status not in ('draft','complete','archived')
                  and public.t42_today() >= starts_on
-                 and public.t42_today() <= coalesce(access_ends_on, results_on, ends_on) loop
+                 and public.t42_today() <= coalesce(access_ends_on, results_on, ends_on + 30) loop
     v_sum := v_sum + public.t42_compute_scores(v_ch.id);
   end loop;
   return v_sum;

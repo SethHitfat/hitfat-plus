@@ -1,0 +1,58 @@
+--- A registers (transform, online) — should succeed
+--- A tries gym_duo / start (should FAIL: not offered)
+ERROR:  That mode is not part of this T42
+ERROR:  The start track is not part of this T42
+--- B registers transform (pending, will not pay)
+--- plan visibility: A today-or-earlier (expect >0), A future (expect 0), B (expect 0)
+ a_sees_past_and_today 
+-----------------------
+                    11
+ a_sees_future 
+---------------
+             0
+ a_sees_perform 
+----------------
+              0
+ b_unpaid_sees 
+---------------
+             0
+--- check-in today: B (expect FAIL payment), A (expect ok)
+ERROR:  Complete your T42 payment to start
+--- scores (v2)
+ t42_compute_scores 
+--------------------
+                  3
+ email |     category     | eligible |         note          | compliance_pct | progress_pct | missions_pct | fitness_pct | total | consistency_total | rank_category 
+-------+------------------+----------+-----------------------+----------------+--------------+--------------+-------------+-------+-------------------+---------------
+ a@x   | transform_female | t        |                       |          98.89 |         0.00 |       100.00 |        0.00 | 59.56 |             98.89 |             1
+ b@x   | transform_female | f        | Payment not completed |           7.78 |         0.00 |         0.00 |        0.00 |  3.11 |              7.78 |              
+ c@x   | perform_male     | t        |                       |          76.67 |         0.00 |        50.00 |        0.00 | 40.67 |             76.67 |             1
+ email | week_no | mission_done 
+-------+---------+--------------
+ a@x   |       1 | t
+ a@x   |       2 | t
+ a@x   |       3 | f
+ b@x   |       1 | f
+ b@x   |       2 | f
+ b@x   |       3 | f
+ c@x   |       1 | f
+ c@x   |       2 | t
+ c@x   |       3 | f
+ phase_now 
+-----------
+ active
+--- access ended yesterday: plan read (expect 0), check-in (expect FAIL), phase (closed)
+ phase_after 
+-------------
+ closed
+ a_sees_after_end 
+------------------
+                0
+ERROR:  This T42 has finished
+ a_still_sees_own_scores 
+-------------------------
+                       1
+--- legacy edition (no access dates): does NOT close by date
+ legacy_open | legacy_phase 
+-------------+--------------
+ t           | completed

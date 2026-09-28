@@ -407,6 +407,10 @@ function capturePaidParam(){
 function handlePaidRedirect(){
   try{
     const sku=localStorage.getItem('hf_plus_pending');
+    /* A T42 edition is granted on its registration, not as a HITFAT+
+       entitlement, so it has its own confirmation (t42.js). */
+    if(sku && sku.indexOf('t42:')===0 && typeof t42AwaitPayment==='function'){
+      localStorage.removeItem('hf_plus_pending'); t42AwaitPayment(); return; }
     if(sku){ localStorage.removeItem('hf_plus_pending'); awaitPayment(); return; }
     refreshPurchases();
   }catch(e){}
