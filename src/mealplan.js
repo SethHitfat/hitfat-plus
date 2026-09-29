@@ -330,88 +330,92 @@ function mpLoad(i){
 }
 function mpDelete(i){ const l=(HF.data.mealPlans||[]).slice(); l.splice(i,1); HF.data.mealPlans=l; HF.save(); renderEat(); }
 
+/* Each verdict as a tone the design knows: ok, info, warn, risk. The
+   hex colours on bmiClass and friends were chosen for a black page; the
+   tones carry a light and a dark shade each. */
+function bmiTone(cls){ return cls==='normal'?'ok':cls==='under'?'info':cls==='preobes'?'warn':'risk'; }
+function deficitTone(k){ return k<=750?'ok':k<=1000?'warn':'risk'; }
+
 function renderPlanView(){
   const p=mpPlan; if(!p){ $('mp-view').innerHTML='<div class="empty">No plan yet.</div>'; return; }
   const n=p.nut, ok=mdgOk(n), bc=bmiClass(n.bmi), wr=wcRisk(p.meta.wc||HF.data.wc, p.meta.gender);
+  const goal={loss:'Lose weight',gain:'Gain weight',maintain:'Maintain'}[p.meta.goal]||'';
   let h='';
 
-  // hero — the number that matters, set the way the rest of the app sets numbers
-  h+='<div class="ehero"><div class="k">Your daily target</div>'+
-     '<div class="row"><div style="flex:1;min-width:0;"><div class="n">'+n.cal.toLocaleString()+'</div>'+
-     '<div class="u">kcal a day · '+p.meta.days+(p.meta.days===1?' day':' days')+' of menus</div></div></div>'+
-     '<div class="sp">'+
-     [[n.tdee.toLocaleString(),'TDEE'],[n.bmr.toLocaleString(),'BMR'],
-      [n.deficit?('−'+n.deficit):'—','Deficit'],[n.bmi.toFixed(1),'BMI']]
-      .map((x,i)=>'<div><div class="v"'+(i===3?' style="color:'+bc.c+';"':'')+'>'+x[0]+'</div><div class="l">'+x[1]+'</div></div>').join('')+
+  /* ── the number that matters ── */
+  h+='<div class="nstage">'+
+     '<div class="nstage-k">Your daily target</div>'+
+     '<div class="nstage-n">'+n.cal.toLocaleString()+'<span> kcal</span></div>'+
+     '<div class="nstage-s">'+goal+' · '+p.meta.days+(p.meta.days===1?' day':' days')+' of menus</div>'+
+     '<div class="nstage-g">'+
+       [[n.tdee.toLocaleString(),'TDEE'],[n.bmr.toLocaleString(),'BMR'],
+        [n.deficit?('−'+n.deficit):'—','Deficit'],[n.bmi.toFixed(1),'BMI']]
+       .map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+
      '</div></div>';
 
-  // body status — CPG MOH 2023
-  h+=fsec('Where you are','CPG MOH 2023 · Asian cut-offs');
-  h+='<div class="emacs" style="grid-template-columns:'+(wr?'1fr 1fr':'1fr')+';">'+
-     '<div class="emac"><div class="v" style="color:'+bc.c+';">'+n.bmi.toFixed(1)+'</div>'+
-     '<div class="l">Body Mass Index</div>'+
-     '<div class="mppill" style="color:'+bc.c+';border-color:'+hexA(bc.c,.35)+';background:'+hexA(bc.c,.12)+';">'+bc.label+'</div></div>'+
-     (wr?'<div class="emac"><div class="v" style="color:'+wr.c+';">'+(p.meta.wc||HF.data.wc)+
-       '<span style="font-size:15px;font-weight:400;letter-spacing:0;">cm</span></div>'+
-       '<div class="l">Waist</div>'+
-       '<div class="mppill" style="color:'+wr.c+';border-color:'+hexA(wr.c,.35)+';background:'+hexA(wr.c,.12)+';">'+wr.label+'</div></div>':'')+
+  /* ── body status, CPG MOH 2023 Asian cut-offs ── */
+  h+=nHead('Where you are','CPG MOH 2023 · Asian cut-offs');
+  h+='<div class="nstats">'+
+     '<div class="nst"><div class="nst-l">Body Mass Index</div><div class="nst-v">'+n.bmi.toFixed(1)+'</div>'+
+       '<span class="npill '+bmiTone(bc.cls)+'">'+bc.label+'</span></div>'+
+     (wr?'<div class="nst"><div class="nst-l">Waist</div><div class="nst-v">'+(p.meta.wc||HF.data.wc)+'<span> cm</span></div>'+
+       '<span class="npill '+(wr.risk?'risk':'ok')+'">'+wr.label+'</span></div>'
+        :'<div class="nst nst-empty" onclick="openMealPlan()"><div class="nst-l">Waist</div><div class="nst-v">—</div>'+
+         '<span class="npill info">Add it in the wizard</span></div>')+
      '</div>';
-  if(n.bmi>=23) h+='<div class="mpnote" style="border-color:'+hexA(bc.c,.35)+';color:'+bc.c+';">'+bc.advice+'</div>';
-  if(wr&&wr.risk) h+='<div class="mpnote" style="border-color:rgba(255,107,107,.35);color:#ff6b6b;">'+wr.note+'</div>';
+  if(n.bmi>=23) h+=nCall(bmiTone(bc.cls), bc.label, bc.advice);
+  if(wr&&wr.risk) h+=nCall('risk','Waist above the risk line', wr.note);
 
-  // macros
-  h+=fsec('Daily macros','MDG 2020 · carbs 50–65% · protein 10–20% · fat 25–35%');
-  h+='<div class="emacs">'+
-     [['Protein',n.prot,n.pPct,'var(--mac-p)',ok.prot],['Carbs',n.carb,n.cPct,'var(--mac-c)',ok.cho],['Fat',n.fat,n.fPct,'var(--ok)',ok.fat]]
-     .map(m=>'<div class="emac"><div class="v" style="color:'+m[3]+';">'+m[1]+
-       '<span style="font-size:15px;font-weight:400;letter-spacing:0;">g</span></div>'+
-       '<div class="l">'+m[0]+'</div>'+
-       '<div class="g" style="color:'+(m[4]?'var(--ok)':'var(--note-amber)')+';">'+m[2]+'% '+(m[4]?'✓':'⚠')+'</div>'+
-       '<div class="b"><i style="width:'+m[2]+'%;background:'+m[3]+';"></i></div></div>').join('')+'</div>';
-  if(n.floorHit) h+='<div class="mpnote" style="border-color:rgba(94,184,255,.35);color:#5eb8ff;">Calories were held at the safe minimum of '+n.floor.toLocaleString()+' kcal (CPG MOH 2023). Give yourself more time, or ease the target.</div>';
-  if(n.deficit){ const v=deficitVerdict(n.deficit);
-    h+='<div class="mpnote" style="border-color:'+hexA(v.c,.35)+';color:'+v.c+';"><b>'+v.label+'</b> — '+v.msg+'</div>'; }
+  /* ── macros, MDG 2020 ── */
+  h+=nHead('Daily macros','Malaysian Dietary Guidelines (MDG 2020)');
+  h+='<div class="nbox">'+
+     [['Protein',n.prot,n.pPct,'var(--mac-p)',ok.prot,'10–20%'],['Carbs',n.carb,n.cPct,'var(--mac-c)',ok.cho,'50–65%'],
+      ['Fat',n.fat,n.fPct,'var(--ok)',ok.fat,'25–35%']]
+     .map(m=>'<div class="nmac"><div class="nmac-h"><span class="nmac-l"><i style="background:'+m[3]+'"></i>'+m[0]+'</span>'+
+       '<span class="nmac-v"><b>'+m[1]+' g</b> · '+m[2]+'%</span></div>'+
+       '<div class="nbar"><i style="width:'+Math.min(100,m[2]*1.5)+'%;background:'+m[3]+';"></i></div>'+
+       '<div class="nmac-r '+(m[4]?'ok':'warn')+'">'+(m[4]?'Within':'Outside')+' the '+m[5]+' guideline</div></div>').join('')+
+     '</div>';
+  if(n.floorHit) h+=nCall('info','Held at the safe minimum','Calories were kept at '+n.floor.toLocaleString()+' kcal (CPG MOH 2023). Give yourself more time, or ease the target.');
+  if(n.deficit){ const v=deficitVerdict(n.deficit); h+=nCall(deficitTone(n.deficit), v.label, v.msg); }
 
-  // days
-  h+=fsec('Daily menus','Three options per slot — swap when an ingredient is missing');
+  /* ── the menus ── */
+  h+=nHead('Daily menus','Three options per meal — swap when an ingredient is missing');
   p.days.forEach((d,di)=>{
-    const bal=(good,txt)=>'<span class="mpbal" style="color:'+(good?'var(--ok)':'#f59e0b')+
-      ';border-color:'+(good?'rgba(46,194,126,.3)':'rgba(245,158,11,.3)')+';">'+txt+'</span>';
+    const bal=(good,txt)=>'<span class="npill '+(good?'ok':'warn')+'">'+txt+'</span>';
     h+='<div class="mpday'+(di===0?' open':'')+'" id="mpday-'+di+'">'+
-      '<button class="mpday-h" onclick="mpDay('+di+')"><div><div class="t">Day '+d.day+'</div>'+
+      '<button class="mpday-h" onclick="mpDay('+di+')"><span class="mpday-n">'+d.day+'</span>'+
+      '<div class="mpday-tx"><div class="t">Day '+d.day+'</div>'+
       '<div class="m">'+d.total.toLocaleString()+' kcal · '+d.pct+'% of target</div></div><span class="ar">⌄</span></button>'+
       '<div class="mpday-b">'+
       '<div class="mpbals">'+
         bal(d.bal.buah>0,'Fruit')+ bal(d.bal.sayur>=2,'Veg')+
         bal(d.bal.protein>=d.slots.length-1,'Protein')+ bal(d.bal.karbo>=1,'Carbs')+
-        bal(d.ok,''+d.total.toLocaleString()+' kcal')+
+        bal(d.ok,d.total.toLocaleString()+' kcal')+
       '</div>';
     d.slots.forEach((s,si)=>{
       const sid='mps-'+di+'-'+si;
       h+='<div class="mpslot" id="'+sid+'">'+
         '<div class="mpslot-h"><div><div class="t">'+s.label+'</div>'+
-        '<div class="m">'+s.time+'</div></div><div class="mppill" style="margin-top:0;">~'+s.target+' kcal</div></div>'+
-        '<div class="mpopts">'+
-        s.options.map((o,oi)=>'<button class="mpo'+(oi===0?' on':'')+'" onclick="mpOpt(\''+sid+'\','+oi+')">'+(oi+1)+'</button>').join('')+
-        '</div>';
+        '<div class="m">'+s.time+' · about '+s.target+' kcal</div></div>'+
+        '<div class="mpopts" role="tablist">'+
+        s.options.map((o,oi)=>'<button class="mpo'+(oi===0?' on':'')+'" aria-label="Option '+(oi+1)+'" onclick="mpOpt(\''+sid+'\','+oi+')">'+(oi+1)+'</button>').join('')+
+        '</div></div>';
       s.options.forEach((o,oi)=>{
         const tot=kcalOf(o), g=groupsOf(o.items), gap=s.target-tot;
         h+='<div class="mpopt" style="display:'+(oi===0?'block':'none')+';">'+
-          '<div class="mpopt-h"><div class="t">'+o.name+'</div><div class="k">'+tot+'</div></div>'+
+          '<div class="mpopt-h"><div class="t">'+o.name+'</div><div class="k">'+tot+' kcal</div></div>'+
           o.items.map(it=>'<div class="mpitem"><div><div class="t">'+it.food+'</div>'+
             '<div class="m">'+it.portion+'</div></div><div class="k">'+it.kcal+'</div></div>').join('')+
-          '<div class="mpbals" style="margin-top:11px;">'+
-            (g.protein?'<span class="mpbal" style="color:var(--mac-c);border-color:rgba(56,189,248,.3);">Protein</span>':'')+
-            (g.karbo?'<span class="mpbal" style="color:#f59e0b;border-color:rgba(245,158,11,.3);">Carbs</span>':'')+
-            (g.sayur?'<span class="mpbal" style="color:var(--ok);border-color:rgba(46,194,126,.3);">Veg</span>':'')+
-            (g.buah?'<span class="mpbal" style="color:var(--mac-p);border-color:rgba(251,146,60,.3);">Fruit</span>':'')+
+          '<div class="mpbals" style="margin-top:10px;">'+
+            (g.protein?'<span class="npill p">Protein</span>':'')+
+            (g.karbo?'<span class="npill c">Carbs</span>':'')+
+            (g.sayur?'<span class="npill ok">Veg</span>':'')+
+            (g.buah?'<span class="npill f">Fruit</span>':'')+
           '</div>'+
-          (o.scale>1?'<div class="mpnote" style="border-color:rgba(94,184,255,.3);color:#5eb8ff;">'+
-            'Portion scaled ×'+o.scale.toFixed(1)+' to reach the '+s.target+' kcal this slot needs.</div>':'')+
-          (gap>80&&gapItems(gap,d.bal).length?'<div class="mpgap">'+
-            '<div class="mpgap-h">Still '+gap+' kcal short</div>'+
-            '<div class="mpgap-s">'+gapItems(gap,d.bal).map(x=>'+'+x.kcal+' kcal · '+x.food).join('<br>')+'</div>'+
-            '</div>':'')+
+          (o.scale>1?nCall('info','','Portion scaled ×'+o.scale.toFixed(1)+' to reach the '+s.target+' kcal this meal needs.'):'')+
+          (gap>80&&gapItems(gap,d.bal).length?nCall('warn','Still '+gap+' kcal short',
+            gapItems(gap,d.bal).map(x=>'+'+x.kcal+' kcal · '+x.food).join('<br>')):'')+
           '</div>';
       });
       h+='</div>';
@@ -419,16 +423,13 @@ function renderPlanView(){
     h+='</div></div>';
   });
 
-  h+=fsec('Tips','');
-  h+='<div class="flib">'+planTips(p.meta).map((t,i)=>
-    '<div class="row" style="cursor:default;align-items:flex-start;">'+
-    '<div class="ic" style="color:var(--hyrox);font-weight:800;">'+(i+1)+'</div>'+
-    '<div style="flex:1;font-size:15px;line-height:1.6;color:var(--ink-72);">'+t+'</div></div>').join('')+'</div>';
-  h+='<div class="mpnote" style="border-color:rgba(245,158,11,.35);color:#f59e0b;">General guidance based on what you entered. If you have diabetes, kidney disease, severe reflux, are pregnant, or your BMI is 27.5 or above — see a doctor or a registered dietitian.</div>';
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;">'+
-     '<button class="bigbtn sec" style="margin:0;" onclick="openMealPlan()">Edit</button>'+
-     '<button class="bigbtn" style="margin:0;" onclick="mpSavePlan()">Save</button></div>';
+  /* ── advice ── */
+  h+=nHead('Tips for this plan','');
+  h+='<div class="nlist">'+planTips(p.meta).map((t,i)=>
+    '<div class="nli nstep"><span class="nnum">'+(i+1)+'</span><div class="nli-b"><div class="nli-s nli-body">'+t+'</div></div></div>').join('')+'</div>';
+  h+=nCall('warn','Medical note','General guidance based on what you entered. If you have diabetes, kidney disease, severe reflux, are pregnant, or your BMI is 27.5 or above — see a doctor or a registered dietitian.');
+  h+='<div class="nactions">'+
+     '<button class="bigbtn sec" onclick="openMealPlan()">Edit plan</button>'+
+     '<button class="bigbtn" onclick="mpSavePlan()">Save plan</button></div>';
   $('mp-view').innerHTML=h;
 }
-
-

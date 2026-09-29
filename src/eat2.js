@@ -88,145 +88,185 @@ function renderEat(){
   eatToday();
 }
 
+/* ── shared pieces ──
+   The Eat tab is a nutrition dashboard, so it is built from the same four
+   parts everywhere: a summary card, grouped rows, quick-action tiles and
+   callouts. Numbers are the heroes; colour is spent on meaning. */
+const SLOT_SHARE={breakfast:.25,lunch:.35,dinner:.30,snack:.10};
+
+/* The calorie ring: eaten against target, the remainder in the middle. */
+function nRing(pct,big,small,size){
+  size=size||132; const r=size/2-9, c=2*Math.PI*r, off=c*(1-Math.min(100,Math.max(0,pct))/100);
+  return '<div class="nring" style="width:'+size+'px;height:'+size+'px;">'+
+    '<svg viewBox="0 0 '+size+' '+size+'" aria-hidden="true"><defs><linearGradient id="nrg" x1="0" y1="0" x2="1" y2="1">'+
+    '<stop offset="0" stop-color="#FF6A4D"/><stop offset="1" stop-color="#D7261E"/></linearGradient></defs>'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" class="nring-t"/>'+
+    (pct>0?'<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" class="nring-v" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/>':'')+
+    '</svg><div class="nring-c"><b>'+big+'</b><span>'+small+'</span></div></div>';
+}
+/* A macro as a labelled bar: what is eaten, out of what, in its colour. */
+function nMacro(label,v,target,col,extra){
+  const w=Math.min(100,Math.round(v/(target||1)*100));
+  return '<div class="nmac"><div class="nmac-h"><span class="nmac-l"><i style="background:'+col+'"></i>'+label+'</span>'+
+    '<span class="nmac-v"><b>'+v+'</b> / '+target+' g'+(extra||'')+'</span></div>'+
+    '<div class="nbar"><i style="width:'+w+'%;background:'+col+';"></i></div></div>';
+}
+/* One grouped-list row: icon tile, title, a line under it, and what sits on the right. */
+function nRow(icon,title,sub,right,go){
+  return '<div class="nli"'+(go?' onclick="'+go+'"':'')+'>'+ic(icon)+
+    '<div class="nli-b"><div class="nli-t">'+title+'</div>'+(sub?'<div class="nli-s">'+sub+'</div>':'')+'</div>'+
+    (right||'')+'</div>';
+}
+function nLiStatic(icon,title,right){
+  return '<div class="nli nstep">'+ic(icon)+'<div class="nli-b">'+(title?'<div class="nli-t">'+title+'</div>':'')+
+    (title?'':'<div class="nli-s nli-body">'+right+'</div>')+'</div>'+(title?right:'')+'</div>';
+}
+function nQuick(icon,title,sub,go){
+  return '<button class="nquick" onclick="'+go+'">'+ic(icon)+
+    '<span class="nquick-t">'+title+'</span><span class="nquick-s">'+sub+'</span></button>';
+}
+/* A callout: a note that carries a verdict. tone = ok | info | warn | risk */
+function nCall(tone,title,text){
+  return '<div class="ncall '+tone+'">'+(title?'<div class="ncall-t">'+title+'</div>':'')+
+    '<div class="ncall-s">'+text+'</div></div>';
+}
+function nHead(title,sub){
+  return '<div class="nhead"><div class="nhead-t">'+title+'</div>'+(sub?'<div class="nhead-s">'+sub+'</div>':'')+'</div>';
+}
+
 /* ── TODAY ── */
 function eatToday(){
   const n=HF.data.nutrition||{};
-  const t=mealTotals(), burned=burnTotal(), left=Math.max(0,n.cal-t.kcal+burned), net=t.kcal-burned;
-  const pct=Math.min(100,Math.round(t.kcal/n.cal*100));
-  const st=dayStatus(t.kcal), score=hfScore(t.kcal,t.p,t.c,t.f);
-  const scoreC=score>=70?'var(--ok)':score>=45?'#f59e0b':'#EF4444';
-  const bySlot={breakfast:0,lunch:0,dinner:0,snack:0}, cntSlot={breakfast:0,lunch:0,dinner:0,snack:0};
-  mealsFor().forEach(m=>{ const k=m.slot||'snack'; bySlot[k]+=(m.kcal||0); cntSlot[k]++; });
+  const t=mealTotals(), burned=burnTotal(), budget=n.cal+burned, left=Math.max(0,budget-t.kcal);
+  const pct=Math.round(t.kcal/(budget||1)*100);
+  const logged=mealsFor().length>0, score=hfScore(t.kcal,t.p,t.c,t.f);
+  const bySlot={breakfast:[],lunch:[],dinner:[],snack:[]};
+  mealsFor().forEach(m=>{ (bySlot[m.slot||'snack']=bySlot[m.slot||'snack']||[]).push(m); });
+
+  /* What the day says, in words. Before anything is logged there is no
+     verdict — "under target" at 8am with nothing eaten is not news. */
+  let st;
+  if(!logged)              st={c:'none', t:'Nothing logged yet — start with '+(SLOTS.filter(x=>x.k===slotNow())[0]||SLOTS[0]).n.toLowerCase()};
+  else if(t.kcal>budget)   st={c:'risk', t:'Over by '+(t.kcal-budget).toLocaleString()+' kcal'};
+  else if(t.kcal>=budget*.8) st={c:'ok',  t:'On track — '+left.toLocaleString()+' kcal to go'};
+  else                     st={c:'info', t:left.toLocaleString()+' kcal still to eat today'};
 
   let h='';
-  // hero
-  h+='<div class="ehero"><div class="k">'+dayName()+' · Calories left</div>'+
-     '<div class="row">'+donutSVG(pct,'#EF4444',104)+
-     '<div style="flex:1;min-width:0;"><div class="n">'+left.toLocaleString()+'</div>'+
-     '<div class="u">of '+n.cal.toLocaleString()+' kcal</div>'+
-     '<div class="estat" style="background:'+hexA(st.c,.14)+';border:1px solid '+hexA(st.c,.32)+';">'+
-     '<span class="d" style="background:'+st.c+';"></span>'+
-     '<span class="t" style="color:'+st.c+';">'+st.t+'</span></div></div></div>'+
-     '<div class="sp">'+
-     [[t.kcal.toLocaleString(),'Eaten'],['+'+burned.toLocaleString(),'Burned'],[net.toLocaleString(),'Net'],[score,'HF Score']]
-       .map((x,i)=>'<div><div class="v"'+(i===3?' style="color:'+scoreC+';"':'')+'>'+x[0]+'</div><div class="l">'+x[1]+'</div></div>').join('')+
+  h+='<div class="nsum">'+
+     '<div class="nsum-k">'+dayName()+'</div>'+
+     '<div class="nsum-top">'+nRing(pct, left.toLocaleString(), t.kcal>budget?'over':'kcal left')+
+     '<div class="nsum-side">'+
+       '<div class="nsum-r"><span>Target</span><b>'+n.cal.toLocaleString()+'</b></div>'+
+       '<div class="nsum-r"><span>Eaten</span><b>'+t.kcal.toLocaleString()+'</b></div>'+
+       '<div class="nsum-r"><span>Exercise</span><b class="pos">+'+burned.toLocaleString()+'</b></div>'+
+       '<div class="nsum-r"><span>Day score</span><b>'+(logged?score:'—')+'</b></div>'+
+     '</div></div>'+
+     '<div class="nstat '+st.c+'"><i></i>'+st.t+'</div>'+
+     '<div class="nsum-macs">'+
+       nMacro('Protein',t.p,n.pt,'var(--mac-p)')+
+       nMacro('Carbs',t.c,n.ct,'var(--mac-c)')+
+       nMacro('Fat',t.f,n.ft,'var(--ok)')+
      '</div></div>';
 
-  // meals across the day
-  h+=fsec('Your day','Tap a slot to log straight into it');
-  h+='<div class="hscroll">'+SLOTS.map(s=>{
-      const v=bySlot[s.k], share=Math.min(100,Math.round(v/(n.cal||1)*100*2.6));
-      return '<div class="eslot'+(v>0?' hit':'')+'" onclick="openManualAt(\''+s.k+'\')">'+
-        '<div class="e">'+glyph(s.e)+'</div><div class="n">'+s.n+'</div>'+
-        '<div class="v">'+(v||'—')+'</div>'+
-        '<div class="m">'+(cntSlot[s.k]?cntSlot[s.k]+(cntSlot[s.k]>1?' items':' item'):'Nothing yet')+'</div>'+
-        '<div class="b"><i style="width:'+(v>0?Math.max(6,share):0)+'%"></i></div></div>';
+  // meals: one grouped list, the slot to fill next marked, + to add
+  h+=nHead('Meals', 'Tap a meal to log into it');
+  h+='<div class="nlist">'+SLOTS.map(s=>{
+      const items=bySlot[s.k]||[], kc=items.reduce((a,m)=>a+(m.kcal||0),0);
+      const aim=Math.round(n.cal*SLOT_SHARE[s.k]/10)*10;
+      const sub= items.length ? kc.toLocaleString()+' kcal · '+hesc(items.map(m=>m.bm||m.name).join(', '))
+                              : 'Aim for about '+aim.toLocaleString()+' kcal';
+      return nRow(s.e, s.n, sub, '<span class="nadd" aria-label="Add">+</span>', "openManualAt('"+s.k+"')");
     }).join('')+'</div>';
 
-  // macros
-  h+=fsec('Macros','Against the split from your target');
-  h+='<div class="emacs">'+
-     [['Protein',t.p,n.pt,'var(--mac-p)'],['Carbs',t.c,n.ct,'var(--mac-c)'],['Fat',t.f,n.ft,'var(--ok)']].map(m=>{
-       const w=Math.min(100,Math.round(m[1]/(m[2]||1)*100));
-       return '<div class="emac"><div class="v" style="color:'+m[3]+';">'+m[1]+'<span style="font-size:15px;font-weight:400;letter-spacing:0;">g</span></div>'+
-         '<div class="l">'+m[0]+'</div><div class="g">of '+m[2]+'g</div>'+
-         '<div class="b"><i style="width:'+w+'%;background:'+m[3]+';"></i></div></div>';
-     }).join('')+'</div>';
+  // activity
+  h+=nHead('Activity', 'Training buys back calories — logged, not guessed');
+  h+='<div class="nlist">'+nRow('flame','Exercise',
+      burnFor().length ? burnFor().length+' logged today' : 'Log a session to earn calories back',
+      '<span class="nval pos">+'+burned+'</span><span class="chev">›</span>','openBurn()')+'</div>';
 
-  // burn
-  h+=fsec('Moved today','Training buys back calories — logged, not guessed');
-  h+='<div class="elist"><div class="elog" onclick="openBurn()"><div class="e">'+glyph('flame')+'</div>'+
-     '<div class="tx"><div class="t">Exercise burn</div>'+
-     '<div class="m">'+(burnFor().length?burnFor().length+' logged today':'Tap to log an activity')+'</div></div>'+
-     '<div class="k" style="color:var(--ok);">+'+burned+'</div><div class="chev">›</div></div></div>';
-
-  // shortcut into the other two segments
-  h+=fsec('Next','');
-  h+='<div class="hscroll" style="gap:12px;">'+
-     '<div style="flex:none;width:270px;">'+ecta({go:"setEatSeg('log')",ic:'📷',t:'Log a meal',
-        s:'Scan it with AI, or type it in — logging by hand is always free.',
-        btn:'Open log',c1:'#2a1016',c2:'#0b0b0d',ac:'#EF4444'})+'</div>'+
-     '<div style="flex:none;width:270px;">'+ecta({go:"setEatSeg('plan')",ic:'🍽️',t:'Meal plan',
-        s:'Malaysian menus, costed against your calories and restrictions.',
-        btn:'Open plans',c1:'#0f2028',c2:'#0b0b0d',ac:'#38bdf8'})+'</div>'+
+  // quick actions
+  h+='<div class="nquicks">'+
+     nQuick('📷','Scan a meal','AI reads the plate','openScan()')+
+     nQuick('🍽️','Meal plan','Malaysian menus',"setEatSeg('plan')")+
      '</div>';
 
   h+='<button class="authalt" onclick="HF.data.nutrition={};HF.save();renderEat()">Change my daily target</button>';
   $('eat-body').innerHTML=h;
 }
-function dayName(){ return new Date().toLocaleDateString('en-MY',{weekday:'long'}); }
+function dayName(){ return new Date().toLocaleDateString('en-MY',{weekday:'long', day:'numeric', month:'long'}); }
 
 /* ── PLAN ── */
 function eatPlan(){
   const mpl=(HF.data.mealPlans||[]), n=HF.data.nutrition||{};
   let h='';
-  h+=ecta({go:'openMealPlan()',ic:'🍽️',t:'Build your meal plan',
-    s:'Five questions, then a full menu for 1 to 14 days — calories, macros and hand portions already worked out.',
-    btn:'Start →',c1:'#2a1016',c2:'#0b0b0d',ac:'#EF4444',
-    note:'MDG 2020 · CPG MOH 2023'});
+  h+='<div class="nstage">'+
+     '<div class="nstage-k">Meal plan</div>'+
+     '<div class="nstage-h">Build your meal plan</div>'+
+     '<div class="nstage-s">Five questions, then a full Malaysian menu for 1 to 14 days — calories, macros and hand portions already worked out.</div>'+
+     '<button class="nstage-cta" onclick="openMealPlan()">Build my plan</button>'+
+     '<div class="nstage-f">'+glyph('check')+'Malaysian Dietary Guidelines 2020 · CPG MOH 2023</div></div>';
 
   if(mpl.length){
-    h+=fsec('Your plans','Saved as a spec — reopens identical every time');
-    h+='<div class="flib">'+mpl.map((p,i)=>
-      '<div class="row" onclick="mpLoad('+i+')">'+
-      '<div class="ic">'+glyph('clipboard')+'</div>'+
-      '<div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:600;color:var(--txt);">'+
-        p.days+(p.days===1?' day · ':' days · ')+p.cal.toLocaleString()+' kcal</div>'+
-      '<div style="font-size:13px;color:var(--dim2);margin-top:3px;">'+
+    h+=nHead('Your plans','Saved as a spec — reopens identical every time');
+    h+='<div class="nlist">'+mpl.map((p,i)=>nRow('clipboard',
+        p.days+(p.days===1?' day · ':' days · ')+p.cal.toLocaleString()+' kcal',
         ({loss:'Lose weight',gain:'Gain weight',maintain:'Maintain'}[p.meta.goal]||p.meta.goal)+' · '+
-        ({'3x':'Three meals','333':'Quarter-quarter-half','6x':'Six small meals','if':'Fasting 16:8'}[p.meta.struct]||p.meta.struct)+'</div></div>'+
-      '<div class="cv" onclick="event.stopPropagation();mpDelete('+i+')">✕</div></div>').join('')+'</div>';
+        ({'3x':'Three meals','333':'Quarter-quarter-half','6x':'Six small meals','if':'Fasting 16:8'}[p.meta.struct]||p.meta.struct),
+        '<button class="ndel" aria-label="Delete plan" onclick="event.stopPropagation();mpDelete('+i+')">✕</button><span class="chev">›</span>',
+        'mpLoad('+i+')')).join('')+'</div>';
   }
 
-  h+=fsec('How it works','');
-  h+='<div class="flib">'+[
-      ['1','Your profile','Weight, height, age and activity — filled in from your calorie target'],
-      ['2','Safe calories','Floor of 1,500 kcal for men and 1,200 for women, deficit capped at 750 a day'],
-      ['3','Malaysian menus','51 menus, portions measured in fists and palms rather than grams'],
-      ['4','Three options per slot','Swap when an ingredient is missing — the calories stay in range']
-    ].map(x=>'<div class="row" style="cursor:default;"><div class="ic" style="color:var(--hyrox);font-weight:800;">'+x[0]+'</div>'+
-      '<div style="flex:1;"><div style="font-size:15px;font-weight:600;color:var(--txt);">'+x[1]+'</div>'+
-      '<div style="font-size:13px;color:var(--dim);margin-top:3px;line-height:1.45;">'+x[2]+'</div></div></div>').join('')+'</div>';
+  h+=nHead('How it works','');
+  h+='<div class="nlist">'+[
+      ['Your profile','Weight, height, age and activity — filled in from your calorie target.'],
+      ['Safe calories','Never below 1,500 kcal for men or 1,200 for women; the deficit is capped at 750 a day.'],
+      ['Malaysian menus','51 menus, with portions in fists and palms rather than grams.'],
+      ['Three options per meal','Swap when an ingredient is missing — the calories stay in range.']
+    ].map((x,i)=>'<div class="nli nstep"><span class="nnum">'+(i+1)+'</span>'+
+      '<div class="nli-b"><div class="nli-t">'+x[0]+'</div><div class="nli-s">'+x[1]+'</div></div></div>').join('')+'</div>';
 
-  if(!ownsAll()) h+='<div class="wrow" style="margin-top:14px;" onclick="openProduct(BUNDLE_SKU)">'+
-     '<div style="font-size:20px;">'+glyph('spark')+'</div><div class="tx"><div class="t">All Access · one payment</div>'+
-     '<div class="m">14-day plans, every program, yours to keep</div></div><div class="chev">›</div></div>';
-  if(n.cal) h+='<div class="mpnote">Your current target is '+n.cal.toLocaleString()+' kcal. The plan recalculates from whatever you enter in the wizard.</div>';
+  if(!ownsAll()) h+='<div class="nlist" style="margin-top:14px;">'+nRow('spark','All Access · one payment',
+     '14-day plans and every program, yours to keep','<span class="chev">›</span>','openProduct(BUNDLE_SKU)')+'</div>';
+  if(n.cal) h+='<div class="nfoot">Your current target is '+n.cal.toLocaleString()+' kcal. The plan recalculates from whatever you enter in the wizard.</div>';
   $('eat-body').innerHTML=h;
 }
 
 /* ── LOG ── */
 function eatLog(){
   const list=mealsFor(), favs=(HF.data.favs||[]).slice(0,10);
-  const slotOf={}; SLOTS.forEach(s=>slotOf[s.k]=s.e);
   let h='';
-  h+='<div style="display:grid;grid-template-columns:1fr;gap:12px;">'+
-     ecta({go:'openScan()',ic:'📷',t:'AI Meal Scan',
-       s:'Photograph your food — calories, protein, carbs and fat come back in seconds.',
-       btn:'Scan now',c1:'#2a1016',c2:'#0b0b0d',ac:'#EF4444',
-       note:scanAccess().label.toUpperCase()})+
+  h+='<div class="nquicks">'+
+     nQuick('📷','Scan with AI',hesc(scanAccess().label),'openScan()')+
+     nQuick('✏️','Add manually','Always free, unlimited','openManual()')+
      '</div>';
-  h+='<div class="elist" style="margin-top:14px;"><div class="elog" onclick="openManual()"><div class="e">'+glyph('pencil')+'</div>'+
-     '<div class="tx"><div class="t">Add manually</div><div class="m">Always free, unlimited</div></div>'+
-     '<div class="chev">›</div></div></div>';
 
   if(favs.length){
-    h+=fsec('Your usuals','One tap — no scan spent');
-    h+='<div class="hscroll">'+favs.map((f,i)=>
-      '<div class="eslot" onclick="logFav('+i+')" style="width:170px;">'+
-      '<div class="e">'+glyph('star')+'</div><div class="n" style="line-height:1.25;">'+f.name+'</div>'+
-      '<div class="v">'+f.kcal+'</div><div class="m">kcal · P '+(f.p||0)+'g</div></div>').join('')+'</div>';
+    h+=nHead('Your usuals','One tap — no scan spent');
+    h+='<div class="hscroll nfavs">'+favs.map((f,i)=>
+      '<button class="nfav" onclick="logFav('+i+')"><span class="nfav-t">'+hesc(f.name)+'</span>'+
+      '<span class="nfav-k">'+f.kcal+' kcal · P '+(f.p||0)+'g</span><span class="nadd">+</span></button>').join('')+'</div>';
   }
 
-  h+=fsec("Today's log", list.length ? list.length+(list.length>1?' meals':' meal')+' · '+mealTotals().kcal.toLocaleString()+' kcal' : '');
-  h+= list.length
-    ? '<div class="elist">'+list.map((m,i)=>
-        '<div class="elog"><div class="e">'+glyph((slotOf[m.slot]||'🍽️'))+'</div>'+
-        '<div class="tx"><div class="t">'+(m.bm||m.name)+'</div>'+
-        '<div class="m">'+m.time+' · P '+m.p+'g · C '+m.c+'g · F '+m.f+'g</div></div>'+
-        '<div class="k">'+m.kcal+'</div>'+
-        '<div class="x" onclick="event.stopPropagation();delMeal('+i+')">✕</div></div>').join('')+'</div>'
-    : '<div class="empty">Nothing logged yet today.</div>';
+  const tot=mealTotals().kcal;
+  h+=nHead("Today's log", list.length ? list.length+(list.length>1?' meals':' meal')+' · '+tot.toLocaleString()+' kcal' : '');
+  if(!list.length){
+    h+='<div class="nempty">'+ic('food')+'<div class="nempty-t">Nothing logged yet today</div>'+
+       '<div class="nempty-s">Scan a plate or add it by hand — it lands in the right meal.</div></div>';
+  } else {
+    /* Grouped by meal, the way a food diary is read. The delete keeps the
+       meal's index in the day, which is what delMeal expects. */
+    SLOTS.forEach(s=>{
+      const rows=list.map((m,i)=>({m,i})).filter(x=>(x.m.slot||'snack')===s.k);
+      if(!rows.length) return;
+      const kc=rows.reduce((a,x)=>a+(x.m.kcal||0),0);
+      h+='<div class="nsub"><span>'+s.n+'</span><span>'+kc.toLocaleString()+' kcal</span></div><div class="nlist">'+
+        rows.map(x=>'<div class="nli"><div class="nli-b"><div class="nli-t">'+hesc(x.m.bm||x.m.name)+'</div>'+
+          '<div class="nli-s">'+(x.m.time?x.m.time+' · ':'')+'P '+x.m.p+'g · C '+x.m.c+'g · F '+x.m.f+'g</div></div>'+
+          '<span class="nval">'+x.m.kcal+'</span>'+
+          '<button class="ndel" aria-label="Remove" onclick="event.stopPropagation();delMeal('+x.i+')">✕</button></div>').join('')+
+        '</div>';
+    });
+  }
   $('eat-body').innerHTML=h;
 }
 function logFav(i){
@@ -487,7 +527,7 @@ function renderScanResult(d){
   h+='<div class="sub" style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">'+
      '<span style="width:6px;height:6px;border-radius:50%;background:var(--hyrox);"></span>AI Meal Scan · HITFAT+</div>';
   h+='<div style="font-size:20px;font-weight:800;line-height:1.2;">'+(unknown?'Could not identify the food':name)+'</div>';
-  if(d.food_name_bm) h+='<div class="sub">'+d.food_name_bm+'</div>';
+  if(d.food_name_bm && d.food_name_bm.trim().toLowerCase()!==name.toLowerCase()) h+='<div class="sub">'+hesc(d.food_name_bm)+'</div>';
   if(d.portion_size) h+='<div class="sub" style="margin-top:2px;">'+d.portion_size+'</div>';
   if(unknown){
     h+='<div class="empty" style="padding:22px 0;">Try a brighter photo, or log it by hand.</div>'+
@@ -495,47 +535,41 @@ function renderScanResult(d){
        '<button class="bigbtn sec" onclick="$(\'scan-sheet\').classList.remove(\'on\')">Back</button>';
     $('scan-sheet').innerHTML=h; $('scan-sheet').classList.add('on'); return;
   }
-  h+='<div style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:99px;margin:12px 0;background:'+hexA(b.c,.12)+';border:1px solid '+hexA(b.c,.3)+';">'+
-     '<span style="width:7px;height:7px;border-radius:50%;background:'+b.c+';"></span>'+
-     '<span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:'+b.c+';">'+b.label+'</span></div>';
-  h+='<div class="arow">'+
-     [[kcal,'Calories','#EF4444'],[p+'g','Protein','var(--mac-p)'],[c+'g','Carbs','var(--mac-c)'],[f+'g','Fat','var(--ok)']].map(x=>
-       '<div class="acard" style="text-align:center;padding:12px 6px;"><div style="font-family:\'Oswald\';font-size:20px;color:'+x[2]+';">'+x[0]+'</div>'+
-       '<div class="sub" style="font-size:11px;">'+x[1]+'</div></div>').join('')+'</div>';
+  /* The verdict, then the meal against the day it has to fit in. */
+  const tone=b.label==='GOOD TO EAT'?'ok':b.label==='SKIP IT TODAY'?'risk':'warn';
+  const n=HF.data.nutrition||{};
+  h+='<div style="margin:12px 0 4px;"><span class="npill '+tone+'">'+b.label.charAt(0)+b.label.slice(1).toLowerCase()+'</span></div>';
+  h+='<div class="nbox nscan"><div class="nscan-k"><b>'+kcal.toLocaleString()+'</b> kcal'+
+     (n.cal?'<span> · '+Math.round(kcal/n.cal*100)+'% of your day</span>':'')+'</div>'+
+     nMacro('Protein',p,n.pt||Math.max(p,1),'var(--mac-p)')+
+     nMacro('Carbs',c,n.ct||Math.max(c,1),'var(--mac-c)')+
+     nMacro('Fat',f,n.ft||Math.max(f,1),'var(--ok)')+'</div>';
   // tabs
-  h+='<div class="filters" style="margin-top:16px;">'+['Overview','Coach','Action'].map((t,i)=>
-      '<button class="chip'+(_mrt===i?' y':'')+'" onclick="setMRT('+i+')">'+t+'</button>').join('')+'</div>';
+  h+='<div class="segs nscan-segs">'+['Overview','Coach','Action'].map((t,i)=>
+      '<button class="seg'+(_mrt===i?' on':'')+'" onclick="setMRT('+i+')">'+t+'</button>').join('')+'</div>';
   if(_mrt===0){
     if(d.breakdown&&d.breakdown.length){
-      h+='<div class="sub" style="margin-bottom:8px;">Based on 1 serving'+(d.portion_size?' ('+d.portion_size+')':'')+'</div>'+
-         '<div style="display:flex;flex-direction:column;gap:8px;">'+d.breakdown.map(it=>{
-        const wt=it.weight_g?(it.weight_g+'g'):(it.weight_ml?(it.weight_ml+'ml'):'');
-        return '<div class="wrow"><div class="tx"><div class="t">'+(it.ingredient||it.name||'')+'</div>'+
-          (wt?'<div class="m">'+wt+'</div>':'')+'</div>'+
-          '<div style="font-family:\'Oswald\';font-size:17px;color:var(--dim);">'+Math.round(it.calories||0)+'</div></div>';
+      h+='<div class="nsub"><span>What is in it</span><span>'+(d.portion_size?hesc(d.portion_size):'1 serving')+'</span></div>'+
+         '<div class="nlist">'+d.breakdown.map(it=>{
+        const wt=it.weight_g?(it.weight_g+' g'):(it.weight_ml?(it.weight_ml+' ml'):'');
+        return '<div class="nli"><div class="nli-b"><div class="nli-t">'+hesc(it.ingredient||it.name||'')+'</div>'+
+          (wt?'<div class="nli-s">'+wt+'</div>':'')+'</div><span class="nval">'+Math.round(it.calories||0)+'</span></div>';
       }).join('')+'</div>';
     }
-    h+='<div class="qh">To burn this meal</div><div style="display:flex;flex-direction:column;gap:8px;">'+
-       burnOptions(kcal).map(x=>'<div class="wrow">'+ic(x[0])+''+
-       '<div class="tx"><div class="t">'+x[1]+'</div><div class="m">'+x[2]+'</div></div></div>').join('')+'</div>'+
-       '<div class="sub" style="font-size:11px;text-align:center;margin-top:8px;">Estimated from your body weight</div>';
+    h+='<div class="nsub"><span>To burn this meal</span><span>for your weight</span></div>'+
+       '<div class="nlist">'+burnOptions(kcal).map(x=>nLiStatic(x[0],x[1],'<span class="nval">'+x[2]+'</span>')).join('')+'</div>';
   } else if(_mrt===1){
-    h+='<div class="acard"><div class="ah"><div style="width:32px;height:32px;border-radius:50%;background:var(--hyrox);display:grid;place-items:center;font-size:15px;color:#fff;">'+glyph('workout')+'</div>'+
-       '<div class="t">Coach says</div></div>'+
-       '<div style="font-size:15px;line-height:1.7;color:var(--ink-90);">'+coachText(kcal,p,c,f)+'</div></div>';
+    h+=nCall('info','Coach says',coachText(kcal,p,c,f));
   } else {
-    h+='<div style="display:flex;flex-direction:column;gap:8px;">'+coachActions(kcal,p,c,f).map(t=>
-       '<div class="wrow">'+ic(t[0])+'<div class="tx"><div class="m" style="color:var(--ink-72);font-size:13px;">'+t[1]+'</div></div></div>').join('')+'</div>';
-    const n=HF.data.nutrition||{};
+    h+='<div class="nlist" style="margin-top:12px;">'+coachActions(kcal,p,c,f).map(t=>nLiStatic(t[0],'',t[1])).join('')+'</div>';
     if(n.cal){ const eaten=mealTotals().kcal, rem=Math.max(0,n.cal-eaten+burnTotal());
-      h+='<div class="acard" style="margin-top:10px;"><div class="ah"><div class="t">Calories left today</div></div>'+
-         '<div class="sub">Target '+n.cal.toLocaleString()+' · eaten '+eaten.toLocaleString()+'</div>'+
-         '<div class="big" style="color:var(--hyrox);margin-top:6px;">'+rem.toLocaleString()+' kcal</div></div>'; }
+      h+='<div class="nbox" style="margin-top:10px;"><div class="nsum-r"><span>Calories left today</span><b>'+rem.toLocaleString()+' kcal</b></div>'+
+         '<div class="nsum-r" style="margin-top:6px;"><span>Target '+n.cal.toLocaleString()+' · eaten '+eaten.toLocaleString()+'</span></div></div>'; }
   }
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;">'+
-     '<button class="bigbtn sec" style="margin:0;" onclick="saveFav()">Save as usual</button>'+
-     '<button class="bigbtn" style="margin:0;" onclick="logScanned()">Log this meal</button></div>'+
-     '<div class="sub" style="font-size:11px;text-align:center;margin-top:10px;">AI estimate — treat it as a guide, not a measurement.</div>';
+  h+='<div class="nactions">'+
+     '<button class="bigbtn sec" onclick="saveFav()">Save as usual</button>'+
+     '<button class="bigbtn" onclick="logScanned()">Log this meal</button></div>'+
+     '<div class="nfoot" style="text-align:center;">AI estimate — treat it as a guide, not a measurement.</div>';
   $('scan-sheet').innerHTML=h;
   $('scan-sheet').classList.add('on');
 }

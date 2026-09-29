@@ -1147,15 +1147,15 @@ ok("three segments",              EAT_SEGS.length===3);
 ok("every segment has a handler", EAT_SEGS.every(function(s){
     return document.getElementById('eat-segs').innerHTML.indexOf("setEatSeg('"+s[0]+"')")>0; }));
 ok("Today is the default",        eatSeg==='today');
-ok("hero renders",                document.getElementById('eat-body').innerHTML.indexOf('ehero')>0);
+ok("hero renders",                document.getElementById('eat-body').innerHTML.indexOf('nsum')>0 && document.getElementById('eat-body').innerHTML.indexOf('nring')>0);
 ok("all four slots shown",        SLOTS.every(function(s){
     return document.getElementById('eat-body').innerHTML.indexOf("openManualAt('"+s.k+"')")>0; }));
-ok("macros render",               document.getElementById('eat-body').innerHTML.indexOf('emacs')>0);
+ok("macros render",               document.getElementById('eat-body').innerHTML.indexOf('nmac')>0);
 noThrow("every segment renders",  function(){ EAT_SEGS.forEach(function(s){ setEatSeg(s[0]); }); });
 setEatSeg('log');
 ok("log offers scan",             document.getElementById('eat-body').innerHTML.indexOf('openScan()')>0);
 ok("log offers manual",           document.getElementById('eat-body').innerHTML.indexOf('openManual()')>0);
-ok("quota shown honestly",        document.getElementById('eat-body').innerHTML.indexOf('FREE SCANS LEFT')>0);
+ok("quota shown honestly",        document.getElementById('eat-body').innerHTML.toUpperCase().indexOf('FREE SCANS LEFT')>0);
 ok("empty log says so",           document.getElementById('eat-body').innerHTML.indexOf('Nothing logged yet')>0);
 logMeal({name:'Nasi lemak',bm:'Nasi lemak',kcal:520,p:14,c:62,f:24,slot:'breakfast'});
 setEatSeg('log');
@@ -1179,6 +1179,20 @@ noThrow("delete meal is safe",    function(){ setEatSeg('log'); delMeal(0); });
 ok("EAT survives an empty day",   (function(){ HF.data.meals={}; renderEat();
     return document.getElementById('eat-body').innerHTML.length>500; })());
 setEatSeg('today');
+/* An empty day gives no verdict — "under target" at breakfast is not news —
+   and no score until there is something to score. */
+var _et=document.getElementById('eat-body').innerHTML;
+ok("an empty day says nothing is logged", _et.indexOf('Nothing logged yet')>0);
+ok("...and scores nothing yet",           _et.indexOf('Day score</span><b>—</b>')>0);
+ok("each meal suggests its share",        _et.indexOf('Aim for about')>0);
+logMeal({name:'Roti canai',bm:'Roti canai',kcal:300,p:6,c:40,f:12,slot:'breakfast'});
+logMeal({name:'Nasi ayam',bm:'Nasi ayam',kcal:600,p:30,c:70,f:20,slot:'lunch'});
+setEatSeg('log');
+var _el=document.getElementById('eat-body').innerHTML;
+ok("the log is grouped by meal",          _el.indexOf('<span>Breakfast</span><span>300 kcal</span>')>0 &&
+                                          _el.indexOf('<span>Lunch</span><span>600 kcal</span>')>0);
+ok("...and removing keeps the day's index", _el.indexOf('delMeal(1)')>0);
+HF.data.meals={}; setEatSeg('today');
 
 print("\n── MEAL PLAN · guidelines ──");
 /* CPG MOH 2023 Asian BMI cut-offs — the boundary is what matters, not the middle */
