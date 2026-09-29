@@ -186,8 +186,8 @@ function eatToday(){
 
   // quick actions
   h+='<div class="nquicks">'+
-     nQuick('📷','Scan a meal','AI reads the plate','openScan()')+
-     nQuick('🍽️','Meal plan','Malaysian menus',"setEatSeg('plan')")+
+     nQuick('📷','Scan a meal',hasPlus()?'AI reads the plate':'With HITFAT+','openScan()')+
+     nQuick('🍽️','Meal plan',hasPlus()?'Malaysian menus':'With HITFAT+',"setEatSeg('plan')")+
      '</div>';
 
   h+='<button class="authalt" onclick="HF.data.nutrition={};HF.save();renderEat()">Change my daily target</button>';
@@ -203,7 +203,7 @@ function eatPlan(){
      '<div class="nstage-k">Meal plan</div>'+
      '<div class="nstage-h">Build your meal plan</div>'+
      '<div class="nstage-s">Five questions, then a full Malaysian menu for 1 to 14 days — calories, macros and hand portions already worked out.</div>'+
-     '<button class="nstage-cta" onclick="openMealPlan()">Build my plan</button>'+
+     '<button class="nstage-cta" onclick="openMealPlan()">'+(hasPlus()?'Build my plan':'Unlock with HITFAT+')+'</button>'+
      '<div class="nstage-f">'+glyph('check')+'Malaysian Dietary Guidelines 2020 · CPG MOH 2023</div></div>';
 
   if(mpl.length){
@@ -225,8 +225,8 @@ function eatPlan(){
     ].map((x,i)=>'<div class="nli nstep"><span class="nnum">'+(i+1)+'</span>'+
       '<div class="nli-b"><div class="nli-t">'+x[0]+'</div><div class="nli-s">'+x[1]+'</div></div></div>').join('')+'</div>';
 
-  if(!ownsAll()) h+='<div class="nlist" style="margin-top:14px;">'+nRow('spark','All Access · one payment',
-     '14-day plans and every program, yours to keep','<span class="chev">›</span>','openProduct(BUNDLE_SKU)')+'</div>';
+  if(!hasPlus()) h+='<div class="nlist" style="margin-top:14px;">'+nRow('spark','HITFAT+ membership',
+     'Meal plans, AI scan and every program — from RM'+Math.round(SUB_PLANS[0].price/12)+' a month','<span class="chev">›</span>','openPaywall()')+'</div>';
   if(n.cal) h+='<div class="nfoot">Your current target is '+n.cal.toLocaleString()+' kcal. The plan recalculates from whatever you enter in the wizard.</div>';
   $('eat-body').innerHTML=h;
 }
@@ -236,8 +236,8 @@ function eatLog(){
   const list=mealsFor(), favs=(HF.data.favs||[]).slice(0,10);
   let h='';
   h+='<div class="nquicks">'+
-     nQuick('📷','Scan with AI',hesc(scanAccess().label),'openScan()')+
-     nQuick('✏️','Add manually','Always free, unlimited','openManual()')+
+     nQuick('📷','Scan with AI',hasPlus()?hesc(scanAccess().label):'With HITFAT+','openScan()')+
+     nQuick('✏️','Add manually','Always open, unlimited','openManual()')+
      '</div>';
 
   if(favs.length){
@@ -352,7 +352,7 @@ function renderManual(){
   const favs=(HF.data.favs||[]).slice(0,8);
   $('man-body').innerHTML=
     '<div style="font-size:17px;font-weight:800;margin-bottom:3px;">Add a meal</div>'+
-    '<div class="sub" style="margin-bottom:14px;">Log anything by hand — always free, no scan used.</div>'+
+    '<div class="sub" style="margin-bottom:14px;">Log anything by hand — always open, no scan used.</div>'+
     (favs.length?'<div class="qh">Quick pick</div><div class="filters">'+favs.map((f,i)=>
       '<button class="chip" onclick="fillFav('+i+')">'+f.name+' · '+f.kcal+'</button>').join('')+'</div>':'')+
     '<div class="qh">Meal</div><div class="filters">'+SLOTS.map(s=>
@@ -383,7 +383,8 @@ function saveManual(){
 /* ── SCAN ── */
 let _scanData=null, _scanTok=0, _pctTimer=null;
 function openScan(){
-  if(!canScan()){ openStore('scan'); return; }
+  if(needPlus('AI meal scan is part of HITFAT+. Logging by hand stays open.')) return;
+  if(!canScan()){ openPaywall('Your scans have run out.'); return; }
   _scanData=null;
   $('scan').classList.add('on');
   $('scan-prev').style.display='none'; $('scan-prev').src='';
@@ -458,7 +459,7 @@ function onScanFile(input){
           if(tok!==_scanTok) return;
           $('scan-frame').classList.remove('on'); stopScanAnim();
           $('scan-live').textContent='Error';
-          if(err && err.code==='quota_exceeded'){ closeScan(); openStore('scan'); return; }
+          if(err && err.code==='quota_exceeded'){ closeScan(); openPaywall('Your scans have run out.'); return; }
           const el=$('scan-err');
           el.textContent=(err&&err.message)||'Scan failed. Try clearer lighting, or log it manually.';
           el.style.display='block';

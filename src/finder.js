@@ -132,7 +132,6 @@ function fqScore(p){
     if(isBarProgram(p)) s-=2;      // only if they own the bar, and they did not say so
   }
 
-  if(!isPaidProgram(p)){ s+=1; why.push('Free'); }
   return {s, why:why.slice(0,3)};
 }
 
@@ -158,7 +157,7 @@ function fqResult(){
     '<div class="t">'+top.p.name+'</div>'+
     '<div class="s">'+(top.p.desc||'')+'</div>'+
     '<div class="fqwhy">'+top.why.map(w=>'<span>✓ '+w+'</span>').join('')+'</div>'+
-    '<div class="go">'+(isPaidProgram(top.p)?'RM'+programPrice(top.p)+' · See the program':'Start free')+'</div></div>';
+    '<div class="go">'+(ownsProgram(top.p)?'Start the program':'Unlock with HITFAT+')+'</div></div>';
 
   h+='<div class="arow" style="margin-top:12px;">'+
      '<div class="acard"><div class="big">'+top.p.weeks.length+'</div><div class="sub">weeks</div></div>'+
@@ -169,7 +168,7 @@ function fqResult(){
 
   if(rest.length){
     h+=fsec('Not the exact match?','These came close');
-    h+=rest.map(x=>frow(x.p, isPaidProgram(x.p)?'RM'+programPrice(x.p):'FREE')).join('');
+    h+=rest.map(x=>frow(x.p)).join('');
   }
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;">'+
      '<button class="bigbtn sec" style="margin:0;" onclick="openFinder()">Answer again</button>'+

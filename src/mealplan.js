@@ -210,6 +210,7 @@ let mp={step:0, goal:'loss', rate:0.5, struct:'3x', days:7, styles:[], prefs:[],
 const MP_STEPS=['Goal','Profile','Structure','Length','Style'];
 
 function openMealPlan(){
+  if(needPlus('Meal plans are part of HITFAT+.')) return;
   const n=HF.data.nutrition||{};
   mp={step:0,
       goal: n.goal==='lose'?'loss':n.goal==='maintain'?'maintain':n.goal?'gain':'loss',
@@ -277,7 +278,7 @@ function renderMP(){
           (locked?'openProduct(BUNDLE_SKU)':'mpSet(\'days\','+n+')')+'">'+n+(n===1?' day':' days')+
           (locked?' '+glyph('lock'):'')+'</button>';
       }).join('')+'</div>'+
-      (ownsAll()?'':'<div class="cpnote">Free builds up to '+FREE_PLAN_DAYS+' days. All Access builds 14.</div>');
+      '';
   } else {
     b='<div class="cph">Style &amp; restrictions</div><div class="cpsub">Pick as many as apply.</div>'+
       '<div class="qh">Eating style</div><div class="cpgrid">'+
@@ -321,10 +322,11 @@ function mpSavePlan(){
   const cap=maxSavedPlans();
   const trimmed=list.slice(0,cap);
   HF.data.mealPlans=trimmed; HF.save();
-  toast(list.length>cap ? 'Plan saved — free keeps your latest one' : 'Plan saved');
+  toast('Plan saved');
   renderPlanView();
 }
 function mpLoad(i){
+  if(needPlus('Meal plans are part of HITFAT+.')) return;
   const p=(HF.data.mealPlans||[])[i]; if(!p) return;
   mpPlan=buildPlan(p.meta); openPlanView();
 }

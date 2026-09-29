@@ -138,7 +138,7 @@ function renderMonthly(){
       ['📅','A new challenge every month','It changes by itself on the first'],
       ['🏃','Any session counts','Program day, single session, recovery — all of it'],
       ['🎖️','Finish it and keep it','Completed months stay on your shelf'],
-      ['🆓','Free for everyone','No purchase, nothing locked']
+      ['🔓','Open to every member','Train any HITFAT+ session to count it']
     ].map(x=>'<div class="row" style="cursor:default;"><div class="ic">'+ic(x[0])+'</div>'+
       '<div style="flex:1;"><div style="font-size:15px;font-weight:600;color:var(--txt);">'+x[1]+'</div>'+
       '<div style="font-size:13px;color:var(--dim);margin-top:3px;">'+x[2]+'</div></div></div>').join('')+'</div>';

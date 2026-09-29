@@ -912,3 +912,71 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .nscan-segs{margin-top:16px;}
 #scan-sheet .nli{align-items:center;}
 :root[data-theme="light"] #scan-sheet{background:var(--bg);}
+
+/* ═══════════════════════════════════════════════════════════════
+   MEMBERSHIP — the paywall, the Store page, the locks
+   ═══════════════════════════════════════════════════════════════ */
+/* the HF mark on a red disc, as on the centre tab */
+.sub-mark{display:inline-block;flex:0 0 auto;width:52px;height:52px;border-radius:50%;position:relative;
+  background:linear-gradient(150deg,#FF5B47 0%,#E3291F 55%,#B8170F 100%);box-shadow:0 8px 20px rgba(215,38,30,.35);}
+.sub-mark::before{content:'';position:absolute;inset:0;margin:auto;width:23px;height:28px;background:#FFFFFF;
+  -webkit-mask:var(--hf-mark) center/contain no-repeat;mask:var(--hf-mark) center/contain no-repeat;}
+
+.sub-hero{text-align:center;padding:4px 6px 4px;}
+.sub-hero .sub-mark{width:64px;height:64px;}
+.sub-hero .sub-mark::before{width:28px;height:35px;}
+.sub-h{font-size:28px;font-weight:800;letter-spacing:-.9px;line-height:1.1;color:var(--txt);margin-top:14px;}
+.sub-s{font-size:15px;color:var(--dim);line-height:1.45;margin-top:6px;}
+.sub-tiers{margin:18px 0 4px;justify-content:center;}
+.sub-tiers .seg{flex:1;}
+
+.sub-perks{background:var(--surface);border-radius:var(--r-card);padding:4px 14px;margin-top:12px;}
+.sub-perk{display:flex;align-items:flex-start;gap:12px;padding:11px 0;}
+.sub-perk + .sub-perk{border-top:.5px solid var(--sep);}
+.sub-perk .t{font-size:15px;font-weight:700;color:var(--txt);}
+.sub-perk .m{font-size:13px;color:var(--dim);margin-top:2px;line-height:1.4;}
+
+.sub-plans{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+.sub-plan{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer;
+  background:var(--surface);border:none;border-radius:18px;padding:16px;font-family:inherit;color:var(--txt);}
+.sub-plan.on{box-shadow:inset 0 0 0 2px var(--txt);}
+.sub-best{position:absolute;top:-9px;left:14px;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:99px;
+  background:var(--hitfat);color:#FFFFFF;}
+.sub-radio{width:22px;height:22px;border-radius:50%;flex:0 0 auto;box-shadow:inset 0 0 0 2px var(--hairline);}
+.sub-plan.on .sub-radio{box-shadow:inset 0 0 0 7px var(--txt);}
+.sub-pl{flex:1;display:flex;flex-direction:column;}
+.sub-pl b{font-size:17px;font-weight:700;}
+.sub-pl small{font-size:13px;color:var(--dim);margin-top:2px;}
+.sub-pr{font-size:20px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;}
+.sub-cta{margin-top:16px;}
+.sub-fine{font-size:12.5px;color:var(--dim);text-align:center;line-height:1.5;margin:10px 8px 4px;}
+
+.sub-status{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r-card);padding:16px;}
+.sub-status-t{font-size:18px;font-weight:800;letter-spacing:-.4px;color:var(--txt);}
+.sub-status-s{font-size:14px;color:var(--dim);margin-top:2px;}
+.sub-inside{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sub-inside div{background:var(--surface);border-radius:var(--r-card);padding:14px;}
+.sub-inside b{display:block;font-size:26px;font-weight:800;letter-spacing:-.8px;color:var(--txt);}
+.sub-inside span{font-size:13px;color:var(--dim);}
+
+/* the Home invitation */
+.sub-card{display:flex;align-items:center;gap:14px;cursor:pointer;margin:6px 0 4px;padding:16px;border-radius:22px;color:#FFFFFF;
+  background:radial-gradient(110% 90% at 100% 0%, rgba(215,38,30,.55) 0%, transparent 60%), #0A0A0C;}
+.sub-card .sub-mark{width:44px;height:44px;}
+.sub-card .sub-mark::before{width:19px;height:24px;}
+.sub-card-b{flex:1;min-width:0;}
+.sub-card-t{font-size:17px;font-weight:800;letter-spacing:-.3px;}
+.sub-card-s{font-size:13px;color:rgba(235,235,245,.72);margin-top:2px;line-height:1.35;}
+.sub-card-go{flex:0 0 auto;font-size:14px;font-weight:700;background:#FFFFFF;color:#0A0A0C;padding:8px 13px;border-radius:99px;}
+
+/* the lock on a card: small, dark glass, top right */
+.lockt{position:absolute;top:9px;right:9px;z-index:3;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(10,10,12,.58);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#FFFFFF;}
+.lockt .gly{width:14px;height:14px;stroke-width:2.2;}
+.fland .im,.fbig,.ftile,.ncard .im,.frow .th,.plan{position:relative;}
+
+/* the paywall sheet itself */
+#pw-body{background:var(--bg);}
+:root[data-theme="light"] :is(.sub-perks,.sub-plan,.sub-status,.sub-inside div){box-shadow:var(--lift-1);}
+:root[data-theme="light"] .sub-plan.on{box-shadow:inset 0 0 0 2px var(--txt), var(--lift-1);}
+:root[data-theme="light"] .sub-card{box-shadow:var(--lift-2);}

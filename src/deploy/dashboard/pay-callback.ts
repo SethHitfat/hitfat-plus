@@ -57,6 +57,14 @@ const CATALOGUE: Record<string, Sku> = {
   "scan_c60": { price: 45, kind: "credits", credits: 60 },
   "scan_m": { price: 19, kind: "pass", days: 30 },
   "scan_y": { price: 99, kind: "pass", days: 365 },
+  /* HITFAT+ membership. Stored as a pass: it ends on a date, and the scan
+     function already treats a live pass as unlimited scanning. The SKU
+     prefix is the tier. Programs, All Access and scan packs stay listed so
+     an order made before the membership still grants on a late callback. */
+  "sub_plus_6m":   { price: 149, kind: "pass", days: 183 },
+  "sub_plus_12m":  { price: 249, kind: "pass", days: 365 },
+  "sub_coach_6m":  { price: 349, kind: "pass", days: 183 },
+  "sub_coach_12m": { price: 599, kind: "pass", days: 365 },
 };
 
 /* 1 = FPX Online Banking · 6 = DuitNow QR — the two the portal offers */
@@ -136,6 +144,20 @@ async function grant(admin: any, user_id: string, sku: string, order_number: str
 
   const row = entitlementFor(sku, order_number);
   if (!row) { console.error('grant for unknown sku', sku); return false; }
+
+  /* A membership bought while one of the same tier is still running starts
+     where that one ends. Renewing early must add months, not overwrite them. */
+  if (sku.startsWith('sub_')) {
+    const tier = sku.startsWith('sub_coach') ? 'sub_coach' : 'sub_plus';
+    const { data: live } = await admin.from('plus_entitlements')
+      .select('expires_at').eq('user_id', user_id).like('sku', tier + '%')
+      .gt('expires_at', new Date().toISOString())
+      .order('expires_at', { ascending: false }).limit(1);
+    const from = live && live[0] ? new Date(live[0].expires_at) : new Date();
+    const days = CATALOGUE[sku]?.days ?? 0;
+    from.setDate(from.getDate() + days);
+    row.expires_at = from.toISOString();
+  }
 
   const { error } = await admin.from('plus_entitlements').insert({ ...row, user_id });
 

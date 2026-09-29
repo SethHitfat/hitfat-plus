@@ -2,6 +2,14 @@ var pass=0,fail=0;
 function ok(n,c,x){ if(c){pass++;print("  ok  "+n);} else {fail++;print("  FAIL "+n+(x!==undefined?"  → "+x:""));} }
 function noThrow(n,fn){ try{ fn(); pass++; print("  ok  "+n); }catch(e){ fail++; print("  FAIL "+n+"  → "+e); } }
 
+/* HITFAT+ is a membership now. Most of this file exercises the app as a
+   member; the MEMBERSHIP section below checks what a non-member meets. */
+function _member(tier){ _ent={skus:{}, credits:0, passUntil:null, loaded:true,
+  plusUntil: tier==='coach'?null:new Date(Date.now()+30*864e5).toISOString(),
+  coachUntil: tier==='coach'?new Date(Date.now()+30*864e5).toISOString():null}; }
+function _guest(){ _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, loaded:true}; }
+_member();
+
 print("\n── CONTENT CARRIED OVER ──");
 ok("exercise library loaded", DB.length>300, DB.length);
 ok("programs loaded",         PROGRAMS.length>35, PROGRAMS.length);
@@ -334,7 +342,7 @@ HF.data.prefs={name:'Seth',goal:'Lose fat',level:'Beginner',days:3,equip:'Bodywe
   noThrow("segment "+s, function(){ setTrSeg(s); }); });
 setTrSeg('explore');
 var ex=document.getElementById('tr-body').innerHTML;
-ok("sampler strip",        ex.indexOf('Free This Week')>0);
+ok("sampler strip",        ex.indexOf('This Week')>0 && ex.indexOf('Free This Week')<0);
 ok("activity types",       ex.indexOf('Activity Types')>0 && ex.indexOf('fact')>0);
 ok("top programs",         ex.indexOf('Top Programs')>0 && ex.indexOf('fbig')>0);
 ok("gradient browse tiles",ex.indexOf('ftile')>0);
@@ -630,7 +638,7 @@ ok("no generic day went empty",  PROGRAMS.filter(function(p){ return p.weeks; })
 
 print("\n── FIND MY PROGRAM ──");
 HF.apply(null); HF.data.onboarded=true;
-_ent={skus:{}, credits:0, passUntil:null, loaded:true};
+_member();
 
 noThrow("finder opens",          function(){ openFinder(); });
 ok("finder is shown",            document.getElementById('fqm').className.indexOf('on')>=0);
@@ -712,15 +720,15 @@ ok("a one-week program still works", weekPhases({weeks:[{days:[{name:'Day 1'}]}]
 ok("no weeks means no section",  weekPhases({weeks:[]})==='' && weekPhases(null)==='');
 ok("session names are shown",    weekPhases(wp).indexOf(wp.weeks[0].days.filter(function(d){return !d.rest;})[0].name)>0);
 openProduct('prog_'+PROGRAMS.filter(isPaidProgram)[0].id);
-ok("the product sheet shows the weeks before the price", (function(){
+ok("an old program link opens the membership, naming the program", (function(){
     var h=document.getElementById('pw-body').innerHTML;
-    return h.indexOf('Week by week')>0 && h.indexOf('Week by week')<h.indexOf('one payment'); })());
+    return h.indexOf(PROGRAMS.filter(isPaidProgram)[0].name)>0 && h.indexOf('sub_plus_12m')>0; })());
 closeProduct();
 HF.apply(null); trSeg='explore';
 
 print("\n── RECOVERY · prehab ──");
 HF.apply(null); HF.data.onboarded=true;
-_ent={skus:{}, credits:0, passUntil:null, loaded:true};
+_member();
 
 var rhs=PROGRAMS.filter(isRehabProgram);
 ok("recovery programs exist",      rhs.length>=6, rhs.length);
@@ -770,8 +778,8 @@ ok("segment states it is not treatment",
     document.getElementById('tr-body').innerHTML.indexOf('not treatment for an injury')>0);
 ok("segment admits missing footage",
     document.getElementById('tr-body').innerHTML.indexOf('being filmed')>0);
-ok("free ones are labelled free",  document.getElementById('tr-body').innerHTML.indexOf('FREE')>0);
-ok("paid ones show a price",       document.getElementById('tr-body').innerHTML.indexOf('RM29')>0);
+ok("programs carry no price of their own", document.getElementById('tr-body').innerHTML.indexOf('RM29')<0 &&
+                                   document.getElementById('tr-body').innerHTML.indexOf('>FREE<')<0);
 
 noThrow("every joint page opens",  function(){ REHAB_JOINTS.forEach(function(j){ openJoint(j.k); }); });
 openJoint('Knee');
@@ -781,14 +789,11 @@ ok("joint page repeats the warning",
     document.getElementById('lib-body').innerHTML.indexOf('stop')>0);
 noThrow("bad joint is safe",       function(){ openJoint('Elbow'); });
 
-openStore('programs');
-ok("store has a Recovery row",     document.getElementById('store-body').innerHTML.indexOf('Recovery &amp; prehab')>0
-                                || document.getElementById('store-body').innerHTML.indexOf('Recovery & prehab')>0);
 HF.apply(null); trSeg='explore';
 
 print("\n── HITFAT BAR & SIGNATURE ──");
 HF.apply(null); HF.data.onboarded=true;
-_ent={skus:{}, credits:0, passUntil:null, loaded:true};
+_member();
 
 /* the Back button bug: TRAIN's Store segment reopened the store forever */
 switchTab('train'); setTrSeg('explore');
@@ -865,9 +870,6 @@ ok("signature costs more at the same length", (function(){
       var fake={weeks:new Array(wk)};
       return programPrice(Object.assign({special:true},fake)) > programPrice(fake); }); })());
 ok("signature is never a BAR program", sigs.every(function(p){ return !isBarProgram(p); }));
-openStore('programs');
-ok("store has a Signature row",  document.getElementById('store-body').innerHTML.indexOf('Signature')>0);
-ok("signature cards are badged", document.getElementById('store-body').innerHTML.indexOf('SIGNATURE')>0);
 ok("bundle still beats singles", BUNDLE_PRICE < PROGRAMS.filter(isPaidProgram)
                                  .reduce(function(s,p){ return s+programPrice(p); },0));
 HF.apply(null); trSeg='explore';
@@ -948,7 +950,7 @@ ok("completion is stated",      document.getElementById('mth-body').innerHTML.in
 ok("shelf shows the badge",     document.getElementById('mth-body').innerHTML.indexOf('mbadge')>0);
 ok("the year ahead is listed",  MONTHLY.every(function(c){
     return document.getElementById('mth-body').innerHTML.indexOf(c.n)>0; }));
-ok("it says it is free",        document.getElementById('mth-body').innerHTML.indexOf('Free for everyone')>0);
+ok("it says who it is for",     document.getElementById('mth-body').innerHTML.indexOf('Open to every member')>0);
 noThrow("home card renders",    function(){ switchTab('home'); });
 ok("home shows the challenge",  document.getElementById('home-activity').innerHTML.indexOf('mcard')>0);
 ok("home card opens the panel", document.getElementById('home-activity').innerHTML.indexOf('openMonthly()')>0);
@@ -956,120 +958,114 @@ noThrow("panel survives no data", function(){ HF.apply(null); renderMonthly(); }
 ok("empty state offers joining", document.getElementById('mth-body').innerHTML.indexOf('Join ')>0);
 HF.apply(null); switchTab('home');
 
-print("\n── STORE · one-off ownership ──");
-/* The client-side gate is merchandising, not enforcement. These tests check
-   the UI offers the right thing. Scan enforcement lives in the edge function
-   and cannot be reached from here. */
+print("\n── MEMBERSHIP ──");
 HF.apply(null);
-_ent={skus:{}, credits:0, passUntil:null, loaded:true};
-ok("owns nothing by default",    !ownsAll() && !owns('prog_reset12'));
-ok("free programs are open",     FREE_PROGRAMS.every(function(id){
-    return ownsProgram(PROGRAMS.filter(function(p){return p.id===id;})[0]); }));
-ok("free programs are not sold", FREE_PROGRAMS.every(function(id){
-    return !isPaidProgram(PROGRAMS.filter(function(p){return p.id===id;})[0]); }));
-ok("single sessions are free",   PROGRAMS.filter(function(p){return !p.weeks;}).every(function(p){
-    return !isPaidProgram(p) && ownsProgram(p); }));
-ok("paid set is non-empty",      PROGRAMS.filter(isPaidProgram).length>0,
-                                 PROGRAMS.filter(isPaidProgram).length);
-ok("every paid program is priced", PROGRAMS.filter(isPaidProgram).every(function(p){
-    return programPrice(p)>0; }));
-ok("longer programs cost more",  (function(){
-    var a=programPrice({weeks:new Array(2)}), b=programPrice({weeks:new Array(12)});
-    return b>a; })());
-ok("bundle beats buying singly", BUNDLE_PRICE < PROGRAMS.filter(isPaidProgram)
-                                 .reduce(function(s,p){return s+programPrice(p);},0));
+_guest();
+ok("a new account is not a member",   !hasPlus() && memberTier()===null);
+ok("...and every program is locked",  PROGRAMS.every(function(p){ return !ownsProgram(p); }));
+ok("...single sessions included",     PROGRAMS.filter(function(p){return !p.weeks;}).every(function(p){ return !ownsProgram(p); }));
+openProgram(PROGRAMS.filter(function(p){return p.weeks;})[0].id);
+ok("a locked program opens the paywall, not the program",
+   document.getElementById('pwm').className.indexOf('on')>=0 &&
+   document.getElementById('progdetail').style.display!=='block');
+var _pw=document.getElementById('pw-body').innerHTML;
+ok("the paywall names the program",   _pw.indexOf('is part of HITFAT+')>0);
+ok("...offers both tiers",            _pw.indexOf("pwSetTier('plus')")>0 && _pw.indexOf("pwSetTier('coach')")>0);
+ok("...12 months first, marked best value", _pw.indexOf('12 months')>0 && _pw.indexOf('Best value')>0 &&
+   _pw.indexOf('12 months') < _pw.indexOf('6 months'));
+ok("...with a monthly figure beside each", _pw.indexOf('a month')>0);
+ok("...and says it does not renew by itself", _pw.indexOf('does not renew by itself')>0);
+ok("...and no struck-through price",  _pw.indexOf('<s>')<0 && _pw.indexOf('<s ')<0);
+pwSetTier('coach'); _pw=document.getElementById('pw-body').innerHTML;
+ok("the coach tier includes T42 and a coach", _pw.indexOf('One T42 challenge included')>0 && _pw.indexOf('Monthly coach review')>0);
+ok("...at the coach prices",          _pw.indexOf('RM'+SUB_PLANS.filter(function(x){return x.sku==='sub_coach_12m';})[0].price)>0);
+pwSetTier('plus'); closeProduct();
+noThrow("a locked day is safe",       function(){ openDay(PROGRAMS.filter(function(p){return p.weeks;})[0].id,0); });
+ok("...and opens the paywall",        document.getElementById('pwm').className.indexOf('on')>=0); closeProduct();
+noThrow("a locked movement is safe",  function(){ playExercise(DB[0].n); });
+ok("...and plays nothing",            document.getElementById('pwm').className.indexOf('on')>=0); closeProduct();
+noThrow("meal plans are locked",      function(){ openMealPlan(); });
+ok("...to the paywall",               document.getElementById('mpm').className.indexOf('on')<0 &&
+                                      document.getElementById('pwm').className.indexOf('on')>=0); closeProduct();
+noThrow("the AI scan is locked",      function(){ openScan(); });
+ok("...to the paywall",               document.getElementById('scan').className.indexOf('on')<0); closeProduct();
+ok("cards carry a lock",              frow(PROGRAMS[0]).indexOf('lockt')>0);
+ok("old product links land on the paywall", (function(){ openProduct(BUNDLE_SKU);
+   var on=document.getElementById('pw-body').innerHTML.indexOf('sub_plus_12m')>0; closeProduct(); return on; })());
 
-/* buying a program unlocks exactly that program */
+/* a program bought before the membership stays open */
 var target=PROGRAMS.filter(isPaidProgram)[0];
 _ent.skus['prog_'+target.id]=true;
-ok("bought program unlocks",     ownsProgram(target));
-ok("others stay locked",         PROGRAMS.filter(isPaidProgram)
-    .filter(function(p){return p.id!==target.id;}).every(function(p){ return !ownsProgram(p); }));
-ok("locked program opens the sheet", (function(){
-    var other=PROGRAMS.filter(isPaidProgram).filter(function(p){return p.id!==target.id;})[0];
-    openProgram(other.id);
-    return document.getElementById('pwm').className.indexOf('on')>=0
-        && document.getElementById('progdetail').style.display!=='block'; })());
-closeProduct();
-ok("owned program actually opens", (function(){
-    openProgram(target.id);
+ok("a program bought on its own stays open", ownsProgram(target));
+ok("...and only that one",           PROGRAMS.filter(function(p){ return p.id!==target.id; }).every(function(p){ return !ownsProgram(p); }));
+ok("...and it actually opens", (function(){ openProgram(target.id);
     return document.getElementById('progdetail').style.display==='block'; })());
+/* All Access is honoured as HITFAT+ for good */
+_guest(); _ent.skus[BUNDLE_SKU]=true;
+ok("All Access counts as HITFAT+",    hasPlus() && memberTier()==='plus' && memberUntil()===null);
+ok("...every program open",           PROGRAMS.every(ownsProgram));
+ok("...14-day meal plans",            maxPlanDays()===14);
+/* the membership itself */
+_member();
+ok("a member is a member",            hasPlus() && memberTier()==='plus' && !!memberUntil());
+ok("...everything opens",             PROGRAMS.every(ownsProgram));
+ok("...and scans without limit",      scanAccess().left===Infinity);
+_member('coach');
+ok("coach includes HITFAT+",          hasPlus() && hasCoach() && memberTier()==='coach');
+_ent.coachUntil=new Date(Date.now()-864e5).toISOString();
+ok("an ended membership locks again", !hasPlus());
+ok("membership prices: 12 months beats 6 per month", ['plus','coach'].every(function(t){
+    var a=SUB_PLANS.filter(function(x){return x.tier===t && x.months===12;})[0],
+        b=SUB_PLANS.filter(function(x){return x.tier===t && x.months===6;})[0];
+    return a && b && a.price/12 < b.price/6; }));
+ok("coach costs more than HITFAT+",   SUB_PLANS.filter(function(x){return x.tier==='coach';}).every(function(c){
+    return c.price > SUB_PLANS.filter(function(x){return x.tier==='plus' && x.months===c.months;})[0].price; }));
 
-/* the bundle unlocks everything, including anything added later */
-_ent.skus={}; _ent.skus[BUNDLE_SKU]=true;
-ok("bundle unlocks every program", PROGRAMS.every(ownsProgram));
-ok("bundle unlocks 14-day plans",  maxPlanDays()===14);
-ok("bundle unlocks saved plans",   maxSavedPlans()===20);
-_ent.skus={};
-ok("free caps plan length",        maxPlanDays()===FREE_PLAN_DAYS);
-ok("free keeps one plan",          maxSavedPlans()===FREE_PLAN_SAVED);
-
-print("\n── SCAN ACCESS ──");
-HF.apply(null);
-_ent={skus:{}, credits:0, passUntil:null, loaded:true};
-ok("free tier comes first",      scanAccess().mode==='free');
-ok("free tier reports its count",scanAccess().left===SCAN_FREE_TIER);
-scanBump(); scanBump(); scanBump();
-ok("free tier runs out",         scanAccess().mode==='none' && !canScan());
-_ent.credits=20;
-ok("credits take over",          scanAccess().mode==='credits' && scanAccess().left===20);
-ok("credits allow scanning",     canScan());
-_ent.passUntil=new Date(Date.now()+86400000).toISOString();
-ok("a live pass outranks credits", scanAccess().mode==='pass');
-ok("a pass is unlimited",        scanAccess().left===Infinity);
-_ent.passUntil=new Date(Date.now()-86400000).toISOString();
-ok("an expired pass is ignored", scanAccess().mode==='credits');
-_ent.credits=0;
-ok("nothing left means nothing", scanAccess().mode==='none' && !canScan());
-ok("running out opens the store",(function(){
-    openScan();
-    return document.getElementById('store').style.display==='block'
-        && document.getElementById('scan').className.indexOf('on')<0; })());
-ok("store lands on the scan tab", storeSeg==='scan');
-ok("every scan product is priced", SCAN_PRODUCTS.every(function(s){ return s.price>0 && s.sku && s.name; }));
-ok("credits and passes both sold", SCAN_PRODUCTS.some(function(s){return s.kind==='credits';})
-                                && SCAN_PRODUCTS.some(function(s){return s.kind==='pass';}));
-ok("bigger credit packs cost less each", (function(){
-    var c=SCAN_PRODUCTS.filter(function(s){return s.kind==='credits';})
-          .sort(function(a,b){return a.credits-b.credits;});
-    return c.length<2 || (c[1].price/c[1].credits) < (c[0].price/c[0].credits); })());
+/* T42 is its own product: a participant trains it without a membership. */
+ok("T42 plays without the membership gate",
+   t42PlayToday.toString().indexOf('needPlus')<0 && startWorkout.toString().indexOf('needPlus')<0 &&
+   startWorkout.toString().indexOf('ownsProgram')<0);
+/* HITFAT+ Coach claims its included T42 place instead of paying. */
+_member('coach');
+var _tc=T42.challenge, _tr=T42.reg, _tb=T42.baseline, _ts=T42.state;
+T42.state='ready'; T42.challenge=_t42edition(9); T42.challenge.price_rm=99;
+T42.reg={id:'r9',challenge_id:'ch1',mode:'online_solo',track:'transform',gender:'male',status:'pending',verify_code:'T42-9'};
+T42.baseline={id:'m9',phase:'baseline',weight_kg:80,height_cm:175,waist_cm:90};
+t42View='pay'; t42Paint();
+ok("a coach member can claim their T42 place", document.getElementById('t42-body').innerHTML.indexOf('t42ClaimCoach()')>0);
+_member(); t42Paint();
+ok("...a HITFAT+ member pays for T42",        document.getElementById('t42-body').innerHTML.indexOf('t42ClaimCoach()')<0);
+T42.challenge=_tc; T42.reg=_tr; T42.baseline=_tb; T42.state=_ts;
+var _g=readFile('deploy/_shared/grant.ts'), _c28=readFile('deploy/28-coach-t42.sql');
+ok("renewing early adds to the end date",     _g.indexOf("sku.startsWith('sub_')")>0 && _g.indexOf('live[0].expires_at')>0);
+ok("the claim needs a live coach membership", _c28.indexOf("sku like 'sub_coach%' and expires_at > now()")>0);
+ok("...and one place a year",                 _c28.indexOf("interval '365 days'")>0);
+ok("...and nobody can call it signed out",    _c28.indexOf('revoke all    on function public.t42_claim_with_coach(uuid) from public, anon')>=0);
 
 print("\n── STORE UI ──");
-HF.apply(null);
-_ent={skus:{}, credits:0, passUntil:null, loaded:true};
-noThrow("store opens",           function(){ openStore('programs'); });
-ok("store segments: programs and scans, BAR while enabled", STORE_SEGS.length===(BAR_ENABLED?3:2));
-noThrow("every segment renders", function(){ STORE_SEGS.forEach(function(s){ setStoreSeg(s[0]); }); });
-setStoreSeg('programs');
-ok("bundle is offered",          document.getElementById('store-body').innerHTML.indexOf('bundle_all')>0);
-ok("paid programs are listed",   document.getElementById('store-body').innerHTML.indexOf('RM')>0);
-ok("free programs are shown too",document.getElementById('store-body').innerHTML.indexOf('FREE')>0);
-setStoreSeg('scan');
-ok("scan tab lists the packs",   SCAN_PRODUCTS.every(function(s){
-    return document.getElementById('store-body').innerHTML.indexOf(s.sku)>0; }));
-ok("scan tab says what is free", document.getElementById('store-body').innerHTML.indexOf('Manual logging')>0);
-setStoreSeg('bar');
-ok("a paused BAR tab sells nothing", document.getElementById('store-body').innerHTML.indexOf('openBarSite()')<0);
-
-noThrow("every product sheet opens", function(){
-  openProduct(BUNDLE_SKU); closeProduct();
-  SCAN_PRODUCTS.forEach(function(s){ openProduct(s.sku); closeProduct(); });
-  PROGRAMS.filter(isPaidProgram).forEach(function(p){ openProduct('prog_'+p.id); closeProduct(); });
-});
-openProduct(BUNDLE_SKU);
-ok("sheet names the price",      document.getElementById('pw-body').innerHTML.indexOf('RM'+BUNDLE_PRICE)>0);
-ok("sheet says one payment",     document.getElementById('pw-body').innerHTML.indexOf('one payment')>0);
-ok("sheet promises no subscription", document.getElementById('pw-body').innerHTML.indexOf('No subscription')>0);
-noThrow("bad sku is safe",       function(){ openProduct('prog_nope'); openProduct('scan_nope'); });
+_guest();
+noThrow("store opens",                function(){ openStore(); });
+var _sb=document.getElementById('store-body').innerHTML;
+ok("the store is the membership",     _sb.indexOf('sub_plus_12m')>0 || _sb.indexOf("pwSetPlan('sub_plus_12m')")>0);
+ok("...and says what is inside",      _sb.indexOf('What is inside')>0);
+ok("...and what stays open",          _sb.indexOf('stay open without a membership')>0);
+ok("no program is sold on its own",   _sb.indexOf("openProduct('prog_")<0);
+_member();
+openStore(); _sb=document.getElementById('store-body').innerHTML;
+ok("a member sees their status",      _sb.indexOf('HITFAT+ member')>0 && _sb.indexOf('Active until')>0);
+ok("...and can extend",               _sb.indexOf('Extend')>0);
+_guest(); _ent.skus[BUNDLE_SKU]=true; openStore(); _sb=document.getElementById('store-body').innerHTML;
+ok("All Access is offered the coach only", _sb.indexOf('All Access')>0 && _sb.indexOf('Add a coach')>0);
+_member();
 closeProduct();
 print("\n── CHECKOUT ──");
 ok("checkout needs a sign-in", (function(){
     var said=null, t0=toast; toast=function(m){ said=m; };
-    sb=null; HF.userId=null; startCheckout(BUNDLE_SKU); toast=t0;
+    sb=null; HF.userId=null; startCheckout('sub_plus_12m'); toast=t0;
     return said && said.indexOf('Sign in')>=0; })());
 sb={}; HF.userId='u1';
 closeProduct();
-noThrow("checkout sheet opens",  function(){ startCheckout(BUNDLE_SKU); });
+noThrow("checkout sheet opens",  function(){ startCheckout('sub_plus_12m'); });
 ok("the sheet is actually visible", document.getElementById('pwm').className.indexOf('on')>=0);
 ok("sheet offers both channels", PAY_CHANNELS.every(function(c){
     return document.getElementById('pw-body').innerHTML.indexOf('setPayChannel('+c[0]+')')>0; }));
@@ -1077,7 +1073,7 @@ ok("FPX is the default",         payChannel===1);
 noThrow("channel switches",      function(){ setPayChannel(6); });
 ok("switch is remembered",       payChannel===6);
 ok("sheet names Bayarcash",      document.getElementById('pw-body').innerHTML.indexOf('Bayarcash')>0);
-ok("sheet shows the price",      document.getElementById('pw-body').innerHTML.indexOf('RM'+BUNDLE_PRICE)>0);
+ok("sheet shows the price",      document.getElementById('pw-body').innerHTML.indexOf('RM'+SUB_PLANS[0].price)>0);
 ok("checkout never sends a price", (function(){
     /* the browser sends a sku and nothing else — a client that can name its
        own price will eventually be asked to */
@@ -1109,7 +1105,7 @@ ok("nothing is sold as recurring", (function(){
     /* jsc has no lookbehind — strip the denials first, then look */
     var stripped=all.replace(/(do not|does not|no)\s+auto-renew/ig,'');
     return !claims && stripped.toLowerCase().indexOf('auto-renew')<0; })());
-HF.apply(null); _ent={skus:{}, credits:0, passUntil:null, loaded:true}; eatSeg='today';
+HF.apply(null); _member(); eatSeg='today';
 
 /* Train sits in the middle of five, and carries the logo rather than a
    line-drawing icon. */
@@ -1147,7 +1143,7 @@ noThrow("every segment renders",  function(){ EAT_SEGS.forEach(function(s){ setE
 setEatSeg('log');
 ok("log offers scan",             document.getElementById('eat-body').innerHTML.indexOf('openScan()')>0);
 ok("log offers manual",           document.getElementById('eat-body').innerHTML.indexOf('openManual()')>0);
-ok("quota shown honestly",        document.getElementById('eat-body').innerHTML.toUpperCase().indexOf('FREE SCANS LEFT')>0);
+ok("quota shown honestly",        document.getElementById('eat-body').innerHTML.indexOf(scanAccess().label)>0);
 ok("empty log says so",           document.getElementById('eat-body').innerHTML.indexOf('Nothing logged yet')>0);
 logMeal({name:'Nasi lemak',bm:'Nasi lemak',kcal:520,p:14,c:62,f:24,slot:'breakfast'});
 setEatSeg('log');

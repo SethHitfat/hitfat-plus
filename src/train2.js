@@ -24,7 +24,7 @@ function metaOf(p){ return p.weeks ? (p.weeks.length+' wk · '+p.level) : (p.dur
 /* landscape card — image on top, title and meta UNDER it (the sampler pattern) */
 function flandCard(p,badge){
   return '<div class="fland" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="im" style="background-image:url(\''+progImg(p)+'\')">'+(badge?'<span class="fnew">'+badge+'</span>':'')+'</div>'+
+    '<div class="im" style="background-image:url(\''+progImg(p)+'\')">'+(badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="t">'+p.name+'</div><div class="m">'+metaOf(p)+'</div></div>';
 }
 /* tall activity tile — photo with a light label bar across the bottom */
@@ -36,13 +36,13 @@ function factCard(a){
 /* big program card — title over the image */
 function fbigCard(p){
   return '<div class="fbig" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')">'+
-    '<div class="ov"></div><div class="in"><div class="t">'+p.name+'</div>'+
+    '<div class="ov"></div>'+lockTag(p)+'<div class="in"><div class="t">'+p.name+'</div>'+
     '<div class="m">'+(p.weeks?progDays(p)+' DAYS':p.dur+' MIN')+'</div></div></div>';
 }
 /* gradient browse tile — the coloured Strength / Pilates blocks */
 function ftile(p){
   return '<div class="ftile" onclick="openProgram(\''+p.id+'\')" style="background:'+grad(p)+'">'+
-    '<div class="t">'+p.name+'</div><div class="ic">'+glyph((p.icon||''))+'</div></div>';
+    '<div class="t">'+p.name+'</div><div class="ic">'+glyph((p.icon||''))+'</div>'+lockTag(p)+'</div>';
 }
 
 const ACTIVITIES=[
@@ -120,7 +120,7 @@ function trExplore(){
   const rotated=singles.map((_,i)=>singles[(wk+i)%singles.length]);
 
   let h='';
-  h+=fsec('Free This Week','A new set every week — no purchase needed.');
+  h+=fsec('This Week','A new set of sessions every week.');
   h+='<div class="hscroll">'+take(rotated,4).map(p=>flandCard(p)).join('')+'</div>';
 
   h+=fsec('Activity Types');
@@ -148,7 +148,7 @@ function ncard(p,rank){
   return '<div class="ncard'+(rank?' ranked':'')+'" onclick="openProgram(\''+p.id+'\')">'+
     (rank?'<div class="rk">'+rank+'</div>':'')+
     '<div class="im" style="background-image:url(\''+progImg(p)+'\')">'+
-      '<div class="ov"></div>'+
+      '<div class="ov"></div>'+lockTag(p)+
       '<div class="ic">'+glyph((p.icon||''))+'</div>'+
       (done>0?'<div class="pb"><i style="width:'+pct+'%"></i></div>':'')+
       '<div class="in"><div class="t">'+p.name+'</div>'+
@@ -407,7 +407,7 @@ function trRecovery(){
     '<div class="m" style="line-height:1.35;">'+j.d+'</div></div>').join('')+'</div>';
 
   h+=fsec('Recovery programs','Start with Daily Mobility 10 if you are not sure');
-  h+=rh.map(p=>frow(p, isPaidProgram(p) ? 'RM'+programPrice(p) : 'FREE')).join('');
+  h+=rh.map(p=>frow(p)).join('');
   $('tr-body').innerHTML=h;
 }
 

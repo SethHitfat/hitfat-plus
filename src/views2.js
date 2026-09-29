@@ -75,7 +75,7 @@ function frow(p,badge){
   const done=progDone(p.id), tot=progDays(p), pct=tot?Math.round(done/tot*100):0;
   return '<div class="frow" onclick="openProgram(\''+p.id+'\')">'+
     '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name)+'">'+
-    (badge?'<span class="fnew">'+badge+'</span>':'')+'</div>'+
+    (badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
     '<div class="m">'+(p.weeks?wks(p.weeks.length)+' · '+tot+' days':(p.level+' · '+p.dur+' min'))+'</div>'+
     (done>0?'<div class="m" style="color:var(--hyrox);">'+pct+'% done</div>'
@@ -171,7 +171,7 @@ function renderHome(){
       '<div class="plan wide" style="background-image:url(\''+IMG.home+'\')" onclick="switchTab(\'train\')">'+
       '<div class="ov"></div><div class="pi"><div class="tx">'+
       '<div class="k">Get started</div><div class="t">Pick your first program</div>'+
-      '<div class="d">Bodyweight, chair or with equipment — all free.</div></div>'+
+      '<div class="d">Bodyweight, chair or with equipment — '+(hasPlus()?'all yours.':'with HITFAT+.')+'</div></div>'+
       '<button class="join" onclick="event.stopPropagation();switchTab(\'train\')">Browse</button>'+
       '</div></div>';
   }
@@ -233,21 +233,27 @@ function renderHome(){
   const rank=p=>(p.goal===want?0:4)+(p.level===lvl||p.level==='All levels'?0:2)+(p.goal==='Recovery'&&want!=='Recovery'?8:0);
   const rest=PROGRAMS.filter(p=>p.weeks && going.indexOf(p)<0).sort((a,b)=>rank(a)-rank(b));
   const plans=going.concat(rest).slice(0,5);
-  $('home-plans').innerHTML='<div class="sechead">Trending Plans</div><div class="hscroll">'+
+  /* One invitation, for anyone not yet a member — above the plans it opens. */
+  const _join = hasPlus() ? '' :
+    '<div class="sub-card" onclick="openPaywall()"><span class="sub-mark" aria-hidden="true"></span>'+
+    '<div class="sub-card-b"><div class="sub-card-t">Unlock HITFAT+</div>'+
+    '<div class="sub-card-s">Every program, meal plan and AI scan — from RM'+(SUB_PLANS[0].price/12).toFixed(0)+' a month</div></div>'+
+    '<span class="sub-card-go">See plans</span></div>';
+  $('home-plans').innerHTML=_join+'<div class="sechead">Trending Plans</div><div class="hscroll">'+
     plans.map(p=>{ const started=progDone(p.id)>0;
       return '<div class="plan" style="background-image:url(\''+progImg(p)+'\')" onclick="openProgram(\''+p.id+'\')">'+
-      '<div class="ov"></div><div class="pi"><div class="tx">'+
+      '<div class="ov"></div>'+lockTag(p)+'<div class="pi"><div class="tx">'+
       '<div class="k">'+p.goal+' · '+p.weeks.length+' wk</div><div class="t">'+p.name+'</div>'+
       '<div class="d">'+progDays(p)+' days · '+p.dur+' min a day</div></div>'+
-      '<button class="join" onclick="event.stopPropagation();openProgram(\''+p.id+'\')">'+(started?'Open':'Start')+'</button>'+
+      '<button class="join" onclick="event.stopPropagation();openProgram(\''+p.id+'\')">'+(!ownsProgram(p)?'Unlock':started?'Open':'Start')+'</button>'+
       '</div></div>'; }).join('')+'</div>';
 
   // 6) Quick sessions
   const quick=PROGRAMS.filter(p=>!p.weeks).slice(0,10);
-  $('home-quick').innerHTML='<div class="sechead">Quick Sessions <span class="freetag">FREE</span></div>'+
+  $('home-quick').innerHTML='<div class="sechead">Quick Sessions</div>'+
     '<div class="hscroll">'+quick.map(p=>
       '<div class="plan" style="background-image:url(\''+progImg(p)+'\')" onclick="openProgram(\''+p.id+'\')">'+
-      '<div class="ov"></div><div class="pi"><div class="tx">'+
+      '<div class="ov"></div>'+lockTag(p)+'<div class="pi"><div class="tx">'+
       '<div class="k">'+p.goal+'</div><div class="t">'+p.name+'</div>'+
       '<div class="d">'+p.level+' · '+p.dur+' min</div></div>'+
       '<button class="join" onclick="event.stopPropagation();openProgram(\''+p.id+'\')">Start</button>'+
@@ -289,7 +295,7 @@ function openProgram(id){
   const p=findProg(id); if(!p) return;
   /* A locked program opens its product sheet instead of its first day. The
      JSON is already in this file, so this is merchandising, not a lock. */
-  if(!ownsProgram(p)) return openProduct('prog_'+p.id);
+  if(!ownsProgram(p)) return openPaywall(p.name+' is part of HITFAT+.');
   curProg=p; curWeek=1;
   const done=progDone(p.id); let acc=0;
   (p.weeks||[]).forEach((w,i)=>{ if(done>=acc) curWeek=i+1; acc+=w.days.length; });
@@ -342,6 +348,7 @@ function markRest(pid,gi){
 let curDay=null;
 function openDay(pid,gi){
   const p=findProg(pid); if(!p) return;
+  if(!ownsProgram(p)) return openPaywall(p.name+' is part of HITFAT+.');
   curProg=p;
   let c=0, day=null, wk=1, dn=1;
   for(let wi=0;wi<p.weeks.length;wi++) for(let di=0;di<p.weeks[wi].days.length;di++){
@@ -396,7 +403,6 @@ function renderLibrary(){
 function renderMe(){
   const p=HF.data.prefs||{}, streak=liveStreak();
   const w=(HF.data.weight||[]).slice(-1)[0];
-  const paid=PROGRAMS.filter(isPaidProgram), owned=paid.filter(ownsProgram).length;
   const signedIn=!!(sb&&HF.userId);
 
   let h='<div class="mehead" onclick="startOnboarding()">'+avatarHTML(60)+
@@ -420,13 +426,24 @@ function renderMe(){
     '</div>';
 
   /* Everything else this account can open, in one place. */
-  h+='<div class="sechead">Programs & challenges</div><div class="glist">'+
-    grow('bag','Store', ownsAll() ? 'All Access' : owned+' of '+paid.length+' owned', "openStore('programs')");
+  /* The membership first — what this account can open, and until when. */
+  const tier=memberTier(), until=memberUntil();
+  h+='<div class="sechead">Membership</div><div class="glist">'+
+    grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+',
+         tier ? (until?'Until '+fmtDate(until):'All Access') : 'Not a member', "openStore()")+'</div>';
+  if(tier==='coach'){
+    h+='<div class="sechead">Your coach</div><div class="glist">'+
+      grow('person','Monthly review','Message coach','coachReview()')+
+      (COACH_GROUP_URL?grow('people','Members group','WhatsApp','coachGroup()'):'')+
+      grow('trophy','T42 included','One edition','openT42()')+'</div>';
+  }
+  h+='<div class="sechead">Challenges</div><div class="glist">';
   if(typeof T42!=='undefined' && T42.state==='ready' && (T42.challenge||T42.past))
     h+=grow('trophy','T42 Challenge', meT42Line(), 'openT42()');
   if(typeof openClub==='function' && typeof Club!=='undefined' && Club.state==='ready' && (Club.isMember()||Club.isStaff()))
     h+=grow('building','HITFAT Club', Club.isStaff()?'Staff':'Member', 'openClub()');
   h+='</div>';
+  h=h.replace('<div class="sechead">Challenges</div><div class="glist"></div>','');
 
   h+='<div class="sechead">Settings</div><div class="glist">'+
     '<div class="grow grow-ctl">'+ic('palette')+'<div class="grow-l">Appearance</div>'+
@@ -442,6 +459,13 @@ function renderMe(){
   h+='<p class="mefoot"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a><br>HITFAT+</p>';
   $('me-body').innerHTML=h;
 }
+
+function coachReview(){
+  const p=HF.data.prefs||{};
+  window.open('https://wa.me/'+COACH_WA+'?text='+encodeURIComponent(
+    'Hi coach, this is '+((p.name||'').trim()||'a HITFAT+ Coach member')+' — I would like my monthly review.'),'_blank');
+}
+function coachGroup(){ if(COACH_GROUP_URL) window.open(COACH_GROUP_URL,'_blank'); }
 
 /* One row of a grouped list: a tile, a label, the value on the right. */
 function grow(icon,label,value,go){

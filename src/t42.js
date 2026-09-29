@@ -1391,6 +1391,13 @@ function t42RenderPay(){
     el.innerHTML=h; return;
   }
 
+  /* HITFAT+ Coach includes one edition a year: claimed, not paid. */
+  if(typeof hasCoach==='function' && hasCoach()){
+    h+='<div class="acard"><div class="ah">'+ic('trophy')+'<div class="t">Included with HITFAT+ Coach</div></div>'+
+       '<div class="sub">Your membership includes one T42 edition a year. Claim this place instead of paying.</div>'+
+       '<button class="bigbtn" id="t42-claim" onclick="t42ClaimCoach()">Claim my place</button></div>';
+    h+='<div class="t42-q" style="text-align:center;margin:10px 0 4px;">Or pay for it separately</div>';
+  }
   if(price>0){
     h+='<div class="t42-price"><div class="t42-price-n">RM'+t42Money(price)+'</div>'+
        '<div class="t42-price-l">One payment · '+t42Esc(t42EdName(c))+' only</div></div>';
@@ -1412,6 +1419,22 @@ function t42RenderPay(){
   }
   h+='<button class="bigbtn sec" onclick="t42Reload()">I have paid — check again</button>';
   el.innerHTML=h;
+}
+
+var t42Claiming=false;
+async function t42ClaimCoach(){
+  if(t42Claiming || !T42.challenge) return;
+  t42Claiming=true;
+  var b=$('t42-claim'); if(b){ b.classList.add('off'); b.textContent='Claiming…'; }
+  try{
+    var r=await sb.rpc('t42_claim_with_coach',{p_challenge:T42.challenge.id});
+    if(r.error) throw r.error;
+    toast('Your place is confirmed — you\'re in');
+    await T42.load(true); t42Resume(); t42Paint(); t42Segs();
+  }catch(e){
+    toast((e&&e.message)||'Could not claim the place');
+    if(b){ b.classList.remove('off'); b.textContent='Claim my place'; }
+  }finally{ t42Claiming=false; }
 }
 
 function t42AskPay(){

@@ -5,6 +5,7 @@ var out = {};
 out[BUNDLE_SKU] = String(BUNDLE_PRICE);
 PROGRAMS.filter(isPaidProgram).forEach(function(p){ out['prog_'+p.id] = String(programPrice(p)); });
 SCAN_PRODUCTS.forEach(function(s){ out[s.sku] = String(s.price); });
+SUB_PLANS.forEach(function(s){ out[s.sku] = String(s.price); });
 print(JSON.stringify(out));
 `;
 (0, eval)(all);

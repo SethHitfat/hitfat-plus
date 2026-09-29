@@ -1,7 +1,20 @@
-/* ═══════════════ STORE · one-off ownership ═══════════════
-   No subscription. The app is free; individual programs are bought once and
-   owned forever, and Meal Scan sells access three ways because its cost is
-   the one thing here that recurs.
+/* ═══════════════ STORE · HITFAT+ membership ═══════════════
+   HITFAT+ is a membership, bought for 6 or 12 months, in two tiers:
+
+     HITFAT+        every program, session, the library, meal plans, AI scan
+     HITFAT+ Coach  all of that, plus one T42 edition, a monthly coach
+                    review and the members' WhatsApp group
+
+   Anyone signed in sees the whole app — FitOn-style — and anything behind
+   the membership shows a lock and opens the paywall. T42 is its own product
+   and is never behind this: a T42 participant trains T42 without a
+   membership. Personal tracking (the daily calorie target, logging meals by
+   hand, weight and progress) stays open, because it is the member's own data.
+
+   Bayarcash charges once, so a membership is paid up front and ends on a
+   date; renewing adds to that date. Old purchases are honoured: All Access
+   counts as HITFAT+ for good, a program bought on its own stays unlocked,
+   and scan credits and passes keep working.
 
    Everything in this file is presentation. It decides what the UI offers,
    not what the server allows. That distinction is load-bearing:
@@ -67,19 +80,49 @@ const SCAN_FREE_TIER=3;
 const FREE_PLAN_DAYS=3, FREE_PLAN_SAVED=1;
 
 /* ── what the user owns ───────────────────────────────────  */
-let _ent={skus:{}, credits:0, passUntil:null, loaded:false};
+let _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, loaded:false};
+
+/* ── the membership ──
+   Prices are the server's too (deploy/_shared/catalogue.ts); build.py
+   refuses to ship if the two disagree. Change a price in both. */
+const SUB_PLANS=[
+  {sku:'sub_plus_12m',  tier:'plus',  months:12, days:365, price:249},
+  {sku:'sub_plus_6m',   tier:'plus',  months:6,  days:183, price:149},
+  {sku:'sub_coach_12m', tier:'coach', months:12, days:365, price:599},
+  {sku:'sub_coach_6m',  tier:'coach', months:6,  days:183, price:349}
+];
+/* The coach's line and the members' group. The group link is set when it
+   exists; until then the row is not shown. */
+const COACH_WA='60176132170', COACH_GROUP_URL='';
+
+function liveDate(d){ return !!(d && new Date(d)>new Date()); }
+function hasCoach(){ return liveDate(_ent.coachUntil); }
+function hasPlus(){ return hasCoach() || liveDate(_ent.plusUntil) || owns(BUNDLE_SKU); }
+function memberTier(){ return hasCoach() ? 'coach' : hasPlus() ? 'plus' : null; }
+/* The date access runs to, or null for All Access (which does not end). */
+function memberUntil(){
+  if(hasCoach()) return _ent.coachUntil;
+  if(liveDate(_ent.plusUntil)) return _ent.plusUntil;
+  return null;
+}
+function fmtDate(d){ return new Date(d).toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'}); }
 
 function owns(sku){ return !!_ent.skus[sku]; }
-function ownsAll(){ return owns(BUNDLE_SKU); }
+/* "Everything unlocked" — the membership, or the All Access bought before it. */
+function ownsAll(){ return hasPlus(); }
+/* Every program and session is part of the membership now, the ones that
+   used to be free included. A program bought on its own before stays open. */
 function ownsProgram(p){
-  if(!isPaidProgram(p)) return true;
-  return ownsAll() || owns('prog_'+p.id);
+  if(!p) return false;
+  return hasPlus() || owns('prog_'+p.id);
 }
 function ownsBar(){ return owns('bar'); }
 
 /* Free tier first, then a pass, then credits — cheapest for the user in
    that order, which is also the order the edge function checks. */
 function scanAccess(){
+  /* A member scans without limit: the membership is a pass on the server. */
+  if(hasPlus() && memberUntil()) return {mode:'pass', label:'Unlimited with HITFAT+', left:Infinity};
   const used=scanUsed(), freeLeft=Math.max(0, SCAN_FREE_TIER-used);
   if(_ent.passUntil && new Date(_ent.passUntil)>new Date())
     return {mode:'pass', label:'Unlimited until '+new Date(_ent.passUntil).toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'}), left:Infinity};
@@ -90,7 +133,7 @@ function scanAccess(){
 function canScan(){ return scanAccess().left>0; }
 
 async function loadEntitlement(){
-  _ent={skus:{}, credits:0, passUntil:null, loaded:true};
+  _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, loaded:true};
   if(!sb || !HF.userId) return _ent;
   try{
     const r=await sb.from('plus_entitlements')
@@ -102,6 +145,13 @@ async function loadEntitlement(){
       if(!live) return;
       if(e.kind==='pass'){
         if(!_ent.passUntil || new Date(e.expires_at)>new Date(_ent.passUntil)) _ent.passUntil=e.expires_at;
+        /* A membership is a pass too — the scan function already treats any
+           live pass as unlimited scanning — and its SKU says which tier. */
+        if(String(e.sku).indexOf('sub_coach')===0){
+          if(!_ent.coachUntil || new Date(e.expires_at)>new Date(_ent.coachUntil)) _ent.coachUntil=e.expires_at;
+        } else if(String(e.sku).indexOf('sub_plus')===0){
+          if(!_ent.plusUntil || new Date(e.expires_at)>new Date(_ent.plusUntil)) _ent.plusUntil=e.expires_at;
+        }
         return;
       }
       _ent.skus[e.sku]=true;         // programs, the bundle, the bar
@@ -121,24 +171,25 @@ function openStore(focus){
      button looked broken because nothing on screen ever changed. */
   if(typeof trSeg!=='undefined' && trSeg!=='store') _storeBackSeg=trSeg;
   hidePanels(); $('store').style.display='block';
-  renderStore(focus||'programs'); $('screen').scrollTop=0;
+  renderStore(focus||'plans'); $('screen').scrollTop=0;
 }
 function closeStore(){
   if(typeof trSeg!=='undefined') trSeg=_storeBackSeg||'explore';
   switchTab('train');
 }
-let storeSeg='programs';
-const STORE_SEGS=[['programs','Programs'],['scan','Meal Scan'],['bar','HITFAT BAR']]
+let storeSeg='plans';
+/* One page: the membership. Programs and scan packs are no longer sold on
+   their own; the BAR tab returns with BAR_ENABLED. */
+const STORE_SEGS=[['plans','Membership'],['bar','HITFAT BAR']]
   .filter(s=>BAR_ENABLED || s[0]!=='bar');
 function setStoreSeg(s){ storeSeg=s; renderStore(s); $('screen').scrollTop=0; }
 
 function renderStore(seg){
   storeSeg=seg||storeSeg;
-  $('store-segs').innerHTML='<div class="segs">'+STORE_SEGS.map(s=>
-    '<button class="seg'+(storeSeg===s[0]?' on':'')+'" onclick="setStoreSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
-  if(storeSeg==='scan') return storeScan();
+  $('store-segs').innerHTML = STORE_SEGS.length>1 ? '<div class="segs">'+STORE_SEGS.map(s=>
+    '<button class="seg'+(storeSeg===s[0]?' on':'')+'" onclick="setStoreSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>' : '';
   if(storeSeg==='bar' && BAR_ENABLED) return storeBar();
-  storePrograms();
+  storeMembership();
 }
 
 function storePrograms(){
@@ -260,6 +311,12 @@ function openBarSite(){ try{ window.open(BAR_URL,'_blank','noopener'); }catch(e)
 /* ── product sheet ────────────────────────────────────────  */
 let _prod=null;
 function openProduct(sku){
+  /* Programs, All Access and scan packs are part of the membership now.
+     Every old way into a product sheet lands on the paywall instead. */
+  if(sku===BUNDLE_SKU || String(sku).indexOf('prog_')===0 || String(sku).indexOf('scan_')===0){
+    const p=String(sku).indexOf('prog_')===0 ? PROGRAMS.filter(x=>'prog_'+x.id===sku)[0] : null;
+    return openPaywall(p ? p.name+' is part of HITFAT+.' : '');
+  }
   _prod=sku;
   let title,price,sub,bullets,cta;
 
@@ -324,7 +381,7 @@ function setPayChannel(c){
 }
 
 function startCheckout(sku){
-  const item = SCAN_PRODUCTS.filter(x=>x.sku===sku)[0];
+  const item = SCAN_PRODUCTS.filter(x=>x.sku===sku)[0] || SUB_PLANS.filter(x=>x.sku===sku)[0];
   const price = sku===BUNDLE_SKU ? BUNDLE_PRICE
               : item ? item.price
               : (function(){ const p=PROGRAMS.filter(x=>'prog_'+x.id===sku)[0]; return p?programPrice(p):0; })();
@@ -369,16 +426,17 @@ async function payNow(){
 
 /* Ask the server what actually settled. The browser never grants itself
    anything — a hand-typed ?paid= in the URL unlocks nothing. */
+function entSig(){ return JSON.stringify([Object.keys(_ent.skus).sort(), _ent.credits, _ent.passUntil, _ent.plusUntil, _ent.coachUntil]); }
 async function refreshPurchases(){
   if(!sb || !HF.userId) return 0;
-  const before=Object.keys(_ent.skus).length + _ent.credits + (_ent.passUntil?1:0);
+  const before=entSig();
   try{
     const tk=await scanToken();
     if(tk) await fetch(PAY_STATUS,{headers:{'Authorization':'Bearer '+tk,'apikey':SUPA_KEY}});
   }catch(e){}
   await loadEntitlement();
-  const after=Object.keys(_ent.skus).length + _ent.credits + (_ent.passUntil?1:0);
-  return after>before ? 1 : 0;
+  const after=entSig();
+  return after!==before ? 1 : 0;
 }
 
 /* Coming back from the gateway, the callback can take a few seconds. Poll
@@ -391,7 +449,7 @@ function awaitPayment(){
     const got=await refreshPurchases();
     if(got || tries>=8){
       clearInterval(t);
-      if(got){ toast('Payment confirmed — unlocked 🎉'); try{ renderStore(storeSeg); }catch(e){} }
+      if(got){ toast('Payment confirmed — welcome to HITFAT+'); try{ renderStore(storeSeg); renderHome(); }catch(e){} }
       else toast('Not confirmed yet — it will unlock by itself once received.');
     }
   }, 3000);
@@ -418,3 +476,114 @@ function handlePaidRedirect(){
 }
 
 
+
+
+/* ═══════════════ THE PAYWALL ═══════════════
+   One sheet for every lock: the tier, what it includes, 12 or 6 months with
+   the monthly figure beside each, and one button. The 12-month plan is the
+   default and says why. Prices are real prices — nothing is struck through
+   against a "regular" price nobody was ever charged. */
+let pwTier='plus', pwSku='sub_plus_12m', pwReason='';
+
+const TIER_INFO={
+  plus:{name:'HITFAT+', line:'Everything in the app, for as long as you are a member.',
+    perks:[['workout','Every program and session','Signature, strength, fat loss, recovery — '+PROGRAMS.filter(p=>p.weeks).length+' programs'],
+           ['photo','AI meal scan','Photograph a plate, get calories and macros'],
+           ['food','Meal plans up to 14 days','Malaysian menus, MDG 2020 and CPG MOH 2023'],
+           ['play','Every movement, on video','The full exercise library, with the camera mirror']]},
+  coach:{name:'HITFAT+ Coach', line:'The app, and a coach who checks in on you.',
+    perks:[['check','Everything in HITFAT+','Every program, scan, meal plan and video'],
+           ['trophy','One T42 challenge included','Claim a place in the next edition, no extra payment'],
+           ['person','Monthly coach review','Your numbers, looked at by a HITFAT coach each month'],
+           ['people','Members-only group','Questions answered, with the people training alongside you']]}
+};
+function subPlan(sku){ return SUB_PLANS.filter(x=>x.sku===sku)[0]; }
+function perMonth(p){ return (p.price/p.months).toFixed(2).replace(/\.00$/,''); }
+
+function openPaywall(reason){
+  pwReason=reason||'';
+  if(!subPlan(pwSku) || subPlan(pwSku).tier!==pwTier) pwSku='sub_'+pwTier+'_12m';
+  $('pw-body').innerHTML=paywallHTML(true);
+  $('pwm').classList.add('on');
+}
+function pwSetTier(t){ pwTier=t; pwSku='sub_'+t+'_12m'; repaintPaywall(); }
+function pwSetPlan(sku){ pwSku=sku; repaintPaywall(); }
+function repaintPaywall(){
+  if($('pwm').classList.contains('on')) $('pw-body').innerHTML=paywallHTML(true);
+  if($('store') && $('store').style.display==='block') storeMembership();
+}
+function pwBuy(){
+  const p=subPlan(pwSku); if(!p) return;
+  if(typeof sb==='undefined' || !sb || !HF.userId){ toast('Sign in first so we can add the membership to your account.'); return; }
+  startCheckout(p.sku);
+}
+
+/* The membership offer, as a sheet (sheet=true) or inside the Store page. */
+function paywallHTML(sheet){
+  const info=TIER_INFO[pwTier], plans=SUB_PLANS.filter(x=>x.tier===pwTier);
+  const chosen=subPlan(pwSku)||plans[0];
+  let h='';
+  if(sheet) h+='<div class="pwtop"><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>';
+  h+='<div class="sub-hero"><span class="sub-mark" aria-hidden="true"></span>'+
+     '<div class="sub-h">'+(pwReason?'Unlock with HITFAT+':'Train with everything')+'</div>'+
+     '<div class="sub-s">'+hesc(pwReason||info.line)+'</div></div>';
+  h+='<div class="segs sub-tiers">'+
+     '<button class="seg'+(pwTier==='plus'?' on':'')+'" onclick="pwSetTier(\'plus\')">HITFAT+</button>'+
+     '<button class="seg'+(pwTier==='coach'?' on':'')+'" onclick="pwSetTier(\'coach\')">HITFAT+ Coach</button></div>';
+  h+='<div class="sub-perks">'+info.perks.map(x=>
+     '<div class="sub-perk">'+ic(x[0])+'<div><div class="t">'+x[1]+'</div><div class="m">'+x[2]+'</div></div></div>').join('')+'</div>';
+  h+='<div class="sub-plans">'+plans.map(p=>{
+       const on=p.sku===chosen.sku, best=p.months===12;
+       const save=best ? Math.round((1-(p.price/12)/(plans.filter(x=>x.months===6)[0].price/6))*100) : 0;
+       return '<button class="sub-plan'+(on?' on':'')+'" onclick="pwSetPlan(\''+p.sku+'\')">'+
+         (best?'<span class="sub-best">Best value'+(save>0?' · save '+save+'%':'')+'</span>':'')+
+         '<span class="sub-radio"></span>'+
+         '<span class="sub-pl"><b>'+p.months+' months</b><small>RM'+perMonth(p)+' a month</small></span>'+
+         '<span class="sub-pr">RM'+p.price+'</span></button>';
+     }).join('')+'</div>';
+  h+='<button class="bigbtn sub-cta" onclick="pwBuy()">Continue · RM'+chosen.price+'</button>';
+  h+='<div class="sub-fine">One payment for '+chosen.months+' months — FPX or DuitNow. It does not renew by itself; '+
+     'we remind you before it ends. '+(pwTier==='coach'?'Includes one T42 edition during your membership.':'T42 challenges are sold separately.')+'</div>';
+  return h;
+}
+
+/* ── the Store page ── */
+function storeMembership(){
+  const t=memberTier(), until=memberUntil();
+  let h='';
+  if(t){
+    h+='<div class="sub-status"><span class="sub-mark" aria-hidden="true"></span><div>'+
+       '<div class="sub-status-t">'+(t==='coach'?'HITFAT+ Coach':'HITFAT+')+' member</div>'+
+       '<div class="sub-status-s">'+(until?'Active until '+fmtDate(until):'All Access — yours for good')+'</div></div></div>';
+    /* All Access never ends, so the only thing left to offer is the coach. */
+    if(!until){ $('store-body').innerHTML=h+coachUpsell(); return; }
+    if(t==='coach' && pwTier!=='coach'){ pwTier='coach'; pwSku='sub_coach_12m'; }
+    h+='<div class="nhead"><div class="nhead-t">'+(t==='coach'?'Extend':'Extend, or add a coach')+'</div>'+
+       '<div class="nhead-s">Added on to your current end date — nothing is lost by renewing early.</div></div>';
+    $('store-body').innerHTML=h+paywallHTML(false);
+    return;
+  }
+  h+=paywallHTML(false);
+  h+='<div class="nhead"><div class="nhead-t">What is inside</div></div><div class="sub-inside">'+
+     [[PROGRAMS.filter(p=>p.weeks).length,'programs'],[PROGRAMS.filter(p=>!p.weeks).length,'single sessions'],
+      [libDB().length,'filmed movements'],['14','day meal plans']].map(x=>
+     '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
+  h+='<div class="nfoot">Your calorie target, meal log, weight and progress stay open without a membership. T42 participants train T42 either way.</div>';
+  $('store-body').innerHTML=h;
+}
+function coachUpsell(){
+  pwTier='coach'; if(!subPlan(pwSku)||subPlan(pwSku).tier!=='coach') pwSku='sub_coach_12m';
+  return '<div class="nhead"><div class="nhead-t">Add a coach</div><div class="nhead-s">A monthly review, the members group and a T42 place.</div></div>'+paywallHTML(false);
+}
+
+/* ── the lock, wherever content is shown ── */
+function lockTag(p){
+  return (p && !ownsProgram(p)) ? '<span class="lockt" aria-label="HITFAT+">'+glyph('lock')+'</span>' : '';
+}
+/* Anything that plays: gated here, so every door is covered. T42 does not
+   come through these — it plays its own day directly. */
+function needPlus(reason){
+  if(hasPlus()) return false;
+  openPaywall(reason||'');
+  return true;
+}

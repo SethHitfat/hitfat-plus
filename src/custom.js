@@ -27,6 +27,7 @@ const CP_STEPS=['Activities','Days','Length','Equipment','Weeks','Preview'];
 let cp={step:0, acts:[], days:[], len:20, eq:'Bodyweight', wk:4};
 
 function openCustom(){
+  if(needPlus('Building your own plan is part of HITFAT+.')) return;
   const saved=HF.data.custom;
   cp = saved ? Object.assign({step:0},JSON.parse(JSON.stringify(saved)))
              : {step:0, acts:['full','fat'], days:[0,2,4], len:20, eq:'Bodyweight', wk:4};
