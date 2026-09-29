@@ -601,7 +601,7 @@ ok("generic plans never pull prehab moves", (function(){
    session, so this must not drift as new movements are added unfilmed. */
 ok("every BAR session uses only filmed movements", (function(){
   var bad=[];
-  PROGRAMS.filter(isBarProgram).forEach(function(p){
+  BAR_PLANS.forEach(function(p){
     p.weeks.forEach(function(w){ w.days.forEach(function(d){
       if(d.rest) return;
       d.ex.forEach(function(n){
@@ -611,7 +611,7 @@ ok("every BAR session uses only filmed movements", (function(){
     }); });
   });
   return bad.length===0; })(), 'unfilmed movements inside BAR programmes');
-ok("no BAR session is left short", PROGRAMS.filter(isBarProgram).every(function(p){
+ok("no BAR session is left short", BAR_PLANS.every(function(p){
   return p.weeks.every(function(w){ return w.days.every(function(d){
     return d.rest || d.ex.length>=4; }); }); }));
 /* The filmed flag must actually narrow the pool, or the guarantee above is
@@ -622,7 +622,7 @@ ok("filmed:true narrows the pool", (function(){
          only.every(function(n){
            var e=DB.filter(function(x){ return x.n===n; })[0]; return e && !!e.v; });
 })());
-ok("BAR plans still get BAR moves", PROGRAMS.filter(isBarProgram).every(function(p){
+ok("BAR plans still get BAR moves", BAR_PLANS.every(function(p){
     return p.weeks[0].days.some(function(d){ return !d.rest && d.ex.some(isBarExercise); }); }));
 ok("no generic day went empty",  PROGRAMS.filter(function(p){ return p.weeks; })
     .every(function(p){ return p.weeks.every(function(w){ return w.days.every(function(d){
@@ -683,10 +683,8 @@ ok("move better returns recovery",  document.getElementById('store-body').innerH
 ok("and it is a recovery program",  (function(){
     return PROGRAMS.filter(isRehabProgram).some(function(p){
       return document.getElementById('store-body').innerHTML.indexOf(p.name)>0; }); })());
-fq={step:3, goal:'strong', joint:null, days:4, equip:'bar', level:'Intermediate'}; fqResult();
-ok("bar equipment surfaces a BAR program", (function(){
-    return PROGRAMS.filter(isBarProgram).some(function(p){
-      return document.getElementById('store-body').innerHTML.indexOf(p.name)>0; }); })());
+/* HITFAT BAR is paused: the Finder must not offer equipment nobody can use. */
+ok("a paused BAR is not a Finder option", FQ_EQUIP.every(function(q){ return q.k!=='bar'; }));
 fq={step:3, goal:'fat', joint:null, days:3, equip:'none', level:'Beginner'}; fqResult();
 ok("no equipment does not pick the BAR", (function(){
     var top=PROGRAMS.map(function(p){ return {p:p, s:fqScore(p).s}; })
@@ -804,13 +802,11 @@ ok("back restores the old tab",  trSeg==='explore', trSeg);
 setTrSeg('plans'); setTrSeg('store'); closeStore();
 ok("back remembers where you were", trSeg==='plans', trSeg);
 
-/* BAR programs */
-var bars=PROGRAMS.filter(isBarProgram);
-ok("BAR programs exist",         bars.length>=5, bars.length);
-ok("BAR programs are free",      bars.every(function(p){ return !isPaidProgram(p) && ownsProgram(p); }));
-ok("BAR programs open directly", (function(){
-    openProgram(bars[0].id);
-    return document.getElementById('progdetail').style.display==='block'; })());
+/* BAR programs — paused (BAR_ENABLED=false). The programs are still built,
+   so switching it back on needs no rework; they just reach no screen. */
+var bars=BAR_PLANS;
+ok("BAR programs are still built",   bars.length>=5, bars.length);
+ok("...and would be free",           bars.every(function(p){ return !isPaidProgram(p); }));
 ok("BAR days are all BAR moves", bars.every(function(p){
     return p.weeks.every(function(w){ return w.days.every(function(d){
       return d.rest || d.ex.every(isBarExercise); }); }); }));
@@ -820,15 +816,15 @@ ok("no BAR day is empty",        bars.every(function(p){
 ok("BAR weeks differ",           (function(){
     var p=bars.filter(function(x){return x.weeks.length>1;})[0];
     return !p || JSON.stringify(p.weeks[0])!==JSON.stringify(p.weeks[1]); })());
-noThrow("BAR segment renders",   function(){ switchTab('train'); setTrSeg('bar'); });
-ok("BAR segment lists them",     bars.every(function(p){
-    return document.getElementById('tr-body').innerHTML.indexOf(p.name)>0; }));
-ok("BAR segment reports its coverage", (function(){
-  var h=document.getElementById('tr-body').innerHTML, c=barFootageCount();
-  return h.indexOf(c.have+' of '+c.total)>0; })(),
-  document.getElementById('tr-body').innerHTML.indexOf('filmed')>0 ? 'has a note' : 'no note at all');
-noThrow("BAR library opens filtered", function(){ openLibrary(BAR_EQ); });
-ok("library filtered to BAR",    libEq===BAR_EQ);
+ok("while paused, no BAR program is in any list", PROGRAMS.filter(isBarProgram).length===0);
+ok("...Train has no BAR segment",  TR_SEGS.every(function(x){ return x[0]!=='bar'; }));
+ok("...the Store has no BAR tab",  STORE_SEGS.every(function(x){ return x[0]!=='bar'; }));
+noThrow("an old link to the BAR segment is safe", function(){ switchTab('train'); setTrSeg('bar'); });
+ok("...and shows no BAR",          document.getElementById('tr-body').innerHTML.indexOf('HITFAT BAR')<0);
+openLibrary(BAR_EQ);
+ok("...the library falls back to everything", libEq==='All');
+ok("...and lists no BAR movement", document.getElementById('lib-body').innerHTML.indexOf(BAR_EQ)<0);
+ok("...while the exercises stay for the plans", BAR_DB.every(function(e){ return DB.indexOf(e)>=0; }));
 
 /* the player must not leave the previous clip running under a new name */
 var _noclip=BAR_DB.filter(function(e){ return !e.v; })[0];
@@ -1042,7 +1038,7 @@ print("\n── STORE UI ──");
 HF.apply(null);
 _ent={skus:{}, credits:0, passUntil:null, loaded:true};
 noThrow("store opens",           function(){ openStore('programs'); });
-ok("three store segments",       STORE_SEGS.length===3);
+ok("store segments: programs and scans, BAR while enabled", STORE_SEGS.length===(BAR_ENABLED?3:2));
 noThrow("every segment renders", function(){ STORE_SEGS.forEach(function(s){ setStoreSeg(s[0]); }); });
 setStoreSeg('programs');
 ok("bundle is offered",          document.getElementById('store-body').innerHTML.indexOf('bundle_all')>0);
@@ -1053,11 +1049,7 @@ ok("scan tab lists the packs",   SCAN_PRODUCTS.every(function(s){
     return document.getElementById('store-body').innerHTML.indexOf(s.sku)>0; }));
 ok("scan tab says what is free", document.getElementById('store-body').innerHTML.indexOf('Manual logging')>0);
 setStoreSeg('bar');
-ok("bar tab shows the price",    document.getElementById('store-body').innerHTML.indexOf('RM'+BAR_PRICE)>0);
-ok("bar tab links out to the site", document.getElementById('store-body').innerHTML.indexOf('openBarSite()')>0);
-ok("bar sessions are never sold",PROGRAMS.filter(isBarProgram).every(function(p){ return !isPaidProgram(p); }));
-ok("no bar content yet is stated", document.getElementById('store-body').innerHTML.indexOf('being filmed')>0
-                                || PROGRAMS.filter(isBarProgram).length>0);
+ok("a paused BAR tab sells nothing", document.getElementById('store-body').innerHTML.indexOf('openBarSite()')<0);
 
 noThrow("every product sheet opens", function(){
   openProduct(BUNDLE_SKU); closeProduct();

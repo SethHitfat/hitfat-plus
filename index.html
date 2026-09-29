@@ -4153,6 +4153,13 @@ function rehabFootageReady(){ return REHAB_DB.some(e => !!e.v); }
    the player says so. Paste the Vimeo ids into v and they light up; nothing
    else has to change.                                                       */
 
+/* HITFAT BAR is paused. The library and the programs stay in the code so
+   switching this back to true brings every screen back — the Train and
+   Store segments, the BAR programs in every list, the Finder option and
+   the library filter. The exercises stay in DB either way, because the BAR
+   programs are generated from them. */
+const BAR_ENABLED=false;
+
 const BAR_EQ='HITFAT BAR';
 const BAR_DB=[
   /* ── hinge ── */
@@ -4231,6 +4238,8 @@ const BAR_DB=[
 /* One library, so the player, the exercise picker and the search all find
    these without knowing they are special. */
 DB = DB.concat(BAR_DB);
+/* What the library shows: every exercise, less the BAR ones while it is paused. */
+function libDB(){ return BAR_ENABLED ? DB : DB.filter(e=>e.eq!==BAR_EQ); }
 
 function isBarExercise(name){
   return BAR_DB.some(e => e.n === name);
@@ -4562,7 +4571,7 @@ BAR_PLANS.forEach(p => { p.bar = true; });
 SIG_PLANS.forEach(p => { p.special = true; });
 
 /* Signature first — they lead every list — then the bar sessions. */
-PROGRAMS = SIG_PLANS.concat(BAR_PLANS, PROGRAMS);
+PROGRAMS = SIG_PLANS.concat(BAR_ENABLED ? BAR_PLANS : [], PROGRAMS);
 
 
 /* ═══════════════ RECOVERY · programs ═══════════════
@@ -4795,7 +4804,7 @@ function renderMonthly(){
   h+=fsec('How it works','');
   h+='<div class="flib">'+[
       ['📅','A new challenge every month','It changes by itself on the first'],
-      ['🏃','Any session counts','Program day, single session, BAR, recovery — all of it'],
+      ['🏃','Any session counts','Program day, single session, recovery — all of it'],
       ['🎖️','Finish it and keep it','Completed months stay on your shelf'],
       ['🆓','Free for everyone','No purchase, nothing locked']
     ].map(x=>'<div class="row" style="cursor:default;"><div class="ic">'+ic(x[0])+'</div>'+
@@ -4954,7 +4963,8 @@ function closeStore(){
   switchTab('train');
 }
 let storeSeg='programs';
-const STORE_SEGS=[['programs','Programs'],['scan','Meal Scan'],['bar','HITFAT BAR']];
+const STORE_SEGS=[['programs','Programs'],['scan','Meal Scan'],['bar','HITFAT BAR']]
+  .filter(s=>BAR_ENABLED || s[0]!=='bar');
 function setStoreSeg(s){ storeSeg=s; renderStore(s); $('screen').scrollTop=0; }
 
 function renderStore(seg){
@@ -4962,7 +4972,7 @@ function renderStore(seg){
   $('store-segs').innerHTML='<div class="segs">'+STORE_SEGS.map(s=>
     '<button class="seg'+(storeSeg===s[0]?' on':'')+'" onclick="setStoreSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
   if(storeSeg==='scan') return storeScan();
-  if(storeSeg==='bar')  return storeBar();
+  if(storeSeg==='bar' && BAR_ENABLED) return storeBar();
   storePrograms();
 }
 
@@ -5128,7 +5138,7 @@ function openProduct(sku){
     '<div class="pwprice"><div class="p">RM'+price+'</div><div class="per">one payment</div></div>'+
     '<button class="bigbtn" onclick="startCheckout(\''+sku+'\')">'+cta+'</button>'+
     '<button class="authalt" onclick="closeProduct()">Not now</button>'+
-    '<div class="pwfine">No subscription. Manual logging, your daily target, all single sessions and the HITFAT BAR programs stay free.</div>';
+    '<div class="pwfine">No subscription. Manual logging, your daily target, all single sessions'+(BAR_ENABLED?' and the HITFAT BAR programs':'')+' stay free.</div>';
   $('pwm').classList.add('on');
 }
 function closeProduct(){ $('pwm').classList.remove('on'); }
@@ -5268,7 +5278,7 @@ const FQ_EQUIP=[
   {k:'bar',    e:'🏋️', n:'HITFAT BAR',          d:'The bar and bands'},
   {k:'weights',e:'🔔', n:'Dumbbell or kettlebell', d:'Something to load up with'},
   {k:'any',    e:'✨', n:'Whatever works',      d:'Show me the best match either way'}
-];
+].filter(q=>BAR_ENABLED || q.k!=='bar');
 
 function openFinder(){
   const p=HF.data.prefs||{};
@@ -12583,10 +12593,12 @@ let libEq='All';
 function openLibrary(eq){ if(eq) libEq=eq;
   hidePanels(); $('library').style.display='block'; renderLibrary(); $('screen').scrollTop=0; }
 function renderLibrary(){
-  const eqs=['All'].concat(Array.from(new Set(DB.map(e=>e.eq))));
-  const list=DB.filter(e=>libEq==='All'||e.eq===libEq);
+  const lib=libDB();
+  if(!BAR_ENABLED && libEq===BAR_EQ) libEq='All';
+  const eqs=['All'].concat(Array.from(new Set(lib.map(e=>e.eq))));
+  const list=lib.filter(e=>libEq==='All'||e.eq===libEq);
   $('lib-body').innerHTML='<div class="hgroup"><h2>All exercises</h2>'+
-    '<p>'+DB.length+' movements, every one with a demo video.</p></div>'+
+    '<p>'+libDB().length+' movements, every one with a demo video.</p></div>'+
     '<div class="filters">'+eqs.map(q=>'<button class="chip'+(q===libEq?' y':'')+'" onclick="libEq=\''+q+'\';renderLibrary()">'+q+'</button>').join('')+'</div>'+
     '<div style="display:flex;flex-direction:column;gap:9px;">'+
     list.map(e=>'<div class="wrow" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
@@ -13943,7 +13955,8 @@ function renderMetric(){
    and a workout list. Content is HITFAT+'s own.                               */
 
 let trSeg='explore';
-const TR_SEGS=[['foryou','For You'],['explore','Explore'],['plans','Plans'],['recovery','Recovery'],['bar','HITFAT BAR'],['store','Store'],['library','Library']];
+const TR_SEGS=[['foryou','For You'],['explore','Explore'],['plans','Plans'],['recovery','Recovery'],['bar','HITFAT BAR'],['store','Store'],['library','Library']]
+  .filter(s=>BAR_ENABLED || s[0]!=='bar');
 function setTrSeg(s){
   /* Remember where we came from BEFORE overwriting trSeg — openStore() runs
      after this assignment and would only ever see 'store'. */
@@ -14005,7 +14018,7 @@ function renderTrain(){
   $('tr-segs').innerHTML='<div class="segs">'+TR_SEGS.map(s=>
     '<button class="seg'+(trSeg===s[0]?' on':'')+'" onclick="setTrSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
   if(trSeg==='store'){ openStore('programs'); return; }
-  if(trSeg==='bar')      return trBar();
+  if(trSeg==='bar' && BAR_ENABLED) return trBar();
   if(trSeg==='recovery') return trRecovery();
   if(trSeg==='foryou')  return trForYou();
   if(trSeg==='plans')   return trPlans();
@@ -14176,7 +14189,7 @@ function trLibrary(){
   const done=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>=progDays(p));
   const favs=(HF.data.favs||[]).length;
   const rows=[
-    ['🏃','Exercises',DB.length,"openLibrary()"],
+    ['🏃','Exercises',libDB().length,"openLibrary()"],
     ['📋','Programs started',started.length,"openActivity('Started')"],
     ['🏆','Programs finished',done.length,"openActivity('Finished')"],
     ['⭐','Saved meals',favs,"switchTab('eat')"],
@@ -14186,9 +14199,9 @@ function trLibrary(){
     '<div class="row" onclick="'+r[3]+'"><span class="ic">'+ic(r[0])+'</span>'+
     '<span class="lb">'+r[1]+'</span><span class="ct">'+r[2]+'</span><span class="cv">›</span></div>').join('')+'</div>';
   h+=fsec('By equipment','Everything you can train with today');
-  const eqs=Array.from(new Set(DB.map(e=>e.eq)));
+  const eqs=Array.from(new Set(libDB().map(e=>e.eq)));
   h+='<div class="flib">'+eqs.map(q=>{
-    const n=DB.filter(e=>e.eq===q).length;
+    const n=libDB().filter(e=>e.eq===q).length;
     return '<div class="row" onclick="libEq=\''+q+'\';openLibrary()"><span class="ic">'+glyph('workout')+'</span>'+
       '<span class="lb">'+q+'</span><span class="ct">'+n+'</span><span class="cv">›</span></div>';
   }).join('')+'</div>';
@@ -14214,7 +14227,7 @@ function openActivity(k){
   }
   h+= list.length ? list.map(p=>frow(p)).join('') : '<div class="empty">Nothing here yet.</div>';
   if(k==='Recovery'){
-    const mob=DB.filter(e=>e.m==='Mobility'||e.t==='hold');
+    const mob=libDB().filter(e=>e.m==='Mobility'||e.t==='hold');
     h+=fsec('Mobility &amp; holds')+'<div style="display:flex;flex-direction:column;gap:9px;">'+
       mob.slice(0,14).map(e=>'<div class="wrow"><div class="tx"><div class="t">'+e.n+'</div>'+
       '<div class="m">'+e.m+' · '+(e.dur||40)+'s hold</div></div></div>').join('')+'</div>'+

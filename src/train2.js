@@ -4,7 +4,8 @@
    and a workout list. Content is HITFAT+'s own.                               */
 
 let trSeg='explore';
-const TR_SEGS=[['foryou','For You'],['explore','Explore'],['plans','Plans'],['recovery','Recovery'],['bar','HITFAT BAR'],['store','Store'],['library','Library']];
+const TR_SEGS=[['foryou','For You'],['explore','Explore'],['plans','Plans'],['recovery','Recovery'],['bar','HITFAT BAR'],['store','Store'],['library','Library']]
+  .filter(s=>BAR_ENABLED || s[0]!=='bar');
 function setTrSeg(s){
   /* Remember where we came from BEFORE overwriting trSeg — openStore() runs
      after this assignment and would only ever see 'store'. */
@@ -66,7 +67,7 @@ function renderTrain(){
   $('tr-segs').innerHTML='<div class="segs">'+TR_SEGS.map(s=>
     '<button class="seg'+(trSeg===s[0]?' on':'')+'" onclick="setTrSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
   if(trSeg==='store'){ openStore('programs'); return; }
-  if(trSeg==='bar')      return trBar();
+  if(trSeg==='bar' && BAR_ENABLED) return trBar();
   if(trSeg==='recovery') return trRecovery();
   if(trSeg==='foryou')  return trForYou();
   if(trSeg==='plans')   return trPlans();
@@ -237,7 +238,7 @@ function trLibrary(){
   const done=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>=progDays(p));
   const favs=(HF.data.favs||[]).length;
   const rows=[
-    ['🏃','Exercises',DB.length,"openLibrary()"],
+    ['🏃','Exercises',libDB().length,"openLibrary()"],
     ['📋','Programs started',started.length,"openActivity('Started')"],
     ['🏆','Programs finished',done.length,"openActivity('Finished')"],
     ['⭐','Saved meals',favs,"switchTab('eat')"],
@@ -247,9 +248,9 @@ function trLibrary(){
     '<div class="row" onclick="'+r[3]+'"><span class="ic">'+ic(r[0])+'</span>'+
     '<span class="lb">'+r[1]+'</span><span class="ct">'+r[2]+'</span><span class="cv">›</span></div>').join('')+'</div>';
   h+=fsec('By equipment','Everything you can train with today');
-  const eqs=Array.from(new Set(DB.map(e=>e.eq)));
+  const eqs=Array.from(new Set(libDB().map(e=>e.eq)));
   h+='<div class="flib">'+eqs.map(q=>{
-    const n=DB.filter(e=>e.eq===q).length;
+    const n=libDB().filter(e=>e.eq===q).length;
     return '<div class="row" onclick="libEq=\''+q+'\';openLibrary()"><span class="ic">'+glyph('workout')+'</span>'+
       '<span class="lb">'+q+'</span><span class="ct">'+n+'</span><span class="cv">›</span></div>';
   }).join('')+'</div>';
@@ -275,7 +276,7 @@ function openActivity(k){
   }
   h+= list.length ? list.map(p=>frow(p)).join('') : '<div class="empty">Nothing here yet.</div>';
   if(k==='Recovery'){
-    const mob=DB.filter(e=>e.m==='Mobility'||e.t==='hold');
+    const mob=libDB().filter(e=>e.m==='Mobility'||e.t==='hold');
     h+=fsec('Mobility &amp; holds')+'<div style="display:flex;flex-direction:column;gap:9px;">'+
       mob.slice(0,14).map(e=>'<div class="wrow"><div class="tx"><div class="t">'+e.n+'</div>'+
       '<div class="m">'+e.m+' · '+(e.dur||40)+'s hold</div></div></div>').join('')+'</div>'+

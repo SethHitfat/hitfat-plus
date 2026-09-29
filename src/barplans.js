@@ -130,6 +130,6 @@ BAR_PLANS.forEach(p => { p.bar = true; });
 SIG_PLANS.forEach(p => { p.special = true; });
 
 /* Signature first — they lead every list — then the bar sessions. */
-PROGRAMS = SIG_PLANS.concat(BAR_PLANS, PROGRAMS);
+PROGRAMS = SIG_PLANS.concat(BAR_ENABLED ? BAR_PLANS : [], PROGRAMS);
 
 

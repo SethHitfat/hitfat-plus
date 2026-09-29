@@ -136,7 +136,7 @@ function renderMonthly(){
   h+=fsec('How it works','');
   h+='<div class="flib">'+[
       ['📅','A new challenge every month','It changes by itself on the first'],
-      ['🏃','Any session counts','Program day, single session, BAR, recovery — all of it'],
+      ['🏃','Any session counts','Program day, single session, recovery — all of it'],
       ['🎖️','Finish it and keep it','Completed months stay on your shelf'],
       ['🆓','Free for everyone','No purchase, nothing locked']
     ].map(x=>'<div class="row" style="cursor:default;"><div class="ic">'+ic(x[0])+'</div>'+

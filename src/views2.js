@@ -378,10 +378,12 @@ let libEq='All';
 function openLibrary(eq){ if(eq) libEq=eq;
   hidePanels(); $('library').style.display='block'; renderLibrary(); $('screen').scrollTop=0; }
 function renderLibrary(){
-  const eqs=['All'].concat(Array.from(new Set(DB.map(e=>e.eq))));
-  const list=DB.filter(e=>libEq==='All'||e.eq===libEq);
+  const lib=libDB();
+  if(!BAR_ENABLED && libEq===BAR_EQ) libEq='All';
+  const eqs=['All'].concat(Array.from(new Set(lib.map(e=>e.eq))));
+  const list=lib.filter(e=>libEq==='All'||e.eq===libEq);
   $('lib-body').innerHTML='<div class="hgroup"><h2>All exercises</h2>'+
-    '<p>'+DB.length+' movements, every one with a demo video.</p></div>'+
+    '<p>'+libDB().length+' movements, every one with a demo video.</p></div>'+
     '<div class="filters">'+eqs.map(q=>'<button class="chip'+(q===libEq?' y':'')+'" onclick="libEq=\''+q+'\';renderLibrary()">'+q+'</button>').join('')+'</div>'+
     '<div style="display:flex;flex-direction:column;gap:9px;">'+
     list.map(e=>'<div class="wrow" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+

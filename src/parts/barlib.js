@@ -10,6 +10,13 @@
    the player says so. Paste the Vimeo ids into v and they light up; nothing
    else has to change.                                                       */
 
+/* HITFAT BAR is paused. The library and the programs stay in the code so
+   switching this back to true brings every screen back — the Train and
+   Store segments, the BAR programs in every list, the Finder option and
+   the library filter. The exercises stay in DB either way, because the BAR
+   programs are generated from them. */
+const BAR_ENABLED=false;
+
 const BAR_EQ='HITFAT BAR';
 const BAR_DB=[
   /* ── hinge ── */
@@ -88,6 +95,8 @@ const BAR_DB=[
 /* One library, so the player, the exercise picker and the search all find
    these without knowing they are special. */
 DB = DB.concat(BAR_DB);
+/* What the library shows: every exercise, less the BAR ones while it is paused. */
+function libDB(){ return BAR_ENABLED ? DB : DB.filter(e=>e.eq!==BAR_EQ); }
 
 function isBarExercise(name){
   return BAR_DB.some(e => e.n === name);

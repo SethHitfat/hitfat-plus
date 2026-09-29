@@ -128,7 +128,8 @@ function closeStore(){
   switchTab('train');
 }
 let storeSeg='programs';
-const STORE_SEGS=[['programs','Programs'],['scan','Meal Scan'],['bar','HITFAT BAR']];
+const STORE_SEGS=[['programs','Programs'],['scan','Meal Scan'],['bar','HITFAT BAR']]
+  .filter(s=>BAR_ENABLED || s[0]!=='bar');
 function setStoreSeg(s){ storeSeg=s; renderStore(s); $('screen').scrollTop=0; }
 
 function renderStore(seg){
@@ -136,7 +137,7 @@ function renderStore(seg){
   $('store-segs').innerHTML='<div class="segs">'+STORE_SEGS.map(s=>
     '<button class="seg'+(storeSeg===s[0]?' on':'')+'" onclick="setStoreSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
   if(storeSeg==='scan') return storeScan();
-  if(storeSeg==='bar')  return storeBar();
+  if(storeSeg==='bar' && BAR_ENABLED) return storeBar();
   storePrograms();
 }
 
@@ -302,7 +303,7 @@ function openProduct(sku){
     '<div class="pwprice"><div class="p">RM'+price+'</div><div class="per">one payment</div></div>'+
     '<button class="bigbtn" onclick="startCheckout(\''+sku+'\')">'+cta+'</button>'+
     '<button class="authalt" onclick="closeProduct()">Not now</button>'+
-    '<div class="pwfine">No subscription. Manual logging, your daily target, all single sessions and the HITFAT BAR programs stay free.</div>';
+    '<div class="pwfine">No subscription. Manual logging, your daily target, all single sessions'+(BAR_ENABLED?' and the HITFAT BAR programs':'')+' stay free.</div>';
   $('pwm').classList.add('on');
 }
 function closeProduct(){ $('pwm').classList.remove('on'); }

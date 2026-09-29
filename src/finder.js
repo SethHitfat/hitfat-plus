@@ -23,7 +23,7 @@ const FQ_EQUIP=[
   {k:'bar',    e:'🏋️', n:'HITFAT BAR',          d:'The bar and bands'},
   {k:'weights',e:'🔔', n:'Dumbbell or kettlebell', d:'Something to load up with'},
   {k:'any',    e:'✨', n:'Whatever works',      d:'Show me the best match either way'}
-];
+].filter(q=>BAR_ENABLED || q.k!=='bar');
 
 function openFinder(){
   const p=HF.data.prefs||{};
