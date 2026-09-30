@@ -56,3 +56,24 @@ ERROR:  This T42 has finished
  legacy_open | legacy_phase 
 -------------+--------------
  t           | completed
+--- a price per mode: Gym Duo priced, Online free on this edition
+ online | gym 
+--------+-----
+      0 | 199
+--- a member cannot move their own registration to another mode (expect 0 rows)
+ email |    mode     | entitled 
+-------+-------------+----------
+ d@x   | gym_duo     | f
+ e@x   | online_solo | t
+--- a mode price that is not a number falls back to the edition price
+ gym_fallback 
+--------------
+        99.00
+--- a paid Gym Duo place comes with gym access (club_members), online does not
+ email |    role    | status |  plan   
+-------+------------+--------+---------
+ d@x   | gym_member | active | T42 Gym
+ e@x   |            |        | 
+   action   
+------------
+ gym_access

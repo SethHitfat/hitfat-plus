@@ -111,12 +111,19 @@ create index if not exists t42_challenges_status on public.t42_challenges (statu
 --                    NEITHER date never closes by date — how every edition
 --                    behaved before this column existed — and is closed by
 --                    being archived instead.
---   tracks / modes   what this edition offers. November 2026 is online
---                    only, TRANSFORM and PERFORM; the engine keeps START and
---                    Gym Duo for editions that want them.
+--   mode_prices      a price per mode, when the modes cost different amounts
+--                    — Gym Duo carries a coach, the gym floor and InBody, and
+--                    Online Solo does not. {"online_solo":149,"gym_duo":299}.
+--                    Each registration pays for itself: a Gym Duo price is
+--                    per person, not per pair. A mode missing from it falls
+--                    back to price. Read through t42_price(), never directly.
+--   tracks / modes   what this edition offers. November 2026 sells both
+--                    modes, TRANSFORM and PERFORM; the engine keeps START for
+--                    editions that want it.
 alter table public.t42_challenges add column if not exists subtitle       text;
 alter table public.t42_challenges add column if not exists cover_url      text;
 alter table public.t42_challenges add column if not exists price          numeric(10,2);
+alter table public.t42_challenges add column if not exists mode_prices    jsonb;
 alter table public.t42_challenges add column if not exists results_on     date;
 alter table public.t42_challenges add column if not exists access_ends_on date;
 alter table public.t42_challenges add column if not exists tracks text[] not null
@@ -584,14 +591,25 @@ $$;
 -- Is this registration paid for? A free edition (no price) entitles every
 -- registration, which is what T42 did before payment was wired. Withdrawn
 -- and disqualified never are.
+-- What one place in this edition costs in this mode: the mode's own price
+-- when mode_prices names it, else the edition's price. Null = free.
+-- pay-create charges the same answer (_shared/t42.ts, t42ModePrice).
+create or replace function public.t42_price(p_challenge uuid, p_mode text)
+returns numeric language sql stable set search_path = public as $$
+  select coalesce(
+           case when jsonb_typeof(c.mode_prices -> p_mode) = 'number'
+                then (c.mode_prices ->> p_mode)::numeric end,
+           c.price)
+    from public.t42_challenges c where c.id = p_challenge;
+$$;
+
 create or replace function public.t42_reg_entitled(p_reg uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select coalesce(
     (select r.status not in ('withdrawn','disqualified')
             and (r.status in ('paid','active','completed')
-                 or coalesce(c.price, 0) = 0)
+                 or coalesce(public.t42_price(r.challenge_id, r.mode), 0) = 0)
        from public.t42_registrations r
-       join public.t42_challenges c on c.id = r.challenge_id
       where r.id = p_reg), false);
 $$;
 
@@ -834,6 +852,7 @@ create policy t42_notes_insert on public.t42_admin_notes
 -- ── who may call the engine helpers ─────────────────────────────
 -- The policies above run them as the signed-in user, so `authenticated`
 -- needs EXECUTE. Nobody signed out does.
+grant execute on function public.t42_price(uuid, text)            to anon, authenticated;
 revoke all   on function public.t42_reg_entitled(uuid)             from public, anon;
 grant execute on function public.t42_reg_entitled(uuid)            to authenticated;
 revoke all   on function public.t42_can_read_plan(uuid, text, int)  from public, anon;

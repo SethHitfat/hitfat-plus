@@ -119,11 +119,18 @@ what stays is the history — result, score, certificate — in **My T42 Journey
 - `price` — ringgit, read by `pay-create` on the server. **NULL = free**,
   which is how T42 ran before payment; running the migration changes nothing
   until a price is set.
+- `mode_prices` — a price per mode when they differ, e.g.
+  `{"online_solo":149,"gym_duo":299}`. Per person: each Gym Duo partner pays
+  their own place. A mode left out falls back to `price`. Read through
+  `t42_price(edition, mode)` (SQL), `t42ModePrice()` (pay-create) and
+  `T42.modePrice()` (app) — all three give the same answer. The mode is fixed
+  at registration (members have no UPDATE policy), so nobody pays the online
+  price and moves to the gym.
 - `results_on`, `access_ends_on` — the programme closes after
   `access_ends_on` (else `results_on`). An edition with neither never closes by
   date, as before — archive it instead.
 - `tracks`, `modes` — what the edition offers. November 2026 is
-  `{transform,perform}` / `{online_solo}`. START and Gym Duo stay in the engine.
+  `{transform,perform}` / `{online_solo,gym_duo}`. START stays in the engine.
 - `subtitle`, `cover_url` — the discovery screen.
 - `config.scoring_model = 'v2'` — consistency 40 · progress 25 · missions 20 ·
   fitness 15 (`config.scoring.v2`, must total 100); `config.progress_mix`
@@ -159,8 +166,12 @@ again:
 ```
 deploy/20-t42-core.sql      # new columns + helpers + the gated plan policy
 deploy/24-t42-scoring.sql   # guards + scorer v2 + scoring by date
-deploy/21-t42-seed.sql      # November: online only, two tracks, v2, missions, dates
-update public.t42_challenges set price = <RM> where slug = 't42-nov-2026';
+deploy/10-club-tables.sql   # Gym Duo check-in runs on HITFAT Club — once, if not run yet
+deploy/11-club-checkin.sql
+deploy/26-t42-gym.sql       # duos, gym attendance, gym access granted on payment
+deploy/21-t42-seed.sql      # November: Online Solo + Gym Duo, two tracks, v2, missions, dates
+update public.t42_challenges set mode_prices = '{"online_solo":<RM>,"gym_duo":<RM>}'
+ where slug = 't42-nov-2026';
 supabase functions deploy pay-create pay-callback pay-status
 ```
 
@@ -258,8 +269,11 @@ All five phases are built, for Online Solo and Gym Duo.
 Built on HITFAT Club rather than beside it. Attendance is a Club class the
 member attended during the challenge — the coach scanning their QR at the
 counter is the verification — counted in distinct Malaysian days. Gym
-access is a `club_members` row an admin grants for the edition
-(`t42_gym_enrol`), because Club check-in refuses anyone without one. The
+access is a `club_members` row for the edition, because Club check-in refuses
+anyone without one. It is granted **automatically when a Gym Duo place is
+paid** (trigger `t42_gym_on_paid`); a grant that fails does not fail the
+payment — it leaves a `gym_access_failed` note, and staff grant it by hand
+with `t42_gym_enrol`. The
 InBody is typed in by staff on `t42-admin.html` → Gym duo, onto the member's
 own baseline or final; the member can never write body composition.
 
@@ -278,8 +292,7 @@ Payment is wired per edition (see *The challenge engine* above): an edition
 with a price ranks only paid registrations; a free edition (no price) ranks
 every status except withdrawn and disqualified, as before.
 
-Gym Duo registers interest and says so on screen. Its check-in, coach
-verification and InBody are what HITFAT Club already models, and the Club
-schema has not been run on this database yet — so the duo half waits for
-`10-club-tables.sql` rather than growing a second QR, a second roster and a
-second coach console for one person to keep in step with the other by hand.
+Gym Duo is sold beside Online Solo at its own price. Its check-in, coach
+verification and InBody are what HITFAT Club already models — so `10-` and
+`11-` (Club) and `26-` must be live before a Gym Duo edition starts, rather
+than growing a second QR, roster and coach console.

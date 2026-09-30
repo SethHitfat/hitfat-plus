@@ -16,11 +16,16 @@ set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000
 insert into t42_registrations (challenge_id,user_id,mode,track,gender,status)
   select id,auth.uid(),'online_solo','transform','female','pending' from t42_challenges;
 \echo '--- A tries gym_duo / start (should FAIL: not offered)'
-reset role; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
+reset role;
+-- November sells both modes; an edition that sells only one must refuse the other.
+update t42_challenges set modes = array['online_solo'];
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
 insert into t42_registrations (challenge_id,user_id,mode,track,gender,status)
   select id,auth.uid(),'gym_duo','transform','male','pending' from t42_challenges;
 insert into t42_registrations (challenge_id,user_id,mode,track,gender,status)
   select id,auth.uid(),'online_solo','start','male','pending' from t42_challenges;
+reset role; update t42_challenges set modes = array['online_solo','gym_duo'];
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
 \echo '--- B registers transform (pending, will not pay)'
 insert into t42_registrations (challenge_id,user_id,mode,track,gender,status)
   select id,auth.uid(),'online_solo','transform','female','pending' from t42_challenges;
@@ -79,3 +84,33 @@ reset role;
 \echo '--- legacy edition (no access dates): does NOT close by date'
 update t42_challenges set results_on = null, access_ends_on = null;
 select t42_access_open(id) as legacy_open, t42_phase(id) as legacy_phase from t42_challenges;
+
+\echo '--- a price per mode: Gym Duo priced, Online free on this edition'
+insert into t42_challenges (slug,name,edition,starts_on,ends_on,reg_closes_on,status,total_days,
+                            price,mode_prices,tracks,modes)
+values ('t42-modes','T42 Modes','Test',t42_today()+5,t42_today()+46,t42_today()+4,'registration',42,
+        99,'{"gym_duo":199,"online_solo":0}',array['transform'],array['online_solo','gym_duo']);
+select t42_price(id,'online_solo') as online, t42_price(id,'gym_duo') as gym from t42_challenges where slug='t42-modes';
+insert into auth.users(id,email) values
+ ('00000000-0000-0000-0000-00000000000d','d@x'), ('00000000-0000-0000-0000-00000000000e','e@x');
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+insert into t42_registrations (challenge_id,user_id,mode,track,gender,status)
+  select id,auth.uid(),'gym_duo','transform','male','pending' from t42_challenges where slug='t42-modes';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000e';
+insert into t42_registrations (challenge_id,user_id,mode,track,gender,status)
+  select id,auth.uid(),'online_solo','transform','male','pending' from t42_challenges where slug='t42-modes';
+\echo '--- a member cannot move their own registration to another mode (expect 0 rows)'
+update t42_registrations set mode='gym_duo' where user_id=auth.uid();
+reset role; reset request.jwt.claim.sub;
+select u.email, r.mode, t42_reg_entitled(r.id) as entitled from t42_registrations r
+  join auth.users u on u.id=r.user_id join t42_challenges c on c.id=r.challenge_id
+ where c.slug='t42-modes' order by 1;
+\echo '--- a mode price that is not a number falls back to the edition price'
+update t42_challenges set mode_prices='{"gym_duo":"199"}' where slug='t42-modes';
+select t42_price(id,'gym_duo') as gym_fallback from t42_challenges where slug='t42-modes';
+\echo '--- a paid Gym Duo place comes with gym access (club_members), online does not'
+update t42_registrations set status='paid' where user_id in
+  ('00000000-0000-0000-0000-00000000000d','00000000-0000-0000-0000-00000000000e');
+select u.email, m.role, m.status, m.plan from auth.users u left join club_members m on m.user_id=u.id
+ where u.email in ('d@x','e@x') order by 1;
+select action from t42_admin_notes where action like 'gym_access%';

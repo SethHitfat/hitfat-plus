@@ -315,13 +315,12 @@ $$;
 -- membership, and memberships are what the gym charges for. Existing
 -- members keep what they have — a coach's role is never touched, and an
 -- expiry is only ever pushed later, never earlier.
-create or replace function public.t42_gym_enrol(p_registration uuid)
+-- The grant itself, with no permission check: called by the admin RPC below
+-- and by the payment trigger. Never granted to a browser.
+create or replace function public.t42_gym_grant(p_registration uuid, p_by uuid)
 returns text language plpgsql security definer set search_path = public as $$
 declare r public.t42_registrations%rowtype; ch public.t42_challenges%rowtype; v_end date;
 begin
-  if not public.t42_is_admin() then
-    raise exception 'Only an admin can grant gym access' using errcode = 'insufficient_privilege';
-  end if;
   select * into r from public.t42_registrations where id = p_registration;
   if not found or r.mode <> 'gym_duo' then
     raise exception 'Not a Gym Duo registration' using errcode = 'check_violation';
@@ -338,9 +337,50 @@ begin
    where public.club_members.role in ('gym_member','hyrox_member');
 
   insert into public.t42_admin_notes (challenge_id, registration_id, action, detail, acted_by)
-  values (ch.id, r.id, 'gym_access', 'Club access until ' || v_end, auth.uid());
+  values (ch.id, r.id, 'gym_access', 'Club access until ' || v_end, p_by);
   return 'Gym access until ' || v_end;
 end $$;
+
+create or replace function public.t42_gym_enrol(p_registration uuid)
+returns text language plpgsql security definer set search_path = public as $$
+begin
+  if not public.t42_is_admin() then
+    raise exception 'Only an admin can grant gym access' using errcode = 'insufficient_privilege';
+  end if;
+  return public.t42_gym_grant(p_registration, auth.uid());
+end $$;
+
+-- Gym Duo is sold in the app, so a paid place comes with the gym. Without
+-- this a member who has paid is turned away at the counter — Club check-in
+-- refuses anyone without a club_members row — until staff remember to
+-- press a button. Fires once, on the move into paid, and never undoes a
+-- grant: a refund is an admin decision, not a trigger's.
+create or replace function public.t42_gym_on_paid()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if new.mode = 'gym_duo'
+     and new.status in ('paid','active')
+     and coalesce(old.status,'') not in ('paid','active','completed') then
+    -- The payment is the thing that must not fail. A grant that cannot be
+    -- made is logged for staff (t42_gym_enrol from the admin page) instead.
+    begin
+      perform public.t42_gym_grant(new.id, null);
+    exception when others then
+      raise warning 't42 gym access not granted for %: %', new.id, sqlerrm;
+      begin
+        insert into public.t42_admin_notes (challenge_id, registration_id, action, detail)
+        values (new.challenge_id, new.id, 'gym_access_failed', left(sqlerrm, 300));
+      exception when others then null;
+      end;
+    end;
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists t42_gym_on_paid on public.t42_registrations;
+create trigger t42_gym_on_paid
+  after update of status on public.t42_registrations
+  for each row execute function public.t42_gym_on_paid();
 
 
 -- ── who may call what ───────────────────────────────────────────
@@ -356,6 +396,8 @@ revoke all on function public.t42_duo_card(uuid)                 from public, an
 revoke all on function public.t42_duo_leaderboard(uuid, text, int) from public, anon;
 revoke all on function public.t42_gym_roster(uuid)               from public, anon;
 revoke all on function public.t42_gym_enrol(uuid)                from public, anon;
+revoke all on function public.t42_gym_grant(uuid, uuid)          from public, anon, authenticated;
+revoke all on function public.t42_gym_on_paid()                  from public, anon, authenticated;
 grant execute on function public.t42_duo_create(uuid)                 to authenticated;
 grant execute on function public.t42_duo_join(uuid, text)             to authenticated;
 grant execute on function public.t42_duo_leave(uuid)                  to authenticated;

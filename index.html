@@ -7684,11 +7684,11 @@ async function clubRedeem(id){
    registration and baseline. The dashboard, the daily check-in and the
    leaderboard are Phase 2 and land against the same state object.
 
-   Gym Duo is deliberately not finished. Its check-in, coach verification
-   and InBody are what HITFAT Club already models, and the Club schema has
-   not been run on this database yet. Rather than build a second QR and a
-   second roster for a coach to keep in step by hand, Gym Duo registers
-   interest and says so plainly.
+   Gym Duo (training at HITFAT HQ) is sold beside Online Solo, at its own
+   price (mode_prices). Its gym check-in, coach verification and InBody are
+   what HITFAT Club already models, so T42 sends the member to the Club QR
+   rather than drawing a second one: the Club schema must be live on the
+   database before a Gym Duo edition starts.
    ═══════════════════════════════════════════════════════════════ */
 
 var T42_MODES = [
@@ -8237,7 +8237,7 @@ function t42RenderLanding(){
      (c.subtitle?'<div class="t42-ed-s">'+t42Esc(c.subtitle)+'</div>':'')+
      '<div class="t42-grid">'+t42Stat('Challenge starts', t42LongDate(c.starts_on))+
      t42Stat('Challenge ends', t42LongDate(c.ends_on))+'</div>'+
-     (T42.price() && !joined ? '<div class="t42-ed-p">RM'+T42.price()+' · this edition only</div>' : '')+
+     (T42.priceLine() && !joined ? '<div class="t42-ed-p">'+t42Esc(T42.priceLine())+'</div>' : '')+
      '</div>';
 
   h+='<div class="t42-when">'+t42Esc(when)+'</div>';
@@ -8345,7 +8345,8 @@ function t42RenderMode(){
        '<div class="t42-radio'+(on?' on':'')+'"></div></div>'+
        '<div class="t42-card-t">'+t42Esc(m.tag)+'</div><ul class="t42-bul">'+
        m.bullets.map(function(b){ return '<li>'+t42Esc(b)+'</li>'; }).join('')+
-       '</ul></div>';
+       '</ul>'+(T42.modePrice(m.id)>0 ? '<div class="t42-ed-p">RM'+T42.modePrice(m.id)+
+       (m.id==='gym_duo'?' per person':'')+'</div>' : '')+'</div>';
   });
 
   /* Said before the choice, not after it: Gym Duo means turning up in
@@ -10995,7 +10996,7 @@ async function t42LoadDuoBoard(id){
    falls back to the original set and carries on as it did before the
    migration, rather than losing T42 until someone runs the SQL. */
 var T42_COLS_BASE='id,slug,name,edition,starts_on,ends_on,reg_opens_on,reg_closes_on,status,total_days,config';
-var T42_COLS_ENGINE=',subtitle,price,results_on,access_ends_on,tracks,modes';
+var T42_COLS_ENGINE=',subtitle,price,mode_prices,results_on,access_ends_on,tracks,modes';
 var t42Legacy=false;
 function t42ChallengeCols(){ return T42_COLS_BASE+(t42Legacy?'':T42_COLS_ENGINE); }
 function t42MissingColumn(e){
@@ -11030,16 +11031,42 @@ T42.accessOpen=function(c){
   var end=this.accessEndsOn(c);
   return !end || t42Today()<=end;
 };
-/* Paid for — or free, when the edition has no price. The same rule as
+/* What one place costs in a mode: the mode's own price when mode_prices
+   names one, else the edition's. 0 = free. The same answer as t42_price()
+   on the server, which is what pay-create actually charges. */
+T42.modePrice=function(mode,c){
+  c=c||this.challenge; if(!c) return 0;
+  var mp=c.mode_prices, v=mp&&typeof mp==='object'?mp[mode]:undefined;
+  var p=(typeof v==='number'&&isFinite(v))?v:Number(c.price);
+  return p>0?p:0;
+};
+/* Paid for — or free, when the mode has no price. The same rule as
    t42_reg_entitled() on the server. */
 T42.entitled=function(r,c){
   r=r||this.reg; c=c||this.challenge; if(!r) return false;
   if(r.status==='withdrawn'||r.status==='disqualified') return false;
   if(r.status==='paid'||r.status==='active'||r.status==='completed') return true;
-  return !(Number(c&&c.price)>0);
+  return !(T42.modePrice(r.mode,c)>0);
 };
 T42.needsPayment=function(){ return !!this.reg && this.reg.status==='pending' && !this.entitled(); };
-T42.price=function(){ var p=Number(this.challenge&&this.challenge.price); return p>0?p:0; };
+/* The price for the mode in hand: mine once registered, else the one being
+   picked. With neither, the cheapest offered mode — what "from RMx" means. */
+T42.price=function(mode){
+  mode=mode||(this.reg&&this.reg.mode)||(typeof t42Draft!=='undefined'&&t42Draft.mode);
+  if(mode) return this.modePrice(mode);
+  var self=this, ps=T42_MODES.filter(function(m){ return self.offers('modes',m.id); })
+    .map(function(m){ return self.modePrice(m.id); }).filter(function(p){ return p>0; });
+  return ps.length?Math.min.apply(null,ps):0;
+};
+/* The edition's price line: one price, or one per mode when they differ. */
+T42.priceLine=function(){
+  var self=this, ms=T42_MODES.filter(function(m){ return self.offers('modes',m.id); });
+  var ps=ms.map(function(m){ return self.modePrice(m.id); });
+  if(!ps.some(function(p){ return p>0; })) return '';
+  if(ps.every(function(p){ return p===ps[0]; })) return 'RM'+ps[0]+' · this edition only';
+  return ms.map(function(m,i){ return t42ModeShort(m.id)+' RM'+ps[i]; }).join(' · ')+' · per person';
+};
+function t42ModeShort(id){ return id==='gym_duo'?'Gym Duo':'Online'; }
 /* draft · registration · upcoming · active · completed · closed — the same
    answer as t42_phase() in the database. */
 T42.phase=function(c){
@@ -11142,9 +11169,13 @@ function t42RenderPay(){
     el.innerHTML=h; return;
   }
 
+  var gym=r.mode==='gym_duo';
   h+='<div class="t42-price"><div class="t42-price-n">RM'+price+'</div>'+
-     '<div class="t42-price-l">One payment · this edition only</div></div>'+
+     '<div class="t42-price-l">One payment · '+(gym?'Gym Duo · your place only, your partner pays their own':
+       'this edition only')+'</div></div>'+
      '<ul class="t42-bul">'+
+       (gym?'<li>Training at HITFAT HQ, Kota Bharu, with gym check-in</li>'+
+            '<li>Official InBody at the start and the end</li>':'')+
        '<li>The full 42-day plan for your track, one day at a time</li>'+
        '<li>Daily check-in, weekly missions and your progress</li>'+
        '<li>Scored and ranked on the leaderboard</li>'+

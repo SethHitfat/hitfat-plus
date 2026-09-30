@@ -2719,6 +2719,44 @@ ok("a free edition entitles a pending registration", T42.entitled());
 T42.reg.status='withdrawn';
 ok("...but never a withdrawn one", !T42.entitled());
 
+/* ── a price per mode: Gym Duo and Online Solo cost different amounts ── */
+T42.challenge=_t42ed({price:null, mode_prices:{online_solo:149, gym_duo:299}});
+ok("each mode has its own price",
+   T42.modePrice('online_solo')===149 && T42.modePrice('gym_duo')===299);
+T42.reg=_t42paidReg({status:'pending', mode:'gym_duo'});
+ok("my price is my mode's",            T42.price()===299);
+ok("...and a priced mode is not free", !T42.entitled() && T42.needsPayment());
+T42.reg.mode='online_solo';
+ok("online pays the online price",     T42.price()===149);
+T42.reg=null; t42Draft.mode=null;
+ok("with no mode yet, the price is 'from' the cheapest", T42.price()===149);
+ok("the edition says both prices",
+   T42.priceLine().indexOf('Online RM149')>=0 && T42.priceLine().indexOf('Gym Duo RM299')>=0);
+T42.challenge=_t42ed({price:99, mode_prices:{gym_duo:199}});
+ok("a mode left out falls back to the edition's price",
+   T42.modePrice('online_solo')===99 && T42.modePrice('gym_duo')===199);
+T42.challenge=_t42ed({price:99, mode_prices:{gym_duo:'199'}});
+ok("...as does one that is not a number, same as t42_price()", T42.modePrice('gym_duo')===99);
+T42.challenge=_t42ed({price:null, mode_prices:{online_solo:149}});
+T42.reg=_t42paidReg({status:'pending', mode:'gym_duo'});
+ok("a mode with no price is free for that mode only",
+   T42.entitled() && T42.modePrice('online_solo')===149);
+T42.challenge=_t42ed({price:120});
+ok("one price for every mode says it once", T42.priceLine()==='RM120 · this edition only');
+T42.challenge=_t42ed({price:null, mode_prices:{online_solo:149, gym_duo:299}});
+T42.reg=_t42paidReg({status:'pending', mode:'gym_duo'});
+T42.baseline={id:'m1',registration_id:'r1',phase:'baseline',weight_kg:61.5,height_cm:165,waist_cm:72};
+t42View='pay'; t42Paint();
+var _pg=document.getElementById('t42-body').innerHTML;
+ok("the Gym Duo pay screen asks for the Gym Duo price", _pg.indexOf('Pay RM299')>0);
+ok("...says it is one place, not the pair",             _pg.indexOf('your partner pays their own')>0);
+ok("...and names the gym",                              _pg.indexOf('HITFAT HQ')>0);
+T42.reg=null; T42.baseline=null; t42Draft.mode=null;
+t42View='mode'; t42Paint();
+var _md=document.getElementById('t42-body').innerHTML;
+ok("the mode choice shows each mode's price",
+   _md.indexOf('RM149')>0 && _md.indexOf('RM299 per person')>0);
+
 /* ── the gate: an unpaid participant sees payment, not the programme ── */
 T42.challenge=_t42ed({price:99, reg_closes_on:_t42day(3)});
 T42.reg=_t42paidReg({status:'pending'});

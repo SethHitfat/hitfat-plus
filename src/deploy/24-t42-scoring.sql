@@ -88,8 +88,11 @@ begin
   if v_closes is not null and public.t42_today() > v_closes then
     raise exception 'Registration for this T42 closed on %', v_closes using errcode = 'check_violation';
   end if;
-  -- Only what this edition offers. November 2026 is online-only with no
-  -- START track; a browser that sends 'gym_duo' anyway is refused here.
+  -- Only what this edition offers. November 2026 has no START track; a
+  -- browser that sends it anyway is refused here. The mode is fixed from
+  -- here on (members have no UPDATE policy on this table), which is what
+  -- makes a per-mode price safe: nobody pays for Online Solo and then
+  -- moves to Gym Duo.
   if v_tracks is not null and not (new.track = any(v_tracks)) then
     raise exception 'The % track is not part of this T42', new.track using errcode = 'check_violation';
   end if;

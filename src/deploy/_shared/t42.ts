@@ -6,6 +6,10 @@
    the edition's row in t42_challenges (admin-written, never the browser's)
    and a new edition is an INSERT, not a redeploy of this function.
 
+   The two modes can cost different amounts (mode_prices), so the price is
+   the one for the mode the buyer registered in — read from their own
+   registration row, never from the request. Same rule as t42_price().
+
    The SKU is 't42:<slug>'. What it buys is ONE registration becoming
    'paid' for THAT edition. It does not touch plus_entitlements: buying T42
    does not unlock HITFAT+ programs, and a November payment does not unlock
@@ -24,6 +28,15 @@ function t42TodayISO() {
   return new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
 }
 
+/* The price of one place in this mode: mode_prices[mode] when it names a
+   number, else the edition's price. Mirrors public.t42_price(). */
+export function t42ModePrice(ch: any, mode: string) {
+  const mp = ch && ch.mode_prices;
+  const v = mp && typeof mp === 'object' ? mp[mode] : undefined;
+  if (typeof v === 'number' && isFinite(v)) return v;
+  return Number((ch && ch.price) || 0);
+}
+
 type T42Offer =
   | { ok: true; price: number; challenge_id: string; name: string }
   | { ok: false; status: number; error: string; code?: string };
@@ -35,7 +48,7 @@ export async function t42Offer(admin: any, sku: string, user_id: string): Promis
   const slug = sku.slice(T42_PREFIX.length);
   const { data: ch } = await admin
     .from('t42_challenges')
-    .select('id, name, price, status, reg_closes_on')
+    .select('id, name, price, mode_prices, status, reg_closes_on')
     .eq('slug', slug).maybeSingle();
   if (!ch || ch.status === 'draft') return { ok: false, status: 400, error: 'Unknown item.' };
   if (ch.status !== 'registration' && ch.status !== 'running') {
@@ -44,12 +57,9 @@ export async function t42Offer(admin: any, sku: string, user_id: string): Promis
   if (ch.reg_closes_on && t42TodayISO() > String(ch.reg_closes_on).slice(0, 10)) {
     return { ok: false, status: 409, error: 'Registration for this T42 is closed.', code: 'closed' };
   }
-  const price = Number(ch.price || 0);
-  if (!(price > 0)) return { ok: false, status: 400, error: 'This T42 needs no payment.', code: 'free' };
-
   const { data: reg } = await admin
     .from('t42_registrations')
-    .select('id, status')
+    .select('id, status, mode')
     .eq('challenge_id', ch.id).eq('user_id', user_id).maybeSingle();
   if (!reg) {
     return { ok: false, status: 409, error: 'Finish signing up for T42 first.', code: 'not_registered' };
@@ -60,6 +70,8 @@ export async function t42Offer(admin: any, sku: string, user_id: string): Promis
   if (reg.status !== 'pending') {
     return { ok: false, status: 403, error: 'This registration cannot be paid for.' };
   }
+  const price = t42ModePrice(ch, reg.mode);
+  if (!(price > 0)) return { ok: false, status: 400, error: 'This T42 needs no payment.', code: 'free' };
   return { ok: true, price, challenge_id: ch.id, name: ch.name };
 }
 

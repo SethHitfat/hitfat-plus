@@ -20,7 +20,7 @@
 
 insert into public.t42_challenges
   (slug, name, edition, subtitle, starts_on, ends_on, reg_opens_on, reg_closes_on,
-   results_on, access_ends_on, price, tracks, modes,
+   results_on, access_ends_on, price, mode_prices, tracks, modes,
    status, total_days, config)
 values (
   't42-nov-2026',
@@ -35,16 +35,22 @@ values (
   -- long enough to submit a final assessment and have it verified.
   date '2026-12-21',          -- results_on
   date '2026-12-21',          -- access_ends_on — after this, history only
-  -- The price is read by pay-create on the server. NULL = free: every
-  -- registration is entitled, which is how T42 ran before payment. SET THE
-  -- REAL PRICE before registration opens:
-  --   update public.t42_challenges set price = 99 where slug = 't42-nov-2026';
-  -- Re-running this file never clears a price already set.
-  null,
-  -- Online only, two tracks. START and Gym Duo stay in the engine for a
-  -- later edition; this one does not offer them.
+  -- The prices are read by pay-create on the server. NULL = free: every
+  -- registration is entitled, which is how T42 ran before payment. The two
+  -- modes cost different amounts, so SET BOTH before registration opens —
+  -- per person; each Gym Duo partner pays their own place (the numbers
+  -- below are an example, not the price):
+  --   update public.t42_challenges
+  --      set mode_prices = '{"online_solo":149,"gym_duo":299}'
+  --    where slug = 't42-nov-2026';
+  -- A mode left out of mode_prices falls back to price. Re-running this
+  -- file never clears a price already set.
+  null,                       -- price
+  null,                       -- mode_prices
+  -- Both modes, two tracks: Online Solo anywhere, Gym Duo at HITFAT HQ.
+  -- START stays in the engine for a later edition.
   array['transform','perform'],
-  array['online_solo'],
+  array['online_solo','gym_duo'],
   'registration',
   42,
   jsonb_build_object(
@@ -107,6 +113,7 @@ on conflict (slug) do update set
   access_ends_on= excluded.access_ends_on,
   -- A price an admin has set is not wiped by re-running the seed.
   price         = coalesce(excluded.price, t42_challenges.price),
+  mode_prices   = coalesce(excluded.mode_prices, t42_challenges.mode_prices),
   tracks        = excluded.tracks,
   modes         = excluded.modes,
   -- Nor is an edition that is already running or finished sent back to
