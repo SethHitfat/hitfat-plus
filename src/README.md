@@ -92,7 +92,23 @@ deploy/23-t42-storage.sql  # the private photo bucket and its policies
 deploy/24-t42-scoring.sql  # the guards, the scorer, the leaderboard
 deploy/25-t42-finalise.sql # closing an edition and issuing certificates
 deploy/26-t42-gym.sql      # Gym Duo — needs the Club schema (10-, 11-) first
+deploy/27-t42-engine.sql   # paid places, dates that run the edition, access that ends
+deploy/28-t42-gym-duo.sql  # Gym Duo sold beside Online: its own price, gym access on payment
 ```
+
+Prices are set by hand, never in a migration — both per person:
+
+```sql
+update public.t42_challenges
+   set price_rm = <online RM>, gym_price_rm = <gym duo RM>
+ where slug = 't42-nov-2026';
+```
+
+`gym_price_rm` null means Gym Duo costs the same as Online. A paid Gym Duo
+place gets its HITFAT Club row (gym check-in) automatically; if that grant
+fails, the payment still stands and a `gym_access_failed` note is left for
+staff to grant it with `t42_gym_enrol`. Run `28-` again after re-running
+`21-`, which rewrites the edition's config.
 
 ### The score
 

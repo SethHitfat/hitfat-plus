@@ -1170,6 +1170,7 @@
   .t42-card-n{font-family:'Oswald';font-size:18px;font-weight:700;letter-spacing:1.6px;
     color:var(--txt);flex:1;}
   .t42-card-t{font-size:13px;color:var(--ink-72);margin-top:7px;line-height:1.5;}
+  .t42-card-p{margin-top:10px;font-weight:700;font-size:15px;color:var(--txt);}
   .t42-radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--hairline);flex:0 0 auto;}
   .t42-radio.on{border-color:var(--hyrox);background:radial-gradient(circle at center,
     var(--hyrox) 0 5px,transparent 6px);}
