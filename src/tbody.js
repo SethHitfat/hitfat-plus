@@ -2613,25 +2613,39 @@ T42.reg={id:'r1',challenge_id:'ch1',mode:'online_solo',track:'transform',gender:
 T42.baseline={id:'m1',phase:'baseline',weight_kg:82,height_cm:174,waist_cm:95};
 t42Resume();
 ok("an unpaid sign-up resumes on payment", t42View==='pay');
-T42.challenge.price_rm=99;
-noThrow("the payment screen renders", function(){ t42Paint(); });
+noThrow("the confirm screen renders", function(){ t42Paint(); });
 var _pp=document.getElementById('t42-body').innerHTML;
-ok("...titled secure your spot",    _pp.indexOf('Secure your spot')>0);
-ok("...with the edition's price",   _pp.indexOf('RM99')>0 && _pp.indexOf('Pay RM99')>0);
-ok("...both ways to pay",           _pp.indexOf('FPX')>0 && _pp.indexOf('DuitNow')>0);
-ok("...saying it covers this edition only", _pp.indexOf('November 2026 only')>0);
-ok("...and that it is not HITFAT+", _pp.indexOf('not a HITFAT+ subscription')>0);
-T42.challenge.price_rm=null; t42Paint();
-_pp=document.getElementById('t42-body').innerHTML;
-ok("no price yet says payment opens soon", _pp.indexOf('Payment opens soon')>0 && _pp.indexOf('Pay RM')<0);
-ok("...with a way to pay by message",      _pp.indexOf('t42AskPay()')>0);
+ok("...titled confirm your place",  _pp.indexOf('Confirm your place')>0);
+ok("...with no price and no checkout in the app", _pp.indexOf('Pay RM')<0 && _pp.indexOf('t42PayNow()')<0 && _pp.indexOf('setPayChannel')<0);
+ok("...saying to pay with the same email", _pp.indexOf('same email as this account')>0);
+ok("...a way to confirm after paying",     _pp.indexOf('t42ClaimPurchase(null)')>0);
+ok("...and by order number for another email", _pp.indexOf('t42ClaimOrder()')>0 && _pp.indexOf('id="t42-order"')>0);
+ok("...and a human to message",            _pp.indexOf('t42AskPay()')>0);
+T42.challenge.config={landing_url:'https://hitfat.bcl.my/form/t42'}; t42Paint();
+ok("the landing page is one tap away when the edition has one",
+   document.getElementById('t42-body').innerHTML.indexOf('t42JoinLanding()')>0);
+T42.challenge.config={};
 t42View='dash'; t42Paint();
 ok("an unpaid place cannot reach the dashboard",
-   document.getElementById('t42-body').innerHTML.indexOf('Secure your spot')>0);
+   document.getElementById('t42-body').innerHTML.indexOf('Confirm your place')>0);
 t42View='joined'; t42Paint();
 ok("...nor the countdown",
-   document.getElementById('t42-body').innerHTML.indexOf('Secure your spot')>0);
-ok("Home asks for the last step", t42HomeCard().indexOf('Secure your spot')>0);
+   document.getElementById('t42-body').innerHTML.indexOf('Confirm your place')>0);
+ok("Home asks for the last step", t42HomeCard().indexOf('Confirm your place')>0);
+/* A buyer — paid on the landing page — is invited to set up, not to join. */
+var _r0=T42.reg; T42.reg=null; T42.purchase={paid:true, order_number:'BCL-1'}; t42View='landing'; t42Paint();
+ok("a buyer is invited to set up their place", document.getElementById('t42-body').innerHTML.indexOf('Set up my T42')>0 &&
+   document.getElementById('t42-body').innerHTML.indexOf('t42JoinLanding()')<0);
+T42.purchase=null; t42Paint();
+ok("anyone else joins on the landing page",    document.getElementById('t42-body').innerHTML.indexOf('t42JoinLanding()')>0 &&
+   document.getElementById('t42-body').innerHTML.indexOf('Already paid?')>0);
+T42.reg=_r0;
+var _s29=readFile('deploy/29-t42-purchases.sql'), _fn=readFile('deploy/t42-purchase/index.ts');
+ok("the webhook needs its secret",               _fn.indexOf("key !== secret.value")>0);
+ok("...ignores a payment that did not go through", _fn.indexOf("ignored: 'not paid'")>0);
+ok("...and a retried order is recorded once",      _fn.indexOf("onConflict: 'order_number', ignoreDuplicates: true")>0);
+ok("a purchase confirms one place, once",          _s29.indexOf("claimed_by is null or claimed_by = auth.uid()")>0);
+ok("...matched by the signed-in email",            _s29.indexOf("lower(email) = public.t42_my_email()")>0);
 T42.baseline=null;
 ok("...or the sign-up before it", t42HomeCard().indexOf('Finish your sign-up')>0);
 t42Resume();

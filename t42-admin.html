@@ -155,6 +155,7 @@ try{ sb=window.supabase.createClient(SUPA_URL,SUPA_KEY); }catch(e){}
 
 const $=id=>document.getElementById(id);
 let me=null, isAdmin=false, editions=[], ed=null, tab='overview';
+let unclaimed=[];
 let people=[], queue=[], baselines={}, photoUrls={}, filter='';
 
 function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on');
@@ -274,6 +275,11 @@ async function loadAll(){
   const p=await sb.rpc('t42_admin_participants',{p_challenge:ed.id});
   if(p.error){ $('body').innerHTML='<div class="card">'+esc(p.error.message)+'</div>'; return; }
   people=p.data||[];
+  /* Paid on the landing page but not yet set up in the app — the people
+     support will hear from. Staff-readable only (t42_purchases RLS). */
+  const pu=await sb.from('t42_purchases').select('email,name,order_number,source,paid_at')
+    .eq('challenge_id',ed.id).is('claimed_by',null).order('paid_at',{ascending:false});
+  unclaimed=pu.error?[]:(pu.data||[]);
 
   const ids=people.map(x=>x.registration_id);
   queue=[]; baselines={};
@@ -493,7 +499,23 @@ function renderPeople(){
   const q=filter.toLowerCase();
   const rows=people.filter(p=>!q || [p.full_name,p.email,p.verify_code,p.category,p.track,p.status]
     .some(v=>String(v||'').toLowerCase().indexOf(q)>=0));
-  let h='<div class="sechead">Participants</div>'+
+  /* A payment taken outside the landing page — bank transfer, cash at HQ.
+     Recorded against the buyer's email; their place confirms itself when
+     they sign in to the app with it. */
+  let h=(isAdmin?'<div class="card" style="padding:14px;margin-bottom:16px;">'+
+      '<div style="font-weight:700;margin-bottom:8px;">Record a payment made outside the T42 page</div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+      '<input id="pu-email" type="email" placeholder="Buyer email" style="flex:2;min-width:200px;">'+
+      '<input id="pu-name" placeholder="Name" style="flex:1;min-width:140px;">'+
+      '<input id="pu-note" placeholder="How paid (e.g. bank transfer, ref)" style="flex:2;min-width:200px;">'+
+      '<button class="btn" onclick="addPurchase()">Record</button></div>'+
+      '<div class="muted" style="margin-top:6px;">They sign in to the app with this email and their place is confirmed.</div></div>':'')+
+    (unclaimed.length?'<div class="sechead">Paid, not set up in the app yet ('+unclaimed.length+')</div>'+
+      '<div class="card tbl" style="margin-bottom:16px;"><table><thead><tr><th>Email</th><th>Name</th><th>Order</th><th>Paid</th></tr></thead><tbody>'+
+      unclaimed.map(u=>'<tr><td><b>'+esc(u.email)+'</b></td><td>'+esc(u.name||'—')+'</td><td class="muted">'+esc(u.order_number||'—')+
+        (u.source==='manual'?' · manual':'')+'</td><td class="muted">'+esc(String(u.paid_at||'').slice(0,10))+'</td></tr>').join('')+
+      '</tbody></table></div>':'')+
+    '<div class="sechead">Participants</div>'+
     '<input style="width:100%;max-width:360px;margin-bottom:12px;" placeholder="Search name, email, code, track…" '+
     'value="'+esc(filter)+'" oninput="filter=this.value;renderPeople();this.focus();">'+
     '<div class="card tbl"><table><thead><tr>'+
@@ -531,6 +553,19 @@ function renderPeople(){
    button is hidden for anyone else as a courtesy. Each needs a reason and
    leaves a before/after row, because a disqualification is exactly the
    decision someone will later ask about. */
+async function addPurchase(){
+  const email=($('pu-email').value||'').trim(), name=($('pu-name').value||'').trim(), note=($('pu-note').value||'').trim();
+  if(!email || email.indexOf('@')<0){ toast('Enter the buyer\'s email'); return; }
+  if(!note){ toast('Say how it was paid — it is kept in the audit log'); return; }
+  try{
+    const r=await sb.rpc('t42_add_purchase',{p_challenge:ed.id, p_email:email, p_name:name||null, p_note:note});
+    if(r.error) throw r.error;
+    toast('Recorded — '+email+' can set up their T42 now');
+    $('pu-email').value=''; $('pu-name').value=''; $('pu-note').value='';
+    await loadAll();
+  }catch(e){ toast((e&&e.message)||'Could not record that'); }
+}
+
 async function setStatus(regId,status){
   if(!isAdmin) return;
   const p=person(regId);

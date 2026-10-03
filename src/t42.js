@@ -102,6 +102,7 @@ var T42 = {
   duoCard:[],                   // t42_duo_card(): me first, then my partner
   duoScore:null,                // my duo's t42_duo_scores row
   past:null,                    // {challenge, reg} of a finished edition beside an open one
+  purchase:null,                // a landing-page payment for this edition, matched by email
   open:null,                    // the edition taking people now, whatever is on screen
   weeks:[],                     // every t42_weeks row of the edition, for the timeline
   journey:null,                 // every registration I have ever had, for My T42 Journey
@@ -375,6 +376,19 @@ var T42 = {
           .eq('challenge_id',this.challenge.id).eq('user_id',uid).maybeSingle();
         if(rg.error) throw rg.error;
         this.reg=rg.data||null;
+        /* Paid on the landing page? Matched by this account's email. */
+        this.purchase=null;
+        try{
+          var pu=await sb.rpc('t42_my_purchase',{p_challenge:this.challenge.id});
+          this.purchase=(!pu.error && pu.data && pu.data[0]) || null;
+        }catch(e){}
+        /* Signed up before the payment landed: confirm it now, quietly. */
+        if(this.purchase && this.reg && this.reg.status==='pending'){
+          try{
+            var cl=await sb.rpc('t42_claim_purchase',{p_challenge:this.challenge.id, p_order:null});
+            if(!cl.error){ this.reg.status='paid'; this.reg.product_sku='landing'; }
+          }catch(e){}
+        }
       }
 
       /* A finished edition is not "open", so the query above never returns
@@ -689,7 +703,6 @@ function t42RenderLanding(){
   }
 
   var joined=T42.isJoined(), open=T42.regOpen();
-  var price=Number(c.price_rm)||0;
 
   /* ── the poster ── */
   var h='<div class="t42-stage">'+
@@ -701,9 +714,12 @@ function t42RenderLanding(){
     '<div class="t42-when">'+t42Esc(t42WhenLine(c))+'</div>';
   if(joined && !T42.isOut()){
     h+='<button class="t42-stage-cta" onclick="t42Continue()">Continue</button>';
+  } else if(!joined && T42.purchase){
+    h+='<button class="t42-stage-cta" onclick="t42Begin()">Set up my T42</button>'+
+       '<div class="t42-stage-fine">Payment received — welcome. Two minutes to set up your place.</div>';
   } else if(!joined && open){
-    h+='<button class="t42-stage-cta" onclick="t42Begin()">Join T42</button>'+
-       (price ? '<div class="t42-stage-fine">RM'+t42Money(price)+' · this edition only</div>' : '');
+    h+='<button class="t42-stage-cta" onclick="t42JoinLanding()">Join T42</button>'+
+       '<button class="t42-stage-alt" onclick="t42Begin()">Already paid? Set up my place</button>';
   }
   h+='</div>';
 
@@ -767,8 +783,8 @@ function t42RenderLanding(){
              'The leaderboard shows your name and points — never your weight, waist or photos.')+
      '</div>';
 
-  if(!joined && open)
-    h+='<button class="bigbtn" onclick="t42Begin()">Join T42</button>';
+  if(!joined && open && !T42.purchase)
+    h+='<button class="bigbtn" onclick="t42JoinLanding()">Join T42</button>';
 
   el.innerHTML=h;
 }
@@ -1274,6 +1290,7 @@ async function t42SaveBaseline(){
     t42DraftClear();
     t42Base._ready=false;
     toast(T42.isPaid() ? 'Baseline saved' : 'Signed up — one step left');
+    if(!T42.isPaid() && T42.purchase){ await t42ClaimPurchase(null, true); return; }
     t42Go(T42.isPaid() ? (T42.dayNo()>0 ? 'dash' : 'joined') : 'pay');
     try{ renderHome(); }catch(e){}
   }catch(e){
@@ -1396,13 +1413,15 @@ function t42RulesRead(){ try{ return localStorage.getItem(t42RulesKey())==='1'; 
 
 
 /* ═══════════════════════════════════════════════════════════════
-   Secure your spot
+   Confirm your place
 
    Signed up is not in. The registration row exists from the baseline on,
-   as 'pending'; payment turns it 'paid' on the server (pay-callback, or
-   pay-status on the way back), and only then does anything count. The
-   browser never names a price — it sends "t42:<edition>" and the server
-   reads the price off the edition's own row.
+   as 'pending'. T42 is paid for on its landing page (a Bayarcash Link
+   form); the form's webhook records the purchase against the buyer's
+   email (29-t42-purchases.sql), and the server matches it to this
+   account — by email, or by the order number on the receipt — and turns
+   the place 'paid'. Only then does anything count. The app shows no price
+   and takes no payment for T42.
    ═══════════════════════════════════════════════════════════════ */
 
 var t42Paying=false;
@@ -1412,12 +1431,12 @@ function t42RenderPay(){
   var c=T42.challenge, r=T42.reg;
   if(!r) return t42RenderLanding();
   if(T42.isPaid()) return t42RenderJoined();
-  var tr=t42Track(r.track)||{}, price=Number(c.price_rm)||0;
+  var tr=t42Track(r.track)||{};
   var open=T42.regOpen() && !T42.isOver();
 
   var h='<div class="hgroup"><div class="k">'+(open?'Last step':t42EdName(c))+'</div>'+
-        '<h2>'+(open?'Secure your spot':'Registration closed')+'</h2>'+
-        '<p>'+(open?'Your sign-up is saved. Your place is confirmed the moment payment clears.'
+        '<h2>'+(open?'Confirm your place':'Registration closed')+'</h2>'+
+        '<p>'+(open?'Your sign-up is saved. Your place is confirmed as soon as your payment is matched.'
                    :'This edition is no longer taking payments, so your place was not confirmed.')+
         '</p></div>';
 
@@ -1439,29 +1458,59 @@ function t42RenderPay(){
     h+='<div class="acard"><div class="ah">'+ic('trophy')+'<div class="t">Included with HITFAT+ Coach</div></div>'+
        '<div class="sub">Your membership includes one T42 edition a year. Claim this place instead of paying.</div>'+
        '<button class="bigbtn" id="t42-claim" onclick="t42ClaimCoach()">Claim my place</button></div>';
-    h+='<div class="t42-q" style="text-align:center;margin:10px 0 4px;">Or pay for it separately</div>';
   }
-  if(price>0){
-    h+='<div class="t42-price"><div class="t42-price-n">RM'+t42Money(price)+'</div>'+
-       '<div class="t42-price-l">One payment · '+t42Esc(t42EdName(c))+' only</div></div>';
-    if(typeof PAY_CHANNELS!=='undefined'){
-      h+='<div class="paychs">'+PAY_CHANNELS.map(function(ch){
-        return '<button class="paych'+(ch[0]===payChannel?' on':'')+'" onclick="setPayChannel('+ch[0]+')">'+
-               '<b>'+ch[1]+'</b><small>'+ch[2]+'</small></button>';
-      }).join('')+'</div>';
-    }
-    h+='<button class="bigbtn" id="t42-pay-go" onclick="t42PayNow()">Pay RM'+t42Money(price)+'</button>'+
-       '<div class="t42-note">Secure payment by Bayarcash — FPX or DuitNow. This covers '+
-       t42Esc(t42EdName(c))+' only: daily content closes on '+t42Day(T42.lastDay(),true)+
-       ', your result and certificate stay with you. It is not a HITFAT+ subscription.</div>';
-  } else {
-    h+='<div class="acard"><div class="ah">'+ic('clock')+'<div class="t">Payment opens soon</div></div>'+
-       '<div class="sub">Your spot is held. Online payment for this edition is not open yet — '+
-       'message HITFAT and we will confirm your place.</div>'+
-       '<button class="bigbtn sec" onclick="t42AskPay()">Message HITFAT</button></div>';
-  }
-  h+='<button class="bigbtn sec" onclick="t42Reload()">I have paid — check again</button>';
+
+  /* T42 is paid for on its own page, not in the app. Paying there with
+     this account's email confirms the place by itself; another email is
+     matched by its order number. */
+  h+='<div class="bl-card"><div class="bl-h">'+ic('card')+'<span>Pay on the T42 page</span></div>'+
+     '<div class="bl-note" style="margin-top:0;">Use the same email as this account — <b>'+t42Esc(t42MyEmail()||'your sign-in email')+'</b> — '+
+     'and your place is confirmed by itself.</div>'+
+     (t42LandingUrl() ? '<button class="bigbtn" onclick="t42JoinLanding()">Go to the T42 page</button>' : '')+
+     '<button class="bigbtn sec" id="t42-claim-now" onclick="t42ClaimPurchase(null)">I have paid — confirm my place</button></div>';
+  h+='<div class="bl-card"><div class="bl-h">'+ic('doc')+'<span>Paid with another email?</span></div>'+
+     '<span class="bl-in"><input class="inp" id="t42-order" type="text" autocapitalize="characters" placeholder="Order number, from your receipt"></span>'+
+     '<button class="bigbtn sec" onclick="t42ClaimOrder()">Confirm with order number</button></div>';
+  h+='<div class="t42-note">Trouble? <a href="#" onclick="t42AskPay();return false;">Message HITFAT</a> — we can confirm your place by hand.</div>';
   el.innerHTML=h;
+}
+
+/* The landing page for this edition — set per edition in its config. */
+function t42LandingUrl(){
+  var u=t42Cfg().landing_url;
+  return (u && /^https:\/\//.test(u)) ? u : '';
+}
+function t42JoinLanding(){
+  var u=t42LandingUrl();
+  if(T42_DEMO){ t42Begin(); return; }
+  if(u){ window.open(u,'_blank'); return; }
+  /* No page yet: sign up now and confirm when the payment arrives. */
+  t42Begin();
+}
+function t42MyEmail(){ return (typeof HF!=='undefined' && HF.email) || ''; }
+
+var t42ClaimBusy=false;
+async function t42ClaimPurchase(order, quiet){
+  if(T42_DEMO){ toast('Payment found — you\'re in'); t42DemoGo('upcoming'); return; }
+  if(t42ClaimBusy || !T42.challenge) return;
+  t42ClaimBusy=true;
+  var b=$('t42-claim-now'); if(b){ b.classList.add('off'); b.textContent='Checking…'; }
+  try{
+    var r=await sb.rpc('t42_claim_purchase',{p_challenge:T42.challenge.id, p_order:order||null});
+    if(r.error) throw r.error;
+    toast('Payment found — you\'re in');
+    await T42.load(true); t42Resume(); t42Paint(); t42Segs();
+    try{ renderHome(); }catch(e){}
+  }catch(e){
+    if(!quiet) toast((e&&e.message)||'Could not confirm yet');
+    else { t42Go('pay'); }
+    if(b){ b.classList.remove('off'); b.textContent='I have paid — confirm my place'; }
+  }finally{ t42ClaimBusy=false; }
+}
+function t42ClaimOrder(){
+  var i=$('t42-order'), v=i && String(i.value||'').trim();
+  if(!v){ toast('Enter the order number from your receipt'); return; }
+  t42ClaimPurchase(v);
 }
 
 var t42Claiming=false;
@@ -1641,7 +1690,7 @@ function t42HomeCard(){
     if(!T42.hasBaseline() && T42.regOpen()){
       head='Finish your sign-up'; sub='Your starting point, then your place'; cta='Continue';
     } else {
-      head='Secure your spot'; sub='One step left — confirm your place in '+t42EdName(T42.challenge); cta='Continue';
+      head='Confirm your place'; sub='One step left — your payment for '+t42EdName(T42.challenge); cta='Continue';
     }
   } else if((st==='upcoming'||st==='active') && !T42.hasBaseline() && day<=T42.lockDay()){
     head='Finish your baseline';

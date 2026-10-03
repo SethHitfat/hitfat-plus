@@ -1052,3 +1052,6 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .ck-foot .bigbtn{margin:0;}
 .ck-count{font-size:13px;font-weight:600;color:var(--dim);text-align:center;margin-bottom:8px;}
 :root[data-theme="light"] :is(.bl-card,.ck-card){box-shadow:var(--lift-1);}
+/* a quiet second way in, under the white button on a stage */
+.t42-stage-alt{display:block;width:100%;margin-top:10px;background:none;border:none;color:rgba(255,255,255,.82);
+  font:600 14.5px var(--font);padding:8px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}

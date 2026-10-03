@@ -2969,6 +2969,9 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .ck-foot .bigbtn{margin:0;}
 .ck-count{font-size:13px;font-weight:600;color:var(--dim);text-align:center;margin-bottom:8px;}
 :root[data-theme="light"] :is(.bl-card,.ck-card){box-shadow:var(--lift-1);}
+/* a quiet second way in, under the white button on a stage */
+.t42-stage-alt{display:block;width:100%;margin-top:10px;background:none;border:none;color:rgba(255,255,255,.82);
+  font:600 14.5px var(--font);padding:8px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
 
 </style>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
@@ -8678,6 +8681,7 @@ var T42 = {
   duoCard:[],                   // t42_duo_card(): me first, then my partner
   duoScore:null,                // my duo's t42_duo_scores row
   past:null,                    // {challenge, reg} of a finished edition beside an open one
+  purchase:null,                // a landing-page payment for this edition, matched by email
   open:null,                    // the edition taking people now, whatever is on screen
   weeks:[],                     // every t42_weeks row of the edition, for the timeline
   journey:null,                 // every registration I have ever had, for My T42 Journey
@@ -8951,6 +8955,19 @@ var T42 = {
           .eq('challenge_id',this.challenge.id).eq('user_id',uid).maybeSingle();
         if(rg.error) throw rg.error;
         this.reg=rg.data||null;
+        /* Paid on the landing page? Matched by this account's email. */
+        this.purchase=null;
+        try{
+          var pu=await sb.rpc('t42_my_purchase',{p_challenge:this.challenge.id});
+          this.purchase=(!pu.error && pu.data && pu.data[0]) || null;
+        }catch(e){}
+        /* Signed up before the payment landed: confirm it now, quietly. */
+        if(this.purchase && this.reg && this.reg.status==='pending'){
+          try{
+            var cl=await sb.rpc('t42_claim_purchase',{p_challenge:this.challenge.id, p_order:null});
+            if(!cl.error){ this.reg.status='paid'; this.reg.product_sku='landing'; }
+          }catch(e){}
+        }
       }
 
       /* A finished edition is not "open", so the query above never returns
@@ -9265,7 +9282,6 @@ function t42RenderLanding(){
   }
 
   var joined=T42.isJoined(), open=T42.regOpen();
-  var price=Number(c.price_rm)||0;
 
   /* ── the poster ── */
   var h='<div class="t42-stage">'+
@@ -9277,9 +9293,12 @@ function t42RenderLanding(){
     '<div class="t42-when">'+t42Esc(t42WhenLine(c))+'</div>';
   if(joined && !T42.isOut()){
     h+='<button class="t42-stage-cta" onclick="t42Continue()">Continue</button>';
+  } else if(!joined && T42.purchase){
+    h+='<button class="t42-stage-cta" onclick="t42Begin()">Set up my T42</button>'+
+       '<div class="t42-stage-fine">Payment received — welcome. Two minutes to set up your place.</div>';
   } else if(!joined && open){
-    h+='<button class="t42-stage-cta" onclick="t42Begin()">Join T42</button>'+
-       (price ? '<div class="t42-stage-fine">RM'+t42Money(price)+' · this edition only</div>' : '');
+    h+='<button class="t42-stage-cta" onclick="t42JoinLanding()">Join T42</button>'+
+       '<button class="t42-stage-alt" onclick="t42Begin()">Already paid? Set up my place</button>';
   }
   h+='</div>';
 
@@ -9343,8 +9362,8 @@ function t42RenderLanding(){
              'The leaderboard shows your name and points — never your weight, waist or photos.')+
      '</div>';
 
-  if(!joined && open)
-    h+='<button class="bigbtn" onclick="t42Begin()">Join T42</button>';
+  if(!joined && open && !T42.purchase)
+    h+='<button class="bigbtn" onclick="t42JoinLanding()">Join T42</button>';
 
   el.innerHTML=h;
 }
@@ -9850,6 +9869,7 @@ async function t42SaveBaseline(){
     t42DraftClear();
     t42Base._ready=false;
     toast(T42.isPaid() ? 'Baseline saved' : 'Signed up — one step left');
+    if(!T42.isPaid() && T42.purchase){ await t42ClaimPurchase(null, true); return; }
     t42Go(T42.isPaid() ? (T42.dayNo()>0 ? 'dash' : 'joined') : 'pay');
     try{ renderHome(); }catch(e){}
   }catch(e){
@@ -9972,13 +9992,15 @@ function t42RulesRead(){ try{ return localStorage.getItem(t42RulesKey())==='1'; 
 
 
 /* ═══════════════════════════════════════════════════════════════
-   Secure your spot
+   Confirm your place
 
    Signed up is not in. The registration row exists from the baseline on,
-   as 'pending'; payment turns it 'paid' on the server (pay-callback, or
-   pay-status on the way back), and only then does anything count. The
-   browser never names a price — it sends "t42:<edition>" and the server
-   reads the price off the edition's own row.
+   as 'pending'. T42 is paid for on its landing page (a Bayarcash Link
+   form); the form's webhook records the purchase against the buyer's
+   email (29-t42-purchases.sql), and the server matches it to this
+   account — by email, or by the order number on the receipt — and turns
+   the place 'paid'. Only then does anything count. The app shows no price
+   and takes no payment for T42.
    ═══════════════════════════════════════════════════════════════ */
 
 var t42Paying=false;
@@ -9988,12 +10010,12 @@ function t42RenderPay(){
   var c=T42.challenge, r=T42.reg;
   if(!r) return t42RenderLanding();
   if(T42.isPaid()) return t42RenderJoined();
-  var tr=t42Track(r.track)||{}, price=Number(c.price_rm)||0;
+  var tr=t42Track(r.track)||{};
   var open=T42.regOpen() && !T42.isOver();
 
   var h='<div class="hgroup"><div class="k">'+(open?'Last step':t42EdName(c))+'</div>'+
-        '<h2>'+(open?'Secure your spot':'Registration closed')+'</h2>'+
-        '<p>'+(open?'Your sign-up is saved. Your place is confirmed the moment payment clears.'
+        '<h2>'+(open?'Confirm your place':'Registration closed')+'</h2>'+
+        '<p>'+(open?'Your sign-up is saved. Your place is confirmed as soon as your payment is matched.'
                    :'This edition is no longer taking payments, so your place was not confirmed.')+
         '</p></div>';
 
@@ -10015,29 +10037,59 @@ function t42RenderPay(){
     h+='<div class="acard"><div class="ah">'+ic('trophy')+'<div class="t">Included with HITFAT+ Coach</div></div>'+
        '<div class="sub">Your membership includes one T42 edition a year. Claim this place instead of paying.</div>'+
        '<button class="bigbtn" id="t42-claim" onclick="t42ClaimCoach()">Claim my place</button></div>';
-    h+='<div class="t42-q" style="text-align:center;margin:10px 0 4px;">Or pay for it separately</div>';
   }
-  if(price>0){
-    h+='<div class="t42-price"><div class="t42-price-n">RM'+t42Money(price)+'</div>'+
-       '<div class="t42-price-l">One payment · '+t42Esc(t42EdName(c))+' only</div></div>';
-    if(typeof PAY_CHANNELS!=='undefined'){
-      h+='<div class="paychs">'+PAY_CHANNELS.map(function(ch){
-        return '<button class="paych'+(ch[0]===payChannel?' on':'')+'" onclick="setPayChannel('+ch[0]+')">'+
-               '<b>'+ch[1]+'</b><small>'+ch[2]+'</small></button>';
-      }).join('')+'</div>';
-    }
-    h+='<button class="bigbtn" id="t42-pay-go" onclick="t42PayNow()">Pay RM'+t42Money(price)+'</button>'+
-       '<div class="t42-note">Secure payment by Bayarcash — FPX or DuitNow. This covers '+
-       t42Esc(t42EdName(c))+' only: daily content closes on '+t42Day(T42.lastDay(),true)+
-       ', your result and certificate stay with you. It is not a HITFAT+ subscription.</div>';
-  } else {
-    h+='<div class="acard"><div class="ah">'+ic('clock')+'<div class="t">Payment opens soon</div></div>'+
-       '<div class="sub">Your spot is held. Online payment for this edition is not open yet — '+
-       'message HITFAT and we will confirm your place.</div>'+
-       '<button class="bigbtn sec" onclick="t42AskPay()">Message HITFAT</button></div>';
-  }
-  h+='<button class="bigbtn sec" onclick="t42Reload()">I have paid — check again</button>';
+
+  /* T42 is paid for on its own page, not in the app. Paying there with
+     this account's email confirms the place by itself; another email is
+     matched by its order number. */
+  h+='<div class="bl-card"><div class="bl-h">'+ic('card')+'<span>Pay on the T42 page</span></div>'+
+     '<div class="bl-note" style="margin-top:0;">Use the same email as this account — <b>'+t42Esc(t42MyEmail()||'your sign-in email')+'</b> — '+
+     'and your place is confirmed by itself.</div>'+
+     (t42LandingUrl() ? '<button class="bigbtn" onclick="t42JoinLanding()">Go to the T42 page</button>' : '')+
+     '<button class="bigbtn sec" id="t42-claim-now" onclick="t42ClaimPurchase(null)">I have paid — confirm my place</button></div>';
+  h+='<div class="bl-card"><div class="bl-h">'+ic('doc')+'<span>Paid with another email?</span></div>'+
+     '<span class="bl-in"><input class="inp" id="t42-order" type="text" autocapitalize="characters" placeholder="Order number, from your receipt"></span>'+
+     '<button class="bigbtn sec" onclick="t42ClaimOrder()">Confirm with order number</button></div>';
+  h+='<div class="t42-note">Trouble? <a href="#" onclick="t42AskPay();return false;">Message HITFAT</a> — we can confirm your place by hand.</div>';
   el.innerHTML=h;
+}
+
+/* The landing page for this edition — set per edition in its config. */
+function t42LandingUrl(){
+  var u=t42Cfg().landing_url;
+  return (u && /^https:\/\//.test(u)) ? u : '';
+}
+function t42JoinLanding(){
+  var u=t42LandingUrl();
+  if(T42_DEMO){ t42Begin(); return; }
+  if(u){ window.open(u,'_blank'); return; }
+  /* No page yet: sign up now and confirm when the payment arrives. */
+  t42Begin();
+}
+function t42MyEmail(){ return (typeof HF!=='undefined' && HF.email) || ''; }
+
+var t42ClaimBusy=false;
+async function t42ClaimPurchase(order, quiet){
+  if(T42_DEMO){ toast('Payment found — you\'re in'); t42DemoGo('upcoming'); return; }
+  if(t42ClaimBusy || !T42.challenge) return;
+  t42ClaimBusy=true;
+  var b=$('t42-claim-now'); if(b){ b.classList.add('off'); b.textContent='Checking…'; }
+  try{
+    var r=await sb.rpc('t42_claim_purchase',{p_challenge:T42.challenge.id, p_order:order||null});
+    if(r.error) throw r.error;
+    toast('Payment found — you\'re in');
+    await T42.load(true); t42Resume(); t42Paint(); t42Segs();
+    try{ renderHome(); }catch(e){}
+  }catch(e){
+    if(!quiet) toast((e&&e.message)||'Could not confirm yet');
+    else { t42Go('pay'); }
+    if(b){ b.classList.remove('off'); b.textContent='I have paid — confirm my place'; }
+  }finally{ t42ClaimBusy=false; }
+}
+function t42ClaimOrder(){
+  var i=$('t42-order'), v=i && String(i.value||'').trim();
+  if(!v){ toast('Enter the order number from your receipt'); return; }
+  t42ClaimPurchase(v);
 }
 
 var t42Claiming=false;
@@ -10217,7 +10269,7 @@ function t42HomeCard(){
     if(!T42.hasBaseline() && T42.regOpen()){
       head='Finish your sign-up'; sub='Your starting point, then your place'; cta='Continue';
     } else {
-      head='Secure your spot'; sub='One step left — confirm your place in '+t42EdName(T42.challenge); cta='Continue';
+      head='Confirm your place'; sub='One step left — your payment for '+t42EdName(T42.challenge); cta='Continue';
     }
   } else if((st==='upcoming'||st==='active') && !T42.hasBaseline() && day<=T42.lockDay()){
     head='Finish your baseline';
