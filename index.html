@@ -14305,8 +14305,16 @@ function activityMatch(k,p){
   return p.goal===k;
 }
 
+/* T42 has a seat in Train, not only a banner on Home: when an edition is
+   open (or one has finished for this member), it is the first chip and the
+   first card. It opens the T42 panel — the challenge lives there. */
+function t42InTrain(){
+  return typeof T42!=='undefined' && T42.state==='ready' && !!(T42.challenge||T42.past);
+}
 function renderTrain(){
-  $('tr-segs').innerHTML='<div class="segs">'+TR_SEGS.map(s=>
+  if(trSeg==='t42'){ trSeg='foryou'; if(typeof openT42==='function') openT42(); return; }
+  const segs=(t42InTrain()?[['t42','T42']]:[]).concat(TR_SEGS);
+  $('tr-segs').innerHTML='<div class="segs">'+segs.map(s=>
     '<button class="seg'+(trSeg===s[0]?' on':'')+'" onclick="setTrSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
   if(trSeg==='store'){ openStore('programs'); return; }
   if(trSeg==='bar' && BAR_ENABLED) return trBar();
@@ -14331,7 +14339,7 @@ function trForYou(){
   const goalKey=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/move|mobil/i.test(goal)?'Recovery':'';
   const picked=PROGRAMS.filter(p=>!p.weeks&&(goalKey?activityMatch(goalKey,p):p.level===lvl)).slice(0,8);
   const byLevel=PROGRAMS.filter(p=>!p.weeks&&p.level===lvl).slice(0,8);
-  let h=fqCard();
+  let h=(t42InTrain()?t42HomeCard():'')+fqCard();
   if(going.length){
     h+=fsec('Continue','Pick up where you left off');
     h+=going.map(frow).join('');
@@ -14361,7 +14369,7 @@ function trExplore(){
   const wk=Math.floor(new Date().getTime()/6048e5);
   const rotated=singles.map((_,i)=>singles[(wk+i)%singles.length]);
 
-  let h='';
+  let h=(t42InTrain()?t42HomeCard():'');
   h+=fsec('This Week','A new set of sessions every week.');
   h+='<div class="hscroll">'+take(rotated,4).map(p=>flandCard(p)).join('')+'</div>';
 

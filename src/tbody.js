@@ -2764,6 +2764,21 @@ ok("...and refuses a second payment",  _pc.indexOf("You are already in this T42.
 ok("coming back from paying for T42 waits on T42",
    readFile('store.js').indexOf("sku.indexOf('t42:')===0 && typeof t42AwaitPayment==='function'")>0);
 
+/* T42 has a seat in Train, not only the Home banner. */
+_t42reset();
+switchTab('train'); setTrSeg('foryou');
+ok("Train leads with a T42 chip when an edition is open",
+   document.getElementById('tr-segs').innerHTML.indexOf("setTrSeg('t42')")>0);
+ok("...and the T42 card at the top of For You",
+   document.getElementById('tr-body').innerHTML.indexOf('t42-banner')>=0);
+setTrSeg('explore');
+ok("...and of Explore", document.getElementById('tr-body').innerHTML.indexOf('t42-banner')>=0);
+setTrSeg('t42');
+ok("the chip opens the T42 panel", document.getElementById('t42').style.display==='block' && trSeg!=='t42');
+T42.challenge=null; switchTab('train'); setTrSeg('foryou');
+ok("no edition, no chip",          document.getElementById('tr-segs').innerHTML.indexOf("setTrSeg('t42')")<0);
+_t42reset();
+
 print("\n── T42 · GYM DUO ──");
 function _t42gym(){
   _t42running();
