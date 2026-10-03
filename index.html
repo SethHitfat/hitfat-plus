@@ -2368,8 +2368,12 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 
 /* ── the back button: a chevron and a word, in the tint ── */
 .back{font-size:17px;font-weight:500;letter-spacing:-.2px;gap:6px;padding:8px 0 10px;text-transform:none;}
-.back .bk-c{display:inline-block;flex:0 0 auto;width:10px;height:10px;border-left:2.5px solid currentColor;border-bottom:2.5px solid currentColor;
-  transform:rotate(45deg);border-radius:1px;margin-left:3px;}
+/* A drawn chevron, not a rotated box: an old rule (.app *{transform:none
+   !important}) flattens every rotation in the app, which turned the box
+   into an "L". */
+.back .bk-c{display:inline-block;flex:0 0 auto;width:11px;height:19px;background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 19'%3E%3Cpath d='M9.5 1.5 2 9.5l7.5 8' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 19'%3E%3Cpath d='M9.5 1.5 2 9.5l7.5 8' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;}
 
 /* ── grouped lists (Me, and anything that is a list of settings) ── */
 .glist{background:var(--surface);border-radius:var(--r-card);overflow:hidden;}
@@ -2654,8 +2658,8 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .nsum-k{font-size:13px;font-weight:600;color:var(--dim);}
 .nsum-top{display:flex;align-items:center;gap:18px;margin-top:10px;}
 .nring{position:relative;flex:0 0 auto;}
-.nring svg{width:100%;height:100%;transform:rotate(-90deg);}
-.nring circle{fill:none;stroke-width:12;}
+.nring svg{width:100%;height:100%;}
+.nring circle,.nring path{fill:none;stroke-width:12;}
 .nring-t{stroke:var(--tint);}
 .nring-v{stroke:url(#nrg);stroke-linecap:round;transition:stroke-dashoffset .6s ease;}
 .nring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
@@ -2897,6 +2901,74 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 :root[data-theme="light"] :is(.sub-perks,.sub-plan,.sub-status,.sub-inside div){box-shadow:var(--lift-1);}
 :root[data-theme="light"] .sub-plan.on{box-shadow:inset 0 0 0 2px var(--txt), var(--lift-1);}
 :root[data-theme="light"] .sub-card{box-shadow:var(--lift-2);}
+
+/* ── demo switcher (only with ?demo) ── */
+#t42-demo{position:fixed;left:12px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:9999;}
+#t42-demo.open{left:0;right:0;bottom:0;top:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;}
+.dm-pill{border:none;border-radius:99px;padding:8px 13px;font:600 12px/1 var(--font);color:#FFFFFF;
+  background:rgba(10,10,12,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);cursor:pointer;}
+.dm-sheet{width:100%;max-width:440px;margin:0 auto;background:var(--bg);border-radius:22px 22px 0 0;
+  padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:85vh;overflow-y:auto;}
+.dm-h{font-size:17px;font-weight:800;color:var(--txt);margin:2px 4px 10px;}
+.dm-row{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;border:none;
+  background:var(--surface);border-radius:14px;padding:11px 14px;margin-bottom:6px;font-family:inherit;cursor:pointer;color:var(--txt);}
+.dm-row b{font-size:15px;} .dm-row span{font-size:12.5px;color:var(--dim);}
+.dm-row.on{box-shadow:inset 0 0 0 2px var(--hitfat);}
+.dm-actions{display:flex;gap:8px;margin-top:6px;}
+.dm-actions button{flex:1;border:none;border-radius:12px;padding:12px;font:600 14px var(--font);background:var(--surface2);color:var(--txt);cursor:pointer;}
+.dm-f{font-size:12px;color:var(--dim);text-align:center;margin-top:10px;}
+
+/* ── T42 navigation ──
+   The five tabs as one segmented control that fits the phone — Rank was
+   off the right edge — and the screens' own sub-tabs as a quieter second
+   control, so the two rows never read as one heap of pills. */
+#t42-segs{display:flex;gap:0;padding:3px;margin:2px 0 14px;border-radius:13px;background:var(--surface2);overflow:visible;}
+#t42-segs .seg{flex:1;min-width:0;padding:8px 2px;font-size:13.5px;font-weight:600;border-radius:10px;
+  background:none;color:var(--txt);box-shadow:none;white-space:nowrap;}
+#t42-segs .seg.on{background:var(--surface);color:var(--txt);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+:root:not([data-theme="light"]) #t42-segs .seg.on{background:#3A3A3C;}
+#t42-progtabs{display:flex;gap:18px;margin:0 2px 14px;border-bottom:.5px solid var(--sep);overflow-x:auto;scrollbar-width:none;}
+#t42-progtabs::-webkit-scrollbar{display:none;}
+#t42-progtabs .seg{background:none !important;box-shadow:none !important;color:var(--dim) !important;padding:8px 0 10px;
+  border-radius:0;font-size:15px;font-weight:600;border-bottom:2.5px solid transparent;flex:0 0 auto;}
+#t42-progtabs .seg.on{color:var(--txt) !important;border-bottom-color:var(--hitfat);}
+.t42-seg3{display:flex;padding:3px;border-radius:12px;background:var(--surface2);margin:0 0 10px;}
+.t42-seg3 button{flex:1;border:none;background:none;border-radius:9px;padding:9px 4px;font:600 14px var(--font);color:var(--txt);cursor:pointer;}
+.t42-seg3 button.on{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+:root:not([data-theme="light"]) .t42-seg3 button.on{background:#3A3A3C;}
+.t42-seg2{width:60%;}
+
+/* ── T42 forms: baseline and the daily check-in ── */
+.bl-card,.ck-card{background:var(--surface);border-radius:var(--r-card);padding:16px;margin-bottom:12px;}
+.bl-h{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;color:var(--txt);margin-bottom:14px;}
+.bl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.bl-f{display:block;}
+.bl-l{display:block;font-size:13px;font-weight:600;color:var(--dim);margin:0 0 6px 2px;}
+.bl-in{position:relative;display:block;}
+.bl-in .inp{width:100%;padding-right:44px;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;margin:0;}
+.bl-in i{position:absolute;right:13px;top:50%;margin-top:-10px;font-style:normal;font-size:14px;font-weight:600;color:var(--dim);line-height:20px;}
+.bl-tip{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.45;color:var(--ink-72);
+  background:var(--surface2);border-radius:12px;padding:10px 12px;margin-top:14px;}
+.bl-tip .gly{flex:0 0 auto;margin-top:2px;color:var(--hitfat);}
+.bl-note{font-size:13px;color:var(--dim);margin-top:10px;line-height:1.4;}
+.bl-card .t42-seg3{margin:0;}
+.ck-h{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.ck-t{font-size:17px;font-weight:700;color:var(--txt);}
+.ck-s{font-size:13.5px;color:var(--dim);margin-top:2px;line-height:1.35;}
+.ck-card .t42-pills{gap:8px;}
+.ck-card .t42-pill{padding:11px 6px;font-size:15px;}
+.ck-in{margin-bottom:10px;}
+.ck-sub{font-size:13px;font-weight:600;color:var(--dim);margin:2px 2px 7px;}
+.ck-sub + .t42-pills{margin-bottom:4px;}
+.ck-scale{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin:4px 4px 12px;}
+.ck-card .t42-glass{color:var(--tint);}
+.ck-card .t42-glass .gly{color:inherit;width:18px;height:18px;}
+.ck-card .t42-glass.on{color:#0A84FF;background:rgba(10,132,255,.14);}
+.ck-foot{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:5;margin-top:6px;padding-top:8px;
+  background:linear-gradient(to top,var(--bg) 75%,transparent);}
+.ck-foot .bigbtn{margin:0;}
+.ck-count{font-size:13px;font-weight:600;color:var(--dim);text-align:center;margin-bottom:8px;}
+:root[data-theme="light"] :is(.bl-card,.ck-card){box-shadow:var(--lift-1);}
 
 </style>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
@@ -4998,6 +5070,14 @@ const SUB_PLANS=[
    exists; until then the row is not shown. */
 const COACH_WA='60176132170', COACH_GROUP_URL='';
 
+/* The membership is switched on once the payment functions know the new
+   SKUs. Until then — and always in demo mode — everything is open, so no
+   one meets a lock that has nothing to sell. */
+var MEMBERSHIP_LIVE=false;
+function contentOpen(){
+  return !MEMBERSHIP_LIVE || (typeof T42_DEMO!=='undefined' && T42_DEMO) || hasPlus();
+}
+
 function liveDate(d){ return !!(d && new Date(d)>new Date()); }
 function hasCoach(){ return liveDate(_ent.coachUntil); }
 function hasPlus(){ return hasCoach() || liveDate(_ent.plusUntil) || owns(BUNDLE_SKU); }
@@ -5012,12 +5092,12 @@ function fmtDate(d){ return new Date(d).toLocaleDateString('en-MY',{day:'numeric
 
 function owns(sku){ return !!_ent.skus[sku]; }
 /* "Everything unlocked" — the membership, or the All Access bought before it. */
-function ownsAll(){ return hasPlus(); }
+function ownsAll(){ return contentOpen(); }
 /* Every program and session is part of the membership now, the ones that
    used to be free included. A program bought on its own before stays open. */
 function ownsProgram(p){
   if(!p) return false;
-  return hasPlus() || owns('prog_'+p.id);
+  return contentOpen() || owns('prog_'+p.id);
 }
 function ownsBar(){ return owns('bar'); }
 
@@ -5417,6 +5497,7 @@ function repaintPaywall(){
 }
 function pwBuy(){
   const p=subPlan(pwSku); if(!p) return;
+  if(!MEMBERSHIP_LIVE){ toast('Membership opens soon — everything is open in the meantime.'); return; }
   if(typeof sb==='undefined' || !sb || !HF.userId){ toast('Sign in first so we can add the membership to your account.'); return; }
   startCheckout(p.sku);
 }
@@ -5486,7 +5567,7 @@ function lockTag(p){
 /* Anything that plays: gated here, so every door is covered. T42 does not
    come through these — it plays its own day directly. */
 function needPlus(reason){
-  if(hasPlus()) return false;
+  if(contentOpen()) return false;
   openPaywall(reason||'');
   return true;
 }
@@ -8826,6 +8907,7 @@ var T42 = {
 
   /* Every edition I have been part of, with what each one left me. */
   async loadJourney(){
+    if(T42_DEMO){ this.journey=t42DemoJourney(); return; }
     var uid=await this.uid(); if(!uid){ this.journey=[]; return; }
     var r=await sb.from('t42_registrations')
       .select('*, t42_challenges(*), t42_scores(*), t42_certificates(id,kind), t42_measurements(phase,weight_kg,waist_cm)')
@@ -8840,6 +8922,7 @@ var T42 = {
   },
 
   async load(force){
+    if(T42_DEMO){ t42DemoApply(); return; }
     if(this.state==='loading') return;
     if(this.state==='ready' && !force) return;
     if(!sb || !SUPA_READY){ this.state='nosetup'; return; }
@@ -8994,6 +9077,7 @@ function t42DraftClear(){
 
 function t42Paint(){
   var el=$('t42-body'); if(!el) return;
+  t42ShellBack('Back', null);
   var busy=t42StateCard();
   if(busy){ el.innerHTML=busy; return; }
   if(t42View==='mode')     return t42RenderMode();
@@ -9081,6 +9165,7 @@ function t42StateCard(){
 
 function openT42(){
   hidePanels(); $('t42').style.display='block'; $('screen').scrollTop=0;
+  if(T42_DEMO) t42DemoMount();
   t42DraftLoad();
   t42CkReady=false; t42CkFor=null;
   /* Resume BEFORE the first paint when the state is already loaded. Opening
@@ -9149,10 +9234,17 @@ function t42GoJourney(){
 
 /* A way back for the screens that sit outside the tabs — photos before the
    start, the rules, a past edition's result. */
-function t42Back(label,go){
-  return '<button class="t42-back" onclick="'+(go||'t42GoHome')+'()">'+glyph('chevleft')+
-         '<span>'+t42Esc(label||'T42')+'</span></button>';
+/* There is one back button: the panel's own, at the top. A screen inside
+   T42 tells it where to go and what to say ("‹ Track", "‹ T42"); every
+   other screen leaves it on its default, back to Home. Two back buttons
+   stacked one above the other asked a member to guess which was which. */
+function t42ShellBack(label,go){
+  if(typeof document==='undefined' || !document.querySelector) return;
+  var b=document.querySelector('#t42 > .back'); if(!b || !b.setAttribute) return;
+  b.innerHTML='<span class="bk-c" aria-hidden="true"></span>'+t42Esc(label||'Back');
+  b.setAttribute('onclick', go ? go+'()' : "switchTab('home')");
 }
+function t42Back(label,go){ t42ShellBack(label||'T42', go||'t42GoHome'); return ''; }
 
 
 /* ═══════════════════════════════════════════════════════════════
@@ -9482,6 +9574,7 @@ function t42TakeSuggested(id){
 var t42Base={weight:'', height:'', waist:'', age:'', gender:'', goal:'Fat Loss'};
 
 function t42BasePrefill(){
+  if(T42_DEMO && !T42.baseline){ t42Base={weight:'86.4',height:'174',waist:'98',age:'31',gender:'male',goal:'Fat Loss'}; return; }
   var n=(HF && HF.data && HF.data.nutrition)||{};
   var w=(HF && HF.data && HF.data.weight)||[];
   var last=w.length?w[w.length-1]:null;
@@ -9499,6 +9592,7 @@ function t42BasePrefill(){
 function t42RenderBaseline(){
   var el=$('t42-body'); if(!el) return;
   if(!t42Base._ready){ t42BasePrefill(); t42Base._ready=true; }
+  t42BaseTab='basic';
 
   var n=t42Steps(), joined=T42.isJoined();
   var h=(!joined ? t42Back('Track','t42GoTrack') : T42.isPaid() ? t42Back('T42') : t42Back('T42','t42GoLanding'))+
@@ -9506,16 +9600,44 @@ function t42RenderBaseline(){
         '<h2>'+(joined?'Your baseline':'Your starting point')+'</h2>'+
         '<p>Every number you beat is measured from here. Weigh in the morning, before eating.</p></div>';
 
-  h+='<div class="segs" id="t42-basetabs">'+
-     '<button class="seg'+(t42BaseTab==='basic'?' on':'')+'" onclick="t42BaseTab1()">Basic info</button>'+
-     '<button class="seg'+(t42BaseTab==='photos'?' on':'')+'" onclick="t42BaseTab2()">Photos</button>'+
-     '<button class="seg'+(t42BaseTab==='physical'?' on':'')+'" onclick="t42BaseTab3()">Physical</button></div>';
+  /* One form, in the order a person stands on a scale: weight, then height
+     and waist, then the two things a leaderboard needs. The old Basic /
+     Photos / Physical tabs sent a beginner looking for the button. */
+  h+='<div class="bl-card"><div class="bl-h">'+ic('scale')+'<span>Your body</span></div>'+
+     '<div class="bl-grid">'+
+       t42BlField('t42-wt','weight','Weight','kg','decimal','0.1')+
+       t42BlField('t42-ht','height','Height','cm','numeric','1')+
+       t42BlField('t42-wc','waist','Waist','cm','decimal','0.1')+
+       t42BlField('t42-age','age','Age','yrs','numeric','1')+
+     '</div>'+
+     '<div class="bl-tip">'+glyph('measure')+'<span>Waist: tape level with your belly button, standing relaxed, after you breathe out.</span></div>'+
+     ((HF&&HF.data&&HF.data.nutrition&&HF.data.nutrition.w) ? '<div class="bl-note">Filled in from your HITFAT+ profile — change anything that is out of date.</div>' : '')+
+     '</div>';
 
-  if(t42BaseTab==='basic')    h+=t42BaseBasic();
-  if(t42BaseTab==='photos')   h+=t42BasePhotos();
-  if(t42BaseTab==='physical') h+=t42BasePhysical();
+  h+='<div class="bl-card"><div class="bl-h">'+ic('people')+'<span>Your category</span></div>'+
+     '<div class="t42-seg3">'+
+       '<button class="'+(t42Base.gender==='male'?'on':'')+'" onclick="t42BaseSet(\'gender\',\'male\')">Men</button>'+
+       '<button class="'+(t42Base.gender==='female'?'on':'')+'" onclick="t42BaseSet(\'gender\',\'female\')">Women</button></div>'+
+     '<div class="bl-note" style="margin-top:2px;">Leaderboards are ranked separately for men and women.</div></div>';
 
+  if(joined){
+    var b=T42.baseline||{}, photos=!!(b.photo_front||b.photo_side||b.photo_back);
+    h+='<div class="t42-list">'+
+       t42Row('photo','Starting photos', photos?'Saved — private to you':'Front, side and back — private to you',
+              photos?'done':'todo','t42GoPhotos()')+
+       (T42.reg && T42.reg.mode!=='gym_duo' && T42.reg.verify_code
+         ? t42Row('lock','Your verification code', t42Esc(T42.reg.verify_code)+' · for a scale photo if you finish on top','info','t42Noop()') : '')+
+       '</div>';
+  }
+
+  h+=t42BaseFoot();
   el.innerHTML=h;
+}
+/* A number with its unit inside the box, so nobody types 175 into the kg. */
+function t42BlField(id,key,label,unit,mode,step){
+  return '<label class="bl-f" for="'+id+'"><span class="bl-l">'+label+'</span>'+
+    '<span class="bl-in"><input class="inp" id="'+id+'" type="number" inputmode="'+mode+'" step="'+step+'" value="'+
+    t42Esc(t42Base[key])+'" oninput="t42BaseNum(\''+id+'\',\''+key+'\')" placeholder="—"><i>'+unit+'</i></span></label>';
 }
 
 function t42BaseBasic(){
@@ -9672,6 +9794,8 @@ var t42Saving=false;
 
 async function t42SaveBaseline(){
   if(t42Saving) return;                       // double-tap is one registration
+  if(T42_DEMO){ if(!t42BaseValid()){ toast(t42BaseMissingLine()||'Fill in your baseline'); return; }
+                t42DraftClear(); t42Base._ready=false; toast('Signed up — one step left'); t42DemoGo('pay'); return; }
   if(!t42BaseValid()){
     toast(t42BaseMissingLine()||'Fill in your baseline');
     if(t42BaseTab!=='basic'){ t42BaseTab='basic'; t42RenderBaseline(); }
@@ -9918,6 +10042,7 @@ function t42RenderPay(){
 
 var t42Claiming=false;
 async function t42ClaimCoach(){
+  if(T42_DEMO){ t42DemoNote(); return; }
   if(t42Claiming || !T42.challenge) return;
   t42Claiming=true;
   var b=$('t42-claim'); if(b){ b.classList.add('off'); b.textContent='Claiming…'; }
@@ -9939,6 +10064,7 @@ function t42AskPay(){
 }
 
 async function t42PayNow(){
+  if(T42_DEMO){ toast('Payment confirmed — you\'re in'); t42DemoGo('upcoming'); return; }
   if(t42Paying) return;
   var c=T42.challenge; if(!c || !T42.reg) return;
   if(typeof PAY_CREATE==='undefined'){ toast('Payment is not available here'); return; }
@@ -10422,54 +10548,47 @@ function t42RenderCheckin(){
   var h='<div class="hgroup"><div class="k">Day '+day+(past?' · Yesterday':'')+'</div><h2>Daily check-in</h2>'+
         '<p>'+(saved?'Already saved. Change anything you like.'
                :past?'Log what you did yesterday. It closes tonight.'
-                    :'Thirty seconds. Then you are done for the day.')+'</p></div>';
+                    :'Five quick answers, about thirty seconds.')+'</p></div>';
 
-  h+='<div class="t42-field"><label>Energy</label><div class="t42-pills">'+
-     [1,2,3,4,5].map(function(n){
-       return '<button class="t42-pill'+(t42Ck.energy===n?' on':'')+
-              '" onclick="t42CkSet(\'energy\','+n+')">'+n+'</button>';
-     }).join('')+'</div></div>';
+  var pill=function(k,v,label){
+    return '<button class="t42-pill'+(t42Ck[k]===v?' on':'')+'" onclick="t42CkSet(\''+k+'\','+(typeof v==='number'?v:'\''+v+'\'')+')">'+label+'</button>';
+  };
+  var card=function(icon,title,sub,body){
+    return '<div class="ck-card"><div class="ck-h">'+t42Ic(icon)+'<div><div class="ck-t">'+title+'</div>'+
+      (sub?'<div class="ck-s">'+sub+'</div>':'')+'</div></div>'+body+'</div>';
+  };
 
-  h+='<div class="t42-field"><label>Sleep</label><div class="t42-pills">'+
-     [['poor','Poor'],['ok','OK'],['good','Good']].map(function(o){
-       return '<button class="t42-pill'+(t42Ck.sleep===o[0]?' on':'')+
-              '" onclick="t42CkSet(\'sleep\',\''+o[0]+'\')">'+o[1]+'</button>';
-     }).join('')+'</div></div>';
+  /* In the order that matters for the day: did I train, did I move, did I
+     drink, did I eat well — then how I feel. */
+  var plan=(!past && T42.planDay) ? t42Esc(T42.planDay.title) : (past ? 'Yesterday\'s session' : 'Rest day — recovery counts');
+  h+=card('workout','Workout', plan,
+     '<div class="t42-pills">'+pill('workout','completed','Done')+pill('workout','rest','Rest day')+pill('workout','planned','Not yet')+'</div>');
 
-  h+='<div class="t42-field"><label>Nutrition</label><div class="t42-pills">'+
-     [['on_track','On track'],['partly','Partly'],['off_track','Off track']].map(function(o){
-       return '<button class="t42-pill'+(t42Ck.nutrition===o[0]?' on':'')+
-              '" onclick="t42CkSet(\'nutrition\',\''+o[0]+'\')">'+o[1]+'</button>';
-     }).join('')+'</div></div>';
+  var stp=parseInt(t42Ck.steps,10)||0, tgt=T42.stepTarget(), sp=Math.min(100,Math.round(stp/tgt*100));
+  h+=card('steps','Steps','Goal '+t42Num(tgt)+' · read it off your phone\'s health app',
+     '<span class="bl-in ck-in"><input class="inp" id="t42-steps" type="number" inputmode="numeric" placeholder="0" value="'+
+       t42Esc(t42Ck.steps)+'" oninput="t42CkNum(\'t42-steps\',\'steps\')"><i>steps</i></span>'+
+     '<div class="nbar"><i id="t42-stepbar" style="width:'+sp+'%;background:var(--hitfat);"></i></div>');
 
-  /* Water as taps, not a slider. A slider on a phone is a fight for a
-     number that only ever moves in glasses. */
   var glasses=Math.round((t42Ck.water_ml||0)/250);
-  h+='<div class="t42-field"><label>Water · '+((t42Ck.water_ml||0)/1000).toFixed(2).replace(/0$/,'')+
-     'L of '+(T42.waterTarget()/1000).toFixed(1)+'L</label>'+
-     '<div class="t42-glasses">'+
-     [1,2,3,4,5,6,7,8].map(function(n){
-       return '<button class="t42-glass'+(n<=glasses?' on':'')+
-              '" onclick="t42CkWater('+n+')">'+(n<=glasses?glyph('water'):'·')+'</button>';
-     }).join('')+'</div>'+
-     '<div class="t42-q">Each glass is 250ml. Tap the same one again to go back.</div></div>';
+  h+=card('water','Water', ((t42Ck.water_ml||0)/1000).toFixed(2).replace(/0$/,'')+' L of '+(T42.waterTarget()/1000).toFixed(1)+' L · each glass 250 ml',
+     '<div class="t42-glasses">'+[1,2,3,4,5,6,7,8].map(function(n){
+       return '<button class="t42-glass'+(n<=glasses?' on':'')+'" aria-label="'+n+' glasses" onclick="t42CkWater('+n+')">'+glyph('water')+'</button>';
+     }).join('')+'</div>');
 
-  h+='<div class="t42-field"><label for="t42-steps">Steps</label>'+
-     '<input class="inp" id="t42-steps" type="number" inputmode="numeric" '+
-     'placeholder="'+t42Num(T42.stepTarget())+'" value="'+t42Esc(t42Ck.steps)+
-     '" oninput="t42CkNum(\'t42-steps\',\'steps\')">'+
-     '<div class="t42-q">Read it off your phone\'s health app. Target '+
-     t42Num(T42.stepTarget())+'.</div></div>';
+  h+=card('food','Food','A good protein source with each main meal?',
+     '<div class="t42-pills">'+pill('nutrition','on_track','On track')+pill('nutrition','partly','Partly')+pill('nutrition','off_track','Off track')+'</div>');
 
-  h+='<div class="t42-field"><label>Workout</label><div class="t42-pills">'+
-     [['completed','Done'],['planned','Planned'],['rest','Rest']].map(function(o){
-       return '<button class="t42-pill'+(t42Ck.workout===o[0]?' on':'')+
-              '" onclick="t42CkSet(\'workout\',\''+o[0]+'\')">'+o[1]+'</button>';
-     }).join('')+'</div></div>';
+  h+=card('person','How you feel','',
+     '<div class="ck-sub">Energy</div><div class="t42-pills">'+[1,2,3,4,5].map(function(n){ return pill('energy',n,String(n)); }).join('')+'</div>'+
+     '<div class="ck-scale"><span>Low</span><span>Great</span></div>'+
+     '<div class="ck-sub">Sleep</div><div class="t42-pills">'+pill('sleep','poor','Poor')+pill('sleep','ok','OK')+pill('sleep','good','Good')+'</div>');
 
-  h+='<button class="bigbtn'+(t42CkValid()?'':' off')+'" onclick="t42SaveCheckin()">'+
-     (saved?'Update Check-in':'Save Check-in')+'</button>'+
-     '<button class="bigbtn sec" onclick="t42GoDash()">Back</button>';
+  var answered=['workout','nutrition','energy','sleep'].filter(function(k){ return !!t42Ck[k]; }).length+
+               (t42Ck.water_ml?1:0)+(t42Ck.steps!==''?1:0);
+  h+='<div class="ck-foot"><div class="ck-count">'+answered+' of 6 answered</div>'+
+     '<button class="bigbtn'+(t42CkValid()?'':' off')+'" onclick="t42SaveCheckin()">'+
+     (saved?'Update Check-in':'Save Check-in')+'</button></div>';
 
   el.innerHTML=h;
 }
@@ -10492,6 +10611,8 @@ function t42CkNum(id,k){
 }
 function t42CkFootSync(){
   var el=$('t42-body'); if(!el||!el.querySelectorAll) return;
+  var bar=$('t42-stepbar');
+  if(bar && bar.style) bar.style.width=Math.min(100,Math.round((parseInt(t42Ck.steps,10)||0)/T42.stepTarget()*100))+'%';
   var b=el.querySelectorAll('.bigbtn');
   if(b&&b.length) b[0].classList.toggle('off', !t42CkValid());
 }
@@ -10509,7 +10630,7 @@ var t42CkSaving=false;
 async function t42SaveCheckin(){
   if(t42CkSaving) return;
   if(!t42CkValid()){ toast('Answer at least one thing'); return; }
-  if(!sb || !SUPA_READY || !T42.reg){ toast('Sign in to check in'); return; }
+  if(!T42.reg || (!T42_DEMO && (!sb || !SUPA_READY))){ toast('Sign in to check in'); return; }
   var day=t42CkDay(), today=T42.dayNo();
   if(!day){ toast('T42 has not started yet'); return; }
 
@@ -10531,8 +10652,9 @@ async function t42SaveCheckin(){
        taps on Save is one check-in, and re-opening the screen at night to
        add the evening's steps must not create a second row the consistency
        count would then read as two days. */
-    var r=await sb.from('t42_daily_checkins')
-      .upsert(row,{onConflict:'registration_id,day_no'}).select().maybeSingle();
+    var r = T42_DEMO ? {data:Object.assign({id:'demo-ck-'+day},row)}
+      : await sb.from('t42_daily_checkins')
+        .upsert(row,{onConflict:'registration_id,day_no'}).select().maybeSingle();
     if(r.error) throw r.error;
 
     if(day===today) T42.today=r.data;
@@ -10659,6 +10781,11 @@ function t42PlayToday(){
    by plFinish itself; this is the copy the scorer reads, and it is the only
    reason T42 needs its own table rather than counting plus_data sessions. */
 async function t42RecordWorkout(meta,mins){
+  if(T42_DEMO && T42.reg && meta && meta.t42day){
+    T42.doneToday={day_no:meta.t42day,title:meta.name||'Workout',minutes:mins||meta.t42mins||null};
+    T42.completions=[T42.doneToday].concat(T42.completions.filter(function(c){ return c.day_no!==meta.t42day; }));
+    return;
+  }
   if(!sb || !SUPA_READY || !T42.reg || !meta || !meta.t42day) return;
   try{
     var row={
@@ -11030,6 +11157,7 @@ function t42PickPhoto(phase,slot){
 }
 
 async function t42UploadPhoto(phase,slot,file){
+  if(T42_DEMO){ t42DemoNote(); return; }
   var r=t42PhaseRow(phase); if(!r) return;
   if(file.size > 8*1024*1024){ toast('That photo is over 8MB'); return; }
   t42PhotoBusy=phase+'-'+slot; t42RenderProgress();
@@ -11150,6 +11278,7 @@ var t42MeasSaving=false;
 
 async function t42SaveMeasure(){
   if(t42MeasSaving) return;
+  if(T42_DEMO){ t42DemoNote(); return; }
   if(!t42MeasValid()){ toast('Enter a weight and a waist'); return; }
   if(!sb || !SUPA_READY || !T42.reg){ toast('Sign in first'); return; }
   t42MeasSaving=true;
@@ -11265,6 +11394,7 @@ var t42FitSaving=false;
 
 async function t42SaveFitness(){
   if(t42FitSaving) return;
+  if(T42_DEMO){ t42DemoNote(); return; }
   var p=t42FitPhase(), r=p?t42PhaseRow(p):null;
   if(!r){ toast('Save that checkpoint first'); return; }
   if(!t42FitAny()){ toast('Fill in at least one result'); return; }
@@ -11463,16 +11593,25 @@ function t42RenderRank(){
   if(!t42Board) t42Board=t42MyBoard();
   if(!t42BoardModeSet){ t42BoardMode=T42.isGym()?'duo':'online'; t42BoardModeSet=true; }
 
-  var h='<div class="segs" id="t42-ranktabs">'+
-    '<button class="seg'+(t42BoardMode==='online'?' on':'')+'" onclick="t42RankMode(\'online\')">Online solo</button>'+
-    '<button class="seg'+(t42BoardMode==='duo'?' on':'')+'" onclick="t42RankMode(\'duo\')">Gym duo</button></div>';
+  /* Gym duo only where there is a gym edition, or for someone in one. */
+  var h='';
+  if(t42GymOpen() || T42.isGym()){
+    h+='<div class="segs" id="t42-ranktabs">'+
+      '<button class="seg'+(t42BoardMode==='online'?' on':'')+'" onclick="t42RankMode(\'online\')">Online solo</button>'+
+      '<button class="seg'+(t42BoardMode==='duo'?' on':'')+'" onclick="t42RankMode(\'duo\')">Gym duo</button></div>';
+  } else t42BoardMode='online';
 
   if(t42BoardMode==='duo'){ el.innerHTML=h+t42DuoBoard(); return; }
 
-  h+='<div class="t42-pills t42-boards">'+T42_BOARDS.map(function(b){
-    return '<button class="t42-pill'+(t42Board===b.id?' on':'')+
-           '" onclick="t42RankBoard(\''+b.id+'\')">'+t42Esc(b.n)+'</button>';
-  }).join('')+'</div>';
+  /* Which board, as two plain questions: which category, then men or women.
+     Five chips in a heap made the member hunt for their own. */
+  var grp = t42Board==='consistency' ? 'consistency' : t42Board.split('_')[0];
+  var sex = t42Board==='consistency' ? '' : t42Board.split('_')[1];
+  h+='<div class="t42-seg3">'+[['transform','Transform'],['perform','Perform'],['consistency','Consistency']].map(function(g){
+       return '<button class="'+(grp===g[0]?'on':'')+'" onclick="t42RankGroup(\''+g[0]+'\')">'+g[1]+'</button>'; }).join('')+'</div>';
+  if(grp!=='consistency')
+    h+='<div class="t42-seg3 t42-seg2">'+[['male','Men'],['female','Women']].map(function(x){
+       return '<button class="'+(sex===x[0]?'on':'')+'" onclick="t42RankSex(\''+x[0]+'\')">'+x[1]+'</button>'; }).join('')+'</div>';
 
   /* Your own standing, from your own score row, above the list — so it is
      there whether or not you are in the top ten. */
@@ -11518,9 +11657,17 @@ function t42RenderRank(){
 var t42BoardModeSet=false;
 function t42RankMode(m){ t42BoardMode=m; t42BoardModeSet=true; t42RenderRank(); }
 function t42RankBoard(id){ t42Board=id; t42RenderRank(); }
+function t42RankGroup(g){
+  if(g==='consistency'){ t42Board='consistency'; }
+  else { var s=t42Board==='consistency' ? ((T42.reg&&T42.reg.gender)||'male') : t42Board.split('_')[1]; t42Board=g+'_'+s; }
+  t42RenderRank();
+}
+function t42RankSex(s){ var g=t42Board==='consistency'?'transform':t42Board.split('_')[0]; t42Board=g+'_'+s; t42RenderRank(); }
 function t42RankReload(){ delete t42BoardState[t42Board]; t42RenderRank(); }
 
 async function t42LoadBoard(id){
+  if(T42_DEMO){ t42BoardRows[id]=t42DemoBoard(id); t42BoardState[id]='ready';
+                if(t42View==='rank' && t42Board===id) setTimeout(t42RenderRank,0); return; }
   t42BoardState[id]='loading';
   if(!sb || !SUPA_READY || !T42.challenge){ t42BoardState[id]='error'; return; }
   try{
@@ -11597,6 +11744,7 @@ function t42JoinOpen(){
 /* A past edition, opened from My T42 Journey: its result, its certificate,
    and nothing that would let the old plan back in. */
 async function t42OpenReg(id){
+  if(T42_DEMO){ t42DemoGo('results'); return; }
   var row=(T42.journey||[]).filter(function(x){ return x.id===id; })[0]; if(!row) return;
   var ch=row.t42_challenges, reg={};
   Object.keys(row).forEach(function(k){ if(k.indexOf('t42_')!==0) reg[k]=row[k]; });
@@ -12479,6 +12627,220 @@ async function t42LoadDuoBoard(id){
   }
   if(t42View==='rank' && t42BoardMode==='duo' && t42DuoBoardId===id) t42RenderRank();
 }
+/* ═══════════════════════════════════════════════════════════════
+   T42 · DEMO MODE
+
+   For recording the landing page: app.hitfat.io/?demo turns it on for
+   this browser tab, ?demo=off turns it off. Every screen of T42 can then
+   be shown with a believable member's 42 days, and everything in HITFAT+
+   is open.
+
+   Nothing here touches the database. T42.load() is answered from the data
+   below, the leaderboard and My T42 Journey too, and anything that would
+   write (a check-in, a finished workout) changes only what is on screen.
+   The real edition, its dates and its participants are not involved.
+   ═══════════════════════════════════════════════════════════════ */
+
+var T42_DEMO=false, t42DemoStage='active', t42DemoHidden=false;
+(function(){
+  try{
+    var q=String(location.search||'')+String(location.hash||'');
+    if(/[?&#]demo=off\b/.test(q)) sessionStorage.removeItem('hf_demo');
+    else if(/[?&#]demo\b/.test(q)) sessionStorage.setItem('hf_demo','1');
+    T42_DEMO = sessionStorage.getItem('hf_demo')==='1';
+    var st=sessionStorage.getItem('hf_demo_stage'); if(st) t42DemoStage=st;
+  }catch(e){}
+})();
+
+/* The stages a viewer moves through, in order. */
+var T42_DEMO_STAGES=[
+  ['discover','Invitation',     'Not joined yet'],
+  ['pay',     'Secure your spot','Signed up, payment next'],
+  ['upcoming','You\'re in',      'Paid, counting down to day 1'],
+  ['day1',    'Day 1',          'The first morning'],
+  ['active',  'Day 18',         'Mid-challenge, a missed day behind'],
+  ['halfway', 'Day 21',         'Halfway milestone'],
+  ['final',   'Day 40',         'Final assessment open'],
+  ['results', 'Results',        'Finished — result and certificate'],
+  ['journey', 'My T42 Journey', 'Every edition, the trophy cabinet']
+];
+
+function t42DemoISO(off){
+  var d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+off);
+  return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+}
+function t42DemoName(){
+  var n=((HF&&HF.data&&HF.data.prefs&&HF.data.prefs.name)||'').trim();
+  return n || 'Aiman Rahim';
+}
+
+var T42_DEMO_WEEKS=[
+  {week_no:1,theme:'Build the Habit',focus:'Start consistently. Small, every day, beats big once a week.',step_target:7000,
+   mini_title:'Step Challenge',mini_detail:'Hit your step target five days out of seven.',rush_title:'City Circuit',rush_target:'Complete 1 race'},
+  {week_no:2,theme:'Move More',focus:'Daily movement. Walk more, sit less — steps count.',step_target:8000,
+   mini_title:'Hydration Challenge',mini_detail:'Two litres a day, every day this week.',rush_title:'City Circuit',rush_target:'Complete 1 race'},
+  {week_no:3,theme:'Eat Better',focus:'A good protein source with every main meal, portions under control.',step_target:8000,
+   mini_title:'Protein Week',mini_detail:'A palm of protein at every main meal.',rush_title:'Night Run',rush_target:'Beat your previous time'},
+  {week_no:4,theme:'Build Fitness',focus:'Harder sessions, better recovery. Your body can do more than week one.',step_target:9000,
+   mini_title:'Consistency Challenge',mini_detail:'Every check-in, every day, no gaps.',rush_title:'Night Run',rush_target:'Complete 1 race'},
+  {week_no:5,theme:'Push Performance',focus:'Better quality in every session. Beat last week.',step_target:9000,
+   mini_title:'Workout Streak',mini_detail:'Four sessions, no missed days between them.',rush_title:'Hill Sprint',rush_target:'Complete 1 race'},
+  {week_no:6,theme:'Finish Strong',focus:'Every day to the line. Final assessment, final result.',step_target:10000,
+   mini_title:'Final Push',mini_detail:'Everything you have, for seven days.',rush_title:'Hill Sprint',rush_target:'Post your best time'}
+];
+
+/* Today's workout, from movements that are filmed, so Start plays clips. */
+function t42DemoPlan(day){
+  var pick=function(t){ return DB.filter(function(e){ return e.v && e.t===t && e.eq!==BAR_EQ; })[0]; };
+  var names=['squat','push','lunge','core','full','hinge'].map(pick).filter(Boolean).map(function(e){ return e.n; }).slice(0,5);
+  return {id:'demo-plan-'+day, track:'transform', day_no:day, title:'Full Body '+('0'+(Math.ceil(day/2))).slice(-2),
+          est_minutes:28, level:'Beginner', equipment:'No equipment',
+          focus:'Every major muscle, once. Steady pace, good form over speed.',
+          exercises:names.map(function(n,i){ return {n:n, sets:3, reps:[12,10,12,40,30][i]||12}; })};
+}
+
+/* Days that had a check-in and a workout, up to (not including) today. */
+function t42DemoHistory(day, missed){
+  var ck=[], wo=[];
+  for(var d=1; d<day; d++){
+    if(missed.indexOf(d)>=0) continue;
+    ck.push({day_no:d, steps:6200+((d*1373)%4800), water_ml:[1500,2000,2250,2500][d%4],
+             nutrition:d%5===0?'partly':'on_track', energy:3+(d%3), sleep:d%4===0?'ok':'good'});
+    if(d%7!==0 && d%7!==4) wo.push({day_no:d, title:'Full Body '+('0'+Math.ceil(d/2)).slice(-2), minutes:24+(d%9)});
+  }
+  return {ck:ck.reverse(), wo:wo.reverse()};
+}
+
+function t42DemoApply(){
+  var st=t42DemoStage, total=42, day;
+  var dayFor={discover:-20, pay:-20, upcoming:-12, day1:1, active:18, halfway:21, final:40, results:60, journey:60};
+  day=dayFor[st]||18;
+  var startOff = day<0 ? -day : -(day-1);
+  var c={id:'demo-nov', slug:'t42-nov-demo', name:'T42 November 2026', edition:'November 2026',
+         subtitle:'42 days. One transformation.', starts_on:t42DemoISO(startOff), ends_on:t42DemoISO(startOff+41),
+         reg_opens_on:t42DemoISO(startOff-30), reg_closes_on:t42DemoISO(startOff-1), status:'registration',
+         total_days:total, price_rm:99, results_on:t42DemoISO(startOff+45), access_ends_on:t42DemoISO(startOff+41),
+         config:{tracks:['transform','perform'], gym_enabled:false, step_target:8000, water_target_ml:2000,
+                 scoring:{online_transform:{weight_pct:40,waist_pct:25,workout_pct:20,consistency_pct:10,rush_pct:5},
+                          perform:{fitness_pct:50,rush_pct:25,workout_pct:15,consistency_pct:10}}}};
+  if(day>0 && day<=total) c.status='running';
+  if(st==='results'||st==='journey') c.status='complete';
+  if(st==='final') c.status='running';
+
+  T42.state='ready'; T42.err=null;
+  T42.challenge=c; T42.open=c; T42.past=null; T42.weeks=T42_DEMO_WEEKS.slice();
+  T42.duo=null; T42.duoCard=[]; T42.duoScore=null; T42.reviews=[]; T42.journey=null;
+  T42.reg=null; T42.baseline=null; T42.mid=null; T42.final=null; T42.certs=[]; T42.score=null;
+  T42.t42ClearDay();
+  if(st==='discover') return;
+
+  T42.reg={id:'demo-reg', challenge_id:c.id, mode:'online_solo', track:'transform', gender:'male',
+           status: st==='pay' ? 'pending' : (c.status==='complete' ? 'completed' : (day>0?'active':'paid')),
+           verify_code:'T42-48217'};
+  T42.baseline={id:'demo-b', phase:'baseline', weight_kg:86.4, height_cm:174, waist_cm:98, age:31,
+                photo_front:'demo', fitness:{pushups:14, plank_sec:45, squats_60:28, run1k_sec:420}};
+  if(st==='pay'||st==='upcoming') return;
+
+  var cur=Math.min(day,total), missed=[9];
+  var hist=t42DemoHistory(cur, missed);
+  T42.checkins=hist.ck; T42.completions=hist.wo;
+  T42.week=T42_DEMO_WEEKS[Math.ceil(cur/7)-1]||null;
+  T42.planDay=(cur%7===0) ? null : t42DemoPlan(cur);
+  /* Day 18 opens with yesterday missed and today still to do — the screen
+     a member most often sees. Day 21 has today's check-in in. */
+  if(st==='active'){ T42.checkins=T42.checkins.filter(function(x){ return x.day_no!==17; }); }
+  if(st==='halfway'){
+    T42.today={day_no:cur, steps:8420, water_ml:2000, nutrition:'on_track', energy:4, sleep:'good'};
+    T42.checkins.unshift(T42.today);
+  }
+  if(cur>=21) T42.mid={id:'demo-m', phase:'mid', weight_kg:83.9, waist_cm:94.5, taken_on:t42DemoISO(startOff+20)};
+  T42.score={registration_id:'demo-reg', eligible:true, category:'transform_male', total:cur>=40?84.2:74.6,
+             consistency_total:cur>=40?88:82, rank_category:cur>=40?3:4, rank_consistency:6,
+             workout_pct:cur>=40?92:89, consistency_pct:cur>=40?93:88, is_final:c.status==='complete'};
+  if(c.status==='complete'){
+    T42.final={id:'demo-f', phase:'final', weight_kg:81.9, waist_cm:90.5, verify_status:'verified',
+               fitness:{pushups:24, plank_sec:95, squats_60:39, run1k_sec:350}};
+    T42.certs=[{id:'demo-cert', kind:'finisher', participant_name:t42DemoName(), edition:'November 2026',
+                final_score:84.2, issued_on:t42DemoISO(-14), serial:'T42-2611-8F3C21'}];
+  }
+}
+
+/* A leaderboard with people on it: first names and an initial, the way the
+   real board shows them. The viewer sits fourth. */
+function t42DemoBoard(id){
+  var names={
+    transform_male:['Hafiz R.','Daniel L.','Arif S.','__me__','Kumar V.','Faizal M.','Jason T.','Irfan Z.','Syafiq A.','Wei Jie C.'],
+    transform_female:['Nurul A.','Siti H.','Aina R.','Mei Ling T.','Farah N.','Priya K.','Hani Z.','Liyana S.','Joanne W.','Amira F.'],
+    perform_male:['Haziq A.','Ravi P.','Zul K.','Adam L.','Kelvin O.','Firdaus H.','Hakim J.','Ryan T.','Amir B.','Shah N.'],
+    perform_female:['Ain M.','Grace L.','Nadia R.','Sofea I.','Kavitha S.','Yasmin H.','Bella C.','Dina A.','Ika N.','Zara Q.'],
+    consistency:['Siti H.','Hafiz R.','Nurul A.','Ravi P.','Aina R.','__me__','Daniel L.','Grace L.','Arif S.','Farah N.']
+  }[id]||[];
+  /* Scores fall away from the top in uneven steps, with the viewer's own
+     score sitting exactly at their place — a board where fourth outscores
+     fifth by the rules, not by accident. */
+  var me=T42.score||{}, mineAt=names.indexOf('__me__');
+  var myScore=Number(id==='consistency'?me.consistency_total:me.total)||80;
+  var steps=[2.1,1.7,1.4,1.2,1.3,1.1,1.25,1.15,1.35];
+  var at=function(i){
+    var anchor=mineAt>=0?mineAt:3, v=myScore, k;
+    if(i<anchor){ for(k=i;k<anchor;k++) v+=steps[k]; }
+    else { for(k=anchor;k<i;k++) v-=steps[k]; }
+    return Math.round(v*10)/10;
+  };
+  return names.map(function(n,i){
+    var mine=n==='__me__';
+    return {place:i+1, display_name: mine ? (t42DemoName().split(/\s+/)[0]+' '+((t42DemoName().split(/\s+/)[1]||'')[0]||'')+'.').trim() : n,
+            score: mine ? myScore : at(i), is_me: mine};
+  });
+}
+
+function t42DemoJourney(){
+  var c=T42.challenge||{};
+  return [
+    {id:'demo-reg', challenge_id:c.id, status:'completed', track:'transform', joined_at:t42DemoISO(-90),
+     t42_challenges:Object.assign({},c,{status:'complete'}),
+     t42_scores:{total:84.2, consistency_total:88, consistency_pct:93, eligible:true, rank_category:3, category:'transform_male'},
+     t42_certificates:[{id:'demo-cert',kind:'finisher'}],
+     t42_measurements:[{phase:'baseline',weight_kg:86.4,waist_cm:98},{phase:'final',weight_kg:81.9,waist_cm:90.5}]}
+  ];
+}
+
+function t42DemoNote(){ toast('Demo — nothing is saved'); }
+
+/* ── the switcher ──
+   A small pill, bottom left, above the tab bar. Hide it before recording;
+   it comes back on reload. */
+function t42DemoGo(st){
+  t42DemoStage=st;
+  try{ sessionStorage.setItem('hf_demo_stage',st); }catch(e){}
+  t42DemoApply();
+  t42DemoSheet(false);
+  if(typeof openT42==='function') openT42();
+  if(st==='journey' && typeof t42GoJourney==='function'){ T42.journey=t42DemoJourney(); t42GoJourney(); }
+  try{ renderHome(); }catch(e){}
+}
+function t42DemoSheet(open){
+  var el=document.getElementById('t42-demo'); if(!el) return;
+  el.className = open ? 'open' : '';
+  if(!open){ el.innerHTML=t42DemoPill(); return; }
+  el.innerHTML='<div class="dm-sheet"><div class="dm-h">Demo · T42 stages</div>'+
+    T42_DEMO_STAGES.map(function(s){
+      return '<button class="dm-row'+(s[0]===t42DemoStage?' on':'')+'" onclick="t42DemoGo(\''+s[0]+'\')">'+
+        '<b>'+s[1]+'</b><span>'+s[2]+'</span></button>'; }).join('')+
+    '<div class="dm-actions"><button onclick="t42DemoHide()">Hide this button</button>'+
+    '<button onclick="t42DemoSheet(false)">Close</button></div>'+
+    '<div class="dm-f">Nothing here is saved. Leave demo: add ?demo=off to the address.</div></div>';
+}
+function t42DemoPill(){
+  return '<button class="dm-pill" onclick="t42DemoSheet(true)">Demo · '+
+    ((T42_DEMO_STAGES.filter(function(s){ return s[0]===t42DemoStage; })[0]||[])[1]||'')+'</button>';
+}
+function t42DemoHide(){ var el=document.getElementById('t42-demo'); if(el) el.remove(); }
+function t42DemoMount(){
+  if(!T42_DEMO || typeof document==='undefined' || !document.body || document.getElementById('t42-demo')) return;
+  var el=document.createElement('div'); el.id='t42-demo';
+  document.body.appendChild(el); t42DemoSheet(false);
+}
 /* ═══════════════ VIEWS · Home v4 layout, ported from HITFAT HYBRID ═══════════════
    Same components, same rhythm, same hierarchy: ONE hero (Today), everything else
    compact and scannable, no metric shown twice. Only the content and accent differ. */
@@ -12588,8 +12950,10 @@ function donutSVG(pct,color,size){
   const r=size/2-4, C=2*Math.PI*r, off=C*(1-Math.max(0,Math.min(100,pct))/100);
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" style="flex:none;">'+
     '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" style="stroke:var(--tint)" stroke-width="6"/>'+
-    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round"'+
-    ' stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 '+size/2+' '+size/2+')"/></svg>';
+    /* A path from twelve o'clock, not a rotated circle — the app flattens
+       transforms (.app *{transform:none}), which started every ring at three. */
+    (pct>0?'<path d="M'+size/2+' '+(size/2-r)+' a'+r+' '+r+' 0 1 1 0 '+(2*r)+' a'+r+' '+r+' 0 1 1 0 '+(-2*r)+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round"'+
+    ' stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/>':'')+'</svg>';
 }
 /* Consistency, not a made-up fitness grade: share of the weekly goal actually hit,
    averaged over the last 4 weeks. Every point of it comes from logged sessions. */
@@ -12652,7 +13016,7 @@ function renderHome(){
       '<div class="plan wide" style="background-image:url(\''+IMG.home+'\')" onclick="switchTab(\'train\')">'+
       '<div class="ov"></div><div class="pi"><div class="tx">'+
       '<div class="k">Get started</div><div class="t">Pick your first program</div>'+
-      '<div class="d">Bodyweight, chair or with equipment — '+(hasPlus()?'all yours.':'with HITFAT+.')+'</div></div>'+
+      '<div class="d">Bodyweight, chair or with equipment — '+(contentOpen()?'all yours.':'with HITFAT+.')+'</div></div>'+
       '<button class="join" onclick="event.stopPropagation();switchTab(\'train\')">Browse</button>'+
       '</div></div>';
   }
@@ -12715,7 +13079,7 @@ function renderHome(){
   const rest=PROGRAMS.filter(p=>p.weeks && going.indexOf(p)<0).sort((a,b)=>rank(a)-rank(b));
   const plans=going.concat(rest).slice(0,5);
   /* One invitation, for anyone not yet a member — above the plans it opens. */
-  const _join = hasPlus() ? '' :
+  const _join = contentOpen() ? '' :
     '<div class="sub-card" onclick="openPaywall()"><span class="sub-mark" aria-hidden="true"></span>'+
     '<div class="sub-card-b"><div class="sub-card-t">Unlock HITFAT+</div>'+
     '<div class="sub-card-s">Every program, meal plan and AI scan — from RM'+(SUB_PLANS[0].price/12).toFixed(0)+' a month</div></div>'+
@@ -13153,7 +13517,10 @@ function nRing(pct,big,small,size){
     '<svg viewBox="0 0 '+size+' '+size+'" aria-hidden="true"><defs><linearGradient id="nrg" x1="0" y1="0" x2="1" y2="1">'+
     '<stop offset="0" stop-color="#FF6A4D"/><stop offset="1" stop-color="#D7261E"/></linearGradient></defs>'+
     '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" class="nring-t"/>'+
-    (pct>0?'<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" class="nring-v" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/>':'')+
+    /* Drawn from twelve o'clock as a path, rather than a circle rotated
+       -90°: the app flattens every CSS transform (.app *{transform:none}). */
+    (pct>0?'<path d="M'+size/2+' '+(size/2-r)+' a'+r+' '+r+' 0 1 1 0 '+(2*r)+' a'+r+' '+r+' 0 1 1 0 '+(-2*r)+'" class="nring-v" '+
+      'stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/>':'')+
     '</svg><div class="nring-c"><b>'+big+'</b><span>'+small+'</span></div></div>';
 }
 /* A macro as a labelled bar: what is eaten, out of what, in its colour. */
@@ -13238,8 +13605,8 @@ function eatToday(){
 
   // quick actions
   h+='<div class="nquicks">'+
-     nQuick('📷','Scan a meal',hasPlus()?'AI reads the plate':'With HITFAT+','openScan()')+
-     nQuick('🍽️','Meal plan',hasPlus()?'Malaysian menus':'With HITFAT+',"setEatSeg('plan')")+
+     nQuick('📷','Scan a meal',contentOpen()?'AI reads the plate':'With HITFAT+','openScan()')+
+     nQuick('🍽️','Meal plan',contentOpen()?'Malaysian menus':'With HITFAT+',"setEatSeg('plan')")+
      '</div>';
 
   h+='<button class="authalt" onclick="HF.data.nutrition={};HF.save();renderEat()">Change my daily target</button>';
@@ -13255,7 +13622,7 @@ function eatPlan(){
      '<div class="nstage-k">Meal plan</div>'+
      '<div class="nstage-h">Build your meal plan</div>'+
      '<div class="nstage-s">Five questions, then a full Malaysian menu for 1 to 14 days — calories, macros and hand portions already worked out.</div>'+
-     '<button class="nstage-cta" onclick="openMealPlan()">'+(hasPlus()?'Build my plan':'Unlock with HITFAT+')+'</button>'+
+     '<button class="nstage-cta" onclick="openMealPlan()">'+(contentOpen()?'Build my plan':'Unlock with HITFAT+')+'</button>'+
      '<div class="nstage-f">'+glyph('check')+'Malaysian Dietary Guidelines 2020 · CPG MOH 2023</div></div>';
 
   if(mpl.length){
@@ -13277,7 +13644,7 @@ function eatPlan(){
     ].map((x,i)=>'<div class="nli nstep"><span class="nnum">'+(i+1)+'</span>'+
       '<div class="nli-b"><div class="nli-t">'+x[0]+'</div><div class="nli-s">'+x[1]+'</div></div></div>').join('')+'</div>';
 
-  if(!hasPlus()) h+='<div class="nlist" style="margin-top:14px;">'+nRow('spark','HITFAT+ membership',
+  if(!contentOpen()) h+='<div class="nlist" style="margin-top:14px;">'+nRow('spark','HITFAT+ membership',
      'Meal plans, AI scan and every program — from RM'+Math.round(SUB_PLANS[0].price/12)+' a month','<span class="chev">›</span>','openPaywall()')+'</div>';
   if(n.cal) h+='<div class="nfoot">Your current target is '+n.cal.toLocaleString()+' kcal. The plan recalculates from whatever you enter in the wizard.</div>';
   $('eat-body').innerHTML=h;
@@ -13288,7 +13655,7 @@ function eatLog(){
   const list=mealsFor(), favs=(HF.data.favs||[]).slice(0,10);
   let h='';
   h+='<div class="nquicks">'+
-     nQuick('📷','Scan with AI',hasPlus()?hesc(scanAccess().label):'With HITFAT+','openScan()')+
+     nQuick('📷','Scan with AI',contentOpen()?hesc(scanAccess().label):'With HITFAT+','openScan()')+
      nQuick('✏️','Add manually','Always open, unlimited','openManual()')+
      '</div>';
 
@@ -14863,6 +15230,7 @@ function boot(){
   try{ if(typeof T42!=='undefined') T42.load().then(function(){
     try{ if($('home') && $('home').style.display!=='none') renderHome(); }catch(e){}
   }); }catch(e){}
+  try{ if(typeof t42DemoMount==='function') t42DemoMount(); }catch(e){}
 
   setTimeout(hideSplash,4500);
   capturePaidParam();      // before auth — an OAuth redirect would otherwise drop it

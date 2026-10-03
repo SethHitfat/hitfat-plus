@@ -9,6 +9,7 @@ function _member(tier){ _ent={skus:{}, credits:0, passUntil:null, loaded:true,
   coachUntil: tier==='coach'?new Date(Date.now()+30*864e5).toISOString():null}; }
 function _guest(){ _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, loaded:true}; }
 _member();
+MEMBERSHIP_LIVE=true;   // the locks are what is under test; the switch is checked on its own below
 
 print("\n── CONTENT CARRIED OVER ──");
 ok("exercise library loaded", DB.length>300, DB.length);
@@ -1042,6 +1043,14 @@ ok("the claim needs a live coach membership", _c28.indexOf("sku like 'sub_coach%
 ok("...and one place a year",                 _c28.indexOf("interval '365 days'")>0);
 ok("...and nobody can call it signed out",    _c28.indexOf('revoke all    on function public.t42_claim_with_coach(uuid) from public, anon')>=0);
 
+/* Until the payment functions know the membership, nothing is locked. */
+MEMBERSHIP_LIVE=false; _guest();
+ok("before launch, everything is open",  PROGRAMS.every(ownsProgram) && !needPlus('x'));
+ok("...and Home invites no one",         (function(){ switchTab('home'); return document.getElementById('home-plans').innerHTML.indexOf('sub-card')<0; })());
+ok("...and the paywall sells nothing yet", (function(){ var said=null,t0=toast; toast=function(m){said=m;}; pwBuy(); toast=t0;
+   return said && said.indexOf('opens soon')>=0; })());
+MEMBERSHIP_LIVE=true;
+
 print("\n── STORE UI ──");
 _guest();
 noThrow("store opens",                function(){ openStore(); });
@@ -1720,8 +1729,11 @@ ok("...and recommends a track", document.getElementById('t42-body').innerHTML.in
 /* ── baseline ── */
 t42View='baseline'; t42Base._ready=false;
 noThrow("the baseline renders", function(){ t42Paint(); });
-ok("...with all three tabs", document.getElementById('t42-body').innerHTML.indexOf('Basic info')>0 &&
-   document.getElementById('t42-body').innerHTML.indexOf('Photos')>0);
+ok("...as one form, no tabs to hunt through", document.getElementById('t42-body').innerHTML.indexOf('t42-basetabs')<0 &&
+   document.getElementById('t42-body').innerHTML.indexOf('t42-wt')>0 && document.getElementById('t42-body').innerHTML.indexOf('t42-wc')>0);
+ok("...each number with its unit",  document.getElementById('t42-body').innerHTML.indexOf('<i>kg</i>')>0 &&
+   document.getElementById('t42-body').innerHTML.indexOf('<i>cm</i>')>0);
+ok("...and how to measure a waist", document.getElementById('t42-body').innerHTML.indexOf('belly button')>0);
 /* Nothing is a valid baseline until the three numbers the score is
    measured from are all there. */
 t42Base={weight:'',height:'',waist:'',age:'',gender:''};
@@ -1748,7 +1760,7 @@ ok("...and pointed back to Basic info",  t42BaseMissingLine()==='Still needed: w
 t42Base.weight='8.2';
 ok("a wrong number is called out as wrong, not missing", t42BaseMissing()[0]==='a real weight');
 t42View='baseline'; t42Base._ready=true; t42Paint();
-ok("the Physical tab offers the way back", document.getElementById('t42-body').innerHTML.indexOf('Go to Basic info')>0);
+ok("the form says what is still missing", document.getElementById('t42-body').innerHTML.indexOf('Still needed')>0);
 t42Base={weight:'82',height:'174',waist:'95',age:'',gender:'male'};
 ok("nothing missing says nothing",       t42BaseMissingLine()==='');
 t42BaseTab='basic'; t42Base._ready=false;
@@ -2337,7 +2349,9 @@ var _lb=document.getElementById('t42-body').innerHTML;
 ok("...every row",               (_lb.match(/t42-lb-n/g)||[]).length===4);
 ok("...marking me",              _lb.indexOf('Aina R. · you')>0);
 ok("...pinning my place above",  _lb.indexOf('t42-me-r">#3')>0);
-ok("...and naming all five boards", _lb.indexOf('Transform · Women')>0 && _lb.indexOf('Consistency')>0);
+ok("...and offering every board as category, then men or women", _lb.indexOf("t42RankGroup('perform')")>0 &&
+   _lb.indexOf("t42RankGroup('consistency')")>0 && _lb.indexOf("t42RankSex('male')")>0);
+ok("...with no gym duo switch on an online edition", _lb.indexOf("t42RankMode('duo')")<0);
 /* The leaderboard's whole privacy promise, checked on the output. */
 ok("no weight on the board",     _lb.indexOf(' kg')<0);
 ok("no waist on the board",      _lb.indexOf(' cm')<0);
@@ -2350,6 +2364,7 @@ t42BoardState.transform_female='error';
 t42Paint();
 ok("a failed load offers a retry",
    document.getElementById('t42-body').innerHTML.indexOf('t42RankReload()')>0);
+var _mode0=T42.reg.mode; T42.reg.mode='gym_duo';
 t42RankMode('duo');
 ok("the duo board offers the four duo categories",
    document.getElementById('t42-body').innerHTML.indexOf("t42DuoBoardPick('duo_transform_female')")>0 &&
@@ -2777,6 +2792,35 @@ setTrSeg('t42');
 ok("the chip opens the T42 panel", document.getElementById('t42').style.display==='block' && trSeg!=='t42');
 T42.challenge=null; switchTab('train'); setTrSeg('foryou');
 ok("no edition, no chip",          document.getElementById('tr-segs').innerHTML.indexOf("setTrSeg('t42')")<0);
+_t42reset();
+
+/* ── demo mode: a whole challenge, nothing written ── */
+T42_DEMO=true;
+var _realSb=sb; sb={from:function(){ throw new Error('demo wrote to the database'); },
+                    rpc:function(){ throw new Error('demo called the database'); }};
+T42_DEMO_STAGES.forEach(function(st){
+  noThrow("demo stage "+st[0]+" renders", function(){ t42DemoStage=st[0]; T42.load(); t42Resume(); t42Paint(); });
+});
+t42DemoStage='active'; T42.load(); t42Resume();
+ok("demo day 18 is a running challenge",  T42.stage()==='active' && T42.dayNo()===18);
+ok("...with history behind it",           T42.checkins.length>=14 && T42.completions.length>=10);
+ok("...and yesterday missed",             t42MissedYesterday());
+t42Paint();
+ok("...that the dashboard shows",         document.getElementById('t42-body').innerHTML.indexOf('Day 18')>0 &&
+                                          document.getElementById('t42-body').innerHTML.indexOf('You missed yesterday')>0);
+t42LoadBoard('transform_male');
+ok("the demo leaderboard has ten people", t42BoardRows.transform_male.length===10 &&
+                                          t42BoardRows.transform_male.filter(function(r){ return r.is_me; }).length===1);
+ok("...in score order, the viewer included", ['transform_male','consistency'].every(function(id){
+    var rows=t42DemoBoard(id); return rows.every(function(r,i){ return !i || rows[i-1].score>=r.score; }); }));
+t42CkReady=false; t42Go('checkin'); t42CkSet('energy',4);
+var _ckErr=null; t42SaveCheckin().catch(function(e){ _ckErr=e; });
+ok("a demo check-in stays on the device", !_ckErr && !!T42.today && T42.today.day_no===18);
+t42DemoStage='results'; T42.load(); t42Resume();
+ok("demo results land on the result",     t42View==='result' && T42.certs.length===1);
+ok("demo journey has the finished edition", t42DemoJourney().length===1 && t42DemoJourney()[0].t42_scores.eligible);
+ok("demo opens everything",               contentOpen());
+sb=_realSb; T42_DEMO=false; t42DemoStage='active';
 _t42reset();
 
 print("\n── T42 · GYM DUO ──");

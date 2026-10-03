@@ -101,7 +101,10 @@ function nRing(pct,big,small,size){
     '<svg viewBox="0 0 '+size+' '+size+'" aria-hidden="true"><defs><linearGradient id="nrg" x1="0" y1="0" x2="1" y2="1">'+
     '<stop offset="0" stop-color="#FF6A4D"/><stop offset="1" stop-color="#D7261E"/></linearGradient></defs>'+
     '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" class="nring-t"/>'+
-    (pct>0?'<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" class="nring-v" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/>':'')+
+    /* Drawn from twelve o'clock as a path, rather than a circle rotated
+       -90°: the app flattens every CSS transform (.app *{transform:none}). */
+    (pct>0?'<path d="M'+size/2+' '+(size/2-r)+' a'+r+' '+r+' 0 1 1 0 '+(2*r)+' a'+r+' '+r+' 0 1 1 0 '+(-2*r)+'" class="nring-v" '+
+      'stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/>':'')+
     '</svg><div class="nring-c"><b>'+big+'</b><span>'+small+'</span></div></div>';
 }
 /* A macro as a labelled bar: what is eaten, out of what, in its colour. */
@@ -186,8 +189,8 @@ function eatToday(){
 
   // quick actions
   h+='<div class="nquicks">'+
-     nQuick('📷','Scan a meal',hasPlus()?'AI reads the plate':'With HITFAT+','openScan()')+
-     nQuick('🍽️','Meal plan',hasPlus()?'Malaysian menus':'With HITFAT+',"setEatSeg('plan')")+
+     nQuick('📷','Scan a meal',contentOpen()?'AI reads the plate':'With HITFAT+','openScan()')+
+     nQuick('🍽️','Meal plan',contentOpen()?'Malaysian menus':'With HITFAT+',"setEatSeg('plan')")+
      '</div>';
 
   h+='<button class="authalt" onclick="HF.data.nutrition={};HF.save();renderEat()">Change my daily target</button>';
@@ -203,7 +206,7 @@ function eatPlan(){
      '<div class="nstage-k">Meal plan</div>'+
      '<div class="nstage-h">Build your meal plan</div>'+
      '<div class="nstage-s">Five questions, then a full Malaysian menu for 1 to 14 days — calories, macros and hand portions already worked out.</div>'+
-     '<button class="nstage-cta" onclick="openMealPlan()">'+(hasPlus()?'Build my plan':'Unlock with HITFAT+')+'</button>'+
+     '<button class="nstage-cta" onclick="openMealPlan()">'+(contentOpen()?'Build my plan':'Unlock with HITFAT+')+'</button>'+
      '<div class="nstage-f">'+glyph('check')+'Malaysian Dietary Guidelines 2020 · CPG MOH 2023</div></div>';
 
   if(mpl.length){
@@ -225,7 +228,7 @@ function eatPlan(){
     ].map((x,i)=>'<div class="nli nstep"><span class="nnum">'+(i+1)+'</span>'+
       '<div class="nli-b"><div class="nli-t">'+x[0]+'</div><div class="nli-s">'+x[1]+'</div></div></div>').join('')+'</div>';
 
-  if(!hasPlus()) h+='<div class="nlist" style="margin-top:14px;">'+nRow('spark','HITFAT+ membership',
+  if(!contentOpen()) h+='<div class="nlist" style="margin-top:14px;">'+nRow('spark','HITFAT+ membership',
      'Meal plans, AI scan and every program — from RM'+Math.round(SUB_PLANS[0].price/12)+' a month','<span class="chev">›</span>','openPaywall()')+'</div>';
   if(n.cal) h+='<div class="nfoot">Your current target is '+n.cal.toLocaleString()+' kcal. The plan recalculates from whatever you enter in the wizard.</div>';
   $('eat-body').innerHTML=h;
@@ -236,7 +239,7 @@ function eatLog(){
   const list=mealsFor(), favs=(HF.data.favs||[]).slice(0,10);
   let h='';
   h+='<div class="nquicks">'+
-     nQuick('📷','Scan with AI',hasPlus()?hesc(scanAccess().label):'With HITFAT+','openScan()')+
+     nQuick('📷','Scan with AI',contentOpen()?hesc(scanAccess().label):'With HITFAT+','openScan()')+
      nQuick('✏️','Add manually','Always open, unlimited','openManual()')+
      '</div>';
 

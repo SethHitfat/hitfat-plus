@@ -107,8 +107,10 @@ function donutSVG(pct,color,size){
   const r=size/2-4, C=2*Math.PI*r, off=C*(1-Math.max(0,Math.min(100,pct))/100);
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" style="flex:none;">'+
     '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" style="stroke:var(--tint)" stroke-width="6"/>'+
-    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round"'+
-    ' stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 '+size/2+' '+size/2+')"/></svg>';
+    /* A path from twelve o'clock, not a rotated circle — the app flattens
+       transforms (.app *{transform:none}), which started every ring at three. */
+    (pct>0?'<path d="M'+size/2+' '+(size/2-r)+' a'+r+' '+r+' 0 1 1 0 '+(2*r)+' a'+r+' '+r+' 0 1 1 0 '+(-2*r)+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round"'+
+    ' stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/>':'')+'</svg>';
 }
 /* Consistency, not a made-up fitness grade: share of the weekly goal actually hit,
    averaged over the last 4 weeks. Every point of it comes from logged sessions. */
@@ -171,7 +173,7 @@ function renderHome(){
       '<div class="plan wide" style="background-image:url(\''+IMG.home+'\')" onclick="switchTab(\'train\')">'+
       '<div class="ov"></div><div class="pi"><div class="tx">'+
       '<div class="k">Get started</div><div class="t">Pick your first program</div>'+
-      '<div class="d">Bodyweight, chair or with equipment — '+(hasPlus()?'all yours.':'with HITFAT+.')+'</div></div>'+
+      '<div class="d">Bodyweight, chair or with equipment — '+(contentOpen()?'all yours.':'with HITFAT+.')+'</div></div>'+
       '<button class="join" onclick="event.stopPropagation();switchTab(\'train\')">Browse</button>'+
       '</div></div>';
   }
@@ -234,7 +236,7 @@ function renderHome(){
   const rest=PROGRAMS.filter(p=>p.weeks && going.indexOf(p)<0).sort((a,b)=>rank(a)-rank(b));
   const plans=going.concat(rest).slice(0,5);
   /* One invitation, for anyone not yet a member — above the plans it opens. */
-  const _join = hasPlus() ? '' :
+  const _join = contentOpen() ? '' :
     '<div class="sub-card" onclick="openPaywall()"><span class="sub-mark" aria-hidden="true"></span>'+
     '<div class="sub-card-b"><div class="sub-card-t">Unlock HITFAT+</div>'+
     '<div class="sub-card-s">Every program, meal plan and AI scan — from RM'+(SUB_PLANS[0].price/12).toFixed(0)+' a month</div></div>'+

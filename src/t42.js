@@ -331,6 +331,7 @@ var T42 = {
 
   /* Every edition I have been part of, with what each one left me. */
   async loadJourney(){
+    if(T42_DEMO){ this.journey=t42DemoJourney(); return; }
     var uid=await this.uid(); if(!uid){ this.journey=[]; return; }
     var r=await sb.from('t42_registrations')
       .select('*, t42_challenges(*), t42_scores(*), t42_certificates(id,kind), t42_measurements(phase,weight_kg,waist_cm)')
@@ -345,6 +346,7 @@ var T42 = {
   },
 
   async load(force){
+    if(T42_DEMO){ t42DemoApply(); return; }
     if(this.state==='loading') return;
     if(this.state==='ready' && !force) return;
     if(!sb || !SUPA_READY){ this.state='nosetup'; return; }
@@ -499,6 +501,7 @@ function t42DraftClear(){
 
 function t42Paint(){
   var el=$('t42-body'); if(!el) return;
+  t42ShellBack('Back', null);
   var busy=t42StateCard();
   if(busy){ el.innerHTML=busy; return; }
   if(t42View==='mode')     return t42RenderMode();
@@ -586,6 +589,7 @@ function t42StateCard(){
 
 function openT42(){
   hidePanels(); $('t42').style.display='block'; $('screen').scrollTop=0;
+  if(T42_DEMO) t42DemoMount();
   t42DraftLoad();
   t42CkReady=false; t42CkFor=null;
   /* Resume BEFORE the first paint when the state is already loaded. Opening
@@ -654,10 +658,17 @@ function t42GoJourney(){
 
 /* A way back for the screens that sit outside the tabs — photos before the
    start, the rules, a past edition's result. */
-function t42Back(label,go){
-  return '<button class="t42-back" onclick="'+(go||'t42GoHome')+'()">'+glyph('chevleft')+
-         '<span>'+t42Esc(label||'T42')+'</span></button>';
+/* There is one back button: the panel's own, at the top. A screen inside
+   T42 tells it where to go and what to say ("‹ Track", "‹ T42"); every
+   other screen leaves it on its default, back to Home. Two back buttons
+   stacked one above the other asked a member to guess which was which. */
+function t42ShellBack(label,go){
+  if(typeof document==='undefined' || !document.querySelector) return;
+  var b=document.querySelector('#t42 > .back'); if(!b || !b.setAttribute) return;
+  b.innerHTML='<span class="bk-c" aria-hidden="true"></span>'+t42Esc(label||'Back');
+  b.setAttribute('onclick', go ? go+'()' : "switchTab('home')");
 }
+function t42Back(label,go){ t42ShellBack(label||'T42', go||'t42GoHome'); return ''; }
 
 
 /* ═══════════════════════════════════════════════════════════════
@@ -987,6 +998,7 @@ function t42TakeSuggested(id){
 var t42Base={weight:'', height:'', waist:'', age:'', gender:'', goal:'Fat Loss'};
 
 function t42BasePrefill(){
+  if(T42_DEMO && !T42.baseline){ t42Base={weight:'86.4',height:'174',waist:'98',age:'31',gender:'male',goal:'Fat Loss'}; return; }
   var n=(HF && HF.data && HF.data.nutrition)||{};
   var w=(HF && HF.data && HF.data.weight)||[];
   var last=w.length?w[w.length-1]:null;
@@ -1004,6 +1016,7 @@ function t42BasePrefill(){
 function t42RenderBaseline(){
   var el=$('t42-body'); if(!el) return;
   if(!t42Base._ready){ t42BasePrefill(); t42Base._ready=true; }
+  t42BaseTab='basic';
 
   var n=t42Steps(), joined=T42.isJoined();
   var h=(!joined ? t42Back('Track','t42GoTrack') : T42.isPaid() ? t42Back('T42') : t42Back('T42','t42GoLanding'))+
@@ -1011,16 +1024,44 @@ function t42RenderBaseline(){
         '<h2>'+(joined?'Your baseline':'Your starting point')+'</h2>'+
         '<p>Every number you beat is measured from here. Weigh in the morning, before eating.</p></div>';
 
-  h+='<div class="segs" id="t42-basetabs">'+
-     '<button class="seg'+(t42BaseTab==='basic'?' on':'')+'" onclick="t42BaseTab1()">Basic info</button>'+
-     '<button class="seg'+(t42BaseTab==='photos'?' on':'')+'" onclick="t42BaseTab2()">Photos</button>'+
-     '<button class="seg'+(t42BaseTab==='physical'?' on':'')+'" onclick="t42BaseTab3()">Physical</button></div>';
+  /* One form, in the order a person stands on a scale: weight, then height
+     and waist, then the two things a leaderboard needs. The old Basic /
+     Photos / Physical tabs sent a beginner looking for the button. */
+  h+='<div class="bl-card"><div class="bl-h">'+ic('scale')+'<span>Your body</span></div>'+
+     '<div class="bl-grid">'+
+       t42BlField('t42-wt','weight','Weight','kg','decimal','0.1')+
+       t42BlField('t42-ht','height','Height','cm','numeric','1')+
+       t42BlField('t42-wc','waist','Waist','cm','decimal','0.1')+
+       t42BlField('t42-age','age','Age','yrs','numeric','1')+
+     '</div>'+
+     '<div class="bl-tip">'+glyph('measure')+'<span>Waist: tape level with your belly button, standing relaxed, after you breathe out.</span></div>'+
+     ((HF&&HF.data&&HF.data.nutrition&&HF.data.nutrition.w) ? '<div class="bl-note">Filled in from your HITFAT+ profile — change anything that is out of date.</div>' : '')+
+     '</div>';
 
-  if(t42BaseTab==='basic')    h+=t42BaseBasic();
-  if(t42BaseTab==='photos')   h+=t42BasePhotos();
-  if(t42BaseTab==='physical') h+=t42BasePhysical();
+  h+='<div class="bl-card"><div class="bl-h">'+ic('people')+'<span>Your category</span></div>'+
+     '<div class="t42-seg3">'+
+       '<button class="'+(t42Base.gender==='male'?'on':'')+'" onclick="t42BaseSet(\'gender\',\'male\')">Men</button>'+
+       '<button class="'+(t42Base.gender==='female'?'on':'')+'" onclick="t42BaseSet(\'gender\',\'female\')">Women</button></div>'+
+     '<div class="bl-note" style="margin-top:2px;">Leaderboards are ranked separately for men and women.</div></div>';
 
+  if(joined){
+    var b=T42.baseline||{}, photos=!!(b.photo_front||b.photo_side||b.photo_back);
+    h+='<div class="t42-list">'+
+       t42Row('photo','Starting photos', photos?'Saved — private to you':'Front, side and back — private to you',
+              photos?'done':'todo','t42GoPhotos()')+
+       (T42.reg && T42.reg.mode!=='gym_duo' && T42.reg.verify_code
+         ? t42Row('lock','Your verification code', t42Esc(T42.reg.verify_code)+' · for a scale photo if you finish on top','info','t42Noop()') : '')+
+       '</div>';
+  }
+
+  h+=t42BaseFoot();
   el.innerHTML=h;
+}
+/* A number with its unit inside the box, so nobody types 175 into the kg. */
+function t42BlField(id,key,label,unit,mode,step){
+  return '<label class="bl-f" for="'+id+'"><span class="bl-l">'+label+'</span>'+
+    '<span class="bl-in"><input class="inp" id="'+id+'" type="number" inputmode="'+mode+'" step="'+step+'" value="'+
+    t42Esc(t42Base[key])+'" oninput="t42BaseNum(\''+id+'\',\''+key+'\')" placeholder="—"><i>'+unit+'</i></span></label>';
 }
 
 function t42BaseBasic(){
@@ -1177,6 +1218,8 @@ var t42Saving=false;
 
 async function t42SaveBaseline(){
   if(t42Saving) return;                       // double-tap is one registration
+  if(T42_DEMO){ if(!t42BaseValid()){ toast(t42BaseMissingLine()||'Fill in your baseline'); return; }
+                t42DraftClear(); t42Base._ready=false; toast('Signed up — one step left'); t42DemoGo('pay'); return; }
   if(!t42BaseValid()){
     toast(t42BaseMissingLine()||'Fill in your baseline');
     if(t42BaseTab!=='basic'){ t42BaseTab='basic'; t42RenderBaseline(); }
@@ -1423,6 +1466,7 @@ function t42RenderPay(){
 
 var t42Claiming=false;
 async function t42ClaimCoach(){
+  if(T42_DEMO){ t42DemoNote(); return; }
   if(t42Claiming || !T42.challenge) return;
   t42Claiming=true;
   var b=$('t42-claim'); if(b){ b.classList.add('off'); b.textContent='Claiming…'; }
@@ -1444,6 +1488,7 @@ function t42AskPay(){
 }
 
 async function t42PayNow(){
+  if(T42_DEMO){ toast('Payment confirmed — you\'re in'); t42DemoGo('upcoming'); return; }
   if(t42Paying) return;
   var c=T42.challenge; if(!c || !T42.reg) return;
   if(typeof PAY_CREATE==='undefined'){ toast('Payment is not available here'); return; }
@@ -1927,54 +1972,47 @@ function t42RenderCheckin(){
   var h='<div class="hgroup"><div class="k">Day '+day+(past?' · Yesterday':'')+'</div><h2>Daily check-in</h2>'+
         '<p>'+(saved?'Already saved. Change anything you like.'
                :past?'Log what you did yesterday. It closes tonight.'
-                    :'Thirty seconds. Then you are done for the day.')+'</p></div>';
+                    :'Five quick answers, about thirty seconds.')+'</p></div>';
 
-  h+='<div class="t42-field"><label>Energy</label><div class="t42-pills">'+
-     [1,2,3,4,5].map(function(n){
-       return '<button class="t42-pill'+(t42Ck.energy===n?' on':'')+
-              '" onclick="t42CkSet(\'energy\','+n+')">'+n+'</button>';
-     }).join('')+'</div></div>';
+  var pill=function(k,v,label){
+    return '<button class="t42-pill'+(t42Ck[k]===v?' on':'')+'" onclick="t42CkSet(\''+k+'\','+(typeof v==='number'?v:'\''+v+'\'')+')">'+label+'</button>';
+  };
+  var card=function(icon,title,sub,body){
+    return '<div class="ck-card"><div class="ck-h">'+t42Ic(icon)+'<div><div class="ck-t">'+title+'</div>'+
+      (sub?'<div class="ck-s">'+sub+'</div>':'')+'</div></div>'+body+'</div>';
+  };
 
-  h+='<div class="t42-field"><label>Sleep</label><div class="t42-pills">'+
-     [['poor','Poor'],['ok','OK'],['good','Good']].map(function(o){
-       return '<button class="t42-pill'+(t42Ck.sleep===o[0]?' on':'')+
-              '" onclick="t42CkSet(\'sleep\',\''+o[0]+'\')">'+o[1]+'</button>';
-     }).join('')+'</div></div>';
+  /* In the order that matters for the day: did I train, did I move, did I
+     drink, did I eat well — then how I feel. */
+  var plan=(!past && T42.planDay) ? t42Esc(T42.planDay.title) : (past ? 'Yesterday\'s session' : 'Rest day — recovery counts');
+  h+=card('workout','Workout', plan,
+     '<div class="t42-pills">'+pill('workout','completed','Done')+pill('workout','rest','Rest day')+pill('workout','planned','Not yet')+'</div>');
 
-  h+='<div class="t42-field"><label>Nutrition</label><div class="t42-pills">'+
-     [['on_track','On track'],['partly','Partly'],['off_track','Off track']].map(function(o){
-       return '<button class="t42-pill'+(t42Ck.nutrition===o[0]?' on':'')+
-              '" onclick="t42CkSet(\'nutrition\',\''+o[0]+'\')">'+o[1]+'</button>';
-     }).join('')+'</div></div>';
+  var stp=parseInt(t42Ck.steps,10)||0, tgt=T42.stepTarget(), sp=Math.min(100,Math.round(stp/tgt*100));
+  h+=card('steps','Steps','Goal '+t42Num(tgt)+' · read it off your phone\'s health app',
+     '<span class="bl-in ck-in"><input class="inp" id="t42-steps" type="number" inputmode="numeric" placeholder="0" value="'+
+       t42Esc(t42Ck.steps)+'" oninput="t42CkNum(\'t42-steps\',\'steps\')"><i>steps</i></span>'+
+     '<div class="nbar"><i id="t42-stepbar" style="width:'+sp+'%;background:var(--hitfat);"></i></div>');
 
-  /* Water as taps, not a slider. A slider on a phone is a fight for a
-     number that only ever moves in glasses. */
   var glasses=Math.round((t42Ck.water_ml||0)/250);
-  h+='<div class="t42-field"><label>Water · '+((t42Ck.water_ml||0)/1000).toFixed(2).replace(/0$/,'')+
-     'L of '+(T42.waterTarget()/1000).toFixed(1)+'L</label>'+
-     '<div class="t42-glasses">'+
-     [1,2,3,4,5,6,7,8].map(function(n){
-       return '<button class="t42-glass'+(n<=glasses?' on':'')+
-              '" onclick="t42CkWater('+n+')">'+(n<=glasses?glyph('water'):'·')+'</button>';
-     }).join('')+'</div>'+
-     '<div class="t42-q">Each glass is 250ml. Tap the same one again to go back.</div></div>';
+  h+=card('water','Water', ((t42Ck.water_ml||0)/1000).toFixed(2).replace(/0$/,'')+' L of '+(T42.waterTarget()/1000).toFixed(1)+' L · each glass 250 ml',
+     '<div class="t42-glasses">'+[1,2,3,4,5,6,7,8].map(function(n){
+       return '<button class="t42-glass'+(n<=glasses?' on':'')+'" aria-label="'+n+' glasses" onclick="t42CkWater('+n+')">'+glyph('water')+'</button>';
+     }).join('')+'</div>');
 
-  h+='<div class="t42-field"><label for="t42-steps">Steps</label>'+
-     '<input class="inp" id="t42-steps" type="number" inputmode="numeric" '+
-     'placeholder="'+t42Num(T42.stepTarget())+'" value="'+t42Esc(t42Ck.steps)+
-     '" oninput="t42CkNum(\'t42-steps\',\'steps\')">'+
-     '<div class="t42-q">Read it off your phone\'s health app. Target '+
-     t42Num(T42.stepTarget())+'.</div></div>';
+  h+=card('food','Food','A good protein source with each main meal?',
+     '<div class="t42-pills">'+pill('nutrition','on_track','On track')+pill('nutrition','partly','Partly')+pill('nutrition','off_track','Off track')+'</div>');
 
-  h+='<div class="t42-field"><label>Workout</label><div class="t42-pills">'+
-     [['completed','Done'],['planned','Planned'],['rest','Rest']].map(function(o){
-       return '<button class="t42-pill'+(t42Ck.workout===o[0]?' on':'')+
-              '" onclick="t42CkSet(\'workout\',\''+o[0]+'\')">'+o[1]+'</button>';
-     }).join('')+'</div></div>';
+  h+=card('person','How you feel','',
+     '<div class="ck-sub">Energy</div><div class="t42-pills">'+[1,2,3,4,5].map(function(n){ return pill('energy',n,String(n)); }).join('')+'</div>'+
+     '<div class="ck-scale"><span>Low</span><span>Great</span></div>'+
+     '<div class="ck-sub">Sleep</div><div class="t42-pills">'+pill('sleep','poor','Poor')+pill('sleep','ok','OK')+pill('sleep','good','Good')+'</div>');
 
-  h+='<button class="bigbtn'+(t42CkValid()?'':' off')+'" onclick="t42SaveCheckin()">'+
-     (saved?'Update Check-in':'Save Check-in')+'</button>'+
-     '<button class="bigbtn sec" onclick="t42GoDash()">Back</button>';
+  var answered=['workout','nutrition','energy','sleep'].filter(function(k){ return !!t42Ck[k]; }).length+
+               (t42Ck.water_ml?1:0)+(t42Ck.steps!==''?1:0);
+  h+='<div class="ck-foot"><div class="ck-count">'+answered+' of 6 answered</div>'+
+     '<button class="bigbtn'+(t42CkValid()?'':' off')+'" onclick="t42SaveCheckin()">'+
+     (saved?'Update Check-in':'Save Check-in')+'</button></div>';
 
   el.innerHTML=h;
 }
@@ -1997,6 +2035,8 @@ function t42CkNum(id,k){
 }
 function t42CkFootSync(){
   var el=$('t42-body'); if(!el||!el.querySelectorAll) return;
+  var bar=$('t42-stepbar');
+  if(bar && bar.style) bar.style.width=Math.min(100,Math.round((parseInt(t42Ck.steps,10)||0)/T42.stepTarget()*100))+'%';
   var b=el.querySelectorAll('.bigbtn');
   if(b&&b.length) b[0].classList.toggle('off', !t42CkValid());
 }
@@ -2014,7 +2054,7 @@ var t42CkSaving=false;
 async function t42SaveCheckin(){
   if(t42CkSaving) return;
   if(!t42CkValid()){ toast('Answer at least one thing'); return; }
-  if(!sb || !SUPA_READY || !T42.reg){ toast('Sign in to check in'); return; }
+  if(!T42.reg || (!T42_DEMO && (!sb || !SUPA_READY))){ toast('Sign in to check in'); return; }
   var day=t42CkDay(), today=T42.dayNo();
   if(!day){ toast('T42 has not started yet'); return; }
 
@@ -2036,8 +2076,9 @@ async function t42SaveCheckin(){
        taps on Save is one check-in, and re-opening the screen at night to
        add the evening's steps must not create a second row the consistency
        count would then read as two days. */
-    var r=await sb.from('t42_daily_checkins')
-      .upsert(row,{onConflict:'registration_id,day_no'}).select().maybeSingle();
+    var r = T42_DEMO ? {data:Object.assign({id:'demo-ck-'+day},row)}
+      : await sb.from('t42_daily_checkins')
+        .upsert(row,{onConflict:'registration_id,day_no'}).select().maybeSingle();
     if(r.error) throw r.error;
 
     if(day===today) T42.today=r.data;
@@ -2164,6 +2205,11 @@ function t42PlayToday(){
    by plFinish itself; this is the copy the scorer reads, and it is the only
    reason T42 needs its own table rather than counting plus_data sessions. */
 async function t42RecordWorkout(meta,mins){
+  if(T42_DEMO && T42.reg && meta && meta.t42day){
+    T42.doneToday={day_no:meta.t42day,title:meta.name||'Workout',minutes:mins||meta.t42mins||null};
+    T42.completions=[T42.doneToday].concat(T42.completions.filter(function(c){ return c.day_no!==meta.t42day; }));
+    return;
+  }
   if(!sb || !SUPA_READY || !T42.reg || !meta || !meta.t42day) return;
   try{
     var row={
@@ -2535,6 +2581,7 @@ function t42PickPhoto(phase,slot){
 }
 
 async function t42UploadPhoto(phase,slot,file){
+  if(T42_DEMO){ t42DemoNote(); return; }
   var r=t42PhaseRow(phase); if(!r) return;
   if(file.size > 8*1024*1024){ toast('That photo is over 8MB'); return; }
   t42PhotoBusy=phase+'-'+slot; t42RenderProgress();
@@ -2655,6 +2702,7 @@ var t42MeasSaving=false;
 
 async function t42SaveMeasure(){
   if(t42MeasSaving) return;
+  if(T42_DEMO){ t42DemoNote(); return; }
   if(!t42MeasValid()){ toast('Enter a weight and a waist'); return; }
   if(!sb || !SUPA_READY || !T42.reg){ toast('Sign in first'); return; }
   t42MeasSaving=true;
@@ -2770,6 +2818,7 @@ var t42FitSaving=false;
 
 async function t42SaveFitness(){
   if(t42FitSaving) return;
+  if(T42_DEMO){ t42DemoNote(); return; }
   var p=t42FitPhase(), r=p?t42PhaseRow(p):null;
   if(!r){ toast('Save that checkpoint first'); return; }
   if(!t42FitAny()){ toast('Fill in at least one result'); return; }
@@ -2968,16 +3017,25 @@ function t42RenderRank(){
   if(!t42Board) t42Board=t42MyBoard();
   if(!t42BoardModeSet){ t42BoardMode=T42.isGym()?'duo':'online'; t42BoardModeSet=true; }
 
-  var h='<div class="segs" id="t42-ranktabs">'+
-    '<button class="seg'+(t42BoardMode==='online'?' on':'')+'" onclick="t42RankMode(\'online\')">Online solo</button>'+
-    '<button class="seg'+(t42BoardMode==='duo'?' on':'')+'" onclick="t42RankMode(\'duo\')">Gym duo</button></div>';
+  /* Gym duo only where there is a gym edition, or for someone in one. */
+  var h='';
+  if(t42GymOpen() || T42.isGym()){
+    h+='<div class="segs" id="t42-ranktabs">'+
+      '<button class="seg'+(t42BoardMode==='online'?' on':'')+'" onclick="t42RankMode(\'online\')">Online solo</button>'+
+      '<button class="seg'+(t42BoardMode==='duo'?' on':'')+'" onclick="t42RankMode(\'duo\')">Gym duo</button></div>';
+  } else t42BoardMode='online';
 
   if(t42BoardMode==='duo'){ el.innerHTML=h+t42DuoBoard(); return; }
 
-  h+='<div class="t42-pills t42-boards">'+T42_BOARDS.map(function(b){
-    return '<button class="t42-pill'+(t42Board===b.id?' on':'')+
-           '" onclick="t42RankBoard(\''+b.id+'\')">'+t42Esc(b.n)+'</button>';
-  }).join('')+'</div>';
+  /* Which board, as two plain questions: which category, then men or women.
+     Five chips in a heap made the member hunt for their own. */
+  var grp = t42Board==='consistency' ? 'consistency' : t42Board.split('_')[0];
+  var sex = t42Board==='consistency' ? '' : t42Board.split('_')[1];
+  h+='<div class="t42-seg3">'+[['transform','Transform'],['perform','Perform'],['consistency','Consistency']].map(function(g){
+       return '<button class="'+(grp===g[0]?'on':'')+'" onclick="t42RankGroup(\''+g[0]+'\')">'+g[1]+'</button>'; }).join('')+'</div>';
+  if(grp!=='consistency')
+    h+='<div class="t42-seg3 t42-seg2">'+[['male','Men'],['female','Women']].map(function(x){
+       return '<button class="'+(sex===x[0]?'on':'')+'" onclick="t42RankSex(\''+x[0]+'\')">'+x[1]+'</button>'; }).join('')+'</div>';
 
   /* Your own standing, from your own score row, above the list — so it is
      there whether or not you are in the top ten. */
@@ -3023,9 +3081,17 @@ function t42RenderRank(){
 var t42BoardModeSet=false;
 function t42RankMode(m){ t42BoardMode=m; t42BoardModeSet=true; t42RenderRank(); }
 function t42RankBoard(id){ t42Board=id; t42RenderRank(); }
+function t42RankGroup(g){
+  if(g==='consistency'){ t42Board='consistency'; }
+  else { var s=t42Board==='consistency' ? ((T42.reg&&T42.reg.gender)||'male') : t42Board.split('_')[1]; t42Board=g+'_'+s; }
+  t42RenderRank();
+}
+function t42RankSex(s){ var g=t42Board==='consistency'?'transform':t42Board.split('_')[0]; t42Board=g+'_'+s; t42RenderRank(); }
 function t42RankReload(){ delete t42BoardState[t42Board]; t42RenderRank(); }
 
 async function t42LoadBoard(id){
+  if(T42_DEMO){ t42BoardRows[id]=t42DemoBoard(id); t42BoardState[id]='ready';
+                if(t42View==='rank' && t42Board===id) setTimeout(t42RenderRank,0); return; }
   t42BoardState[id]='loading';
   if(!sb || !SUPA_READY || !T42.challenge){ t42BoardState[id]='error'; return; }
   try{
@@ -3102,6 +3168,7 @@ function t42JoinOpen(){
 /* A past edition, opened from My T42 Journey: its result, its certificate,
    and nothing that would let the old plan back in. */
 async function t42OpenReg(id){
+  if(T42_DEMO){ t42DemoGo('results'); return; }
   var row=(T42.journey||[]).filter(function(x){ return x.id===id; })[0]; if(!row) return;
   var ch=row.t42_challenges, reg={};
   Object.keys(row).forEach(function(k){ if(k.indexOf('t42_')!==0) reg[k]=row[k]; });

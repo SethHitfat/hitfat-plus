@@ -95,6 +95,14 @@ const SUB_PLANS=[
    exists; until then the row is not shown. */
 const COACH_WA='60176132170', COACH_GROUP_URL='';
 
+/* The membership is switched on once the payment functions know the new
+   SKUs. Until then — and always in demo mode — everything is open, so no
+   one meets a lock that has nothing to sell. */
+var MEMBERSHIP_LIVE=false;
+function contentOpen(){
+  return !MEMBERSHIP_LIVE || (typeof T42_DEMO!=='undefined' && T42_DEMO) || hasPlus();
+}
+
 function liveDate(d){ return !!(d && new Date(d)>new Date()); }
 function hasCoach(){ return liveDate(_ent.coachUntil); }
 function hasPlus(){ return hasCoach() || liveDate(_ent.plusUntil) || owns(BUNDLE_SKU); }
@@ -109,12 +117,12 @@ function fmtDate(d){ return new Date(d).toLocaleDateString('en-MY',{day:'numeric
 
 function owns(sku){ return !!_ent.skus[sku]; }
 /* "Everything unlocked" — the membership, or the All Access bought before it. */
-function ownsAll(){ return hasPlus(); }
+function ownsAll(){ return contentOpen(); }
 /* Every program and session is part of the membership now, the ones that
    used to be free included. A program bought on its own before stays open. */
 function ownsProgram(p){
   if(!p) return false;
-  return hasPlus() || owns('prog_'+p.id);
+  return contentOpen() || owns('prog_'+p.id);
 }
 function ownsBar(){ return owns('bar'); }
 
@@ -514,6 +522,7 @@ function repaintPaywall(){
 }
 function pwBuy(){
   const p=subPlan(pwSku); if(!p) return;
+  if(!MEMBERSHIP_LIVE){ toast('Membership opens soon — everything is open in the meantime.'); return; }
   if(typeof sb==='undefined' || !sb || !HF.userId){ toast('Sign in first so we can add the membership to your account.'); return; }
   startCheckout(p.sku);
 }
@@ -583,7 +592,7 @@ function lockTag(p){
 /* Anything that plays: gated here, so every door is covered. T42 does not
    come through these — it plays its own day directly. */
 function needPlus(reason){
-  if(hasPlus()) return false;
+  if(contentOpen()) return false;
   openPaywall(reason||'');
   return true;
 }

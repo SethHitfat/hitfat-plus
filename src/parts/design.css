@@ -451,8 +451,12 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 
 /* ── the back button: a chevron and a word, in the tint ── */
 .back{font-size:17px;font-weight:500;letter-spacing:-.2px;gap:6px;padding:8px 0 10px;text-transform:none;}
-.back .bk-c{display:inline-block;flex:0 0 auto;width:10px;height:10px;border-left:2.5px solid currentColor;border-bottom:2.5px solid currentColor;
-  transform:rotate(45deg);border-radius:1px;margin-left:3px;}
+/* A drawn chevron, not a rotated box: an old rule (.app *{transform:none
+   !important}) flattens every rotation in the app, which turned the box
+   into an "L". */
+.back .bk-c{display:inline-block;flex:0 0 auto;width:11px;height:19px;background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 19'%3E%3Cpath d='M9.5 1.5 2 9.5l7.5 8' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 19'%3E%3Cpath d='M9.5 1.5 2 9.5l7.5 8' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;}
 
 /* ── grouped lists (Me, and anything that is a list of settings) ── */
 .glist{background:var(--surface);border-radius:var(--r-card);overflow:hidden;}
@@ -737,8 +741,8 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .nsum-k{font-size:13px;font-weight:600;color:var(--dim);}
 .nsum-top{display:flex;align-items:center;gap:18px;margin-top:10px;}
 .nring{position:relative;flex:0 0 auto;}
-.nring svg{width:100%;height:100%;transform:rotate(-90deg);}
-.nring circle{fill:none;stroke-width:12;}
+.nring svg{width:100%;height:100%;}
+.nring circle,.nring path{fill:none;stroke-width:12;}
 .nring-t{stroke:var(--tint);}
 .nring-v{stroke:url(#nrg);stroke-linecap:round;transition:stroke-dashoffset .6s ease;}
 .nring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
@@ -980,3 +984,71 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 :root[data-theme="light"] :is(.sub-perks,.sub-plan,.sub-status,.sub-inside div){box-shadow:var(--lift-1);}
 :root[data-theme="light"] .sub-plan.on{box-shadow:inset 0 0 0 2px var(--txt), var(--lift-1);}
 :root[data-theme="light"] .sub-card{box-shadow:var(--lift-2);}
+
+/* ── demo switcher (only with ?demo) ── */
+#t42-demo{position:fixed;left:12px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:9999;}
+#t42-demo.open{left:0;right:0;bottom:0;top:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;}
+.dm-pill{border:none;border-radius:99px;padding:8px 13px;font:600 12px/1 var(--font);color:#FFFFFF;
+  background:rgba(10,10,12,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);cursor:pointer;}
+.dm-sheet{width:100%;max-width:440px;margin:0 auto;background:var(--bg);border-radius:22px 22px 0 0;
+  padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:85vh;overflow-y:auto;}
+.dm-h{font-size:17px;font-weight:800;color:var(--txt);margin:2px 4px 10px;}
+.dm-row{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;border:none;
+  background:var(--surface);border-radius:14px;padding:11px 14px;margin-bottom:6px;font-family:inherit;cursor:pointer;color:var(--txt);}
+.dm-row b{font-size:15px;} .dm-row span{font-size:12.5px;color:var(--dim);}
+.dm-row.on{box-shadow:inset 0 0 0 2px var(--hitfat);}
+.dm-actions{display:flex;gap:8px;margin-top:6px;}
+.dm-actions button{flex:1;border:none;border-radius:12px;padding:12px;font:600 14px var(--font);background:var(--surface2);color:var(--txt);cursor:pointer;}
+.dm-f{font-size:12px;color:var(--dim);text-align:center;margin-top:10px;}
+
+/* ── T42 navigation ──
+   The five tabs as one segmented control that fits the phone — Rank was
+   off the right edge — and the screens' own sub-tabs as a quieter second
+   control, so the two rows never read as one heap of pills. */
+#t42-segs{display:flex;gap:0;padding:3px;margin:2px 0 14px;border-radius:13px;background:var(--surface2);overflow:visible;}
+#t42-segs .seg{flex:1;min-width:0;padding:8px 2px;font-size:13.5px;font-weight:600;border-radius:10px;
+  background:none;color:var(--txt);box-shadow:none;white-space:nowrap;}
+#t42-segs .seg.on{background:var(--surface);color:var(--txt);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+:root:not([data-theme="light"]) #t42-segs .seg.on{background:#3A3A3C;}
+#t42-progtabs{display:flex;gap:18px;margin:0 2px 14px;border-bottom:.5px solid var(--sep);overflow-x:auto;scrollbar-width:none;}
+#t42-progtabs::-webkit-scrollbar{display:none;}
+#t42-progtabs .seg{background:none !important;box-shadow:none !important;color:var(--dim) !important;padding:8px 0 10px;
+  border-radius:0;font-size:15px;font-weight:600;border-bottom:2.5px solid transparent;flex:0 0 auto;}
+#t42-progtabs .seg.on{color:var(--txt) !important;border-bottom-color:var(--hitfat);}
+.t42-seg3{display:flex;padding:3px;border-radius:12px;background:var(--surface2);margin:0 0 10px;}
+.t42-seg3 button{flex:1;border:none;background:none;border-radius:9px;padding:9px 4px;font:600 14px var(--font);color:var(--txt);cursor:pointer;}
+.t42-seg3 button.on{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+:root:not([data-theme="light"]) .t42-seg3 button.on{background:#3A3A3C;}
+.t42-seg2{width:60%;}
+
+/* ── T42 forms: baseline and the daily check-in ── */
+.bl-card,.ck-card{background:var(--surface);border-radius:var(--r-card);padding:16px;margin-bottom:12px;}
+.bl-h{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;color:var(--txt);margin-bottom:14px;}
+.bl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.bl-f{display:block;}
+.bl-l{display:block;font-size:13px;font-weight:600;color:var(--dim);margin:0 0 6px 2px;}
+.bl-in{position:relative;display:block;}
+.bl-in .inp{width:100%;padding-right:44px;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;margin:0;}
+.bl-in i{position:absolute;right:13px;top:50%;margin-top:-10px;font-style:normal;font-size:14px;font-weight:600;color:var(--dim);line-height:20px;}
+.bl-tip{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.45;color:var(--ink-72);
+  background:var(--surface2);border-radius:12px;padding:10px 12px;margin-top:14px;}
+.bl-tip .gly{flex:0 0 auto;margin-top:2px;color:var(--hitfat);}
+.bl-note{font-size:13px;color:var(--dim);margin-top:10px;line-height:1.4;}
+.bl-card .t42-seg3{margin:0;}
+.ck-h{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.ck-t{font-size:17px;font-weight:700;color:var(--txt);}
+.ck-s{font-size:13.5px;color:var(--dim);margin-top:2px;line-height:1.35;}
+.ck-card .t42-pills{gap:8px;}
+.ck-card .t42-pill{padding:11px 6px;font-size:15px;}
+.ck-in{margin-bottom:10px;}
+.ck-sub{font-size:13px;font-weight:600;color:var(--dim);margin:2px 2px 7px;}
+.ck-sub + .t42-pills{margin-bottom:4px;}
+.ck-scale{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin:4px 4px 12px;}
+.ck-card .t42-glass{color:var(--tint);}
+.ck-card .t42-glass .gly{color:inherit;width:18px;height:18px;}
+.ck-card .t42-glass.on{color:#0A84FF;background:rgba(10,132,255,.14);}
+.ck-foot{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:5;margin-top:6px;padding-top:8px;
+  background:linear-gradient(to top,var(--bg) 75%,transparent);}
+.ck-foot .bigbtn{margin:0;}
+.ck-count{font-size:13px;font-weight:600;color:var(--dim);text-align:center;margin-bottom:8px;}
+:root[data-theme="light"] :is(.bl-card,.ck-card){box-shadow:var(--lift-1);}
