@@ -18,7 +18,7 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { createHmac } from 'node:crypto';
-import { CATALOGUE, CHANNELS, BC_API, SITE, CORS, json, t42Slug } from '../_shared/catalogue.ts';
+import { CATALOGUE, CHANNELS, BC_API, SITE, CORS, json, t42Slug, t42ModePrice } from '../_shared/catalogue.ts';
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
@@ -63,7 +63,7 @@ Deno.serve(async (req: Request) => {
        signed up (the pending registration) and not already be in. */
     if (slug) {
       const { data: ch } = await admin.from('t42_challenges')
-        .select('id, status, price_rm, reg_closes_on').eq('slug', slug).maybeSingle();
+        .select('id, status, price_rm, gym_price_rm, reg_closes_on').eq('slug', slug).maybeSingle();
       if (!ch || ['registration', 'running'].indexOf(ch.status) < 0) {
         return json({ error: 'This T42 is not taking new participants.' }, 400);
       }
@@ -71,12 +71,14 @@ Deno.serve(async (req: Request) => {
       if (ch.reg_closes_on && today > String(ch.reg_closes_on)) {
         return json({ error: 'Registration for this T42 has closed.' }, 400);
       }
-      if (!(Number(ch.price_rm) > 0)) return json({ error: 'Payment for this T42 is not open yet.' }, 400);
       const { data: reg } = await admin.from('t42_registrations')
-        .select('id, status').eq('challenge_id', ch.id).eq('user_id', user.id).maybeSingle();
+        .select('id, status, mode').eq('challenge_id', ch.id).eq('user_id', user.id).maybeSingle();
       if (!reg) return json({ error: 'Finish your T42 sign-up first.' }, 400);
       if (reg.status !== 'pending') return json({ error: 'You are already in this T42.', code: 'already_owned' }, 409);
-      price = Number(ch.price_rm);
+      /* Gym Duo has its own price (per person); the mode is read from the
+         buyer's own registration, never from the request. */
+      price = t42ModePrice(ch, reg.mode);
+      if (!(price > 0)) return json({ error: 'Payment for this T42 is not open yet.' }, 400);
     }
 
     /* Buying something you already own is a refund request waiting to happen.

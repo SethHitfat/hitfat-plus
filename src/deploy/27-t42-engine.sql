@@ -207,7 +207,8 @@ revoke all on function public.t42_compute_all() from public, anon, authenticated
 -- ═══════════════════════════════════════════════════════════════
 --  4 · T42 NOVEMBER 2026
 --
---  Online only, TRANSFORM and PERFORM, content closing on the last day.
+--  TRANSFORM and PERFORM, content closing on the last day. Gym Duo is
+--  switched on by 28-t42-gym-duo.sql.
 --  The price is NOT set here — it is a business decision, not a migration:
 --
 --    update public.t42_challenges set price_rm = 99 where slug = 't42-nov-2026';
@@ -216,9 +217,10 @@ update public.t42_challenges
    set subtitle       = coalesce(subtitle, '42 days. One transformation.'),
        results_on     = coalesce(results_on, ends_on + 4),
        access_ends_on = coalesce(access_ends_on, ends_on),
-       config = config || jsonb_build_object(
-         'tracks',      jsonb_build_array('transform','perform'),
-         'gym_enabled', false),
+       -- gym_enabled is a default only: 28-t42-gym-duo.sql turns Gym Duo on,
+       -- and running this file again must not switch it back off.
+       config = jsonb_build_object('gym_enabled', false) || config || jsonb_build_object(
+         'tracks',      jsonb_build_array('transform','perform')),
        updated_at = now()
  where slug = 't42-nov-2026';
 

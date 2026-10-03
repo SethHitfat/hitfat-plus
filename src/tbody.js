@@ -2773,8 +2773,23 @@ ok("the price is never invented in a migration", !/set\s+price_rm\s*=/.test(_sql
 var _grant=readFile('deploy/_shared/grant.ts'), _pc=readFile('deploy/pay-create/index.ts');
 ok("paying for T42 confirms that registration, not a store entitlement",
    _grant.indexOf("update({ status: 'paid', product_sku: sku })")>0 && _grant.indexOf(".eq('status', 'pending')")>0);
-ok("pay-create prices T42 from the edition's row",
-   _pc.indexOf("price = Number(ch.price_rm)")>0 && _pc.indexOf('amount: price')>0);
+ok("pay-create prices T42 from the edition's row, by the buyer's own mode",
+   _pc.indexOf("price = t42ModePrice(ch, reg.mode)")>0 && _pc.indexOf("gym_price_rm")>0 &&
+   _pc.indexOf('amount: price')>0);
+var _cat=readFile('deploy/_shared/catalogue.ts');
+ok("...with the same rule as the app: Gym Duo's own price, else the edition's",
+   _cat.indexOf("if (mode === 'gym_duo' && gym > 0) return gym;")>0 &&
+   _cat.indexOf("return Number(ch?.price_rm) || 0;")>0);
+var _sql28=readFile('deploy/28-t42-gym-duo.sql');
+ok("the database runs only the modes an edition sells",
+   _sql28.indexOf("before insert on public.t42_registrations")>0 && _sql28.indexOf("'gym_enabled') = 'true'")>0);
+ok("a paid Gym Duo place grants the gym, and a failed grant never fails the payment",
+   _sql28.indexOf("after update of status on public.t42_registrations")>0 &&
+   _sql28.indexOf("exception when others then")>0 && _sql28.indexOf("'gym_access_failed'")>0);
+ok("...and the Gym Duo price is not invented in a migration either",
+   !/set\s+(gym_)?price_rm\s*=/.test(_sql28.replace(/--.*$/mg,'')));
+ok("re-running 27 does not switch Gym Duo back off",
+   _sql27.indexOf("jsonb_build_object('gym_enabled', false) || config")>0);
 ok("...and refuses a second payment",  _pc.indexOf("You are already in this T42.")>0);
 ok("coming back from paying for T42 waits on T42",
    readFile('store.js').indexOf("sku.indexOf('t42:')===0 && typeof t42AwaitPayment==='function'")>0);
@@ -2837,6 +2852,33 @@ function _t42gym(){
      weight_change_pct:-5.8,waist_change_pct:-4.0,workout_pct:88,attendance_pct:78,total:80.3}];
   T42.duoScore={duo_id:'d1',category:'duo_transform_female',eligible:true,team_total:82.2,rank_category:7};
 }
+
+/* ── a price per mode ── */
+_t42gym();
+T42.challenge.price_rm=149; T42.challenge.gym_price_rm=299;
+T42.challenge.config=Object.assign({},T42.challenge.config,{gym_enabled:true});
+ok("Gym Duo has its own price",            t42ModePrice(T42.challenge,'gym_duo')===299);
+ok("...and online keeps the edition's",    t42ModePrice(T42.challenge,'online_solo')===149);
+ok("the edition says both prices",         t42PriceLine(T42.challenge)==='Online RM149 · Gym Duo RM299 per person');
+T42.challenge.gym_price_rm=null;
+ok("no Gym Duo price falls back to the edition's", t42ModePrice(T42.challenge,'gym_duo')===149);
+ok("...and one price is said once",        t42PriceLine(T42.challenge)==='RM149 · this edition only');
+T42.challenge.config.gym_enabled=false; T42.challenge.gym_price_rm=299;
+ok("a closed Gym Duo is not advertised",   t42PriceLine(T42.challenge)==='RM149 · this edition only');
+T42.challenge.config.gym_enabled=true;
+T42.reg.status='pending';
+T42.baseline={id:'m1',registration_id:'r1',phase:'baseline',weight_kg:61.5,height_cm:165,waist_cm:72};
+T42.challenge.reg_closes_on=_t42day(3); T42.challenge.status='registration';
+T42.challenge.starts_on=_t42day(5); T42.challenge.ends_on=_t42day(46);
+noThrow("the Gym Duo pay screen renders", function(){ t42RenderPay(); });
+var _gp=document.getElementById('t42-body').innerHTML;
+ok("...asking for the Gym Duo price",      _gp.indexOf('Pay RM299')>0, _gp.slice(0,200));
+ok("...one place, not the pair",           _gp.indexOf('your partner pays for theirs')>0);
+ok("...and saying the gym opens on payment", _gp.indexOf('Gym access at HITFAT HQ is switched on')>0);
+t42Draft.mode=null;
+noThrow("the mode step renders", function(){ t42RenderMode(); });
+var _mp=document.getElementById('t42-body').innerHTML;
+ok("the mode step shows each mode's price", _mp.indexOf('RM149')>0 && _mp.indexOf('RM299 per person')>0);
 
 /* ── the pairing window ── */
 _t42gym();

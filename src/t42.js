@@ -28,7 +28,8 @@
    27-t42-engine.sql — and what the member keeps is the trophy cabinet:
    result, score, certificate. Nothing here unlocks HITFAT+.
 
-   Gym Duo is built but switched off per edition (config.gym_enabled).
+   Gym Duo is switched on per edition (config.gym_enabled) and has its own
+   price (gym_price_rm, per person; 28-t42-gym-duo.sql).
    ═══════════════════════════════════════════════════════════════ */
 
 var T42_MODES = [
@@ -689,7 +690,7 @@ function t42RenderLanding(){
   }
 
   var joined=T42.isJoined(), open=T42.regOpen();
-  var price=Number(c.price_rm)||0;
+  var priceLine=t42PriceLine(c);
 
   /* ── the poster ── */
   var h='<div class="t42-stage">'+
@@ -703,7 +704,7 @@ function t42RenderLanding(){
     h+='<button class="t42-stage-cta" onclick="t42Continue()">Continue</button>';
   } else if(!joined && open){
     h+='<button class="t42-stage-cta" onclick="t42Begin()">Join T42</button>'+
-       (price ? '<div class="t42-stage-fine">RM'+t42Money(price)+' · this edition only</div>' : '');
+       (priceLine ? '<div class="t42-stage-fine">'+t42Esc(priceLine)+'</div>' : '');
   }
   h+='</div>';
 
@@ -779,6 +780,22 @@ function t42Info(icon,title,sub){
     '<div class="t42-row-l">'+t42Esc(title)+'</div><div class="t42-row-v">'+t42Esc(sub)+'</div></div></div>';
 }
 function t42Money(n){ n=Number(n)||0; return n%1 ? n.toFixed(2) : String(n); }
+/* What one place costs in a mode: Gym Duo has its own price (per person),
+   falling back to the edition's. The same answer pay-create charges
+   (t42ModePrice in _shared/catalogue.ts) and t42_price() gives. */
+function t42ModePrice(c,mode){
+  c=c||T42.challenge||{};
+  var gym=Number(c.gym_price_rm);
+  if(mode==='gym_duo' && gym>0) return gym;
+  return Number(c.price_rm)||0;
+}
+/* The price line under "Join T42": one price, or one per mode. */
+function t42PriceLine(c){
+  var on=t42ModePrice(c,'online_solo'), gym=t42GymOpen()?t42ModePrice(c,'gym_duo'):0;
+  if(!on && !gym) return '';
+  if(!gym || gym===on) return 'RM'+t42Money(on||gym)+' · this edition only';
+  return 'Online RM'+t42Money(on)+' · Gym Duo RM'+t42Money(gym)+' per person';
+}
 
 /* The six weeks as one strip: the week we are in lit, the ones done filled.
    Before day 1 every week is ahead, which is the point of showing it. */
@@ -851,7 +868,8 @@ function t42RenderMode(){
        '<div class="t42-radio'+(on?' on':'')+'"></div></div>'+
        '<div class="t42-card-t">'+t42Esc(m.tag)+'</div><ul class="t42-bul">'+
        m.bullets.map(function(b){ return '<li>'+t42Esc(b)+'</li>'; }).join('')+
-       '</ul></div>';
+       '</ul>'+(t42ModePrice(T42.challenge,m.id)>0 ? '<div class="t42-card-p">RM'+
+       t42Money(t42ModePrice(T42.challenge,m.id))+(m.id==='gym_duo'?' per person':'')+'</div>' : '')+'</div>';
   });
 
   /* Said before the choice, not after it: Gym Duo means turning up in
@@ -1412,7 +1430,7 @@ function t42RenderPay(){
   var c=T42.challenge, r=T42.reg;
   if(!r) return t42RenderLanding();
   if(T42.isPaid()) return t42RenderJoined();
-  var tr=t42Track(r.track)||{}, price=Number(c.price_rm)||0;
+  var tr=t42Track(r.track)||{}, price=t42ModePrice(c,r.mode), gym=r.mode==='gym_duo';
   var open=T42.regOpen() && !T42.isOver();
 
   var h='<div class="hgroup"><div class="k">'+(open?'Last step':t42EdName(c))+'</div>'+
@@ -1424,6 +1442,7 @@ function t42RenderPay(){
   h+='<div class="t42-list">'+
      t42Row('calendar', t42Esc(t42EdName(c)), t42Esc(t42Range(c)), 'info', 't42Noop()')+
      t42Row('target', 'Track', t42Esc(tr.name||'—'), 'done', 't42Noop()')+
+     (gym ? t42Row('gym', 'Gym Duo', 'HITFAT HQ, Kota Bharu', 'done', 't42Noop()') : '')+
      t42Row('measure', 'Starting point', T42.hasBaseline()
         ? T42.baseline.weight_kg+' kg · '+T42.baseline.waist_cm+' cm' : 'Not added yet',
         T42.hasBaseline()?'done':'todo', 't42GoBaseline()')+
@@ -1443,7 +1462,8 @@ function t42RenderPay(){
   }
   if(price>0){
     h+='<div class="t42-price"><div class="t42-price-n">RM'+t42Money(price)+'</div>'+
-       '<div class="t42-price-l">One payment · '+t42Esc(t42EdName(c))+' only</div></div>';
+       '<div class="t42-price-l">One payment · '+t42Esc(t42EdName(c))+' only'+
+       (gym?' · your place only — your partner pays for theirs':'')+'</div></div>';
     if(typeof PAY_CHANNELS!=='undefined'){
       h+='<div class="paychs">'+PAY_CHANNELS.map(function(ch){
         return '<button class="paych'+(ch[0]===payChannel?' on':'')+'" onclick="setPayChannel('+ch[0]+')">'+
@@ -1453,7 +1473,8 @@ function t42RenderPay(){
     h+='<button class="bigbtn" id="t42-pay-go" onclick="t42PayNow()">Pay RM'+t42Money(price)+'</button>'+
        '<div class="t42-note">Secure payment by Bayarcash — FPX or DuitNow. This covers '+
        t42Esc(t42EdName(c))+' only: daily content closes on '+t42Day(T42.lastDay(),true)+
-       ', your result and certificate stay with you. It is not a HITFAT+ subscription.</div>';
+       ', your result and certificate stay with you. It is not a HITFAT+ subscription.'+
+       (gym?' Gym access at HITFAT HQ is switched on as soon as your payment clears.':'')+'</div>';
   } else {
     h+='<div class="acard"><div class="ah">'+ic('clock')+'<div class="t">Payment opens soon</div></div>'+
        '<div class="sub">Your spot is held. Online payment for this edition is not open yet — '+
@@ -1509,7 +1530,7 @@ async function t42PayNow(){
   }catch(e){ toast('Could not start payment — check your connection.'); }
   finally{
     t42Paying=false;
-    if(btn){ btn.classList.remove('off'); btn.textContent='Pay RM'+t42Money(c.price_rm); }
+    if(btn){ btn.classList.remove('off'); btn.textContent='Pay RM'+t42Money(t42ModePrice(c,(T42.reg||{}).mode)); }
   }
 }
 

@@ -112,6 +112,15 @@ function t42Slug(sku: string): string | null {
   return m ? m[1] : null;
 }
 
+/* What one T42 place costs in a mode. Gym Duo has its own price
+   (gym_price_rm, per person) and falls back to the edition's price_rm.
+   Same answer as public.t42_price() in 28-t42-gym-duo.sql. */
+function t42ModePrice(ch: any, mode: string): number {
+  const gym = Number(ch?.gym_price_rm);
+  if (mode === 'gym_duo' && gym > 0) return gym;
+  return Number(ch?.price_rm) || 0;
+}
+
 /* Bayarcash transaction status: 3 = Success (0 New · 1 Pending · 2 Failed · 4 Cancelled) */
 function isPaidStatus(s: unknown) {
   return String(s) === '3' || String(s).toLowerCase() === 'success';
