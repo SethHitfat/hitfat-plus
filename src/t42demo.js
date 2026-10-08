@@ -91,8 +91,8 @@ function t42DemoApply(){
          subtitle:'42 days. One transformation.', starts_on:t42DemoISO(startOff), ends_on:t42DemoISO(startOff+41),
          reg_opens_on:t42DemoISO(startOff-30), reg_closes_on:t42DemoISO(startOff-1), status:'registration',
          total_days:total, price_rm:99, results_on:t42DemoISO(startOff+45), access_ends_on:t42DemoISO(startOff+41),
-         config:{tracks:['transform','perform'], gym_enabled:false, step_target:8000, water_target_ml:2000,
-                 scoring:{online_transform:{weight_pct:40,waist_pct:25,workout_pct:20,consistency_pct:10,rush_pct:5},
+         config:{tracks:['transform','perform'], gym_enabled:true, online_enabled:false, step_target:8000, water_target_ml:2000,
+                 scoring:{gym_transform:{bodyfat_pct:40,weight_waist_pct:25,attendance_pct:20,consistency_pct:10,rush_pct:5},
                           perform:{fitness_pct:50,rush_pct:25,workout_pct:15,consistency_pct:10}}}};
   if(day>0 && day<=total) c.status='running';
   if(st==='results'||st==='journey') c.status='complete';
@@ -105,11 +105,21 @@ function t42DemoApply(){
   T42.t42ClearDay();
   if(st==='discover') return;
 
-  T42.reg={id:'demo-reg', challenge_id:c.id, mode:'online_solo', track:'transform', gender:'male',
+  /* Gym Duo: November is physical, at HITFAT HQ, in pairs. Before paying
+     there is no duo yet; from the countdown on the viewer is paired with
+     Amir, who is still waiting on his InBody — the checklist has work in it. */
+  var paired = st!=='pay';
+  T42.reg={id:'demo-reg', challenge_id:c.id, mode:'gym_duo', track:'transform', gender:'male',
+           duo_id: paired ? 'demo-duo' : null,
            status: st==='pay' ? 'pending' : (c.status==='complete' ? 'completed' : (day>0?'active':'paid')),
            verify_code:'T42-48217'};
   T42.baseline={id:'demo-b', phase:'baseline', weight_kg:86.4, height_cm:174, waist_cm:98, age:31,
+                body_fat_pct: st==='upcoming' ? null : 27.8,
                 photo_front:'demo', fitness:{pushups:14, plank_sec:45, squats_60:28, run1k_sec:420}};
+  if(paired){
+    T42.duo={id:'demo-duo', code:'T42-K8F2'};
+    T42.duoCard=t42DemoDuoCard(st, Math.max(0,Math.min(day,total)));
+  }
   if(st==='pay'||st==='upcoming') return;
 
   var cur=Math.min(day,total), missed=[9];
@@ -125,15 +135,54 @@ function t42DemoApply(){
     T42.checkins.unshift(T42.today);
   }
   if(cur>=21) T42.mid={id:'demo-m', phase:'mid', weight_kg:83.9, waist_cm:94.5, taken_on:t42DemoISO(startOff+20)};
-  T42.score={registration_id:'demo-reg', eligible:true, category:'transform_male', total:cur>=40?84.2:74.6,
+  T42.duoScore={duo_id:'demo-duo', eligible:true, category:'duo_transform_male',
+                team_total:cur>=40?82.6:73.1, rank_category:cur>=40?2:3};
+  T42.score={registration_id:'demo-reg', eligible:true, category:'gym_transform_male', total:cur>=40?84.2:74.6,
              consistency_total:cur>=40?88:82, rank_category:cur>=40?3:4, rank_consistency:6,
              workout_pct:cur>=40?92:89, consistency_pct:cur>=40?93:88, is_final:c.status==='complete'};
   if(c.status==='complete'){
-    T42.final={id:'demo-f', phase:'final', weight_kg:81.9, waist_cm:90.5, verify_status:'verified',
+    T42.final={id:'demo-f', phase:'final', weight_kg:81.9, waist_cm:90.5, body_fat_pct:23.1, verify_status:'verified',
                fitness:{pushups:24, plank_sec:95, squats_60:39, run1k_sec:350}};
     T42.certs=[{id:'demo-cert', kind:'finisher', participant_name:t42DemoName(), edition:'November 2026',
                 final_score:84.2, issued_on:t42DemoISO(-14), serial:'T42-2611-8F3C21'}];
   }
+}
+
+/* The two partners as t42_duo_card() returns them: me first. Amir's
+   InBody is still to do before day 1; from day 1 both are ready. */
+function t42DemoDuoCard(st, day){
+  var before = st==='upcoming', ok = !before;
+  var wl = day>=40 ? -5.2 : day>=21 ? -2.9 : day>=18 ? -2.4 : 0;
+  return [
+    {is_me:true, display_name:t42DemoName().split(/\s+/)[0], baseline_ok:true, inbody_ok:ok, ready:ok,
+     workout_today: st==='final', gym_today: st==='halfway'||st==='final',
+     checked_in_today: st==='halfway', steps_today: st==='halfway' ? 8420 : st==='active' ? 3120 : null,
+     weight_change_pct: day ? wl : null, waist_change_pct: day ? wl*1.4 : null,
+     attended: Math.round(day*0.55), workout_pct: day ? 89 : null, total: day ? (day>=40?84.2:74.6) : null},
+    {is_me:false, display_name:'Amir', baseline_ok:true, inbody_ok:ok, ready:ok,
+     workout_today: day>0 && day%7!==0, gym_today: day>0 && st!=='active', checked_in_today: day>0,
+     steps_today: day>0 ? 9650 : null,
+     weight_change_pct: day ? wl-0.6 : null, waist_change_pct: day ? (wl-0.6)*1.3 : null,
+     attended: Math.round(day*0.62), workout_pct: day ? 93 : null, total: day ? (day>=40?81.0:71.6) : null}
+  ];
+}
+
+/* The duo board: teams by first names, ours third (second at the end). */
+function t42DemoDuoBoard(id){
+  var teams={
+    duo_transform_male:['Hafiz & Daniel','Arif & Kumar','__me__','Faizal & Jason','Irfan & Syafiq','Wei Jie & Zack','Hakim & Ryan'],
+    duo_transform_female:['Nurul & Siti','Aina & Mei Ling','Farah & Priya','Hani & Liyana','Joanne & Amira'],
+    duo_perform_male:['Haziq & Ravi','Zul & Adam','Kelvin & Firdaus','Amir B. & Shah'],
+    duo_perform_female:['Ain & Grace','Nadia & Sofea','Kavitha & Yasmin','Bella & Dina']
+  }[id]||[];
+  var ds=T42.duoScore||{}, mine=Number(ds.team_total)||73;
+  if(id==='duo_transform_male' && ds.rank_category===2){ teams.splice(teams.indexOf('__me__'),1); teams.splice(1,0,'__me__'); }
+  var at=teams.indexOf('__me__'), top = at>=0 ? mine+at*1.6 : 80;
+  return teams.map(function(t,i){
+    var me=t==='__me__';
+    return {place:i+1, team: me ? t42DemoName().split(/\s+/)[0]+' & Amir' : t,
+            score: me ? mine : Math.round((top-i*1.6-(i>at?0.3:0))*10)/10, is_mine:me};
+  });
 }
 
 /* A leaderboard with people on it: first names and an initial, the way the
@@ -170,7 +219,7 @@ function t42DemoJourney(){
   return [
     {id:'demo-reg', challenge_id:c.id, status:'completed', track:'transform', joined_at:t42DemoISO(-90),
      t42_challenges:Object.assign({},c,{status:'complete'}),
-     t42_scores:{total:84.2, consistency_total:88, consistency_pct:93, eligible:true, rank_category:3, category:'transform_male'},
+     t42_scores:{total:84.2, consistency_total:88, consistency_pct:93, eligible:true, rank_category:3, category:'gym_transform_male'},
      t42_certificates:[{id:'demo-cert',kind:'finisher'}],
      t42_measurements:[{phase:'baseline',weight_kg:86.4,waist_cm:98},{phase:'final',weight_kg:81.9,waist_cm:90.5}]}
   ];

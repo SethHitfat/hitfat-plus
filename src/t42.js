@@ -28,7 +28,9 @@
    27-t42-engine.sql — and what the member keeps is the trophy cabinet:
    result, score, certificate. Nothing here unlocks HITFAT+.
 
-   Gym Duo is built but switched off per edition (config.gym_enabled).
+   Which modes an edition runs is its own: config.gym_enabled turns Gym
+   Duo on, config.online_enabled:false turns Online Solo off. November 2026
+   is Gym Duo only — physical, at HITFAT HQ, in pairs.
    ═══════════════════════════════════════════════════════════════ */
 
 var T42_MODES = [
@@ -461,7 +463,16 @@ function t42Tracks(){
   return T42_TRACKS.filter(function(t){ return ids.indexOf(t.id)>=0; });
 }
 function t42GymOpen(){ return t42Cfg().gym_enabled===true; }
-function t42Steps(){ return t42GymOpen() ? 3 : 2; }
+function t42OnlineOpen(){ return t42Cfg().online_enabled!==false; }
+/* The modes this edition runs. Never none: an edition with both switched
+   off is a misconfiguration, and Online Solo is the safe reading of it. */
+function t42Modes(){
+  var m=T42_MODES.filter(function(x){ return x.id==='gym_duo' ? t42GymOpen() : t42OnlineOpen(); });
+  return m.length ? m : [T42_MODES[0]];
+}
+function t42OnlyMode(){ var m=t42Modes(); return m.length===1 ? m[0].id : null; }
+function t42GymOnly(){ return t42OnlyMode()==='gym_duo'; }
+function t42Steps(){ return t42Modes().length>1 ? 3 : 2; }
 
 var T42_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 /* "3 Nov" — and the year only when it is not this one. */
@@ -557,7 +568,7 @@ var T42_SEGS={
 function t42SegFor(v,stage){
   if(v==='measure'||v==='fitness'||v==='review') return 'progress';
   if(v==='cert'||v==='next') return stage==='finished'?'result':'dash';
-  if(v==='duo') return stage==='upcoming'?'joined':'dash';
+  if(v==='duo') return stage==='upcoming'?'duo':'dash';
   if(v==='dash' && stage==='closing') return 'final';
   if(v==='dash' && stage==='finished') return 'result';
   if(v==='dash' && stage==='upcoming') return 'joined';
@@ -567,6 +578,8 @@ function t42Segs(){
   var bar=$('t42-segs'); if(!bar) return;
   var stage=T42.state==='ready' ? T42.stage() : 'none';
   var list=T42_SEGS[stage];
+  if(list && stage==='upcoming' && T42.isGym())
+    list=[list[0],['duo','Duo','t42GoDuo'],list[1]];
   /* Past the baseline lock, a member without one still gets the tabs —
      they can train and check in, they just are not ranked. */
   var on = !!list && (stage!=='active' || T42.hasBaseline() || T42.dayNo()>T42.lockDay())
@@ -742,15 +755,23 @@ function t42RenderLanding(){
   }
 
   /* ── what it is, in four lines a beginner reads in five seconds ── */
+  var gymOnly=t42GymOnly();
   h+='<div class="sechead">How it works</div><div class="t42-list">'+
      t42Info('calendar','One start line','Everyone starts '+t42Day(t42Date(c.starts_on))+
              ' and finishes together, '+((c.total_days)||42)+' days later.')+
-     t42Info('workout','A plan for every day','A workout, a step goal, water and one food habit — '+
-             'about five things a day.')+
+     (gymOnly
+       ? t42Info('gym','Trained at HITFAT HQ','Coach-led sessions in Kota Bharu. Check in at the counter '+
+                 'by QR — every day you attend counts.')+
+         t42Info('people','In pairs','You compete as a duo: two partners, same gender, same track, one team score.')+
+         t42Info('lab','InBody, start and finish','Your body composition is measured on the gym\'s InBody '+
+                 'and signed off by a coach.')
+       : t42Info('workout','A plan for every day','A workout, a step goal, water and one food habit — '+
+                 'about five things a day.'))+
      t42Info('chart','Scored on more than the scale','Consistency, progress, missions and fitness. '+
              'Never kilograms alone.')+
-     t42Info('trophy','Leaderboard and certificate','Ranked separately for men and women. '+
-             'Every finisher gets a certificate.')+
+     t42Info('trophy','Leaderboard and certificate', gymOnly
+             ? 'Duos ranked by track, men and women separately. Every finisher gets a certificate.'
+             : 'Ranked separately for men and women. Every finisher gets a certificate.')+
      '</div>';
 
   h+=t42WeeksBlock('Six weeks');
@@ -765,7 +786,7 @@ function t42RenderLanding(){
   h+='</div>';
 
   /* The two experiences, but only when the edition runs both. */
-  if(t42GymOpen()){
+  if(t42Modes().length>1){
     h+='<div class="sechead">Two ways to do it</div><div class="t42-modes">';
     T42_MODES.forEach(function(m){
       h+='<div class="t42-mini"><div class="t42-mini-n">'+t42Esc(m.name)+'</div>'+
@@ -839,8 +860,10 @@ function t42Begin(){
   if(!T42.challenge){ toast('No T42 edition is open'); return; }
   if(!T42.regOpen()){ toast('Registration for this T42 is closed'); return; }
   t42DraftLoad();
-  if(!t42GymOpen()) t42Draft.mode='online_solo';
-  t42Go(t42GymOpen() && !t42Draft.mode ? 'mode' : 'track');
+  var only=t42OnlyMode();
+  if(only) t42Draft.mode=only;
+  else if(!t42Modes().some(function(m){ return m.id===t42Draft.mode; })) t42Draft.mode=null;
+  t42Go(t42Draft.mode ? 'track' : 'mode');
 }
 function t42Continue(){ t42Resume(); t42Paint(); t42Segs(); $('screen').scrollTop=0; }
 
@@ -860,7 +883,7 @@ function t42RenderMode(){
         '<div class="hgroup"><div class="k">Step 1 of 3</div><h2>Choose your mode</h2>'+
         '<p>Same challenge. Different experience.</p></div>';
 
-  T42_MODES.forEach(function(m){
+  t42Modes().forEach(function(m){
     var on=t42Draft.mode===m.id;
     h+='<div class="t42-card'+(on?' on':'')+'" onclick="t42PickMode(\''+m.id+'\')">'+
        '<div class="t42-card-h"><div class="t42-card-n">'+t42Esc(m.name)+'</div>'+
@@ -1250,7 +1273,7 @@ async function t42SaveBaseline(){
     if(!uid){ toast('Sign in to join T42'); return; }
 
     if(!T42.reg){
-      var mode=t42Draft.mode||'online_solo';
+      var mode=t42Draft.mode||t42OnlyMode()||'online_solo';
       var track=t42Draft.track||'transform';
       var ins=await sb.from('t42_registrations').insert({
         challenge_id: T42.challenge.id,
@@ -1399,6 +1422,18 @@ function t42PrepItems(){
     {icon:'doc',     label:'Rules & scoring', value:t42RulesRead()?'Read':'Two minutes to read',
                      done:t42RulesRead(), go:'t42GoRules()'}
   ];
+  /* Gym Duo: the partner and, on TRANSFORM, the InBody — both needed to
+     be ranked, so both are on the list before day 1. */
+  if(r.mode==='gym_duo'){
+    var p=t42DuoPartner(), me=t42DuoMe();
+    items.splice(1,0,{icon:'people', label:'Your duo partner',
+      value: p ? 'Paired with '+p.display_name : r.duo_id ? 'Waiting for your partner to join' : 'Required — create or join a duo',
+      done:!!p, go:'t42GoDuo()'});
+    if(r.track==='transform')
+      items.push({icon:'lab', label:'InBody at HQ',
+        value: me&&me.inbody_ok ? 'Done — signed off by a coach' : 'Book it with a coach at HITFAT HQ',
+        done:!!(me&&me.inbody_ok)});
+  }
   var url=t42Cfg().community_url;
   if(url) items.push({icon:'people', label:'Join the community', value:'The T42 group',
                       done:false, go:'t42Community()'});
@@ -1621,7 +1656,10 @@ function t42RenderRules(){
      t42Info('lock','Content closes', t42Day(T42.lastDay(),true)+'. Your result stays.')+
      '</div>';
 
+  var gym=(T42.reg ? T42.reg.mode==='gym_duo' : t42GymOnly());
   h+='<div class="sechead">Every day</div><div class="t42-list">'+
+     (gym ? t42Info('gym','Train at HQ','Check in at the counter by QR. Each day you attend counts '+
+                    'toward your score.') : '')+
      t42Info('workout','Do the workout','Or rest, on a rest day. It plays in the HITFAT+ player.')+
      t42Info('steps','Walk your steps','The goal grows each week, from '+t42Num(T42.stepTarget())+'.')+
      t42Info('food','One food habit','Keep portions controlled and include a good protein source in your main meals.')+
@@ -1641,9 +1679,14 @@ function t42RenderRules(){
   }
 
   h+='<div class="sechead">The leaderboard</div><div class="t42-list">'+
-     t42Info('people','Ranked separately','Transform and Perform, men and women — plus a Consistency award.')+
+     (gym
+       ? t42Info('people','Ranked as duos','Transform and Perform, men and women. The team score is the '+
+                 'average of both partners\' improvement.')
+       : t42Info('people','Ranked separately','Transform and Perform, men and women — plus a Consistency award.'))+
      t42Info('eyeoff','Private by design','Your name and points only. Never your weight, waist or photos.')+
-     t42Info('lock','Verified finishers','Top finishers show a scale photo with their code before results are announced.')+
+     (gym
+       ? t42Info('lock','Verified at HQ','Your InBody and final assessment are taken and signed off by a coach.')
+       : t42Info('lock','Verified finishers','Top finishers show a scale photo with their code before results are announced.'))+
      '</div>';
 
   h+='<div class="sechead">If you miss a day</div>'+
@@ -3068,7 +3111,8 @@ function t42RenderRank(){
 
   /* Gym duo only where there is a gym edition, or for someone in one. */
   var h='';
-  if(t42GymOpen() || T42.isGym()){
+  if(t42GymOnly() || (T42.reg && T42.isGym() && !t42OnlineOpen())) t42BoardMode='duo';
+  else if(t42GymOpen() || T42.isGym()){
     h+='<div class="segs" id="t42-ranktabs">'+
       '<button class="seg'+(t42BoardMode==='online'?' on':'')+'" onclick="t42RankMode(\'online\')">Online solo</button>'+
       '<button class="seg'+(t42BoardMode==='duo'?' on':'')+'" onclick="t42RankMode(\'duo\')">Gym duo</button></div>';
@@ -3785,6 +3829,7 @@ function t42DuoReadiness(){
 /* Club check-in is where the QR lives. T42 sends the member there rather
    than drawing a second QR a coach would have to know about. */
 function t42GymCheckin(){
+  if(T42_DEMO){ toast('At HQ, the coach scans your QR at the counter'); return; }
   if(typeof openClub!=='function'){ toast('Gym check-in is not available'); return; }
   openClub();
   if(typeof clubGoCheckin==='function') clubGoCheckin();
@@ -3817,9 +3862,11 @@ function t42RenderDuo(){
        '<button class="bigbtn sec" onclick="t42DuoJoin()">Join Duo</button></div>';
     h+='<div class="t42-note">A duo is two partners of the same gender on the same track, '+
        'each with their own HITFAT+ account. Pairs can change until day '+T42.lockDay()+'.</div>';
-    /* Pairing can wait. Nothing else in T42 depends on it — the duo only
-       decides who you are ranked with — so it must never be a wall. */
-    h+='<button class="bigbtn sec" onclick="t42DuoDone()">Skip for now</button>';
+    /* Pairing can wait a few days — nothing else in T42 depends on it, so
+       it is never a wall — but T42 is scored as a duo, and someone without
+       one by day N is not ranked. Said plainly. */
+    h+='<div class="t42-q">You need a duo to be ranked. Pair up before day '+T42.lockDay()+'.</div>'+
+       '<button class="bigbtn sec" onclick="t42DuoDone()">Do this later</button>';
     el.innerHTML=h; return;
   }
 
@@ -3871,6 +3918,7 @@ function t42DuoDone(){ t42Resume(); t42Paint(); t42Segs(); $('screen').scrollTop
 var t42DuoBusy=false;
 
 async function t42DuoCreate(){
+  if(T42_DEMO){ t42DemoNote(); return; }
   if(t42DuoBusy) return;
   if(!sb || !SUPA_READY || !T42.reg){ toast('Sign in first'); return; }
   t42DuoBusy=true;
@@ -3886,6 +3934,7 @@ async function t42DuoCreate(){
 }
 
 async function t42DuoJoin(){
+  if(T42_DEMO){ t42DemoNote(); return; }
   if(t42DuoBusy) return;
   var inp=$('t42-duocode');
   var code=String((inp&&inp.value)||'').trim().toUpperCase();
@@ -3906,6 +3955,7 @@ async function t42DuoJoin(){
 }
 
 async function t42DuoLeave(){
+  if(T42_DEMO){ t42DemoNote(); return; }
   if(t42DuoBusy || !T42.reg || !T42.reg.duo_id) return;
   if(!window.confirm('Leave this duo? Your partner stays in it and can pair with someone else.')) return;
   t42DuoBusy=true;
@@ -4060,8 +4110,9 @@ function t42DuoBoard(){
          : '<div class="t42-me-n">'+(T42.reg.duo_id?'Not ranked yet':'Not in a duo')+'</div>')+'</div>';
   }
 
-  var st=t42BoardState[id], rows=t42BoardRows[id]||[];
-  if(!st){ t42LoadDuoBoard(id); st='loading'; }
+  var st=t42BoardState[id];
+  if(!st){ t42LoadDuoBoard(id); st=t42BoardState[id]||'loading'; }
+  var rows=t42BoardRows[id]||[];
   if(st==='loading'){
     h+='<div class="acard"><div class="sub">Loading the duo leaderboard…</div></div>';
   } else if(st==='error'){
@@ -4087,6 +4138,7 @@ function t42DuoBoardPick(id){ t42DuoBoardId=id; t42RenderRank(); }
 function t42DuoBoardReload(){ delete t42BoardState[t42DuoBoardId]; t42RenderRank(); }
 
 async function t42LoadDuoBoard(id){
+  if(T42_DEMO){ t42BoardRows[id]=t42DemoDuoBoard(id); t42BoardState[id]='ready'; return; }
   t42BoardState[id]='loading';
   if(!sb || !SUPA_READY || !T42.challenge){ t42BoardState[id]='error'; return; }
   try{

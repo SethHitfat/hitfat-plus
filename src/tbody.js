@@ -2608,6 +2608,24 @@ t42TrackNext();
 ok("a track the edition does not run cannot be taken", t42View==='track');
 _t42reset();
 
+/* ── physical only: Gym Duo, no Online Solo (November 2026) ── */
+T42.challenge.config={gym_enabled:true, online_enabled:false};
+ok("a gym-only edition offers one mode",  t42Modes().length===1 && t42OnlyMode()==='gym_duo' && t42GymOnly());
+ok("...so there are two steps, not three", t42Steps()===2);
+t42Draft.mode='online_solo'; t42Begin();
+ok("joining skips the mode step into Gym Duo", t42View==='track' && t42Draft.mode==='gym_duo');
+t42View='landing'; t42Paint();
+var _gl=document.getElementById('t42-body').innerHTML;
+ok("the landing says where and with whom", _gl.indexOf('Trained at HITFAT HQ')>0 && _gl.indexOf('In pairs')>0);
+ok("...and offers no second way to do it", _gl.indexOf('Two ways to do it')<0 && _gl.indexOf('ONLINE')<0);
+T42.challenge.config={gym_enabled:true};
+ok("both modes when the edition runs both", t42Modes().length===2 && t42OnlyMode()===null && t42Steps()===3);
+t42Draft.mode=null; t42Begin();
+ok("...and then the mode is asked",       t42View==='mode');
+T42.challenge.config={gym_enabled:false, online_enabled:false};
+ok("an edition with no mode falls back to online", t42OnlyMode()==='online_solo');
+_t42reset();
+
 /* ── securing the spot ── */
 T42.reg={id:'r1',challenge_id:'ch1',mode:'online_solo',track:'transform',gender:'male',status:'pending',verify_code:'T42-77001'};
 T42.baseline={id:'m1',phase:'baseline',weight_kg:82,height_cm:174,waist_cm:95};
@@ -2881,7 +2899,15 @@ var _du=document.getElementById('t42-body').innerHTML;
 ok("...offering to create a duo",     _du.indexOf('t42DuoCreate()')>0);
 ok("...or to join with a code",       _du.indexOf('t42-duocode')>0 && _du.indexOf('t42DuoJoin()')>0);
 ok("...and saying who can pair",      _du.indexOf('same gender on the same track')>0);
-ok("...and letting pairing wait",      _du.indexOf('Skip for now')>0);
+ok("...and letting pairing wait",      _du.indexOf('Do this later')>0);
+ok("...while saying a duo is needed to be ranked", _du.indexOf('You need a duo to be ranked')>0);
+/* Before day 1 the partner is on the checklist and the Duo has a tab. */
+T42.reg.status='paid';
+var _pi=t42PrepItems().map(function(i){ return i.label; });
+ok("the checklist asks for a partner",    _pi.indexOf('Your duo partner')>=0);
+ok("...and the InBody on TRANSFORM",      _pi.indexOf('InBody at HQ')>=0);
+ok("a gym member has a Duo tab before day 1", t42SegFor('duo','upcoming')==='duo');
+T42.reg.status='pending';
 T42.challenge=_t42edition(-10); t42Paint();
 ok("after the window there is nothing to create",
    document.getElementById('t42-body').innerHTML.indexOf('Pairing has closed')>0 &&
