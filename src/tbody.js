@@ -392,6 +392,23 @@ ok("no two rows are identical", (function(){
    return dupe===0; })());
 ok("plans browse is deep",  _pl.length>=30, _pl.length);
 
+print("\n── RECOVERY · COMING SOON ──");
+ok("Recovery is off until filmed",       RECOVERY_LIVE===false);
+ok("...so no recovery program is listed", PROGRAMS.filter(isRehabProgram).length===0);
+noThrow("the Recovery tab renders",      function(){ setTrSeg('recovery'); });
+var _rs=document.getElementById('tr-body').innerHTML;
+ok("...as Coming soon",                  _rs.indexOf('Coming soon')>0 && _rs.indexOf('soon-tag')>0);
+ok("...naming what is on the way",       REHAB_PLANS.every(function(p){ return _rs.indexOf(p.name)>0; }));
+ok("...and nothing in it opens",         _rs.indexOf('openProgram(')<0 && _rs.indexOf('openJoint(')<0);
+openActivity('Recovery');
+ok("the Recovery tile leads to the same", trSeg==='recovery');
+openFinder();
+var _fqh=document.getElementById('fqm').innerHTML;
+ok("the Finder does not offer Move better", _fqh.indexOf('Lose fat')>0 && _fqh.indexOf('Move better')<0);
+try{ closeFinder(); }catch(e){}
+/* Everything below tests Recovery as it will be once the footage is in. */
+RECOVERY_LIVE=true; PROGRAMS=REHAB_PLANS.concat(PROGRAMS);
+
 print("\n── RECOVERY IS NOW AN ACTIVITY ──");
 ok("Recovery is an activity", ACTIVITIES.some(function(a){return a.k==='Recovery';}));
 noThrow("recovery opens",     function(){ openActivity('Recovery'); });

@@ -3,7 +3,7 @@
 var all = readFile("stubp.js") + "\n" + readFile("plus_body.js") + "\n" + `
 var out = {};
 out[BUNDLE_SKU] = String(BUNDLE_PRICE);
-PROGRAMS.filter(isPaidProgram).forEach(function(p){ out['prog_'+p.id] = String(programPrice(p)); });
+PROGRAMS.concat(RECOVERY_LIVE?[]:REHAB_PLANS).filter(isPaidProgram).forEach(function(p){ out['prog_'+p.id] = String(programPrice(p)); });
 SCAN_PRODUCTS.forEach(function(s){ out[s.sku] = String(s.price); });
 SUB_PLANS.forEach(function(s){ out[s.sku] = String(s.price); });
 print(JSON.stringify(out));

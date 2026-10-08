@@ -1055,3 +1055,12 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 /* a quiet second way in, under the white button on a stage */
 .t42-stage-alt{display:block;width:100%;margin-top:10px;background:none;border:none;color:rgba(255,255,255,.82);
   font:600 14.5px var(--font);padding:8px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+
+/* ── Recovery: coming soon ── */
+.rc-soon{position:relative;}
+.soon-pill{position:absolute;top:14px;right:14px;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;padding:5px 10px;border-radius:99px;background:rgba(56,189,248,.18);color:#7dd3fc;}
+.frow.soon{cursor:default;}
+.frow.soon .th{filter:saturate(.55);opacity:.8;}
+.soon-tag{margin-left:auto;align-self:center;font-size:11px;font-weight:700;padding:5px 10px;border-radius:99px;
+  background:var(--lift-2,rgba(127,127,127,.12));color:var(--dim,#8a8a8a);white-space:nowrap;}

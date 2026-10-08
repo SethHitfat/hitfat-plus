@@ -47,7 +47,8 @@ function renderFinder(){
   if(s===0){
     b='<div class="cph">What are you here for?</div>'+
       '<div class="cpsub">One answer. You can change it later.</div>'+
-      FQ_GOALS.map(g=>'<button class="cprow'+(fq.goal===g.k?' on':'')+'" onclick="fqSet(\'goal\',\''+g.k+'\')">'+
+      /* "Move better" leads to Recovery, which is Coming soon. */
+      FQ_GOALS.filter(g=>RECOVERY_LIVE||g.k!=='move').map(g=>'<button class="cprow'+(fq.goal===g.k?' on':'')+'" onclick="fqSet(\'goal\',\''+g.k+'\')">'+
         '<span class="t">'+g.n+'</span><span class="s">'+g.d+'</span></button>').join('');
   } else if(s===1){
     b='<div class="cph">Where does it bother you?</div>'+

@@ -90,4 +90,10 @@ function rehabFor(joint){
 }
 function rehabFootageReady(){ return REHAB_DB.some(e => !!e.v); }
 
+/* Recovery is shown as Coming soon until its clips are filmed (5 of 51 so
+   far). While false the six programs are not in PROGRAMS at all — so they
+   are in no list, search, store shelf or recommendation — and the Recovery
+   tab shows what is coming. Flip to true when the footage is in. */
+var RECOVERY_LIVE=false;
+
 

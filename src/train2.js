@@ -269,6 +269,7 @@ function trLibrary(){
 /* ── filtered program list (activity tiles + library rows land here) ── */
 let curActivity='';
 function openActivity(k){
+  if(k==='Recovery' && !RECOVERY_LIVE){ switchTab('train'); setTrSeg('recovery'); return; }
   curActivity=k;
   let list;
   if(k==='Started')       list=PROGRAMS.filter(p=>progDone(p.id)>0);
@@ -391,7 +392,24 @@ function barCard(p,showProgress){
    Prehab: building range and joint resilience before something complains.
    Not treatment, and the notice below says so once rather than hedging in
    every description. */
+/* Coming soon: what is on the way, nothing that opens. */
+function trRecoverySoon(){
+  let h='<div class="ecta rc-soon" style="background:'+egrad('#0f1f22','#07090a','#38bdf8')+';">'+
+     '<span class="soon-pill">Coming soon</span>'+
+     '<div class="ic">'+glyph('leaf')+'</div><div class="t">Recovery &amp; prehab</div>'+
+     '<div class="s">Joint-by-joint programs for knees, shoulders, hips and the back a desk gives you. '+
+     'We are filming every movement now — they open here when the videos are ready.</div></div>';
+  h+=fsec('What is coming',REHAB_PLANS.length+' programs');
+  h+=REHAB_PLANS.map(p=>
+    '<div class="frow soon"><div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name)+'"></div>'+
+    '<div class="tx"><div class="t">'+p.name+'</div>'+
+    '<div class="m">'+wks(p.weeks.length)+' · '+progDays(p)+' days</div></div>'+
+    '<span class="soon-tag">Soon</span></div>').join('');
+  $('tr-body').innerHTML=h;
+}
+
 function trRecovery(){
+  if(!RECOVERY_LIVE) return trRecoverySoon();
   const rh=PROGRAMS.filter(isRehabProgram);
   let h='';
   h+='<div class="ecta" style="background:'+egrad('#0f1f22','#07090a','#38bdf8')+';">'+
@@ -421,6 +439,7 @@ function trRecovery(){
 
 /* One joint, every movement for it — the filmed ones included. */
 function openJoint(k){
+  if(!RECOVERY_LIVE){ toast('Recovery is coming soon'); return; }
   const j=REHAB_JOINTS.filter(x=>x.k===k)[0]; if(!j) return;
   const names=rehabFor(k);
   hidePanels(); $('library').style.display='block';

@@ -86,7 +86,8 @@ const REHAB_PLANS=[
           {rest:true},{rest:true}]})
 ];
 
-/* Recovery leads the list — it is the section people arrive looking for. */
-PROGRAMS = REHAB_PLANS.concat(PROGRAMS);
+/* Recovery leads the list — it is the section people arrive looking for.
+   Only once it is live: until then it is Coming soon (RECOVERY_LIVE). */
+if(RECOVERY_LIVE) PROGRAMS = REHAB_PLANS.concat(PROGRAMS);
 
 
