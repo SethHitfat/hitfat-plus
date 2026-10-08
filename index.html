@@ -10854,12 +10854,22 @@ function t42PlanExercises(p){
   return out;
 }
 
+/* The player runs the list as timed circuits, so the plan's sets become
+   rounds: the day's most common set count (a 4-set day is four rounds).
+   Playing it once made a 45-minute day a six-minute one. */
+function t42Rounds(exs){
+  var n={}, best=1, top=0;
+  (exs||[]).forEach(function(e){ var k=Number(e.sets)||1; n[k]=(n[k]||0)+1;
+    if(n[k]>top || (n[k]===top && k>best)){ top=n[k]; best=k; } });
+  return Math.max(1, Math.min(best, 8));
+}
+
 function t42PlayToday(){
   var p=T42.planDay; if(!p){ toast('Nothing scheduled today'); return; }
   var exs=t42PlanExercises(p);
   if(!exs.length){ toast('This day has no exercises yet'); return; }
   startWorkout(exs,{
-    rounds: 1,
+    rounds: t42Rounds(exs),
     /* The key HITFAT+ logs the session under. Namespaced by day so a T42
        session appears in the member's own diary alongside everything else,
        and cannot collide with a program's key. */

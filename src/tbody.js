@@ -2855,6 +2855,8 @@ ok("demo opens everything",               contentOpen());
 sb=_realSb; T42_DEMO=false; t42DemoStage='active';
 _t42reset();
 
+ok("a plan's sets become the player's rounds", t42Rounds([{sets:4},{sets:4},{sets:3}])===4 &&
+   t42Rounds([{sets:5},{sets:5},{sets:4},{sets:4}])===5 && t42Rounds([])===1);
 print("\n── T42 · GYM DUO ──");
 function _t42gym(){
   _t42running();
