@@ -2247,7 +2247,7 @@ function t42RenderTrain(){
     exs.forEach(function(e,i){
       h+='<div class="t42-ex"><span class="t42-ex-n">'+(i+1)+'</span>'+
          '<div class="t42-ex-b">'+t42Esc(e.n)+'</div>'+
-         '<div class="t42-ex-s">'+(e.sets||3)+' × '+(e.reps||12)+'</div></div>';
+         '<div class="t42-ex-s">'+t42ExDose(e)+'</div></div>';
     });
   }
 
@@ -2268,11 +2268,20 @@ function t42PlanExercises(p){
     var found=null;
     for(var i=0;i<DB.length;i++) if(DB[i].n===name){ found=DB[i]; break; }
     if(!found){ if(typeof console!=='undefined') console.warn('[T42] unknown exercise:',name); return; }
-    out.push({n:found.n, v:found.v, m:found.m, t:found.t, eq:found.eq,
-              dur:found.dur, sets:(item&&item.sets)||found.sets,
-              reps:(item&&item.reps)||found.reps});
+    /* The plan's label is what the member reads ("Jump Lunge"); the
+       library's name only finds the clip ("Lunges Jump"). A timed exercise
+       carries sec, and the player runs it for exactly that long. */
+    var sec=item&&item.sec ? Number(item.sec) : null;
+    out.push({n:(item&&item.label)||found.n, v:found.v, m:found.m, t:found.t, eq:found.eq,
+              dur:sec||found.dur, sec:sec, sets:(item&&item.sets)||found.sets,
+              reps:sec ? null : ((item&&item.reps)||found.reps)});
   });
   return out;
+}
+/* "3 × 12" or "3 × 40s" — a hold is never shown as a rep count. */
+function t42ExDose(e){
+  var sets=e.sets||3;
+  return sets+' × '+(e.sec ? e.sec+'s' : (e.reps||12));
 }
 
 /* The player runs the list as timed circuits, so the plan's sets become

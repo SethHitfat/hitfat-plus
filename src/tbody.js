@@ -2835,7 +2835,15 @@ T42_DEMO_STAGES.forEach(function(st){
 });
 t42DemoStage='active'; T42.load(); t42Resume();
 ok("demo day 18 is a running challenge",  T42.stage()==='active' && T42.dayNo()===18);
-ok("...with history behind it",           T42.checkins.length>=14 && T42.completions.length>=10);
+ok("...with history behind it",           T42.checkins.length>=14 && T42.completions.length>=8);
+/* The demo plays the real TRANSFORM plan: clean names, timed holds. */
+ok("the demo's day is the real plan",     T42.planDay && T42.planDay.title==='Upper Body & Core');
+var _px=t42PlanExercises(T42.planDay);
+ok("...every exercise found in the library", _px.length===T42.planDay.exercises.length);
+ok("...shown by its clean name",          _px.some(function(e){ return e.n==='Bent-Over Row (Bottles)'; }));
+var _ho=_px.filter(function(e){ return e.sec; })[0];
+ok("...a hold timed in seconds",          _ho && _ho.dur===_ho.sec && /s$/.test(t42ExDose(_ho)));
+ok("...a rep exercise shown in reps",     t42ExDose({sets:4,reps:12})==='4 × 12');
 ok("...and yesterday missed",             t42MissedYesterday());
 t42Paint();
 ok("...that the dashboard shows",         document.getElementById('t42-body').innerHTML.indexOf('Day 18')>0 &&
