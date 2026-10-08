@@ -403,7 +403,7 @@ ok("...and nothing in it opens",         _rs.indexOf('openProgram(')<0 && _rs.in
 openActivity('Recovery');
 ok("the Recovery tile leads to the same", trSeg==='recovery');
 openFinder();
-var _fqh=document.getElementById('fqm').innerHTML;
+var _fqh=document.getElementById('fq-body').innerHTML; closeFinder();
 ok("the Finder does not offer Move better", _fqh.indexOf('Lose fat')>0 && _fqh.indexOf('Move better')<0);
 try{ closeFinder(); }catch(e){}
 /* Everything below tests Recovery as it will be once the footage is in. */
