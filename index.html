@@ -3696,7 +3696,7 @@ var DB = [
 var PROGRAMS_MULTI = [
   // ═══ KETTLEBELL 7-DAY ═══
   {
-    id:'mkb', name:'7 Day Kettlebell', goal:'Strength', level:'Intermediate', dur:22, rounds:3,
+    id:'mkb', name:'7-Day Kettlebell', goal:'Strength', level:'Intermediate', dur:22, rounds:3,
     c1:'#2a2118', c2:'#0d0a06', ac:'#FF8A1E', icon:'🔔',
     desc:'One week of kettlebell training to build full-body power and burn fat. One bell, big results.',
     ex:['Kettlebell Swing','Kettlebell Goblet Squat','Kettlebell Clean','Kettlebell Russian Twist'],
@@ -3714,7 +3714,7 @@ var PROGRAMS_MULTI = [
   },
   // ═══ DUMBBELL 2-WEEK ═══
   {
-    id:'mdb', name:'14 Day Dumbbell', goal:'Strength', level:'Intermediate', dur:25, rounds:3,
+    id:'mdb', name:'14-Day Dumbbell', goal:'Strength', level:'Intermediate', dur:25, rounds:3,
     c1:'#16273a', c2:'#080b0d', ac:'#2EA8FF', icon:'🏋️',
     desc:'Two weeks of structured dumbbell training. Build lean muscle with a push/pull/legs split.',
     ex:['Normal Squat','Chest Press','Deadlift','Bicep Curl'],
@@ -3741,7 +3741,7 @@ var PROGRAMS_MULTI = [
   },
   // ═══ CHAIR 5-DAY (low impact) ═══
   {
-    id:'mch', name:'5 Day Chair', goal:'Fat Loss', level:'Beginner', dur:16, rounds:2,
+    id:'mch', name:'5-Day Chair', goal:'Fat Loss', level:'Beginner', dur:16, rounds:2,
     c1:'#2a1830', c2:'#0d0610', ac:'#C16BFF', icon:'🪑',
     desc:'Five days of low-impact chair workouts. Perfect for beginners, seniors, or joint-friendly training.',
     ex:['Chair Squat','Tricep Dip','Sit To Stand','Chair Russian Twist'],
@@ -3759,7 +3759,7 @@ var PROGRAMS_MULTI = [
   },
 
   {
-    id:'m1', name:'21 Day Home', goal:'Fat Loss', level:'Beginner', dur:20,
+    id:'m1', name:'21-Day Home', goal:'Fat Loss', level:'Beginner', dur:20,
     c1:'#3a2a18', c2:'#0d0a06', ac:'#FF6B00', icon:'🏠',
     desc:'Three weeks to transform at home. No equipment needed. Follow day by day and build the habit that sticks.',
     ex:['Bodyweight Squat','Push Up','Walking Lunges','Plank','Jumping Jack','Crunch'],
@@ -3794,7 +3794,7 @@ var PROGRAMS_MULTI = [
     ]
   },
   {
-    id:'m2', name:'8 Week Beginner Training', goal:'Strength', level:'Beginner', dur:25,
+    id:'m2', name:'8-Week Beginner', goal:'Strength', level:'Beginner', dur:25,
     c1:'#16273a', c2:'#080b0d', ac:'#00B8FF', icon:'🎓',
     desc:'A complete 8-week foundation program. Build strength, learn the movements, and progress safely week by week.',
     ex:['Bodyweight Squat','Push Up','Walking Lunges','Plank'],
@@ -3874,7 +3874,7 @@ var PROGRAMS_MULTI = [
     ]
   },
   {
-    id:'m3', name:'22 Minutes Hardcore', goal:'Fat Loss', level:'Advanced', dur:22,
+    id:'m3', name:'22-Minute Hardcore', goal:'Fat Loss', level:'Advanced', dur:22, rounds:4,
     c1:'#3a1f1f', c2:'#0d0808', ac:'#FF3B30', icon:'🔥',
     desc:'22 minutes of intense training every single day for 4 weeks. No excuses, no rest weeks. Show up daily and transform.',
     ex:['Burpee','Squat Jump','Push Up','Mountain Climber'],
@@ -3896,7 +3896,7 @@ var PROGRAMS_MULTI = [
     })()
   },
   {
-    id:'m4', name:'Lazy Workout', goal:'Fat Loss', level:'Beginner', dur:8,
+    id:'m4', name:'Lazy Workout', goal:'Fat Loss', level:'Beginner', dur:8, rounds:2,
     c1:'#16302d', c2:'#080d0c', ac:'#00D9C0', icon:'😴',
     desc:'For the days you really can\'t be bothered. Just 8 minutes, mostly on the floor. Something is always better than nothing.',
     ex:['Single Leg Glutes Bridge','Dead Bug','Bird Dog','Crunch'],
@@ -4467,7 +4467,7 @@ function PLAN(s){
 
 const BW='Bodyweight';
 const NEW_PLANS=[
-  PLAN({id:'fl30', name:'30-Day Fat Loss', goal:'Fat Loss', level:'Beginner', dur:20, wk:5,
+  PLAN({id:'fl30', name:'5-Week Fat Loss', goal:'Fat Loss', level:'Beginner', dur:20, wk:5,
     c1:'#3a1f1f', c2:'#0d0808', ac:'#FF3B30', icon:'🔥',
     desc:'Five weeks of short, sweaty sessions you can do in a living room. No equipment, no excuses — just show up on the days marked.',
     days:[{n:'Full Body Burn',t:['cardio','squat','push'],eq:BW,c:6},
@@ -4555,7 +4555,7 @@ const NEW_PLANS=[
           {rest:true},
           {rest:true}]}),
 
-  PLAN({id:'am21', name:'Morning 10', goal:'Fat Loss', level:'Beginner', dur:10, wk:3,
+  PLAN({id:'am21', name:'Morning 10', goal:'Fat Loss', level:'Beginner', dur:10, wk:3, rounds:2,
     c1:'#2a2118', c2:'#0d0a06', ac:'#FF8A1E', icon:'☀️',
     desc:'Twenty-one mornings, ten minutes each. This one is not about the workout — it is about becoming a person who trains before the day starts.',
     days:[{n:'Wake Up',t:['cardio'],eq:BW,c:4},
@@ -4675,7 +4675,7 @@ const SIG_PLANS=[
           {n:'Core & Finisher',t:['core','full'],c:6},
           {rest:true}]}),
 
-  PLAN({id:'sig2', name:'HITFAT Strong', goal:'Strength', level:'Advanced', dur:40, wk:8,
+  PLAN({id:'sig2', name:'HITFAT Strong', goal:'Strength', level:'Advanced', dur:40, wk:8, rounds:4,
     c1:'#2a1016', c2:'#0b0b0d', ac:'#EF4444', icon:'✦', special:true,
     desc:'Eight weeks built around getting genuinely stronger. Heavier, slower, fewer reps — and a lot more demanding than it looks on paper.',
     days:[{n:'Squat Day',t:['squat'],c:6},
@@ -6884,6 +6884,26 @@ function progEq(p){
   if(/Bottle/i.test(n))         return 'Bottle';
   return null;
 }
+/* The minutes on a program's card are the minutes the player runs: rounds
+   × (each clip's interval + the rest between them), averaged over the
+   training days. Hand-typed numbers had drifted — "40 min a day" on a plan
+   that plays for 19. Recovery keeps its own (its clips are still being
+   filmed) and so does the plan a member builds, which they set themselves. */
+function progMinutes(p){
+  if(!p || p.rehab || p.id==='custom') return null;
+  var rest=(typeof REST_SECS!=='undefined')?REST_SECS:20, rounds=p.rounds||3, eq=progEq(p), tot=0, n=0;
+  var day=function(names){
+    if(!names || !names.length) return;
+    tot+=rounds*pickEx(names,eq).reduce(function(a,e){ return a+(e.dur||45)+rest; },0)/60; n++;
+  };
+  if(p.weeks) p.weeks.forEach(function(w){ (w.days||[]).forEach(function(d){ if(!d.rest) day(d.ex); }); });
+  else day(p.ex);
+  return n ? Math.max(1, Math.round(tot/n)) : null;
+}
+/* Programs a member trains from: multi-week, not Recovery (which has its
+   own tab, and whose clips are not all filmed yet). */
+function trainingPlans(){ return PROGRAMS.filter(function(p){ return p.weeks && !p.rehab; }); }
+
 function pickEx(names,eq){
   return names.map(function(n){
     var e = eq && DB.find(function(x){return x.n===n && x.eq===eq;});
@@ -6993,6 +7013,8 @@ function hexA(hex,a){ hex=String(hex||'#EF4444').replace('#','');
 function progDays(p){ let n=0; (p.weeks||[]).forEach(w=>w.days.forEach(()=>n++)); return n; }
 function progDone(id){ return HF.data.progress[id]||0; }
 
+/* Every card from here on shows the real length. */
+PROGRAMS.forEach(function(p){ var m=progMinutes(p); if(m) p.dur=m; });
 
 /* ═══════════════════════════════════════════════════════════════
    Icons
@@ -13184,7 +13206,7 @@ function renderHome(){
       '<button class="join" onclick="event.stopPropagation();openDay(\''+nx.p.id+'\','+nx.idx+')">Start</button>'+
       '</div></div>';
   } else {
-    const first=PROGRAMS.filter(p=>p.weeks)[0];
+    const first=trainingPlans()[0];
     $('home-today').innerHTML='<div class="sechead" style="margin-top:0;">Today\'s Training</div>'+
       '<div class="plan wide" style="background-image:url(\''+IMG.home+'\')" onclick="switchTab(\'train\')">'+
       '<div class="ov"></div><div class="pi"><div class="tx">'+
@@ -14899,7 +14921,7 @@ function trForYou(){
    the same workout three times — the exact fault found in Hybrid's Explore. */
 function trExplore(){
   const singles=PROGRAMS.filter(p=>!p.weeks);
-  const multi=PROGRAMS.filter(p=>p.weeks);
+  const multi=trainingPlans();
   const used=new Set();
   const take=(pool,n)=>{ const out=[];
     for(const p of pool){ if(out.length>=n) break; if(used.has(p.id)) continue; used.add(p.id); out.push(p); }
@@ -14916,7 +14938,7 @@ function trExplore(){
   h+=fsec('Activity Types');
   h+='<div class="hscroll">'+ACTIVITIES.map(factCard).join('')+'</div>';
 
-  h+=fsec('Top Programs','Most popular picks right now',true);
+  h+=fsec('Top Programs','HITFAT signature programs first',true);
   h+='<div class="hscroll">'+take(multi,5).map(fbigCard).join('')+'</div>';
 
   h+=fsec('Browse Programs','',true);
@@ -14967,7 +14989,7 @@ function usesEquipment(p){
 }
 function trPlans(){
   _rowSeen={}; _rowSigs=new Set();
-  const multi=PROGRAMS.filter(p=>p.weeks);
+  const multi=trainingPlans();
   const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
   const goal=(HF.data.prefs&&HF.data.prefs.goal)||'';
   const goalKey=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/move|mobil/i.test(goal)?'Core':'';
@@ -14996,7 +15018,7 @@ function trPlans(){
   const mine=multi.filter(p=>p.id==='custom');
   if(mine.length && mine[0].id!==hero.id) h+=nrow('Made by you',mine);
   if(going.length) h+=nrow('Continue your plan',going);
-  h+=nrow('Top 10 in Malaysia today',multi.slice(0,10),true);
+  h+=nrow('HITFAT picks',multi.slice(0,10),true);
   // the goal row and its matching category row are the same list — show one
   if(goalKey) h+=nrow('Because your goal is '+goal.toLowerCase(), by(goalKey));
   ['Fat Loss','Strength','Core'].forEach(k=>{

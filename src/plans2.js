@@ -65,7 +65,7 @@ function PLAN(s){
 
 const BW='Bodyweight';
 const NEW_PLANS=[
-  PLAN({id:'fl30', name:'30-Day Fat Loss', goal:'Fat Loss', level:'Beginner', dur:20, wk:5,
+  PLAN({id:'fl30', name:'5-Week Fat Loss', goal:'Fat Loss', level:'Beginner', dur:20, wk:5,
     c1:'#3a1f1f', c2:'#0d0808', ac:'#FF3B30', icon:'🔥',
     desc:'Five weeks of short, sweaty sessions you can do in a living room. No equipment, no excuses — just show up on the days marked.',
     days:[{n:'Full Body Burn',t:['cardio','squat','push'],eq:BW,c:6},
@@ -153,7 +153,7 @@ const NEW_PLANS=[
           {rest:true},
           {rest:true}]}),
 
-  PLAN({id:'am21', name:'Morning 10', goal:'Fat Loss', level:'Beginner', dur:10, wk:3,
+  PLAN({id:'am21', name:'Morning 10', goal:'Fat Loss', level:'Beginner', dur:10, wk:3, rounds:2,
     c1:'#2a2118', c2:'#0d0a06', ac:'#FF8A1E', icon:'☀️',
     desc:'Twenty-one mornings, ten minutes each. This one is not about the workout — it is about becoming a person who trains before the day starts.',
     days:[{n:'Wake Up',t:['cardio'],eq:BW,c:4},

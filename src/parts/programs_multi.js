@@ -1,7 +1,7 @@
 var PROGRAMS_MULTI = [
   // ═══ KETTLEBELL 7-DAY ═══
   {
-    id:'mkb', name:'7 Day Kettlebell', goal:'Strength', level:'Intermediate', dur:22, rounds:3,
+    id:'mkb', name:'7-Day Kettlebell', goal:'Strength', level:'Intermediate', dur:22, rounds:3,
     c1:'#2a2118', c2:'#0d0a06', ac:'#FF8A1E', icon:'🔔',
     desc:'One week of kettlebell training to build full-body power and burn fat. One bell, big results.',
     ex:['Kettlebell Swing','Kettlebell Goblet Squat','Kettlebell Clean','Kettlebell Russian Twist'],
@@ -19,7 +19,7 @@ var PROGRAMS_MULTI = [
   },
   // ═══ DUMBBELL 2-WEEK ═══
   {
-    id:'mdb', name:'14 Day Dumbbell', goal:'Strength', level:'Intermediate', dur:25, rounds:3,
+    id:'mdb', name:'14-Day Dumbbell', goal:'Strength', level:'Intermediate', dur:25, rounds:3,
     c1:'#16273a', c2:'#080b0d', ac:'#2EA8FF', icon:'🏋️',
     desc:'Two weeks of structured dumbbell training. Build lean muscle with a push/pull/legs split.',
     ex:['Normal Squat','Chest Press','Deadlift','Bicep Curl'],
@@ -46,7 +46,7 @@ var PROGRAMS_MULTI = [
   },
   // ═══ CHAIR 5-DAY (low impact) ═══
   {
-    id:'mch', name:'5 Day Chair', goal:'Fat Loss', level:'Beginner', dur:16, rounds:2,
+    id:'mch', name:'5-Day Chair', goal:'Fat Loss', level:'Beginner', dur:16, rounds:2,
     c1:'#2a1830', c2:'#0d0610', ac:'#C16BFF', icon:'🪑',
     desc:'Five days of low-impact chair workouts. Perfect for beginners, seniors, or joint-friendly training.',
     ex:['Chair Squat','Tricep Dip','Sit To Stand','Chair Russian Twist'],
@@ -64,7 +64,7 @@ var PROGRAMS_MULTI = [
   },
 
   {
-    id:'m1', name:'21 Day Home', goal:'Fat Loss', level:'Beginner', dur:20,
+    id:'m1', name:'21-Day Home', goal:'Fat Loss', level:'Beginner', dur:20,
     c1:'#3a2a18', c2:'#0d0a06', ac:'#FF6B00', icon:'🏠',
     desc:'Three weeks to transform at home. No equipment needed. Follow day by day and build the habit that sticks.',
     ex:['Bodyweight Squat','Push Up','Walking Lunges','Plank','Jumping Jack','Crunch'],
@@ -99,7 +99,7 @@ var PROGRAMS_MULTI = [
     ]
   },
   {
-    id:'m2', name:'8 Week Beginner Training', goal:'Strength', level:'Beginner', dur:25,
+    id:'m2', name:'8-Week Beginner', goal:'Strength', level:'Beginner', dur:25,
     c1:'#16273a', c2:'#080b0d', ac:'#00B8FF', icon:'🎓',
     desc:'A complete 8-week foundation program. Build strength, learn the movements, and progress safely week by week.',
     ex:['Bodyweight Squat','Push Up','Walking Lunges','Plank'],
@@ -179,7 +179,7 @@ var PROGRAMS_MULTI = [
     ]
   },
   {
-    id:'m3', name:'22 Minutes Hardcore', goal:'Fat Loss', level:'Advanced', dur:22,
+    id:'m3', name:'22-Minute Hardcore', goal:'Fat Loss', level:'Advanced', dur:22, rounds:4,
     c1:'#3a1f1f', c2:'#0d0808', ac:'#FF3B30', icon:'🔥',
     desc:'22 minutes of intense training every single day for 4 weeks. No excuses, no rest weeks. Show up daily and transform.',
     ex:['Burpee','Squat Jump','Push Up','Mountain Climber'],
@@ -201,7 +201,7 @@ var PROGRAMS_MULTI = [
     })()
   },
   {
-    id:'m4', name:'Lazy Workout', goal:'Fat Loss', level:'Beginner', dur:8,
+    id:'m4', name:'Lazy Workout', goal:'Fat Loss', level:'Beginner', dur:8, rounds:2,
     c1:'#16302d', c2:'#080d0c', ac:'#00D9C0', icon:'😴',
     desc:'For the days you really can\'t be bothered. Just 8 minutes, mostly on the floor. Something is always better than nothing.',
     ex:['Single Leg Glutes Bridge','Dead Bug','Bird Dog','Crunch'],

@@ -117,7 +117,7 @@ function trForYou(){
    the same workout three times — the exact fault found in Hybrid's Explore. */
 function trExplore(){
   const singles=PROGRAMS.filter(p=>!p.weeks);
-  const multi=PROGRAMS.filter(p=>p.weeks);
+  const multi=trainingPlans();
   const used=new Set();
   const take=(pool,n)=>{ const out=[];
     for(const p of pool){ if(out.length>=n) break; if(used.has(p.id)) continue; used.add(p.id); out.push(p); }
@@ -134,7 +134,7 @@ function trExplore(){
   h+=fsec('Activity Types');
   h+='<div class="hscroll">'+ACTIVITIES.map(factCard).join('')+'</div>';
 
-  h+=fsec('Top Programs','Most popular picks right now',true);
+  h+=fsec('Top Programs','HITFAT signature programs first',true);
   h+='<div class="hscroll">'+take(multi,5).map(fbigCard).join('')+'</div>';
 
   h+=fsec('Browse Programs','',true);
@@ -185,7 +185,7 @@ function usesEquipment(p){
 }
 function trPlans(){
   _rowSeen={}; _rowSigs=new Set();
-  const multi=PROGRAMS.filter(p=>p.weeks);
+  const multi=trainingPlans();
   const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
   const goal=(HF.data.prefs&&HF.data.prefs.goal)||'';
   const goalKey=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/move|mobil/i.test(goal)?'Core':'';
@@ -214,7 +214,7 @@ function trPlans(){
   const mine=multi.filter(p=>p.id==='custom');
   if(mine.length && mine[0].id!==hero.id) h+=nrow('Made by you',mine);
   if(going.length) h+=nrow('Continue your plan',going);
-  h+=nrow('Top 10 in Malaysia today',multi.slice(0,10),true);
+  h+=nrow('HITFAT picks',multi.slice(0,10),true);
   // the goal row and its matching category row are the same list — show one
   if(goalKey) h+=nrow('Because your goal is '+goal.toLowerCase(), by(goalKey));
   ['Fat Loss','Strength','Core'].forEach(k=>{

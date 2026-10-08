@@ -168,7 +168,7 @@ function renderHome(){
       '<button class="join" onclick="event.stopPropagation();openDay(\''+nx.p.id+'\','+nx.idx+')">Start</button>'+
       '</div></div>';
   } else {
-    const first=PROGRAMS.filter(p=>p.weeks)[0];
+    const first=trainingPlans()[0];
     $('home-today').innerHTML='<div class="sechead" style="margin-top:0;">Today\'s Training</div>'+
       '<div class="plan wide" style="background-image:url(\''+IMG.home+'\')" onclick="switchTab(\'train\')">'+
       '<div class="ov"></div><div class="pi"><div class="tx">'+

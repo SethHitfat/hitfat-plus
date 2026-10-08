@@ -91,7 +91,7 @@ const SIG_PLANS=[
           {n:'Core & Finisher',t:['core','full'],c:6},
           {rest:true}]}),
 
-  PLAN({id:'sig2', name:'HITFAT Strong', goal:'Strength', level:'Advanced', dur:40, wk:8,
+  PLAN({id:'sig2', name:'HITFAT Strong', goal:'Strength', level:'Advanced', dur:40, wk:8, rounds:4,
     c1:'#2a1016', c2:'#0b0b0d', ac:'#EF4444', icon:'✦', special:true,
     desc:'Eight weeks built around getting genuinely stronger. Heavier, slower, fewer reps — and a lot more demanding than it looks on paper.',
     days:[{n:'Squat Day',t:['squat'],c:6},

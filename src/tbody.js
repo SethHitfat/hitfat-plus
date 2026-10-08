@@ -324,13 +324,21 @@ noThrow("plans renders", function(){ setTrSeg('plans'); });
 var _ph=document.getElementById('tr-body').innerHTML;
 ok("billboard",        _ph.indexOf('nhero')>0);
 ok("poster cards",     _ph.indexOf('ncard')>0);
-ok("ranked Top 10",    _ph.indexOf('ranked')>0 && _ph.indexOf('Top 10')>0);
+ok("ranked picks row", _ph.indexOf('ranked')>0 && _ph.indexOf('HITFAT picks')>0);
+ok("no unverifiable 'Top 10 in Malaysia' claim", _ph.indexOf('Top 10 in Malaysia')<0);
+ok("Recovery stays in its own tab, not in Plans", _ph.indexOf('Knee Prehab')<0 && _ph.indexOf('Desk Reset')<0);
+ok("...and the billboard is a training plan", trainingPlans().every(function(p){ return !p.rehab; }));
+/* The minutes on a card are what the player runs. */
+ok("every plan's minutes match its content", trainingPlans().filter(function(p){ return p.id!=='custom'; })
+   .every(function(p){ return p.dur===progMinutes(p); }));
+ok("Morning 10 is about ten minutes", Math.abs(PROGRAMS.filter(function(p){ return p.id==='am21'; })[0].dur-10)<=1);
+ok("names are written one way", PROGRAMS.every(function(p){ return !/^\d+ (Day|Week|Minutes?) /.test(p.name); }));
 ok("goal-aware row",   _ph.indexOf('Because your goal')>0, 'goal row');
 ok("other category rows", _ph.indexOf('Build strength')>0 && _ph.indexOf('Core & abs')>0);
 ok("goal row replaces its twin, not duplicates it",
    _ph.indexOf('Because your goal')>0 && _ph.indexOf('Burn fat')<0);
 ok("length rows",      _ph.indexOf('The long game')>0 && _ph.indexOf('Four weeks or less')>0);
-HF.data.progress={}; HF.data.progress[_multi[0].id]=3;
+HF.data.progress={}; HF.data.progress[trainingPlans()[0].id]=3;
 noThrow("continue row renders", function(){ setTrSeg('plans'); });
 ok("started plan promoted", document.getElementById('tr-body').innerHTML.indexOf('Continue')>0);
 ok("progress bar on poster", document.getElementById('tr-body').innerHTML.indexOf('class="pb"')>0);

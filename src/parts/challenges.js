@@ -52,6 +52,26 @@ function progEq(p){
   if(/Bottle/i.test(n))         return 'Bottle';
   return null;
 }
+/* The minutes on a program's card are the minutes the player runs: rounds
+   × (each clip's interval + the rest between them), averaged over the
+   training days. Hand-typed numbers had drifted — "40 min a day" on a plan
+   that plays for 19. Recovery keeps its own (its clips are still being
+   filmed) and so does the plan a member builds, which they set themselves. */
+function progMinutes(p){
+  if(!p || p.rehab || p.id==='custom') return null;
+  var rest=(typeof REST_SECS!=='undefined')?REST_SECS:20, rounds=p.rounds||3, eq=progEq(p), tot=0, n=0;
+  var day=function(names){
+    if(!names || !names.length) return;
+    tot+=rounds*pickEx(names,eq).reduce(function(a,e){ return a+(e.dur||45)+rest; },0)/60; n++;
+  };
+  if(p.weeks) p.weeks.forEach(function(w){ (w.days||[]).forEach(function(d){ if(!d.rest) day(d.ex); }); });
+  else day(p.ex);
+  return n ? Math.max(1, Math.round(tot/n)) : null;
+}
+/* Programs a member trains from: multi-week, not Recovery (which has its
+   own tab, and whose clips are not all filmed yet). */
+function trainingPlans(){ return PROGRAMS.filter(function(p){ return p.weeks && !p.rehab; }); }
+
 function pickEx(names,eq){
   return names.map(function(n){
     var e = eq && DB.find(function(x){return x.n===n && x.eq===eq;});
@@ -161,3 +181,5 @@ function hexA(hex,a){ hex=String(hex||'#EF4444').replace('#','');
 function progDays(p){ let n=0; (p.weeks||[]).forEach(w=>w.days.forEach(()=>n++)); return n; }
 function progDone(id){ return HF.data.progress[id]||0; }
 
+/* Every card from here on shows the real length. */
+PROGRAMS.forEach(function(p){ var m=progMinutes(p); if(m) p.dur=m; });
