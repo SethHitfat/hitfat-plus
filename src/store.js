@@ -95,10 +95,10 @@ const SUB_PLANS=[
    exists; until then the row is not shown. */
 const COACH_WA='60176132170', COACH_GROUP_URL='';
 
-/* The membership is switched on once the payment functions know the new
-   SKUs. Until then — and always in demo mode — everything is open, so no
-   one meets a lock that has nothing to sell. */
-var MEMBERSHIP_LIVE=false;
+/* The membership is on: pay-create, pay-callback and pay-status know the
+   sub_ SKUs (deployed 9 Oct 2026). Set false to open everything again —
+   demo mode always does — so no one meets a lock that has nothing to sell. */
+var MEMBERSHIP_LIVE=true;
 function contentOpen(){
   return !MEMBERSHIP_LIVE || (typeof T42_DEMO!=='undefined' && T42_DEMO) || hasPlus();
 }
@@ -495,7 +495,7 @@ let pwTier='plus', pwSku='sub_plus_12m', pwReason='';
 
 const TIER_INFO={
   plus:{name:'HITFAT+', line:'Everything in the app, for as long as you are a member.',
-    perks:[['workout','Every program and session','Signature, strength, fat loss, recovery — '+PROGRAMS.filter(p=>p.weeks).length+' programs'],
+    perks:[['workout','Every program and session','Signature, strength, fat loss'+(RECOVERY_LIVE?', recovery':'')+' — '+PROGRAMS.filter(p=>p.weeks).length+' programs'],
            ['photo','AI meal scan','Photograph a plate, get calories and macros'],
            ['food','Meal plans up to 14 days','Malaysian menus, MDG 2020 and CPG MOH 2023'],
            ['play','Every movement, on video','The full exercise library, with the camera mirror']]},

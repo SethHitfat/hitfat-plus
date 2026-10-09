@@ -192,21 +192,35 @@ async function grant(admin: any, user_id: string, sku: string, order_number: str
    ═══════════════════════════════════════════════════════════════ */
 
 
-/* Bayarcash signs these five, sorted by key, joined with "|" */
+/* What Bayarcash signs: HMAC-SHA256 over field values sorted by key and
+   joined with "|". The payment intent signs these five; a transaction
+   callback signs every field it sends. Both are checked — either one
+   needs the secret, so accepting either is no weaker than one. */
 const SIGNED = ['amount', 'order_number', 'payer_email', 'payer_name', 'payment_channel'];
 
-function verify(payload: Record<string, unknown>, secret: string): boolean {
-  const given = String(payload.checksum || '');
-  if (!given) return false;
-  const body = SIGNED
+function hmacOf(payload: Record<string, unknown>, keys: string[], secret: string): string {
+  const body = keys
     .filter((k) => payload[k] !== undefined && payload[k] !== null)
     .sort()
     .map((k) => String(payload[k]).trim())
     .join('|');
-  const mine = createHmac('sha256', secret).update(body).digest('hex');
-  const a = Buffer.from(mine, 'utf8'), b = Buffer.from(given, 'utf8');
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);          // constant time — a plain === leaks the answer a byte at a time
+  return createHmac('sha256', secret).update(body).digest('hex');
+}
+
+/* Constant time — a plain === leaks the answer a byte at a time. Bytes via
+   TextEncoder: Deno has no Node Buffer global (the old code crashed here
+   on every callback). */
+function same(x: string, y: string): boolean {
+  const enc = new TextEncoder();
+  const a = enc.encode(x), b = enc.encode(y);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
+function verify(payload: Record<string, unknown>, secret: string): boolean {
+  const given = String(payload.checksum || '').toLowerCase();
+  if (!given) return false;
+  const every = Object.keys(payload).filter((k) => k !== 'checksum');
+  return same(hmacOf(payload, SIGNED, secret), given) || same(hmacOf(payload, every, secret), given);
 }
 
 Deno.serve(async (req: Request) => {
