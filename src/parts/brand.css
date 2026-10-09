@@ -1,0 +1,91 @@
+/* ═══════════════════════════════════════════════════════════════
+   HITFAT+ · the HITFAT ONE look
+
+   The same colour and voice as hitfat.io: a warm black ground, cream type,
+   one red (#ED1C24), the red button for the one action, a cream pill for
+   the choice you are on, and campaign cards that glow red from a corner.
+   The typeface stays the app's own.
+
+   Loaded after the design layer. Dark is the default now; the light theme
+   keeps its own palette and only takes the red. Delete the BRAND marker in
+   shell2.html and the app is what it was.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root{
+  /* The site's red, in two tones that read the same: a fill a white label
+     passes contrast on (4.7:1), and a text red that passes on warm black
+     (5:1). #ED1C24 itself sits just under on both. */
+  --one-red:#DC1A22;
+  --one-red-text:#F5434A;
+  --one-red-wash:rgba(237,28,36,.16);
+  --one-red-line:rgba(237,28,36,.40);
+}
+
+/* ── dark: warm black, cream, red ── */
+:root:not([data-theme="light"]){
+  --bg:#0F0B0B; --surface:#1B1514; --surface2:rgba(244,239,233,.07);
+  --line:rgba(244,239,233,.08); --hairline:rgba(244,239,233,.10); --sep:rgba(244,239,233,.09);
+  --tint:rgba(244,239,233,.08);
+  --txt:#F4EFE9; --dim:#B9AEA7; --dim2:#8E8580;
+  --ink-90:rgba(244,239,233,.92); --ink-72:rgba(244,239,233,.72);
+  --ink-55:rgba(244,239,233,.58); --ink-42:rgba(244,239,233,.46);
+  --hitfat:var(--one-red-text); --hitfat-solid:var(--one-red); --hyrox:var(--one-red-text); --hyrox-solid:var(--one-red);
+  --nav-on:#F4EFE9; --navbg:rgba(15,11,11,.84);
+  --accent-wash:var(--one-red-wash);
+  --n-card:#1B1514;
+}
+
+/* ── light: its own palette, the same red ── */
+:root[data-theme="light"]{
+  --hitfat:#D7261E; --hyrox:#D7261E; --hyrox-solid:#D7261E; --hitfat-solid:#D7261E;
+}
+
+/* ── the one action: red, heavy, rounded like the site's button ── */
+:root:not([data-theme="light"]) .bigbtn:not(.sec):not(.t42-stage-cta){
+  background:var(--one-red);color:#FFFFFF !important;border:none;border-radius:15px;font-weight:800;
+  box-shadow:0 10px 26px rgba(237,28,36,.28);}
+:root:not([data-theme="light"]) .bigbtn:not(.sec):active{transform:scale(.985);}
+:root:not([data-theme="light"]) .bigbtn.sec{background:rgba(244,239,233,.07);color:var(--txt) !important;
+  border:1px solid rgba(244,239,233,.08);border-radius:15px;}
+
+/* ── the choice you are on: a cream pill on a dark track ── */
+:root:not([data-theme="light"]) .seg{background:rgba(244,239,233,.06);color:#B9AEA7;}
+:root:not([data-theme="light"]) .seg.on,
+:root:not([data-theme="light"]) #t42-segs .seg.on,
+:root:not([data-theme="light"]) #t42-progtabs .seg.on{background:#F4EFE9;color:#0F0B0B;}
+:root:not([data-theme="light"]) :is(.t42-seg3) button.on{background:#F4EFE9;color:#0F0B0B;}
+:root:not([data-theme="light"]) .filters .chip.y{background:#F4EFE9;color:#0F0B0B;}
+
+/* ── kickers: small, spaced capitals with a red light, as on the site ── */
+:root:not([data-theme="light"]) .hgroup .k{text-transform:uppercase;letter-spacing:.14em;
+  font-size:11.5px !important;font-weight:700;color:#C7BCB4;}
+
+/* ── surfaces: warm, hairline-edged, no grey ── */
+:root:not([data-theme="light"]) :is(.acard,.glist,.t42-list,.elist,.pgtile,.emac,.eslot,.t42-stat,.t42-jcard,
+  .mehead,.wrow,.t42-wk,.t42-mile,.t42-card,.t42-mini,.opt,.cprow,.paych,.fqcta,.frow){
+  background-color:#1B1514;border-color:rgba(244,239,233,.07);}
+:root:not([data-theme="light"]) :is(.opt.sel,.cprow.on,.t42-card.on){box-shadow:inset 0 0 0 2px var(--one-red);}
+
+/* ── campaign cards: dark, one red glow from the corner, a red edge ── */
+:root:not([data-theme="light"]) :is(.t42-stage,.t42-banner,.mcard,.sub-card,.ecta){
+  background:radial-gradient(120% 90% at 100% 0%, rgba(237,28,36,.34) 0%, transparent 58%), #1B1514 !important;
+  border:1px solid var(--one-red-line);}
+
+/* ── photo cards: posters with a deep bottom fade ── */
+:root:not([data-theme="light"]) .plan{border-radius:22px;}
+:root:not([data-theme="light"]) .plan .ov{background:linear-gradient(180deg, rgba(15,11,11,0) 35%, rgba(15,11,11,.92) 100%);}
+:root:not([data-theme="light"]) .plan .join{background:var(--one-red);color:#FFFFFF;}
+
+/* ── progress: the red ── */
+:root:not([data-theme="light"]) :is(.pgbar i,.pbar i,.pgscore .bar i){background:var(--one-red);}
+
+/* ── tab bar: warm black glass; the active tab cream with a red light ── */
+:root:not([data-theme="light"]) .tabs{background:rgba(15,11,11,.86);border:1px solid rgba(244,239,233,.07);
+  box-shadow:0 14px 40px rgba(0,0,0,.6);}
+:root:not([data-theme="light"]) .tab.active:not(.tabmid){background:none;color:#F4EFE9;position:relative;}
+:root:not([data-theme="light"]) .tab.active:not(.tabmid)::after{content:'';position:absolute;left:50%;bottom:1px;
+  width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--one-red);}
+
+/* ── small labels: a red fill wants the fill red; muted chips the brighter grey ── */
+:root:not([data-theme="light"]) .sub-best{background:var(--one-red);}
+:root:not([data-theme="light"]) .t42-rest{color:#B9AEA7;}

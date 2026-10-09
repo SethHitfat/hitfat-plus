@@ -557,7 +557,7 @@ function finishOb(){
 function currentTheme(){
   var t=document.documentElement && document.documentElement.getAttribute
     ? document.documentElement.getAttribute('data-theme') : null;
-  return t==='dark' ? 'dark' : 'light';
+  return t==='light' ? 'light' : 'dark';
 }
 function setTheme(t){
   t = t==='dark' ? 'dark' : 'light';
@@ -565,7 +565,7 @@ function setTheme(t){
   try{ localStorage.setItem('hitfat_theme',t); }catch(e){}
   try{
     var m=document.querySelector('meta[name="theme-color"]');
-    if(m && m.setAttribute) m.setAttribute('content', t==='dark' ? '#000000' : '#F5F4F3');
+    if(m && m.setAttribute) m.setAttribute('content', t==='dark' ? '#0F0B0B' : '#F5F4F3');
   }catch(e){}
   try{ renderMe(); }catch(e){}
 }

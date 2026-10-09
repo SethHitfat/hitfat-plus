@@ -1,7 +1,7 @@
 import re,sys,os
 shell=open('shell2.html').read()
 def rd(p): return open(p).read()
-subs=[('/*__CSS__*/','parts/hybrid-red.css'),('/*__DESIGN__*/','parts/design.css'),('<!--__AUTH__-->','auth.html'),('<!--__SCANUI__-->','scanui.html'),
+subs=[('/*__CSS__*/','parts/hybrid-red.css'),('/*__DESIGN__*/','parts/design.css'),('/*__BRAND__*/','parts/brand.css'),('<!--__AUTH__-->','auth.html'),('<!--__SCANUI__-->','scanui.html'),
  ('/*__DB__*/','parts/db.js'),('/*__PROGRAMS_MULTI__*/','parts/programs_multi.js'),
  ('/*__PROGRAMS__*/','parts/programs.js'),('/*__REHABLIB__*/','parts/rehablib.js'),('/*__BARLIB__*/','parts/barlib.js'),('/*__PLANS__*/','plans2.js'),('/*__BARPLANS__*/','barplans.js'),('/*__REHABPLANS__*/','rehabplans.js'),('/*__MONTHLY__*/','monthly.js'),('/*__STORE__*/','store.js'),('/*__FINDER__*/','finder.js'),('/*__MEALDB__*/','parts/mealdb.js'),('/*__MEALPLAN__*/','mealplan.js'),('/*__CUSTOM__*/','custom.js'),('/*__PLAYER__*/','player.js'),('/*__CHALLENGES__*/','parts/challenges.js'),('/*__ICONS__*/','icons.js'),('/*__CLUB__*/','club.js'),('/*__T42__*/','t42.js'),('/*__T42DEMO__*/','t42demo.js'),
  ('/*__VIEWS__*/','views2.js'),('/*__EAT__*/','eat2.js'),('/*__PROG__*/','prog2.js'),
