@@ -831,7 +831,10 @@
       return el.style.display==='block';
     });
     var authOn=(document.getElementById('auth')||{className:''}).className.indexOf('on')>=0;
-    if(started||painted||authOn) return;
+    /* A full-screen sheet on show (onboarding, the meal-plan wizard) is the
+       app running, not a blank screen. */
+    var sheetOn=!!document.querySelector('.ovl.on');
+    if(started||painted||authOn||sheetOn) return;
     panel('App did not start',[
       'supabase lib : '+(typeof window.supabase!=='undefined'),
       'SUPA_READY   : '+(typeof SUPA_READY!=='undefined'?SUPA_READY:'undefined'),
