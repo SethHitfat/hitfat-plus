@@ -78,10 +78,15 @@ function ecta(o){
     '<div class="go">'+o.btn+'</div>'+(o.note?'<div class="lock">'+o.note+'</div>':'')+'</div>';
 }
 
+/* The date small, the title large — the Home header's shape. */
+function eatHead(){
+  const d=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
+  return '<div class="hsum"><div class="hsum-l"><div class="k">'+d+'</div><div class="t">Eat</div></div></div>';
+}
 function renderEat(){
   const n=HF.data.nutrition||{};
   if(!n.cal){ $('eat-segs').innerHTML=''; renderEatSetup(); return; }
-  $('eat-segs').innerHTML='<div class="segs">'+EAT_SEGS.map(s=>
+  $('eat-segs').innerHTML=eatHead()+'<div class="segs">'+EAT_SEGS.map(s=>
     '<button class="seg'+(eatSeg===s[0]?' on':'')+'" onclick="setEatSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
   if(eatSeg==='plan') return eatPlan();
   if(eatSeg==='log')  return eatLog();
@@ -154,25 +159,29 @@ function eatToday(){
   else if(t.kcal>=budget*.8) st={c:'ok',  t:'On track — '+left.toLocaleString()+' kcal to go'};
   else                     st={c:'info', t:left.toLocaleString()+' kcal still to eat today'};
 
-  let h='';
-  h+='<div class="nsum">'+
-     '<div class="nsum-k">'+dayName()+'</div>'+
-     '<div class="nsum-top">'+nRing(pct, left.toLocaleString(), t.kcal>budget?'over':'kcal left')+
-     '<div class="nsum-side">'+
-       '<div class="nsum-r"><span>Target</span><b>'+n.cal.toLocaleString()+'</b></div>'+
-       '<div class="nsum-r"><span>Eaten</span><b>'+t.kcal.toLocaleString()+'</b></div>'+
-       '<div class="nsum-r"><span>Exercise</span><b class="pos">+'+burned.toLocaleString()+'</b></div>'+
-       '<div class="nsum-r"><span>Day score</span><b>'+(logged?score:'—')+'</b></div>'+
-     '</div></div>'+
-     '<div class="nstat '+st.c+'"><i></i>'+st.t+'</div>'+
-     '<div class="nsum-macs">'+
-       nMacro('Protein',t.p,n.pt,'var(--mac-p)')+
-       nMacro('Carbs',t.c,n.ct,'var(--mac-c)')+
-       nMacro('Fat',t.f,n.ft,'var(--ok)')+
-     '</div></div>';
+  /* The Activity card's shape: three rings — calories, protein, carbs —
+     and the numbers beside them, then the tiles. */
+  let h=fsec('Summary','Eaten against your target, exercise added back.')+
+    '<div class="hact">'+ringsSVG([pct, t.p/(n.pt||1)*100, t.c/(n.ct||1)*100],112)+
+    '<div class="hact-r">'+
+      '<div class="hact-s"><div class="l">Calories</div><div class="v hc-days">'+t.kcal.toLocaleString()+'/'+budget.toLocaleString()+'<span> KCAL</span></div></div>'+
+      '<div class="hact-s"><div class="l">Protein</div><div class="v hc-mins">'+t.p+'/'+n.pt+'<span> G</span></div></div>'+
+      '<div class="hact-s"><div class="l">Carbs</div><div class="v hc-cons">'+t.c+'/'+n.ct+'<span> G</span></div></div>'+
+    '</div></div>'+
+    '<div class="nstat '+st.c+'"><i></i>'+st.t+'</div>'+
+    '<div class="htiles">'+
+      '<div class="htile"><div class="l hc-streak">'+(t.kcal>budget?'Over':'Left')+'</div><div class="v">'+
+        (t.kcal>budget?(t.kcal-budget):left).toLocaleString()+'<span> KCAL</span></div><div class="s">target '+n.cal.toLocaleString()+'</div></div>'+
+      '<div class="htile" onclick="openBurn()"><div class="l hc-sess">Exercise</div><div class="v">+'+burned.toLocaleString()+
+        '<span> KCAL</span></div><div class="s">'+(burnFor().length?burnFor().length+' logged today':'tap to log')+'</div></div>'+
+      '<div class="htile"><div class="l hc-fat">Fat</div><div class="v">'+t.f+'<span> / '+n.ft+' G</span></div><div class="s">'+
+        Math.min(100,Math.round(t.f/(n.ft||1)*100))+'% of target</div></div>'+
+      '<div class="htile"><div class="l hc-score">Day Score</div><div class="v">'+(logged?score:'—')+
+        '</div><div class="s">balance of the day</div></div>'+
+    '</div>';
 
   // meals: one grouped list, the slot to fill next marked, + to add
-  h+=nHead('Meals', 'Tap a meal to log into it');
+  h+=fsec('Meals', 'Tap a meal to log into it.');
   h+='<div class="nlist">'+SLOTS.map(s=>{
       const items=bySlot[s.k]||[], kc=items.reduce((a,m)=>a+(m.kcal||0),0);
       const aim=Math.round(n.cal*SLOT_SHARE[s.k]/10)*10;
@@ -181,20 +190,20 @@ function eatToday(){
       return nRow(s.e, s.n, sub, '<span class="nadd" aria-label="Add">+</span>', "openManualAt('"+s.k+"')");
     }).join('')+'</div>';
 
-  // activity
-  h+=nHead('Activity', 'Training buys back calories — logged, not guessed');
-  h+='<div class="nlist">'+nRow('flame','Exercise',
-      burnFor().length ? burnFor().length+' logged today' : 'Log a session to earn calories back',
-      '<span class="nval pos">+'+burned+'</span><span class="chev">›</span>','openBurn()')+'</div>';
-
-  // quick actions
-  h+='<div class="nquicks">'+
-     nQuick('📷','Scan a meal',contentOpen()?'AI reads the plate':'With HITFAT+','openScan()')+
-     nQuick('🍽️','Meal plan',contentOpen()?'Malaysian menus':'With HITFAT+',"setEatSeg('plan')")+
+  // tools, as the bright tiles Browse Programs uses
+  h+=fsec('Tools','Log faster, plan ahead.');
+  h+='<div class="hscroll">'+
+     eatTile('Scan a Meal', contentOpen()?'AI reads the plate':'With HITFAT+','linear-gradient(135deg,#0B5A1A 0%,#2FA83A 55%,#A3FC08 100%)','photo','openScan()')+
+     eatTile('Meal Plan', contentOpen()?'Malaysian menus':'With HITFAT+','linear-gradient(135deg,#7A3B00 0%,#E08A12 55%,#FFD15A 100%)','clipboard',"setEatSeg('plan')")+
+     eatTile('Log Exercise','Earn calories back','linear-gradient(135deg,#1B2A8C 0%,#3A4FE0 55%,#7A8CFF 100%)','flame','openBurn()')+
      '</div>';
 
   h+='<button class="authalt" onclick="HF.data.nutrition={};HF.save();renderEat()">Change my daily target</button>';
   $('eat-body').innerHTML=h;
+}
+function eatTile(t,sub,g,icon,go){
+  return '<div class="ftile fcat etile" onclick="'+go+'" style="background:'+g+'">'+
+    '<div class="t">'+t+'</div><div class="es">'+sub+'</div><div class="ic">'+glyph(icon)+'</div></div>';
 }
 function dayName(){ return new Date().toLocaleDateString('en-MY',{weekday:'long', day:'numeric', month:'long'}); }
 
@@ -202,15 +211,15 @@ function dayName(){ return new Date().toLocaleDateString('en-MY',{weekday:'long'
 function eatPlan(){
   const mpl=(HF.data.mealPlans||[]), n=HF.data.nutrition||{};
   let h='';
-  h+='<div class="nstage">'+
-     '<div class="nstage-k">Meal plan</div>'+
-     '<div class="nstage-h">Build your meal plan</div>'+
-     '<div class="nstage-s">Five questions, then a full Malaysian menu for 1 to 14 days — calories, macros and hand portions already worked out.</div>'+
-     '<button class="nstage-cta" onclick="openMealPlan()">'+(contentOpen()?'Build my plan':'Unlock with HITFAT+')+'</button>'+
-     '<div class="nstage-f">'+glyph('check')+'Malaysian Dietary Guidelines 2020 · CPG MOH 2023</div></div>';
+  h+=fsec('Made For You','A full Malaysian menu, worked out for you.');
+  h+='<div class="fmade emade" style="background:linear-gradient(118deg,#3A2006 0%,#9A4A0E 42%,#E8902A 72%,#FFD08A 100%)">'+
+     '<div class="t">Build Your Meal Plan</div>'+
+     '<div class="s">Five questions, then 1 to 14 days of meals — calories, macros and hand portions already worked out.</div>'+
+     '<div class="mt">MDG 2020 · CPG MOH 2023</div>'+
+     '<button class="fglass" onclick="openMealPlan()">'+glyph('calendar')+(contentOpen()?'Build My Plan':'Unlock with HITFAT+')+'</button></div>';
 
   if(mpl.length){
-    h+=nHead('Your plans','Saved as a spec — reopens identical every time');
+    h+=fsec('Your Plans','Saved — reopens identical every time.');
     h+='<div class="nlist">'+mpl.map((p,i)=>nRow('clipboard',
         p.days+(p.days===1?' day · ':' days · ')+p.cal.toLocaleString()+' kcal',
         ({loss:'Lose weight',gain:'Gain weight',maintain:'Maintain'}[p.meta.goal]||p.meta.goal)+' · '+
@@ -219,7 +228,7 @@ function eatPlan(){
         'mpLoad('+i+')')).join('')+'</div>';
   }
 
-  h+=nHead('How it works','');
+  h+=fsec('How It Works','');
   h+='<div class="nlist">'+[
       ['Your profile','Weight, height, age and activity — filled in from your calorie target.'],
       ['Safe calories','Never below 1,500 kcal for men or 1,200 for women; the deficit is capped at 750 a day.'],
@@ -238,20 +247,21 @@ function eatPlan(){
 function eatLog(){
   const list=mealsFor(), favs=(HF.data.favs||[]).slice(0,10);
   let h='';
-  h+='<div class="nquicks">'+
-     nQuick('📷','Scan with AI',contentOpen()?hesc(scanAccess().label):'With HITFAT+','openScan()')+
-     nQuick('✏️','Add manually','Always open, unlimited','openManual()')+
+  h+=fsec('Add Food','Scan the plate, or type it in.');
+  h+='<div class="hscroll">'+
+     eatTile('Scan with AI', contentOpen()?hesc(scanAccess().label):'With HITFAT+','linear-gradient(135deg,#0B5A1A 0%,#2FA83A 55%,#A3FC08 100%)','photo','openScan()')+
+     eatTile('Add Manually','Always open, unlimited','linear-gradient(135deg,#4A1580 0%,#8A3FE0 55%,#D38CFF 100%)','pencil','openManual()')+
      '</div>';
 
   if(favs.length){
-    h+=nHead('Your usuals','One tap — no scan spent');
+    h+=fsec('Your Usuals','One tap — no scan spent.');
     h+='<div class="hscroll nfavs">'+favs.map((f,i)=>
       '<button class="nfav" onclick="logFav('+i+')"><span class="nfav-t">'+hesc(f.name)+'</span>'+
       '<span class="nfav-k">'+f.kcal+' kcal · P '+(f.p||0)+'g</span><span class="nadd">+</span></button>').join('')+'</div>';
   }
 
   const tot=mealTotals().kcal;
-  h+=nHead("Today's log", list.length ? list.length+(list.length>1?' meals':' meal')+' · '+tot.toLocaleString()+' kcal' : '');
+  h+=fsec("Today's Log", list.length ? list.length+(list.length>1?' meals':' meal')+' · '+tot.toLocaleString()+' kcal' : '');
   if(!list.length){
     h+='<div class="nempty">'+ic('food')+'<div class="nempty-t">Nothing logged yet today</div>'+
        '<div class="nempty-s">Scan a plate or add it by hand — it lands in the right meal.</div></div>';

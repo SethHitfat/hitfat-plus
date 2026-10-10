@@ -1216,10 +1216,12 @@ ok("three segments",              EAT_SEGS.length===3);
 ok("every segment has a handler", EAT_SEGS.every(function(s){
     return document.getElementById('eat-segs').innerHTML.indexOf("setEatSeg('"+s[0]+"')")>0; }));
 ok("Today is the default",        eatSeg==='today');
-ok("hero renders",                document.getElementById('eat-body').innerHTML.indexOf('nsum')>0 && document.getElementById('eat-body').innerHTML.indexOf('nring')>0);
+ok("hero renders",                document.getElementById('eat-body').innerHTML.indexOf('hact')>0 && document.getElementById('eat-body').innerHTML.indexOf('hrings')>0);
+ok("Eat leads with the date and a large title", document.getElementById('eat-segs').innerHTML.indexOf('hsum')>0);
 ok("all four slots shown",        SLOTS.every(function(s){
     return document.getElementById('eat-body').innerHTML.indexOf("openManualAt('"+s.k+"')")>0; }));
-ok("macros render",               document.getElementById('eat-body').innerHTML.indexOf('nmac')>0);
+ok("macros render",               document.getElementById('eat-body').innerHTML.indexOf('Protein')>0 &&
+   document.getElementById('eat-body').innerHTML.indexOf('Carbs')>0 && document.getElementById('eat-body').innerHTML.indexOf('>Fat<')>0);
 noThrow("every segment renders",  function(){ EAT_SEGS.forEach(function(s){ setEatSeg(s[0]); }); });
 setEatSeg('log');
 ok("log offers scan",             document.getElementById('eat-body').innerHTML.indexOf('openScan()')>0);
@@ -1252,7 +1254,7 @@ setEatSeg('today');
    and no score until there is something to score. */
 var _et=document.getElementById('eat-body').innerHTML;
 ok("an empty day says nothing is logged", _et.indexOf('Nothing logged yet')>0);
-ok("...and scores nothing yet",           _et.indexOf('Day score</span><b>—</b>')>0);
+ok("...and scores nothing yet",           _et.indexOf('Day Score</div><div class="v">—</div>')>0);
 ok("each meal suggests its share",        _et.indexOf('Aim for about')>0);
 logMeal({name:'Roti canai',bm:'Roti canai',kcal:300,p:6,c:40,f:12,slot:'breakfast'});
 logMeal({name:'Nasi ayam',bm:'Nasi ayam',kcal:600,p:30,c:70,f:20,slot:'lunch'});
