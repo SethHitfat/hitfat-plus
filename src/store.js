@@ -535,14 +535,20 @@ function paywallHTML(sheet){
   /* The Fitness+ trial card's shape: a collage of the training it opens,
      the mark, a large title; the tier as a segmented control; what it
      includes as one grouped list; the plans to choose from; one button. */
+  let pics=[]; try{ pics=Object.values(IMG).slice(0,6); }catch(e){}
+  const col=pics.length ? '<div class="pwcol" aria-hidden="true">'+pics.map(u=>'<div style="background-image:url(\''+u+'\')"></div>').join('')+'</div>' : '';
   if(sheet){
-    h+='<div class="pwtop"><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>';
-    let pics=[]; try{ pics=Object.values(IMG).slice(0,6); }catch(e){}
-    if(pics.length) h+='<div class="pwcol" aria-hidden="true">'+pics.map(u=>'<div style="background-image:url(\''+u+'\')"></div>').join('')+'</div>';
+    h+='<div class="pwtop"><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+col;
+    h+='<div class="sub-hero pwhero2"><div class="pw-mark">HITFAT<span>+</span></div>'+
+       '<div class="sub-h">'+(pwReason?'Unlock with HITFAT+':'Train with everything')+'</div>'+
+       '<div class="sub-s">'+hesc(pwReason||info.line)+'</div></div>';
+  } else {
+    /* On the Store page the page title already says HITFAT+, so the offer
+       is one poster: the training it opens, with the promise over it. */
+    h+='<div class="pwposter">'+col+'<div class="pwposter-in">'+
+       '<div class="sub-h">'+(pwTier==='coach'?'Train with a coach':'Train with everything')+'</div>'+
+       '<div class="sub-s">'+hesc(info.line)+'</div></div></div>';
   }
-  h+='<div class="sub-hero pwhero2"><div class="pw-mark">HITFAT<span>+</span></div>'+
-     '<div class="sub-h">'+(pwReason?'Unlock with HITFAT+':'Train with everything')+'</div>'+
-     '<div class="sub-s">'+hesc(pwReason||info.line)+'</div></div>';
   h+='<div class="obseg pwseg">'+
      '<button class="'+(pwTier==='plus'?'on':'')+'" onclick="pwSetTier(\'plus\')">HITFAT+</button>'+
      '<button class="'+(pwTier==='coach'?'on':'')+'" onclick="pwSetTier(\'coach\')">HITFAT+ Coach</button></div>';
