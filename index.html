@@ -3172,6 +3172,57 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .flib-empty .t{font-size:22px;font-weight:700;color:var(--txt);margin-top:14px;letter-spacing:-.3px;}
 .flib-empty .s{font-size:15px;color:var(--dim2);margin-top:6px;line-height:1.4;}
 
+/* ═══════════════════════════════════════════════════════════════
+   HOME, after the Apple Fitness Summary
+   ═══════════════════════════════════════════════════════════════ */
+.hsum{display:flex;align-items:flex-end;gap:12px;margin:2px 2px 14px;}
+.hsum-l{flex:1;min-width:0;}
+.hsum .k{font-size:13px;font-weight:600;letter-spacing:.2px;color:var(--dim2);}
+.hsum .t{font-size:34px;font-weight:800;letter-spacing:-.9px;color:var(--txt);line-height:1.08;margin-top:2px;}
+.hsum-av{flex:none;cursor:pointer;}
+/* the week: today a white pill, a trained day a lime dot */
+:root:not([data-theme="light"]) .wk2 .d.on{background:#F2F2F7;}
+:root:not([data-theme="light"]) .wk2 .d.on small,:root:not([data-theme="light"]) .wk2 .d.on b{color:#000000;}
+:root:not([data-theme="light"]) .wk2 .d{position:relative;}
+:root:not([data-theme="light"]) .wk2 .d.done::after{content:'';position:absolute;left:50%;bottom:3px;width:5px;height:5px;
+  margin-left:-2.5px;border-radius:50%;background:var(--lime);}
+:root:not([data-theme="light"]) .wk2 .d.on.done::after{background:#000000;}
+:root:not([data-theme="light"]) .wk2 .d.done:not(.on) b{color:var(--txt);}
+/* activity: rings left, the three numbers right */
+.hact{display:flex;align-items:center;gap:18px;padding:16px;border-radius:18px;background:var(--surface);cursor:pointer;}
+.hrings{flex:none;}
+.hact-r{flex:1;display:flex;flex-direction:column;gap:8px;}
+.hact-s .l{font-size:13px;font-weight:600;color:var(--txt);}
+.hact-s .v{font-size:22px;font-weight:700;letter-spacing:-.3px;line-height:1.1;font-variant-numeric:tabular-nums;}
+.hact-s .v span{font-size:13px;font-weight:700;letter-spacing:.3px;}
+:root[data-theme="light"] .hact-s .v{filter:brightness(.72) saturate(1.2);}
+.hact-note{font-size:13px;color:var(--dim2);margin:8px 4px 0;line-height:1.4;}
+.htiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.htile{padding:14px 16px;border-radius:18px;background:var(--surface);cursor:pointer;}
+.htile .l{font-size:15px;font-weight:600;}
+.htile .v{font-size:26px;font-weight:700;letter-spacing:-.4px;color:var(--txt);margin-top:6px;font-variant-numeric:tabular-nums;}
+.htile .v span{font-size:13px;font-weight:700;color:var(--dim);letter-spacing:.3px;}
+.htile .s{font-size:12px;color:var(--dim2);margin-top:2px;}
+:root[data-theme="light"] .htile .l{filter:brightness(.7);}
+#home-today .fmade{width:auto;max-width:none;}
+#home-today .fmade .bigbtn{width:100%;}
+.hsum .av2{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;
+  font-size:17px;font-weight:700;color:#FFFFFF;background:linear-gradient(135deg,#FF6A3D,#D7261E);}
+.hsum .av2 img{width:100%;height:100%;object-fit:cover;}
+/* ring colours as text: Apple's, lifted a touch so the small units pass on grey */
+.hc-days{color:#FF5A7E;} .hc-mins{color:#A3FC08;} .hc-cons{color:#3EEBF0;}
+.hc-streak{color:#FF9F0A;} .hc-sess{color:#64D2FF;}
+:root[data-theme="light"] .hc-days{color:#C4003A;}
+:root[data-theme="light"] .hc-mins{color:#3C7A00;}
+:root[data-theme="light"] .hc-cons{color:#00737A;}
+:root[data-theme="light"] .hc-streak{color:#A65A00;}
+:root[data-theme="light"] .hc-sess{color:#005F99;}
+:root[data-theme="light"] .hact-s .v, :root[data-theme="light"] .htile .l{filter:none;}
+/* light: the secondary greys need the darker of the two to pass */
+:root[data-theme="light"] .fsec .fs, :root[data-theme="light"] .hsum .k, :root[data-theme="light"] .wk2 .d small{color:var(--dim);}
+:root[data-theme="light"] .fsec .fs, :root[data-theme="light"] .hsum .k, :root[data-theme="light"] .wk2 .d small,
+:root[data-theme="light"] .htile .v span, :root[data-theme="light"] .htile .s, :root[data-theme="light"] .hact-note{color:#56565C;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+
@@ -3223,6 +3274,8 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 /* ── light: its own palette, the HITFAT red ── */
 :root[data-theme="light"]{
   --hitfat:#D7261E; --hyrox:#D7261E; --hyrox-solid:#D7261E; --hitfat-solid:#D7261E;
+  /* solid greys: the translucent ones fell under 4.5:1 on the grey ground */
+  --dim:#56565C; --dim2:#6A6A70;
 }
 
 /* ── the one action: lime, black label ── */
@@ -3280,6 +3333,8 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 /* ── the HITFAT+ mark stays HITFAT red ── */
 :root:not([data-theme="light"]) .topbar{--hyrox:var(--one-red-text);--hitfat:var(--one-red-text);}
 :root:not([data-theme="light"]) .brand .y{color:var(--one-red-text);}
+/* a lime fill takes a black label */
+:root:not([data-theme="light"]) .pgd.on{color:#000000;}
 
 </style>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
@@ -3335,11 +3390,12 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 
     <div id="home" class="pad" style="display:none;">
       <div id="home-hdr"></div>
+      <!-- The week sits under the greeting, as the Fitness Summary puts it. -->
+      <div id="home-week"></div>
       <!-- T42, above everything else on Home. A running challenge is the most
            time-sensitive thing on this screen, and it removes itself when no
            edition is open. -->
       <div id="home-t42"></div>
-      <div id="home-week"></div>
       <div id="home-today"></div>
       <div id="home-activity"></div>
       <div id="home-plans"></div>
@@ -13485,135 +13541,95 @@ function weekMinutes(){
 }
 
 /* ── HOME ── */
+/* ── Home, after the Apple Fitness Summary ──
+   The date small, the greeting large; the week; membership for those who
+   are not members; T42; what is up next; the Activity card with three
+   rings — days against the week's goal, minutes against 150, consistency —
+   and the tiles under it; the month's challenge; then programs and short
+   sessions in the Fitness+ shapes the Train tab uses. */
+const RING_C={days:'#FA114F', mins:'#A3FC08', cons:'#1EEAEF'};
+function ringArc(cx,cy,r,pct){
+  /* Drawn as a path from twelve o'clock: the app's legacy CSS kills every
+     transform, so a rotated circle would start at three. */
+  const p=Math.max(0,Math.min(99.99,pct))/100, a=p*2*Math.PI;
+  const x=cx+r*Math.sin(a), y=cy-r*Math.cos(a);
+  return 'M'+cx+' '+(cy-r)+' A'+r+' '+r+' 0 '+(p>.5?1:0)+' 1 '+x.toFixed(2)+' '+y.toFixed(2);
+}
+function ringsSVG(vals,size){
+  const c=size/2, w=size*.11, rs=[c-w/2, c-w*1.6, c-w*2.7], cols=[RING_C.days,RING_C.mins,RING_C.cons];
+  return '<svg class="hrings" viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'" aria-hidden="true">'+
+    vals.map((v,i)=>'<circle cx="'+c+'" cy="'+c+'" r="'+rs[i]+'" fill="none" stroke="'+cols[i]+'" stroke-opacity=".22" stroke-width="'+w+'"/>'+
+      (v>0?'<path d="'+ringArc(c,c,rs[i],v)+'" fill="none" stroke="'+cols[i]+'" stroke-width="'+w+'" stroke-linecap="round"/>':'')).join('')+
+    '</svg>';
+}
 function renderHome(){
   const nm=((HF.data.prefs&&HF.data.prefs.name)||'').trim();
-  const goal=(HF.data.prefs&&HF.data.prefs.goal)||'Get started';
   const streak=liveStreak();
+  const now=new Date();
+  const dateLine=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
 
-  // 1) header — avatar · greeting · chip
-  $('home-hdr').innerHTML='<div class="hhdr">'+
-    '<div onclick="switchTab(\'me\')" style="cursor:pointer;flex:none;">'+avatarHTML(46)+'</div>'+
-    '<div class="w2"><div class="n">'+(nm?'Hi, '+hesc(nm.split(/\s+/)[0]):'Hi there')+'</div>'+
-    '<div class="s">'+greetWord()+'</div></div>'+
-    (HF.count()?'<div class="chip" onclick="switchTab(\'me\')">'+
-    '<b style="font-family:\'Oswald\';font-size:17px;color:var(--hyrox);line-height:1;">'+consistency()+'</b>'+
-    '<span style="font-size:11px;color:var(--dim);font-weight:600;">Consistency</span></div>':'')+'</div>';
+  // 1) header — the date small, the greeting large, the avatar
+  $('home-hdr').innerHTML='<div class="hsum">'+
+    '<div class="hsum-l"><div class="k">'+dateLine+'</div>'+
+    '<div class="t">'+(nm?'Hi, '+hesc(nm.split(/\s+/)[0]):'Summary')+'</div></div>'+
+    '<div class="hsum-av" onclick="switchTab(\'me\')">'+avatarHTML(40)+'</div></div>';
 
-  // 2) week strip
-  const now=new Date(), off=(now.getDay()+6)%7, mon=new Date(now); mon.setDate(now.getDate()-off);
+  // 2) the week — today a white pill, trained days marked
+  const off=(now.getDay()+6)%7, mon=new Date(now); mon.setDate(now.getDate()-off);
   const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const doneSet=new Set();
-  Object.values(HF.data.sessions).forEach(s=>{ if(s&&s.date){ const d=new Date(s.date);
+  Object.values(HF.data.sessions).forEach(x=>{ if(x&&x.date){ const d=new Date(x.date);
     if(d>=new Date(weekStartISO()+'T00:00:00')) doneSet.add((d.getDay()+6)%7); } });
   $('home-week').innerHTML='<div class="wk2">'+names.map((n,i)=>{
     const dt=new Date(mon); dt.setDate(mon.getDate()+i);
     return '<div class="d '+(i===off?'on':'')+' '+(doneSet.has(i)?'done':'')+'"><small>'+n+'</small><b>'+dt.getDate()+'</b></div>';
   }).join('')+'</div>';
 
-  // 3) Today's Training — the single hero
+  // 3) membership, then T42
+  if($('home-t42')) $('home-t42').innerHTML=(contentOpen()?'':fyJoinCard())+
+    ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
+
+  // 4) Up Next — the plan in progress, or the way to pick one
   const nx=nextUp();
-  if(nx){
-    $('home-today').innerHTML='<div class="sechead" style="margin-top:0;">Today\'s Training</div>'+
-      '<div class="plan wide" style="background-image:url(\''+progImg(nx.p)+'\')" onclick="openDay(\''+nx.p.id+'\','+nx.idx+')">'+
-      '<div class="ov"></div><div class="pi"><div class="tx">'+
-      '<div class="k">'+nx.p.name+' · Day '+(nx.idx+1)+'</div>'+
-      '<div class="t">'+nx.day.name+'</div>'+
-      '<div class="d">'+(nx.day.ex?nx.day.ex.length+' exercises · ':'')+nx.p.dur+' min · video-guided</div></div>'+
-      '<button class="join" onclick="event.stopPropagation();openDay(\''+nx.p.id+'\','+nx.idx+')">Start</button>'+
-      '</div></div>';
+  if(nx && nx.p.weeks){
+    $('home-today').innerHTML=fsec('Up Next','Today, from your plan.')+fyPlanCard(nx.p);
   } else {
-    const first=trainingPlans()[0];
-    $('home-today').innerHTML='<div class="sechead" style="margin-top:0;">Today\'s Training</div>'+
-      '<div class="plan wide" style="background-image:url(\''+IMG.home+'\')" onclick="switchTab(\'train\')">'+
-      '<div class="ov"></div><div class="pi"><div class="tx">'+
-      '<div class="k">Get started</div><div class="t">Pick your first program</div>'+
-      '<div class="d">Bodyweight, chair or with equipment — '+(contentOpen()?'all yours.':'with HITFAT+.')+'</div></div>'+
-      '<button class="join" onclick="event.stopPropagation();switchTab(\'train\')">Browse</button>'+
-      '</div></div>';
+    $('home-today').innerHTML=fsec('Up Next','Pick a plan and your next session waits here.')+
+      '<div class="fmade" style="background:'+PLAN_GRADS.Strength+'">'+
+      '<div class="t">Find your first plan</div>'+
+      '<div class="s">Bodyweight, chair or with equipment — matched to your goal and level.</div>'+
+      '<button class="bigbtn" style="margin-top:18px;" onclick="switchTab(\'train\');setTrSeg(\'plans\')">Browse Plans</button>'+
+      '<button class="fglass" onclick="openFinder()">'+glyph('target')+'Find my program</button></div>';
   }
 
-  // 4) Recent Activity — bar chart + two donuts
-  const dayMin=[0,0,0,0,0,0,0], dayHas=[0,0,0,0,0,0,0], wsISO=weekStartISO();
-  Object.values(HF.data.sessions).forEach(x=>{ const d=sessionISO(x); if(!d||d<wsISO) return;
-    const i=(new Date(d+'T00:00:00').getDay()+6)%7; dayMin[i]+=(x.mins||20); dayHas[i]=1; });
-  const maxMin=Math.max(30,Math.max.apply(null,dayMin));
-  const bars=names.map((n,i)=>'<div class="col"><div class="b '+(dayHas[i]?'':'off')+'" style="height:'+
-    Math.max(4,Math.round(dayMin[i]/maxMin*46))+'px"></div><div class="l">'+n[0]+'</div></div>').join('');
-  const days=daysThisWeek(), wgoal=HF.data.weekGoal||5;
-  /* The month's challenge sits above Recent Activity — high enough to be seen
-     on open, below Today's Training so it never displaces the actual session. */
-  /* Before the first logged session every one of these reads zero: 0 of 5 days,
-     0 min trained, consistency 0, streak 0, 0 total. Six zeros stacked is a
-     report card someone failed before they started. Until there is something to
-     chart, show the month's challenge and say plainly what will appear here. */
-  /* The Club card is the only way into the Club panel, and the Club panel is
-     where check-in lives. It used to sit inside the empty-state branch below,
-     which meant it vanished the moment a member logged their first session —
-     leaving the people who actually train with no way to check in. */
-  const _club = (typeof clubHomeCard==='function') ? clubHomeCard() : '';
-  /* T42 sits above the Club card: a running challenge is the most
-     time-sensitive thing on this screen, and it disappears on its own
-     when no edition is open. */
-  /* T42 draws at the top of Home, in its own slot under the header. */
-  if($('home-t42')) $('home-t42').innerHTML = (typeof t42HomeCard==='function') ? t42HomeCard() : '';
-  const _t42 = '';
-  if(!HF.count()){
-  $('home-activity').innerHTML=_t42+_club+'<div class="sechead">This month</div>'+monthlyCard()+
-      '<div class="acard" style="margin-top:12px;">'+
-      '<div class="ah"><span>\uD83D\uDCC8</span><div class="t">Your progress</div></div>'+
-      '<div class="sub" style="margin-top:3px;">Finish your first session and this fills in \u2014 '+
-      'days trained, minutes, consistency and streak.</div></div>';
-  } else {
-    $('home-activity').innerHTML=_t42+_club+'<div class="sechead">This month</div>'+monthlyCard()+
-      '<div class="sechead">Recent Activity</div>'+
-      '<div class="acard hweek" onclick="switchTab(\'progress\')"><div class="ah">'+ic('run')+'<div class="t">This week</div><div class="c">›</div></div>'+
-      '<div class="hweek-n"><span class="big">'+days+'</span><span class="u"> of '+wgoal+' days</span>'+
-      '<span class="hweek-m">'+weekMinutes()+' min</span></div>'+
-      '<div class="mbar">'+bars+'</div></div>'+
-      '<div class="arow hpair">'+
-      homeTile('bolt','Consistency', consistency()+'<span class="u">%</span>', 'last 4 weeks',
-               donutSVG(consistency(),'#EF4444',44), "switchTab('progress')")+
-      homeTile('flame','Streak', streak+'<span class="u"> '+(streak===1?'day':'days')+'</span>',
-               streak>0 ? 'in a row' : lastTrainedLine(),
-               donutSVG(Math.min(100,streak*14),'#FF9500',44), "switchTab('progress')")+
-      '</div>';
-  }
+  // 5) Activity — three rings and the numbers beside them
+  const days=daysThisWeek(), wgoal=HF.data.weekGoal||5, mins=weekMinutes(), cons=consistency();
+  const vDays=days/wgoal*100, vMins=mins/150*100;
+  const _club=(typeof clubHomeCard==='function') ? clubHomeCard() : '';
+  let a=fsec('Activity','This week, Monday to today.')+
+    '<div class="hact" onclick="switchTab(\'progress\')">'+ringsSVG([vDays,vMins,cons],112)+
+    '<div class="hact-r">'+
+      '<div class="hact-s"><div class="l">Days</div><div class="v hc-days">'+days+'/'+wgoal+'<span> DAYS</span></div></div>'+
+      '<div class="hact-s"><div class="l">Minutes</div><div class="v hc-mins">'+mins+'/150<span> MIN</span></div></div>'+
+      '<div class="hact-s"><div class="l">Consistency</div><div class="v hc-cons">'+cons+'<span>%</span></div></div>'+
+    '</div></div>';
+  if(!HF.count())
+    a+='<div class="hact-note">Your rings fill as you train — finish a session and they start to close.</div>';
+  a+='<div class="htiles">'+
+    '<div class="htile" onclick="switchTab(\'progress\')"><div class="l hc-streak">Streak</div>'+
+      '<div class="v">'+streak+'<span> '+(streak===1?'DAY':'DAYS')+'</span></div><div class="s">'+(streak>0?'in a row':lastTrainedLine())+'</div></div>'+
+    '<div class="htile" onclick="switchTab(\'progress\')"><div class="l hc-sess">Sessions</div>'+
+      '<div class="v">'+HF.count()+'<span> TOTAL</span></div><div class="s">since you started</div></div>'+
+    '</div>';
+  a+=_club+fsec('This Month','The challenge everyone is on.')+monthlyCard();
+  $('home-activity').innerHTML=a;
 
-  // 5) Trending plans
-  const going=PROGRAMS.filter(p=>p.weeks && progDone(p.id)>0 && progDone(p.id)<progDays(p));
-  /* What suits this person first: their goal, then their level; recovery
-     programs last — a beginner's first "trending" card should not be a
-     knee rehab plan. */
-  const want=/strong/i.test(goal)?'Strength':/move/i.test(goal)?'Recovery':'Fat Loss';
-  const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
-  const rank=p=>(p.goal===want?0:4)+(p.level===lvl||p.level==='All levels'?0:2)+(p.goal==='Recovery'&&want!=='Recovery'?8:0);
-  const rest=PROGRAMS.filter(p=>p.weeks && going.indexOf(p)<0).sort((a,b)=>rank(a)-rank(b));
-  const plans=going.concat(rest).slice(0,5);
-  /* One invitation, for anyone not yet a member — above the plans it opens. */
-  const _join = contentOpen() ? '' :
-    '<div class="sub-card" onclick="openPaywall()"><span class="sub-mark" aria-hidden="true"></span>'+
-    '<div class="sub-card-b"><div class="sub-card-t">Unlock HITFAT+</div>'+
-    '<div class="sub-card-s">Every program, meal plan and AI scan — from RM'+(SUB_PLANS[0].price/12).toFixed(0)+' a month</div></div>'+
-    '<span class="sub-card-go">See plans</span></div>';
-  $('home-plans').innerHTML=_join+'<div class="sechead">Trending Plans</div><div class="hscroll">'+
-    plans.map(p=>{ const started=progDone(p.id)>0;
-      return '<div class="plan" style="background-image:url(\''+progImg(p)+'\')" onclick="openProgram(\''+p.id+'\')">'+
-      '<div class="ov"></div>'+lockTag(p)+'<div class="pi"><div class="tx">'+
-      '<div class="k">'+p.goal+' · '+p.weeks.length+' wk</div><div class="t">'+p.name+'</div>'+
-      '<div class="d">'+progDays(p)+' days · '+p.dur+' min a day</div></div>'+
-      '<button class="join" onclick="event.stopPropagation();openProgram(\''+p.id+'\')">'+(!ownsProgram(p)?'Unlock':started?'Open':'Start')+'</button>'+
-      '</div></div>'; }).join('')+'</div>';
-
-  // 6) Quick sessions
-  const quick=PROGRAMS.filter(p=>!p.weeks).slice(0,10);
-  $('home-quick').innerHTML='<div class="sechead">Quick Sessions</div>'+
-    '<div class="hscroll">'+quick.map(p=>
-      '<div class="plan" style="background-image:url(\''+progImg(p)+'\')" onclick="openProgram(\''+p.id+'\')">'+
-      '<div class="ov"></div>'+lockTag(p)+'<div class="pi"><div class="tx">'+
-      '<div class="k">'+p.goal+'</div><div class="t">'+p.name+'</div>'+
-      '<div class="d">'+p.level+' · '+p.dur+' min</div></div>'+
-      '<button class="join" onclick="event.stopPropagation();openProgram(\''+p.id+'\')">Start</button>'+
-      '</div></div>').join('')+'</div>';
+  // 6) programs and short sessions, in the Train tab's shapes
+  const going=trainingPlans().filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
+  $('home-plans').innerHTML=fsec('Popular Programs','Where most members start.',true)+
+    '<div class="hscroll">'+trainingPlans().filter(p=>p.id!=='custom'&&going.indexOf(p)<0).slice(0,5).map(fbigCard).join('')+'</div>';
+  const quick=PROGRAMS.filter(p=>!p.weeks&&!p.rehab&&p.dur<=20).slice(0,9);
+  $('home-quick').innerHTML=fsec('Quick Workouts','Twenty minutes or less.')+fwCols(quick);
 
   /* One quiet invitation, only for people who are not already members,
      and only once the Club has told us which they are. */

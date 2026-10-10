@@ -48,6 +48,8 @@
 /* ── light: its own palette, the HITFAT red ── */
 :root[data-theme="light"]{
   --hitfat:#D7261E; --hyrox:#D7261E; --hyrox-solid:#D7261E; --hitfat-solid:#D7261E;
+  /* solid greys: the translucent ones fell under 4.5:1 on the grey ground */
+  --dim:#56565C; --dim2:#6A6A70;
 }
 
 /* ── the one action: lime, black label ── */
@@ -105,3 +107,5 @@
 /* ── the HITFAT+ mark stays HITFAT red ── */
 :root:not([data-theme="light"]) .topbar{--hyrox:var(--one-red-text);--hitfat:var(--one-red-text);}
 :root:not([data-theme="light"]) .brand .y{color:var(--one-red-text);}
+/* a lime fill takes a black label */
+:root:not([data-theme="light"]) .pgd.on{color:#000000;}

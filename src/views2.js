@@ -131,135 +131,95 @@ function weekMinutes(){
 }
 
 /* ── HOME ── */
+/* ── Home, after the Apple Fitness Summary ──
+   The date small, the greeting large; the week; membership for those who
+   are not members; T42; what is up next; the Activity card with three
+   rings — days against the week's goal, minutes against 150, consistency —
+   and the tiles under it; the month's challenge; then programs and short
+   sessions in the Fitness+ shapes the Train tab uses. */
+const RING_C={days:'#FA114F', mins:'#A3FC08', cons:'#1EEAEF'};
+function ringArc(cx,cy,r,pct){
+  /* Drawn as a path from twelve o'clock: the app's legacy CSS kills every
+     transform, so a rotated circle would start at three. */
+  const p=Math.max(0,Math.min(99.99,pct))/100, a=p*2*Math.PI;
+  const x=cx+r*Math.sin(a), y=cy-r*Math.cos(a);
+  return 'M'+cx+' '+(cy-r)+' A'+r+' '+r+' 0 '+(p>.5?1:0)+' 1 '+x.toFixed(2)+' '+y.toFixed(2);
+}
+function ringsSVG(vals,size){
+  const c=size/2, w=size*.11, rs=[c-w/2, c-w*1.6, c-w*2.7], cols=[RING_C.days,RING_C.mins,RING_C.cons];
+  return '<svg class="hrings" viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'" aria-hidden="true">'+
+    vals.map((v,i)=>'<circle cx="'+c+'" cy="'+c+'" r="'+rs[i]+'" fill="none" stroke="'+cols[i]+'" stroke-opacity=".22" stroke-width="'+w+'"/>'+
+      (v>0?'<path d="'+ringArc(c,c,rs[i],v)+'" fill="none" stroke="'+cols[i]+'" stroke-width="'+w+'" stroke-linecap="round"/>':'')).join('')+
+    '</svg>';
+}
 function renderHome(){
   const nm=((HF.data.prefs&&HF.data.prefs.name)||'').trim();
-  const goal=(HF.data.prefs&&HF.data.prefs.goal)||'Get started';
   const streak=liveStreak();
+  const now=new Date();
+  const dateLine=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
 
-  // 1) header — avatar · greeting · chip
-  $('home-hdr').innerHTML='<div class="hhdr">'+
-    '<div onclick="switchTab(\'me\')" style="cursor:pointer;flex:none;">'+avatarHTML(46)+'</div>'+
-    '<div class="w2"><div class="n">'+(nm?'Hi, '+hesc(nm.split(/\s+/)[0]):'Hi there')+'</div>'+
-    '<div class="s">'+greetWord()+'</div></div>'+
-    (HF.count()?'<div class="chip" onclick="switchTab(\'me\')">'+
-    '<b style="font-family:\'Oswald\';font-size:17px;color:var(--hyrox);line-height:1;">'+consistency()+'</b>'+
-    '<span style="font-size:11px;color:var(--dim);font-weight:600;">Consistency</span></div>':'')+'</div>';
+  // 1) header — the date small, the greeting large, the avatar
+  $('home-hdr').innerHTML='<div class="hsum">'+
+    '<div class="hsum-l"><div class="k">'+dateLine+'</div>'+
+    '<div class="t">'+(nm?'Hi, '+hesc(nm.split(/\s+/)[0]):'Summary')+'</div></div>'+
+    '<div class="hsum-av" onclick="switchTab(\'me\')">'+avatarHTML(40)+'</div></div>';
 
-  // 2) week strip
-  const now=new Date(), off=(now.getDay()+6)%7, mon=new Date(now); mon.setDate(now.getDate()-off);
+  // 2) the week — today a white pill, trained days marked
+  const off=(now.getDay()+6)%7, mon=new Date(now); mon.setDate(now.getDate()-off);
   const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const doneSet=new Set();
-  Object.values(HF.data.sessions).forEach(s=>{ if(s&&s.date){ const d=new Date(s.date);
+  Object.values(HF.data.sessions).forEach(x=>{ if(x&&x.date){ const d=new Date(x.date);
     if(d>=new Date(weekStartISO()+'T00:00:00')) doneSet.add((d.getDay()+6)%7); } });
   $('home-week').innerHTML='<div class="wk2">'+names.map((n,i)=>{
     const dt=new Date(mon); dt.setDate(mon.getDate()+i);
     return '<div class="d '+(i===off?'on':'')+' '+(doneSet.has(i)?'done':'')+'"><small>'+n+'</small><b>'+dt.getDate()+'</b></div>';
   }).join('')+'</div>';
 
-  // 3) Today's Training — the single hero
+  // 3) membership, then T42
+  if($('home-t42')) $('home-t42').innerHTML=(contentOpen()?'':fyJoinCard())+
+    ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
+
+  // 4) Up Next — the plan in progress, or the way to pick one
   const nx=nextUp();
-  if(nx){
-    $('home-today').innerHTML='<div class="sechead" style="margin-top:0;">Today\'s Training</div>'+
-      '<div class="plan wide" style="background-image:url(\''+progImg(nx.p)+'\')" onclick="openDay(\''+nx.p.id+'\','+nx.idx+')">'+
-      '<div class="ov"></div><div class="pi"><div class="tx">'+
-      '<div class="k">'+nx.p.name+' · Day '+(nx.idx+1)+'</div>'+
-      '<div class="t">'+nx.day.name+'</div>'+
-      '<div class="d">'+(nx.day.ex?nx.day.ex.length+' exercises · ':'')+nx.p.dur+' min · video-guided</div></div>'+
-      '<button class="join" onclick="event.stopPropagation();openDay(\''+nx.p.id+'\','+nx.idx+')">Start</button>'+
-      '</div></div>';
+  if(nx && nx.p.weeks){
+    $('home-today').innerHTML=fsec('Up Next','Today, from your plan.')+fyPlanCard(nx.p);
   } else {
-    const first=trainingPlans()[0];
-    $('home-today').innerHTML='<div class="sechead" style="margin-top:0;">Today\'s Training</div>'+
-      '<div class="plan wide" style="background-image:url(\''+IMG.home+'\')" onclick="switchTab(\'train\')">'+
-      '<div class="ov"></div><div class="pi"><div class="tx">'+
-      '<div class="k">Get started</div><div class="t">Pick your first program</div>'+
-      '<div class="d">Bodyweight, chair or with equipment — '+(contentOpen()?'all yours.':'with HITFAT+.')+'</div></div>'+
-      '<button class="join" onclick="event.stopPropagation();switchTab(\'train\')">Browse</button>'+
-      '</div></div>';
+    $('home-today').innerHTML=fsec('Up Next','Pick a plan and your next session waits here.')+
+      '<div class="fmade" style="background:'+PLAN_GRADS.Strength+'">'+
+      '<div class="t">Find your first plan</div>'+
+      '<div class="s">Bodyweight, chair or with equipment — matched to your goal and level.</div>'+
+      '<button class="bigbtn" style="margin-top:18px;" onclick="switchTab(\'train\');setTrSeg(\'plans\')">Browse Plans</button>'+
+      '<button class="fglass" onclick="openFinder()">'+glyph('target')+'Find my program</button></div>';
   }
 
-  // 4) Recent Activity — bar chart + two donuts
-  const dayMin=[0,0,0,0,0,0,0], dayHas=[0,0,0,0,0,0,0], wsISO=weekStartISO();
-  Object.values(HF.data.sessions).forEach(x=>{ const d=sessionISO(x); if(!d||d<wsISO) return;
-    const i=(new Date(d+'T00:00:00').getDay()+6)%7; dayMin[i]+=(x.mins||20); dayHas[i]=1; });
-  const maxMin=Math.max(30,Math.max.apply(null,dayMin));
-  const bars=names.map((n,i)=>'<div class="col"><div class="b '+(dayHas[i]?'':'off')+'" style="height:'+
-    Math.max(4,Math.round(dayMin[i]/maxMin*46))+'px"></div><div class="l">'+n[0]+'</div></div>').join('');
-  const days=daysThisWeek(), wgoal=HF.data.weekGoal||5;
-  /* The month's challenge sits above Recent Activity — high enough to be seen
-     on open, below Today's Training so it never displaces the actual session. */
-  /* Before the first logged session every one of these reads zero: 0 of 5 days,
-     0 min trained, consistency 0, streak 0, 0 total. Six zeros stacked is a
-     report card someone failed before they started. Until there is something to
-     chart, show the month's challenge and say plainly what will appear here. */
-  /* The Club card is the only way into the Club panel, and the Club panel is
-     where check-in lives. It used to sit inside the empty-state branch below,
-     which meant it vanished the moment a member logged their first session —
-     leaving the people who actually train with no way to check in. */
-  const _club = (typeof clubHomeCard==='function') ? clubHomeCard() : '';
-  /* T42 sits above the Club card: a running challenge is the most
-     time-sensitive thing on this screen, and it disappears on its own
-     when no edition is open. */
-  /* T42 draws at the top of Home, in its own slot under the header. */
-  if($('home-t42')) $('home-t42').innerHTML = (typeof t42HomeCard==='function') ? t42HomeCard() : '';
-  const _t42 = '';
-  if(!HF.count()){
-  $('home-activity').innerHTML=_t42+_club+'<div class="sechead">This month</div>'+monthlyCard()+
-      '<div class="acard" style="margin-top:12px;">'+
-      '<div class="ah"><span>\uD83D\uDCC8</span><div class="t">Your progress</div></div>'+
-      '<div class="sub" style="margin-top:3px;">Finish your first session and this fills in \u2014 '+
-      'days trained, minutes, consistency and streak.</div></div>';
-  } else {
-    $('home-activity').innerHTML=_t42+_club+'<div class="sechead">This month</div>'+monthlyCard()+
-      '<div class="sechead">Recent Activity</div>'+
-      '<div class="acard hweek" onclick="switchTab(\'progress\')"><div class="ah">'+ic('run')+'<div class="t">This week</div><div class="c">›</div></div>'+
-      '<div class="hweek-n"><span class="big">'+days+'</span><span class="u"> of '+wgoal+' days</span>'+
-      '<span class="hweek-m">'+weekMinutes()+' min</span></div>'+
-      '<div class="mbar">'+bars+'</div></div>'+
-      '<div class="arow hpair">'+
-      homeTile('bolt','Consistency', consistency()+'<span class="u">%</span>', 'last 4 weeks',
-               donutSVG(consistency(),'#EF4444',44), "switchTab('progress')")+
-      homeTile('flame','Streak', streak+'<span class="u"> '+(streak===1?'day':'days')+'</span>',
-               streak>0 ? 'in a row' : lastTrainedLine(),
-               donutSVG(Math.min(100,streak*14),'#FF9500',44), "switchTab('progress')")+
-      '</div>';
-  }
+  // 5) Activity — three rings and the numbers beside them
+  const days=daysThisWeek(), wgoal=HF.data.weekGoal||5, mins=weekMinutes(), cons=consistency();
+  const vDays=days/wgoal*100, vMins=mins/150*100;
+  const _club=(typeof clubHomeCard==='function') ? clubHomeCard() : '';
+  let a=fsec('Activity','This week, Monday to today.')+
+    '<div class="hact" onclick="switchTab(\'progress\')">'+ringsSVG([vDays,vMins,cons],112)+
+    '<div class="hact-r">'+
+      '<div class="hact-s"><div class="l">Days</div><div class="v hc-days">'+days+'/'+wgoal+'<span> DAYS</span></div></div>'+
+      '<div class="hact-s"><div class="l">Minutes</div><div class="v hc-mins">'+mins+'/150<span> MIN</span></div></div>'+
+      '<div class="hact-s"><div class="l">Consistency</div><div class="v hc-cons">'+cons+'<span>%</span></div></div>'+
+    '</div></div>';
+  if(!HF.count())
+    a+='<div class="hact-note">Your rings fill as you train — finish a session and they start to close.</div>';
+  a+='<div class="htiles">'+
+    '<div class="htile" onclick="switchTab(\'progress\')"><div class="l hc-streak">Streak</div>'+
+      '<div class="v">'+streak+'<span> '+(streak===1?'DAY':'DAYS')+'</span></div><div class="s">'+(streak>0?'in a row':lastTrainedLine())+'</div></div>'+
+    '<div class="htile" onclick="switchTab(\'progress\')"><div class="l hc-sess">Sessions</div>'+
+      '<div class="v">'+HF.count()+'<span> TOTAL</span></div><div class="s">since you started</div></div>'+
+    '</div>';
+  a+=_club+fsec('This Month','The challenge everyone is on.')+monthlyCard();
+  $('home-activity').innerHTML=a;
 
-  // 5) Trending plans
-  const going=PROGRAMS.filter(p=>p.weeks && progDone(p.id)>0 && progDone(p.id)<progDays(p));
-  /* What suits this person first: their goal, then their level; recovery
-     programs last — a beginner's first "trending" card should not be a
-     knee rehab plan. */
-  const want=/strong/i.test(goal)?'Strength':/move/i.test(goal)?'Recovery':'Fat Loss';
-  const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
-  const rank=p=>(p.goal===want?0:4)+(p.level===lvl||p.level==='All levels'?0:2)+(p.goal==='Recovery'&&want!=='Recovery'?8:0);
-  const rest=PROGRAMS.filter(p=>p.weeks && going.indexOf(p)<0).sort((a,b)=>rank(a)-rank(b));
-  const plans=going.concat(rest).slice(0,5);
-  /* One invitation, for anyone not yet a member — above the plans it opens. */
-  const _join = contentOpen() ? '' :
-    '<div class="sub-card" onclick="openPaywall()"><span class="sub-mark" aria-hidden="true"></span>'+
-    '<div class="sub-card-b"><div class="sub-card-t">Unlock HITFAT+</div>'+
-    '<div class="sub-card-s">Every program, meal plan and AI scan — from RM'+(SUB_PLANS[0].price/12).toFixed(0)+' a month</div></div>'+
-    '<span class="sub-card-go">See plans</span></div>';
-  $('home-plans').innerHTML=_join+'<div class="sechead">Trending Plans</div><div class="hscroll">'+
-    plans.map(p=>{ const started=progDone(p.id)>0;
-      return '<div class="plan" style="background-image:url(\''+progImg(p)+'\')" onclick="openProgram(\''+p.id+'\')">'+
-      '<div class="ov"></div>'+lockTag(p)+'<div class="pi"><div class="tx">'+
-      '<div class="k">'+p.goal+' · '+p.weeks.length+' wk</div><div class="t">'+p.name+'</div>'+
-      '<div class="d">'+progDays(p)+' days · '+p.dur+' min a day</div></div>'+
-      '<button class="join" onclick="event.stopPropagation();openProgram(\''+p.id+'\')">'+(!ownsProgram(p)?'Unlock':started?'Open':'Start')+'</button>'+
-      '</div></div>'; }).join('')+'</div>';
-
-  // 6) Quick sessions
-  const quick=PROGRAMS.filter(p=>!p.weeks).slice(0,10);
-  $('home-quick').innerHTML='<div class="sechead">Quick Sessions</div>'+
-    '<div class="hscroll">'+quick.map(p=>
-      '<div class="plan" style="background-image:url(\''+progImg(p)+'\')" onclick="openProgram(\''+p.id+'\')">'+
-      '<div class="ov"></div>'+lockTag(p)+'<div class="pi"><div class="tx">'+
-      '<div class="k">'+p.goal+'</div><div class="t">'+p.name+'</div>'+
-      '<div class="d">'+p.level+' · '+p.dur+' min</div></div>'+
-      '<button class="join" onclick="event.stopPropagation();openProgram(\''+p.id+'\')">Start</button>'+
-      '</div></div>').join('')+'</div>';
+  // 6) programs and short sessions, in the Train tab's shapes
+  const going=trainingPlans().filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
+  $('home-plans').innerHTML=fsec('Popular Programs','Where most members start.',true)+
+    '<div class="hscroll">'+trainingPlans().filter(p=>p.id!=='custom'&&going.indexOf(p)<0).slice(0,5).map(fbigCard).join('')+'</div>';
+  const quick=PROGRAMS.filter(p=>!p.weeks&&!p.rehab&&p.dur<=20).slice(0,9);
+  $('home-quick').innerHTML=fsec('Quick Workouts','Twenty minutes or less.')+fwCols(quick);
 
   /* One quiet invitation, only for people who are not already members,
      and only once the Club has told us which they are. */

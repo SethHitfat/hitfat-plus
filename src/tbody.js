@@ -93,7 +93,11 @@ ok("day marked complete",  progDone(mprog.id)===1, progDone(mprog.id));
 ok("session logged",       HF.count()===1, HF.count());
 ok("streak moved",         HF.data.streak===1, HF.data.streak);
 ok("home activity reflects it", (function(){ switchTab('home');
-  var h=document.getElementById('home-activity').innerHTML; return h.indexOf('1<span class="u"> day</span>')>0 && h.indexOf('in a row')>0 && h.indexOf('This week')>0; })());
+  var h=document.getElementById('home-activity').innerHTML; return h.indexOf('1<span> DAY</span>')>0 && h.indexOf('in a row')>0 &&
+    h.indexOf('hrings')>0 && h.indexOf('1/'+(HF.data.weekGoal||5))>0; })());
+ok("home leads with the date and a large greeting", (function(){ var h=document.getElementById('home-hdr').innerHTML;
+  return h.indexOf('hsum')>0 && /MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY/.test(h); })());
+ok("rings are paths from twelve o'clock", ringArc(50,50,40,25).indexOf('M50 10')===0);
 ok("today hero switches to Continue", document.getElementById('home-today').innerHTML.indexOf('Day 2')>0);
 ok("photos are used, not gradients", document.getElementById('home-plans').innerHTML.indexOf('background-image')>0);
 
@@ -1932,10 +1936,12 @@ ok("...in its own try, apart from the Club's",
 var _wd=_shell.slice(_shell.indexOf('App did not start')-2600, _shell.indexOf('App did not start'));
 ok("the watchdog trusts the app's own _started flag", _wd.indexOf('_started')>0);
 ok("...and any open panel, not just the five tabs",    _wd.indexOf("querySelectorAll('.pad')")>0);
-/* And the banner is the first thing under the header, not below the fold. */
-ok("the banner sits directly under the Home header",
-   _shell.indexOf('id="home-t42"') > _shell.indexOf('id="home-hdr"') &&
-   _shell.indexOf('id="home-t42"') < _shell.indexOf('id="home-week"'));
+/* And the banner is above the fold: under the greeting and the week, above
+   everything else on Home. */
+ok("the banner sits under the header and the week, above the rest",
+   _shell.indexOf('id="home-t42"') > _shell.indexOf('id="home-week"') &&
+   _shell.indexOf('id="home-week"') > _shell.indexOf('id="home-hdr"') &&
+   _shell.indexOf('id="home-t42"') < _shell.indexOf('id="home-today"'));
 delete HF.data.sessions['t-t42-1'];
 _t42reset();
 

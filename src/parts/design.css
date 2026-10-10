@@ -1256,3 +1256,54 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .flib-empty .gly{width:44px;height:44px;color:var(--dim);stroke-width:1.6;}
 .flib-empty .t{font-size:22px;font-weight:700;color:var(--txt);margin-top:14px;letter-spacing:-.3px;}
 .flib-empty .s{font-size:15px;color:var(--dim2);margin-top:6px;line-height:1.4;}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOME, after the Apple Fitness Summary
+   ═══════════════════════════════════════════════════════════════ */
+.hsum{display:flex;align-items:flex-end;gap:12px;margin:2px 2px 14px;}
+.hsum-l{flex:1;min-width:0;}
+.hsum .k{font-size:13px;font-weight:600;letter-spacing:.2px;color:var(--dim2);}
+.hsum .t{font-size:34px;font-weight:800;letter-spacing:-.9px;color:var(--txt);line-height:1.08;margin-top:2px;}
+.hsum-av{flex:none;cursor:pointer;}
+/* the week: today a white pill, a trained day a lime dot */
+:root:not([data-theme="light"]) .wk2 .d.on{background:#F2F2F7;}
+:root:not([data-theme="light"]) .wk2 .d.on small,:root:not([data-theme="light"]) .wk2 .d.on b{color:#000000;}
+:root:not([data-theme="light"]) .wk2 .d{position:relative;}
+:root:not([data-theme="light"]) .wk2 .d.done::after{content:'';position:absolute;left:50%;bottom:3px;width:5px;height:5px;
+  margin-left:-2.5px;border-radius:50%;background:var(--lime);}
+:root:not([data-theme="light"]) .wk2 .d.on.done::after{background:#000000;}
+:root:not([data-theme="light"]) .wk2 .d.done:not(.on) b{color:var(--txt);}
+/* activity: rings left, the three numbers right */
+.hact{display:flex;align-items:center;gap:18px;padding:16px;border-radius:18px;background:var(--surface);cursor:pointer;}
+.hrings{flex:none;}
+.hact-r{flex:1;display:flex;flex-direction:column;gap:8px;}
+.hact-s .l{font-size:13px;font-weight:600;color:var(--txt);}
+.hact-s .v{font-size:22px;font-weight:700;letter-spacing:-.3px;line-height:1.1;font-variant-numeric:tabular-nums;}
+.hact-s .v span{font-size:13px;font-weight:700;letter-spacing:.3px;}
+:root[data-theme="light"] .hact-s .v{filter:brightness(.72) saturate(1.2);}
+.hact-note{font-size:13px;color:var(--dim2);margin:8px 4px 0;line-height:1.4;}
+.htiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.htile{padding:14px 16px;border-radius:18px;background:var(--surface);cursor:pointer;}
+.htile .l{font-size:15px;font-weight:600;}
+.htile .v{font-size:26px;font-weight:700;letter-spacing:-.4px;color:var(--txt);margin-top:6px;font-variant-numeric:tabular-nums;}
+.htile .v span{font-size:13px;font-weight:700;color:var(--dim);letter-spacing:.3px;}
+.htile .s{font-size:12px;color:var(--dim2);margin-top:2px;}
+:root[data-theme="light"] .htile .l{filter:brightness(.7);}
+#home-today .fmade{width:auto;max-width:none;}
+#home-today .fmade .bigbtn{width:100%;}
+.hsum .av2{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;
+  font-size:17px;font-weight:700;color:#FFFFFF;background:linear-gradient(135deg,#FF6A3D,#D7261E);}
+.hsum .av2 img{width:100%;height:100%;object-fit:cover;}
+/* ring colours as text: Apple's, lifted a touch so the small units pass on grey */
+.hc-days{color:#FF5A7E;} .hc-mins{color:#A3FC08;} .hc-cons{color:#3EEBF0;}
+.hc-streak{color:#FF9F0A;} .hc-sess{color:#64D2FF;}
+:root[data-theme="light"] .hc-days{color:#C4003A;}
+:root[data-theme="light"] .hc-mins{color:#3C7A00;}
+:root[data-theme="light"] .hc-cons{color:#00737A;}
+:root[data-theme="light"] .hc-streak{color:#A65A00;}
+:root[data-theme="light"] .hc-sess{color:#005F99;}
+:root[data-theme="light"] .hact-s .v, :root[data-theme="light"] .htile .l{filter:none;}
+/* light: the secondary greys need the darker of the two to pass */
+:root[data-theme="light"] .fsec .fs, :root[data-theme="light"] .hsum .k, :root[data-theme="light"] .wk2 .d small{color:var(--dim);}
+:root[data-theme="light"] .fsec .fs, :root[data-theme="light"] .hsum .k, :root[data-theme="light"] .wk2 .d small,
+:root[data-theme="light"] .htile .v span, :root[data-theme="light"] .htile .s, :root[data-theme="light"] .hact-note{color:#56565C;}
