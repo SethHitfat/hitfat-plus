@@ -718,7 +718,9 @@ function t42RenderLanding(){
   var joined=T42.isJoined(), open=T42.regOpen();
 
   /* ── the poster ── */
-  var h='<div class="t42-stage">'+
+  /* The poster, full-bleed like a Fitness+ program page: a photo under a
+     red-black fade, the mark and the dates on it. */
+  var h='<div class="t42-stage t42-poster" style="--pimg:url(\''+(typeof IMG!=='undefined'?IMG.hiit:'')+'\')">'+
     '<div class="t42-stage-top"><span class="t42-logo t42-logo-s">T42</span>'+
     '<span class="t42-stage-tag">TRANSFORMATION 42 DAYS</span></div>'+
     '<div class="t42-stage-ed">'+t42Esc(t42EdName(c))+'</div>'+
@@ -1843,8 +1845,20 @@ function t42RenderDash(){
        '<div class="sub">Weight, waist and photos — the same way as day 1.</div></div>';
   }
 
-  /* ── today ── */
-  h+='<div class="sechead">Today</div><div class="t42-list">';
+  /* ── today: the Activity card's rings — workout, steps, water — with
+     the numbers beside them, then the list that ticks them off ── */
+  var ck0=T42.today, wd0=!!T42.doneToday, pl0=T42.planDay;
+  var st0=(ck0&&ck0.steps)||0, wa0=(ck0&&ck0.water_ml)||0;
+  h+=fsec('Today',day===1?'Day one. Three rings to close.':'Close the three rings.')+
+     '<div class="hact t42-act" onclick="t42GoCheckin()">'+
+     ringsSVG([(wd0||!pl0)?100:0, st0/T42.stepTarget()*100, wa0/T42.waterTarget()*100],112)+
+     '<div class="hact-r">'+
+       '<div class="hact-s"><div class="l">Workout</div><div class="v hc-days">'+(wd0?'Done':pl0?'To do':'Rest day')+'</div></div>'+
+       '<div class="hact-s"><div class="l">Steps</div><div class="v hc-mins">'+t42Num(st0)+'<span>/'+t42Num(T42.stepTarget())+'</span></div></div>'+
+       '<div class="hact-s"><div class="l">Water</div><div class="v hc-cons">'+(wa0/1000).toFixed(1)+
+         '<span>/'+(T42.waterTarget()/1000).toFixed(1)+' L</span></div></div>'+
+     '</div></div>'+
+     '<div class="t42-list" style="margin-top:12px;">';
 
   var ck=T42.today;
   var wDone=!!T42.doneToday;

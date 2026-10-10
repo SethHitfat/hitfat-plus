@@ -1353,3 +1353,25 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .htiles.me3{grid-template-columns:1fr 1fr 1fr;}
 .htiles.me3 .v{font-size:24px;}
 #me .mehead{margin-top:2px;}
+
+/* ═══════════════════════════════════════════════════════════════
+   T42, in the Fitness language — its red kept
+   ═══════════════════════════════════════════════════════════════ */
+#t42 .t42-stage.t42-poster, :root:not([data-theme="light"]) #t42 .t42-stage.t42-poster{margin:-6px -18px 16px;border-radius:0;border:none !important;min-height:440px;
+  display:flex;flex-direction:column;justify-content:flex-end;padding:22px 18px 22px;
+  background:linear-gradient(180deg,rgba(0,0,0,.30) 0%,rgba(0,0,0,.08) 22%,rgba(40,4,6,.74) 52%,rgba(45,5,7,.92) 74%,var(--bg) 100%),
+             var(--pimg) center/cover no-repeat, #0A0A0C !important;}
+.t42-poster .t42-stage-top{margin-bottom:auto;}
+.t42-poster .t42-stage-h{font-size:34px;letter-spacing:-.9px;line-height:1.05;}
+.t42-poster .t42-stage-cta{border-radius:14px;}
+#t42 .t42-act{margin-bottom:0;}
+/* the leaderboard: Apple's grouped rows */
+#t42 .t42-lb{background:#1C1C1E;border-bottom:.5px solid var(--sep);padding:13px 14px;}
+#t42 .t42-lb:first-of-type{border-top-left-radius:16px;border-top-right-radius:16px;}
+#t42 .t42-lb:last-of-type{border-bottom-left-radius:16px;border-bottom-right-radius:16px;border-bottom:none;}
+:root[data-theme="light"] #t42 .t42-lb{background:#FFFFFF;}
+#t42 .t42-lb.me{background:rgba(237,28,36,.16);}
+/* small green marks, deep enough to read */
+:root[data-theme="light"] .t42-tick{color:#157A35;}
+#t42 .t42-chip.done{color:#30D158;background:rgba(48,209,88,.14);}
+:root[data-theme="light"] #t42 .t42-chip.done{color:#157A35;background:rgba(21,122,53,.10);}
