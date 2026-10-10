@@ -193,7 +193,7 @@ function eatToday(){
   // tools, as the bright tiles Browse Programs uses
   h+=fsec('Tools','Log faster, plan ahead.');
   h+='<div class="hscroll">'+
-     eatTile('Scan a Meal', contentOpen()?'AI reads the plate':'With HITFAT+','linear-gradient(135deg,#0B5A1A 0%,#2FA83A 55%,#A3FC08 100%)','photo','openScan()')+
+     eatTile('Scan a Meal', contentOpen()?'AI reads the plate':'With HITFAT+','linear-gradient(135deg,#5A0A0E 0%,#C21A14 55%,#FF6A5C 100%)','photo','openScan()')+
      eatTile('Meal Plan', contentOpen()?'Malaysian menus':'With HITFAT+','linear-gradient(135deg,#7A3B00 0%,#E08A12 55%,#FFD15A 100%)','clipboard',"setEatSeg('plan')")+
      eatTile('Log Exercise','Earn calories back','linear-gradient(135deg,#1B2A8C 0%,#3A4FE0 55%,#7A8CFF 100%)','flame','openBurn()')+
      '</div>';
@@ -249,7 +249,7 @@ function eatLog(){
   let h='';
   h+=fsec('Add Food','Scan the plate, or type it in.');
   h+='<div class="hscroll">'+
-     eatTile('Scan with AI', contentOpen()?hesc(scanAccess().label):'With HITFAT+','linear-gradient(135deg,#0B5A1A 0%,#2FA83A 55%,#A3FC08 100%)','photo','openScan()')+
+     eatTile('Scan with AI', contentOpen()?hesc(scanAccess().label):'With HITFAT+','linear-gradient(135deg,#5A0A0E 0%,#C21A14 55%,#FF6A5C 100%)','photo','openScan()')+
      eatTile('Add Manually','Always open, unlimited','linear-gradient(135deg,#4A1580 0%,#8A3FE0 55%,#D38CFF 100%)','pencil','openManual()')+
      '</div>';
 

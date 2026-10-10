@@ -137,7 +137,7 @@ function weekMinutes(){
    rings — days against the week's goal, minutes against 150, consistency —
    and the tiles under it; the month's challenge; then programs and short
    sessions in the Fitness+ shapes the Train tab uses. */
-const RING_C={days:'#FA114F', mins:'#A3FC08', cons:'#1EEAEF'};
+const RING_C={days:'#FA114F', mins:'#FF9F0A', cons:'#1EEAEF'};
 function ringArc(cx,cy,r,pct){
   /* Drawn as a path from twelve o'clock: the app's legacy CSS kills every
      transform, so a rotated circle would start at three. */
