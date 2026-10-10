@@ -295,51 +295,100 @@ let curProg=null, curWeek=1;
 function findProg(id){ return PROGRAMS.find(p=>p.id===id)||CHALLENGES.find(c=>c.id===id); }
 function openProgram(id){
   const p=findProg(id); if(!p) return;
-  /* A locked program opens its product sheet instead of its first day. The
-     JSON is already in this file, so this is merchandising, not a lock. */
-  if(!ownsProgram(p)) return openPaywall(p.name+' is part of HITFAT+.');
-  curProg=p; curWeek=1;
+  /* Every program opens its page — the way Fitness+ shows an episode to
+     someone who has not subscribed. A locked one says so on its button;
+     its days and its player still refuse (openDay, playDay, playSingle). */
+  curProg=p; curWeek=1; pdxMore=false;
   const done=progDone(p.id); let acc=0;
   (p.weeks||[]).forEach((w,i)=>{ if(done>=acc) curWeek=i+1; acc+=w.days.length; });
   hidePanels(); $('progdetail').style.display='block'; renderProgram(); $('screen').scrollTop=0;
 }
 function closeProgramDetail(){ switchTab('train'); }
 function backToProgram(){ hidePanels(); $('progdetail').style.display='block'; renderProgram(); }
+/* ── the program page, after Fitness+ ──
+   A full-bleed poster with the title on it; the one action in lime and
+   Preview beside it; the description folded to two lines with MORE; the
+   sessions as a list of episodes; related programs at the end. */
+let pdxMore=false;
+function pdxToggle(){ pdxMore=!pdxMore; renderProgram(); }
+function pdxHero(p,kicker,title,sub,meta){
+  return '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')">'+
+    '<div class="pdx-ov"></div>'+
+    '<button class="pdx-back" aria-label="Back" onclick="'+(kicker==='day'?'backToProgram()':'closeProgramDetail()')+'">'+glyph('chevleft')+'</button>'+
+    '<div class="pdx-in"><div class="pdx-t">'+title+'</div>'+
+    (sub?'<div class="pdx-s">'+sub+'</div>':'')+
+    (meta?'<div class="pdx-m">'+meta+'</div>':'')+'</div></div>';
+}
+function pdxSub(p){
+  if(!p.weeks) return (p.goal||p.level||'Workout');
+  const n=p.weeks.length;
+  return (n===1?'1 Week':n+' Weeks')+' of '+String(p.goal||'Training').replace(/\b\w/g,c=>c.toUpperCase());
+}
 function renderProgram(){
   const p=curProg; if(!p) return;
   const tot=progDays(p), done=progDone(p.id), pct=tot?Math.round(done/tot*100):0;
-  let h='<div class="plan wide" style="background-image:url(\''+progImg(p)+'\');height:232px;">'+
-    '<div class="ov"></div><div class="pi"><div class="tx">'+
-    '<div class="k">'+(p.goal||'Program')+(p.level?' · '+p.level:'')+'</div>'+
-    '<div class="t" style="font-size:24px;">'+p.name+'</div>'+
-    '<div class="d">'+(p.weeks?wks(p.weeks.length)+' · ':'')+tot+' days · '+p.dur+' min a day</div></div></div></div>';
-  h+='<p style="font-size:15px;color:var(--dim);line-height:1.6;margin:16px 0 18px;">'+(p.desc||'')+'</p>';
-  h+='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;">'+
-     '<div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);">'+done+' / '+tot+' days</div>'+
-     '<div style="font-family:\'Oswald\';font-size:20px;color:var(--hyrox);">'+pct+'%</div></div>'+
-     '<div class="pbar"><i style="width:'+pct+'%"></i></div>';
-  if(!p.weeks || !p.weeks.length)
-    h+='<button class="bigbtn" onclick="playSingle(\''+p.id+'\')">▶  Start workout</button>';
-  if(p.weeks && p.weeks.length>1)
-    h+='<div class="filters" style="margin-top:18px;">'+p.weeks.map((w,i)=>
-      '<button class="chip'+((i+1)===curWeek?' y':'')+'" onclick="curWeek='+(i+1)+';renderProgram()">Week '+(i+1)+'</button>').join('')+'</div>';
-  /* A single session has no weeks at all — the two checks above already know
-     that, then this block read p.weeks[curWeek-1] anyway and the whole app
-     died on boot with "Cannot read properties of undefined". There is no day
-     list to draw for a single session; the Start button above is the page. */
-  const wk=(p.weeks||[])[curWeek-1];
-  if(wk){
-  let offd=0; for(let i=0;i<curWeek-1;i++) offd+=p.weeks[i].days.length;
-  h+='<div style="display:flex;flex-direction:column;gap:9px;margin-top:12px;">'+
-    (wk.days||[]).map((d,di)=>{
-      const gi=offd+di, isDone=gi<done;
-      return '<div class="wrow'+(isDone?' done':'')+'" onclick="'+(d.rest?('markRest(\''+p.id+'\','+gi+')'):('openDay(\''+p.id+'\','+gi+')'))+'">'+
-        '<div class="num'+(isDone?' on':'')+'">'+(gi+1)+'</div>'+
-        '<div class="tx"><div class="t">'+(d.rest?'Rest day':(d.name||'Workout'))+'</div>'+
-        '<div class="m">'+(d.rest?'Recovery &amp; stretch':((d.ex?d.ex.length:0)+' exercises · '+p.dur+' min'))+'</div>'+
-        '</div><div class="chev">'+(isDone?'✓':(d.rest?glyph('moon'):'›'))+'</div></div>';
-    }).join('')+'</div>';
+  const owned=ownsProgram(p), multi=!!(p.weeks&&p.weeks.length);
+  const meta=[p.level, multi?planPerWeek(p)+' days a week':'', p.dur+' min'+(multi?' a day':'')].filter(Boolean).join(' · ');
+  let h=pdxHero(p,'program',p.name,pdxSub(p),meta);
+
+  /* the one action, then Preview */
+  let nextGi=-1;
+  if(multi){ let c=0; p.weeks.forEach(w=>w.days.forEach(d=>{ if(nextGi<0 && c>=done && !d.rest) nextGi=c; c++; })); }
+  h+='<div class="pdx-btns">';
+  if(!owned){
+    h+='<button class="bigbtn" onclick="openPaywall(\''+p.name.replace(/'/g,"\\'")+' is part of HITFAT+.\')">Unlock with HITFAT+</button>';
+  } else if(!multi){
+    h+='<button class="bigbtn" onclick="playSingle(\''+p.id+'\')">'+glyph('play')+'Start Workout</button>';
+  } else if(nextGi>=0){
+    h+='<button class="bigbtn" onclick="openDay(\''+p.id+'\','+nextGi+')">'+glyph('play')+
+       (done>0?'Continue · Day '+(nextGi+1):'Start Plan')+'</button>';
+  } else {
+    h+='<div class="pdx-done">'+glyph('trophy')+'Plan complete — every day done.</div>';
   }
+  if(owned && multi && nextGi>=0)
+    h+='<button class="pdx-prev" onclick="openDay(\''+p.id+'\','+nextGi+')">'+glyph('play')+'Preview Day '+(nextGi+1)+'</button>';
+  h+='</div>';
+
+  /* the description, two lines until MORE */
+  if(p.desc)
+    h+='<div class="pdx-desc'+(pdxMore?' open':'')+'">'+p.desc+'</div>'+
+       '<button class="pdx-morebtn" onclick="pdxToggle()">'+(pdxMore?'LESS':'MORE')+'</button>';
+
+  if(multi && done>0)
+    h+='<div class="pdx-prog"><div class="pdx-prog-l">Day '+Math.min(done,tot)+' of '+tot+'</div>'+
+       '<div class="pdx-prog-r">'+pct+'%</div></div><div class="pbar"><i style="width:'+pct+'%"></i></div>';
+
+  /* the sessions, as episodes */
+  if(multi){
+    h+='<div class="fsec"><div class="ft">'+(p.weeks.length>1?'In This Plan':'In This Week')+'</div></div>';
+    if(p.weeks.length>1)
+      h+='<div class="filters pdx-weeks">'+p.weeks.map((w,i)=>
+        '<button class="chip'+((i+1)===curWeek?' y':'')+'" onclick="curWeek='+(i+1)+';renderProgram()">Week '+(i+1)+'</button>').join('')+'</div>';
+    const wk=p.weeks[curWeek-1];
+    let offd=0; for(let i=0;i<curWeek-1;i++) offd+=p.weeks[i].days.length;
+    h+='<div class="pdx-eps">'+(wk.days||[]).map((d,di)=>{
+      const gi=offd+di, isDone=gi<done;
+      if(d.rest) return '<div class="pdx-rest" onclick="markRest(\''+p.id+'\','+gi+')">'+glyph('moon')+
+        '<span>Day '+(gi+1)+' · Rest &amp; recover</span>'+(isDone?'<b>✓</b>':'')+'</div>';
+      return '<div class="fwr pdx-ep'+(isDone?' done':'')+'" onclick="openDay(\''+p.id+'\','+gi+')">'+
+        '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop((d.name||'')+gi)+'">'+
+          (isDone?'<span class="fnew">DONE</span>':'')+'</div>'+
+        '<div class="tx"><div class="t">'+(d.name||'Workout')+'</div>'+
+        '<div class="m">Day '+(gi+1)+' · '+(d.ex?d.ex.length:0)+' exercises · '+p.dur+'min</div></div>'+
+        '<span class="pdx-chev">›</span></div>';
+    }).join('')+'</div>';
+  } else {
+    const exs=pickEx(p.ex||[], progEq(p));
+    h+='<div class="fsec"><div class="ft">In This Workout</div><div class="fs">'+exs.length+' exercises · '+(p.rounds||3)+' rounds</div></div>';
+    h+='<div class="pdx-eps">'+exs.map((e,i)=>
+      '<div class="pdx-ex"><span class="n">'+(i+1)+'</span><div class="tx"><div class="t">'+e.n+'</div>'+
+      '<div class="m">'+e.m+' · '+e.eq+'</div></div></div>').join('')+'</div>';
+  }
+
+  /* related: same goal, not this one */
+  const rel=PROGRAMS.filter(x=>x.id!==p.id && x.goal===p.goal && !x.rehab && !!x.weeks===multi).slice(0,8);
+  if(rel.length) h+='<div class="fsec"><div class="ft">Related</div></div>'+
+    '<div class="hscroll">'+rel.map(x=>flandCard(x)).join('')+'</div>';
   $('pgd-body').innerHTML=h;
 }
 function markRest(pid,gi){
@@ -359,17 +408,15 @@ function openDay(pid,gi){
   if(!day||day.rest) return;
   curDay={p,day,gi};
   const exs=pickEx(day.ex, progEq(p));
-  let h='<div class="plan wide" style="background-image:url(\''+progImg(p)+'\');height:200px;">'+
-    '<div class="ov"></div><div class="pi"><div class="tx"><div class="k">Week '+wk+' · Day '+dn+'</div>'+
-    '<div class="t" style="font-size:24px;">'+(day.name||'Workout')+'</div>'+
-    '<div class="d">'+exs.length+' exercises · '+(p.rounds||3)+' rounds · '+p.dur+' min</div></div></div></div>';
-  h+='<div class="sechead">Exercises</div><div style="display:flex;flex-direction:column;gap:9px;">'+
-    exs.map((e,i)=>'<div class="wrow" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
-      '<div class="num">'+(i+1)+'</div>'+
+  let h=pdxHero(p,'day',(day.name||'Workout'),p.name+' · Week '+wk+', Day '+dn,
+                exs.length+' exercises · '+(p.rounds||3)+' rounds · '+p.dur+' min');
+  h+='<div class="pdx-btns"><button class="bigbtn" onclick="playDay()">'+glyph('play')+'Start Workout</button>'+
+     '<button class="pdx-prev" onclick="completeDay()">'+glyph('check')+'Mark done without playing</button></div>';
+  h+='<div class="fsec"><div class="ft">In This Workout</div><div class="fs">Tap a movement to watch it.</div></div>'+
+    '<div class="pdx-eps">'+exs.map((e,i)=>'<div class="pdx-ex" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
+      '<span class="n">'+(i+1)+'</span>'+
       '<div class="tx"><div class="t">'+e.n+'</div><div class="m">'+e.m+' · '+e.eq+'</div></div>'+
-      '<div style="font-family:\'Oswald\';font-size:17px;color:var(--hyrox);">▶</div></div>').join('')+'</div>';
-  h+='<button class="bigbtn" onclick="playDay()">▶  Start workout</button>'+
-     '<button class="bigbtn sec" onclick="completeDay()">Mark done without playing</button>';
+      '<span class="pdx-play">'+glyph('play')+'</span></div>').join('')+'</div>';
   $('dd-body').innerHTML=h;
   hidePanels(); $('daydetail').style.display='block'; $('screen').scrollTop=0;
 }

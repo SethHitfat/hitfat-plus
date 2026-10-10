@@ -58,7 +58,8 @@ noThrow("day detail",           function(){ openProgram(openable.id); openDay(cu
    the whole app down with it. */
 noThrow("single session opens", function(){
   openProgram(PROGRAMS.filter(function(p){ return !p.weeks; })[0].id); });
-ok("single session shows Start",  document.getElementById('pgd-body').innerHTML.indexOf('Start workout')>0);
+ok("single session shows Start",  document.getElementById('pgd-body').innerHTML.indexOf('Start Workout')>0);
+ok("...and lists its movements",   document.getElementById('pgd-body').innerHTML.indexOf('In This Workout')>0);
 ok("and draws no day list",       document.getElementById('pgd-body').innerHTML.indexOf('class="wrow')<0);
 noThrow("every program opens",    function(){
   PROGRAMS.forEach(function(p){ if(ownsProgram(p)) openProgram(p.id); }); });
@@ -994,10 +995,17 @@ _guest();
 ok("a new account is not a member",   !hasPlus() && memberTier()===null);
 ok("...and every program is locked",  PROGRAMS.every(function(p){ return !ownsProgram(p); }));
 ok("...single sessions included",     PROGRAMS.filter(function(p){return !p.weeks;}).every(function(p){ return !ownsProgram(p); }));
-openProgram(PROGRAMS.filter(function(p){return p.weeks;})[0].id);
-ok("a locked program opens the paywall, not the program",
-   document.getElementById('pwm').className.indexOf('on')>=0 &&
-   document.getElementById('progdetail').style.display!=='block');
+var _lp=trainingPlans().filter(function(p){ return p.id!=='custom'; })[0];
+openProgram(_lp.id);
+var _lph=document.getElementById('pgd-body').innerHTML;
+/* As on Fitness+: the page opens for anyone; a locked one says so on its
+   button, and its days and player still refuse. */
+ok("a locked program shows its page", document.getElementById('progdetail').style.display==='block' &&
+   (_lph.indexOf('In This Plan')>0 || _lph.indexOf('In This Week')>0));
+ok("...with the unlock as its action", _lph.indexOf('Unlock with HITFAT+')>0 && _lph.indexOf('Start Plan')<0);
+openDay(_lp.id,0);
+ok("...but its days still open the paywall",
+   document.getElementById('pwm').className.indexOf('on')>=0 && document.getElementById('daydetail').style.display!=='block');
 var _pw=document.getElementById('pw-body').innerHTML;
 ok("the paywall names the program",   _pw.indexOf('is part of HITFAT+')>0);
 ok("...offers both tiers",            _pw.indexOf("pwSetTier('plus')")>0 && _pw.indexOf("pwSetTier('coach')")>0);
