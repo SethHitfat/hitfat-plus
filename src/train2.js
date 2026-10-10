@@ -174,24 +174,75 @@ function fqCard(){
     '<div class="m">Four questions, one match — from '+PROGRAMS.filter(p=>p.weeks).length+' programs</div></div>'+
     '<div class="chev">›</div></div>';
 }
+/* ── For You, after Fitness+ ──
+   Someone who is not a member meets the membership first, on a collage of
+   the programs it opens. A member meets their plan: today's session and
+   the button that starts it. Then what suits them, short sessions, and the
+   programs most people start with. */
+function fyJoinCard(){
+  const pics=[]; trainingPlans().concat(PROGRAMS.filter(p=>!p.weeks)).forEach(p=>{
+    const u=progImg(p); if(pics.indexOf(u)<0) pics.push(u); });
+  const m=(SUB_PLANS[0].price/12).toFixed(2);
+  return '<div class="fyjoin"><div class="fyjoin-grid">'+pics.slice(0,6).map((u,i)=>
+      '<div style="background-image:url(\''+u+'\')"></div>').join('')+'</div>'+
+    '<div class="fyjoin-b"><div class="t">Join HITFAT+</div>'+
+    '<div class="s">Every program, meal plan and AI meal scan — designed for all levels.</div>'+
+    '<button class="bigbtn" onclick="openPaywall()">See Membership</button>'+
+    '<div class="f">From RM'+m+' a month on the 12-month plan. No auto-renew.</div>'+
+    '<button class="fyjoin-alt" onclick="openPaywall();pwSetPlan(\'sub_plus_6m\')">or the 6-month plan '+glyph('chevleft')+'</button>'+
+    '</div></div>';
+}
+function nextSession(p){
+  const done=progDone(p.id); let c=0, gi=-1;
+  (p.weeks||[]).forEach(w=>w.days.forEach(d=>{ if(gi<0 && c>=done && !d.rest) gi=c; c++; }));
+  return gi;
+}
+function sessionAt(p,gi){
+  let c=0, out=null;
+  (p.weeks||[]).forEach((w,wi)=>w.days.forEach(d=>{ if(c===gi) out={day:d,week:wi+1}; c++; }));
+  return out;
+}
+function fyPlanCard(p){
+  const done=progDone(p.id), tot=progDays(p), gi=nextSession(p), at=gi>=0?sessionAt(p,gi):null;
+  return '<div class="fmade fyplan" style="background:'+(PLAN_GRADS[p.goal]||PLAN_GRADS.Strength)+'">'+
+    '<div class="t">'+p.name+'</div>'+
+    '<div class="s">'+(at?'Week '+at.week+' · ':'')+'Day '+Math.min(done+1,tot)+' of '+tot+'</div>'+
+    '<div class="pb"><i style="width:'+Math.round(done/tot*100)+'%"></i></div>'+
+    (at?'<div class="fyplan-next"><div class="k">UP NEXT</div><div class="n">'+(at.day.name||'Workout')+'</div>'+
+        '<div class="m">'+(at.day.ex?at.day.ex.length:0)+' exercises · '+p.dur+' min</div></div>'+
+        '<button class="bigbtn" onclick="openDay(\''+p.id+'\','+gi+')">'+glyph('play')+'Start Day '+(gi+1)+'</button>'
+      :'<div class="fyplan-next"><div class="n">Every day done.</div></div>')+
+    '<button class="fglass" onclick="openProgram(\''+p.id+'\')">'+glyph('calendar')+'View Plan</button></div>';
+}
 function trForYou(){
   const goal=(HF.data.prefs&&HF.data.prefs.goal)||'';
   const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
-  const going=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>0&&progDone(p.id)<progDays(p));
-  const goalKey=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/move|mobil/i.test(goal)?'Recovery':'';
-  const picked=PROGRAMS.filter(p=>!p.weeks&&(goalKey?activityMatch(goalKey,p):p.level===lvl)).slice(0,8);
-  const byLevel=PROGRAMS.filter(p=>!p.weeks&&p.level===lvl).slice(0,8);
-  let h=(t42InTrain()?t42HomeCard():'')+fqCard();
+  const going=trainingPlans().filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
+  const goalKey=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/core|abs/i.test(goal)?'Core':'';
+  const singles=PROGRAMS.filter(p=>!p.weeks&&!p.rehab);
+  const picked=singles.filter(p=>(goalKey?activityMatch(goalKey,p):true)&&(p.level===lvl||!goalKey)).slice(0,8);
+  const pick=picked.length>=3?picked:singles.filter(p=>p.level===lvl).slice(0,8);
+  const quick=singles.filter(p=>p.dur<=20&&pick.indexOf(p)<0).slice(0,9);
+
+  let h='';
+  if(!contentOpen()) h+=fyJoinCard();
+  if(t42InTrain()) h+=t42HomeCard();
+
   if(going.length){
-    h+=fsec('Continue','Pick up where you left off');
-    h+=going.map(frow).join('');
+    h+=fsec('Your Plan',going.length>1?'You have '+going.length+' plans going.':'Today, and the rest of the week.');
+    h+='<div class="hscroll fmades">'+going.map(fyPlanCard).join('')+'</div>';
+  } else {
+    h+=fsec('Find Your Plan','Four questions, one match.');
+    h+=fqCard();
   }
-  h+=fsec(goalKey?('For your goal · '+goal):'Picked for you','Matched to what you told us in setup');
-  h+='<div class="hscroll">'+(picked.length?picked:byLevel).map(p=>flandCard(p)).join('')+'</div>';
-  h+=fsec('At your level','Everything marked '+lvl);
-  h+=byLevel.slice(0,6).map(p=>frow(p)).join('');
-  if(!going.length && !picked.length && !byLevel.length)
-    h='<div class="empty">Finish setup and start a program — this page fills itself in.</div>';
+  h+=fsec('Picked for You',goalKey?'For your goal: '+goal.toLowerCase()+' · '+lvl:'Matched to your level · '+lvl);
+  h+='<div class="hscroll">'+pick.map((p,i)=>flandCard(p,i<2?'NEW':'')).join('')+'</div>';
+  if(quick.length){
+    h+=fsec('Quick Workouts','Twenty minutes or less.');
+    h+=fwCols(quick);
+  }
+  h+=fsec('Popular Programs','Where most members start.',true);
+  h+='<div class="hscroll">'+trainingPlans().filter(p=>p.id!=='custom'&&going.indexOf(p)<0).slice(0,5).map(fbigCard).join('')+'</div>';
   $('tr-body').innerHTML=h;
 }
 
@@ -211,7 +262,7 @@ function trExplore(){
   const wk=Math.floor(new Date().getTime()/6048e5);
   const rotated=singles.map((_,i)=>singles[(wk+i)%singles.length]);
 
-  let h=(t42InTrain()?t42HomeCard():'');
+  let h=(contentOpen()?'':fyJoinCard())+(t42InTrain()?t42HomeCard():'');
   h+=fsec('This Week','A new set of sessions every week.');
   h+='<div class="hscroll">'+take(rotated,6).map((p,i)=>flandCard(p,i<2?'NEW':'')).join('')+'</div>';
 

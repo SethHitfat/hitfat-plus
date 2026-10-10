@@ -318,6 +318,27 @@ ok("generation is deterministic",  (function(){
    return a===b; })());
 ok("rest days survive",            _multi.some(function(p){return p.weeks[0].days.some(function(d){return d.rest;});}));
 
+print("\n── FOR YOU · AFTER FITNESS+ ──");
+HF.apply(null); HF.data.onboarded=true;
+HF.data.prefs={name:'Seth',goal:'Lose fat',level:'Beginner',days:3,equip:'Bodyweight only'};
+_guest();
+noThrow("for you renders for a guest", function(){ setTrSeg('foryou'); });
+var _fy=document.getElementById('tr-body').innerHTML;
+ok("a guest meets the membership first", _fy.indexOf('fyjoin')>=0 && _fy.indexOf('Join HITFAT+')>0 && _fy.indexOf('openPaywall()')>0);
+ok("...and it promises no free trial", _fy.indexOf('Free')<0 || _fy.indexOf('Try It Free')<0);
+ok("...with the sections after it", _fy.indexOf('Picked for You')>0 && _fy.indexOf('Popular Programs')>0);
+_member('plus');
+var _pp=trainingPlans().filter(function(p){ return p.id!=='custom'; })[0];
+HF.data.progress={}; HF.data.progress[_pp.id]=2;
+setTrSeg('foryou'); _fy=document.getElementById('tr-body').innerHTML;
+ok("a member does not see the join card", _fy.indexOf('fyjoin')<0);
+ok("a member with a plan sees Your Plan", _fy.indexOf('Your Plan')>0 && _fy.indexOf('UP NEXT')>0);
+ok("...and its next day starts from here", _fy.indexOf("openDay('"+_pp.id+"',"+nextSession(_pp)+")")>0);
+ok("short sessions in columns", _fy.indexOf('Quick Workouts')>0 && _fy.indexOf('fwcol')>0);
+HF.data.progress={}; setTrSeg('foryou'); _fy=document.getElementById('tr-body').innerHTML;
+ok("no plan yet: the finder instead", _fy.indexOf('Find Your Plan')>0 && _fy.indexOf('openFinder()')>0);
+HF.apply(null);
+
 print("\n── PLANS · AFTER FITNESS+ ──");
 HF.apply(null); HF.data.onboarded=true;
 HF.data.prefs={name:'Seth',goal:'Lose fat',level:'Beginner',days:3,equip:'Bodyweight only'};
