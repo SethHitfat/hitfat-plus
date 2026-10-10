@@ -414,20 +414,21 @@ function renderMe(){
   const w=(HF.data.weight||[]).slice(-1)[0];
   const signedIn=!!(sb&&HF.userId);
 
-  let h='<div class="mehead" onclick="startOnboarding()">'+avatarHTML(60)+
+  let h='<div class="hsum"><div class="hsum-l"><div class="k">ACCOUNT</div><div class="t">Me</div></div></div>'+
+    '<div class="mehead" onclick="startOnboarding()">'+avatarHTML(60)+
     '<div class="w2"><div class="n">'+hesc((p.name||'').trim()||'Set your name')+'</div>'+
     '<div class="s">'+hesc(HF.email||'Local preview')+'</div></div><span class="chev">›</span></div>';
 
   /* Three numbers, each one that means something on its own. */
-  h+='<div class="arow">'+
-    '<div class="acard"><div class="ah">'+ic('flame')+'<div class="t">Streak</div></div>'+
-      '<div class="big">'+streak+'</div><div class="sub">'+(streak===1?'day in a row':'days in a row')+'</div></div>'+
-    '<div class="acard"><div class="ah">'+ic('check')+'<div class="t">Sessions</div></div>'+
-      '<div class="big">'+HF.count()+'</div><div class="sub">all time</div></div>'+
-    '<div class="acard"><div class="ah">'+ic('scale')+'<div class="t">Weight</div></div>'+
-      '<div class="big">'+(w?w.kg:'—')+'</div><div class="sub">'+(w?'kg':'not logged')+'</div></div></div>';
+  h+='<div class="htiles me3">'+
+    '<div class="htile" onclick="switchTab(\'progress\')"><div class="l hc-streak">Streak</div><div class="v">'+streak+'</div>'+
+      '<div class="s">'+(streak===1?'day in a row':'days in a row')+'</div></div>'+
+    '<div class="htile" onclick="switchTab(\'progress\')"><div class="l hc-sess">Sessions</div><div class="v">'+HF.count()+'</div>'+
+      '<div class="s">all time</div></div>'+
+    '<div class="htile" onclick="switchTab(\'progress\')"><div class="l hc-cons">Weight</div><div class="v">'+(w?w.kg:'—')+'</div>'+
+      '<div class="s">'+(w?'kg':'not logged')+'</div></div></div>';
 
-  h+='<div class="sechead">Your plan</div><div class="glist">'+
+  h+=fsec('Your Plan','')+'<div class="glist">'+
     grow('target','Goal', p.goal||'Not set', 'startOnboarding()')+
     grow('chart','Level', p.level||'Not set', 'startOnboarding()')+
     grow('calendar','Days a week', p.days?p.days+' days':'Not set', 'startOnboarding()')+
@@ -437,24 +438,24 @@ function renderMe(){
   /* Everything else this account can open, in one place. */
   /* The membership first — what this account can open, and until when. */
   const tier=memberTier(), until=memberUntil();
-  h+='<div class="sechead">Membership</div><div class="glist">'+
+  h+=fsec('Membership','')+'<div class="glist">'+
     grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+',
          tier ? (until?'Until '+fmtDate(until):'All Access') : 'Not a member', "openStore()")+'</div>';
   if(tier==='coach'){
-    h+='<div class="sechead">Your coach</div><div class="glist">'+
+    h+=fsec('Your Coach','')+'<div class="glist">'+
       grow('person','Monthly review','Message coach','coachReview()')+
       (COACH_GROUP_URL?grow('people','Members group','WhatsApp','coachGroup()'):'')+
       grow('trophy','T42 included','One edition','openT42()')+'</div>';
   }
-  h+='<div class="sechead">Challenges</div><div class="glist">';
+  h+=fsec('Challenges','')+'<div class="glist">';
   if(typeof T42!=='undefined' && T42.state==='ready' && (T42.challenge||T42.past))
     h+=grow('trophy','T42 Challenge', meT42Line(), 'openT42()');
   if(typeof openClub==='function' && typeof Club!=='undefined' && Club.state==='ready' && (Club.isMember()||Club.isStaff()))
     h+=grow('building','HITFAT Club', Club.isStaff()?'Staff':'Member', 'openClub()');
   h+='</div>';
-  h=h.replace('<div class="sechead">Challenges</div><div class="glist"></div>','');
+  h=h.replace(fsec('Challenges','')+'<div class="glist"></div>','');
 
-  h+='<div class="sechead">Settings</div><div class="glist">'+
+  h+=fsec('Settings','')+'<div class="glist">'+
     '<div class="grow grow-ctl">'+ic('palette')+'<div class="grow-l">Appearance</div>'+
     '<div class="segs grow-seg">'+
     '<button class="seg'+(currentTheme()==='light'?' on':'')+'" onclick="setThemeLight()">Light</button>'+

@@ -105,24 +105,38 @@ function spark(series, good){
     return px.toFixed(1)+','+py.toFixed(1);
   }).join(' ');
   return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:26px;display:block;overflow:visible;">'+
-         '<polyline points="'+pts+'" fill="none" stroke="'+(good?'var(--ok)':'var(--hitfat)')+
+         '<polyline points="'+pts+'" fill="none" stroke="'+(good?'var(--pg-good)':'var(--pg-bad)')+
          '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 }
 
 /* One tile. Returns '' when there is nothing to show, so the grid simply
    holds fewer tiles rather than a row of dashes. */
+/* The Fitness Trends tile: the label in its colour on top, the number
+   large, the change under it in green or red, and the shape of it. */
+const PG_COL={'Weight':'#64D2FF','Body fat':'#BF5AF2','Waist':'#FF9F0A','Workouts':'#A3FC08','Days logged':'#30D158','Streak':'#FF9F0A'};
+/* the same hues, deep enough to read on the light theme's grey */
+const PG_COL_L={'Weight':'#005F99','Body fat':'#7A2DB0','Waist':'#A65A00','Workouts':'#3C7A00','Days logged':'#1A7F37','Streak':'#A65A00'};
 function pgTile(label, value, unit, sub, series, goodDown, metric){
   if(value===null||value===undefined) return '';
   const d=series&&series.length>1?windowDelta(series,30):null;
   let tone='var(--dim)';
-  if(d!==null && d!==0) tone=((d<0)===!!goodDown)?'var(--ok)':'var(--hitfat)';
-  const tap=metric?' onclick="pgOpenMetric(\''+metric+'\')" style="cursor:pointer;"':'';
-  return '<div class="pgtile"'+tap+'>'+
-    '<div class="v">'+value+(unit?'<span class="u"> '+unit+'</span>':'')+'</div>'+
-    '<div class="l">'+label+'</div>'+
+  if(d!==null && d!==0) tone=((d<0)===!!goodDown)?'var(--pg-good)':'var(--pg-bad)';
+  const tap=metric?' onclick="pgOpenMetric(\''+metric+'\')"':'';
+  return '<div class="htile pgt'+(metric?' tap':'')+'"'+tap+'>'+
+    '<div class="l pgl" style="--c:'+(PG_COL[label]||'var(--txt)')+';--cl:'+(PG_COL_L[label]||'var(--txt)')+'">'+label+'</div>'+
+    '<div class="v">'+value+(unit?'<span> '+String(unit).toUpperCase()+'</span>':'')+'</div>'+
     (sub?'<div class="s" style="color:'+tone+'">'+sub+'</div>':'')+
     (series?spark(series, d===null?false:(((d<0)===!!goodDown)||d===0)):'')+
   '</div>';
+}
+/* One ring, one colour, the number in the middle. */
+function pgRing(pct,col,size,big,small){
+  const c=size/2, w=size*.11, r=c-w/2;
+  return '<div class="pgring" style="width:'+size+'px;height:'+size+'px">'+
+    '<svg viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'" aria-hidden="true">'+
+    '<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-opacity=".22" stroke-width="'+w+'"/>'+
+    (pct>0?'<path d="'+ringArc(c,c,r,pct)+'" fill="none" stroke="'+col+'" stroke-width="'+w+'" stroke-linecap="round"/>':'')+
+    '</svg><div class="pgring-c"><b>'+big+'</b><span>'+small+'</span></div></div>';
 }
 
 /* This month's training, as a calendar. Filled = trained, ring = today. */
@@ -152,18 +166,18 @@ function renderProgress(){
   const fSeries=bodySeries('bf'), waistSeries=bodySeries('waist');
   const goal=(HF.data.nutrition&&HF.data.nutrition.goal)||'lose';
   const goodDown=(goal!=='muscle'&&goal!=='bulk');
-  let h='';
+  /* The date small, the title large — the Home header's shape. */
+  const dl=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
+  let h='<div class="hsum"><div class="hsum-l"><div class="k">'+dl+'</div><div class="t">Progress</div></div></div>';
 
-  /* ── score ── the only dark card on a light page, so it reads as the
-     headline rather than one more panel. */
-  h+='<div class="pgscore">'+
-     '<div class="k">HITFAT PROGRESS SCORE</div>'+
-     '<div class="row"><div class="n">'+sc.score+'<span>/100</span></div>'+
-     '<div class="band">'+sc.band+'</div></div>'+
-     '<div class="bar"><i style="width:'+sc.score+'%"></i></div>'+
-     '<div class="parts">'+sc.parts.map(p=>
-       '<div class="p"><b>'+p.got+'</b><span>'+p.label+'</span><small>'+p.note+'</small></div>').join('')+
-     '</div></div>';
+  /* ── score ── one ring and the four parts it is made of, the way the
+     Activity card shows its rings and their numbers. */
+  h+=fsec('Progress Score','Four parts of 25, each from what you did.')+
+     '<div class="hact">'+pgRing(sc.score,'#A3FC08',112,sc.score,'/100')+
+     '<div class="hact-r"><div class="hact-s"><div class="l">This month</div><div class="v hc-mins">'+sc.band+'</div></div>'+
+     sc.parts.map(p=>'<div class="pgpart"><span>'+p.label+'</span><b>'+p.got+'<small>/25</small></b></div>').join('')+
+     '</div></div>'+
+     '<div class="pgnotes">'+sc.parts.map(p=>'<div><b>'+p.label+'</b> · '+p.note+'</div>').join('')+'</div>';
 
   /* ── this month ── every tile is left out when its measurement has never
      been entered, rather than printed as a dash. */
@@ -178,7 +192,7 @@ function renderProgress(){
     pgTile('Days logged', nu.logged||0, '', 'of '+pgDays()+' days', null, false),
     pgTile('Streak', streak, streak===1?'day':'days', streak?'Keep it up':'Start today', null, false)
   ].filter(Boolean).join('');
-  h+='<div class="sechead">Highlights</div>'+
+  h+=fsec('Highlights','Tap a measurement for its trend.')+
      '<div class="pgseg">'+
      '<button class="seg'+(pgDays()===7?' on':'')+'" onclick="setPgP(\'week\')">This week</button>'+
      '<button class="seg'+(pgDays()===7?'':' on')+'" onclick="setPgP(\'month\')">Last 30 days</button>'+
@@ -190,7 +204,7 @@ function renderProgress(){
     const span=Math.abs(start-target)||1, done=Math.abs(start-cur);
     const pct=Math.max(0,Math.min(100,Math.round(done/span*100)));
     const left=Math.round(Math.abs(cur-target)*10)/10;
-    h+='<div class="sechead">Goal</div>'+
+    h+=fsec('Goal','')+
        '<div class="acard"><div class="ah"><div class="t">Weight goal</div>'+
        '<div class="c" onclick="askGoalWeight()" style="cursor:pointer;color:var(--hitfat);font-weight:700;font-size:13px;">Edit</div></div>'+
        '<div style="display:flex;align-items:baseline;gap:8px;margin-top:4px;">'+
@@ -201,7 +215,7 @@ function renderProgress(){
   }
 
   /* ── training ── */
-  h+='<div class="sechead">Training</div>'+
+  h+=fsec('Training','Filled days are days you trained.')+
      '<div class="acard"><div class="ah">'+ic('workout')+'<div class="t">'+(pgDays()===7?'This week':'Last 30 days')+'</div></div>'+
      '<div class="arow pgstats">'+
      '<div><div class="big">'+tr.sessions+'</div><div class="sub">sessions</div></div>'+
@@ -215,7 +229,7 @@ function renderProgress(){
   if(nu.logged){
     const n=HF.data.nutrition||{};
     const pct=n.cal?Math.min(100,Math.round(nu.avgKcal/n.cal*100)):0;
-    h+='<div class="sechead">Nutrition</div>'+
+    h+=fsec('Nutrition','What you logged, on average.')+
        '<div class="acard"><div class="ah">'+ic('food')+'<div class="t">Average intake</div></div>'+
        '<div style="display:flex;align-items:baseline;gap:8px;">'+
        '<div class="big">'+nu.avgKcal+'</div><div class="sub">kcal / day'+(n.cal?' · target '+n.cal:'')+'</div></div>'+
@@ -236,7 +250,7 @@ function renderProgress(){
                           s:nu.logged+' of '+pgDays()+' days'});
   if(streak) ins.push({ok:streak>=3, t:'Streak', s:streak+' day'+(streak===1?'':'s')+' running'});
   if(ins.length){
-    h+='<div class="sechead">Insights</div><div class="acard">'+
+    h+=fsec('Insights','Read from your numbers, nothing more.')+'<div class="acard">'+
        ins.map(x=>'<div class="pgins"><i class="'+(x.ok?'ok':'warn')+'"></i>'+
        '<div><b>'+x.t+'</b><small>'+x.s+'</small></div></div>').join('')+'</div>';
   }
@@ -244,17 +258,17 @@ function renderProgress(){
   /* ── achievements ── */
   const badges=Object.keys(HF.data.badges||{});
   if(badges.length){
-    h+='<div class="sechead">Achievements</div><div class="pggrid">'+
+    h+=fsec('Achievements','')+'<div class="pggrid">'+
        badges.slice(-6).map(k=>'<div class="pgtile" style="text-align:center;">'+
        '<div style="font-size:26px;">'+glyph('trophy')+'</div><div class="l">'+k+'</div></div>').join('')+'</div>';
   }
 
   /* programs in flight */
   const going=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>0&&progDone(p.id)<progDays(p));
-  if(going.length) h+='<div class="sechead">Programs</div>'+going.map(frow).join('');
+  if(going.length) h+=fsec('Programs','In progress.')+going.map(frow).join('');
 
-  h+='<button class="bigbtn" onclick="askMeasure()" style="margin-top:20px;">＋ Log measurements</button>'+
-     '<button class="bigbtn sec" onclick="openShare()">Share progress card</button>';
+  h+='<button class="bigbtn" onclick="askMeasure()" style="margin-top:22px;">Log Measurements</button>'+
+     '<button class="bigbtn sec" onclick="openShare()">Share Progress Card</button>';
   $('prog-body').innerHTML=h;
 }
 

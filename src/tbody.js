@@ -204,7 +204,11 @@ noThrow("unknown food handled",  function(){ renderScanResult({food_name:'',esti
 print("\n── PROGRESS ──");
 HF.apply(null); HF.data.onboarded=true;
 noThrow("empty progress renders", function(){ switchTab('progress'); });
-ok("empty state offers measurement logging", document.getElementById('prog-body').innerHTML.indexOf('Log measurements')>0);
+ok("empty state offers measurement logging", document.getElementById('prog-body').innerHTML.indexOf('Log Measurements')>0);
+ok("progress leads with the date and a large title", document.getElementById('prog-body').innerHTML.indexOf('hsum')>0);
+ok("the score is a ring with its four parts", document.getElementById('prog-body').innerHTML.indexOf('pgring')>0 &&
+   document.getElementById('prog-body').innerHTML.split('class="pgpart"').length-1===4);
+ok("a trend is never drawn in the accent colour", document.getElementById('prog-body').innerHTML.indexOf("var(--hitfat)')")<0);
 logWeight(82); 
 ok("weight stored",  weightLog().length===1 && weightLog()[0].kg===82, JSON.stringify(weightLog()));
 logWeight(81.4);
