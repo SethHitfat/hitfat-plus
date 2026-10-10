@@ -248,3 +248,12 @@
 /* the coming-soon pill sits on a dark poster in both themes */
 .soon-pill{color:#FFC93C;}
 :root[data-theme="light"] .t42-rest{color:#3A3A3C;}
+
+/* "Good" stays green — a tick, Completed, a trend the right way, on track.
+   Meaning, not decoration: the rest of the palette is red and yellow. */
+:root{ --tone-ok:#30D158; --ok:#30D158; --pg-good:#30D158; }
+:root[data-theme="light"]{ --tone-ok:#1A7F37; --ok:#1A7F37; --pg-good:#1A7F37; }
+.t42-tick{color:#30D158;}
+:root[data-theme="light"] .t42-tick{color:#157A35;}
+#t42 .t42-chip.done{color:#30D158;background:rgba(48,209,88,.14);}
+:root[data-theme="light"] #t42 .t42-chip.done{color:#157A35;background:rgba(21,122,53,.10);}
