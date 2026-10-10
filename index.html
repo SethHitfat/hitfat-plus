@@ -3378,6 +3378,37 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 #auth .authfoot{color:var(--dim2);}
 #auth .afields .inp::placeholder{color:#8E8E93;opacity:1;}
 
+/* ═══════════════════════════════════════════════════════════════
+   PAYWALL, after the Fitness+ trial card, in HITFAT colours
+   ═══════════════════════════════════════════════════════════════ */
+#pwm{background:#1C1C1E;}
+:root[data-theme="light"] #pwm{background:#F2F2F7;}
+#pwm .pw-in{max-width:440px;margin:0 auto;padding-top:calc(14px + env(safe-area-inset-top,0px));}
+#pwm .pwtop{position:relative;z-index:2;margin-bottom:-40px;}
+#pwm .pwx{background:rgba(44,44,46,.82);border:none;color:#FFFFFF;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
+.pwcol{display:grid;grid-template-columns:1.1fr 1fr 1fr;grid-template-rows:92px 92px;gap:3px;position:relative;
+  margin:0 -20px;border-radius:0 0 4px 4px;overflow:hidden;}
+.pwcol div{background:#2C2C2E center/cover no-repeat;}
+.pwcol div:nth-child(1){grid-row:span 2;}
+.pwcol::after{content:'';position:absolute;left:0;right:0;bottom:0;height:90px;background:linear-gradient(180deg,transparent,#1C1C1E);}
+:root[data-theme="light"] .pwcol::after{background:linear-gradient(180deg,transparent,#F2F2F7);}
+.pwhero2{text-align:left;padding:0 2px;margin-top:-18px;position:relative;}
+.pw-mark{font-size:15px;font-weight:800;color:var(--txt);}
+.pw-mark span{color:var(--one-red-text,#F5434A);}
+:root[data-theme="light"] .pw-mark span{color:#C21A14;}
+.pwhero2 .sub-h{font-size:30px;margin-top:4px;text-align:left;}
+.pwhero2 .sub-s{text-align:left;}
+.pwseg{margin-top:18px;}
+.pwq{font-size:20px;font-weight:700;letter-spacing:-.3px;color:var(--txt);margin:22px 2px 10px;}
+#pwm .sub-perks{background:#2C2C2E;margin-top:0;}
+:root[data-theme="light"] #pwm .sub-perks{background:#FFFFFF;box-shadow:none;}
+#pwm .sub-plan{background:#2C2C2E;border:none;}
+:root[data-theme="light"] #pwm .sub-plan{background:#FFFFFF;box-shadow:none;}
+.sub-plan.on, :root[data-theme="light"] .sub-plan.on{box-shadow:inset 0 0 0 2px var(--act,#DC1A22) !important;}
+.sub-plan.on .sub-radio{box-shadow:inset 0 0 0 7px var(--act,#DC1A22);}
+.sub-best, :root:not([data-theme="light"]) .sub-best, :root[data-theme="light"] .sub-best{background:#FFC21A;color:#1C1C1E;}
+#pwm .sub-cta{border-radius:99px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -6188,15 +6219,24 @@ function paywallHTML(sheet){
   const info=TIER_INFO[pwTier], plans=SUB_PLANS.filter(x=>x.tier===pwTier);
   const chosen=subPlan(pwSku)||plans[0];
   let h='';
-  if(sheet) h+='<div class="pwtop"><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>';
-  h+='<div class="sub-hero"><span class="sub-mark" aria-hidden="true"></span>'+
+  /* The Fitness+ trial card's shape: a collage of the training it opens,
+     the mark, a large title; the tier as a segmented control; what it
+     includes as one grouped list; the plans to choose from; one button. */
+  if(sheet){
+    h+='<div class="pwtop"><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>';
+    let pics=[]; try{ pics=Object.values(IMG).slice(0,6); }catch(e){}
+    if(pics.length) h+='<div class="pwcol" aria-hidden="true">'+pics.map(u=>'<div style="background-image:url(\''+u+'\')"></div>').join('')+'</div>';
+  }
+  h+='<div class="sub-hero pwhero2"><div class="pw-mark">HITFAT<span>+</span></div>'+
      '<div class="sub-h">'+(pwReason?'Unlock with HITFAT+':'Train with everything')+'</div>'+
      '<div class="sub-s">'+hesc(pwReason||info.line)+'</div></div>';
-  h+='<div class="segs sub-tiers">'+
-     '<button class="seg'+(pwTier==='plus'?' on':'')+'" onclick="pwSetTier(\'plus\')">HITFAT+</button>'+
-     '<button class="seg'+(pwTier==='coach'?' on':'')+'" onclick="pwSetTier(\'coach\')">HITFAT+ Coach</button></div>';
+  h+='<div class="obseg pwseg">'+
+     '<button class="'+(pwTier==='plus'?'on':'')+'" onclick="pwSetTier(\'plus\')">HITFAT+</button>'+
+     '<button class="'+(pwTier==='coach'?'on':'')+'" onclick="pwSetTier(\'coach\')">HITFAT+ Coach</button></div>';
+  h+='<div class="pwq">What you get</div>';
   h+='<div class="sub-perks">'+info.perks.map(x=>
      '<div class="sub-perk">'+ic(x[0])+'<div><div class="t">'+x[1]+'</div><div class="m">'+x[2]+'</div></div></div>').join('')+'</div>';
+  h+='<div class="pwq">Choose your plan</div>';
   h+='<div class="sub-plans">'+plans.map(p=>{
        const on=p.sku===chosen.sku, best=p.months===12;
        const save=best ? Math.round((1-(p.price/12)/(plans.filter(x=>x.months===6)[0].price/6))*100) : 0;

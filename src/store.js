@@ -532,15 +532,24 @@ function paywallHTML(sheet){
   const info=TIER_INFO[pwTier], plans=SUB_PLANS.filter(x=>x.tier===pwTier);
   const chosen=subPlan(pwSku)||plans[0];
   let h='';
-  if(sheet) h+='<div class="pwtop"><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>';
-  h+='<div class="sub-hero"><span class="sub-mark" aria-hidden="true"></span>'+
+  /* The Fitness+ trial card's shape: a collage of the training it opens,
+     the mark, a large title; the tier as a segmented control; what it
+     includes as one grouped list; the plans to choose from; one button. */
+  if(sheet){
+    h+='<div class="pwtop"><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>';
+    let pics=[]; try{ pics=Object.values(IMG).slice(0,6); }catch(e){}
+    if(pics.length) h+='<div class="pwcol" aria-hidden="true">'+pics.map(u=>'<div style="background-image:url(\''+u+'\')"></div>').join('')+'</div>';
+  }
+  h+='<div class="sub-hero pwhero2"><div class="pw-mark">HITFAT<span>+</span></div>'+
      '<div class="sub-h">'+(pwReason?'Unlock with HITFAT+':'Train with everything')+'</div>'+
      '<div class="sub-s">'+hesc(pwReason||info.line)+'</div></div>';
-  h+='<div class="segs sub-tiers">'+
-     '<button class="seg'+(pwTier==='plus'?' on':'')+'" onclick="pwSetTier(\'plus\')">HITFAT+</button>'+
-     '<button class="seg'+(pwTier==='coach'?' on':'')+'" onclick="pwSetTier(\'coach\')">HITFAT+ Coach</button></div>';
+  h+='<div class="obseg pwseg">'+
+     '<button class="'+(pwTier==='plus'?'on':'')+'" onclick="pwSetTier(\'plus\')">HITFAT+</button>'+
+     '<button class="'+(pwTier==='coach'?'on':'')+'" onclick="pwSetTier(\'coach\')">HITFAT+ Coach</button></div>';
+  h+='<div class="pwq">What you get</div>';
   h+='<div class="sub-perks">'+info.perks.map(x=>
      '<div class="sub-perk">'+ic(x[0])+'<div><div class="t">'+x[1]+'</div><div class="m">'+x[2]+'</div></div></div>').join('')+'</div>';
+  h+='<div class="pwq">Choose your plan</div>';
   h+='<div class="sub-plans">'+plans.map(p=>{
        const on=p.sku===chosen.sku, best=p.months===12;
        const save=best ? Math.round((1-(p.price/12)/(plans.filter(x=>x.months===6)[0].price/6))*100) : 0;

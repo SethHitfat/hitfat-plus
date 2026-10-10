@@ -1462,3 +1462,34 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 #auth .authmsg{text-align:left;margin:10px 4px 6px;}
 #auth .authfoot{color:var(--dim2);}
 #auth .afields .inp::placeholder{color:#8E8E93;opacity:1;}
+
+/* ═══════════════════════════════════════════════════════════════
+   PAYWALL, after the Fitness+ trial card, in HITFAT colours
+   ═══════════════════════════════════════════════════════════════ */
+#pwm{background:#1C1C1E;}
+:root[data-theme="light"] #pwm{background:#F2F2F7;}
+#pwm .pw-in{max-width:440px;margin:0 auto;padding-top:calc(14px + env(safe-area-inset-top,0px));}
+#pwm .pwtop{position:relative;z-index:2;margin-bottom:-40px;}
+#pwm .pwx{background:rgba(44,44,46,.82);border:none;color:#FFFFFF;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
+.pwcol{display:grid;grid-template-columns:1.1fr 1fr 1fr;grid-template-rows:92px 92px;gap:3px;position:relative;
+  margin:0 -20px;border-radius:0 0 4px 4px;overflow:hidden;}
+.pwcol div{background:#2C2C2E center/cover no-repeat;}
+.pwcol div:nth-child(1){grid-row:span 2;}
+.pwcol::after{content:'';position:absolute;left:0;right:0;bottom:0;height:90px;background:linear-gradient(180deg,transparent,#1C1C1E);}
+:root[data-theme="light"] .pwcol::after{background:linear-gradient(180deg,transparent,#F2F2F7);}
+.pwhero2{text-align:left;padding:0 2px;margin-top:-18px;position:relative;}
+.pw-mark{font-size:15px;font-weight:800;color:var(--txt);}
+.pw-mark span{color:var(--one-red-text,#F5434A);}
+:root[data-theme="light"] .pw-mark span{color:#C21A14;}
+.pwhero2 .sub-h{font-size:30px;margin-top:4px;text-align:left;}
+.pwhero2 .sub-s{text-align:left;}
+.pwseg{margin-top:18px;}
+.pwq{font-size:20px;font-weight:700;letter-spacing:-.3px;color:var(--txt);margin:22px 2px 10px;}
+#pwm .sub-perks{background:#2C2C2E;margin-top:0;}
+:root[data-theme="light"] #pwm .sub-perks{background:#FFFFFF;box-shadow:none;}
+#pwm .sub-plan{background:#2C2C2E;border:none;}
+:root[data-theme="light"] #pwm .sub-plan{background:#FFFFFF;box-shadow:none;}
+.sub-plan.on, :root[data-theme="light"] .sub-plan.on{box-shadow:inset 0 0 0 2px var(--act,#DC1A22) !important;}
+.sub-plan.on .sub-radio{box-shadow:inset 0 0 0 7px var(--act,#DC1A22);}
+.sub-best, :root:not([data-theme="light"]) .sub-best, :root[data-theme="light"] .sub-best{background:#FFC21A;color:#1C1C1E;}
+#pwm .sub-cta{border-radius:99px;}
