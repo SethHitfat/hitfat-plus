@@ -3341,6 +3341,43 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .obfoot .bigbtn{max-width:440px;margin:0 auto;display:block;width:100%;border-radius:99px;}
 .obhint{text-align:center;font-size:13px;color:var(--dim);margin-top:8px;}
 
+/* ═══════════════════════════════════════════════════════════════
+   SIGN IN, after Fitness+: a collage of the training, fading into the
+   page; the mark; a large title; Google in white; email and password as
+   one grouped card; the lime button.
+   ═══════════════════════════════════════════════════════════════ */
+/* The way in stays dark in both themes (hybrid-red pins it); these are
+   the Fitness dark values it pins now. */
+#splash, #auth{--bg:#000000; --surface:#1C1C1E; --surface2:#2C2C2E; --txt:#FFFFFF; --dim:#A1A1A6; --dim2:#8E8E93;
+  --lime:#A3FC08; --sep:rgba(84,84,88,.55);}
+#auth.on{display:block;background:var(--bg);}
+#auth .authcol{display:grid;grid-template-columns:1.1fr 1fr 1fr;grid-template-rows:118px 118px;gap:3px;position:relative;
+  max-width:520px;margin:0 auto;}
+#auth .authcol div{background:#1C1C1E center/cover no-repeat;}
+#auth .authcol div:nth-child(1){grid-row:span 2;}
+#auth .authcol::after{content:'';position:absolute;left:0;right:0;bottom:0;height:140px;
+  background:linear-gradient(180deg,transparent,var(--bg));}
+#auth .auth-in{display:block;justify-content:flex-start;padding:0 24px calc(40px + env(safe-area-inset-bottom,0px));
+  margin-top:-36px;position:relative;max-width:420px;}
+#auth .amark{font-size:17px;font-weight:800;letter-spacing:-.2px;color:var(--txt);}
+#auth .amark .y{color:var(--one-red-text,#F5434A);}
+#auth h1{font-family:inherit !important;font-size:34px;font-weight:800;letter-spacing:-.9px;text-transform:none;text-align:left;
+  margin:6px 0 4px;color:var(--txt);}
+#auth .lead{text-align:left;font-size:15px;color:var(--dim);margin:0 0 22px;}
+#auth .gbtn{border-radius:99px;padding:14px;font-weight:600;font-size:16px;}
+#auth .orline{margin:18px 0;color:var(--dim2);}
+#auth .afields{border-radius:14px;overflow:hidden;background:#1C1C1E;}
+#auth .afields .inp{display:block;width:100%;margin:0;border-radius:0;background:transparent;border:none;
+  padding:15px 16px;font-size:17px;color:var(--txt);}
+#auth .afields .inp + .inp{border-top:.5px solid var(--sep);}
+#auth .afields .inp:focus{box-shadow:none;background:rgba(255,255,255,.04);}
+#auth .bigbtn{border-radius:99px;margin-top:6px;}
+#auth .authalt{color:var(--dim);font-family:inherit;font-size:14px;}
+#auth .authalt b{color:var(--lime,#A3FC08);font-weight:600;}
+#auth .authmsg{text-align:left;margin:10px 4px 6px;}
+#auth .authfoot{color:var(--dim2);}
+#auth .afields .inp::placeholder{color:#8E8E93;opacity:1;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+
@@ -3550,9 +3587,9 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
   <div class="bar"><i></i></div>
 </div>
 
-<div id="auth"><div class="auth-in">
-  <div class="alogo"></div>
-  <h1 id="auth-title">Sign in</h1>
+<div id="auth"><div class="authcol" id="auth-col" aria-hidden="true"></div><div class="auth-in">
+  <div class="amark">HITFAT<span class="y">+</span></div>
+  <h1 id="auth-title">Sign In</h1>
   <div class="lead" id="auth-lead">Log in to sync your plan and progress across devices.</div>
 
   <button class="gbtn" onclick="signInGoogle()">
@@ -3562,10 +3599,12 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 
   <div class="orline">OR</div>
 
-  <input class="inp" id="auth-email" type="email" autocomplete="email" placeholder="Email">
-  <input class="inp" id="auth-pass" type="password" autocomplete="current-password" placeholder="Password">
+  <div class="afields">
+    <input class="inp" id="auth-email" type="email" autocomplete="email" placeholder="Email">
+    <input class="inp" id="auth-pass" type="password" autocomplete="current-password" placeholder="Password">
+  </div>
   <div class="authmsg" id="auth-msg"></div>
-  <button class="bigbtn" id="auth-submit" onclick="authSubmit()">Sign in</button>
+  <button class="bigbtn" id="auth-submit" onclick="authSubmit()">Sign In</button>
   <button class="authalt" id="auth-alt" onclick="authToggle()">New here? <b>Create an account</b></button>
   <button class="authalt" onclick="authForgot()" style="padding-top:0;">Forgot your password?</button>
 
@@ -16064,16 +16103,23 @@ function openJoint(k){
    Same flow as HITFAT HYBRID against the same Supabase project, so an athlete
    who already has a Hybrid account signs straight in — no second sign-up. ── */
 let authMode='in';
-function showAuth(){ $('auth').classList.add('on'); hideSplash(); }
+function showAuth(){ authCollage(); $('auth').classList.add('on'); hideSplash(); }
+/* The Fitness+ way in: a collage of the training it opens, fading into
+   the page. Drawn when shown, from the same photographs the app uses. */
+function authCollage(){
+  const el=$('auth-col'); if(!el || el.childNodes.length) return;
+  let pics=[]; try{ pics=Object.values(IMG).slice(0,6); }catch(e){ /* the library is not loaded: no collage */ }
+  el.innerHTML=pics.map(u=>'<div style="background-image:url(\''+u+'\')"></div>').join('');
+}
 function hideAuth(){ $('auth').classList.remove('on'); }
 function authMsg(t,kind){ const m=$('auth-msg'); if(m){ m.textContent=t||''; m.className='authmsg'+(kind?' '+kind:''); } }
 function authToggle(){
   authMode = authMode==='in' ? 'up' : 'in';
-  $('auth-title').textContent = authMode==='in' ? 'Sign in' : 'Create account';
+  $('auth-title').textContent = authMode==='in' ? 'Sign In' : 'Create Account';
   $('auth-lead').textContent  = authMode==='in'
     ? 'Log in to sync your plan and progress across devices.'
     : 'One account for HITFAT+ — your progress follows you to any phone.';
-  $('auth-submit').textContent = authMode==='in' ? 'Sign in' : 'Create account';
+  $('auth-submit').textContent = authMode==='in' ? 'Sign In' : 'Create Account';
   $('auth-alt').innerHTML = authMode==='in'
     ? 'New here? <b>Create an account</b>' : 'Already have an account? <b>Sign in</b>';
   authMsg('');

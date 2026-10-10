@@ -2,16 +2,23 @@
    Same flow as HITFAT HYBRID against the same Supabase project, so an athlete
    who already has a Hybrid account signs straight in — no second sign-up. ── */
 let authMode='in';
-function showAuth(){ $('auth').classList.add('on'); hideSplash(); }
+function showAuth(){ authCollage(); $('auth').classList.add('on'); hideSplash(); }
+/* The Fitness+ way in: a collage of the training it opens, fading into
+   the page. Drawn when shown, from the same photographs the app uses. */
+function authCollage(){
+  const el=$('auth-col'); if(!el || el.childNodes.length) return;
+  let pics=[]; try{ pics=Object.values(IMG).slice(0,6); }catch(e){ /* the library is not loaded: no collage */ }
+  el.innerHTML=pics.map(u=>'<div style="background-image:url(\''+u+'\')"></div>').join('');
+}
 function hideAuth(){ $('auth').classList.remove('on'); }
 function authMsg(t,kind){ const m=$('auth-msg'); if(m){ m.textContent=t||''; m.className='authmsg'+(kind?' '+kind:''); } }
 function authToggle(){
   authMode = authMode==='in' ? 'up' : 'in';
-  $('auth-title').textContent = authMode==='in' ? 'Sign in' : 'Create account';
+  $('auth-title').textContent = authMode==='in' ? 'Sign In' : 'Create Account';
   $('auth-lead').textContent  = authMode==='in'
     ? 'Log in to sync your plan and progress across devices.'
     : 'One account for HITFAT+ — your progress follows you to any phone.';
-  $('auth-submit').textContent = authMode==='in' ? 'Sign in' : 'Create account';
+  $('auth-submit').textContent = authMode==='in' ? 'Sign In' : 'Create Account';
   $('auth-alt').innerHTML = authMode==='in'
     ? 'New here? <b>Create an account</b>' : 'Already have an account? <b>Sign in</b>';
   authMsg('');
