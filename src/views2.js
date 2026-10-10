@@ -573,7 +573,7 @@ function setTheme(t){
   try{ localStorage.setItem('hitfat_theme',t); }catch(e){}
   try{
     var m=document.querySelector('meta[name="theme-color"]');
-    if(m && m.setAttribute) m.setAttribute('content', t==='dark' ? '#000000' : '#F5F4F3');
+    if(m && m.setAttribute) m.setAttribute('content', t==='dark' ? '#000000' : '#F2F2F7');
   }catch(e){}
   try{ renderMe(); }catch(e){}
 }

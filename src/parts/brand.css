@@ -109,3 +109,86 @@
 :root:not([data-theme="light"]) .brand .y{color:var(--one-red-text);}
 /* a lime fill takes a black label */
 :root:not([data-theme="light"]) .pgd.on{color:#000000;}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT, after Apple Fitness
+   The same app in Apple's light grouped style: a pale grey ground, white
+   surfaces that sit flat on it, black type with a solid secondary grey,
+   the lime as the action fill (black label, as in dark), a deep green
+   wherever the accent is text, and a black pill for the choice you are
+   on. T42 and the HITFAT+ mark keep the red.
+   ═══════════════════════════════════════════════════════════════ */
+:root[data-theme="light"]{
+  --bg:#F2F2F7; --surface:#FFFFFF; --surface2:#E9E9EE;
+  --line:rgba(60,60,67,.12); --hairline:rgba(60,60,67,.16); --sep:rgba(60,60,67,.18);
+  --tint:rgba(118,118,128,.12);
+  --txt:#000000; --dim:#55555B; --dim2:#6C6C70;
+  --hitfat:#2F7300; --hitfat-solid:#A3FC08; --hyrox:#2F7300; --hyrox-solid:#A3FC08;
+  --hitfat-ink:#000000; --hyrox-ink:#000000;
+  --lime:#2F7300;                 /* the accent as TEXT on white */
+  --nav-on:#000000; --navbg:rgba(255,255,255,.86);
+  --accent-wash:rgba(163,252,8,.22);
+  --n-card:#FFFFFF;
+  --lift-1:none; --lift-2:0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.08);
+}
+:root[data-theme="light"] :is(#t42, .t42-banner, .t42-stage, .topbar){
+  --hitfat:#C21A14; --hitfat-solid:#C21A14; --hyrox:#C21A14; --hyrox-solid:#C21A14;
+  --hitfat-ink:#FFFFFF; --hyrox-ink:#FFFFFF; --accent-wash:rgba(194,26,20,.10);
+}
+:root[data-theme="light"] .brand .y{color:#C21A14;}
+
+/* the action: lime with a black label, flat */
+:root[data-theme="light"] .bigbtn:not(.sec):not(.t42-stage-cta){background:#A3FC08;color:#000000 !important;
+  border:none;border-radius:14px;font-weight:700;box-shadow:none;}
+:root[data-theme="light"] .bigbtn.sec{background:#E9E9EE;color:#2F7300 !important;border:none;border-radius:14px;box-shadow:none;}
+:root[data-theme="light"] #t42 .bigbtn:not(.sec):not(.t42-stage-cta){background:#C21A14;color:#FFFFFF !important;}
+:root[data-theme="light"] #t42 .bigbtn.sec{color:#000000 !important;}
+:root[data-theme="light"] .pdx-prev{color:#2F7300;}
+:root[data-theme="light"] .plan .join{background:#A3FC08;color:#000000;box-shadow:none;}
+:root[data-theme="light"] .nadd{background:#A3FC08;color:#000000;}
+
+/* the choice you are on: a black pill; the rest light grey */
+:root[data-theme="light"] .seg{background:rgba(118,118,128,.12);color:#000000;box-shadow:none;}
+:root[data-theme="light"] .seg.on,
+:root[data-theme="light"] #t42-segs .seg.on,
+:root[data-theme="light"] #t42-progtabs .seg.on{background:#000000;color:#FFFFFF;box-shadow:none;}
+:root[data-theme="light"] .t42-seg3 button.on{background:#000000;color:#FFFFFF;}
+:root[data-theme="light"] .filters .chip{background:rgba(118,118,128,.12);box-shadow:none;}
+:root[data-theme="light"] .filters .chip.y{background:#000000;color:#FFFFFF;}
+
+/* surfaces: white, flat, grouped */
+:root[data-theme="light"] :is(.acard,.glist,.t42-list,.elist,.pgtile,.emac,.eslot,.t42-stat,.t42-jcard,
+  .mehead,.wrow,.t42-wk,.t42-price,.t42-mile,.t42-card,.t42-mini,.opt,.cprow,.paych,.fqcta,.frow,
+  .nsum,.nbox,.nlist,.nquick,.nfav,.nempty,.ncall,.nst,.mpday,.hact,.htile,.pdx-ex,.pdx-rest,.pdx-done){
+  background-color:#FFFFFF;box-shadow:none;border-color:transparent;}
+:root[data-theme="light"] :is(.opt.sel,.cprow.on){box-shadow:inset 0 0 0 2px #2F7300;}
+:root[data-theme="light"] :is(.sub-card,.fyjoin){background:#FFFFFF !important;border:none;}
+/* the month's challenge and the campaign cards are posters with white
+   type: they stay dark on the light page, as Fitness+ keeps its artwork */
+:root[data-theme="light"] :is(.mcard,.ecta){background:#1C1C1E !important;border:none;
+  --txt:#FFFFFF; --dim:rgba(235,235,245,.72); --dim2:rgba(235,235,245,.60);}
+:root[data-theme="light"] .fyjoin-grid::after{background:linear-gradient(180deg,transparent,#FFFFFF);}
+
+/* the week: today a black pill, a trained day a green dot */
+:root[data-theme="light"] .wk2 .d.on{background:#000000;box-shadow:none;}
+:root[data-theme="light"] .wk2 .d.on small,:root[data-theme="light"] .wk2 .d.on b{color:#FFFFFF;}
+:root[data-theme="light"] .wk2 .d.done::after{background:#4CB000;}
+:root[data-theme="light"] .wk2 .d.on.done::after{background:#A3FC08;}
+
+/* progress fills: lime reads on white as a fill */
+:root[data-theme="light"] :is(.pgbar i,.pbar i,.pgscore .bar i){background:#4CB000;}
+:root[data-theme="light"] .pgd.on{background:#A3FC08;color:#000000;}
+
+/* Library: the accent as deep green text */
+:root[data-theme="light"] .flib2 .lb, :root[data-theme="light"] .flib2 .ic .gly{color:#2F7300;}
+
+/* tab bar: white glass, the active tab on a grey pill */
+:root[data-theme="light"] .tabs{background:rgba(255,255,255,.86);border:1px solid rgba(0,0,0,.04);
+  box-shadow:0 10px 30px rgba(0,0,0,.10);}
+:root[data-theme="light"] .tab.active:not(.tabmid){background:rgba(118,118,128,.14);color:#000000;}
+:root[data-theme="light"] .tab.active:not(.tabmid)::after{display:none;}
+:root[data-theme="light"] .tab.active .ticon{filter:none;}
+
+/* kickers */
+:root[data-theme="light"] .hgroup .k{text-transform:uppercase;letter-spacing:.06em;font-size:12px !important;font-weight:700;color:#6C6C70;}
+:root[data-theme="light"] .sub-best{background:#A3FC08;color:#000000;}
