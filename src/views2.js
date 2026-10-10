@@ -499,58 +499,89 @@ function confirmReset(){
   toast('Progress reset'); switchTab('home');
 }
 
-/* ── ONBOARDING ── */
+/* ── ONBOARDING, after the Fitness+ "Build Your Plan" sheet ──
+   A large title on a grouped sheet; the goal and the equipment as tiles
+   with icons, the level as a segmented control, the week as seven day
+   circles, the readiness note and its tick, and one lime button held at
+   the bottom. The answers are the same five it always asked. */
 let _ob={};
+const OB_DAYS=['M','T','W','T','F','S','S'];
+function obDefaultDays(n){ return ({2:[0,3],3:[0,2,4],4:[0,1,3,4],5:[0,1,2,3,4],6:[0,1,2,3,4,5]})[n]||[0,2,4]; }
 function startOnboarding(){
   const p=HF.data.prefs||{};
   _ob={goal:p.goal||null, level:p.level||'Beginner', days:p.days||3,
+       dayList:(Array.isArray(p.dayList)&&p.dayList.length)?p.dayList.slice():obDefaultDays(p.days||3),
        equip:p.equip||'Bodyweight only', ack:!!HF.data.readiness, name:p.name||''};
   $('ob').classList.add('on'); renderOb(); $('ob').scrollTop=0;
 }
 function obPick(f,v){ _ob[f]=v; renderOb(); }
 function obAck(){ _ob.ack=!_ob.ack; renderOb(); }
+function obDay(i){
+  const l=_ob.dayList, k=l.indexOf(i);
+  if(k>=0){ if(l.length<=2){ toast('Two days a week at least'); return; } l.splice(k,1); }
+  else { if(l.length>=6){ toast('Keep one day to rest'); return; } l.push(i); l.sort(); }
+  _ob.days=l.length; renderOb();
+}
+function obClose(){ $('ob').classList.remove('on'); }
 function renderOb(){
-  const opt=(f,v,label,sub)=>{
-    const arg=(typeof v==='number')?v:"'"+String(v).replace(/'/g,"\\'")+"'";
-    return '<button class="opt '+(_ob[f]===v?'sel':'')+'" onclick="obPick(\''+f+'\','+arg+')">'+label+(sub?'<small>'+sub+'</small>':'')+'</button>';
-  };
+  const q=v=>"'"+String(v).replace(/'/g,"\\'")+"'";
+  const tile=(f,v,label,sub,icon)=>'<button class="obtile'+(_ob[f]===v?' on':'')+'" onclick="obPick(\''+f+'\','+q(v)+')">'+
+      '<span class="obtile-ic">'+glyph(icon)+'</span><span class="obtile-t">'+label+'</span>'+
+      (sub?'<span class="obtile-s">'+sub+'</span>':'')+'</button>';
+  const LV={Beginner:'New to this, or coming back after a break.',
+            Intermediate:'You train regularly and know the moves.',
+            Advanced:'A strong base — you want a real challenge.'};
+  const first=!HF.data.onboarded;
   $('ob-in').innerHTML=
-    '<div class="brand">HITFAT<span class="y">+</span></div>'+
-    '<div class="step">Let\'s set up your plan</div>'+
-    '<h1>Train for the <span class="y">body you want</span></h1>'+
-    '<div class="sub">Four quick answers. You can change any of them later.</div>'+
-    '<div class="qh">What are you here for?</div>'+
-    opt('goal','Lose fat','Lose fat','Burn more than you eat, keep your muscle')+
-    opt('goal','Get stronger','Get stronger','Build strength you can feel day to day')+
-    opt('goal','Move better','Move better','Mobility, joints and easier movement')+
-    opt('goal','Get started','Just get started','Build the habit first, the rest follows')+
-    '<div class="qh">Where are you now?</div>'+
-    opt('level','Beginner','Beginner','New to this, or coming back after a break')+
-    opt('level','Intermediate','Intermediate','I train regularly and know the moves')+
-    opt('level','Advanced','Advanced','Strong base, I want a real challenge')+
-    '<div class="qh">Days a week</div>'+
-    opt('days',2,'2 days')+opt('days',3,'3 days')+opt('days',4,'4 days')+opt('days',5,'5 days')+
-    '<div class="qh">What do you have?</div>'+
-    opt('equip','Bodyweight only','Bodyweight only','Nothing but you and the floor')+
-    opt('equip','Home basics','Home basics','A chair, a towel, water bottles')+
-    opt('equip','Dumbbell / Kettlebell','Dumbbell or kettlebell','Some real weight at home')+
-    '<div class="qh">Before you start</div>'+
-    '<div class="readbox">'+
-    '<div class="ri"><span class="d">●</span><span>Train to your own ability — scale any movement so it suits you today.</span></div>'+
-    '<div class="ri"><span class="d">●</span><span>Stop if you get chest pain, dizziness, unusual breathlessness or sharp pain.</span></div>'+
-    '<div class="ri"><span class="d">●</span><span>If you have a condition, an injury, or any doubt about starting exercise, get medical advice first.</span></div></div>'+
-    '<div class="qh">Your name</div>'+
-    '<input class="inp" id="ob-name" maxlength="24" placeholder="What should we call you?" value="'+String(_ob.name||'').replace(/"/g,'&quot;')+'" oninput="_ob.name=this.value">'+
-    '<div class="ackrow '+(_ob.ack?'on':'')+'" onclick="obAck()"><div class="box"><span>✓</span></div>'+
-    '<div>I have read this and understand I train at my own pace and responsibility.</div></div>'+
-    '<button class="bigbtn" onclick="finishOb()">Start training</button>'+
-    (_ob.goal&&_ob.ack?'':'<div class="cnote" style="text-align:center;margin-top:10px;">Pick a goal and tick the box to continue.</div>');
+    (first?'':'<button class="obx" aria-label="Close" onclick="obClose()">✕</button>')+
+    '<h1 class="obh">'+(first?'Build Your Plan':'Your Plan')+'</h1>'+
+    '<div class="obsub">Four answers. Change any of them later in Me.</div>'+
+
+    '<div class="obq">Your Goal</div>'+
+    '<div class="obgrid">'+
+      tile('goal','Lose fat','Lose Fat','Burn more, keep muscle','flame')+
+      tile('goal','Get stronger','Get Stronger','Strength you can feel','workout')+
+      tile('goal','Move better','Move Better','Mobility and joints','leaf')+
+      tile('goal','Get started','Just Get Started','The habit first','sunrise')+
+    '</div>'+
+
+    '<div class="obq">Your Level</div>'+
+    '<div class="obseg">'+['Beginner','Intermediate','Advanced'].map(l=>
+      '<button class="'+(_ob.level===l?'on':'')+'" onclick="obPick(\'level\','+q(l)+')">'+l+'</button>').join('')+'</div>'+
+    '<div class="obnote">'+LV[_ob.level]+'</div>'+
+
+    '<div class="obq">Weekly Schedule</div>'+
+    '<div class="obcard"><div class="obdays">'+OB_DAYS.map((d,i)=>
+      '<button class="'+(_ob.dayList.indexOf(i)>=0?'on':'')+'" onclick="obDay('+i+')" aria-label="Day '+(i+1)+'">'+d+'</button>').join('')+'</div>'+
+    '<div class="obrow"><span>Days a week</span><b>'+_ob.days+' days</b></div></div>'+
+
+    '<div class="obq">Equipment</div>'+
+    '<div class="obgrid obgrid3">'+
+      tile('equip','Bodyweight only','Bodyweight','Just you','person')+
+      tile('equip','Home basics','Home Basics','Chair, towel, bottles','home')+
+      tile('equip','Dumbbell / Kettlebell','Weights','Dumbbell or kettlebell','workout')+
+    '</div>'+
+
+    '<div class="obq">Before You Start</div>'+
+    '<div class="obcard obread">'+
+      '<div class="ri">'+glyph('check')+'<span>Train to your own ability — scale any movement so it suits you today.</span></div>'+
+      '<div class="ri">'+glyph('warning')+'<span>Stop if you get chest pain, dizziness, unusual breathlessness or sharp pain.</span></div>'+
+      '<div class="ri">'+glyph('heart')+'<span>If you have a condition, an injury, or any doubt about starting exercise, get medical advice first.</span></div>'+
+      '<div class="obrow obtick'+(_ob.ack?' on':'')+'" onclick="obAck()"><span class="box">'+(_ob.ack?'✓':'')+'</span>'+
+        '<span>I have read this and understand I train at my own pace and responsibility.</span></div>'+
+    '</div>'+
+
+    '<div class="obq">Your Name</div>'+
+    '<input class="inp obname" id="ob-name" maxlength="24" placeholder="What should we call you?" value="'+String(_ob.name||'').replace(/"/g,'&quot;')+'" oninput="_ob.name=this.value">'+
+
+    '<div class="obfoot"><button class="bigbtn" onclick="finishOb()">'+(first?'Start Training':'Save')+'</button>'+
+    (_ob.goal&&_ob.ack?'':'<div class="obhint">Pick a goal and tick the box to continue.</div>')+'</div>';
 }
 function finishOb(){
   if(!_ob.goal){ toast('Pick a goal to continue'); $('ob').scrollTop=0; return; }
   if(!_ob.ack){ toast('Please tick the readiness box'); return; }
   HF.data.prefs=Object.assign({},HF.data.prefs,{goal:_ob.goal,level:_ob.level||'Beginner',
-    days:_ob.days||3,equip:_ob.equip||'Bodyweight only',name:(_ob.name||'').trim().slice(0,24)});
+    days:_ob.days||3,dayList:(_ob.dayList||[]).slice(),equip:_ob.equip||'Bodyweight only',name:(_ob.name||'').trim().slice(0,24)});
   HF.data.readiness=true; HF.data.onboarded=true; HF.save();
   try{ sb && sb.auth.getSession().then(r=>{ if(r&&r.data&&r.data.session) syncProfile(r.data.session); }); }catch(e){}
   updateAvatar();

@@ -650,6 +650,20 @@ _ob.goal='Lose fat'; finishOb(); ok("blocked without the readiness tick", HF.dat
 _ob.ack=true; finishOb();
 ok("completes with both",   HF.data.onboarded===true);
 ok("prefs saved",           HF.data.prefs.goal==='Lose fat' && HF.data.prefs.name==='Seth', JSON.stringify(HF.data.prefs));
+/* The Fitness+ sheet: days chosen as circles, counted into prefs.days. */
+startOnboarding();
+var _obh=document.getElementById('ob-in').innerHTML;
+ok("the sheet asks with tiles, a segment and day circles", _obh.indexOf('obtile')>0 && _obh.indexOf('obseg')>0 &&
+   _obh.split('obDay(').length-1===7);
+ok("...and an edit can be closed", _obh.indexOf('obClose()')>0);
+var _d0=_ob.dayList.length; obDay(6);
+ok("a day circle adds a day", _ob.dayList.length===_d0+1 && _ob.days===_d0+1);
+_ob.dayList=[0,3]; _ob.days=2; obDay(0);
+ok("...never fewer than two", _ob.dayList.length===2);
+_ob.dayList=[0,1,2,3,4,5]; _ob.days=6; obDay(6);
+ok("...and one day always rests", _ob.dayList.length===6);
+_ob.dayList=[0,2,4,6]; _ob.days=4; finishOb();
+ok("the chosen days are kept", HF.data.prefs.days===4 && HF.data.prefs.dayList.join()==='0,2,4,6');
 
 
 
