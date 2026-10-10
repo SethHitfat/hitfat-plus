@@ -3154,6 +3154,24 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fyplan .bigbtn .gly{width:17px;height:17px;fill:currentColor;stroke:none;}
 .fyplan .fglass{margin-top:8px;}
 
+/* ═══════════════════════════════════════════════════════════════
+   LIBRARY, after Fitness+: one list in the accent colour, counts on the
+   right, separators inset past the icon; an empty state with a clock.
+   ═══════════════════════════════════════════════════════════════ */
+.flib2{margin-top:8px;}
+.flib2 .row{display:flex;align-items:center;gap:14px;padding:13px 2px;cursor:pointer;position:relative;}
+.flib2 .row + .row::before{content:'';position:absolute;top:0;left:40px;right:0;height:.5px;background:var(--sep);}
+.flib2 .row:active{opacity:.6;}
+.flib2 .ic .gly{width:22px;height:22px;color:var(--lime,var(--hitfat));stroke:currentColor;}
+.flib2 .lb{flex:1;font-size:17px;font-weight:400;color:var(--lime,var(--hitfat));}
+:root[data-theme="light"] .flib2 .lb, :root[data-theme="light"] .flib2 .ic .gly{color:var(--hitfat);}
+.flib2 .ct{font-size:17px;color:var(--dim2);}
+.flib2 .cv{color:var(--dim2);font-size:20px;margin-left:2px;}
+.flib-empty{text-align:center;padding:64px 24px 24px;}
+.flib-empty .gly{width:44px;height:44px;color:var(--dim);stroke-width:1.6;}
+.flib-empty .t{font-size:22px;font-weight:700;color:var(--txt);margin-top:14px;letter-spacing:-.3px;}
+.flib-empty .s{font-size:15px;color:var(--dim2);margin-top:6px;line-height:1.4;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+
@@ -15507,29 +15525,58 @@ function trPlans(){
 }
 
 /* ── LIBRARY ── */
+/* ── Library, after Fitness+ ──
+   One grouped list in the accent colour — what HITFAT+ holds and what is
+   yours in it, each with its count — then what you trained last, or the
+   empty state that says it will appear there. */
 function trLibrary(){
-  const started=PROGRAMS.filter(p=>progDone(p.id)>0);
-  const done=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>=progDays(p));
-  const favs=(HF.data.favs||[]).length;
+  const singles=PROGRAMS.filter(p=>!p.weeks&&!p.rehab);
+  const plans=trainingPlans().filter(p=>p.id!=='custom');
+  const going=trainingPlans().filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
+  const done=trainingPlans().filter(p=>progDone(p.id)>=progDays(p)&&progDays(p)>0);
   const rows=[
-    ['🏃','Exercises',libDB().length,"openLibrary()"],
-    ['📋','Programs started',started.length,"openActivity('Started')"],
-    ['🏆','Programs finished',done.length,"openActivity('Finished')"],
-    ['⭐','Saved meals',favs,"switchTab('eat')"],
-    ['✅','Sessions logged',HF.count(),"switchTab('progress')"]
+    ['workout',  'Workouts',     singles.length,              "openLibList('workouts')"],
+    ['clipboard','Programs',     plans.length,                "openLibList('programs')"],
+    ['play',     'Exercises',    libDB().length,              "openLibrary()"],
+    ['trophy',   'Collections',  CHALLENGES.length,           "openLibList('collections')"],
+    ['repeat',   'In Progress',  going.length,                "openActivity('Started')"],
+    ['medal',    'Finished',     done.length,                 "openActivity('Finished')"],
+    ['star',     'Saved Meals',  (HF.data.favs||[]).length,   "switchTab('eat')"]
   ];
-  let h='<div class="flib">'+rows.map(r=>
-    '<div class="row" onclick="'+r[3]+'"><span class="ic">'+ic(r[0])+'</span>'+
+  let h='<div class="flib2">'+rows.map(r=>
+    '<div class="row" onclick="'+r[3]+'"><span class="ic">'+glyph(r[0])+'</span>'+
     '<span class="lb">'+r[1]+'</span><span class="ct">'+r[2]+'</span><span class="cv">›</span></div>').join('')+'</div>';
-  h+=fsec('By equipment','Everything you can train with today');
-  const eqs=Array.from(new Set(libDB().map(e=>e.eq)));
-  h+='<div class="flib">'+eqs.map(q=>{
-    const n=libDB().filter(e=>e.eq===q).length;
-    return '<div class="row" onclick="libEq=\''+q+'\';openLibrary()"><span class="ic">'+glyph('workout')+'</span>'+
-      '<span class="lb">'+q+'</span><span class="ct">'+n+'</span><span class="cv">›</span></div>';
-  }).join('')+'</div>';
-  if(!started.length) h+='<div class="empty">Start a program and it shows up here.</div>';
+
+  /* what you trained last */
+  const recent=Object.keys(HF.data.sessions||{}).map(k=>Object.assign({key:k},HF.data.sessions[k]))
+    .filter(x=>x&&x.date).sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,8);
+  if(!recent.length){
+    h+='<div class="flib-empty">'+glyph('clock')+'<div class="t">Your Recently Trained</div>'+
+       '<div class="s">Workouts you finish will show up in your Library.</div></div>';
+  } else {
+    h+=fsec('Recently Trained','The last sessions you finished.');
+    h+='<div class="pdx-eps">'+recent.map(x=>{
+      const pid=String(x.key).replace(/-d\d+$/,'').replace(/-\d{4}-\d\d-\d\d$/,'');
+      const p=findProg(pid);
+      const when=new Date(x.date); const d=isNaN(when)?'':when.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+      return '<div class="fwr"'+(p?' onclick="openProgram(\''+p.id+'\')"':'')+'>'+
+        '<div class="th" style="background-image:url(\''+(p?progImg(p):IMG.home)+'\');'+thumbCrop(x.name||'')+'"></div>'+
+        '<div class="tx"><div class="t">'+(x.name||'Workout')+'</div>'+
+        '<div class="m">'+[d, x.mins?x.mins+'min':'', p&&p.name!==x.name?p.name:''].filter(Boolean).join(' · ')+'</div></div></div>';
+    }).join('')+'</div>';
+  }
   $('tr-body').innerHTML=h;
+}
+/* The catalogue lists the Library rows open onto. */
+function openLibList(k){
+  const T={workouts:['Workouts',PROGRAMS.filter(p=>!p.weeks&&!p.rehab)],
+           programs:['Programs',trainingPlans().filter(p=>p.id!=='custom')],
+           collections:['Collections',CHALLENGES]}[k];
+  if(!T) return;
+  let h='<div class="hgroup"><div class="k">Library</div><h2>'+T[0]+'</h2><p>'+T[1].length+' in HITFAT+</p></div>';
+  h+=T[1].map(p=>frow(p)).join('');
+  $('lib-body').innerHTML=h;
+  hidePanels(); $('library').style.display='block'; $('screen').scrollTop=0;
 }
 
 /* ── filtered program list (activity tiles + library rows land here) ── */

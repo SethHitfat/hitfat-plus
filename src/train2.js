@@ -358,29 +358,58 @@ function trPlans(){
 }
 
 /* ── LIBRARY ── */
+/* ── Library, after Fitness+ ──
+   One grouped list in the accent colour — what HITFAT+ holds and what is
+   yours in it, each with its count — then what you trained last, or the
+   empty state that says it will appear there. */
 function trLibrary(){
-  const started=PROGRAMS.filter(p=>progDone(p.id)>0);
-  const done=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>=progDays(p));
-  const favs=(HF.data.favs||[]).length;
+  const singles=PROGRAMS.filter(p=>!p.weeks&&!p.rehab);
+  const plans=trainingPlans().filter(p=>p.id!=='custom');
+  const going=trainingPlans().filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
+  const done=trainingPlans().filter(p=>progDone(p.id)>=progDays(p)&&progDays(p)>0);
   const rows=[
-    ['🏃','Exercises',libDB().length,"openLibrary()"],
-    ['📋','Programs started',started.length,"openActivity('Started')"],
-    ['🏆','Programs finished',done.length,"openActivity('Finished')"],
-    ['⭐','Saved meals',favs,"switchTab('eat')"],
-    ['✅','Sessions logged',HF.count(),"switchTab('progress')"]
+    ['workout',  'Workouts',     singles.length,              "openLibList('workouts')"],
+    ['clipboard','Programs',     plans.length,                "openLibList('programs')"],
+    ['play',     'Exercises',    libDB().length,              "openLibrary()"],
+    ['trophy',   'Collections',  CHALLENGES.length,           "openLibList('collections')"],
+    ['repeat',   'In Progress',  going.length,                "openActivity('Started')"],
+    ['medal',    'Finished',     done.length,                 "openActivity('Finished')"],
+    ['star',     'Saved Meals',  (HF.data.favs||[]).length,   "switchTab('eat')"]
   ];
-  let h='<div class="flib">'+rows.map(r=>
-    '<div class="row" onclick="'+r[3]+'"><span class="ic">'+ic(r[0])+'</span>'+
+  let h='<div class="flib2">'+rows.map(r=>
+    '<div class="row" onclick="'+r[3]+'"><span class="ic">'+glyph(r[0])+'</span>'+
     '<span class="lb">'+r[1]+'</span><span class="ct">'+r[2]+'</span><span class="cv">›</span></div>').join('')+'</div>';
-  h+=fsec('By equipment','Everything you can train with today');
-  const eqs=Array.from(new Set(libDB().map(e=>e.eq)));
-  h+='<div class="flib">'+eqs.map(q=>{
-    const n=libDB().filter(e=>e.eq===q).length;
-    return '<div class="row" onclick="libEq=\''+q+'\';openLibrary()"><span class="ic">'+glyph('workout')+'</span>'+
-      '<span class="lb">'+q+'</span><span class="ct">'+n+'</span><span class="cv">›</span></div>';
-  }).join('')+'</div>';
-  if(!started.length) h+='<div class="empty">Start a program and it shows up here.</div>';
+
+  /* what you trained last */
+  const recent=Object.keys(HF.data.sessions||{}).map(k=>Object.assign({key:k},HF.data.sessions[k]))
+    .filter(x=>x&&x.date).sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,8);
+  if(!recent.length){
+    h+='<div class="flib-empty">'+glyph('clock')+'<div class="t">Your Recently Trained</div>'+
+       '<div class="s">Workouts you finish will show up in your Library.</div></div>';
+  } else {
+    h+=fsec('Recently Trained','The last sessions you finished.');
+    h+='<div class="pdx-eps">'+recent.map(x=>{
+      const pid=String(x.key).replace(/-d\d+$/,'').replace(/-\d{4}-\d\d-\d\d$/,'');
+      const p=findProg(pid);
+      const when=new Date(x.date); const d=isNaN(when)?'':when.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+      return '<div class="fwr"'+(p?' onclick="openProgram(\''+p.id+'\')"':'')+'>'+
+        '<div class="th" style="background-image:url(\''+(p?progImg(p):IMG.home)+'\');'+thumbCrop(x.name||'')+'"></div>'+
+        '<div class="tx"><div class="t">'+(x.name||'Workout')+'</div>'+
+        '<div class="m">'+[d, x.mins?x.mins+'min':'', p&&p.name!==x.name?p.name:''].filter(Boolean).join(' · ')+'</div></div></div>';
+    }).join('')+'</div>';
+  }
   $('tr-body').innerHTML=h;
+}
+/* The catalogue lists the Library rows open onto. */
+function openLibList(k){
+  const T={workouts:['Workouts',PROGRAMS.filter(p=>!p.weeks&&!p.rehab)],
+           programs:['Programs',trainingPlans().filter(p=>p.id!=='custom')],
+           collections:['Collections',CHALLENGES]}[k];
+  if(!T) return;
+  let h='<div class="hgroup"><div class="k">Library</div><h2>'+T[0]+'</h2><p>'+T[1].length+' in HITFAT+</p></div>';
+  h+=T[1].map(p=>frow(p)).join('');
+  $('lib-body').innerHTML=h;
+  hidePanels(); $('library').style.display='block'; $('screen').scrollTop=0;
 }
 
 /* ── filtered program list (activity tiles + library rows land here) ── */

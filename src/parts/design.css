@@ -1238,3 +1238,21 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fyplan .bigbtn{margin:12px 0 0;display:flex;align-items:center;justify-content:center;gap:8px;}
 .fyplan .bigbtn .gly{width:17px;height:17px;fill:currentColor;stroke:none;}
 .fyplan .fglass{margin-top:8px;}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIBRARY, after Fitness+: one list in the accent colour, counts on the
+   right, separators inset past the icon; an empty state with a clock.
+   ═══════════════════════════════════════════════════════════════ */
+.flib2{margin-top:8px;}
+.flib2 .row{display:flex;align-items:center;gap:14px;padding:13px 2px;cursor:pointer;position:relative;}
+.flib2 .row + .row::before{content:'';position:absolute;top:0;left:40px;right:0;height:.5px;background:var(--sep);}
+.flib2 .row:active{opacity:.6;}
+.flib2 .ic .gly{width:22px;height:22px;color:var(--lime,var(--hitfat));stroke:currentColor;}
+.flib2 .lb{flex:1;font-size:17px;font-weight:400;color:var(--lime,var(--hitfat));}
+:root[data-theme="light"] .flib2 .lb, :root[data-theme="light"] .flib2 .ic .gly{color:var(--hitfat);}
+.flib2 .ct{font-size:17px;color:var(--dim2);}
+.flib2 .cv{color:var(--dim2);font-size:20px;margin-left:2px;}
+.flib-empty{text-align:center;padding:64px 24px 24px;}
+.flib-empty .gly{width:44px;height:44px;color:var(--dim);stroke-width:1.6;}
+.flib-empty .t{font-size:22px;font-weight:700;color:var(--txt);margin-top:14px;letter-spacing:-.3px;}
+.flib-empty .s{font-size:15px;color:var(--dim2);margin-top:6px;line-height:1.4;}
