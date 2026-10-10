@@ -3,7 +3,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>HITFAT+</title>
-<meta name="theme-color" content="#0F0B0B">
+<meta name="theme-color" content="#000000">
 <script>
 /* Theme, set before anything paints so there is no black-to-white flash.
    Dark is the default — the HITFAT ONE look, the same as hitfat.io: warm
@@ -14,7 +14,7 @@
   try{ var k=localStorage.getItem('hitfat_theme'); if(k==='dark'||k==='light') t=k; }catch(e){}
   document.documentElement.setAttribute('data-theme',t);
   var m=document.querySelector('meta[name="theme-color"]');
-  if(m) m.setAttribute('content', t==='dark' ? '#0F0B0B' : '#F5F4F3');
+  if(m) m.setAttribute('content', t==='dark' ? '#000000' : '#F5F4F3');
 })();
 </script>
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2980,98 +2980,207 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .soon-tag{margin-left:auto;align-self:center;font-size:11px;font-weight:700;padding:5px 10px;border-radius:99px;
   background:var(--lift-2,rgba(127,127,127,.12));color:var(--dim,#8a8a8a);white-space:nowrap;}
 
+
+/* ═══════════════════════════════════════════════════════════════
+   EXPLORE & PLANS, after Apple Fitness+
+   Section title + grey line under it; small sampler cards; posters with
+   the title at the top and the count at the bottom; bright category
+   tiles; workouts in columns of three; the plan as a big gradient card
+   with a glass "Plan Preview" button; the custom plan on gold.
+   ═══════════════════════════════════════════════════════════════ */
+.fsec{margin:30px 2px 12px;}
+.fsec .ft{font-size:22px;font-weight:700;letter-spacing:-.4px;}
+.fsec .ft .cv{font-size:22px;color:var(--dim2);font-weight:500;}
+.fsec .fs{font-size:14px;margin-top:3px;color:var(--dim2);}
+
+/* the sampler: 16:9 cards, two and a bit on a phone */
+.fland{width:168px;}
+.fland .im{width:168px;height:95px;border-radius:12px;}
+.fland .t{font-size:15px;font-weight:500;margin-top:8px;}
+.fland .m{font-size:13px;color:var(--dim2);}
+.fnew{font-size:10px;font-weight:700;letter-spacing:.3px;padding:3px 7px;border-radius:6px;}
+
+/* activity types: square photo, a light label band */
+.fact{width:118px;border-radius:14px;}
+.fact .im{width:118px;height:118px;}
+.fact .lb{padding:9px 6px;font-size:13px;font-weight:600;}
+
+/* top programs: title at the top, count at the bottom */
+.fbig{width:300px;height:200px;border-radius:18px;}
+.fbig .ov{background:linear-gradient(180deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.08) 46%,rgba(0,0,0,.55) 100%);}
+.fbig .in{padding:16px 18px;}
+.fbig .t{font-size:22px;font-weight:700;letter-spacing:-.4px;line-height:1.12;max-width:80%;}
+.fbig .s{font-size:14px;color:rgba(255,255,255,.86);margin-top:5px;max-width:70%;}
+.fbig .m{position:absolute;left:18px;bottom:14px;font-size:11px;font-weight:700;letter-spacing:.8px;color:#FFFFFF;}
+
+/* browse: bright gradient tiles, an icon in the corner */
+.ftile.fcat{width:212px;height:118px;border-radius:16px;padding:14px 16px;}
+.ftile.fcat .t{font-size:19px;font-weight:700;letter-spacing:-.3px;color:#FFFFFF;max-width:80%;}
+.ftile.fcat .ic{right:14px;bottom:12px;opacity:.9;color:#FFFFFF;}
+.ftile.fcat .ic .gly{width:30px;height:30px;stroke:#FFFFFF;}
+
+/* workouts: columns of three rows, no card behind them */
+.fwcols{scroll-snap-type:x mandatory;}
+.fwcol{flex:none;width:calc(100% - 28px);max-width:330px;display:flex;flex-direction:column;gap:12px;scroll-snap-align:start;}
+.fwr{display:flex;align-items:center;gap:12px;cursor:pointer;}
+.fwr:active{opacity:.6;}
+.fwr .th{position:relative;flex:0 0 136px;width:136px;height:78px;border-radius:12px;overflow:hidden;
+  background:#1C1C1E center/cover no-repeat;}
+.fwr .th .fnew{left:7px;bottom:7px;}
+.fwr .tx{flex:1;min-width:0;}
+.fwr .t{font-size:15px;font-weight:500;color:var(--txt);line-height:1.25;}
+.fwr .m{font-size:13px;color:var(--dim2);margin-top:3px;}
+
+/* collections: big illustrated challenge cards */
+.fcoll{flex:none;width:300px;min-height:190px;border-radius:18px;padding:18px;position:relative;overflow:hidden;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:flex-end;}
+.fcoll .ic{position:absolute;top:16px;right:16px;opacity:.9;}
+.fcoll .ic .gly{width:34px;height:34px;stroke:#FFFFFF;}
+.fcoll .t{font-size:24px;font-weight:800;letter-spacing:-.5px;color:#FFFFFF;line-height:1.1;}
+.fcoll .m{font-size:11px;font-weight:700;letter-spacing:.8px;color:rgba(255,255,255,.88);margin-top:6px;}
+.fcoll .d{font-size:13px;color:rgba(255,255,255,.82);margin-top:6px;line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* plans: the Made For You card */
+.fmades{gap:12px;}
+.fmade{flex:none;width:calc(100% - 28px);max-width:340px;min-height:210px;border-radius:22px;padding:20px;position:relative;
+  overflow:hidden;display:flex;flex-direction:column;}
+.fmade .t{font-size:24px;font-weight:700;letter-spacing:-.5px;color:#FFFFFF;line-height:1.1;max-width:85%;}
+.fmade .s{font-size:15px;color:rgba(255,255,255,.80);margin-top:5px;}
+.fmade .mt{font-size:12px;font-weight:700;letter-spacing:.6px;color:#E4FF8A;margin-top:6px;}
+.fmade .pb{height:4px;border-radius:2px;background:rgba(255,255,255,.22);margin-top:12px;}
+.fmade .pb i{display:block;height:100%;border-radius:2px;background:#FFFFFF;}
+.fmade .fglass{margin-top:auto;}
+
+/* the glass pill with the lime label: Plan Preview, Build Your Own */
+.fglass{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:18px;padding:14px;
+  border:none;border-radius:16px;cursor:pointer;font-size:16px;font-weight:600;
+  background:rgba(0,0,0,.34);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--lime,#A3FC08);}
+.fglass .gly{width:17px;height:17px;stroke:currentColor;}
+.fglass:active{opacity:.7;}
+.fglass.fglass-q{margin-top:8px;color:rgba(255,255,255,.72);background:rgba(0,0,0,.22);}
+:root[data-theme="light"] .fglass{background:rgba(0,0,0,.42);color:#C6FF4D;}
+
+/* plans: the custom plan on gold */
+.fcustom{border-radius:22px;padding:20px;position:relative;overflow:hidden;
+  background:radial-gradient(120% 120% at 100% 0%,rgba(255,236,170,.55) 0%,transparent 55%),
+             linear-gradient(135deg,#3B3220 0%,#7D6A3E 48%,#C9AC6E 100%);}
+.fcustom .t{font-size:22px;font-weight:700;letter-spacing:-.4px;color:#FFFFFF;}
+.fcustom .s{font-size:15px;color:rgba(255,255,255,.86);margin-top:6px;line-height:1.45;max-width:92%;}
+/* top programs: the title block sits at the top, the count at the bottom */
+.fbig{display:block;}
+.fbig .in{position:absolute;left:0;right:0;top:0;}
+/* columns snap to the page gutter, not the screen edge */
+.fwcols{scroll-padding-inline:18px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
-   HITFAT+ · the HITFAT ONE look
+   HITFAT+ · the dark theme, after Apple Fitness+
 
-   The same colour and voice as hitfat.io: a warm black ground, cream type,
-   one red (#ED1C24), the red button for the one action, a cream pill for
-   the choice you are on, and campaign cards that glow red from a corner.
-   The typeface stays the app's own.
+   Taken from the Fitness+ app itself: a true-black ground, grouped grey
+   surfaces (#1C1C1E, #2C2C2E), white type with Apple's secondary grey, and
+   one neon lime (#A3FC08) for the action — the "Try It Free" button, the
+   "Preview" link, the active tab. The chosen chip is a white pill.
 
-   Loaded after the design layer. Dark is the default now; the light theme
-   keeps its own palette and only takes the red. Delete the BRAND marker in
+   Red stays where it is the brand, not the interface: the HITFAT+ mark,
+   the centre HF button and everything T42 (its posters, its logo, its
+   progress), which keeps the HITFAT red inside #t42 and its home card.
+
+   The typeface stays the app's own. Loaded after the design layer; the
+   light theme keeps its own palette. Delete the BRAND marker in
    shell2.html and the app is what it was.
    ═══════════════════════════════════════════════════════════════ */
 
 :root{
-  /* The site's red, in two tones that read the same: a fill a white label
-     passes contrast on (4.7:1), and a text red that passes on warm black
-     (5:1). #ED1C24 itself sits just under on both. */
+  --lime:#A3FC08;
+  --lime-wash:rgba(163,252,8,.14);
+  /* the HITFAT red, for the brand and for T42 */
   --one-red:#DC1A22;
   --one-red-text:#F5434A;
-  --one-red-wash:rgba(237,28,36,.16);
   --one-red-line:rgba(237,28,36,.40);
 }
 
-/* ── dark: warm black, cream, red ── */
+/* ── dark: black, Apple greys, lime ── */
 :root:not([data-theme="light"]){
-  --bg:#0F0B0B; --surface:#1B1514; --surface2:rgba(244,239,233,.07);
-  --line:rgba(244,239,233,.08); --hairline:rgba(244,239,233,.10); --sep:rgba(244,239,233,.09);
-  --tint:rgba(244,239,233,.08);
-  --txt:#F4EFE9; --dim:#B9AEA7; --dim2:#8E8580;
-  --ink-90:rgba(244,239,233,.92); --ink-72:rgba(244,239,233,.72);
-  --ink-55:rgba(244,239,233,.58); --ink-42:rgba(244,239,233,.46);
+  --bg:#000000; --surface:#1C1C1E; --surface2:#2C2C2E;
+  --line:rgba(255,255,255,.08); --hairline:rgba(255,255,255,.10); --sep:rgba(84,84,88,.55);
+  --tint:rgba(118,118,128,.24);
+  --txt:#FFFFFF; --dim:#A1A1A6; --dim2:#8E8E93;
+  --ink-90:rgba(255,255,255,.92); --ink-72:rgba(235,235,245,.72);
+  --ink-55:rgba(235,235,245,.60); --ink-42:rgba(235,235,245,.48);
+  --hitfat:var(--lime); --hitfat-solid:var(--lime); --hyrox:var(--lime); --hyrox-solid:var(--lime);
+  --hitfat-ink:#000000; --hyrox-ink:#000000;
+  --nav-on:var(--lime); --navbg:rgba(28,28,30,.84);
+  --accent-wash:var(--lime-wash);
+  --n-card:#1C1C1E;
+}
+/* T42 is red. Its screens and its home card keep the HITFAT red, so the
+   challenge looks like its posters and not like the rest of the app. */
+:root:not([data-theme="light"]) :is(#t42, .t42-banner, .t42-stage){
   --hitfat:var(--one-red-text); --hitfat-solid:var(--one-red); --hyrox:var(--one-red-text); --hyrox-solid:var(--one-red);
-  --nav-on:#F4EFE9; --navbg:rgba(15,11,11,.84);
-  --accent-wash:var(--one-red-wash);
-  --n-card:#1B1514;
+  --hitfat-ink:#FFFFFF; --hyrox-ink:#FFFFFF; --accent-wash:rgba(237,28,36,.16);
 }
 
-/* ── light: its own palette, the same red ── */
+/* ── light: its own palette, the HITFAT red ── */
 :root[data-theme="light"]{
   --hitfat:#D7261E; --hyrox:#D7261E; --hyrox-solid:#D7261E; --hitfat-solid:#D7261E;
 }
 
-/* ── the one action: red, heavy, rounded like the site's button ── */
+/* ── the one action: lime, black label ── */
 :root:not([data-theme="light"]) .bigbtn:not(.sec):not(.t42-stage-cta){
-  background:var(--one-red);color:#FFFFFF !important;border:none;border-radius:15px;font-weight:800;
-  box-shadow:0 10px 26px rgba(237,28,36,.28);}
-:root:not([data-theme="light"]) .bigbtn:not(.sec):active{transform:scale(.985);}
-:root:not([data-theme="light"]) .bigbtn.sec{background:rgba(244,239,233,.07);color:var(--txt) !important;
-  border:1px solid rgba(244,239,233,.08);border-radius:15px;}
+  background:var(--lime);color:#000000 !important;border:none;border-radius:14px;font-weight:700;box-shadow:none;}
+:root:not([data-theme="light"]) .bigbtn:not(.sec):active{transform:scale(.985);opacity:.9;}
+:root:not([data-theme="light"]) .bigbtn.sec{background:#2C2C2E;color:var(--lime) !important;border:none;border-radius:14px;}
+/* inside T42 the action is red, like its posters */
+:root:not([data-theme="light"]) #t42 .bigbtn:not(.sec):not(.t42-stage-cta){background:var(--one-red);color:#FFFFFF !important;}
+:root:not([data-theme="light"]) #t42 .bigbtn.sec{color:#FFFFFF !important;}
 
-/* ── the choice you are on: a cream pill on a dark track ── */
-:root:not([data-theme="light"]) .seg{background:rgba(244,239,233,.06);color:#B9AEA7;}
+/* ── the choice you are on: a white pill; the rest dark grey ── */
+:root:not([data-theme="light"]) .seg{background:#1C1C1E;color:#FFFFFF;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
 :root:not([data-theme="light"]) .seg.on,
 :root:not([data-theme="light"]) #t42-segs .seg.on,
-:root:not([data-theme="light"]) #t42-progtabs .seg.on{background:#F4EFE9;color:#0F0B0B;}
-:root:not([data-theme="light"]) :is(.t42-seg3) button.on{background:#F4EFE9;color:#0F0B0B;}
-:root:not([data-theme="light"]) .filters .chip.y{background:#F4EFE9;color:#0F0B0B;}
+:root:not([data-theme="light"]) #t42-progtabs .seg.on{background:#F2F2F7;color:#000000;box-shadow:none;}
+:root:not([data-theme="light"]) :is(.t42-seg3) button.on{background:#F2F2F7;color:#000000;}
+:root:not([data-theme="light"]) .filters .chip.y{background:#F2F2F7;color:#000000;}
 
-/* ── kickers: small, spaced capitals with a red light, as on the site ── */
-:root:not([data-theme="light"]) .hgroup .k{text-transform:uppercase;letter-spacing:.14em;
-  font-size:11.5px !important;font-weight:700;color:#C7BCB4;}
+/* ── kickers ── */
+:root:not([data-theme="light"]) .hgroup .k{text-transform:uppercase;letter-spacing:.06em;
+  font-size:12px !important;font-weight:700;color:var(--dim2);}
 
-/* ── surfaces: warm, hairline-edged, no grey ── */
+/* ── surfaces: grouped grey, no edges ── */
 :root:not([data-theme="light"]) :is(.acard,.glist,.t42-list,.elist,.pgtile,.emac,.eslot,.t42-stat,.t42-jcard,
   .mehead,.wrow,.t42-wk,.t42-mile,.t42-card,.t42-mini,.opt,.cprow,.paych,.fqcta,.frow){
-  background-color:#1B1514;border-color:rgba(244,239,233,.07);}
-:root:not([data-theme="light"]) :is(.opt.sel,.cprow.on,.t42-card.on){box-shadow:inset 0 0 0 2px var(--one-red);}
+  background-color:#1C1C1E;border-color:transparent;}
+:root:not([data-theme="light"]) :is(.opt.sel,.cprow.on){box-shadow:inset 0 0 0 2px var(--lime);}
+:root:not([data-theme="light"]) .t42-card.on{box-shadow:inset 0 0 0 2px var(--one-red);}
 
-/* ── campaign cards: dark, one red glow from the corner, a red edge ── */
-:root:not([data-theme="light"]) :is(.t42-stage,.t42-banner,.mcard,.sub-card,.ecta){
-  background:radial-gradient(120% 90% at 100% 0%, rgba(237,28,36,.34) 0%, transparent 58%), #1B1514 !important;
+/* ── campaign cards: T42 keeps its red glow; the others are plain grey ── */
+:root:not([data-theme="light"]) :is(.t42-stage,.t42-banner){
+  background:radial-gradient(120% 90% at 100% 0%, rgba(237,28,36,.34) 0%, transparent 58%), #1C1C1E !important;
   border:1px solid var(--one-red-line);}
+:root:not([data-theme="light"]) :is(.mcard,.sub-card,.ecta){background:#1C1C1E !important;border:none;}
 
 /* ── photo cards: posters with a deep bottom fade ── */
-:root:not([data-theme="light"]) .plan{border-radius:22px;}
-:root:not([data-theme="light"]) .plan .ov{background:linear-gradient(180deg, rgba(15,11,11,0) 35%, rgba(15,11,11,.92) 100%);}
-:root:not([data-theme="light"]) .plan .join{background:var(--one-red);color:#FFFFFF;}
+:root:not([data-theme="light"]) .plan{border-radius:20px;}
+:root:not([data-theme="light"]) .plan .ov{background:linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,.9) 100%);}
+:root:not([data-theme="light"]) .plan .join{background:var(--lime);color:#000000;}
 
-/* ── progress: the red ── */
-:root:not([data-theme="light"]) :is(.pgbar i,.pbar i,.pgscore .bar i){background:var(--one-red);}
+/* ── progress: lime ── */
+:root:not([data-theme="light"]) :is(.pgbar i,.pbar i,.pgscore .bar i){background:var(--lime);}
 
-/* ── tab bar: warm black glass; the active tab cream with a red light ── */
-:root:not([data-theme="light"]) .tabs{background:rgba(15,11,11,.86);border:1px solid rgba(244,239,233,.07);
+/* ── tab bar: grey glass; the active tab lime on a soft pill ── */
+:root:not([data-theme="light"]) .tabs{background:rgba(28,28,30,.86);border:1px solid rgba(255,255,255,.06);
   box-shadow:0 14px 40px rgba(0,0,0,.6);}
-:root:not([data-theme="light"]) .tab.active:not(.tabmid){background:none;color:#F4EFE9;position:relative;}
-:root:not([data-theme="light"]) .tab.active:not(.tabmid)::after{content:'';position:absolute;left:50%;bottom:1px;
-  width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--one-red);}
+:root:not([data-theme="light"]) .tab.active:not(.tabmid){background:rgba(255,255,255,.10);color:var(--lime);}
+:root:not([data-theme="light"]) .tab.active:not(.tabmid)::after{display:none;}
 
-/* ── small labels: a red fill wants the fill red; muted chips the brighter grey ── */
-:root:not([data-theme="light"]) .sub-best{background:var(--one-red);}
-:root:not([data-theme="light"]) .t42-rest{color:#B9AEA7;}
+/* ── small labels ── */
+:root:not([data-theme="light"]) .sub-best{background:var(--lime);color:#000000;}
+:root:not([data-theme="light"]) .t42-rest{color:var(--dim);}
+
+/* ── the HITFAT+ mark stays HITFAT red ── */
+:root:not([data-theme="light"]) .topbar{--hyrox:var(--one-red-text);--hitfat:var(--one-red-text);}
+:root:not([data-theme="light"]) .brand .y{color:var(--one-red-text);}
 
 </style>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
@@ -13711,7 +13820,7 @@ function setTheme(t){
   try{ localStorage.setItem('hitfat_theme',t); }catch(e){}
   try{
     var m=document.querySelector('meta[name="theme-color"]');
-    if(m && m.setAttribute) m.setAttribute('content', t==='dark' ? '#0F0B0B' : '#F5F4F3');
+    if(m && m.setAttribute) m.setAttribute('content', t==='dark' ? '#000000' : '#F5F4F3');
   }catch(e){}
   try{ renderMe(); }catch(e){}
 }
@@ -14947,10 +15056,94 @@ function factCard(a){
 }
 /* big program card — title over the image */
 function fbigCard(p){
+  const sub = p.weeks ? wks(p.weeks.length).replace(/^\w/,c=>c.toUpperCase())+' of '+(p.goal||'training').toLowerCase() : p.level;
   return '<div class="fbig" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')">'+
     '<div class="ov"></div>'+lockTag(p)+'<div class="in"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+(p.weeks?progDays(p)+' DAYS':p.dur+' MIN')+'</div></div></div>';
+    '<div class="s">'+sub+'</div></div>'+
+    '<div class="m">'+(p.weeks?planSessions(p)+' WORKOUTS':p.dur+' MIN')+'</div></div>';
 }
+/* Training days, not calendar days: what "18 EPISODES" counts on Fitness+. */
+function planSessions(p){ let n=0; (p.weeks||[]).forEach(w=>(w.days||[]).forEach(d=>{ if(!d.rest) n++; })); return n; }
+function planPerWeek(p){ const w=(p.weeks||[])[0]; return w ? (w.days||[]).filter(d=>!d.rest).length : 0; }
+
+/* ── Browse Programs: the bright category tiles ── */
+const BROWSE=[
+  {k:'Fat Loss',  n:'Fat Loss',          g:'linear-gradient(135deg,#8A0F12 0%,#E0341E 55%,#FF8A3D 100%)', ic:'flame'},
+  {k:'Strength',  n:'Strength',          g:'linear-gradient(135deg,#1B2A8C 0%,#3A4FE0 55%,#7A8CFF 100%)', ic:'workout'},
+  {k:'Core',      n:'Core & Abs',        g:'linear-gradient(135deg,#0B5A4A 0%,#11A37F 55%,#7BE0B6 100%)', ic:'target'},
+  {k:'Beginner',  n:'Easy to Start',     g:'linear-gradient(135deg,#7A3B00 0%,#E08A12 55%,#FFD15A 100%)', ic:'sunrise'},
+  {k:'Short',     n:'Four Weeks or Less',g:'linear-gradient(135deg,#4A1580 0%,#8A3FE0 55%,#D38CFF 100%)', ic:'clock'},
+  {k:'Long',      n:'The Long Game',     g:'linear-gradient(135deg,#5A0E3E 0%,#C2186B 55%,#FF7AB0 100%)', ic:'trophy'}
+];
+function planGroup(k){
+  const all=trainingPlans().filter(p=>p.id!=='custom');
+  if(k==='Short') return all.filter(p=>p.weeks.length<=4).sort((a,b)=>a.weeks.length-b.weeks.length);
+  if(k==='Long')  return all.filter(p=>p.weeks.length>=6);
+  if(k==='Beginner') return all.filter(p=>p.level==='Beginner');
+  return all.filter(p=>p.goal===k);
+}
+function fcat(b){
+  return '<div class="ftile fcat" onclick="openPlanGroup(\''+b.k+'\')" style="background:'+b.g+'">'+
+    '<div class="t">'+b.n+'</div><div class="ic">'+glyph(b.ic)+'</div></div>';
+}
+function openPlanGroup(k){
+  const b=BROWSE.filter(x=>x.k===k)[0]||{n:k}, list=planGroup(k);
+  let h='<div class="hgroup"><div class="k">Programs</div><h2>'+b.n+'</h2><p>'+list.length+' '+
+        (list.length===1?'program':'programs')+'</p></div>';
+  h+= list.length ? list.map(p=>frow(p)).join('') : '<div class="empty">Nothing here yet.</div>';
+  $('lib-body').innerHTML=h;
+  hidePanels(); $('library').style.display='block'; $('screen').scrollTop=0;
+}
+
+/* ── Workouts: columns of three rows, paged sideways ── */
+function fwRow(p,badge){
+  return '<div class="fwr" onclick="openProgram(\''+p.id+'\')">'+
+    '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name)+'">'+
+      (badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
+    '<div class="tx"><div class="t">'+p.name+'</div><div class="m">'+p.dur+'min · '+(p.goal||p.level)+'</div></div></div>';
+}
+function fwCols(list){
+  let h='<div class="hscroll fwcols">';
+  for(let i=0;i<list.length;i+=3)
+    h+='<div class="fwcol">'+list.slice(i,i+3).map((p,j)=>fwRow(p,i+j<2?'NEW':'')).join('')+'</div>';
+  return h+'</div>';
+}
+
+/* ── Collections: the challenges, as big cards ── */
+function fcoll(c){
+  return '<div class="fcoll" onclick="openProgram(\''+c.id+'\')" style="background:'+grad(c)+'">'+
+    '<div class="ic">'+glyph((c.icon||''))+'</div>'+
+    '<div class="t">'+c.name+'</div>'+
+    '<div class="m">'+(c.days||progDays(c))+' DAYS · '+(c.dur||'')+' MIN/DAY</div>'+
+    (c.desc?'<div class="d">'+c.desc+'</div>':'')+'</div>';
+}
+
+/* ── Plans: Made For You, the way Fitness+ lays a plan out ── */
+const PLAN_GRADS={
+  'Fat Loss':'linear-gradient(118deg,#2A0C10 0%,#8E1E2C 42%,#F06A4E 78%,#FFB28A 100%)',
+  'Strength':'linear-gradient(118deg,#141E46 0%,#3F3592 42%,#9A5BC8 72%,#F2907E 100%)',
+  'Core':    'linear-gradient(118deg,#062A2E 0%,#13616E 45%,#3FB3A6 75%,#B8F0D2 100%)'
+};
+function fplanCard(p){
+  const done=progDone(p.id), tot=progDays(p), going=done>0&&done<tot;
+  return '<div class="fmade" style="background:'+(PLAN_GRADS[p.goal]||PLAN_GRADS.Strength)+'">'+lockTag(p)+
+    '<div class="t">'+p.name+'</div>'+
+    '<div class="s">'+(p.goal||'')+' · '+p.level+'</div>'+
+    '<div class="mt">'+planPerWeek(p)+' DAYS A WEEK · '+p.dur+'MIN/DAY</div>'+
+    (going?'<div class="pb"><i style="width:'+Math.round(done/tot*100)+'%"></i></div>':'')+
+    '<button class="fglass" onclick="openProgram(\''+p.id+'\')">'+glyph('calendar')+
+      (going?'Continue · Day '+(done+1):'Plan Preview')+'</button></div>';
+}
+function madeForYou(){
+  const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
+  const goal=(HF.data.prefs&&HF.data.prefs.goal)||'';
+  const want=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/core|abs/i.test(goal)?'Core':'';
+  const all=trainingPlans().filter(p=>p.id!=='custom');
+  const going=all.filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
+  const score=p=>(going.indexOf(p)>=0?-10:0)+(want&&p.goal===want?0:3)+(p.level===lvl?0:2)+(/^sig/.test(p.id)?0:1);
+  return all.slice().sort((a,b)=>score(a)-score(b)).slice(0,6);
+}
+
 /* gradient browse tile — the coloured Strength / Pilates blocks */
 function ftile(p){
   return '<div class="ftile" onclick="openProgram(\''+p.id+'\')" style="background:'+grad(p)+'">'+
@@ -15041,7 +15234,7 @@ function trExplore(){
 
   let h=(t42InTrain()?t42HomeCard():'');
   h+=fsec('This Week','A new set of sessions every week.');
-  h+='<div class="hscroll">'+take(rotated,4).map(p=>flandCard(p)).join('')+'</div>';
+  h+='<div class="hscroll">'+take(rotated,6).map((p,i)=>flandCard(p,i<2?'NEW':'')).join('')+'</div>';
 
   h+=fsec('Activity Types');
   h+='<div class="hscroll">'+ACTIVITIES.map(factCard).join('')+'</div>';
@@ -15050,13 +15243,13 @@ function trExplore(){
   h+='<div class="hscroll">'+take(multi,5).map(fbigCard).join('')+'</div>';
 
   h+=fsec('Browse Programs','',true);
-  h+='<div class="hscroll">'+take(rotated,8).map(ftile).join('')+'</div>';
+  h+='<div class="hscroll">'+BROWSE.filter(b=>planGroup(b.k).length).map(fcat).join('')+'</div>';
 
   h+=fsec('Workouts','New and picked for you');
-  h+=take(rotated,8).map((p,i)=>frow(p,i<2?'NEW':'')).join('');
+  h+=fwCols(take(rotated,9));
 
-  h+=fsec('Challenges','Commit for a set number of days');
-  h+=CHALLENGES.map(c=>frow(c)).join('');
+  h+=fsec('Collections','Challenges with a finish line',true);
+  h+='<div class="hscroll">'+CHALLENGES.map(fcoll).join('')+'</div>';
   $('tr-body').innerHTML=h;
 }
 
@@ -15097,58 +15290,40 @@ function usesEquipment(p){
 }
 function trPlans(){
   _rowSeen={}; _rowSigs=new Set();
-  const multi=trainingPlans();
+  const multi=trainingPlans().filter(p=>p.id!=='custom');
   const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
   const goal=(HF.data.prefs&&HF.data.prefs.goal)||'';
-  const goalKey=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/move|mobil/i.test(goal)?'Core':'';
-  const going=multi.filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
+  const goalKey=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/move|mobil|core|abs/i.test(goal)?'Core':'';
 
-  const hero=going[0]
-    || multi.filter(p=>(goalKey?p.goal===goalKey:true)&&p.level===lvl)[0]
-    || multi.filter(p=>p.level===lvl)[0] || multi[0];
+  /* Made For You: big plan cards, the one in progress first, then the
+     ones matched to this member's goal and level. */
+  let h='';
+  h+=fsec('Made For You','Programs matched to your goal and level. Preview one before you start.');
+  h+='<div class="hscroll fmades">'+madeForYou().map(fplanCard).join('')+'</div>';
 
-  let h='<div class="nhero" style="background-image:url(\''+progImg(hero)+'\')">'+
-    '<div class="ov"></div><div class="in">'+
-    '<div class="ic">'+glyph((hero.icon||''))+'</div>'+
-    '<div class="t">'+hero.name+'</div>'+
-    '<div class="tags">'+hero.goal+' · '+hero.level+' · '+wks(hero.weeks.length)+' · '+hero.dur+' min a day</div>'+
-    '<div class="d">'+hero.desc+'</div>'+
-    '<div class="btns">'+
-      '<button class="pl" onclick="event.stopPropagation();openProgram(\''+hero.id+'\')">▶  '+
-        (progDone(hero.id)>0?'Continue':'Start plan')+'</button>'+
-      '<button class="inf" onclick="event.stopPropagation();openProgram(\''+hero.id+'\')">ⓘ  More info</button>'+
-    '</div></div></div>';
+  /* Build Your Own: the custom plan, on the gold card */
+  h+=fsec('Build Your Own','Choose the activities and set your schedule.');
+  h+='<div class="fcustom">'+
+     '<div class="t">'+(hasCustom()?'Your Custom Plan':'Custom Plan')+'</div>'+
+     '<div class="s">'+(hasCustom()
+        ? 'Change the activities, days, length or equipment any time — your progress carries over.'
+        : 'Your activities, workout length, days of the week and the equipment you have.')+'</div>'+
+     '<button class="fglass" onclick="openCustom()">'+(hasCustom()?'Edit My Plan':'Build Your Own')+'</button>'+
+     (hasCustom()?'<button class="fglass fglass-q" onclick="cpDelete()">Delete it</button>':'')+
+     '</div>';
 
-  const rest=multi.filter(p=>p.id!==hero.id);
-  const by=k=>rest.filter(p=>p.goal===k);
-
+  /* Everything else, by what it is for */
+  const by=k=>multi.filter(p=>p.goal===k);
   h+='<div class="nrows">';
-  const mine=multi.filter(p=>p.id==='custom');
-  if(mine.length && mine[0].id!==hero.id) h+=nrow('Made by you',mine);
-  if(going.length) h+=nrow('Continue your plan',going);
-  h+=nrow('HITFAT picks',multi.slice(0,10),true);
-  // the goal row and its matching category row are the same list — show one
-  if(goalKey) h+=nrow('Because your goal is '+goal.toLowerCase(), by(goalKey));
+  if(goalKey) h+=nrow({'Fat Loss':'Burn fat','Strength':'Build strength','Core':'Core & abs'}[goalKey], by(goalKey));
   ['Fat Loss','Strength','Core'].forEach(k=>{
     if(k===goalKey) return;
     h+=nrow({'Fat Loss':'Burn fat','Strength':'Build strength','Core':'Core & abs'}[k], by(k));
   });
-  h+=nrow('Easy to start',            rest.filter(p=>p.level==='Beginner'));
-  h+=nrow('Four weeks or less',       rest.filter(p=>p.weeks.length<=4).sort((a,b)=>a.weeks.length-b.weeks.length));
-  h+=nrow('The long game',            rest.filter(p=>p.weeks.length>=6));
-  h+=nrow('Use what you have',        rest.filter(usesEquipment));
-  h+=nrow('Nothing but you',          rest.filter(p=>!usesEquipment(p)));
+  h+=nrow('Easy to start',      multi.filter(p=>p.level===lvl&&p.level==='Beginner'));
+  h+=nrow('Four weeks or less', multi.filter(p=>p.weeks.length<=4).sort((a,b)=>a.weeks.length-b.weeks.length));
+  h+=nrow('The long game',      multi.filter(p=>p.weeks.length>=6));
   h+='</div>';
-
-  h+='<div class="nrow"><div class="nt">Challenges</div>'+CHALLENGES.map(c=>frow(c)).join('')+'</div>';
-  h+='<div class="fplan" style="background:linear-gradient(150deg,#3a2030,#141014);margin-top:22px;">'+
-     '<div class="t">'+(hasCustom()?'Your custom plan':'Build your own')+'</div>'+
-     '<div class="s">'+(hasCustom()
-        ? 'Change the activities, days, length or equipment any time — your progress carries over.'
-        : 'Pick the activities, the days, the session length and what equipment you have. We build the weeks.')+'</div>'+
-     '<button class="pill" onclick="openCustom()">'+(hasCustom()?'Edit my plan':'Build your own')+'</button>'+
-     (hasCustom()?'<button class="pill" style="margin-top:9px;color:rgba(255,255,255,.5);" onclick="cpDelete()">Delete it</button>':'')+
-     '</div>';
   $('tr-body').innerHTML=h;
 }
 

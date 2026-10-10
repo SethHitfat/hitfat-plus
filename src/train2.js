@@ -35,10 +35,94 @@ function factCard(a){
 }
 /* big program card — title over the image */
 function fbigCard(p){
+  const sub = p.weeks ? wks(p.weeks.length).replace(/^\w/,c=>c.toUpperCase())+' of '+(p.goal||'training').toLowerCase() : p.level;
   return '<div class="fbig" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')">'+
     '<div class="ov"></div>'+lockTag(p)+'<div class="in"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+(p.weeks?progDays(p)+' DAYS':p.dur+' MIN')+'</div></div></div>';
+    '<div class="s">'+sub+'</div></div>'+
+    '<div class="m">'+(p.weeks?planSessions(p)+' WORKOUTS':p.dur+' MIN')+'</div></div>';
 }
+/* Training days, not calendar days: what "18 EPISODES" counts on Fitness+. */
+function planSessions(p){ let n=0; (p.weeks||[]).forEach(w=>(w.days||[]).forEach(d=>{ if(!d.rest) n++; })); return n; }
+function planPerWeek(p){ const w=(p.weeks||[])[0]; return w ? (w.days||[]).filter(d=>!d.rest).length : 0; }
+
+/* ── Browse Programs: the bright category tiles ── */
+const BROWSE=[
+  {k:'Fat Loss',  n:'Fat Loss',          g:'linear-gradient(135deg,#8A0F12 0%,#E0341E 55%,#FF8A3D 100%)', ic:'flame'},
+  {k:'Strength',  n:'Strength',          g:'linear-gradient(135deg,#1B2A8C 0%,#3A4FE0 55%,#7A8CFF 100%)', ic:'workout'},
+  {k:'Core',      n:'Core & Abs',        g:'linear-gradient(135deg,#0B5A4A 0%,#11A37F 55%,#7BE0B6 100%)', ic:'target'},
+  {k:'Beginner',  n:'Easy to Start',     g:'linear-gradient(135deg,#7A3B00 0%,#E08A12 55%,#FFD15A 100%)', ic:'sunrise'},
+  {k:'Short',     n:'Four Weeks or Less',g:'linear-gradient(135deg,#4A1580 0%,#8A3FE0 55%,#D38CFF 100%)', ic:'clock'},
+  {k:'Long',      n:'The Long Game',     g:'linear-gradient(135deg,#5A0E3E 0%,#C2186B 55%,#FF7AB0 100%)', ic:'trophy'}
+];
+function planGroup(k){
+  const all=trainingPlans().filter(p=>p.id!=='custom');
+  if(k==='Short') return all.filter(p=>p.weeks.length<=4).sort((a,b)=>a.weeks.length-b.weeks.length);
+  if(k==='Long')  return all.filter(p=>p.weeks.length>=6);
+  if(k==='Beginner') return all.filter(p=>p.level==='Beginner');
+  return all.filter(p=>p.goal===k);
+}
+function fcat(b){
+  return '<div class="ftile fcat" onclick="openPlanGroup(\''+b.k+'\')" style="background:'+b.g+'">'+
+    '<div class="t">'+b.n+'</div><div class="ic">'+glyph(b.ic)+'</div></div>';
+}
+function openPlanGroup(k){
+  const b=BROWSE.filter(x=>x.k===k)[0]||{n:k}, list=planGroup(k);
+  let h='<div class="hgroup"><div class="k">Programs</div><h2>'+b.n+'</h2><p>'+list.length+' '+
+        (list.length===1?'program':'programs')+'</p></div>';
+  h+= list.length ? list.map(p=>frow(p)).join('') : '<div class="empty">Nothing here yet.</div>';
+  $('lib-body').innerHTML=h;
+  hidePanels(); $('library').style.display='block'; $('screen').scrollTop=0;
+}
+
+/* ── Workouts: columns of three rows, paged sideways ── */
+function fwRow(p,badge){
+  return '<div class="fwr" onclick="openProgram(\''+p.id+'\')">'+
+    '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name)+'">'+
+      (badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
+    '<div class="tx"><div class="t">'+p.name+'</div><div class="m">'+p.dur+'min · '+(p.goal||p.level)+'</div></div></div>';
+}
+function fwCols(list){
+  let h='<div class="hscroll fwcols">';
+  for(let i=0;i<list.length;i+=3)
+    h+='<div class="fwcol">'+list.slice(i,i+3).map((p,j)=>fwRow(p,i+j<2?'NEW':'')).join('')+'</div>';
+  return h+'</div>';
+}
+
+/* ── Collections: the challenges, as big cards ── */
+function fcoll(c){
+  return '<div class="fcoll" onclick="openProgram(\''+c.id+'\')" style="background:'+grad(c)+'">'+
+    '<div class="ic">'+glyph((c.icon||''))+'</div>'+
+    '<div class="t">'+c.name+'</div>'+
+    '<div class="m">'+(c.days||progDays(c))+' DAYS · '+(c.dur||'')+' MIN/DAY</div>'+
+    (c.desc?'<div class="d">'+c.desc+'</div>':'')+'</div>';
+}
+
+/* ── Plans: Made For You, the way Fitness+ lays a plan out ── */
+const PLAN_GRADS={
+  'Fat Loss':'linear-gradient(118deg,#2A0C10 0%,#8E1E2C 42%,#F06A4E 78%,#FFB28A 100%)',
+  'Strength':'linear-gradient(118deg,#141E46 0%,#3F3592 42%,#9A5BC8 72%,#F2907E 100%)',
+  'Core':    'linear-gradient(118deg,#062A2E 0%,#13616E 45%,#3FB3A6 75%,#B8F0D2 100%)'
+};
+function fplanCard(p){
+  const done=progDone(p.id), tot=progDays(p), going=done>0&&done<tot;
+  return '<div class="fmade" style="background:'+(PLAN_GRADS[p.goal]||PLAN_GRADS.Strength)+'">'+lockTag(p)+
+    '<div class="t">'+p.name+'</div>'+
+    '<div class="s">'+(p.goal||'')+' · '+p.level+'</div>'+
+    '<div class="mt">'+planPerWeek(p)+' DAYS A WEEK · '+p.dur+'MIN/DAY</div>'+
+    (going?'<div class="pb"><i style="width:'+Math.round(done/tot*100)+'%"></i></div>':'')+
+    '<button class="fglass" onclick="openProgram(\''+p.id+'\')">'+glyph('calendar')+
+      (going?'Continue · Day '+(done+1):'Plan Preview')+'</button></div>';
+}
+function madeForYou(){
+  const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
+  const goal=(HF.data.prefs&&HF.data.prefs.goal)||'';
+  const want=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/core|abs/i.test(goal)?'Core':'';
+  const all=trainingPlans().filter(p=>p.id!=='custom');
+  const going=all.filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
+  const score=p=>(going.indexOf(p)>=0?-10:0)+(want&&p.goal===want?0:3)+(p.level===lvl?0:2)+(/^sig/.test(p.id)?0:1);
+  return all.slice().sort((a,b)=>score(a)-score(b)).slice(0,6);
+}
+
 /* gradient browse tile — the coloured Strength / Pilates blocks */
 function ftile(p){
   return '<div class="ftile" onclick="openProgram(\''+p.id+'\')" style="background:'+grad(p)+'">'+
@@ -129,7 +213,7 @@ function trExplore(){
 
   let h=(t42InTrain()?t42HomeCard():'');
   h+=fsec('This Week','A new set of sessions every week.');
-  h+='<div class="hscroll">'+take(rotated,4).map(p=>flandCard(p)).join('')+'</div>';
+  h+='<div class="hscroll">'+take(rotated,6).map((p,i)=>flandCard(p,i<2?'NEW':'')).join('')+'</div>';
 
   h+=fsec('Activity Types');
   h+='<div class="hscroll">'+ACTIVITIES.map(factCard).join('')+'</div>';
@@ -138,13 +222,13 @@ function trExplore(){
   h+='<div class="hscroll">'+take(multi,5).map(fbigCard).join('')+'</div>';
 
   h+=fsec('Browse Programs','',true);
-  h+='<div class="hscroll">'+take(rotated,8).map(ftile).join('')+'</div>';
+  h+='<div class="hscroll">'+BROWSE.filter(b=>planGroup(b.k).length).map(fcat).join('')+'</div>';
 
   h+=fsec('Workouts','New and picked for you');
-  h+=take(rotated,8).map((p,i)=>frow(p,i<2?'NEW':'')).join('');
+  h+=fwCols(take(rotated,9));
 
-  h+=fsec('Challenges','Commit for a set number of days');
-  h+=CHALLENGES.map(c=>frow(c)).join('');
+  h+=fsec('Collections','Challenges with a finish line',true);
+  h+='<div class="hscroll">'+CHALLENGES.map(fcoll).join('')+'</div>';
   $('tr-body').innerHTML=h;
 }
 
@@ -185,58 +269,40 @@ function usesEquipment(p){
 }
 function trPlans(){
   _rowSeen={}; _rowSigs=new Set();
-  const multi=trainingPlans();
+  const multi=trainingPlans().filter(p=>p.id!=='custom');
   const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
   const goal=(HF.data.prefs&&HF.data.prefs.goal)||'';
-  const goalKey=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/move|mobil/i.test(goal)?'Core':'';
-  const going=multi.filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
+  const goalKey=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/move|mobil|core|abs/i.test(goal)?'Core':'';
 
-  const hero=going[0]
-    || multi.filter(p=>(goalKey?p.goal===goalKey:true)&&p.level===lvl)[0]
-    || multi.filter(p=>p.level===lvl)[0] || multi[0];
+  /* Made For You: big plan cards, the one in progress first, then the
+     ones matched to this member's goal and level. */
+  let h='';
+  h+=fsec('Made For You','Programs matched to your goal and level. Preview one before you start.');
+  h+='<div class="hscroll fmades">'+madeForYou().map(fplanCard).join('')+'</div>';
 
-  let h='<div class="nhero" style="background-image:url(\''+progImg(hero)+'\')">'+
-    '<div class="ov"></div><div class="in">'+
-    '<div class="ic">'+glyph((hero.icon||''))+'</div>'+
-    '<div class="t">'+hero.name+'</div>'+
-    '<div class="tags">'+hero.goal+' · '+hero.level+' · '+wks(hero.weeks.length)+' · '+hero.dur+' min a day</div>'+
-    '<div class="d">'+hero.desc+'</div>'+
-    '<div class="btns">'+
-      '<button class="pl" onclick="event.stopPropagation();openProgram(\''+hero.id+'\')">▶  '+
-        (progDone(hero.id)>0?'Continue':'Start plan')+'</button>'+
-      '<button class="inf" onclick="event.stopPropagation();openProgram(\''+hero.id+'\')">ⓘ  More info</button>'+
-    '</div></div></div>';
+  /* Build Your Own: the custom plan, on the gold card */
+  h+=fsec('Build Your Own','Choose the activities and set your schedule.');
+  h+='<div class="fcustom">'+
+     '<div class="t">'+(hasCustom()?'Your Custom Plan':'Custom Plan')+'</div>'+
+     '<div class="s">'+(hasCustom()
+        ? 'Change the activities, days, length or equipment any time — your progress carries over.'
+        : 'Your activities, workout length, days of the week and the equipment you have.')+'</div>'+
+     '<button class="fglass" onclick="openCustom()">'+(hasCustom()?'Edit My Plan':'Build Your Own')+'</button>'+
+     (hasCustom()?'<button class="fglass fglass-q" onclick="cpDelete()">Delete it</button>':'')+
+     '</div>';
 
-  const rest=multi.filter(p=>p.id!==hero.id);
-  const by=k=>rest.filter(p=>p.goal===k);
-
+  /* Everything else, by what it is for */
+  const by=k=>multi.filter(p=>p.goal===k);
   h+='<div class="nrows">';
-  const mine=multi.filter(p=>p.id==='custom');
-  if(mine.length && mine[0].id!==hero.id) h+=nrow('Made by you',mine);
-  if(going.length) h+=nrow('Continue your plan',going);
-  h+=nrow('HITFAT picks',multi.slice(0,10),true);
-  // the goal row and its matching category row are the same list — show one
-  if(goalKey) h+=nrow('Because your goal is '+goal.toLowerCase(), by(goalKey));
+  if(goalKey) h+=nrow({'Fat Loss':'Burn fat','Strength':'Build strength','Core':'Core & abs'}[goalKey], by(goalKey));
   ['Fat Loss','Strength','Core'].forEach(k=>{
     if(k===goalKey) return;
     h+=nrow({'Fat Loss':'Burn fat','Strength':'Build strength','Core':'Core & abs'}[k], by(k));
   });
-  h+=nrow('Easy to start',            rest.filter(p=>p.level==='Beginner'));
-  h+=nrow('Four weeks or less',       rest.filter(p=>p.weeks.length<=4).sort((a,b)=>a.weeks.length-b.weeks.length));
-  h+=nrow('The long game',            rest.filter(p=>p.weeks.length>=6));
-  h+=nrow('Use what you have',        rest.filter(usesEquipment));
-  h+=nrow('Nothing but you',          rest.filter(p=>!usesEquipment(p)));
+  h+=nrow('Easy to start',      multi.filter(p=>p.level===lvl&&p.level==='Beginner'));
+  h+=nrow('Four weeks or less', multi.filter(p=>p.weeks.length<=4).sort((a,b)=>a.weeks.length-b.weeks.length));
+  h+=nrow('The long game',      multi.filter(p=>p.weeks.length>=6));
   h+='</div>';
-
-  h+='<div class="nrow"><div class="nt">Challenges</div>'+CHALLENGES.map(c=>frow(c)).join('')+'</div>';
-  h+='<div class="fplan" style="background:linear-gradient(150deg,#3a2030,#141014);margin-top:22px;">'+
-     '<div class="t">'+(hasCustom()?'Your custom plan':'Build your own')+'</div>'+
-     '<div class="s">'+(hasCustom()
-        ? 'Change the activities, days, length or equipment any time — your progress carries over.'
-        : 'Pick the activities, the days, the session length and what equipment you have. We build the weeks.')+'</div>'+
-     '<button class="pill" onclick="openCustom()">'+(hasCustom()?'Edit my plan':'Build your own')+'</button>'+
-     (hasCustom()?'<button class="pill" style="margin-top:9px;color:rgba(255,255,255,.5);" onclick="cpDelete()">Delete it</button>':'')+
-     '</div>';
   $('tr-body').innerHTML=h;
 }
 

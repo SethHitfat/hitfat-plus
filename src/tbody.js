@@ -317,14 +317,17 @@ ok("generation is deterministic",  (function(){
    return a===b; })());
 ok("rest days survive",            _multi.some(function(p){return p.weeks[0].days.some(function(d){return d.rest;});}));
 
-print("\n── PLANS · NETFLIX BROWSE ──");
+print("\n── PLANS · AFTER FITNESS+ ──");
 HF.apply(null); HF.data.onboarded=true;
 HF.data.prefs={name:'Seth',goal:'Lose fat',level:'Beginner',days:3,equip:'Bodyweight only'};
 noThrow("plans renders", function(){ setTrSeg('plans'); });
 var _ph=document.getElementById('tr-body').innerHTML;
-ok("billboard",        _ph.indexOf('nhero')>0);
+ok("Made For You leads the page", _ph.indexOf('Made For You')>0 && _ph.indexOf('fmade')>0 &&
+   _ph.indexOf('fmade')<_ph.indexOf('nrow'));
+ok("...each card previews its plan", _ph.indexOf('Plan Preview')>0);
+ok("...the goal's plans first",  madeForYou()[0].goal==='Fat Loss');
+ok("Build Your Own on its own card", _ph.indexOf('fcustom')>0 && _ph.indexOf('Build Your Own')>0);
 ok("poster cards",     _ph.indexOf('ncard')>0);
-ok("ranked picks row", _ph.indexOf('ranked')>0 && _ph.indexOf('HITFAT picks')>0);
 ok("no unverifiable 'Top 10 in Malaysia' claim", _ph.indexOf('Top 10 in Malaysia')<0);
 ok("Recovery stays in its own tab, not in Plans", _ph.indexOf('Knee Prehab')<0 && _ph.indexOf('Desk Reset')<0);
 ok("...and the billboard is a training plan", trainingPlans().every(function(p){ return !p.rehab; }));
@@ -333,10 +336,9 @@ ok("every plan's minutes match its content", trainingPlans().filter(function(p){
    .every(function(p){ return p.dur===progMinutes(p); }));
 ok("Morning 10 is about ten minutes", Math.abs(PROGRAMS.filter(function(p){ return p.id==='am21'; })[0].dur-10)<=1);
 ok("names are written one way", PROGRAMS.every(function(p){ return !/^\d+ (Day|Week|Minutes?) /.test(p.name); }));
-ok("goal-aware row",   _ph.indexOf('Because your goal')>0, 'goal row');
+ok("the goal's row comes first", _ph.indexOf('Burn fat')>0 && _ph.indexOf('Burn fat')<_ph.indexOf('Build strength'));
 ok("other category rows", _ph.indexOf('Build strength')>0 && _ph.indexOf('Core & abs')>0);
-ok("goal row replaces its twin, not duplicates it",
-   _ph.indexOf('Because your goal')>0 && _ph.indexOf('Burn fat')<0);
+ok("no row twice", _ph.split('>Burn fat<').length===2);
 ok("length rows",      _ph.indexOf('The long game')>0 && _ph.indexOf('Four weeks or less')>0);
 HF.data.progress={}; HF.data.progress[trainingPlans()[0].id]=3;
 noThrow("continue row renders", function(){ setTrSeg('plans'); });
@@ -355,12 +357,15 @@ ok("sampler strip",        ex.indexOf('This Week')>0 && ex.indexOf('Free This We
 ok("activity types",       ex.indexOf('Activity Types')>0 && ex.indexOf('fact')>0);
 ok("top programs",         ex.indexOf('Top Programs')>0 && ex.indexOf('fbig')>0);
 ok("gradient browse tiles",ex.indexOf('ftile')>0);
-ok("workout list rows",    ex.indexOf('frow')>0);
+ok("workouts in columns of three", ex.indexOf('fwcol')>0 && ex.split('class="fwr"').length-1===9);
+ok("browse is by category",  ex.indexOf('openPlanGroup(')>0);
+ok("challenges as collections", ex.indexOf('Collections')>0 && ex.indexOf('fcoll')>0);
+noThrow("a category opens", function(){ openPlanGroup('Strength'); });
+ok("...listing its plans", document.getElementById('lib-body').innerHTML.indexOf('HITFAT Strong')>0);
 ok("NEW badge used",       ex.indexOf('fnew')>0);
 setTrSeg('plans');
 var _plansHtml=document.getElementById('tr-body').innerHTML;
-ok("billboard leads the page", _plansHtml.indexOf('nhero')>0 && _plansHtml.indexOf('nhero')<_plansHtml.indexOf('nrow'));
-ok("billboard has a start action", _plansHtml.indexOf('Start plan')>0 || _plansHtml.indexOf('Continue')>0);
+ok("plans lead with Made For You", _plansHtml.indexOf('fmade')>0);
 ok("build your own still offered", _plansHtml.toLowerCase().indexOf('build your own')>0);
 setTrSeg('library');
 var lb=document.getElementById('tr-body').innerHTML;
@@ -590,9 +595,8 @@ ok("rebuild from spec is identical", (function(){
     applyCustom();
     return a===JSON.stringify(PROGRAMS.filter(function(p){return p.id==='custom';})[0].weeks); })());
 noThrow("plans shows it", function(){ setTrSeg('plans'); });
-ok("Made by you row",  document.getElementById('tr-body').innerHTML.indexOf('Made by you')>0 ||
-                       document.getElementById('tr-body').innerHTML.indexOf('nhero')>0);
-ok("card offers editing", document.getElementById('tr-body').innerHTML.indexOf('Edit my plan')>0);
+ok("the custom card says it is yours", document.getElementById('tr-body').innerHTML.indexOf('Your Custom Plan')>0);
+ok("card offers editing", document.getElementById('tr-body').innerHTML.indexOf('Edit My Plan')>0);
 noThrow("custom plan opens", function(){ openProgram('custom'); });
 noThrow("its day opens",     function(){ openDay('custom',0); });
 delete HF.data.custom; applyCustom();
