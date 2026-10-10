@@ -113,9 +113,9 @@ function spark(series, good){
    holds fewer tiles rather than a row of dashes. */
 /* The Fitness Trends tile: the label in its colour on top, the number
    large, the change under it in green or red, and the shape of it. */
-const PG_COL={'Weight':'#64D2FF','Body fat':'#BF5AF2','Waist':'#FF9F0A','Workouts':'#FF5A5F','Days logged':'#30D158','Streak':'#FF9F0A'};
+const PG_COL={'Weight':'#FF5A5F','Body fat':'#FFC93C','Waist':'#FFC93C','Workouts':'#FF5A5F','Days logged':'#FFFFFF','Streak':'#FFC93C'};
 /* the same hues, deep enough to read on the light theme's grey */
-const PG_COL_L={'Weight':'#005F99','Body fat':'#7A2DB0','Waist':'#A65A00','Workouts':'#C21A14','Days logged':'#1A7F37','Streak':'#A65A00'};
+const PG_COL_L={'Weight':'#C21A14','Body fat':'#8A5A00','Waist':'#8A5A00','Workouts':'#C21A14','Days logged':'#000000','Streak':'#8A5A00'};
 function pgTile(label, value, unit, sub, series, goodDown, metric){
   if(value===null||value===undefined) return '';
   const d=series&&series.length>1?windowDelta(series,30):null;

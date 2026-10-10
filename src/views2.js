@@ -137,7 +137,9 @@ function weekMinutes(){
    rings — days against the week's goal, minutes against 150, consistency —
    and the tiles under it; the month's challenge; then programs and short
    sessions in the Fitness+ shapes the Train tab uses. */
-const RING_C={days:'#FA114F', mins:'#FF9F0A', cons:'#1EEAEF'};
+/* The three rings: red, yellow, and white (black in light) — the HITFAT
+   palette. Coloured through CSS variables so the theme can swap them. */
+const RING_C={days:'var(--rc0)', mins:'var(--rc1)', cons:'var(--rc2)'};
 function ringArc(cx,cy,r,pct){
   /* Drawn as a path from twelve o'clock: the app's legacy CSS kills every
      transform, so a rotated circle would start at three. */
@@ -148,8 +150,8 @@ function ringArc(cx,cy,r,pct){
 function ringsSVG(vals,size){
   const c=size/2, w=size*.11, rs=[c-w/2, c-w*1.6, c-w*2.7], cols=[RING_C.days,RING_C.mins,RING_C.cons];
   return '<svg class="hrings" viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'" aria-hidden="true">'+
-    vals.map((v,i)=>'<circle cx="'+c+'" cy="'+c+'" r="'+rs[i]+'" fill="none" stroke="'+cols[i]+'" stroke-opacity=".22" stroke-width="'+w+'"/>'+
-      (v>0?'<path d="'+ringArc(c,c,rs[i],v)+'" fill="none" stroke="'+cols[i]+'" stroke-width="'+w+'" stroke-linecap="round"/>':'')).join('')+
+    vals.map((v,i)=>'<circle cx="'+c+'" cy="'+c+'" r="'+rs[i]+'" fill="none" style="stroke:'+cols[i]+'" stroke-opacity=".22" stroke-width="'+w+'"/>'+
+      (v>0?'<path d="'+ringArc(c,c,rs[i],v)+'" fill="none" style="stroke:'+cols[i]+'" stroke-width="'+w+'" stroke-linecap="round"/>':'')).join('')+
     '</svg>';
 }
 function renderHome(){

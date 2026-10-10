@@ -201,3 +201,50 @@
    would disappear */
 :root .fmade .bigbtn:not(.sec), :root[data-theme="light"] .fmade .bigbtn:not(.sec):not(.t42-stage-cta),
 :root:not([data-theme="light"]) .fmade .bigbtn:not(.sec):not(.t42-stage-cta){background:#FFFFFF;color:#000000 !important;}
+
+/* ═══════════════════════════════════════════════════════════════
+   THE HITFAT PALETTE — red, a little yellow, black, white, greys.
+   Every other hue Apple brought (blue, purple, green, cyan, pink) is
+   mapped onto these: rings, tile labels, tones, macros, ticks.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --yel:#FFC21A;                       /* fill, with a dark label */
+  --yel-t:#FFC93C;                     /* text on black and grey */
+  --rc0:#FF453A; --rc1:#FFC21A; --rc2:#F2F2F7;      /* the three rings */
+  --tone-ok:#FFC93C; --tone-info:#A1A1A6; --tone-warn:#FF8A3D; --tone-risk:#FF5A5F;
+  --ok:#FFC93C; --pg-good:#FFC93C; --pg-bad:#FF5A5F;
+  --mac-p:#FF5A5F; --mac-c:#FFC93C;
+}
+:root[data-theme="light"]{
+  --yel-t:#8A5A00;
+  --rc0:#D7261E; --rc1:#E0A800; --rc2:#1C1C1E;
+  --tone-ok:#8A5A00; --tone-info:#56565C; --tone-warn:#B4470A; --tone-risk:#C21A14;
+  --ok:#8A5A00; --pg-good:#8A5A00; --pg-bad:#C21A14;
+  --mac-p:#C21A14; --mac-c:#8A5A00;
+}
+/* ring colours as text */
+.hc-days{color:var(--lime);} .hc-mins{color:var(--yel-t);} .hc-cons{color:var(--txt);}
+.hc-streak{color:var(--yel-t);} .hc-sess{color:var(--lime);} .hc-fat{color:var(--txt);} .hc-score{color:var(--yel-t);}
+:root[data-theme="light"] :is(.hc-days,.hc-sess){color:#C21A14;}
+:root[data-theme="light"] :is(.hc-mins,.hc-streak,.hc-score){color:#8A5A00;}
+:root[data-theme="light"] :is(.hc-cons,.hc-fat){color:#000000;}
+/* done marks: yellow, the colour of winning */
+.t42-tick{color:var(--yel-t);}
+:root[data-theme="light"] .t42-tick{color:#8A5A00;}
+#t42 .t42-chip.done{color:var(--yel-t);background:rgba(255,194,26,.14);}
+:root[data-theme="light"] #t42 .t42-chip.done{color:#8A5A00;background:rgba(255,194,26,.18);}
+.fnew{background:rgba(0,0,0,.62);color:#FFFFFF;}
+.soon-pill{background:rgba(255,194,26,.18);color:var(--yel-t);}
+/* T42's own row icons, in the same three tints */
+.t42-ic.workout,.t42-ic.steps,.t42-ic.gym,.t42-ic.flag{background:#DC1A22;color:#FFFFFF;}
+.t42-ic.food,.t42-ic.check,.t42-ic.rush{background:#FFC21A;color:#1C1C1E;}
+.t42-ic.water,.t42-ic.measure,.t42-ic.person{background:#3A3A3C;color:#FFFFFF;}
+/* the check-in's water glasses fill yellow */
+.t42-glass .gly{color:var(--yel-t);}
+.ck-card .t42-glass.on{color:var(--yel-t);background:rgba(255,194,26,.14);}
+.nstage-f .gly{color:var(--yel-t);}
+:root{--note-sky:#A1A1A6;--note-amber:#FFC93C;}
+:root[data-theme="light"]{--note-sky:#56565C;--note-amber:#8A5A00;}
+/* the coming-soon pill sits on a dark poster in both themes */
+.soon-pill{color:#FFC93C;}
+:root[data-theme="light"] .t42-rest{color:#3A3A3C;}

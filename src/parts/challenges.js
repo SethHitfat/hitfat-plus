@@ -15,7 +15,7 @@ var CHALLENGES = [
   },
   {
     id:'c2', name:'30-Day Core', period:'MONTHLY', days:30, dur:12,
-    c1:'#16273a', c2:'#080b0d', ac:'#00B8FF', icon:'💎',
+    c1:'#2E2208', c2:'#0B0906', ac:'#FFC21A', icon:'💎',
     desc:'A daily core challenge that gets harder each week. 30 days to carve out a stronger, tighter core.',
     weeks: challengeWeeks(30, [
       ['Crunch','Plank','Dead Bug','Bird Dog'],

@@ -48,11 +48,11 @@ function planPerWeek(p){ const w=(p.weeks||[])[0]; return w ? (w.days||[]).filte
 /* ── Browse Programs: the bright category tiles ── */
 const BROWSE=[
   {k:'Fat Loss',  n:'Fat Loss',          g:'linear-gradient(135deg,#8A0F12 0%,#E0341E 55%,#FF8A3D 100%)', ic:'flame'},
-  {k:'Strength',  n:'Strength',          g:'linear-gradient(135deg,#1B2A8C 0%,#3A4FE0 55%,#7A8CFF 100%)', ic:'workout'},
-  {k:'Core',      n:'Core & Abs',        g:'linear-gradient(135deg,#0B5A4A 0%,#11A37F 55%,#7BE0B6 100%)', ic:'target'},
-  {k:'Beginner',  n:'Easy to Start',     g:'linear-gradient(135deg,#7A3B00 0%,#E08A12 55%,#FFD15A 100%)', ic:'sunrise'},
-  {k:'Short',     n:'Four Weeks or Less',g:'linear-gradient(135deg,#4A1580 0%,#8A3FE0 55%,#D38CFF 100%)', ic:'clock'},
-  {k:'Long',      n:'The Long Game',     g:'linear-gradient(135deg,#5A0E3E 0%,#C2186B 55%,#FF7AB0 100%)', ic:'trophy'}
+  {k:'Strength',  n:'Strength',          g:'linear-gradient(135deg,#1C1C1E 0%,#5A0A0E 55%,#DC1A22 100%)', ic:'workout'},
+  {k:'Core',      n:'Core & Abs',        g:'linear-gradient(135deg,#3A2600 0%,#A87400 55%,#FFC21A 100%)', ic:'target'},
+  {k:'Beginner',  n:'Easy to Start',     g:'linear-gradient(135deg,#2C2C2E 0%,#5A4A1E 55%,#D9A21A 100%)', ic:'sunrise'},
+  {k:'Short',     n:'Four Weeks or Less',g:'linear-gradient(135deg,#2A0608 0%,#8E1218 55%,#E8424A 100%)', ic:'clock'},
+  {k:'Long',      n:'The Long Game',     g:'linear-gradient(135deg,#0B0B0C 0%,#3A3A3C 55%,#8E8E93 100%)', ic:'trophy'}
 ];
 function planGroup(k){
   const all=trainingPlans().filter(p=>p.id!=='custom');
@@ -100,8 +100,8 @@ function fcoll(c){
 /* ── Plans: Made For You, the way Fitness+ lays a plan out ── */
 const PLAN_GRADS={
   'Fat Loss':'linear-gradient(118deg,#2A0C10 0%,#8E1E2C 42%,#F06A4E 78%,#FFB28A 100%)',
-  'Strength':'linear-gradient(118deg,#141E46 0%,#3F3592 42%,#9A5BC8 72%,#F2907E 100%)',
-  'Core':    'linear-gradient(118deg,#062A2E 0%,#13616E 45%,#3FB3A6 75%,#B8F0D2 100%)'
+  'Strength':'linear-gradient(118deg,#141414 0%,#4A0C10 42%,#B81A1F 72%,#F2645A 100%)',
+  'Core':    'linear-gradient(118deg,#1A1406 0%,#5A4206 45%,#B88A12 75%,#F2C94C 100%)'
 };
 function fplanCard(p){
   const done=progDone(p.id), tot=progDays(p), going=done>0&&done<tot;

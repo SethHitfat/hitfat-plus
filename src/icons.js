@@ -75,21 +75,24 @@ var ICON_PATH={
 
 /* A colour for each kind — Apple's system palette, so the tiles sit
    together the way the Settings list does. */
+/* The HITFAT palette, three tints and no more: red for doing (training,
+   steps, the day), yellow for winning (a trophy, a streak, time, done),
+   graphite for everything that only informs. Apple's dozen colours read
+   as Apple's app, not HITFAT's. */
+var T_RED='#DC1A22', T_YEL='#FFC21A', T_GRA='#3A3A3C';
 var ICON_TINT={
-  workout:'#FF9500', steps:'#FF375F', run:'#FF9500', food:'#34C759', water:'#0A84FF', check:'#34C759',
-  gym:'#BF5AF2', bolt:'#FFCC00', measure:'#64D2FF', flag:'#FF3B30', photo:'#5E5CE6', clock:'#FF9F0A',
-  person:'#8E8E93', people:'#AF52DE', flame:'#FF6B00', scale:'#30B0C7', bag:'#FF2D55', palette:'#5E5CE6',
-  chart:'#0A84FF', building:'#BF5AF2', doc:'#64D2FF', warning:'#FF9F0A', calendar:'#FF3B30', lock:'#8E8E93',
-  key:'#FFCC00', plus:'#34C759', trophy:'#FFCC00', target:'#FF3B30', compass:'#0A84FF', lab:'#30B0C7',
-  moon:'#5E5CE6', clipboard:'#8E8E93', repeat:'#34C759', leaf:'#34C759', pencil:'#8E8E93', star:'#FFCC00',
-  spark:'#FF2D55', heart:'#FF375F', home:'#0A84FF', chair:'#A2845E', laptop:'#8E8E93', rocket:'#FF6B00',
-  sun:'#FF9F0A', bell:'#FF9500', mirror:'#64D2FF', share:'#0A84FF', eyeoff:'#8E8E93', dot:'#8E8E93',
-  chevleft:'#8E8E93', medal:'#FF9F0A', sunrise:'#FF9500', play:'#FF3B30', card:'#30B0C7'
+  workout:T_RED, steps:T_RED, run:T_RED, flame:T_RED, gym:T_RED, flag:T_RED, target:T_RED, heart:T_RED,
+  play:T_RED, spark:T_RED, rocket:T_RED, bag:T_RED, calendar:T_RED,
+  bolt:T_YEL, trophy:T_YEL, star:T_YEL, medal:T_YEL, key:T_YEL, sun:T_YEL, sunrise:T_YEL, clock:T_YEL,
+  check:T_YEL, plus:T_YEL, food:T_YEL, warning:T_YEL,
+  person:T_GRA, people:T_GRA, lock:T_GRA, clipboard:T_GRA, pencil:T_GRA, laptop:T_GRA, eyeoff:T_GRA,
+  dot:T_GRA, chevleft:T_GRA, measure:T_GRA, scale:T_GRA, doc:T_GRA, chart:T_GRA, compass:T_GRA,
+  lab:T_GRA, moon:T_GRA, palette:T_GRA, building:T_GRA, home:T_GRA, chair:T_GRA, mirror:T_GRA,
+  share:T_GRA, card:T_GRA, water:T_GRA, leaf:T_GRA, repeat:T_GRA, bell:T_GRA
 };
-/* Tiles light enough that a white glyph would vanish get a dark one. */
-var ICON_DARK_GLYPH={bolt:1, trophy:1, key:1, star:1, measure:1};
+/* Yellow tiles take a dark glyph; a white one would vanish. */
+var ICON_DARK_GLYPH={bolt:1, trophy:1, star:1, medal:1, key:1, sun:1, sunrise:1, clock:1, check:1, plus:1, food:1, warning:1};
 
-/* Every emoji the app used as an icon, and what it means. */
 var EMOJI_ICON={
   '🔥':'flame','✅':'check','⚖️':'scale','⚖':'scale','🛍️':'bag','🛍':'bag','🎨':'palette','📈':'chart',
   '🏃':'run','⚡':'bolt','🏛️':'building','🏛':'building','📄':'doc','⚠️':'warning','⚠':'warning',
