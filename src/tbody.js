@@ -533,11 +533,20 @@ pl.round=1;
 ok("rounds loop back to the first exercise",
    pl.rounds>1 ? (plNextIndex().i===0 && plNextIndex().round===2) : true);
 
+noThrow("rest starts", function(){ pl.i=0; pl.round=1; plRest({i:1,round:1}); });
+ok("rest counts from twenty", pl.rest && pl.rest.left===REST_SECS && document.getElementById('pl-restn').textContent==String(REST_SECS));
+ok("rest draws its ring", document.getElementById('pl-restarc').innerHTML.indexOf('d="M100')>0);
+ok("rest names what is next", document.getElementById('pl-restnext').textContent===pl.exs[1].n);
+plRestAdd(20); ok("+20s adds twenty", pl.rest.left===REST_SECS+20 && pl.rest.total===REST_SECS+20);
+plSkipRest(); ok("skip ends the rest", !pl.resting && pl.rest===null && pl.i===1);
+stopTick();
 pl.i=pl.exs.length-1; pl.round=pl.rounds; pl.t0=Date.now()-6*60000;
 plFinish();
 ok("finish logs a session",  HF.count()===1, HF.count());
 ok("finish advances the day", progDone(_p.id)===1, progDone(_p.id));
 ok("done overlay shown",     document.getElementById('pl-done').className.indexOf('on')>=0);
+ok("the summary names the workout", document.getElementById('pl-dn-name').textContent.length>0);
+ok("...and shows the week as rings", document.getElementById('pl-dn-week').innerHTML.indexOf('hrings')>0);
 noThrow("player closes",     function(){ plClose(); });
 ok("player state released",  pl===null);
 ok("iframe emptied",         document.getElementById('pl-video').src==='');

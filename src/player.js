@@ -149,21 +149,41 @@ function plGo(n){
   plResume();
 }
 /* Rest — and the reason it exists twice over: it is also when the next clip loads. */
+function plRestPaint(){
+  if(!pl || !pl.rest) return;
+  const r=pl.rest;
+  $('pl-restn').textContent=Math.max(0,r.left);
+  const a=$('pl-restarc');
+  if(a && typeof ringArc==='function'){
+    const pct=r.total?Math.max(0,r.left)/r.total*100:0;
+    a.innerHTML = pct>0 ? '<path d="'+ringArc(100,100,88,pct)+'" fill="none" stroke-width="12" stroke-linecap="round"/>' : '';
+  }
+}
 function plRest(n){
   pl.resting=true;
   const nx=pl.exs[n.i];
   setClip(nx);                                   // buffers behind the rest overlay
-  $('pl-restnext').textContent='NEXT · '+nx.n;
+  $('pl-restnext').textContent=nx.n;
+  if($('pl-restmeta')) $('pl-restmeta').textContent=[nx.m,nx.eq].filter(Boolean).join(' · ')+
+    ' · '+(n.i+1)+' of '+pl.exs.length+(pl.rounds>1?', round '+n.round:'');
   $('pl-rest').classList.add('on');
-  let r=REST_SECS; $('pl-restn').textContent=r;
+  pl.rest={left:REST_SECS, total:REST_SECS, n};
+  plRestPaint();
   plTick=setInterval(()=>{
-    r--; $('pl-restn').textContent=Math.max(0,r);
-    if(r<=0){ clearInterval(plTick); plTick=null; pl.resting=false; plGo(n); }
+    if(!pl || !pl.rest) return;
+    pl.rest.left--; plRestPaint();
+    if(pl.rest.left<=0){ clearInterval(plTick); plTick=null; pl.resting=false; pl.rest=null; plGo(n); }
   },1000);
+}
+/* Twenty more seconds: the ring grows with it, so it still empties at the end. */
+function plRestAdd(d){
+  if(!pl || !pl.rest) return;
+  pl.rest.left+=d; pl.rest.total=Math.max(pl.rest.total, pl.rest.left);
+  plRestPaint();
 }
 function plSkipRest(){
   if(!pl||!pl.resting) return;
-  stopTick(); pl.resting=false;
+  stopTick(); pl.resting=false; pl.rest=null;
   const n=plNextIndex(); if(n) plGo(n); else plFinish();
 }
 
@@ -196,6 +216,18 @@ function plFinish(){
   $('pl-dn-ex').textContent=pl.exs.length;
   $('pl-dn-min').textContent=mins;
   $('pl-dn-rnd').textContent=pl.rounds;
+  /* The Fitness+ summary: the workout by name, today's date, then the week
+     this session went into, as the same three rings Home shows. */
+  if($('pl-dn-name')) $('pl-dn-name').textContent=m.name||'Workout';
+  if($('pl-dn-date')) $('pl-dn-date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  try{ const st=liveStreak(); $('pl-dn-streak').textContent=st; $('pl-dn-streak-u').textContent=st===1?'DAY':'DAYS'; }catch(e){}
+  try{
+    const days=daysThisWeek(), wg=HF.data.weekGoal||5, wm=weekMinutes(), cons=consistency();
+    $('pl-dn-week').innerHTML=ringsSVG([days/wg*100, wm/150*100, cons],78)+
+      '<div><div class="t">This Week</div>'+
+      '<div class="l"><b class="hc-days">'+days+'/'+wg+'</b> days · <b class="hc-mins">'+wm+'/150</b> min</div>'+
+      '<div class="l">'+(days>=wg?'Weekly goal reached.':(wg-days)+' more day'+(wg-days===1?'':'s')+' to your goal.')+'</div></div>';
+  }catch(e){ $('pl-dn-week').innerHTML=''; }
   $('pl-done').classList.add('on');
 }
 function plClose(){
