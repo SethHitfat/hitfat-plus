@@ -653,9 +653,17 @@ ok("prefs saved",           HF.data.prefs.goal==='Lose fat' && HF.data.prefs.nam
 /* The Fitness+ sheet: days chosen as circles, counted into prefs.days. */
 startOnboarding();
 var _obh=document.getElementById('ob-in').innerHTML;
-ok("the sheet asks with tiles, a segment and day circles", _obh.indexOf('obtile')>0 && _obh.indexOf('obseg')>0 &&
-   _obh.split('obDay(').length-1===7);
+/* An edit is the Fitness+ "Get Started" sheet: Schedule, Goal, Equipment. */
+ok("an edit opens on the schedule, with day circles", _obh.indexOf('obtabs')>0 &&
+   _obh.split('class="obdays"').length-1===1 && _obh.split('aria-label="'+'Monday"').length-1===1);
+ok("...a card for each training day", _obh.split('class="obwk"').length-1===_ob.dayList.length);
 ok("...and an edit can be closed", _obh.indexOf('obClose()')>0);
+noThrow("the goal tab opens", function(){ obSetTab('goal'); });
+ok("...with the goal tiles and the level", document.getElementById('ob-in').innerHTML.indexOf('obtile')>0 &&
+   document.getElementById('ob-in').innerHTML.indexOf("obPick('level'")>0);
+noThrow("the equipment tab opens", function(){ obSetTab('equip'); });
+ok("...with the equipment tiles", document.getElementById('ob-in').innerHTML.indexOf("obPick('equip'")>0);
+obSetTab('schedule');
 var _d0=_ob.dayList.length; obDay(6);
 ok("a day circle adds a day", _ob.dayList.length===_d0+1 && _ob.days===_d0+1);
 _ob.dayList=[0,3]; _ob.days=2; obDay(0);
@@ -664,6 +672,10 @@ _ob.dayList=[0,1,2,3,4,5]; _ob.days=6; obDay(6);
 ok("...and one day always rests", _ob.dayList.length===6);
 _ob.dayList=[0,2,4,6]; _ob.days=4; finishOb();
 ok("the chosen days are kept", HF.data.prefs.days===4 && HF.data.prefs.dayList.join()==='0,2,4,6');
+ok("an edit saves without leaving for Home", HF.data.onboarded===true);
+ok("a Remove on a day card takes the day off", (function(){
+    startOnboarding(); _ob.dayList=[0,2,4]; _ob.days=3; renderOb(); obDay(2); return _ob.dayList.join()==='0,4'; })());
+obClose();
 
 
 

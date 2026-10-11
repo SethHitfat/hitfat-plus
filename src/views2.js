@@ -526,8 +526,11 @@ function startOnboarding(){
   _ob={goal:p.goal||null, level:p.level||'Beginner', days:p.days||3,
        dayList:(Array.isArray(p.dayList)&&p.dayList.length)?p.dayList.slice():obDefaultDays(p.days||3),
        equip:p.equip||'Bodyweight only', ack:!!HF.data.readiness, name:p.name||''};
+  _obTab='schedule';
   $('ob').classList.add('on'); renderOb(); $('ob').scrollTop=0;
 }
+let _obTab='schedule';
+function obSetTab(t){ _obTab=t; renderOb(); }
 function obPick(f,v){ _ob[f]=v; renderOb(); }
 function obAck(){ _ob.ack=!_ob.ack; renderOb(); }
 function obDay(i){
@@ -546,6 +549,7 @@ function renderOb(){
             Intermediate:'You train regularly and know the moves.',
             Advanced:'A strong base — you want a real challenge.'};
   const first=!HF.data.onboarded;
+  if(!first) return renderObEdit(tile,LV,q);
   $('ob-in').innerHTML=
     (first?'':'<button class="obx" aria-label="Close" onclick="obClose()">✕</button>')+
     '<h1 class="obh">'+(first?'Build Your Plan':'Your Plan')+'</h1>'+
@@ -591,8 +595,77 @@ function renderOb(){
     '<div class="obfoot"><button class="bigbtn" onclick="finishOb()">'+(first?'Start Training':'Save')+'</button>'+
     (_ob.goal&&_ob.ack?'':'<div class="obhint">Pick a goal and tick the box to continue.</div>')+'</div>';
 }
+/* ── EDIT PLAN, after the Fitness+ "Get Started" sheet ──
+   The same answers as onboarding, laid out the way Fitness+ edits a plan:
+   the plan in progress on one row, a segmented control, and the week as a
+   card for each training day with the session that lands on it. */
+const OB_DAY_NAMES=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+function obWeekCards(){
+  const nx=nextUp(), p=nx&&nx.p&&nx.p.weeks?nx.p:null;
+  /* The plan's next sessions, in order, onto the chosen days in order — a
+     missed day moves along, it is not lost. */
+  const ses=[];
+  if(p){ let c=0; p.weeks.forEach(w=>w.days.forEach(d=>{ if(c>=nx.idx && !d.rest) ses.push(d); c++; })); }
+  return _ob.dayList.map((di,k)=>{
+    const d=ses[k];
+    return '<div class="obwk"><div class="obwk-h"><div><div class="obwk-d">'+OB_DAY_NAMES[di]+'</div>'+
+      '<div class="obwk-m">'+(p?p.dur+'min':'Training day')+'</div></div>'+
+      '<button class="obpill" onclick="obDay('+di+')">Remove</button></div>'+
+      '<div class="obwk-s">'+glyph(d?'workout':'calendar')+'<div><div class="t">'+hesc(d?(d.name||'Workout'):'Any session')+'</div>'+
+      '<div class="m">'+(d?(d.ex?d.ex.length+' exercises':'')+(p?' · '+hesc(p.name):''):'From your plan, or one you pick')+'</div></div></div></div>';
+  }).join('');
+}
+function renderObEdit(tile,LV,q){
+  const nx=nextUp(), p=nx&&nx.p&&nx.p.weeks?nx.p:null;
+  const wkNo=p?(()=>{ let c=0,w=1; p.weeks.forEach((wk,wi)=>wk.days.forEach(()=>{ if(c===nx.idx) w=wi+1; c++; })); return w; })():0;
+  const tabs=[['schedule','Schedule'],['goal','Goal'],['equip','Equipment']];
+  let h='<button class="obx" aria-label="Close" onclick="obClose()">✕</button>'+
+    '<h1 class="obh">Your Plan</h1>'+
+    '<div class="obplan" onclick="'+(p?'obClose();openProgram(\''+p.id+'\')':'obClose();switchTab(\'train\');setTrSeg(\'plans\')')+'">'+
+      glyph('calendar')+'<span>'+(p?'Week '+wkNo+' of '+hesc(p.name):'No plan yet — pick one')+'</span><span class="chev">›</span></div>'+
+    '<div class="obseg obtabs">'+tabs.map(t=>
+      '<button class="'+(_obTab===t[0]?'on':'')+'" onclick="obSetTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>';
+
+  if(_obTab==='schedule'){
+    h+='<div class="obq">Weekly Schedule</div>'+
+      '<div class="obsub">Pick your training days. A session missed can be done later — you have got this.</div>'+
+      '<div class="obcard"><div class="obdays">'+OB_DAYS.map((d,i)=>
+        '<button class="'+(_ob.dayList.indexOf(i)>=0?'on':'')+'" onclick="obDay('+i+')" aria-label="'+OB_DAY_NAMES[i]+'">'+d+'</button>').join('')+'</div>'+
+      '<div class="obrow"><span>Days a week</span><b>'+_ob.days+' days</b></div></div>'+
+      '<div class="obwks">'+obWeekCards()+'</div>';
+  } else if(_obTab==='goal'){
+    h+='<div class="obq">Your Goal</div>'+
+      '<div class="obgrid">'+
+        tile('goal','Lose fat','Lose Fat','Burn more, keep muscle','flame')+
+        tile('goal','Get stronger','Get Stronger','Strength you can feel','workout')+
+        tile('goal','Move better','Move Better','Mobility and joints','leaf')+
+        tile('goal','Get started','Just Get Started','The habit first','sunrise')+
+      '</div>'+
+      '<div class="obq">Your Level</div>'+
+      '<div class="obseg">'+['Beginner','Intermediate','Advanced'].map(l=>
+        '<button class="'+(_ob.level===l?'on':'')+'" onclick="obPick(\'level\','+q(l)+')">'+l+'</button>').join('')+'</div>'+
+      '<div class="obnote">'+LV[_ob.level]+'</div>'+
+      '<div class="obq">Your Name</div>'+
+      '<input class="inp obname" id="ob-name" maxlength="24" placeholder="What should we call you?" value="'+String(_ob.name||'').replace(/"/g,'&quot;')+'" oninput="_ob.name=this.value">';
+  } else {
+    h+='<div class="obq">Equipment</div>'+
+      '<div class="obsub">What you have to hand. Sessions are picked to match.</div>'+
+      '<div class="obgrid obgrid3">'+
+        tile('equip','Bodyweight only','Bodyweight','Just you','person')+
+        tile('equip','Home basics','Home Basics','Chair, towel, bottles','home')+
+        tile('equip','Dumbbell / Kettlebell','Weights','Dumbbell or kettlebell','workout')+
+      '</div>';
+  }
+  /* Someone onboarded before the readiness note existed still has to tick it. */
+  if(!_ob.ack) h+='<div class="obq">Before You Start</div>'+
+    '<div class="obcard obread"><div class="obrow obtick" onclick="obAck()"><span class="box"></span>'+
+    '<span>I have read the safety note and understand I train at my own pace and responsibility.</span></div></div>';
+  h+='<div class="obfoot"><button class="bigbtn" onclick="finishOb()">Save Plan</button></div>';
+  $('ob-in').innerHTML=h;
+}
 function finishOb(){
-  if(!_ob.goal){ toast('Pick a goal to continue'); $('ob').scrollTop=0; return; }
+  const first=!HF.data.onboarded;
+  if(!_ob.goal){ toast('Pick a goal to continue'); if(!first){ _obTab='goal'; renderOb(); } $('ob').scrollTop=0; return; }
   if(!_ob.ack){ toast('Please tick the readiness box'); return; }
   HF.data.prefs=Object.assign({},HF.data.prefs,{goal:_ob.goal,level:_ob.level||'Beginner',
     days:_ob.days||3,dayList:(_ob.dayList||[]).slice(),equip:_ob.equip||'Bodyweight only',name:(_ob.name||'').trim().slice(0,24)});
@@ -600,7 +673,9 @@ function finishOb(){
   try{ sb && sb.auth.getSession().then(r=>{ if(r&&r.data&&r.data.session) syncProfile(r.data.session); }); }catch(e){}
   updateAvatar();
   $('ob').classList.remove('on');
-  switchTab('home');
+  /* The first run lands on Home; an edit stays where it was opened. */
+  if(first) switchTab('home');
+  else { try{ renderMe(); renderHome(); }catch(e){} toast('Plan saved'); }
 }
 
 

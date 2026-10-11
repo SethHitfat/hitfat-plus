@@ -1583,3 +1583,30 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 #me .grow-act{color:var(--lime);}
 #me .grow-act.danger{color:#FF453A;}
 :root[data-theme="light"] #me .grow-act.danger{color:#D70015;}
+
+/* ═══════════════════════════════════════════════════════════════
+   EDIT PLAN, after the Fitness+ "Get Started" sheet
+   ═══════════════════════════════════════════════════════════════ */
+.obplan{display:flex;align-items:center;gap:10px;margin-top:14px;padding:14px 16px;border-radius:14px;cursor:pointer;
+  background:#2C2C2E;color:var(--txt);font-size:16px;}
+:root[data-theme="light"] .obplan{background:#FFFFFF;}
+.obplan .gly{width:20px;height:20px;color:var(--lime);flex:none;}
+.obplan span:not(.chev){flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.obplan .chev{color:var(--dim2);font-size:20px;}
+.obtabs{margin-top:12px;}
+.obtabs button{padding:7px 4px;font-size:14px;}
+.obwks{display:flex;flex-direction:column;gap:12px;margin-top:12px;}
+.obwk{background:#2C2C2E;border-radius:14px;padding:4px 16px;}
+:root[data-theme="light"] .obwk{background:#FFFFFF;}
+.obwk-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;}
+.obwk-d{font-size:17px;font-weight:600;color:var(--txt);}
+.obwk-m{font-size:15px;color:var(--dim);margin-top:1px;}
+.obpill{border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;padding:6px 12px;border-radius:99px;
+  background:rgba(255,90,95,.14);color:var(--lime);}
+:root[data-theme="light"] .obpill{background:rgba(194,26,20,.10);}
+.obwk-s{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-top:.5px solid var(--sep);}
+.obwk-s .gly{width:20px;height:20px;color:var(--yel-t);flex:none;margin-top:2px;}
+.obwk-s .t{font-size:16px;color:var(--txt);}
+.obwk-s .m{font-size:14px;color:var(--dim);margin-top:2px;}
+#ob .obsub + .obgrid, #ob .obsub + .obcard{margin-top:12px;}
+.obpill{color:#FF8A8D;} :root[data-theme="light"] .obpill{color:var(--lime);}
