@@ -130,12 +130,12 @@ function ftile(p){
 }
 
 const ACTIVITIES=[
-  {k:'Fat Loss',  n:'Fat Loss',  img:IMG.hiit},
-  {k:'Strength',  n:'Strength',  img:IMG.db},
-  {k:'Core',      n:'Core',      img:IMG.core},
-  {k:'Beginner',  n:'Beginner',  img:IMG.home},
+  {k:'Fat Loss',  n:'Fat Loss',  img:'/img/p/act-fatloss.jpg'},
+  {k:'Strength',  n:'Strength',  img:'/img/p/act-strength.jpg'},
+  {k:'Core',      n:'Core',      img:'/img/p/act-core.jpg'},
+  {k:'Beginner',  n:'Beginner',  img:'/img/p/act-beginner.jpg'},
   {k:'Equipment', n:'Equipment', img:IMG.kb},
-  {k:'Recovery',  n:'Recovery',  img:IMG.lowimp}
+  {k:'Recovery',  n:'Recovery',  img:'/img/p/act-recovery.jpg'}
 ];
 function activityMatch(k,p){
   if(k==='Beginner')  return p.level==='Beginner';
