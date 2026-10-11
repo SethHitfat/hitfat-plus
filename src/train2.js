@@ -77,7 +77,7 @@ function openPlanGroup(k){
 /* ── Workouts: columns of three rows, paged sideways ── */
 function fwRow(p,badge){
   return '<div class="fwr" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name)+'">'+
+    '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name,p)+'">'+
       (badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="tx"><div class="t">'+p.name+'</div><div class="m">'+p.dur+'min · '+(p.goal||p.level)+'</div></div></div>';
 }
@@ -417,7 +417,7 @@ function trLibrary(){
       const p=findProg(pid);
       const when=new Date(x.date); const d=isNaN(when)?'':when.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
       return '<div class="fwr"'+(p?' onclick="openProgram(\''+p.id+'\')"':'')+'>'+
-        '<div class="th" style="background-image:url(\''+(p?progImg(p):IMG.home)+'\');'+thumbCrop(x.name||'')+'"></div>'+
+        '<div class="th" style="background-image:url(\''+(p?progImg(p):IMG.home)+'\');'+thumbCrop(x.name||'',p)+'"></div>'+
         '<div class="tx"><div class="t">'+(x.name||'Workout')+'</div>'+
         '<div class="m">'+[d, x.mins?x.mins+'min':'', p&&p.name!==x.name?p.name:''].filter(Boolean).join(' · ')+'</div></div></div>';
     }).join('')+'</div>';
@@ -581,7 +581,7 @@ function trRecoverySoon(){
      '<div class="m">'+REHAB_PLANS.length+' programs · '+REHAB_PLANS.reduce((t,p)=>t+progDays(p),0)+' sessions</div></div>';
   h+=fsec('What Is Coming',REHAB_PLANS.length+' programs, filming now.');
   h+='<div class="pdx-eps">'+REHAB_PLANS.map(p=>
-    '<div class="fwr pdx-ep soon"><div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name)+'"></div>'+
+    '<div class="fwr pdx-ep soon"><div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name,p)+'"></div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
     '<div class="m">'+wks(p.weeks.length)+' · '+progDays(p)+' days</div>'+
     '<span class="soon-tag">Soon</span></div></div>').join('')+'</div>';

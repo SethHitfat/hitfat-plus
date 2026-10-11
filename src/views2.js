@@ -44,7 +44,16 @@ const IMG={
 const IMG_LIST=Object.values(IMG);
 /* Order matters: the most specific test wins, so no single photo swallows half
    the catalogue the way one shared "equipment" bucket did. */
+/* A program's own picture, shot for it, beats any shared photo. These are
+   files beside the page (/img/p/<id>.jpg, 900px) rather than data URIs:
+   the site now deploys from the repo, so the folder cannot go missing, and
+   each picture loads only when its card is on screen instead of every one
+   riding along in index.html. Add an id here when its picture is in. */
+const PHOTO=new Set(['sig1','sig2','sig3','sig4','fl30','lad4','men6','f40','core14','bws8','hiit4',
+                     'min3','am21','reset12','mkb','mdb','mch','m1','m2','m3','ch2']);
+function hasPhoto(p){ return !!(p && PHOTO.has(p.id)); }
 function progImg(p){
+  if(hasPhoto(p)) return '/img/p/'+p.id+'.jpg';
   const n=(p&&p.name)||'', g=(p&&p.goal)||'';
   /* Recovery and BAR before anything else — a knee prehab program showing a
      man carrying kettlebells in a dark gym reads as the wrong product. These
@@ -74,7 +83,7 @@ function progImg(p){
 function frow(p,badge){
   const done=progDone(p.id), tot=progDays(p), pct=tot?Math.round(done/tot*100):0;
   return '<div class="frow" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name)+'">'+
+    '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name,p)+'">'+
     (badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
     '<div class="m">'+(p.weeks?wks(p.weeks.length)+' · '+tot+' days':(p.level+' · '+p.dur+' min'))+'</div>'+
@@ -86,7 +95,9 @@ function frow(p,badge){
 /* The library has fewer photographs than programs, so rows that share one
    are framed differently — a different part of the same frame — instead of
    repeating the identical thumbnail five times in a column. */
-function thumbCrop(name){
+function thumbCrop(name,p){
+  /* a picture made for this program is framed as it was shot */
+  if(hasPhoto(p)) return 'background-size:cover;background-position:50% 30%;';
   let h=0; const n=String(name||'');
   for(let i=0;i<n.length;i++) h=(h*31+n.charCodeAt(i))>>>0;
   const x=[50,28,72,40,62][h%5], y=[40,55,30][(h>>3)%3], z=[100,135,150][(h>>5)%3];
