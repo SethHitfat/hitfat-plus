@@ -24,7 +24,7 @@ have=set(re.findall(r'\.([a-zA-Z][\w-]*)',css))
 need=['app','screen','pad','tabs','tab','hhdr','wk2','plan','ov','pi','join','acard','arow','mbar',
       'sechead','hscroll','frow','th','chev','wrow','num','bigbtn','ovl','hgroup','empty','pbar','inp',
       'sheet','segs','seg','fsec','fland','fact','fbig','ftile','fplan','flib','fnew','share-in','y','av2',
-      'nhero','nrows','nrow','nt','ncard','ranked','rk','pb',
+      'nhero','nrows','nrow','ncard','ranked','rk','pb',
       'cp-in','cpbar','cpstep','cph','cpsub','cpgrid','cpo','cpdays','cpd','cpnote','cprow','cpfoot',
       'pl-scrim','pl-top','pl-x','pl-hd','pl-bot','pl-name','pl-sub','pl-clock','pl-mid','pl-skip','pl-row','pl-tl','pl-bar','pl-track','pl-go','pl-ov','pl-pill','pl-next','pl-segs','pl-sm','now','done',
       'pl-fill','pl-ic','pl-dot','pl-modes','pl-mo','pl-busy','mirrormode','camoff','hascam','rdt','rds',

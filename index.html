@@ -16516,14 +16516,15 @@ function ncard(p,rank){
    catalogue. What it never does is show two rows with the SAME list, or bury a
    plan in every row. Both are capped here. */
 let _rowSeen={}, _rowSigs=new Set();
-function nrow(title,list,ranked){
+function nrow(title,list,ranked,sub){
   list=(list||[]).filter(p=>ranked || (_rowSeen[p.id]||0)<3);
   if(!list.length) return '';
   const sig=list.map(p=>p.id).join(',');
   if(_rowSigs.has(sig)) return '';          // an identical row already exists
   _rowSigs.add(sig);
   list.forEach(p=>{ _rowSeen[p.id]=(_rowSeen[p.id]||0)+1; });
-  return '<div class="nrow"><div class="nt">'+title+'</div>'+
+  /* the same section head as every other row in the app: Title Case, a line under it */
+  return '<div class="nrow">'+fsec(title,sub||'')+
     '<div class="hscroll">'+list.map((p,i)=>ncard(p,ranked?i+1:0)).join('')+'</div></div>';
 }
 /* a plan counts as "use what you have" only if its sessions really call for kit */
@@ -16559,14 +16560,17 @@ function trPlans(){
   /* Everything else, by what it is for */
   const by=k=>multi.filter(p=>p.goal===k);
   h+='<div class="nrows">';
-  if(goalKey) h+=nrow({'Fat Loss':'Burn fat','Strength':'Build strength','Core':'Core & abs'}[goalKey], by(goalKey));
+  const ROWS={'Fat Loss':['Burn Fat','Plans built around the deficit.'],
+              'Strength':['Build Strength','Stronger, week on week.'],
+              'Core':['Core & Abs','A stronger middle, and a back that thanks you.']};
+  if(goalKey) h+=nrow(ROWS[goalKey][0], by(goalKey), false, 'For your goal.');
   ['Fat Loss','Strength','Core'].forEach(k=>{
     if(k===goalKey) return;
-    h+=nrow({'Fat Loss':'Burn fat','Strength':'Build strength','Core':'Core & abs'}[k], by(k));
+    h+=nrow(ROWS[k][0], by(k), false, ROWS[k][1]);
   });
-  h+=nrow('Easy to start',      multi.filter(p=>p.level===lvl&&p.level==='Beginner'));
-  h+=nrow('Four weeks or less', multi.filter(p=>p.weeks.length<=4).sort((a,b)=>a.weeks.length-b.weeks.length));
-  h+=nrow('The long game',      multi.filter(p=>p.weeks.length>=6));
+  h+=nrow('Easy to Start',      multi.filter(p=>p.level===lvl&&p.level==='Beginner'), false, 'Beginner plans, at your level.');
+  h+=nrow('Four Weeks or Less', multi.filter(p=>p.weeks.length<=4).sort((a,b)=>a.weeks.length-b.weeks.length), false, 'Short plans, quick to finish.');
+  h+=nrow('The Long Game',      multi.filter(p=>p.weeks.length>=6), false, 'Six weeks and more, for the real change.');
   h+='</div>';
   $('tr-body').innerHTML=h;
 }

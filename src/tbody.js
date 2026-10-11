@@ -370,10 +370,10 @@ ok("every plan's minutes match its content", trainingPlans().filter(function(p){
    .every(function(p){ return p.dur===progMinutes(p); }));
 ok("Morning 10 is about ten minutes", Math.abs(PROGRAMS.filter(function(p){ return p.id==='am21'; })[0].dur-10)<=1);
 ok("names are written one way", PROGRAMS.every(function(p){ return !/^\d+ (Day|Week|Minutes?) /.test(p.name); }));
-ok("the goal's row comes first", _ph.indexOf('Burn fat')>0 && _ph.indexOf('Burn fat')<_ph.indexOf('Build strength'));
-ok("other category rows", _ph.indexOf('Build strength')>0 && _ph.indexOf('Core & abs')>0);
-ok("no row twice", _ph.split('>Burn fat<').length===2);
-ok("length rows",      _ph.indexOf('The long game')>0 && _ph.indexOf('Four weeks or less')>0);
+ok("the goal's row comes first", _ph.indexOf('Burn Fat')>0 && _ph.indexOf('Burn Fat')<_ph.indexOf('Build Strength'));
+ok("other category rows", _ph.indexOf('Build Strength')>0 && _ph.indexOf('Core & Abs')>0);
+ok("no row twice", _ph.split('>Burn Fat<').length===2);
+ok("length rows",      _ph.indexOf('The Long Game')>0 && _ph.indexOf('Four Weeks or Less')>0);
 HF.data.progress={}; HF.data.progress[trainingPlans()[0].id]=3;
 noThrow("continue row renders", function(){ setTrSeg('plans'); });
 ok("started plan promoted", document.getElementById('tr-body').innerHTML.indexOf('Continue')>0);
