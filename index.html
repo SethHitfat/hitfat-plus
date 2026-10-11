@@ -3680,6 +3680,16 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 /* The month's challenge: its kicker in sentence case like every other card. */
 .mcard .mtag{font-size:15px;font-weight:700;letter-spacing:0;}
 
+/* ═══════════════════════════════════════════════════════════════
+   T42, in line: the edition beside the mark in sentence case, the
+   numbers in the ring colours
+   ═══════════════════════════════════════════════════════════════ */
+.t42-stage-tag, .t42-banner-tag, #t42 .t42-stage-tag{font-family:inherit !important;font-size:15px !important;font-weight:600 !important;
+  letter-spacing:0 !important;text-transform:none !important;color:rgba(255,255,255,.72) !important;}
+#t42 .t42-stat-v.t42-tone-r, .t42-stat-v.t42-tone-r{color:var(--lime);}
+#t42 .t42-stat-v.t42-tone-y, .t42-stat-v.t42-tone-y{color:var(--yel-t);}
+#t42 .t42-jlab span{color:rgba(255,255,255,.58);}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -10528,7 +10538,7 @@ function t42RenderLanding(){
 
   /* ── what it is, in four lines a beginner reads in five seconds ── */
   var gymOnly=t42GymOnly();
-  h+='<div class="sechead">How it works</div><div class="t42-list">'+
+  h+='<div class="sechead">How It Works</div><div class="t42-list">'+
      t42Info('calendar','One start line','Everyone starts '+t42Day(t42Date(c.starts_on))+
              ' and finishes together, '+((c.total_days)||42)+' days later.')+
      (gymOnly
@@ -10549,7 +10559,7 @@ function t42RenderLanding(){
   h+=t42WeeksBlock('Six weeks');
 
   var tracks=t42Tracks();
-  h+='<div class="sechead">'+(tracks.length===2?'Two tracks':'The tracks')+'</div><div class="t42-list">';
+  h+='<div class="sechead">'+(tracks.length===2?'Two Tracks':'The Tracks')+'</div><div class="t42-list">';
   tracks.forEach(function(t){
     h+='<div class="t42-row t42-info">'+ic(t.icon)+'<div class="t42-row-b">'+
        '<div class="t42-row-l t42-trackn">'+t42Esc(t.name)+'</div>'+
@@ -10559,7 +10569,7 @@ function t42RenderLanding(){
 
   /* The two experiences, but only when the edition runs both. */
   if(t42Modes().length>1){
-    h+='<div class="sechead">Two ways to do it</div><div class="t42-modes">';
+    h+='<div class="sechead">Two Ways to Do It</div><div class="t42-modes">';
     T42_MODES.forEach(function(m){
       h+='<div class="t42-mini"><div class="t42-mini-n">'+t42Esc(m.name)+'</div>'+
          '<div class="t42-mini-t">'+t42Esc(m.tag)+'</div></div>';
@@ -10567,7 +10577,7 @@ function t42RenderLanding(){
     h+='</div>';
   }
 
-  h+='<div class="sechead">Good to know</div><div class="t42-list">'+
+  h+='<div class="sechead">Good to Know</div><div class="t42-list">'+
      t42Info('lock','This edition only',
              'Your place is for '+t42EdName(c)+'. The next T42 is a new challenge and a new sign-up.')+
      t42Info('clock','Access ends with the challenge',
@@ -11120,7 +11130,7 @@ function t42RenderJoined(){
 
   var h='<div class="t42-stage">'+
     '<div class="t42-stage-top"><span class="t42-logo t42-logo-s">T42</span>'+
-    '<span class="t42-stage-tag">'+t42Esc(t42EdName(c).toUpperCase())+'</span></div>'+
+    '<span class="t42-stage-tag">'+t42Esc(t42EdName(c))+'</span></div>'+
     '<div class="t42-stage-h t42-in">You\'re in.</div>'+
     '<div class="t42-stage-k">'+t42Esc(t42EdName(c))+' starts in</div>'+
     '<div class="t42-count" id="t42-cd">'+t42Countdown()+'</div>'+
@@ -11129,7 +11139,7 @@ function t42RenderJoined(){
 
   /* ── the checklist ── */
   var items=t42PrepItems(), done=items.filter(function(i){ return i.done; }).length;
-  h+='<div class="sechead">Get ready <span class="t42-sec-n">'+done+' of '+items.length+'</span></div>'+
+  h+='<div class="sechead">Get Ready <span class="t42-sec-n">'+done+' of '+items.length+'</span></div>'+
      '<div class="t42-list">';
   items.forEach(function(it){
     h+=t42Row(it.icon, t42Esc(it.label), t42Esc(it.value), it.done?'done':(it.go?'todo':'info'), it.go||'t42Noop()');
@@ -11138,7 +11148,7 @@ function t42RenderJoined(){
 
   if(r.mode==='gym_duo') h+=t42DuoSummaryCard();
 
-  h+='<div class="sechead">Your challenge</div><div class="t42-grid">'+
+  h+='<div class="sechead">Your Challenge</div><div class="t42-grid">'+
      t42Stat('Track', tr.name||'—')+
      t42Stat('Mode',  r.mode==='gym_duo' ? 'Gym duo' : 'Online')+
      t42Stat('Starts', t42Day(t42Date(c.starts_on)))+
@@ -11421,7 +11431,7 @@ function t42RenderRules(){
         '<div class="hgroup"><div class="k">'+t42Esc(t42EdName(c))+'</div><h2>How T42 works</h2>'+
         '<p>Two minutes. Everything that decides your result.</p></div>';
 
-  h+='<div class="sechead">The dates</div><div class="t42-list">'+
+  h+='<div class="sechead">The Dates</div><div class="t42-list">'+
      t42Info('calendar','Day 1', t42Day(t42Date(c.starts_on),true))+
      t42Info('flag','Day '+(c.total_days||42), t42Day(t42Date(c.ends_on),true))+
      (c.results_on ? t42Info('trophy','Results', t42Day(t42Date(c.results_on),true)) : '')+
@@ -11429,7 +11439,7 @@ function t42RenderRules(){
      '</div>';
 
   var gym=(T42.reg ? T42.reg.mode==='gym_duo' : t42GymOnly());
-  h+='<div class="sechead">Every day</div><div class="t42-list">'+
+  h+='<div class="sechead">Every Day</div><div class="t42-list">'+
      (gym ? t42Info('gym','Train at HQ','Check in at the counter by QR. Each day you attend counts '+
                     'toward your score.') : '')+
      t42Info('workout','Do the workout','Or rest, on a rest day. It plays in the HITFAT+ player.')+
@@ -11440,7 +11450,7 @@ function t42RenderRules(){
 
   var ws=t42WeightSet();
   if(ws){
-    h+='<div class="sechead">How you are scored</div>'+
+    h+='<div class="sechead">How You Are Scored</div>'+
        '<div class="acard"><div class="sub" style="margin-bottom:10px;">'+
        (tr?t42Esc(tr.name)+' is':'Your track is')+' scored out of 100, and never on kilograms alone:</div>';
     Object.keys(ws).forEach(function(k){
@@ -11450,7 +11460,7 @@ function t42RenderRules(){
     h+='</div>';
   }
 
-  h+='<div class="sechead">The leaderboard</div><div class="t42-list">'+
+  h+='<div class="sechead">The Leaderboard</div><div class="t42-list">'+
      (gym
        ? t42Info('people','Ranked as duos','Transform and Perform, men and women. The team score is the '+
                  'average of both partners\' improvement.')
@@ -11461,11 +11471,11 @@ function t42RenderRules(){
        : t42Info('lock','Verified finishers','Top finishers show a scale photo with their code before results are announced.'))+
      '</div>';
 
-  h+='<div class="sechead">If you miss a day</div>'+
+  h+='<div class="sechead">If You Miss a Day</div>'+
      '<div class="acard"><div class="sub">Nothing resets. You stay on the same day as everyone else '+
      'and carry on with today. A missed day counts against consistency — one day never ruins 42.</div></div>';
 
-  h+='<div class="sechead">After day '+(c.total_days||42)+'</div>'+
+  h+='<div class="sechead">After Day '+(c.total_days||42)+'</div>'+
      '<div class="acard"><div class="sub">The daily plan, check-ins and leaderboard close with the challenge. '+
      'Your result, score, badges and certificate stay in My T42 Journey. The next T42 is a new '+
      'challenge and a new sign-up.</div></div>';
@@ -11474,9 +11484,11 @@ function t42RenderRules(){
 }
 
 
-function t42Stat(label,val){
+/* tone: 'r' red, 'y' yellow, or none for white — the ring colours, as
+   every summary in the app numbers itself. */
+function t42Stat(label,val,tone){
   return '<div class="t42-stat"><div class="t42-stat-l">'+t42Esc(label)+'</div>'+
-         '<div class="t42-stat-v">'+t42Esc(val)+'</div></div>';
+         '<div class="t42-stat-v'+(tone?' t42-tone-'+tone:'')+'">'+t42Esc(val)+'</div></div>';
 }
 
 
@@ -11531,7 +11543,7 @@ function t42HomeCard(){
     cta='Join T42';
   }
 
-  var ed=t42EdName(T42.challenge).toUpperCase();
+  var ed=t42EdName(T42.challenge);
   var bar = st==='active'
     ? '<div class="t42-banner-bar"><i style="width:'+Math.round(day/((T42.challenge.total_days)||42)*100)+'%"></i></div>' : '';
   return '<div class="t42-banner" onclick="openT42()">'+
@@ -11567,7 +11579,7 @@ function t42RenderDash(){
   /* ── where I am: one number, one bar, one line ── */
   var h='<div class="t42-stage t42-today">'+
     '<div class="t42-stage-top"><span class="t42-logo t42-logo-s">T42</span>'+
-    '<span class="t42-stage-tag">'+t42Esc(t42EdName(c).toUpperCase())+'</span></div>'+
+    '<span class="t42-stage-tag">'+t42Esc(t42EdName(c))+'</span></div>'+
     '<div class="t42-day"><div class="t42-day-l">'+
       '<div class="t42-day-n">Day '+day+'</div>'+
       '<div class="t42-day-s">of '+total+(wk?' · Week '+wk+(theme?' · '+t42Esc(theme):''):'')+'</div></div>'+
@@ -11672,10 +11684,10 @@ function t42RenderDash(){
 
   /* ── how it is going: four numbers, all earned ── */
   var sc=T42.score, pts = sc && sc.eligible ? t42Fmt(t42MyBoard()==='consistency'?sc.consistency_total:sc.total) : '—';
-  h+='<div class="sechead">Your progress</div><div class="t42-grid">'+
-     t42Stat('Streak', T42.streak()+(T42.streak()===1?' day':' days'))+
-     t42Stat('Compliance', T42.consistency()+'%')+
-     t42Stat('Workouts', T42.workoutPct()+'%')+
+  h+='<div class="sechead">Your Progress</div><div class="t42-grid">'+
+     t42Stat('Streak', T42.streak()+(T42.streak()===1?' day':' days'),'y')+
+     t42Stat('Compliance', T42.consistency()+'%','r')+
+     t42Stat('Workouts', T42.workoutPct()+'%','y')+
      t42Stat('Points', pts)+
      '</div>';
   var dw=t42Delta('weight_kg'), dc=t42Delta('waist_cm');
@@ -11687,7 +11699,7 @@ function t42RenderDash(){
 
   /* The mini challenge, if the week carries one. */
   if(T42.week && T42.week.mini_title){
-    h+='<div class="sechead">This week</div>'+
+    h+='<div class="sechead">This Week</div>'+
        '<div class="acard"><div class="ah">'+ic('target')+'<div class="t">'+
        t42Esc(T42.week.mini_title)+'</div></div>'+
        '<div class="sub">'+t42Esc(T42.week.mini_detail||'')+'</div></div>';
@@ -12024,7 +12036,7 @@ function t42RenderTrain(){
   h+='<button class="bigbtn" onclick="t42PlayToday()">'+
      (done?'Play Again':'Start Workout')+'</button>';
 
-  h+='<div class="sechead">Workout preview</div>';
+  h+='<div class="sechead">Workout Preview</div>';
   if(!exs.length){
     h+='<div class="acard"><div class="sub">This day has no exercises listed yet.</div></div>';
   } else {
@@ -12256,7 +12268,7 @@ function t42ProgBody(){
      InBody and should not read four empty rows about it. */
   if(b.body_fat_pct!=null || (t42Latest()&&t42Latest().body_fat_pct!=null)){
     var l=t42Latest();
-    h+='<div class="sechead">Body composition</div><div class="t42-grid">'+
+    h+='<div class="sechead">Body Composition</div><div class="t42-grid">'+
        t42Stat('Body fat', (l.body_fat_pct!=null?l.body_fat_pct+'%':'—'))+
        t42Stat('Muscle',   (l.muscle_mass_kg!=null?l.muscle_mass_kg+' kg':'—'))+
        '</div>';
@@ -12266,7 +12278,7 @@ function t42ProgBody(){
      not scoring — the scored numbers are the three checkpoints above, and
      mixing the two would let a daily self-weigh look like a result. */
   var wl=(typeof weightLog==='function')?weightLog():[];
-  h+='<div class="sechead">Your weight log</div>';
+  h+='<div class="sechead">Your Weight Log</div>';
   if(wl.length<2){
     h+='<div class="acard"><div class="sub">Log your weight a few times and the '+
        'trend appears here. This is yours — it is not what you are scored on.</div>'+
@@ -12325,7 +12337,7 @@ function t42ProgFitness(){
     return h;
   }
 
-  h+='<div class="sechead">Baseline vs now</div><div class="t42-list">';
+  h+='<div class="sechead">Baseline vs Now</div><div class="t42-list">';
   T42_FITNESS.forEach(function(f){
     var a=bf[f.k], c=lf[f.k];
     var d=(a!=null&&c!=null)?Math.round((c-a)*10)/10:null;
@@ -13036,7 +13048,7 @@ function t42Finished(what){
    edition just finished; both are invitations. */
 function t42NextBlock(){
   var o=T42.open, cur=T42.challenge;
-  var h='<div class="sechead">Ready for another 42 days?</div>';
+  var h='<div class="sechead">Ready for Another 42 Days?</div>';
   if(o && (!cur || o.id!==cur.id)){
     h+='<div class="t42-stage t42-next" onclick="t42JoinOpen()">'+
        '<div class="t42-stage-top"><span class="t42-logo t42-logo-s">T42</span>'+
@@ -13315,13 +13327,13 @@ function t42RenderResult(){
 
   var dw=t42Delta('weight_kg'), dc=t42Delta('waist_cm');
   var b=T42.baseline||{}, l=t42Latest()||{};
-  h+='<div class="sechead">Your body</div><div class="t42-list">'+
+  h+='<div class="sechead">Your Body</div><div class="t42-list">'+
      t42ResRow('scale','Weight', (b.weight_kg!=null?b.weight_kg+' kg':'—')+' → '+(l!==b&&l.weight_kg!=null?l.weight_kg+' kg':'—'),
                t42Signed(dw,' kg'))+
      t42ResRow('measure','Waist', (b.waist_cm!=null?b.waist_cm+' cm':'—')+' → '+(l!==b&&l.waist_cm!=null?l.waist_cm+' cm':'—'),
                t42Signed(dc,' cm'))+
      '</div>';
-  h+='<div class="sechead">Your 42 days</div><div class="t42-grid">'+
+  h+='<div class="sechead">Your 42 Days</div><div class="t42-grid">'+
      t42Stat('Workouts',    T42.workoutPct()+'%')+
      t42Stat('Check-ins',   T42.checkins.length+' / '+total)+
      t42Stat('Longest streak', t42BestStreak()+(t42BestStreak()===1?' day':' days'))+
@@ -13567,7 +13579,7 @@ function t42RenderNext(){
 
   h+=t42NextBlock();
 
-  h+='<div class="sechead">Keep going</div>';
+  h+='<div class="sechead">Keep Going</div>';
   h+=t42NextCard('⚡','HITFAT RUSH',
       'Keep racing. Your times carry on at rush.hitfat.io.', 't42Rush()','Open RUSH');
   h+=t42NextCard('🏛️','Train with us at HITFAT HQ',
@@ -13679,7 +13691,7 @@ function t42RenderDuo(){
      '<div class="sub" style="margin-top:8px;">Give this to your partner. Both of you must finish registration.</div>'+
      (code?'<button class="bigbtn sec" onclick="t42DuoShare()">Send the code</button>':'')+'</div>';
 
-  h+='<div class="sechead">Team status</div><div class="t42-list">';
+  h+='<div class="sechead">Team Status</div><div class="t42-list">';
   var tr=T42.reg.track==='transform';
   [t42DuoMe(), t42DuoPartner()].forEach(function(m,i){
     if(!m){
@@ -13807,7 +13819,7 @@ function t42DuoSummaryCard(){
    have they walked. That, and nothing more personal than that. */
 function t42DuoDashCard(){
   if(!T42.reg.duo_id){
-    return '<div class="sechead">Your duo</div>'+
+    return '<div class="sechead">Your Duo</div>'+
       '<div class="acard" onclick="t42GoDuo()" style="cursor:pointer;">'+
       '<div class="ah">'+ic('people')+'<div class="t">Not in a duo</div><div class="c">›</div></div>'+
       '<div class="sub">'+(T42.duoWindowOpen()?'Pair up before day '+T42.lockDay()+' to compete as a team.'
@@ -13825,11 +13837,11 @@ function t42DuoDashCard(){
       '<div class="t42-duo-l"><span>Steps</span><b>'+(m.steps_today!=null?t42Num(m.steps_today):'—')+'</b></div></div>';
   };
   var ds=T42.duoScore;
-  var h='<div class="sechead">Your duo</div><div class="t42-duo">'+col(me,'You')+col(p,'Partner')+'</div>';
+  var h='<div class="sechead">Your Duo</div><div class="t42-duo">'+col(me,'You')+col(p,'Partner')+'</div>';
   if(ds && ds.eligible){
     h+='<div class="t42-grid" style="margin-top:10px;">'+
-       t42Stat('Duo score', t42Fmt(ds.team_total))+
-       t42Stat('Team rank', ds.rank_category?'#'+ds.rank_category:'—')+'</div>';
+       t42Stat('Duo score', t42Fmt(ds.team_total),'r')+
+       t42Stat('Team rank', ds.rank_category?'#'+ds.rank_category:'—','y')+'</div>';
   } else {
     h+='<div class="t42-q">'+(t42DuoReadiness()<100
          ? 'Team readiness '+t42DuoReadiness()+'% — the duo is ranked once both of you are ready.'

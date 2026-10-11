@@ -2279,11 +2279,11 @@ ok("the weight log is separated from the score", _pb.indexOf('not what you are s
                                                  _pb.indexOf('not scored')>0);
 /* An online participant has no InBody and should not read empty rows
    about body fat. */
-ok("no body composition without an InBody", _pb.indexOf('Body composition')<0);
+ok("no body composition without an InBody", _pb.indexOf('Body Composition')<0);
 T42.mid={id:'m2',phase:'mid',weight_kg:58.3,waist_cm:68,body_fat_pct:19.4,muscle_mass_kg:26.1};
 t42Paint();
 ok("...but it appears once there is one",
-   document.getElementById('t42-body').innerHTML.indexOf('Body composition')>0);
+   document.getElementById('t42-body').innerHTML.indexOf('Body Composition')>0);
 T42.mid=null;
 
 /* A member with no baseline gets a way to fix that, not an empty chart. */
@@ -2839,7 +2839,7 @@ t42View='joined'; t42Paint();
 var _up=document.getElementById('t42-body').innerHTML;
 ok("the countdown says you are in",  _up.indexOf('You\'re in.')>0);
 ok("...counts days and hours",       _up.indexOf('days to go')>0 && _up.indexOf('hours')>0);
-ok("...lists what to get ready",     _up.indexOf('Get ready')>0 && _up.indexOf('Starting photos')>0 &&
+ok("...lists what to get ready",     _up.indexOf('Get Ready')>0 && _up.indexOf('Starting photos')>0 &&
                                      _up.indexOf('Rules &amp; scoring')>0);
 var _pi=t42PrepItems();
 ok("the checklist ticks what exists", _pi.filter(function(i){ return i.done; }).length===4, _pi.filter(function(i){ return i.done; }).length);
@@ -3123,7 +3123,7 @@ t42View='dash'; t42Paint();
 var _dg=document.getElementById('t42-body').innerHTML;
 ok("today lists the gym check-in",      _dg.indexOf('Gym check-in')>0);
 ok("...ticked when it happened",        _dg.indexOf('Checked in at HQ')>0);
-ok("the duo sits under today",          _dg.indexOf('Your duo')>0);
+ok("the duo sits under today",          _dg.indexOf('Your Duo')>0);
 ok("...you beside your partner",        _dg.indexOf('Siti H.')>0);
 ok("...with their steps",               _dg.indexOf('5,200')>0);
 ok("...and the crosses where they missed", _dg.indexOf('t42-duo-no')>0);
@@ -3143,7 +3143,7 @@ _t42gym();
 /* An online member never sees any of it. */
 T42.reg.mode='online_solo'; t42Paint();
 ok("online solo has no gym row",  document.getElementById('t42-body').innerHTML.indexOf('Gym check-in')<0);
-ok("...and no duo",               document.getElementById('t42-body').innerHTML.indexOf('Your duo')<0);
+ok("...and no duo",               document.getElementById('t42-body').innerHTML.indexOf('Your Duo')<0);
 _t42gym();
 
 /* ── duo progress ── */

@@ -1676,3 +1676,13 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 
 /* The month's challenge: its kicker in sentence case like every other card. */
 .mcard .mtag{font-size:15px;font-weight:700;letter-spacing:0;}
+
+/* ═══════════════════════════════════════════════════════════════
+   T42, in line: the edition beside the mark in sentence case, the
+   numbers in the ring colours
+   ═══════════════════════════════════════════════════════════════ */
+.t42-stage-tag, .t42-banner-tag, #t42 .t42-stage-tag{font-family:inherit !important;font-size:15px !important;font-weight:600 !important;
+  letter-spacing:0 !important;text-transform:none !important;color:rgba(255,255,255,.72) !important;}
+#t42 .t42-stat-v.t42-tone-r, .t42-stat-v.t42-tone-r{color:var(--lime);}
+#t42 .t42-stat-v.t42-tone-y, .t42-stat-v.t42-tone-y{color:var(--yel-t);}
+#t42 .t42-jlab span{color:rgba(255,255,255,.58);}
