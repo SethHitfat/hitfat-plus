@@ -24,7 +24,7 @@ function metaOf(p){ return p.weeks ? (p.weeks.length+' wk · '+p.level) : (p.dur
 /* landscape card — image on top, title and meta UNDER it (the sampler pattern) */
 function flandCard(p,badge){
   return '<div class="fland" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="im" style="background-image:url(\''+progImg(p)+'\')">'+(badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
+    '<div class="im" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';background-position:50% 18%':'')+'">'+(badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="t">'+p.name+'</div><div class="m">'+metaOf(p)+'</div></div>';
 }
 /* tall activity tile — photo with a light label bar across the bottom */
@@ -36,7 +36,7 @@ function factCard(a){
 /* big program card — title over the image */
 function fbigCard(p){
   const sub = p.weeks ? wks(p.weeks.length).replace(/^\w/,c=>c.toUpperCase())+' of '+(p.goal||'training').toLowerCase() : p.level;
-  return '<div class="fbig" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')">'+
+  return '<div class="fbig" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';background-position:50% 18%':'')+'">'+
     '<div class="ov"></div>'+lockTag(p)+'<div class="in"><div class="t">'+p.name+'</div>'+
     '<div class="s">'+sub+'</div></div>'+
     '<div class="m">'+(p.weeks?planSessions(p)+' WORKOUTS':p.dur+' MIN')+'</div></div>';

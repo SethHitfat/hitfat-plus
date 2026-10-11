@@ -50,7 +50,10 @@ const IMG_LIST=Object.values(IMG);
    each picture loads only when its card is on screen instead of every one
    riding along in index.html. Add an id here when its picture is in. */
 const PHOTO=new Set(['sig1','sig2','sig3','sig4','fl30','lad4','men6','f40','core14','bws8','hiit4',
-                     'min3','am21','reset12','mkb','mdb','mch','m1','m2','m3','ch2']);
+                     'min3','am21','reset12','mkb','mdb','mch','m1','m2','m3','ch2',
+                     /* second batch: workouts, from 300px-wide drafts, so softer up close */
+                     'kb1','kb2','kb3','db1','db2','db3','ch1','tw1','tw2','p4','p6','p7','p9','p10','p11','p12',
+                     'p13','p14','p16','p17','p18','p19','p22','p23','p24','p25','p26','p29','p31','rh5']);
 function hasPhoto(p){ return !!(p && PHOTO.has(p.id)); }
 function progImg(p){
   if(hasPhoto(p)) return '/img/p/'+p.id+'.jpg';
@@ -97,7 +100,7 @@ function frow(p,badge){
    repeating the identical thumbnail five times in a column. */
 function thumbCrop(name,p){
   /* a picture made for this program is framed as it was shot */
-  if(hasPhoto(p)) return 'background-size:cover;background-position:50% 30%;';
+  if(hasPhoto(p)) return 'background-size:cover;background-position:50% 18%;';
   let h=0; const n=String(name||'');
   for(let i=0;i<n.length;i++) h=(h*31+n.charCodeAt(i))>>>0;
   const x=[50,28,72,40,62][h%5], y=[40,55,30][(h>>3)%3], z=[100,135,150][(h>>5)%3];
@@ -294,7 +297,8 @@ function pdxHero(p,kicker,title,sub,meta,pill){
     '<button class="pdx-back" aria-label="Back" onclick="'+(kicker==='day'?'backToProgram()':'closeProgramDetail()')+'">'+glyph('chevleft')+'</button>'+
     (pill?'<button class="pdx-pill" onclick="'+pill.go+'" tabindex="-1">'+glyph(pill.icon)+pill.label+'</button>':'')+
     '<span class="pdx-bar-r"></span></div></div>'+
-    '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')">'+
+    /* tall pictures keep the head in frame: crop from near the top */
+    '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';background-position:50% 12%':'')+'">'+
     '<div class="pdx-ov"></div>'+
     '<div class="pdx-in"><div class="pdx-t">'+title+'</div>'+
     (sub?'<div class="pdx-s">'+sub+'</div>':'')+
