@@ -3708,6 +3708,21 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .pdx-ep.soon .th{filter:saturate(.6);opacity:.85;}
 .pdx-ep.soon .soon-tag{display:inline-block;margin:8px 0 0;background:rgba(255,194,26,.16);color:var(--yel-t);}
 
+/* ═══════════════════════════════════════════════════════════════
+   LIBRARY · Exercises: one grouped list, a play button on each
+   ═══════════════════════════════════════════════════════════════ */
+.liblist{background:var(--surface);border-radius:var(--r-card,16px);overflow:hidden;}
+:root[data-theme="light"] .liblist{background:#FFFFFF;box-shadow:var(--lift-1);}
+.librow{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;position:relative;}
+.librow + .librow::before{content:'';position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep);}
+.librow:active{background:var(--tint);}
+.librow .tx{flex:1;min-width:0;}
+.librow .t{font-size:16px;font-weight:600;color:var(--txt);}
+.librow .m{font-size:13px;color:var(--dim);margin-top:2px;}
+.libplay{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(255,90,95,.14);}
+:root[data-theme="light"] .libplay{background:rgba(194,26,20,.10);}
+.libplay .gly{width:15px;height:15px;color:var(--lime);fill:currentColor;stroke:none;margin-left:2px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -14675,14 +14690,17 @@ function renderLibrary(){
   if(!BAR_ENABLED && libEq===BAR_EQ) libEq='All';
   const eqs=['All'].concat(Array.from(new Set(lib.map(e=>e.eq))));
   const list=lib.filter(e=>libEq==='All'||e.eq===libEq);
-  $('lib-body').innerHTML='<div class="hgroup"><h2>All exercises</h2>'+
-    '<p>'+libDB().length+' movements, every one with a demo video.</p></div>'+
+  /* The Library's sub-pages share one head (Library, then the name), and the
+     movements are one grouped list with a play button each, as the day page
+     lists its exercises. */
+  $('lib-body').innerHTML='<div class="hgroup"><div class="k">Library</div><h2>Exercises</h2>'+
+    '<p>'+libDB().length+' movements, each with a demo video.</p></div>'+
     '<div class="filters">'+eqs.map(q=>'<button class="chip'+(q===libEq?' y':'')+'" onclick="libEq=\''+q+'\';renderLibrary()">'+q+'</button>').join('')+'</div>'+
-    '<div style="display:flex;flex-direction:column;gap:9px;">'+
-    list.map(e=>'<div class="wrow" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
+    '<div class="liblist">'+
+    list.map(e=>'<div class="librow" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
       '<div class="tx"><div class="t">'+e.n+'</div>'+
       '<div class="m">'+e.m+' · '+e.eq+' · '+(e.dur||45)+'s</div></div>'+
-      '<div class="chev">▶</div></div>').join('')+'</div>';
+      '<span class="libplay" aria-label="Play">'+glyph('play')+'</span></div>').join('')+'</div>';
 }
 
 /* ── ME ── */
@@ -16677,7 +16695,10 @@ function openActivity(k){
   if(k==='Started')       list=PROGRAMS.filter(p=>progDone(p.id)>0);
   else if(k==='Finished') list=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>=progDays(p));
   else                    list=PROGRAMS.filter(p=>activityMatch(k,p));
-  let h='<div class="hgroup"><div class="k">Activity</div><h2>'+k+'</h2><p>'+list.length+' '+
+  /* Started and Finished are reached from the Library and are named there
+     In Progress and Finished; the activity tiles keep their own names. */
+  const fromLib=(k==='Started'||k==='Finished');
+  let h='<div class="hgroup"><div class="k">'+(fromLib?'Library':'Activity')+'</div><h2>'+(k==='Started'?'In Progress':k)+'</h2><p>'+list.length+' '+
         (list.length===1?'program':'programs')+'</p></div>';
   if(k==='Recovery'){
     h+='<div class="today"><div class="tk"><span style="color:var(--hyrox);font-weight:800;">● IN BUILD</span></div>'+

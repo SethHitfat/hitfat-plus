@@ -420,14 +420,17 @@ function renderLibrary(){
   if(!BAR_ENABLED && libEq===BAR_EQ) libEq='All';
   const eqs=['All'].concat(Array.from(new Set(lib.map(e=>e.eq))));
   const list=lib.filter(e=>libEq==='All'||e.eq===libEq);
-  $('lib-body').innerHTML='<div class="hgroup"><h2>All exercises</h2>'+
-    '<p>'+libDB().length+' movements, every one with a demo video.</p></div>'+
+  /* The Library's sub-pages share one head (Library, then the name), and the
+     movements are one grouped list with a play button each, as the day page
+     lists its exercises. */
+  $('lib-body').innerHTML='<div class="hgroup"><div class="k">Library</div><h2>Exercises</h2>'+
+    '<p>'+libDB().length+' movements, each with a demo video.</p></div>'+
     '<div class="filters">'+eqs.map(q=>'<button class="chip'+(q===libEq?' y':'')+'" onclick="libEq=\''+q+'\';renderLibrary()">'+q+'</button>').join('')+'</div>'+
-    '<div style="display:flex;flex-direction:column;gap:9px;">'+
-    list.map(e=>'<div class="wrow" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
+    '<div class="liblist">'+
+    list.map(e=>'<div class="librow" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
       '<div class="tx"><div class="t">'+e.n+'</div>'+
       '<div class="m">'+e.m+' · '+e.eq+' · '+(e.dur||45)+'s</div></div>'+
-      '<div class="chev">▶</div></div>').join('')+'</div>';
+      '<span class="libplay" aria-label="Play">'+glyph('play')+'</span></div>').join('')+'</div>';
 }
 
 /* ── ME ── */

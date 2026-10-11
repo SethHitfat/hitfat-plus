@@ -445,7 +445,10 @@ function openActivity(k){
   if(k==='Started')       list=PROGRAMS.filter(p=>progDone(p.id)>0);
   else if(k==='Finished') list=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>=progDays(p));
   else                    list=PROGRAMS.filter(p=>activityMatch(k,p));
-  let h='<div class="hgroup"><div class="k">Activity</div><h2>'+k+'</h2><p>'+list.length+' '+
+  /* Started and Finished are reached from the Library and are named there
+     In Progress and Finished; the activity tiles keep their own names. */
+  const fromLib=(k==='Started'||k==='Finished');
+  let h='<div class="hgroup"><div class="k">'+(fromLib?'Library':'Activity')+'</div><h2>'+(k==='Started'?'In Progress':k)+'</h2><p>'+list.length+' '+
         (list.length===1?'program':'programs')+'</p></div>';
   if(k==='Recovery'){
     h+='<div class="today"><div class="tk"><span style="color:var(--hyrox);font-weight:800;">● IN BUILD</span></div>'+
