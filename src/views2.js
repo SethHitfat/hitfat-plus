@@ -585,7 +585,8 @@ function renderMe(){
 
   h+=fsec('About','')+'<div class="glist">'+
     grow('doc','Privacy Policy','',"location.href='/privacy'")+
-    grow('clipboard','Terms of Use','',"location.href='/terms'")+'</div>';
+    grow('clipboard','Terms of Use','',"location.href='/terms'")+
+    grow('card','Refund Policy','',"location.href='/refund'")+'</div>';
 
   if(signedIn) h+='<div class="glist meact"><button class="grow grow-act" onclick="signOut()">Sign Out</button></div>';
   h+='<div class="glist meact"><button class="grow grow-act danger" onclick="confirmReset()">Reset Progress</button></div>';

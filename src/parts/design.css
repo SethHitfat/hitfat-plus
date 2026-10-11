@@ -1734,3 +1734,6 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .renew-t{font-size:22px;font-weight:800;letter-spacing:-.4px;color:#FFFFFF;margin-top:4px;line-height:1.15;}
 .renew-s{font-size:14px;color:rgba(255,255,255,.72);margin-top:6px;line-height:1.45;}
 .renew .bigbtn{margin:14px 0 0;}
+/* the policy, said before the Pay button */
+.co-legal{font-size:13px;color:var(--dim);line-height:1.45;margin:8px 4px 0;}
+.co-legal a, .sub-fine a{color:var(--lime);text-decoration:none;font-weight:600;}

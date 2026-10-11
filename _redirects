@@ -2,3 +2,8 @@
 # also what Netlify publishes — without this they are readable at /src/... .
 # No credentials are in them; the SQL and edge-function code still should not be.
 /src/*  /404.html  404!
+
+# Policy pages live at short addresses the app links to.
+/privacy  /privacy.html  200
+/terms    /terms.html    200
+/refund   /refund.html   200

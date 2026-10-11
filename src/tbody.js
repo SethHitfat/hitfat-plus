@@ -2853,7 +2853,7 @@ try{ localStorage.removeItem(t42RulesKey()); }catch(e){}
 t42View='joined'; t42Paint();
 var _up=document.getElementById('t42-body').innerHTML;
 ok("the countdown says you are in",  _up.indexOf('You\'re in.')>0);
-ok("...counts days and hours",       _up.indexOf('days to go')>0 && _up.indexOf('hours')>0);
+ok("...counts days and hours",       /days? to go/.test(_up) && _up.indexOf('hour')>0);
 ok("...lists what to get ready",     _up.indexOf('Get Ready')>0 && _up.indexOf('Starting photos')>0 &&
                                      _up.indexOf('Rules &amp; scoring')>0);
 var _pi=t42PrepItems();

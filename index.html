@@ -3737,6 +3737,9 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .renew-t{font-size:22px;font-weight:800;letter-spacing:-.4px;color:#FFFFFF;margin-top:4px;line-height:1.15;}
 .renew-s{font-size:14px;color:rgba(255,255,255,.72);margin-top:6px;line-height:1.45;}
 .renew .bigbtn{margin:14px 0 0;}
+/* the policy, said before the Pay button */
+.co-legal{font-size:13px;color:var(--dim);line-height:1.45;margin:8px 4px 0;}
+.co-legal a, .sub-fine a{color:var(--lime);text-decoration:none;font-weight:600;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -6482,6 +6485,10 @@ function startCheckout(sku){
      '<button class="paych'+(i===0?' on':'')+'" onclick="setPayChannel('+c[0]+')">'+ic(c[3])+
      '<span class="co-pn"><b>'+c[1]+'</b><small>'+c[2]+'</small></span><span class="sub-radio"></span></button>').join('')+'</div>';
   h+='<div class="co-safe">'+glyph('lock')+'<span>Secure payment by Bayarcash. We never see your banking details.</span></div>';
+  /* No refunds is the policy, so it is said here, before the button, not
+     only on a page nobody opens until afterwards. */
+  h+='<div class="co-legal">All purchases are final and non-refundable. '+
+     '<a href="/terms" target="_blank" rel="noopener">Terms</a> · <a href="/refund" target="_blank" rel="noopener">Refund Policy</a></div>';
   h+='<button class="bigbtn sub-cta" id="pay-go" onclick="payNow()">Pay RM'+it.price+'</button>';
   h+='<button class="authalt" onclick="closeProduct()">Cancel</button>';
   $('pw-body').innerHTML='<div class="co">'+h+'</div>';
@@ -6665,7 +6672,8 @@ function paywallHTML(sheet){
      }).join('')+'</div>';
   h+='<button class="bigbtn sub-cta" onclick="pwBuy()">Continue · RM'+chosen.price+'</button>';
   h+='<div class="sub-fine">One payment for '+chosen.months+' months — FPX or DuitNow. It does not renew by itself; '+
-     'we remind you before it ends. '+(pwTier==='coach'?'Includes one T42 edition during your membership.':'T42 challenges are sold separately.')+'</div>';
+     'we remind you before it ends. '+(pwTier==='coach'?'Includes one T42 edition during your membership.':'T42 challenges are sold separately.')+
+     ' All purchases are final. <a href="/terms" target="_blank" rel="noopener">Terms</a> · <a href="/refund" target="_blank" rel="noopener">Refunds</a></div>';
   return h;
 }
 
@@ -14871,7 +14879,8 @@ function renderMe(){
 
   h+=fsec('About','')+'<div class="glist">'+
     grow('doc','Privacy Policy','',"location.href='/privacy'")+
-    grow('clipboard','Terms of Use','',"location.href='/terms'")+'</div>';
+    grow('clipboard','Terms of Use','',"location.href='/terms'")+
+    grow('card','Refund Policy','',"location.href='/refund'")+'</div>';
 
   if(signedIn) h+='<div class="glist meact"><button class="grow grow-act" onclick="signOut()">Sign Out</button></div>';
   h+='<div class="glist meact"><button class="grow grow-act danger" onclick="confirmReset()">Reset Progress</button></div>';

@@ -435,6 +435,10 @@ function startCheckout(sku){
      '<button class="paych'+(i===0?' on':'')+'" onclick="setPayChannel('+c[0]+')">'+ic(c[3])+
      '<span class="co-pn"><b>'+c[1]+'</b><small>'+c[2]+'</small></span><span class="sub-radio"></span></button>').join('')+'</div>';
   h+='<div class="co-safe">'+glyph('lock')+'<span>Secure payment by Bayarcash. We never see your banking details.</span></div>';
+  /* No refunds is the policy, so it is said here, before the button, not
+     only on a page nobody opens until afterwards. */
+  h+='<div class="co-legal">All purchases are final and non-refundable. '+
+     '<a href="/terms" target="_blank" rel="noopener">Terms</a> · <a href="/refund" target="_blank" rel="noopener">Refund Policy</a></div>';
   h+='<button class="bigbtn sub-cta" id="pay-go" onclick="payNow()">Pay RM'+it.price+'</button>';
   h+='<button class="authalt" onclick="closeProduct()">Cancel</button>';
   $('pw-body').innerHTML='<div class="co">'+h+'</div>';
@@ -618,7 +622,8 @@ function paywallHTML(sheet){
      }).join('')+'</div>';
   h+='<button class="bigbtn sub-cta" onclick="pwBuy()">Continue · RM'+chosen.price+'</button>';
   h+='<div class="sub-fine">One payment for '+chosen.months+' months — FPX or DuitNow. It does not renew by itself; '+
-     'we remind you before it ends. '+(pwTier==='coach'?'Includes one T42 edition during your membership.':'T42 challenges are sold separately.')+'</div>';
+     'we remind you before it ends. '+(pwTier==='coach'?'Includes one T42 edition during your membership.':'T42 challenges are sold separately.')+
+     ' All purchases are final. <a href="/terms" target="_blank" rel="noopener">Terms</a> · <a href="/refund" target="_blank" rel="noopener">Refunds</a></div>';
   return h;
 }
 
