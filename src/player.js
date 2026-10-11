@@ -33,13 +33,47 @@ function setClip(ex){
   if(pl) pl.clip=ex.v;
   f.src=vimeoSrc(ex.v);
 }
+const PL_ICON_PLAY='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+const PL_ICON_PAUSE='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="13.5" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg>';
+/* As in Fitness+, the transport gets out of the way of the coach while the
+   movement runs: it fades three seconds after play, and a tap on the clip
+   brings it back. Paused, it stays. */
+let plIdleT=null;
+function plWake(){
+  const el=$('play'); if(!el) return;
+  el.classList.remove('idle');
+  if(plIdleT){ clearTimeout(plIdleT); plIdleT=null; }
+  if(pl && pl.running) plIdleT=setTimeout(()=>{ if(pl && pl.running) el.classList.add('idle'); },3000);
+}
+function plTap(e){
+  const t=e && e.target;
+  if(t && t.closest && t.closest('button,.pl-ov')) return plWake();
+  const el=$('play'); if(!el) return;
+  if(el.classList.contains('idle')) plWake(); else if(pl && pl.running){ el.classList.add('idle'); }
+}
+function plSetPlayIcon(running){
+  const b=$('pl-play'); if(!b) return;
+  b.innerHTML=running?PL_ICON_PAUSE:PL_ICON_PLAY;
+  try{ b.setAttribute('aria-label',running?'Pause':'Play'); }catch(e){}
+}
+/* The movement's time, as Fitness+ shows it: elapsed on the left, what is
+   left on the right, and a bar between. pl.len grows and shrinks with the
+   ten-second buttons so the elapsed side never jumps. */
+function plTime(){
+  if(!pl) return;
+  const len=Math.max(pl.len||0,pl.left), el=Math.max(0,len-pl.left);
+  $('pl-clock').textContent=fmtT(pl.left);
+  if($('pl-el'))  $('pl-el').textContent=fmtT(el);
+  if($('pl-rem')) $('pl-rem').textContent='−'+fmtT(pl.left);
+  if($('pl-fill')) $('pl-fill').style.width=(len?Math.round(el/len*100):0)+'%';
+}
 function fmtT(s){ s=Math.max(0,Math.round(s)); return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
 
 /* start a workout from a list of exercise objects */
 function startWorkout(exs,meta){
   if(!exs || !exs.length){ toast('Nothing to play'); return; }
   pl={exs, i:0, round:1, rounds:(meta&&meta.rounds)||1, meta:meta||{},
-      left:exs[0].dur||45, running:false, resting:false, clip:null,
+      left:exs[0].dur||45, len:exs[0].dur||45, running:false, resting:false, clip:null,
       t0:Date.now(), done:0};
   $('play').classList.add('on');
   $('pl-done').classList.remove('on');
@@ -54,7 +88,8 @@ function exitPlayer(){
   const f=$('pl-video'); if(f) f.src='';
   if(pl) pl.clip=null;
   pl=null;
-  $('play').classList.remove('on');
+  $('play').classList.remove('on','idle');
+  if(plIdleT){ clearTimeout(plIdleT); plIdleT=null; }
   $('pl-rest').classList.remove('on');
   $('pl-cd').classList.remove('on');
   $('pl-ready').classList.remove('on');
@@ -73,17 +108,17 @@ function plCountdown(done){
 }
 function plResume(){
   if(!pl || pl.running) return;
-  pl.running=true; $('pl-play').textContent='❚❚';
+  pl.running=true; plSetPlayIcon(true); plWake();
   plTick=setInterval(()=>{
     if(!pl) return;
     pl.left--;
-    $('pl-clock').textContent=fmtT(pl.left);
+    plTime();
     if(pl.left<=0) plNext(true);
   },1000);
 }
-function plPause(){ stopTick(); const b=$('pl-play'); if(b) b.textContent='▶'; }
+function plPause(){ stopTick(); plSetPlayIcon(false); plWake(); }
 function plToggle(){ if(!pl) return; pl.running?plPause():plResume(); }
-function plAdjust(d){ if(!pl) return; pl.left=Math.max(5,pl.left+d); $('pl-clock').textContent=fmtT(pl.left); }
+function plAdjust(d){ if(!pl) return; const was=pl.left; pl.left=Math.max(5,pl.left+d); pl.len=(pl.len||was)+(pl.left-was); plTime(); }
 
 function plNextIndex(){
   if(!pl) return null;
@@ -104,11 +139,11 @@ function plPrev(){
   stopTick();
   if(pl.i>0) plGo({i:pl.i-1, round:pl.round});
   else if(pl.round>1) plGo({i:pl.exs.length-1, round:pl.round-1});
-  else { pl.left=pl.exs[0].dur||45; renderPl(); plResume(); }
+  else { pl.left=pl.len=pl.exs[0].dur||45; renderPl(); plResume(); }
 }
 function plGo(n){
   pl.i=n.i; pl.round=n.round;
-  pl.left=pl.exs[pl.i].dur||45;
+  pl.left=pl.len=pl.exs[pl.i].dur||45;
   $('pl-rest').classList.remove('on');
   renderPl(); setClip(pl.exs[pl.i]);
   plResume();
@@ -137,7 +172,7 @@ function renderPl(){
   const ex=pl.exs[pl.i];
   $('pl-name').textContent=ex.n;
   $('pl-sub').textContent=ex.m+' · '+ex.eq;
-  $('pl-clock').textContent=fmtT(pl.left);
+  plTime(); plSetPlayIcon(!!pl.running);
   $('pl-pill').innerHTML=(pl.rounds>1?'Round <b>'+pl.round+'/'+pl.rounds+'</b> · ':'')+
                          '<b>'+(pl.i+1)+'</b>/'+pl.exs.length;
   // one tick per exercise beats a bare percentage — you can see the shape of the set

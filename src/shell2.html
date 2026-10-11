@@ -160,23 +160,43 @@
 .pl-next b{color:var(--ink-90);font-weight:700;}
 .pl-name{font-size:30px;font-weight:700;letter-spacing:-.8px;line-height:1.08;color:var(--txt);}
 .pl-sub{font-size:13px;color:var(--ink-55);margin-top:4px;}
-.pl-segs{display:flex;gap:3px;margin:16px 0 14px;}
+.pl-segs{display:flex;gap:3px;margin:14px 0 12px;}
 .pl-segs i{flex:1;height:3px;border-radius:2px;background:var(--tint);transition:background .3s;}
 .pl-segs i.done{background:var(--tint);}
 .pl-segs i.now{background:var(--hyrox);}
-.pl-timerow{display:flex;align-items:center;justify-content:center;gap:18px;}
-.pl-adj{width:52px;height:34px;border-radius:99px;cursor:pointer;color:var(--ink-90);
-  background:rgba(28,28,30,.6);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
-  border:1px solid var(--hairline);font-family:'Inter',system-ui,sans-serif;
-  font-size:13px;font-weight:600;}
-.pl-clock{font-family:'Inter',system-ui,sans-serif;font-size:62px;font-weight:250;letter-spacing:-2.5px;
-  color:var(--txt);min-width:150px;text-align:center;line-height:1;font-variant-numeric:tabular-nums;}
-.pl-ctrl{display:flex;align-items:center;justify-content:center;gap:26px;margin-top:16px;}
-.pl-sm{width:52px;height:52px;border-radius:50%;cursor:pointer;color:var(--txt);font-size:15px;
-  background:rgba(28,28,30,.6);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
-  border:1px solid var(--hairline);}
-.pl-go{width:68px;height:68px;border-radius:50%;background:var(--hyrox-solid);border:none;color:var(--hyrox-ink);
-  font-size:20px;cursor:pointer;box-shadow:0 8px 30px rgba(239,68,68,.45);}
+/* the movement's name with its countdown beside it */
+.pl-row{display:flex;align-items:flex-end;gap:14px;}
+.pl-nm{flex:1;min-width:0;}
+.pl-clock{font-family:'Inter',system-ui,sans-serif;font-size:52px;font-weight:250;letter-spacing:-2px;
+  color:var(--txt);text-align:right;line-height:.9;font-variant-numeric:tabular-nums;flex:none;}
+
+/* Fitness+ transport, centred on the clip: glass circles, white glyphs */
+.pl-mid{position:absolute;left:0;right:0;top:0;bottom:250px;z-index:5;display:flex;align-items:center;
+  justify-content:center;gap:28px;pointer-events:none;}
+.pl-mid button{pointer-events:auto;}
+.pl-mid{transition:opacity .35s ease;}
+#play.idle .pl-mid{opacity:0;}
+#play.idle .pl-mid button{pointer-events:none;}
+.pl-skip,.pl-go,.pl-sm{border-radius:50%;cursor:pointer;color:#FFFFFF;display:grid;place-items:center;padding:0;
+  background:rgba(44,44,46,.55);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);
+  border:1px solid rgba(255,255,255,.10);}
+.pl-skip{width:52px;height:52px;}
+.pl-skip svg{width:30px;height:30px;}
+.pl-go{width:78px;height:78px;background:rgba(220,26,34,.78);border-color:rgba(255,255,255,.18);
+  box-shadow:0 10px 34px rgba(220,26,34,.40);}
+.pl-go svg{width:34px;height:34px;}
+.pl-skip:active,.pl-go:active,.pl-sm:active{opacity:.7;}
+
+/* the time bar: elapsed · bar · what is left, between previous and next */
+.pl-tl{display:flex;align-items:center;gap:10px;}
+.pl-sm{width:42px;height:42px;flex:none;}
+.pl-sm svg{width:16px;height:16px;}
+.pl-bar{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:42px;padding:0 14px;border-radius:99px;
+  background:rgba(44,44,46,.55);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);
+  border:1px solid rgba(255,255,255,.10);font-size:13px;font-weight:500;color:rgba(255,255,255,.86);
+  font-variant-numeric:tabular-nums;}
+.pl-track{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.22);overflow:hidden;}
+.pl-track i{display:block;height:100%;width:0;border-radius:3px;background:#FFFFFF;transition:width .9s linear;}
 
 /* overlays */
 .pl-ov{position:absolute;inset:0;z-index:8;display:none;flex-direction:column;align-items:center;
@@ -703,7 +723,7 @@
   </div>
 </div>
 
-<div id="play">
+<div id="play" onclick="plTap(event)">
   <div class="pl-fill"></div>
   <iframe id="pl-video" allow="autoplay; picture-in-picture" frameborder="0"></iframe>
   <video id="pl-cam" autoplay playsinline muted></video>
@@ -721,20 +741,25 @@
   </div>
   <div class="pl-dot" id="pl-camdot"></div>
 
+  <!-- Fitness+ transport, in the middle of the clip: back ten seconds (more
+       time on this movement), play/pause, forward ten (less). -->
+  <div class="pl-mid">
+    <button class="pl-skip" onclick="plAdjust(10)" aria-label="Back 10 seconds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.6 12.4a7.5 7.5 0 1 0 2.3-5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M6.6 3.2v3.9h3.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><text x="12.2" y="15.4" text-anchor="middle" font-size="7" font-weight="700" fill="currentColor" font-family="system-ui,sans-serif">10</text></svg></button>
+    <button class="pl-go" id="pl-play" onclick="plToggle()" aria-label="Play"></button>
+    <button class="pl-skip" onclick="plAdjust(-10)" aria-label="Forward 10 seconds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 12.4a7.5 7.5 0 1 1-2.3-5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M17.4 3.2v3.9h-3.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><text x="11.8" y="15.4" text-anchor="middle" font-size="7" font-weight="700" fill="currentColor" font-family="system-ui,sans-serif">10</text></svg></button>
+  </div>
+
   <div class="pl-bot">
     <div class="pl-next" id="pl-next"></div>
-    <div class="pl-name" id="pl-name"></div>
-    <div class="pl-sub" id="pl-sub"></div>
-    <div class="pl-segs" id="pl-segs"></div>
-    <div class="pl-timerow">
-      <button class="pl-adj" onclick="plAdjust(-10)">−10</button>
+    <div class="pl-row">
+      <div class="pl-nm"><div class="pl-name" id="pl-name"></div><div class="pl-sub" id="pl-sub"></div></div>
       <div class="pl-clock" id="pl-clock">0:45</div>
-      <button class="pl-adj" onclick="plAdjust(10)">+10</button>
     </div>
-    <div class="pl-ctrl">
-      <button class="pl-sm" onclick="plPrev()">◀</button>
-      <button class="pl-go" id="pl-play" onclick="plToggle()">▶</button>
-      <button class="pl-sm" onclick="plNext(false)">▶</button>
+    <div class="pl-segs" id="pl-segs"></div>
+    <div class="pl-tl">
+      <button class="pl-sm" onclick="plPrev()" aria-label="Previous exercise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M19 5.5l-9 6.5 9 6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
+      <div class="pl-bar"><span id="pl-el">0:00</span><div class="pl-track"><i id="pl-fill"></i></div><span id="pl-rem">−0:45</span></div>
+      <button class="pl-sm" onclick="plNext(false)" aria-label="Next exercise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M5 5.5l9 6.5-9 6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
     </div>
   </div>
 

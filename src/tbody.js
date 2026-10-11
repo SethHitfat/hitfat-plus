@@ -518,7 +518,14 @@ ok("clip changed",         pl.clip===pl.exs[1].v);
 plPrev();
 ok("prev goes back",       pl.i===0 && pl.clip===_first);
 plAdjust(10);  ok("plus 10s",  pl.left===(pl.exs[0].dur||45)+10, pl.left);
+ok("back ten adds time without moving what is done",
+   document.getElementById('pl-el').textContent==='0:00' && document.getElementById('pl-rem').textContent==='−'+fmtT(pl.left));
+pl.left-=5; plTime();
+ok("the time bar counts what is done", document.getElementById('pl-el').textContent==='0:05');
 plAdjust(-999);ok("never below 5s", pl.left===5, pl.left);
+plPause(); ok("paused shows play", document.getElementById('pl-play').innerHTML.indexOf('M8 5.5')>0);
+plResume(); ok("playing shows pause", document.getElementById('pl-play').innerHTML.indexOf('<rect')>=0);
+plPause();
 
 pl.i=pl.exs.length-1; pl.round=pl.rounds;
 ok("last exercise of last round has no next", plNextIndex()===null);
