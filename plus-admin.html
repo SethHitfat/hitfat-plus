@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>HITFAT+ · Members</title>
+<!--
+  HITFAT+ · the membership desk
+
+  Find a member, see their membership and orders, unlock a payment that
+  never granted, give or extend a membership, end one given by mistake,
+  and delete an account on request.
+
+  Who may do it is decided by the database (deploy/32-plus-admin.sql):
+  every function checks that the caller is an admin in club_members, and
+  every change is written to plus_admin_log. Hiding a button here is a
+  courtesy, not the lock.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000; --surface:#1C1C1E; --surface2:#2C2C2E; --line:#38383A;
+    --txt:#fff; --dim:#A1A1A6; --red:#FF5A5F; --act:#DC1A22; --yel:#FFC93C; --ok:#30D158;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:15px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:22px 20px 80px;}
+  .mark{font-weight:800;font-size:18px;letter-spacing:-.3px}.mark span{color:var(--red)}
+  h1{font-size:30px;font-weight:800;letter-spacing:-.7px;margin-top:6px}
+  h2{font-size:20px;font-weight:700;letter-spacing:-.3px;margin:26px 0 10px}
+  .sub{color:var(--dim);font-size:14px;line-height:1.5;margin-top:4px}
+  .card{background:var(--surface);border-radius:16px;padding:16px;margin-bottom:12px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{background:var(--act);color:#fff;border:none;border-radius:99px;padding:10px 18px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
+  .btn.sec{background:var(--surface2);color:var(--txt)}
+  .btn.ok{background:var(--ok);color:#04150c}
+  .btn.danger{background:transparent;border:1px solid var(--red);color:var(--red)}
+  .btn.sm{padding:6px 12px;font-size:13px}
+  .btn:disabled{opacity:.4;cursor:default}
+  input,select{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--txt);font:inherit}
+  input:focus,select:focus{outline:2px solid var(--act);border-color:transparent}
+  .tabs{display:flex;gap:4px;background:var(--surface);border-radius:12px;padding:3px;margin:18px 0 6px;max-width:460px}
+  .tabs button{flex:1;border:none;background:none;color:var(--txt);font:600 14px Inter,system-ui,sans-serif;padding:9px;border-radius:9px;cursor:pointer}
+  .tabs button.on{background:#636366}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{text-align:left;color:var(--dim);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tr.click{cursor:pointer} tr.click:hover td{background:#232325}
+  .scroll{overflow-x:auto}
+  .pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+  .p-ok{background:rgba(48,209,88,.16);color:var(--ok)} .p-wait{background:rgba(255,194,26,.16);color:var(--yel)}
+  .p-bad{background:rgba(255,90,95,.16);color:var(--red)} .p-dim{background:var(--surface2);color:var(--dim)}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+  .kv div{background:var(--surface2);border-radius:12px;padding:12px}
+  .kv span{display:block;color:var(--dim);font-size:13px} .kv b{display:block;font-size:16px;margin-top:3px;word-break:break-all}
+  .danger-zone{border:1px solid rgba(255,90,95,.35)}
+  .gate{max-width:380px;margin:12vh auto 0}
+  .gate input{width:100%;margin-top:10px}
+  .err{color:var(--red);font-size:14px;margin-top:10px;min-height:18px}
+  .hide{display:none!important}
+  .mono{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+  #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:99px;font-weight:600;opacity:0;transition:opacity .2s;pointer-events:none}
+  #toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="gate" id="gate">
+    <div class="mark">HITFAT<span>+</span></div>
+    <h1>Members</h1>
+    <div class="sub">Sign in with an admin account.</div>
+    <input id="em" type="email" autocomplete="username" placeholder="Email">
+    <input id="pw" type="password" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')signIn()">
+    <div class="row" style="margin-top:14px"><button class="btn" id="gbtn" onclick="signIn()">Sign in</button></div>
+    <div class="err" id="gerr"></div>
+  </div>
+
+  <div class="hide" id="app">
+    <div class="row" style="justify-content:space-between">
+      <div><div class="mark">HITFAT<span>+</span></div><h1>Members</h1></div>
+      <button class="btn sec sm" onclick="signOut()">Sign out</button>
+    </div>
+    <div class="tabs">
+      <button id="t-find" class="on" onclick="tab('find')">Find</button>
+      <button id="t-orders" onclick="tab('orders')">Recent orders</button>
+      <button id="t-log" onclick="tab('log')">Log</button>
+    </div>
+
+    <section id="s-find">
+      <div class="card"><div class="row">
+        <input id="q" type="search" placeholder="Email, or part of it" style="flex:1;min-width:220px" onkeydown="if(event.key==='Enter')find()">
+        <button class="btn" onclick="find()">Search</button>
+      </div></div>
+      <div id="results"></div>
+      <div id="member"></div>
+    </section>
+
+    <section id="s-orders" class="hide">
+      <div class="sub">The latest checkouts. A <b>pending</b> order older than a few minutes may be a payment that cleared without unlocking: check it in Bayarcash, then open the member and press Unlock.</div>
+      <div class="card scroll" style="margin-top:12px" id="orders"></div>
+    </section>
+
+    <section id="s-log" class="hide">
+      <div class="sub">Every unlock, grant, end and delete made here.</div>
+      <div class="card scroll" style="margin-top:12px" id="log"></div>
+    </section>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPA_URL='https://ercvaagznsndvrewlvgt.supabase.co';
+const SUPA_KEY='sb_publishable_aZ5NIn03riGJ_ikX0R5-rQ_oOfoS0G7';
+let sb=null; try{ sb=window.supabase.createClient(SUPA_URL,SUPA_KEY); }catch(e){}
+const $=id=>document.getElementById(id);
+const SKUS=[['sub_plus_6m','HITFAT+ · 6 months'],['sub_plus_12m','HITFAT+ · 12 months'],
+            ['sub_coach_6m','HITFAT+ Coach · 6 months'],['sub_coach_12m','HITFAT+ Coach · 12 months']];
+const SKU_NAME=Object.fromEntries(SKUS);
+let cur=null;
+
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2800); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function when(d){ if(!d) return '—'; try{ return new Date(d).toLocaleString('en-MY',{day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit'}); }catch(e){ return d; } }
+function day(d){ if(!d) return '—'; try{ return new Date(d).toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'}); }catch(e){ return d; } }
+function live(d){ return d && new Date(d)>new Date(); }
+function rm(n){ return n==null?'—':'RM'+Number(n).toFixed(2).replace(/\.00$/,''); }
+function msg(e){ return (e&&e.message||String(e)).replace(/^.*?:\s*/,'') || 'Something went wrong.'; }
+function statusPill(s){ return '<span class="pill '+(s==='paid'?'p-ok':s==='pending'?'p-wait':'p-bad')+'">'+esc(s)+'</span>'; }
+
+/* ── sign in: the database decides who is an admin ── */
+async function signIn(){
+  const b=$('gbtn'); b.disabled=true; b.textContent='Checking…'; $('gerr').textContent='';
+  try{
+    const r=await sb.auth.signInWithPassword({email:$('em').value.trim(), password:$('pw').value});
+    if(r.error) throw r.error;
+    await afterAuth(true);
+  }catch(e){ $('gerr').textContent=msg(e); b.disabled=false; b.textContent='Sign in'; }
+}
+async function afterAuth(loud){
+  const s=await sb.auth.getSession(); if(!(s&&s.data&&s.data.session)) return;
+  const a=await sb.rpc('plus_is_admin');
+  if(a.error){
+    if(loud) throw new Error(/function|schema cache/i.test(a.error.message)?'The membership desk is not set up on this database yet. Run 32-plus-admin.sql.':a.error.message);
+    return;
+  }
+  if(!a.data){ await sb.auth.signOut(); if(loud) throw new Error('That account is not an admin.'); return; }
+  $('gate').classList.add('hide'); $('app').classList.remove('hide');
+}
+async function signOut(){ try{ await sb.auth.signOut(); }catch(e){} location.reload(); }
+
+function tab(t){
+  ['find','orders','log'].forEach(x=>{ $('s-'+x).classList.toggle('hide',x!==t); $('t-'+x).classList.toggle('on',x===t); });
+  if(t==='orders') loadOrders(); if(t==='log') loadLog();
+}
+
+/* ── find ── */
+async function find(){
+  const q=$('q').value.trim(); $('member').innerHTML='';
+  if(q.length<3){ $('results').innerHTML='<div class="sub">Type at least 3 characters.</div>'; return; }
+  $('results').innerHTML='<div class="sub">Searching…</div>';
+  const r=await sb.rpc('plus_admin_find',{p_q:q});
+  if(r.error){ $('results').innerHTML='<div class="err">'+esc(msg(r.error))+'</div>'; return; }
+  const list=r.data||[];
+  if(!list.length){ $('results').innerHTML='<div class="sub">No account with that email.</div>'; return; }
+  $('results').innerHTML='<div class="card scroll"><table><tr><th>Email</th><th>Membership</th><th>Pending</th><th>Joined</th><th>Last sign-in</th></tr>'+
+    list.map(u=>'<tr class="click" onclick="openUser(\''+u.id+'\')"><td>'+esc(u.email)+'</td><td>'+
+      (live(u.coach_until)?'<span class="pill p-ok">Coach · '+day(u.coach_until)+'</span>':live(u.plus_until)?'<span class="pill p-ok">HITFAT+ · '+day(u.plus_until)+'</span>':'<span class="pill p-dim">None</span>')+
+      '</td><td>'+(u.pending>0?'<span class="pill p-wait">'+u.pending+'</span>':'—')+'</td><td>'+day(u.created_at)+'</td><td>'+when(u.last_sign_in_at)+'</td></tr>').join('')+'</table></div>';
+}
+
+/* ── one member ── */
+async function openUser(id){
+  $('member').innerHTML='<div class="sub">Loading…</div>';
+  const r=await sb.rpc('plus_admin_user',{p_user:id});
+  if(r.error){ $('member').innerHTML='<div class="err">'+esc(msg(r.error))+'</div>'; return; }
+  cur=r.data; renderUser(); $('member').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function renderUser(){
+  const u=cur.user, ents=cur.entitlements||[], ords=cur.orders||[];
+  const plus=ents.filter(e=>/^sub_plus/.test(e.sku)&&live(e.expires_at)).map(e=>e.expires_at).sort().pop();
+  const coach=ents.filter(e=>/^sub_coach/.test(e.sku)&&live(e.expires_at)).map(e=>e.expires_at).sort().pop();
+  let h='<h2>'+esc(u.email)+'</h2><div class="kv">'+
+    '<div><span>Membership</span><b>'+(coach?'HITFAT+ Coach until '+day(coach):plus?'HITFAT+ until '+day(plus):'None')+'</b></div>'+
+    '<div><span>Joined</span><b>'+day(u.created_at)+'</b></div>'+
+    '<div><span>Last sign-in</span><b>'+when(u.last_sign_in_at)+'</b></div>'+
+    '<div><span>Account id</span><b class="mono">'+esc(u.id)+'</b></div>'+
+    (cur.staff?'<div><span>Staff role</span><b>'+esc(cur.staff)+'</b></div>':'')+'</div>';
+
+  h+='<h2>Orders</h2><div class="card scroll">'+(ords.length?'<table><tr><th>Order</th><th>What</th><th>Amount</th><th>Status</th><th>Created</th><th></th></tr>'+
+    ords.map(o=>'<tr><td class="mono">'+esc(o.order_number)+'</td><td>'+esc(SKU_NAME[o.sku]||o.sku)+'</td><td>'+rm(o.amount)+'</td><td>'+statusPill(o.status)+
+      (o.note?'<div class="sub">'+esc(o.note)+'</div>':'')+'</td><td>'+when(o.created_at)+'</td><td>'+
+      (o.status!=='paid'&&SKU_NAME[o.sku]?'<button class="btn ok sm" onclick="unlock(\''+esc(o.order_number)+'\')">Unlock</button>':'')+'</td></tr>').join('')+'</table>'
+      :'<div class="sub">No orders.</div>')+'</div>';
+
+  h+='<h2>Memberships and purchases</h2><div class="card scroll">'+(ents.length?'<table><tr><th>What</th><th>Until</th><th>Source</th><th>Added</th><th></th></tr>'+
+    ents.map(e=>'<tr><td>'+esc(SKU_NAME[e.sku]||e.sku)+'</td><td>'+(e.expires_at?(live(e.expires_at)?'<span class="pill p-ok">'+day(e.expires_at)+'</span>':'<span class="pill p-dim">ended '+day(e.expires_at)+'</span>'):'—')+
+      '</td><td class="mono">'+esc(e.source||'')+'</td><td>'+day(e.created_at)+'</td><td>'+
+      (e.kind==='pass'&&live(e.expires_at)?'<button class="btn danger sm" onclick="endEnt('+e.id+')">End</button>':'')+'</td></tr>').join('')+'</table>'
+      :'<div class="sub">Nothing yet.</div>')+'</div>';
+
+  h+='<h2>Give or extend</h2><div class="card"><div class="sub" style="margin:0 0 10px">Added from the end of a running membership of the same tier, as a renewal is.</div><div class="row">'+
+    '<select id="g-sku">'+SKUS.map(s=>'<option value="'+s[0]+'">'+s[1]+'</option>').join('')+'</select>'+
+    '<input id="g-note" placeholder="Why (e.g. bank transfer, giveaway)" style="flex:1;min-width:220px">'+
+    '<button class="btn" onclick="grant()">Give</button></div></div>';
+
+  h+='<h2>Delete account</h2><div class="card danger-zone"><div class="sub" style="margin:0 0 10px">On the member\'s request. Their progress, memberships and scans are deleted; payment records are kept in the archive. This cannot be undone.</div>'+
+    (cur.staff?'<div class="sub">Staff accounts cannot be deleted here.</div>':
+    '<div class="row"><input id="d-email" placeholder="Type '+esc(u.email)+' to confirm" style="flex:1;min-width:220px">'+
+    '<input id="d-note" placeholder="Request received how (e.g. email 12 Oct)" style="flex:1;min-width:200px">'+
+    '<button class="btn danger" onclick="del()">Delete account</button></div>')+'</div>';
+  $('member').innerHTML=h;
+}
+
+async function unlock(order){
+  const note=prompt('Unlock '+order+'.\nChecked in Bayarcash? Add a note (e.g. "paid 12 Oct, ref ...").');
+  if(note===null) return;
+  const r=await sb.rpc('plus_admin_unlock',{p_order:order,p_note:note});
+  if(r.error) return toast(msg(r.error));
+  toast('Unlocked until '+day(r.data.until)); openUser(cur.user.id);
+}
+async function grant(){
+  const sku=$('g-sku').value, note=$('g-note').value.trim();
+  if(note.length<3) return toast('Say why, in a few words.');
+  const r=await sb.rpc('plus_admin_grant',{p_user:cur.user.id,p_sku:sku,p_note:note});
+  if(r.error) return toast(msg(r.error));
+  toast(SKU_NAME[sku]+' until '+day(r.data.until)); openUser(cur.user.id);
+}
+async function endEnt(id){
+  const note=prompt('End this membership now? Say why.'); if(note===null) return;
+  const r=await sb.rpc('plus_admin_end',{p_ent:id,p_note:note});
+  if(r.error) return toast(msg(r.error));
+  toast('Ended'); openUser(cur.user.id);
+}
+async function del(){
+  const typed=$('d-email').value.trim(), note=$('d-note').value.trim();
+  if(typed.toLowerCase()!==String(cur.user.email).toLowerCase()) return toast('Type the email exactly to confirm.');
+  if(!note) return toast('Say how the request came in.');
+  const r=await sb.rpc('plus_admin_delete',{p_user:cur.user.id,p_confirm_email:typed,p_note:note});
+  if(r.error) return toast(msg(r.error));
+  toast('Deleted · '+r.data.orders_archived+' order(s) archived'); cur=null; $('member').innerHTML=''; find();
+}
+
+/* ── recent orders, the log ── */
+async function loadOrders(){
+  $('orders').innerHTML='<div class="sub">Loading…</div>';
+  const r=await sb.rpc('plus_admin_recent',{p_limit:100});
+  if(r.error){ $('orders').innerHTML='<div class="err">'+esc(msg(r.error))+'</div>'; return; }
+  const l=r.data||[];
+  $('orders').innerHTML=l.length?'<table><tr><th>Created</th><th>Email</th><th>What</th><th>Amount</th><th>Status</th><th>Order</th></tr>'+
+    l.map(o=>'<tr class="click" onclick="tab(\'find\');$(\'q\').value=\''+esc(o.email||'')+'\';find().then(()=>openUser(\''+o.user_id+'\'))"><td>'+when(o.created_at)+'</td><td>'+esc(o.email||'—')+
+      '</td><td>'+esc(SKU_NAME[o.sku]||o.sku)+'</td><td>'+rm(o.amount)+'</td><td>'+statusPill(o.status)+'</td><td class="mono">'+esc(o.order_number)+'</td></tr>').join('')+'</table>'
+    :'<div class="sub">No orders yet.</div>';
+}
+async function loadLog(){
+  $('log').innerHTML='<div class="sub">Loading…</div>';
+  const r=await sb.rpc('plus_admin_log_recent',{p_limit:100});
+  if(r.error){ $('log').innerHTML='<div class="err">'+esc(msg(r.error))+'</div>'; return; }
+  const l=r.data||[];
+  $('log').innerHTML=l.length?'<table><tr><th>When</th><th>Admin</th><th>Action</th><th>Target</th><th>Detail</th></tr>'+
+    l.map(x=>'<tr><td>'+when(x.created_at)+'</td><td>'+esc(x.admin_email||'')+'</td><td>'+esc(x.action)+'</td><td class="mono">'+esc(x.target||'')+
+      '</td><td class="mono">'+esc(JSON.stringify(x.detail||{}))+'</td></tr>').join('')+'</table>'
+    :'<div class="sub">Nothing yet.</div>';
+}
+
+/* a reload keeps the session */
+afterAuth(false);
+</script>
+</body>
+</html>
