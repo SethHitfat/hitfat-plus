@@ -416,10 +416,13 @@ function renderMe(){
   const w=(HF.data.weight||[]).slice(-1)[0];
   const signedIn=!!(sb&&HF.userId);
 
+  /* The Fitness+ account sheet: the person in the middle, large, with the
+     one thing they are most likely to change right under their name. */
   let h='<div class="hsum"><div class="hsum-l"><div class="k">ACCOUNT</div><div class="t">Me</div></div></div>'+
-    '<div class="mehead" onclick="startOnboarding()">'+avatarHTML(60)+
-    '<div class="w2"><div class="n">'+hesc((p.name||'').trim()||'Set your name')+'</div>'+
-    '<div class="s">'+hesc(HF.email||'Local preview')+'</div></div><span class="chev">›</span></div>';
+    '<div class="meprof">'+avatarHTML(84)+
+    '<div class="n">'+hesc((p.name||'').trim()||'Set your name')+'</div>'+
+    '<div class="s">'+hesc(HF.email||'Not signed in')+'</div>'+
+    '<button class="meedit" onclick="startOnboarding()">Edit Plan</button></div>';
 
   /* Three numbers, each one that means something on its own. */
   h+='<div class="htiles me3">'+
@@ -440,9 +443,16 @@ function renderMe(){
   /* Everything else this account can open, in one place. */
   /* The membership first — what this account can open, and until when. */
   const tier=memberTier(), until=memberUntil();
-  h+=fsec('Membership','')+'<div class="glist">'+
-    grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+',
-         tier ? (until?'Until '+fmtDate(until):'All Access') : 'Not a member', "openStore()")+'</div>';
+  if(tier){
+    h+=fsec('Membership','')+'<div class="glist">'+
+      grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+', until?'Until '+fmtDate(until):'All Access', "openStore()")+'</div>';
+  } else {
+    /* Not a member: the offer, as a poster, not a grey row that says no. */
+    h+='<div class="mepromo" onclick="openStore()"><div class="pw-mark">HITFAT<span>+</span></div>'+
+      '<div class="t">Train with everything</div>'+
+      '<div class="s">Every program, unlimited meal scans and 14-day meal plans.</div>'+
+      '<span class="mepromo-b">See Plans</span></div>';
+  }
   if(tier==='coach'){
     h+=fsec('Your Coach','')+'<div class="glist">'+
       grow('person','Monthly review','Message coach','coachReview()')+
@@ -459,16 +469,18 @@ function renderMe(){
 
   h+=fsec('Settings','')+'<div class="glist">'+
     '<div class="grow grow-ctl">'+ic('palette')+'<div class="grow-l">Appearance</div>'+
-    '<div class="segs grow-seg">'+
-    '<button class="seg'+(currentTheme()==='light'?' on':'')+'" onclick="setThemeLight()">Light</button>'+
-    '<button class="seg'+(currentTheme()==='dark'?' on':'')+'" onclick="setThemeDark()">Dark</button></div></div>'+
+    '<div class="obseg meseg">'+
+    '<button class="'+(currentTheme()==='light'?'on':'')+'" onclick="setThemeLight()">Light</button>'+
+    '<button class="'+(currentTheme()==='dark'?'on':'')+'" onclick="setThemeDark()">Dark</button></div></div>'+
     '</div>';
 
-  h+='<div class="glist" style="margin-top:22px;">'+
-    (signedIn?'<button class="grow grow-act" onclick="signOut()">Sign out</button>':'')+
-    '<button class="grow grow-act danger" onclick="confirmReset()">Reset progress</button></div>';
+  h+=fsec('About','')+'<div class="glist">'+
+    grow('doc','Privacy Policy','',"location.href='/privacy'")+
+    grow('clipboard','Terms of Use','',"location.href='/terms'")+'</div>';
 
-  h+='<p class="mefoot"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a><br>HITFAT+</p>';
+  if(signedIn) h+='<div class="glist meact"><button class="grow grow-act" onclick="signOut()">Sign Out</button></div>';
+  h+='<div class="glist meact"><button class="grow grow-act danger" onclick="confirmReset()">Reset Progress</button></div>';
+  h+='<p class="mefoot">HITFAT+</p>';
   $('me-body').innerHTML=h;
 }
 

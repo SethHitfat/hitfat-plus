@@ -3136,5 +3136,22 @@ ok("gym check-in opens the Club's own QR",
 clubCiStop(); clubSegNow='overview';
 _t42reset();
 
+print("\n── ME, after the Fitness+ account sheet ──");
+(function(){
+  var keep={p:_ent.plusUntil,c:_ent.coachUntil,m:MEMBERSHIP_LIVE};
+  MEMBERSHIP_LIVE=true; _ent.plusUntil=null; _ent.coachUntil=null;
+  noThrow("Me renders without a membership", function(){ renderMe(); });
+  var h=document.getElementById('me-body').innerHTML;
+  ok("not a member: the offer, as a poster", h.indexOf('mepromo')>0 && h.indexOf('openStore()')>0);
+  ok("the profile leads with Edit Plan",     h.indexOf('meprof')>0 && h.indexOf('Edit Plan')>0);
+  ok("Appearance is a segmented control",    h.indexOf('setThemeLight()')>0 && h.indexOf('setThemeDark()')>0);
+  ok("privacy and terms are rows in About",  h.indexOf("/privacy")>0 && h.indexOf("/terms")>0);
+  _ent.plusUntil=new Date(Date.now()+30*864e5).toISOString();
+  renderMe(); h=document.getElementById('me-body').innerHTML;
+  ok("a member sees their date, not the offer", h.indexOf('mepromo')<0 && h.indexOf('Until ')>0);
+  _ent.plusUntil=keep.p; _ent.coachUntil=keep.c; MEMBERSHIP_LIVE=keep.m;
+})();
+
+
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

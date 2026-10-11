@@ -3470,6 +3470,35 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .co-dot{width:9px;height:9px;border-radius:50%;background:var(--act,#DC1A22);animation:t42pulse 1.2s infinite;}
 .co-dot:nth-child(2){animation-delay:.2s;} .co-dot:nth-child(3){animation-delay:.4s;}
 
+/* ═══════════════════════════════════════════════════════════════
+   ME & SETTINGS, after the Fitness+ account sheet
+   ═══════════════════════════════════════════════════════════════ */
+.meprof{display:flex;flex-direction:column;align-items:center;text-align:center;padding:6px 0 4px;}
+.meprof .av2{border:none;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(135deg,#FF6A5C,#C62828);color:#FFFFFF;font-weight:700;}
+.meprof .av2 img{width:100%;height:100%;object-fit:cover;}
+.meprof .n{font-size:24px;font-weight:800;letter-spacing:-.5px;color:var(--txt);margin-top:12px;}
+.meprof .s{font-size:15px;color:var(--dim);margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.meedit{margin-top:12px;border:none;cursor:pointer;font-family:inherit;font-size:15px;font-weight:600;
+  padding:8px 18px;border-radius:99px;background:#2C2C2E;color:var(--lime);}
+:root[data-theme="light"] .meedit{background:#FFFFFF;box-shadow:var(--lift-1);}
+#me .me3{margin-top:18px;}
+.mepromo{margin-top:26px;border-radius:22px;padding:20px;cursor:pointer;position:relative;overflow:hidden;
+  background:radial-gradient(120% 90% at 100% 0%,rgba(220,26,34,.85),transparent 60%),
+             radial-gradient(90% 80% at 0% 100%,rgba(255,194,26,.30),transparent 60%),#141416;}
+.mepromo .pw-mark{color:#FFFFFF;}
+#me .mepromo .pw-mark span{color:#FFC21A;}
+.mepromo .t{font-size:24px;font-weight:800;letter-spacing:-.5px;color:#FFFFFF;margin-top:6px;line-height:1.1;}
+.mepromo .s{font-size:15px;color:rgba(255,255,255,.82);margin-top:6px;line-height:1.4;max-width:90%;}
+.mepromo-b{display:inline-block;margin-top:16px;padding:9px 18px;border-radius:99px;background:#FFFFFF;color:#1C1C1E;font-size:15px;font-weight:700;}
+.meseg{flex:0 0 auto;width:150px;}
+.meseg button{padding:7px 4px;font-size:14px;}
+#me .meact{margin-top:22px;}
+#me .meact + .meact{margin-top:12px;}
+#me .grow-act{color:var(--lime);}
+#me .grow-act.danger{color:#FF453A;}
+:root[data-theme="light"] #me .grow-act.danger{color:#D70015;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -14305,10 +14334,13 @@ function renderMe(){
   const w=(HF.data.weight||[]).slice(-1)[0];
   const signedIn=!!(sb&&HF.userId);
 
+  /* The Fitness+ account sheet: the person in the middle, large, with the
+     one thing they are most likely to change right under their name. */
   let h='<div class="hsum"><div class="hsum-l"><div class="k">ACCOUNT</div><div class="t">Me</div></div></div>'+
-    '<div class="mehead" onclick="startOnboarding()">'+avatarHTML(60)+
-    '<div class="w2"><div class="n">'+hesc((p.name||'').trim()||'Set your name')+'</div>'+
-    '<div class="s">'+hesc(HF.email||'Local preview')+'</div></div><span class="chev">›</span></div>';
+    '<div class="meprof">'+avatarHTML(84)+
+    '<div class="n">'+hesc((p.name||'').trim()||'Set your name')+'</div>'+
+    '<div class="s">'+hesc(HF.email||'Not signed in')+'</div>'+
+    '<button class="meedit" onclick="startOnboarding()">Edit Plan</button></div>';
 
   /* Three numbers, each one that means something on its own. */
   h+='<div class="htiles me3">'+
@@ -14329,9 +14361,16 @@ function renderMe(){
   /* Everything else this account can open, in one place. */
   /* The membership first — what this account can open, and until when. */
   const tier=memberTier(), until=memberUntil();
-  h+=fsec('Membership','')+'<div class="glist">'+
-    grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+',
-         tier ? (until?'Until '+fmtDate(until):'All Access') : 'Not a member', "openStore()")+'</div>';
+  if(tier){
+    h+=fsec('Membership','')+'<div class="glist">'+
+      grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+', until?'Until '+fmtDate(until):'All Access', "openStore()")+'</div>';
+  } else {
+    /* Not a member: the offer, as a poster, not a grey row that says no. */
+    h+='<div class="mepromo" onclick="openStore()"><div class="pw-mark">HITFAT<span>+</span></div>'+
+      '<div class="t">Train with everything</div>'+
+      '<div class="s">Every program, unlimited meal scans and 14-day meal plans.</div>'+
+      '<span class="mepromo-b">See Plans</span></div>';
+  }
   if(tier==='coach'){
     h+=fsec('Your Coach','')+'<div class="glist">'+
       grow('person','Monthly review','Message coach','coachReview()')+
@@ -14348,16 +14387,18 @@ function renderMe(){
 
   h+=fsec('Settings','')+'<div class="glist">'+
     '<div class="grow grow-ctl">'+ic('palette')+'<div class="grow-l">Appearance</div>'+
-    '<div class="segs grow-seg">'+
-    '<button class="seg'+(currentTheme()==='light'?' on':'')+'" onclick="setThemeLight()">Light</button>'+
-    '<button class="seg'+(currentTheme()==='dark'?' on':'')+'" onclick="setThemeDark()">Dark</button></div></div>'+
+    '<div class="obseg meseg">'+
+    '<button class="'+(currentTheme()==='light'?'on':'')+'" onclick="setThemeLight()">Light</button>'+
+    '<button class="'+(currentTheme()==='dark'?'on':'')+'" onclick="setThemeDark()">Dark</button></div></div>'+
     '</div>';
 
-  h+='<div class="glist" style="margin-top:22px;">'+
-    (signedIn?'<button class="grow grow-act" onclick="signOut()">Sign out</button>':'')+
-    '<button class="grow grow-act danger" onclick="confirmReset()">Reset progress</button></div>';
+  h+=fsec('About','')+'<div class="glist">'+
+    grow('doc','Privacy Policy','',"location.href='/privacy'")+
+    grow('clipboard','Terms of Use','',"location.href='/terms'")+'</div>';
 
-  h+='<p class="mefoot"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a><br>HITFAT+</p>';
+  if(signedIn) h+='<div class="glist meact"><button class="grow grow-act" onclick="signOut()">Sign Out</button></div>';
+  h+='<div class="glist meact"><button class="grow grow-act danger" onclick="confirmReset()">Reset Progress</button></div>';
+  h+='<p class="mefoot">HITFAT+</p>';
   $('me-body').innerHTML=h;
 }
 
