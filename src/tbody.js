@@ -3223,5 +3223,11 @@ print("\n── PROGRAM PAGE: the bar that stays ──");
   ok("the back button is in the bar, once", h.split('class="pdx-back"').length-1===1);
 })();
 
+print("\n── COLLECTIONS ──");
+noThrow("the Collections page opens", function(){ openLibList('collections'); });
+ok("...as posters, every collection", document.getElementById('lib-body').innerHTML.split('class="fcoll"').length-1===CHALLENGES.length);
+noThrow("a collection opens", function(){ openProgram(CHALLENGES[0].id); });
+ok("its days do not say Day n twice", document.getElementById('pgd-body').innerHTML.indexOf('>Day 2</div><div class="m">Day 2')<0);
+
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

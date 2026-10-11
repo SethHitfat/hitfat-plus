@@ -1719,3 +1719,6 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .libplay{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(255,90,95,.14);}
 :root[data-theme="light"] .libplay{background:rgba(194,26,20,.10);}
 .libplay .gly{width:15px;height:15px;color:var(--lime);fill:currentColor;stroke:none;margin-left:2px;}
+/* Collections, stacked: the Explore poster at full width */
+.fcolls{display:flex;flex-direction:column;gap:12px;}
+.fcolls .fcoll{width:auto;min-height:200px;}

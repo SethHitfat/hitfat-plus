@@ -431,7 +431,9 @@ function openLibList(k){
            collections:['Collections',CHALLENGES]}[k];
   if(!T) return;
   let h='<div class="hgroup"><div class="k">Library</div><h2>'+T[0]+'</h2><p>'+T[1].length+' in HITFAT+</p></div>';
-  h+=T[1].map(p=>frow(p)).join('');
+  /* Collections are posters wherever they appear, as in Explore and in
+     Fitness+ — here stacked full width rather than as rows. */
+  h+= k==='collections' ? '<div class="fcolls">'+T[1].map(fcoll).join('')+'</div>' : T[1].map(p=>frow(p)).join('');
   $('lib-body').innerHTML=h;
   hidePanels(); $('library').style.display='block'; $('screen').scrollTop=0;
 }

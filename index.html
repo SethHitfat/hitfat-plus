@@ -3722,6 +3722,9 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .libplay{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(255,90,95,.14);}
 :root[data-theme="light"] .libplay{background:rgba(194,26,20,.10);}
 .libplay .gly{width:15px;height:15px;color:var(--lime);fill:currentColor;stroke:none;margin-left:2px;}
+/* Collections, stacked: the Explore poster at full width */
+.fcolls{display:flex;flex-direction:column;gap:12px;}
+.fcolls .fcoll{width:auto;min-height:200px;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -14626,7 +14629,7 @@ function renderProgram(){
         '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop((d.name||'')+gi)+'">'+
           (isDone?'<span class="fnew">DONE</span>':'')+'</div>'+
         '<div class="tx"><div class="t">'+(d.name||'Workout')+'</div>'+
-        '<div class="m">Day '+(gi+1)+' · '+(d.ex?d.ex.length:0)+' exercises · '+p.dur+'min</div></div>'+
+        '<div class="m">'+(/^Day \d+$/.test(d.name||'')?'':'Day '+(gi+1)+' · ')+(d.ex?d.ex.length:0)+' exercises · '+p.dur+'min</div></div>'+
         '<span class="pdx-chev">›</span></div>';
     }).join('')+'</div>';
   } else {
@@ -16681,7 +16684,9 @@ function openLibList(k){
            collections:['Collections',CHALLENGES]}[k];
   if(!T) return;
   let h='<div class="hgroup"><div class="k">Library</div><h2>'+T[0]+'</h2><p>'+T[1].length+' in HITFAT+</p></div>';
-  h+=T[1].map(p=>frow(p)).join('');
+  /* Collections are posters wherever they appear, as in Explore and in
+     Fitness+ — here stacked full width rather than as rows. */
+  h+= k==='collections' ? '<div class="fcolls">'+T[1].map(fcoll).join('')+'</div>' : T[1].map(p=>frow(p)).join('');
   $('lib-body').innerHTML=h;
   hidePanels(); $('library').style.display='block'; $('screen').scrollTop=0;
 }

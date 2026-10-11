@@ -356,7 +356,7 @@ function renderProgram(){
         '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop((d.name||'')+gi)+'">'+
           (isDone?'<span class="fnew">DONE</span>':'')+'</div>'+
         '<div class="tx"><div class="t">'+(d.name||'Workout')+'</div>'+
-        '<div class="m">Day '+(gi+1)+' · '+(d.ex?d.ex.length:0)+' exercises · '+p.dur+'min</div></div>'+
+        '<div class="m">'+(/^Day \d+$/.test(d.name||'')?'':'Day '+(gi+1)+' · ')+(d.ex?d.ex.length:0)+' exercises · '+p.dur+'min</div></div>'+
         '<span class="pdx-chev">›</span></div>';
     }).join('')+'</div>';
   } else {
