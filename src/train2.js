@@ -233,8 +233,15 @@ function trForYou(){
   const going=trainingPlans().filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
   const goalKey=/fat|lose/i.test(goal)?'Fat Loss':/strong|strength/i.test(goal)?'Strength':/core|abs/i.test(goal)?'Core':'';
   const singles=PROGRAMS.filter(p=>!p.weeks&&!p.rehab);
-  const picked=singles.filter(p=>(goalKey?activityMatch(goalKey,p):true)&&(p.level===lvl||!goalKey)).slice(0,8);
-  const pick=picked.length>=3?picked:singles.filter(p=>p.level===lvl).slice(0,8);
+  /* What the line under the title promises is what the row holds: goal and
+     level when there are enough of those, then level alone, then a mix —
+     never "matched to your level" over sessions at another level. */
+  const byGoal=goalKey?singles.filter(p=>activityMatch(goalKey,p)&&p.level===lvl):[];
+  const byLvl=singles.filter(p=>p.level===lvl);
+  let pick, pickSub;
+  if(byGoal.length>=3){ pick=byGoal.slice(0,8); pickSub='For your goal: '+goal.toLowerCase()+' · '+lvl; }
+  else if(byLvl.length>=3){ pick=byLvl.slice(0,8); pickSub='Matched to your level · '+lvl; }
+  else { pick=singles.slice(0,8); pickSub='A mix to start with'; }
   const quick=singles.filter(p=>p.dur<=20&&pick.indexOf(p)<0).slice(0,9);
 
   let h='';
@@ -248,7 +255,7 @@ function trForYou(){
     h+=fsec('Find Your Plan','Four questions, one match.');
     h+=fqCard();
   }
-  h+=fsec('Picked for You',goalKey?'For your goal: '+goal.toLowerCase()+' · '+lvl:'Matched to your level · '+lvl);
+  h+=fsec('Picked for You',pickSub);
   h+='<div class="hscroll">'+pick.map((p,i)=>flandCard(p,i<2?'NEW':'')).join('')+'</div>';
   if(quick.length){
     h+=fsec('Quick Workouts','Twenty minutes or less.');

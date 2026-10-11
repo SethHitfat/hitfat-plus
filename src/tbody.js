@@ -339,6 +339,12 @@ var _fy=document.getElementById('tr-body').innerHTML;
 ok("a guest meets the membership first", _fy.indexOf('fyjoin')>=0 && _fy.indexOf('Join HITFAT+')>0 && _fy.indexOf('openPaywall()')>0);
 ok("...and it promises no free trial", _fy.indexOf('Free')<0 || _fy.indexOf('Try It Free')<0);
 ok("...with the sections after it", _fy.indexOf('Picked for You')>0 && _fy.indexOf('Popular Programs')>0);
+ok("Picked for You holds what its line promises", (function(){
+    var keep=HF.data.prefs; HF.data.prefs=Object.assign({},keep,{goal:'',level:'Beginner'}); trForYou();
+    var h=document.getElementById('tr-body').innerHTML; HF.data.prefs=keep;
+    if(h.indexOf('Matched to your level · Beginner')<0) return true;
+    var row=h.slice(h.indexOf('Picked for You'), h.indexOf('Quick Workouts')>0?h.indexOf('Quick Workouts'):h.indexOf('Popular Programs'));
+    return row.indexOf('Intermediate')<0 && row.indexOf('Advanced')<0; })());
 _member('plus');
 var _pp=trainingPlans().filter(function(p){ return p.id!=='custom'; })[0];
 HF.data.progress={}; HF.data.progress[_pp.id]=2;
