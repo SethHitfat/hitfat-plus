@@ -16372,6 +16372,15 @@ function renderTrain(){
   $('tr-segs').innerHTML='<div class="hsum"><div class="hsum-l"><div class="k">'+dl+'</div><div class="t">Train</div></div></div>'+
     '<div class="segs">'+segs.map(s=>
     '<button class="seg'+(trSeg===s[0]?' on':'')+'" onclick="setTrSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
+  /* More pills than fit: bring the chosen one into view, so Library (the
+     last) is never selected off the edge of the screen. */
+  try{
+    const row=$('tr-segs').querySelector('.segs'), on=row&&row.querySelector('.seg.on');
+    if(row && on && typeof on.offsetLeft==='number'){
+      const want=on.offsetLeft-(row.clientWidth-on.offsetWidth)/2;
+      row.scrollLeft=Math.max(0,want);
+    }
+  }catch(e){}
   if(trSeg==='store'){ openStore('programs'); return; }
   if(trSeg==='bar' && BAR_ENABLED) return trBar();
   if(trSeg==='recovery') return trRecovery();
