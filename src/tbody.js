@@ -567,6 +567,9 @@ openProgram(_pp.id); openDay(_pp.id,0);
 _cam.mode='ok'; _cam.stopped=0;
 noThrow("workout opens on READY", function(){ playDay(); });
 ok("ready screen shown, not counting down", document.getElementById('pl-ready').className.indexOf('on')>=0);
+ok("ready names the workout and what is in it", document.getElementById('pl-rdt').textContent===(pl.meta.name||pl.exs[0].n) &&
+   /exercises?/.test(document.getElementById('pl-rdm').textContent) && /min$/.test(document.getElementById('pl-rdm').textContent));
+ok("the player's chrome waits behind Ready", document.getElementById('play').className.indexOf('rdy')>=0);
 ok("both view modes offered", document.getElementById('pl-modes').innerHTML.indexOf('Mirror')>0 &&
    document.getElementById('pl-modes').innerHTML.indexOf('Coach')>0);
 ok("coach is the default", plCam.mode==='coach');

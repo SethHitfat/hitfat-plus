@@ -88,11 +88,11 @@ function exitPlayer(){
   const f=$('pl-video'); if(f) f.src='';
   if(pl) pl.clip=null;
   pl=null;
-  $('play').classList.remove('on','idle');
+  $('play').classList.remove('on','idle','rdy');
   if(plIdleT){ clearTimeout(plIdleT); plIdleT=null; }
   $('pl-rest').classList.remove('on');
   $('pl-cd').classList.remove('on');
-  $('pl-ready').classList.remove('on');
+  $('pl-ready').classList.remove('on','busy');
 }
 function stopTick(){ if(plTick){ clearInterval(plTick); plTick=null; } if(pl) pl.running=false; }
 
@@ -323,14 +323,13 @@ function plCamBusy(why){
   $('pl-modes').style.display='none';
   $('pl-rdgo').style.display='none';
   $('pl-rdbusy').style.display='flex';
-  r.classList.add('on');
+  r.classList.add('on','busy');
 }
 function plRetryCam(){
+  plReadyText();
   $('pl-rdbusy').style.display='none';
   $('pl-modes').style.display='flex';
   $('pl-rdgo').style.display='block';
-  $('pl-rdt').textContent='Ready?';
-  $('pl-rds').textContent='Pick your view, then start.';
   plBegin();
 }
 function plNoCam(){
@@ -341,14 +340,26 @@ function plNoCam(){
 }
 
 /* READY screen → mode choice → camera → countdown → play */
+/* What is in it, as Fitness+ lists an episode: the movements, the rounds,
+   and roughly how long, rests included. */
+function plReadyText(){
+  const r=$('pl-ready'); if(r) r.classList.remove('busy');
+  if(!pl) return;
+  const n=pl.exs.length, rd=pl.rounds||1;
+  const secs=pl.exs.reduce((t,e)=>t+(e.dur||45),0)*rd + REST_SECS*Math.max(0,n*rd-1);
+  $('pl-rdt').textContent=(pl.meta&&pl.meta.name)||pl.exs[0].n;
+  if($('pl-rdm')) $('pl-rdm').textContent=n+(n===1?' exercise':' exercises')+(rd>1?' · '+rd+' rounds':'')+' · about '+Math.max(1,Math.round(secs/60))+' min';
+  $('pl-rds').textContent='Choose Your View';
+  if($('pl-rdf')) $('pl-rdf').textContent='Up first: '+pl.exs[0].n;
+}
 function plReady(){
-  $('pl-rdt').textContent='Ready?';
-  $('pl-rds').textContent='Pick your view, then start.';
+  plReadyText();
   $('pl-modes').style.display='flex';
   $('pl-rdgo').style.display='block';
   $('pl-rdbusy').style.display='none';
   plRenderModes();
   $('pl-ready').classList.add('on');
+  $('play').classList.add('rdy');
 }
 function plPickMode(m){ plSetMode(m); plRenderModes(); }
 function plRenderModes(){
@@ -361,7 +372,8 @@ function plBegin(){
   plAskCam(()=>plStart());
 }
 function plStart(){
-  $('pl-ready').classList.remove('on');
+  $('pl-ready').classList.remove('on','busy');
+  $('play').classList.remove('rdy');
   plCountdown(()=>plResume());
 }
 /* release the camera whenever the page is hidden — iOS will not do it for us */
