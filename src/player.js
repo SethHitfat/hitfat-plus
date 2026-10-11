@@ -98,13 +98,22 @@ function stopTick(){ if(plTick){ clearInterval(plTick); plTick=null; } if(pl) pl
 
 function plCountdown(done){
   const el=$('pl-cd'), n=$('pl-cdn');
-  el.classList.add('on'); let c=3; n.textContent=c;
+  const paint=c=>{
+    /* a fresh node each beat so the fade-in plays again */
+    n.textContent=c>0?String(c):'GO';
+    n.className='cdn'+(c>0?'':' go');
+    try{ n.style.animation='none'; void n.offsetWidth; n.style.animation=''; }catch(e){}
+    const a=$('pl-cdarc'), pct=c>0?(4-c)/3*100:100;
+    if(a && typeof ringArc==='function')
+      a.innerHTML='<path d="'+ringArc(100,100,88,pct)+'" fill="none" stroke-width="12" stroke-linecap="round"/>';
+  };
+  if($('pl-cdx') && pl) $('pl-cdx').innerHTML='Up first · <b>'+pl.exs[pl.i].n+'</b>';
+  el.classList.add('on'); let c=3; paint(c);
   const t=setInterval(()=>{
     c--;
-    if(c>0){ n.textContent=c; }
-    else if(c===0){ n.textContent='GO'; }
+    if(c>=0){ paint(c); }
     else { clearInterval(t); el.classList.remove('on'); done&&done(); }
-  },700);
+  },800);
 }
 function plResume(){
   if(!pl || pl.running) return;

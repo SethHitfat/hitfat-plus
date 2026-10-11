@@ -203,9 +203,20 @@
   justify-content:center;gap:14px;padding:32px;text-align:center;
   background:rgba(0,0,0,.82);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);}
 .pl-ov.on{display:flex;}
-#pl-cd{background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
-#pl-cd .cdn{font-family:'Inter',system-ui,sans-serif;font-size:132px;font-weight:200;letter-spacing:-6px;
-  color:var(--txt);line-height:1;}
+#pl-cd{background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);gap:0;}
+#pl-cd .cdk{font-size:15px;font-weight:700;color:#FF5A5F;}
+#pl-cd .cdring{position:relative;width:220px;height:220px;margin:14px 0 18px;}
+#pl-cd .cdring svg{width:100%;height:100%;}
+#pl-cd .cdring circle{stroke:rgba(255,255,255,.14);}
+#pl-cd .cdring path{stroke:#DC1A22;}
+#pl-cd .cdn{position:absolute;inset:0;display:grid;place-items:center;font-family:'Inter',system-ui,sans-serif;
+  font-size:104px;font-weight:250;letter-spacing:-4px;color:#FFFFFF;line-height:1;font-variant-numeric:tabular-nums;
+  animation:cdin .45s ease both;}
+#pl-cd .cdn.go{font-size:64px;font-weight:800;letter-spacing:-1px;color:#FF5A5F;}
+#pl-cd .cdx{font-size:16px;color:rgba(255,255,255,.72);}
+#pl-cd .cdx b{color:#FFFFFF;font-weight:700;}
+@keyframes cdin{from{opacity:0;}to{opacity:1;}}
+
 #pl-rest{gap:0;}
 #pl-rest .rk{font-size:15px;font-weight:700;letter-spacing:.2px;color:#FFC93C;}
 #pl-rest .rring{position:relative;width:220px;height:220px;margin:14px 0 18px;}
@@ -834,7 +845,14 @@
     </div>
   </div>
 
-  <div class="pl-ov" id="pl-cd"><div class="cdn" id="pl-cdn">3</div></div>
+  <!-- 3, 2, 1, GO: a red ring fills a third a second around the count, the
+       way a watch counts a workout in, with the first movement named below. -->
+  <div class="pl-ov" id="pl-cd">
+    <div class="cdk">Get Ready</div>
+    <div class="cdring"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="88" fill="none" stroke-width="12"/><g id="pl-cdarc"></g></svg>
+      <div class="cdn" id="pl-cdn">3</div></div>
+    <div class="cdx" id="pl-cdx"></div>
+  </div>
 
   <!-- Rest: the next clip loads behind this. A ring empties with the seconds,
        and the movement coming up waits on a card below it. -->
