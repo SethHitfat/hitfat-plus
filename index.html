@@ -3383,7 +3383,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
    ═══════════════════════════════════════════════════════════════ */
 #pwm{background:#1C1C1E;}
 :root[data-theme="light"] #pwm{background:#F2F2F7;}
-#pwm .pw-in{max-width:440px;margin:0 auto;padding-top:calc(14px + env(safe-area-inset-top,0px));}
+#pwm .pw-in{max-width:440px;margin:0 auto;padding-top:calc(14px + env(safe-area-inset-top,0px));background:transparent;}
 #pwm .pwtop{position:relative;z-index:2;margin-bottom:-40px;}
 #pwm .pwx{background:rgba(44,44,46,.82);border:none;color:#FFFFFF;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
 .pwcol{display:grid;grid-template-columns:1.1fr 1fr 1fr;grid-template-rows:92px 92px;gap:3px;position:relative;
@@ -3423,6 +3423,52 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 #store .sub-cta{border-radius:99px;}
 #store .sub-inside div:nth-child(odd) b{color:var(--lime);}
 #store .sub-inside div:nth-child(even) b{color:var(--yel-t);}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHECKOUT — the purchase sheet and the sheet you come back to
+   ═══════════════════════════════════════════════════════════════ */
+#pwm .co .cotop{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.coback{display:inline-flex;align-items:center;gap:2px;background:none;border:none;padding:6px 0;cursor:pointer;
+  font-family:inherit;font-size:17px;color:var(--lime);}
+.coback .gly{width:22px;height:22px;}
+.co .coh{font-size:30px;font-weight:800;letter-spacing:-.7px;color:var(--txt);margin:4px 2px 14px;}
+.cosum{background:#2C2C2E;border-radius:var(--r-card,16px);padding:4px 16px;}
+:root[data-theme="light"] .cosum{background:#FFFFFF;}
+.co-item{display:flex;align-items:center;gap:12px;padding:14px 0;}
+.co-item .sub-mark{width:44px;height:44px;}
+.co-item .sub-mark::before{width:19px;height:24px;}
+.co-n{font-size:17px;font-weight:700;color:var(--txt);}
+.co-l{font-size:14px;color:var(--dim);margin-top:2px;}
+.co-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:.5px solid var(--sep);font-size:15px;}
+.co-row span{color:var(--dim);}
+.co-row b{color:var(--txt);font-weight:600;text-align:right;}
+.co-tot span{color:var(--txt);font-weight:700;}
+.co-tot b{font-size:20px;font-weight:800;letter-spacing:-.4px;}
+.co-pay{display:block;background:#2C2C2E;border-radius:var(--r-card,16px);padding:0 16px;margin:0;}
+:root[data-theme="light"] .co-pay{background:#FFFFFF;}
+#pwm .co-pay .paych{display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;
+  border-radius:0;padding:13px 0;box-shadow:none;}
+.co-pay .paych + .paych{border-top:.5px solid var(--sep);}
+.co-pn{flex:1;min-width:0;}
+.co-pay .paych b, .co-pay .paych.on b{color:var(--txt);font-size:16px;font-weight:600;margin:0;}
+.co-pay .paych small{font-size:13px;color:var(--dim);margin-top:2px;}
+.co-pay .paych.on .sub-radio{box-shadow:inset 0 0 0 7px var(--act,#DC1A22);}
+.co-safe{display:flex;align-items:flex-start;gap:8px;margin:14px 4px 0;font-size:13px;color:var(--dim);line-height:1.45;}
+.co-safe .gly{width:16px;height:16px;flex:0 0 auto;margin-top:1px;}
+.co .sub-cta{margin-top:18px;}
+.co .authalt{display:block;margin:10px auto 0;color:var(--dim);}
+.co-done{text-align:center;padding-top:8px;}
+.co-done .coh{margin:18px 0 8px;font-size:28px;}
+.co-s{font-size:16px;color:var(--dim);line-height:1.45;margin:0 8px 22px;}
+.co-badge{width:84px;height:84px;border-radius:50%;margin:40px auto 0;display:flex;align-items:center;justify-content:center;gap:6px;}
+.co-badge .gly{width:42px;height:42px;stroke-width:2.6;}
+.co-ok{background:var(--tone-ok,#30D158);color:#FFFFFF;}
+:root[data-theme="light"] .co-ok{background:#1A7F37;}
+.co-late{background:#FFC21A;color:#1C1C1E;}
+.co-wait{background:#2C2C2E;}
+:root[data-theme="light"] .co-wait{background:#E5E5EA;}
+.co-dot{width:9px;height:9px;border-radius:50%;background:var(--act,#DC1A22);animation:t42pulse 1.2s infinite;}
+.co-dot:nth-child(2){animation-delay:.2s;} .co-dot:nth-child(3){animation-delay:.4s;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -6081,7 +6127,7 @@ function closeProduct(){ $('pwm').classList.remove('on'); }
    be asked to.                                                             */
 const PAY_CREATE = SUPA_URL + '/functions/v1/pay-create';
 const PAY_STATUS = SUPA_URL + '/functions/v1/pay-status';
-const PAY_CHANNELS = [[1,'FPX','Online banking'],[6,'DuitNow QR','Any bank or eWallet app']];
+const PAY_CHANNELS = [[1,'FPX','Online banking','building'],[6,'DuitNow QR','Any bank or eWallet app','qr']];
 let payChannel = 1, _paySku = null;
 
 function setPayChannel(c){
@@ -6090,39 +6136,66 @@ function setPayChannel(c){
     b.classList.toggle('on', PAY_CHANNELS[i][0] === c));
 }
 
+/* What the buyer is paying for, in words: the name, a line under it, the
+   price, and — for the membership — the dates it covers. */
+function checkoutItem(sku){
+  const sp=SUB_PLANS.filter(x=>x.sku===sku)[0];
+  if(sp){
+    /* The server starts a renewal where the same tier's current one ends;
+       the dates shown here follow the same rule. */
+    const cur=sp.tier==='coach' ? _ent.coachUntil : _ent.plusUntil;
+    const from=liveDate(cur) ? new Date(cur) : new Date(), to=new Date(from);
+    to.setDate(to.getDate()+sp.days);
+    return {name:TIER_INFO[sp.tier].name, line:sp.months+' months · RM'+perMonth(sp)+' a month',
+            price:sp.price, sub:true, from:liveDate(cur)?fmtDate(from):'Today', to:fmtDate(to)};
+  }
+  const sc=SCAN_PRODUCTS.filter(x=>x.sku===sku)[0];
+  if(sc) return {name:sc.name, line:sc.note, price:sc.price};
+  if(sku===BUNDLE_SKU) return {name:'All Access', line:'Every program, yours for good', price:BUNDLE_PRICE};
+  const p=PROGRAMS.filter(x=>'prog_'+x.id===sku)[0];
+  return p ? {name:p.name, line:wks(p.weeks.length)+' program', price:programPrice(p)} : null;
+}
+
 function startCheckout(sku){
-  const item = SCAN_PRODUCTS.filter(x=>x.sku===sku)[0] || SUB_PLANS.filter(x=>x.sku===sku)[0];
-  const price = sku===BUNDLE_SKU ? BUNDLE_PRICE
-              : item ? item.price
-              : (function(){ const p=PROGRAMS.filter(x=>'prog_'+x.id===sku)[0]; return p?programPrice(p):0; })();
-  if(!price) return;
+  const it=checkoutItem(sku);
+  if(!it || !it.price) return;
   if(!sb || !HF.userId) return toast('Sign in first so we can unlock your purchase.');
   _paySku = sku; payChannel = 1;
 
-  $('pw-body').innerHTML=
-    '<div class="pwtop"><button class="pwx" onclick="closeProduct()">✕</button></div>'+
-    '<div class="pwhero"><div class="pwmark">HITFAT<span>+</span></div>'+
-    '<div class="pwh">How would you like to pay?</div>'+
-    '<div class="pws">RM'+price+', once. It unlocks in your account as soon as the payment clears.</div></div>'+
-    '<div class="paychs">'+PAY_CHANNELS.map((c,i)=>
-      '<button class="paych'+(i===0?' on':'')+'" onclick="setPayChannel('+c[0]+')">'+
-      '<b>'+c[1]+'</b><small>'+c[2]+'</small></button>').join('')+'</div>'+
-    '<div class="pwfine" style="text-align:left;margin:14px 0 0;">Secure payment via Bayarcash. '+
-      'We never see your banking details.</div>'+
-    '<button class="bigbtn" id="pay-go" onclick="payNow()">Pay RM'+price+'</button>'+
-    '<button class="authalt" onclick="closeProduct()">Cancel</button>';
-  /* Usually the sheet is already open because openProduct put it there, but
+  /* The Fitness+ purchase sheet: what you are buying, how you pay, one
+     button. The membership can step back to the plans it came from. */
+  let h='<div class="pwtop cotop">'+
+     (it.sub?'<button class="coback" onclick="openPaywall(pwReason)">'+glyph('chevleft')+'Plans</button>':'<span></span>')+
+     '<button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>';
+  h+='<div class="coh">Checkout</div>';
+  h+='<div class="cosum"><div class="co-item"><span class="sub-mark" aria-hidden="true"></span>'+
+     '<div><div class="co-n">'+hesc(it.name)+'</div><div class="co-l">'+hesc(it.line)+'</div></div></div>';
+  if(it.sub) h+='<div class="co-row"><span>Starts</span><b>'+it.from+'</b></div>'+
+                '<div class="co-row"><span>Ends</span><b>'+it.to+'</b></div>'+
+                '<div class="co-row"><span>Renews</span><b>No — one payment</b></div>';
+  h+='<div class="co-row co-tot"><span>Total</span><b>RM'+it.price+'</b></div></div>';
+  h+='<div class="pwq">Pay with</div>';
+  h+='<div class="paychs co-pay">'+PAY_CHANNELS.map((c,i)=>
+     '<button class="paych'+(i===0?' on':'')+'" onclick="setPayChannel('+c[0]+')">'+ic(c[3])+
+     '<span class="co-pn"><b>'+c[1]+'</b><small>'+c[2]+'</small></span><span class="sub-radio"></span></button>').join('')+'</div>';
+  h+='<div class="co-safe">'+glyph('lock')+'<span>Secure payment by Bayarcash. We never see your banking details.</span></div>';
+  h+='<button class="bigbtn sub-cta" id="pay-go" onclick="payNow()">Pay RM'+it.price+'</button>';
+  h+='<button class="authalt" onclick="closeProduct()">Cancel</button>';
+  $('pw-body').innerHTML='<div class="co">'+h+'</div>';
+  /* Usually the sheet is already open because the paywall put it there, but
      checkout can be reached directly — writing into a hidden modal shows the
      buyer nothing at all. */
   $('pwm').classList.add('on');
+  try{ $('pwm').scrollTop=0; }catch(e){}
 }
 
 async function payNow(){
   const sku=_paySku; if(!sku) return;
-  const btn=$('pay-go'); if(btn){ btn.disabled=true; btn.textContent='Opening secure payment…'; }
+  const btn=$('pay-go'), label=btn?btn.textContent:'Pay';
+  if(btn){ btn.disabled=true; btn.textContent='Opening secure payment…'; }
   try{
     const tk=await scanToken();
-    if(!tk){ toast('Sign in first.'); if(btn) btn.disabled=false; return; }
+    if(!tk){ toast('Sign in first.'); if(btn){ btn.disabled=false; btn.textContent=label; } return; }
     const r=await fetch(PAY_CREATE,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk,'apikey':SUPA_KEY},
       body:JSON.stringify({sku, channel:payChannel, name:(HF.data.prefs&&HF.data.prefs.name)||''})});
@@ -6131,7 +6204,7 @@ async function payNow(){
     if(d && d.code==='already_owned'){ toast('You already own this.'); await refreshPurchases(); closeProduct(); return; }
     toast((d&&d.error)||'Could not start payment. Try again.');
   }catch(e){ toast('Could not start payment — check your connection.'); }
-  if(btn){ btn.disabled=false; btn.textContent='Pay'; }
+  if(btn){ btn.disabled=false; btn.textContent=label; }
 }
 
 /* Ask the server what actually settled. The browser never grants itself
@@ -6153,16 +6226,36 @@ async function refreshPurchases(){
    briefly rather than telling the buyer it failed. */
 function awaitPayment(){
   let tries=0;
-  toast('Confirming your payment…');
+  coConfirm('wait');
   const t=setInterval(async ()=>{
     tries++;
     const got=await refreshPurchases();
     if(got || tries>=8){
       clearInterval(t);
-      if(got){ toast('Payment confirmed — welcome to HITFAT+'); try{ renderStore(storeSeg); renderHome(); }catch(e){} }
-      else toast('Not confirmed yet — it will unlock by itself once received.');
+      coConfirm(got?'ok':'late');
+      if(got){ try{ renderStore(storeSeg); renderHome(); }catch(e){} }
     }
   }, 3000);
+}
+
+/* The sheet the buyer comes back to: waiting, confirmed, or not yet. */
+function coConfirm(state){
+  const t=memberTier(), until=memberUntil();
+  const v={
+    wait:['co-wait','Confirming your payment','This usually takes a few seconds. You can keep this open.','',''],
+    ok:['co-ok',(t==='coach'?'Welcome to HITFAT+ Coach':t?'Welcome to HITFAT+':'Payment confirmed'),
+        (until?'Everything is open until '+fmtDate(until)+'.':'Your purchase is unlocked.'),
+        'Start training','closeProduct();switchTab(\'train\')'],
+    late:['co-late','Not confirmed yet','Your bank has not told us yet. It unlocks by itself once it does — nothing to do but wait.',
+        'OK','closeProduct()']
+  }[state];
+  if(!v || !$('pw-body')) return;
+  $('pw-body').innerHTML='<div class="co co-done">'+
+    (state==='wait'?'':'<div class="pwtop cotop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>')+
+    '<div class="co-badge '+v[0]+'">'+(state==='ok'?glyph('check'):state==='late'?glyph('clock'):'<span class="co-dot"></span><span class="co-dot"></span><span class="co-dot"></span>')+'</div>'+
+    '<div class="coh">'+v[1]+'</div><div class="co-s">'+v[2]+'</div>'+
+    (v[3]?'<button class="bigbtn sub-cta" onclick="'+v[4]+'">'+v[3]+'</button>':'')+'</div>';
+  $('pwm').classList.add('on');
 }
 
 /* Runs before auth so the marker survives an OAuth redirect. */
@@ -7828,7 +7921,8 @@ var ICON_PATH={
   medal:   '<circle cx="12" cy="15" r="5"/><path d="M8.5 3.5l2.5 7M15.5 3.5l-2.5 7M12 13v4"/>',
   play:    '<path d="M8 5.5v13l11-6.5z"/>',
   sunrise: '<path d="M3 18h18M6.5 18a5.5 5.5 0 0 1 11 0M12 4.5V8M5 9.5l2 2M19 9.5l-2 2M8.5 21h7"/>',
-  card:    '<rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 14.5h4"/>'
+  card:    '<rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 14.5h4"/>',
+  qr:      '<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z"/><path d="M14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5zM14 19v1M20 14v1"/>'
 };
 
 /* A colour for each kind — Apple's system palette, so the tiles sit
@@ -7846,7 +7940,7 @@ var ICON_TINT={
   person:T_GRA, people:T_GRA, lock:T_GRA, clipboard:T_GRA, pencil:T_GRA, laptop:T_GRA, eyeoff:T_GRA,
   dot:T_GRA, chevleft:T_GRA, measure:T_GRA, scale:T_GRA, doc:T_GRA, chart:T_GRA, compass:T_GRA,
   lab:T_GRA, moon:T_GRA, palette:T_GRA, building:T_GRA, home:T_GRA, chair:T_GRA, mirror:T_GRA,
-  share:T_GRA, card:T_GRA, water:T_GRA, leaf:T_GRA, repeat:T_GRA, bell:T_GRA
+  share:T_GRA, card:T_GRA, qr:T_GRA, water:T_GRA, leaf:T_GRA, repeat:T_GRA, bell:T_GRA
 };
 /* Yellow tiles take a dark glyph; a white one would vanish. */
 var ICON_DARK_GLYPH={bolt:1, trophy:1, star:1, medal:1, key:1, sun:1, sunrise:1, clock:1, check:1, plus:1, food:1, warning:1};

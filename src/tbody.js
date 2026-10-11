@@ -1173,6 +1173,19 @@ noThrow("channel switches",      function(){ setPayChannel(6); });
 ok("switch is remembered",       payChannel===6);
 ok("sheet names Bayarcash",      document.getElementById('pw-body').innerHTML.indexOf('Bayarcash')>0);
 ok("sheet shows the price",      document.getElementById('pw-body').innerHTML.indexOf('RM'+SUB_PLANS[0].price)>0);
+ok("checkout names the plan",   document.getElementById('pw-body').innerHTML.indexOf('12 months')>0);
+ok("checkout says it does not renew", document.getElementById('pw-body').innerHTML.indexOf('No — one payment')>0);
+ok("a renewal starts where the current one ends", (function(){
+    var keep=_ent.plusUntil, d=new Date(Date.now()+30*864e5);
+    _ent.plusUntil=d.toISOString(); var it=checkoutItem('sub_plus_12m'); _ent.plusUntil=keep;
+    return it && it.from===fmtDate(d); })());
+noThrow("coming back: waiting",  function(){ coConfirm('wait'); });
+ok("waiting has no button",      document.getElementById('pw-body').innerHTML.indexOf('bigbtn')<0);
+noThrow("coming back: confirmed", function(){ coConfirm('ok'); });
+ok("confirmed offers to train",  document.getElementById('pw-body').innerHTML.indexOf('Start training')>0);
+noThrow("coming back: not yet",  function(){ coConfirm('late'); });
+ok("not yet says it unlocks itself", document.getElementById('pw-body').innerHTML.indexOf('unlocks by itself')>0);
+startCheckout('sub_plus_12m');
 ok("checkout never sends a price", (function(){
     /* the browser sends a sku and nothing else — a client that can name its
        own price will eventually be asked to */

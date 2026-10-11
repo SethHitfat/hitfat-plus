@@ -70,7 +70,8 @@ var ICON_PATH={
   medal:   '<circle cx="12" cy="15" r="5"/><path d="M8.5 3.5l2.5 7M15.5 3.5l-2.5 7M12 13v4"/>',
   play:    '<path d="M8 5.5v13l11-6.5z"/>',
   sunrise: '<path d="M3 18h18M6.5 18a5.5 5.5 0 0 1 11 0M12 4.5V8M5 9.5l2 2M19 9.5l-2 2M8.5 21h7"/>',
-  card:    '<rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 14.5h4"/>'
+  card:    '<rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 14.5h4"/>',
+  qr:      '<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z"/><path d="M14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5zM14 19v1M20 14v1"/>'
 };
 
 /* A colour for each kind — Apple's system palette, so the tiles sit
@@ -88,7 +89,7 @@ var ICON_TINT={
   person:T_GRA, people:T_GRA, lock:T_GRA, clipboard:T_GRA, pencil:T_GRA, laptop:T_GRA, eyeoff:T_GRA,
   dot:T_GRA, chevleft:T_GRA, measure:T_GRA, scale:T_GRA, doc:T_GRA, chart:T_GRA, compass:T_GRA,
   lab:T_GRA, moon:T_GRA, palette:T_GRA, building:T_GRA, home:T_GRA, chair:T_GRA, mirror:T_GRA,
-  share:T_GRA, card:T_GRA, water:T_GRA, leaf:T_GRA, repeat:T_GRA, bell:T_GRA
+  share:T_GRA, card:T_GRA, qr:T_GRA, water:T_GRA, leaf:T_GRA, repeat:T_GRA, bell:T_GRA
 };
 /* Yellow tiles take a dark glyph; a white one would vanish. */
 var ICON_DARK_GLYPH={bolt:1, trophy:1, star:1, medal:1, key:1, sun:1, sunrise:1, clock:1, check:1, plus:1, food:1, warning:1};

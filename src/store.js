@@ -379,7 +379,7 @@ function closeProduct(){ $('pwm').classList.remove('on'); }
    be asked to.                                                             */
 const PAY_CREATE = SUPA_URL + '/functions/v1/pay-create';
 const PAY_STATUS = SUPA_URL + '/functions/v1/pay-status';
-const PAY_CHANNELS = [[1,'FPX','Online banking'],[6,'DuitNow QR','Any bank or eWallet app']];
+const PAY_CHANNELS = [[1,'FPX','Online banking','building'],[6,'DuitNow QR','Any bank or eWallet app','qr']];
 let payChannel = 1, _paySku = null;
 
 function setPayChannel(c){
@@ -388,39 +388,66 @@ function setPayChannel(c){
     b.classList.toggle('on', PAY_CHANNELS[i][0] === c));
 }
 
+/* What the buyer is paying for, in words: the name, a line under it, the
+   price, and — for the membership — the dates it covers. */
+function checkoutItem(sku){
+  const sp=SUB_PLANS.filter(x=>x.sku===sku)[0];
+  if(sp){
+    /* The server starts a renewal where the same tier's current one ends;
+       the dates shown here follow the same rule. */
+    const cur=sp.tier==='coach' ? _ent.coachUntil : _ent.plusUntil;
+    const from=liveDate(cur) ? new Date(cur) : new Date(), to=new Date(from);
+    to.setDate(to.getDate()+sp.days);
+    return {name:TIER_INFO[sp.tier].name, line:sp.months+' months · RM'+perMonth(sp)+' a month',
+            price:sp.price, sub:true, from:liveDate(cur)?fmtDate(from):'Today', to:fmtDate(to)};
+  }
+  const sc=SCAN_PRODUCTS.filter(x=>x.sku===sku)[0];
+  if(sc) return {name:sc.name, line:sc.note, price:sc.price};
+  if(sku===BUNDLE_SKU) return {name:'All Access', line:'Every program, yours for good', price:BUNDLE_PRICE};
+  const p=PROGRAMS.filter(x=>'prog_'+x.id===sku)[0];
+  return p ? {name:p.name, line:wks(p.weeks.length)+' program', price:programPrice(p)} : null;
+}
+
 function startCheckout(sku){
-  const item = SCAN_PRODUCTS.filter(x=>x.sku===sku)[0] || SUB_PLANS.filter(x=>x.sku===sku)[0];
-  const price = sku===BUNDLE_SKU ? BUNDLE_PRICE
-              : item ? item.price
-              : (function(){ const p=PROGRAMS.filter(x=>'prog_'+x.id===sku)[0]; return p?programPrice(p):0; })();
-  if(!price) return;
+  const it=checkoutItem(sku);
+  if(!it || !it.price) return;
   if(!sb || !HF.userId) return toast('Sign in first so we can unlock your purchase.');
   _paySku = sku; payChannel = 1;
 
-  $('pw-body').innerHTML=
-    '<div class="pwtop"><button class="pwx" onclick="closeProduct()">✕</button></div>'+
-    '<div class="pwhero"><div class="pwmark">HITFAT<span>+</span></div>'+
-    '<div class="pwh">How would you like to pay?</div>'+
-    '<div class="pws">RM'+price+', once. It unlocks in your account as soon as the payment clears.</div></div>'+
-    '<div class="paychs">'+PAY_CHANNELS.map((c,i)=>
-      '<button class="paych'+(i===0?' on':'')+'" onclick="setPayChannel('+c[0]+')">'+
-      '<b>'+c[1]+'</b><small>'+c[2]+'</small></button>').join('')+'</div>'+
-    '<div class="pwfine" style="text-align:left;margin:14px 0 0;">Secure payment via Bayarcash. '+
-      'We never see your banking details.</div>'+
-    '<button class="bigbtn" id="pay-go" onclick="payNow()">Pay RM'+price+'</button>'+
-    '<button class="authalt" onclick="closeProduct()">Cancel</button>';
-  /* Usually the sheet is already open because openProduct put it there, but
+  /* The Fitness+ purchase sheet: what you are buying, how you pay, one
+     button. The membership can step back to the plans it came from. */
+  let h='<div class="pwtop cotop">'+
+     (it.sub?'<button class="coback" onclick="openPaywall(pwReason)">'+glyph('chevleft')+'Plans</button>':'<span></span>')+
+     '<button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>';
+  h+='<div class="coh">Checkout</div>';
+  h+='<div class="cosum"><div class="co-item"><span class="sub-mark" aria-hidden="true"></span>'+
+     '<div><div class="co-n">'+hesc(it.name)+'</div><div class="co-l">'+hesc(it.line)+'</div></div></div>';
+  if(it.sub) h+='<div class="co-row"><span>Starts</span><b>'+it.from+'</b></div>'+
+                '<div class="co-row"><span>Ends</span><b>'+it.to+'</b></div>'+
+                '<div class="co-row"><span>Renews</span><b>No — one payment</b></div>';
+  h+='<div class="co-row co-tot"><span>Total</span><b>RM'+it.price+'</b></div></div>';
+  h+='<div class="pwq">Pay with</div>';
+  h+='<div class="paychs co-pay">'+PAY_CHANNELS.map((c,i)=>
+     '<button class="paych'+(i===0?' on':'')+'" onclick="setPayChannel('+c[0]+')">'+ic(c[3])+
+     '<span class="co-pn"><b>'+c[1]+'</b><small>'+c[2]+'</small></span><span class="sub-radio"></span></button>').join('')+'</div>';
+  h+='<div class="co-safe">'+glyph('lock')+'<span>Secure payment by Bayarcash. We never see your banking details.</span></div>';
+  h+='<button class="bigbtn sub-cta" id="pay-go" onclick="payNow()">Pay RM'+it.price+'</button>';
+  h+='<button class="authalt" onclick="closeProduct()">Cancel</button>';
+  $('pw-body').innerHTML='<div class="co">'+h+'</div>';
+  /* Usually the sheet is already open because the paywall put it there, but
      checkout can be reached directly — writing into a hidden modal shows the
      buyer nothing at all. */
   $('pwm').classList.add('on');
+  try{ $('pwm').scrollTop=0; }catch(e){}
 }
 
 async function payNow(){
   const sku=_paySku; if(!sku) return;
-  const btn=$('pay-go'); if(btn){ btn.disabled=true; btn.textContent='Opening secure payment…'; }
+  const btn=$('pay-go'), label=btn?btn.textContent:'Pay';
+  if(btn){ btn.disabled=true; btn.textContent='Opening secure payment…'; }
   try{
     const tk=await scanToken();
-    if(!tk){ toast('Sign in first.'); if(btn) btn.disabled=false; return; }
+    if(!tk){ toast('Sign in first.'); if(btn){ btn.disabled=false; btn.textContent=label; } return; }
     const r=await fetch(PAY_CREATE,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk,'apikey':SUPA_KEY},
       body:JSON.stringify({sku, channel:payChannel, name:(HF.data.prefs&&HF.data.prefs.name)||''})});
@@ -429,7 +456,7 @@ async function payNow(){
     if(d && d.code==='already_owned'){ toast('You already own this.'); await refreshPurchases(); closeProduct(); return; }
     toast((d&&d.error)||'Could not start payment. Try again.');
   }catch(e){ toast('Could not start payment — check your connection.'); }
-  if(btn){ btn.disabled=false; btn.textContent='Pay'; }
+  if(btn){ btn.disabled=false; btn.textContent=label; }
 }
 
 /* Ask the server what actually settled. The browser never grants itself
@@ -451,16 +478,36 @@ async function refreshPurchases(){
    briefly rather than telling the buyer it failed. */
 function awaitPayment(){
   let tries=0;
-  toast('Confirming your payment…');
+  coConfirm('wait');
   const t=setInterval(async ()=>{
     tries++;
     const got=await refreshPurchases();
     if(got || tries>=8){
       clearInterval(t);
-      if(got){ toast('Payment confirmed — welcome to HITFAT+'); try{ renderStore(storeSeg); renderHome(); }catch(e){} }
-      else toast('Not confirmed yet — it will unlock by itself once received.');
+      coConfirm(got?'ok':'late');
+      if(got){ try{ renderStore(storeSeg); renderHome(); }catch(e){} }
     }
   }, 3000);
+}
+
+/* The sheet the buyer comes back to: waiting, confirmed, or not yet. */
+function coConfirm(state){
+  const t=memberTier(), until=memberUntil();
+  const v={
+    wait:['co-wait','Confirming your payment','This usually takes a few seconds. You can keep this open.','',''],
+    ok:['co-ok',(t==='coach'?'Welcome to HITFAT+ Coach':t?'Welcome to HITFAT+':'Payment confirmed'),
+        (until?'Everything is open until '+fmtDate(until)+'.':'Your purchase is unlocked.'),
+        'Start training','closeProduct();switchTab(\'train\')'],
+    late:['co-late','Not confirmed yet','Your bank has not told us yet. It unlocks by itself once it does — nothing to do but wait.',
+        'OK','closeProduct()']
+  }[state];
+  if(!v || !$('pw-body')) return;
+  $('pw-body').innerHTML='<div class="co co-done">'+
+    (state==='wait'?'':'<div class="pwtop cotop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>')+
+    '<div class="co-badge '+v[0]+'">'+(state==='ok'?glyph('check'):state==='late'?glyph('clock'):'<span class="co-dot"></span><span class="co-dot"></span><span class="co-dot"></span>')+'</div>'+
+    '<div class="coh">'+v[1]+'</div><div class="co-s">'+v[2]+'</div>'+
+    (v[3]?'<button class="bigbtn sub-cta" onclick="'+v[4]+'">'+v[3]+'</button>':'')+'</div>';
+  $('pwm').classList.add('on');
 }
 
 /* Runs before auth so the marker survives an OAuth redirect. */
