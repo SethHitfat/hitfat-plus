@@ -156,7 +156,11 @@ function t42InTrain(){
 function renderTrain(){
   if(trSeg==='t42'){ trSeg='foryou'; if(typeof openT42==='function') openT42(); return; }
   const segs=(t42InTrain()?[['t42','T42']]:[]).concat(TR_SEGS);
-  $('tr-segs').innerHTML='<div class="segs">'+segs.map(s=>
+  /* The large title over the pills, as Fitness+ puts its name over For You,
+     Explore, Plans and Library — the date small above it, as every tab has. */
+  const dl=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
+  $('tr-segs').innerHTML='<div class="hsum"><div class="hsum-l"><div class="k">'+dl+'</div><div class="t">Train</div></div></div>'+
+    '<div class="segs">'+segs.map(s=>
     '<button class="seg'+(trSeg===s[0]?' on':'')+'" onclick="setTrSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
   if(trSeg==='store'){ openStore('programs'); return; }
   if(trSeg==='bar' && BAR_ENABLED) return trBar();

@@ -417,6 +417,8 @@ delete HF.data.sessions['sig1-d0'];
 noThrow("equipment still filters the exercise library", function(){ openLibrary('Bodyweight'); });
 ok("segment pills render", document.getElementById('tr-segs').innerHTML.indexOf('seg on')>0 ||
                            document.getElementById('tr-segs').innerHTML.indexOf('seg')>0);
+ok("Train has a large title over the pills, like every tab", document.getElementById('tr-segs').innerHTML.indexOf('class="t">Train<')>0 &&
+   document.getElementById('tr-segs').innerHTML.indexOf('hsum')<document.getElementById('tr-segs').innerHTML.indexOf('class="segs"'));
 
 print("\n── NO REPEATED CARDS (the Hybrid Explore fault) ──");
 function _ids(h){ var o=[],re=/openProgram\(.([a-z0-9]+)./g,m; while((m=re.exec(h))) o.push(m[1]); return o; }
