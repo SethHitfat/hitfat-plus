@@ -84,7 +84,7 @@ function monthlyCard(){
   const p=challengeProgress(), left=daysLeftInMonth();
   return '<div class="mcard" onclick="openMonthly()">'+
     '<div class="mtop"><span class="me">'+glyph(p.c.e)+'</span>'+
-    '<span class="mtag">'+monthName().toUpperCase()+' CHALLENGE</span></div>'+
+    '<span class="mtag">'+monthName()+' Challenge</span></div>'+
     '<div class="mn">'+p.c.n+'</div>'+
     '<div class="mbar"><i style="width:'+p.pct+'%"></i></div>'+
     '<div class="mrow"><span>'+p.done+' of '+p.target+' days</span>'+

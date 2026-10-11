@@ -344,7 +344,7 @@ var _pp=trainingPlans().filter(function(p){ return p.id!=='custom'; })[0];
 HF.data.progress={}; HF.data.progress[_pp.id]=2;
 setTrSeg('foryou'); _fy=document.getElementById('tr-body').innerHTML;
 ok("a member does not see the join card", _fy.indexOf('fyjoin')<0);
-ok("a member with a plan sees Your Plan", _fy.indexOf('Your Plan')>0 && _fy.indexOf('UP NEXT')>0);
+ok("a member with a plan sees Your Plan", _fy.indexOf('Your Plan')>0 && _fy.indexOf('Up Next')>0);
 ok("...and its next day starts from here", _fy.indexOf("openDay('"+_pp.id+"',"+nextSession(_pp)+")")>0);
 ok("short sessions in columns", _fy.indexOf('Quick Workouts')>0 && _fy.indexOf('fwcol')>0);
 HF.data.progress={}; setTrSeg('foryou'); _fy=document.getElementById('tr-body').innerHTML;

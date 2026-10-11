@@ -1139,7 +1139,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 
 /* the glass pill with the lime label: Plan Preview, Build Your Own */
 .fglass{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:18px;padding:14px;
-  border:none;border-radius:16px;cursor:pointer;font-size:16px;font-weight:600;
+  border:none;border-radius:99px;cursor:pointer;font-size:16px;font-weight:600;
   background:rgba(0,0,0,.34);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#FFFFFF;}
 .fglass .gly{width:17px;height:17px;stroke:currentColor;}
 .fglass:active{opacity:.7;}
@@ -1232,7 +1232,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fyplan{min-height:0;}
 .fyplan .pb{margin-top:10px;}
 .fyplan-next{margin-top:16px;padding:12px 14px;border-radius:14px;background:rgba(0,0,0,.28);}
-.fyplan-next .k{font-size:11px;font-weight:700;letter-spacing:.8px;color:#FFFFFF;opacity:.9;}
+.fyplan-next .k{font-size:13px;font-weight:600;color:rgba(255,255,255,.82);}
 .fyplan-next .n{font-size:17px;font-weight:700;color:#FFFFFF;margin-top:3px;}
 .fyplan-next .m{font-size:13px;color:rgba(255,255,255,.78);margin-top:2px;}
 .fyplan .bigbtn{margin:12px 0 0;display:flex;align-items:center;justify-content:center;gap:8px;}
@@ -1673,3 +1673,6 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 #eat .obgrid .obtile.on{box-shadow:inset 0 0 0 2px var(--lime);}
 .esave{margin-top:22px;border-radius:99px;}
 :root[data-theme="light"] #eat .obgrid .obtile.on, #eat .obgrid .obtile.on{box-shadow:inset 0 0 0 2px var(--lime);}
+
+/* The month's challenge: its kicker in sentence case like every other card. */
+.mcard .mtag{font-size:15px;font-weight:700;letter-spacing:0;}

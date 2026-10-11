@@ -208,7 +208,7 @@ function fyPlanCard(p){
     '<div class="t">'+p.name+'</div>'+
     '<div class="s">'+(at?'Week '+at.week+' · ':'')+'Day '+Math.min(done+1,tot)+' of '+tot+'</div>'+
     '<div class="pb"><i style="width:'+Math.round(done/tot*100)+'%"></i></div>'+
-    (at?'<div class="fyplan-next"><div class="k">UP NEXT</div><div class="n">'+(at.day.name||'Workout')+'</div>'+
+    (at?'<div class="fyplan-next"><div class="k">Up Next</div><div class="n">'+(at.day.name||'Workout')+'</div>'+
         '<div class="m">'+(at.day.ex?at.day.ex.length:0)+' exercises · '+p.dur+' min</div></div>'+
         '<button class="bigbtn" onclick="openDay(\''+p.id+'\','+gi+')">'+glyph('play')+'Start Day '+(gi+1)+'</button>'
       :'<div class="fyplan-next"><div class="n">Every day done.</div></div>')+

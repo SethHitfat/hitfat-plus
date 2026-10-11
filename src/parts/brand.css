@@ -57,9 +57,9 @@
 
 /* ── the one action: lime, black label ── */
 :root:not([data-theme="light"]) .bigbtn:not(.sec):not(.t42-stage-cta){
-  background:var(--act);color:#FFFFFF !important;border:none;border-radius:14px;font-weight:700;box-shadow:none;}
+  background:var(--act);color:#FFFFFF !important;border:none;border-radius:99px;font-weight:700;box-shadow:none;}
 :root:not([data-theme="light"]) .bigbtn:not(.sec):active{transform:scale(.985);opacity:.9;}
-:root:not([data-theme="light"]) .bigbtn.sec{background:#2C2C2E;color:var(--lime) !important;border:none;border-radius:14px;}
+:root:not([data-theme="light"]) .bigbtn.sec{background:#2C2C2E;color:var(--lime) !important;border:none;border-radius:99px;}
 /* inside T42 the action is red, like its posters */
 :root:not([data-theme="light"]) #t42 .bigbtn:not(.sec):not(.t42-stage-cta){background:var(--one-red);color:#FFFFFF !important;}
 :root:not([data-theme="light"]) #t42 .bigbtn.sec{color:#FFFFFF !important;}
@@ -143,8 +143,8 @@
 
 /* the action: lime with a black label, flat */
 :root[data-theme="light"] .bigbtn:not(.sec):not(.t42-stage-cta){background:#C21A14;color:#FFFFFF !important;
-  border:none;border-radius:14px;font-weight:700;box-shadow:none;}
-:root[data-theme="light"] .bigbtn.sec{background:#E9E9EE;color:#C21A14 !important;border:none;border-radius:14px;box-shadow:none;}
+  border:none;border-radius:99px;font-weight:700;box-shadow:none;}
+:root[data-theme="light"] .bigbtn.sec{background:#E9E9EE;color:#C21A14 !important;border:none;border-radius:99px;box-shadow:none;}
 :root[data-theme="light"] #t42 .bigbtn:not(.sec):not(.t42-stage-cta){background:#C21A14;color:#FFFFFF !important;}
 :root[data-theme="light"] #t42 .bigbtn.sec{color:#000000 !important;}
 :root[data-theme="light"] .pdx-prev{color:#C21A14;}
