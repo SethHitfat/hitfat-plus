@@ -563,18 +563,23 @@ function barCard(p,showProgress){
    Not treatment, and the notice below says so once rather than hedging in
    every description. */
 /* Coming soon: what is on the way, nothing that opens. */
+/* Coming soon, as Fitness+ would put it: a poster in the recovery colour
+   (HITFAT's yellow) with the promise on it, then what is on the way as
+   Fitness+ lists a series — each one marked Soon, none of them opening. */
 function trRecoverySoon(){
-  let h='<div class="ecta rc-soon" style="background:'+egrad('#0f1f22','#07090a','#38bdf8')+';">'+
-     '<span class="soon-pill">Coming soon</span>'+
-     '<div class="ic">'+glyph('leaf')+'</div><div class="t">Recovery &amp; prehab</div>'+
+  let h='<div class="rcpost">'+
+     '<span class="rcpost-pill">Coming Soon</span>'+
+     '<div class="rcpost-ic" aria-hidden="true">'+glyph('leaf')+'</div>'+
+     '<div class="t">Recovery &amp; Prehab</div>'+
      '<div class="s">Joint-by-joint programs for knees, shoulders, hips and the back a desk gives you. '+
-     'We are filming every movement now — they open here when the videos are ready.</div></div>';
-  h+=fsec('What is coming',REHAB_PLANS.length+' programs');
-  h+=REHAB_PLANS.map(p=>
-    '<div class="frow soon"><div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name)+'"></div>'+
+     'We are filming every movement now — they open here when the videos are ready.</div>'+
+     '<div class="m">'+REHAB_PLANS.length+' programs · '+REHAB_PLANS.reduce((t,p)=>t+progDays(p),0)+' sessions</div></div>';
+  h+=fsec('What Is Coming',REHAB_PLANS.length+' programs, filming now.');
+  h+='<div class="pdx-eps">'+REHAB_PLANS.map(p=>
+    '<div class="fwr pdx-ep soon"><div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name)+'"></div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+wks(p.weeks.length)+' · '+progDays(p)+' days</div></div>'+
-    '<span class="soon-tag">Soon</span></div>').join('');
+    '<div class="m">'+wks(p.weeks.length)+' · '+progDays(p)+' days</div>'+
+    '<span class="soon-tag">Soon</span></div></div>').join('')+'</div>';
   $('tr-body').innerHTML=h;
 }
 

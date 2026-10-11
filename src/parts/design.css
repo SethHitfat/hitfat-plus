@@ -1686,3 +1686,21 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 #t42 .t42-stat-v.t42-tone-r, .t42-stat-v.t42-tone-r{color:var(--lime);}
 #t42 .t42-stat-v.t42-tone-y, .t42-stat-v.t42-tone-y{color:var(--yel-t);}
 #t42 .t42-jlab span{color:rgba(255,255,255,.58);}
+
+/* ═══════════════════════════════════════════════════════════════
+   RECOVERY, coming soon: a poster in the recovery yellow
+   ═══════════════════════════════════════════════════════════════ */
+.rcpost{position:relative;overflow:hidden;border-radius:22px;padding:20px;margin-top:4px;min-height:220px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  background:radial-gradient(120% 110% at 100% 0%,rgba(255,214,102,.55) 0%,transparent 55%),
+             linear-gradient(135deg,#17130A 0%,#4A3810 46%,#A07A12 78%,#E2B53C 100%);}
+.rcpost-pill{position:absolute;top:16px;left:16px;font-size:13px;font-weight:700;padding:6px 12px;border-radius:99px;
+  background:rgba(0,0,0,.42);color:#FFC93C;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
+.rcpost-ic{position:absolute;top:10px;right:6px;opacity:.22;}
+.rcpost-ic .gly{width:120px;height:120px;color:#FFFFFF;stroke-width:1.2;}
+.rcpost .t{font-size:28px;font-weight:800;letter-spacing:-.6px;color:#FFFFFF;line-height:1.1;margin-top:56px;}
+.rcpost .s{font-size:15px;color:rgba(255,255,255,.86);line-height:1.45;margin-top:8px;max-width:94%;}
+.rcpost .m{font-size:13px;font-weight:700;color:#FFFFFF;margin-top:12px;}
+.pdx-ep.soon{cursor:default;}
+.pdx-ep.soon .th{filter:saturate(.6);opacity:.85;}
+.pdx-ep.soon .soon-tag{display:inline-block;margin:8px 0 0;background:rgba(255,194,26,.16);color:var(--yel-t);}

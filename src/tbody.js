@@ -454,7 +454,7 @@ ok("Recovery is off until filmed",       RECOVERY_LIVE===false);
 ok("...so no recovery program is listed", PROGRAMS.filter(isRehabProgram).length===0);
 noThrow("the Recovery tab renders",      function(){ setTrSeg('recovery'); });
 var _rs=document.getElementById('tr-body').innerHTML;
-ok("...as Coming soon",                  _rs.indexOf('Coming soon')>0 && _rs.indexOf('soon-tag')>0);
+ok("...as Coming Soon",                  _rs.indexOf('Coming Soon')>0 && _rs.indexOf('soon-tag')>0);
 ok("...naming what is on the way",       REHAB_PLANS.every(function(p){ return _rs.indexOf(p.name)>0; }));
 ok("...and nothing in it opens",         _rs.indexOf('openProgram(')<0 && _rs.indexOf('openJoint(')<0);
 openActivity('Recovery');
