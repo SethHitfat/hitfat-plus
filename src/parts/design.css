@@ -1727,3 +1727,10 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .librow.soon:active{background:none;}
 .librow.soon .t{color:var(--dim);}
 .librow .soon-tag{background:rgba(255,194,26,.16);color:var(--yel-t);}
+/* the reminder the paywall promises: two weeks before a membership ends */
+.renew{border-radius:22px;padding:18px;margin-bottom:6px;
+  background:radial-gradient(120% 100% at 100% 0%,rgba(255,194,26,.30),transparent 60%),#1C1C1E;}
+.renew-k{font-size:15px;font-weight:700;color:#FFC93C;}
+.renew-t{font-size:22px;font-weight:800;letter-spacing:-.4px;color:#FFFFFF;margin-top:4px;line-height:1.15;}
+.renew-s{font-size:14px;color:rgba(255,255,255,.72);margin-top:6px;line-height:1.45;}
+.renew .bigbtn{margin:14px 0 0;}

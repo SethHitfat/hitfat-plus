@@ -3259,5 +3259,19 @@ ok("a program missing a video does not open", (function(){
     openProgram('zz-test'); toast=t0; PROGRAMS.pop();
     return said.indexOf('coming soon')>0 && document.getElementById('progdetail').style.display==='none'; })());
 
+print("\n── THE RENEWAL REMINDER ──");
+(function(){
+  var keep={p:_ent.plusUntil,c:_ent.coachUntil};
+  _ent.coachUntil=null; _ent.plusUntil=new Date(Date.now()+60*864e5).toISOString();
+  ok("no reminder two months out", renewCard()==='');
+  _ent.plusUntil=new Date(Date.now()+10*864e5).toISOString();
+  ok("a reminder ten days out", renewCard().indexOf('Ends in 10 days')>0 && renewCard().indexOf('openStore()')>0);
+  _ent.plusUntil=new Date(Date.now()+3*3600e3).toISOString();
+  ok("...and on the last day", renewCard().indexOf('Ends today')>0);
+  _ent.plusUntil=new Date(Date.now()-864e5).toISOString();
+  ok("none once it has ended", renewCard()==='');
+  _ent.plusUntil=keep.p; _ent.coachUntil=keep.c;
+})();
+
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

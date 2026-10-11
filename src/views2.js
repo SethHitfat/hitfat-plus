@@ -201,6 +201,20 @@ function ringsSVG(vals,size){
       (v>0?'<path d="'+ringArc(c,c,rs[i],v)+'" fill="none" style="stroke:'+cols[i]+'" stroke-width="'+w+'" stroke-linecap="round"/>':'')).join('')+
     '</svg>';
 }
+/* The paywall promises a reminder before a membership ends, and nothing
+   renews by itself — so this is that reminder: a card on Home from two
+   weeks out, and on the last day, until it is renewed or has ended. */
+function renewCard(){
+  if(typeof memberUntil!=='function') return '';
+  const until=memberUntil(); if(!until) return '';            // All Access never ends
+  const ms=new Date(until)-new Date(), days=Math.ceil(ms/864e5);
+  if(!(ms>0) || days>14) return '';
+  const tier=memberTier()==='coach'?'HITFAT+ Coach':'HITFAT+';
+  return '<div class="renew"><div class="renew-k">'+(days<=1?'Ends today':'Ends in '+days+' days')+'</div>'+
+    '<div class="renew-t">Your '+tier+' ends on '+fmtDate(until)+'</div>'+
+    '<div class="renew-s">It does not renew by itself. Renew now and the new months start from that date, so none are lost.</div>'+
+    '<button class="bigbtn" onclick="openStore()">Renew</button></div>';
+}
 function renderHome(){
   const nm=((HF.data.prefs&&HF.data.prefs.name)||'').trim();
   const streak=liveStreak();
@@ -226,7 +240,7 @@ function renderHome(){
   }).join('')+'</div>';
 
   // 3) membership, then T42
-  if($('home-t42')) $('home-t42').innerHTML=(contentOpen()?'':fyJoinCard())+
+  if($('home-t42')) $('home-t42').innerHTML=(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
   // 4) Up Next — the plan in progress, or the way to pick one
