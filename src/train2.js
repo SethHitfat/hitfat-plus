@@ -24,7 +24,7 @@ function metaOf(p){ return p.weeks ? (p.weeks.length+' wk · '+p.level) : (p.dur
 /* landscape card — image on top, title and meta UNDER it (the sampler pattern) */
 function flandCard(p,badge){
   return '<div class="fland" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="im" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';background-position:50% 18%':'')+'">'+(badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
+    '<div class="im" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.wide):'')+'">'+(badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="t">'+p.name+'</div><div class="m">'+metaOf(p)+'</div></div>';
 }
 /* tall activity tile — photo with a light label bar across the bottom */
@@ -36,7 +36,7 @@ function factCard(a){
 /* big program card — title over the image */
 function fbigCard(p){
   const sub = p.weeks ? wks(p.weeks.length).replace(/^\w/,c=>c.toUpperCase())+' of '+(p.goal||'training').toLowerCase() : p.level;
-  return '<div class="fbig" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';background-position:50% 18%':'')+'">'+
+  return '<div class="fbig" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.poster):'')+'">'+
     '<div class="ov"></div>'+lockTag(p)+'<div class="in"><div class="t">'+p.name+'</div>'+
     '<div class="s">'+sub+'</div></div>'+
     '<div class="m">'+(p.weeks?planSessions(p)+' WORKOUTS':p.dur+' MIN')+'</div></div>';
@@ -193,11 +193,11 @@ function fqCard(){
    the button that starts it. Then what suits them, short sessions, and the
    programs most people start with. */
 function fyJoinCard(){
-  const pics=[]; trainingPlans().concat(PROGRAMS.filter(p=>!p.weeks)).forEach(p=>{
-    const u=progImg(p); if(pics.indexOf(u)<0) pics.push(u); });
+  const pics=[], seen=[]; trainingPlans().concat(PROGRAMS.filter(p=>!p.weeks)).forEach(p=>{
+    const u=progImg(p); if(seen.indexOf(u)<0){ seen.push(u); pics.push({u,p}); } });
   const m=(SUB_PLANS[0].price/12).toFixed(2);
-  return '<div class="fyjoin"><div class="fyjoin-grid">'+pics.slice(0,6).map((u,i)=>
-      '<div style="background-image:url(\''+u+'\')"></div>').join('')+'</div>'+
+  return '<div class="fyjoin"><div class="fyjoin-grid">'+pics.slice(0,6).map(x=>
+      '<div style="background-image:url(\''+x.u+'\');'+imgPos(x.p,FA.join)+'"></div>').join('')+'</div>'+
     '<div class="fyjoin-b"><div class="t">Join HITFAT+</div>'+
     '<div class="s">Every program, meal plan and AI meal scan — designed for all levels.</div>'+
     '<button class="bigbtn" onclick="openPaywall()">See Membership</button>'+
@@ -310,7 +310,7 @@ function ncard(p,rank){
   const done=progDone(p.id), tot=progDays(p), pct=tot?Math.round(done/tot*100):0;
   return '<div class="ncard'+(rank?' ranked':'')+'" onclick="openProgram(\''+p.id+'\')">'+
     (rank?'<div class="rk">'+rank+'</div>':'')+
-    '<div class="im" style="background-image:url(\''+progImg(p)+'\')">'+
+    '<div class="im" style="background-image:url(\''+progImg(p)+'\');'+imgPos(p,FA.tall)+'">'+
       '<div class="ov"></div>'+lockTag(p)+
       '<div class="ic">'+glyph((p.icon||''))+'</div>'+
       (done>0?'<div class="pb"><i style="width:'+pct+'%"></i></div>':'')+

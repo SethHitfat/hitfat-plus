@@ -3229,5 +3229,15 @@ ok("...as posters, every collection", document.getElementById('lib-body').innerH
 noThrow("a collection opens", function(){ openProgram(CHALLENGES[0].id); });
 ok("its days do not say Day n twice", document.getElementById('pgd-body').innerHTML.indexOf('>Day 2</div><div class="m">Day 2')<0);
 
+print("\n── PICTURES ARE FRAMED ON THE PERSON ──");
+ok("every picture has a focal point", Array.from(PHOTO).every(function(id){ return !!FOCAL[id]; }));
+function _pos(id,fa){ var m=imgPos({id:id},fa).match(/([\d.]+)% ([\d.]+)%/); return m?[+m[1],+m[2]]:null; }
+ok("a tall picture in a wide card keeps the face near the top", _pos('kb3',FA.wide)[0]===50 && _pos('kb3',FA.wide)[1]<10);
+ok("a square picture in a tall poster takes the slice with the body", _pos('m2',FA.tall)[1]===50 && _pos('m2',FA.tall)[0]<50);
+ok("positions never leave 0–100%", Array.from(PHOTO).every(function(id){
+    return [FA.wide,FA.row,FA.poster,FA.hero,FA.tall,FA.join].every(function(fa){
+      var m=imgPos({id:id},fa).match(/([\d.]+)% ([\d.]+)%/); return m && +m[1]>=0 && +m[1]<=100 && +m[2]>=0 && +m[2]<=100; }); }));
+ok("a program with no picture of its own is untouched", imgPos({id:'p1'},FA.wide)==='');
+
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

@@ -55,6 +55,39 @@ const PHOTO=new Set(['sig1','sig2','sig3','sig4','fl30','lad4','men6','f40','cor
                      'kb1','kb2','kb3','db1','db2','db3','ch1','tw1','tw2','p4','p6','p7','p9','p10','p11','p12',
                      'p13','p14','p16','p17','p18','p19','p22','p23','p24','p25','p26','p29','p31','rh5']);
 function hasPhoto(p){ return !!(p && PHOTO.has(p.id)); }
+/* Where the person is in each picture: x is the middle of the body, y the
+   face (or the middle of the body when it lies flat), both in %, then the
+   picture's width/height. A picture is cropped differently in every frame
+   — a wide card shows a third of a tall picture, a tall poster nearly all
+   of it — so the position is worked out per frame: the face sits a third
+   of the way down, the body across the middle, never past an edge. */
+const FOCAL={
+  am21:[55,17,1], bws8:[55,48,1], ch1:[50,18,0.593], ch2:[57,16,0.667], core14:[55,32,1],
+  db1:[45,30,0.593], db2:[47,16,0.593], db3:[47,12,0.593], f40:[45,12,1], fl30:[50,12,1],
+  hiit4:[50,22,1], kb1:[50,15,0.593], kb2:[45,10,0.593], kb3:[50,7,0.593], lad4:[52,15,1],
+  m1:[52,12,1], m2:[40,14,1], m3:[55,25,1], mch:[57,15,1], mdb:[50,28,1],
+  men6:[50,13,1], min3:[48,15,1], mkb:[50,10,1], p10:[45,20,0.593], p11:[50,10,0.593],
+  p12:[50,18,0.593], p13:[45,24,0.593], p14:[50,13,0.593], p16:[55,18,0.593], p17:[50,50,0.593],
+  p18:[47,12,0.593], p19:[50,18,0.593], p22:[45,12,0.593], p23:[55,22,0.593], p24:[50,22,0.593],
+  p25:[50,8,0.593], p26:[40,22,0.593], p29:[50,10,0.593], p31:[45,12,0.593], p4:[48,10,0.593],
+  p6:[50,22,0.593], p7:[45,34,0.593], p9:[55,36,0.593], reset12:[48,13,1], rh5:[47,18,0.593],
+  sig1:[47,13,1], sig2:[48,20,1], sig3:[47,15,1], sig4:[48,10,1], tw1:[55,15,0.593],
+  tw2:[60,44,0.593]
+};
+const FA={wide:1.77, row:1.65, poster:1.5, hero:0.87, tall:0.67, join:0.6};
+function imgPos(p,frame){
+  const f=hasPhoto(p)&&FOCAL[p.id]; if(!f) return '';
+  const fx=f[0]/100, fy=f[1]/100, ar=f[2], fa=frame||FA.row;
+  let px=50, py=50;
+  if(fa>ar){                         // wider than the picture: choose the band
+    const v=ar/fa, top=Math.min(Math.max(fy-0.33*v,0),1-v);
+    py=(1-v)>0.001 ? top/(1-v)*100 : 50; px=50;
+  } else {                           // narrower: choose the slice
+    const h=fa/ar, left=Math.min(Math.max(fx-0.5*h,0),1-h);
+    px=(1-h)>0.001 ? left/(1-h)*100 : 50; py=50;
+  }
+  return 'background-position:'+px.toFixed(1)+'% '+py.toFixed(1)+'%;';
+}
 function progImg(p){
   if(hasPhoto(p)) return '/img/p/'+p.id+'.jpg';
   const n=(p&&p.name)||'', g=(p&&p.goal)||'';
@@ -100,7 +133,7 @@ function frow(p,badge){
    repeating the identical thumbnail five times in a column. */
 function thumbCrop(name,p){
   /* a picture made for this program is framed as it was shot */
-  if(hasPhoto(p)) return 'background-size:cover;background-position:50% 18%;';
+  if(hasPhoto(p)) return 'background-size:cover;'+imgPos(p,FA.row);
   let h=0; const n=String(name||'');
   for(let i=0;i<n.length;i++) h=(h*31+n.charCodeAt(i))>>>0;
   const x=[50,28,72,40,62][h%5], y=[40,55,30][(h>>3)%3], z=[100,135,150][(h>>5)%3];
@@ -298,7 +331,7 @@ function pdxHero(p,kicker,title,sub,meta,pill){
     (pill?'<button class="pdx-pill" onclick="'+pill.go+'" tabindex="-1">'+glyph(pill.icon)+pill.label+'</button>':'')+
     '<span class="pdx-bar-r"></span></div></div>'+
     /* tall pictures keep the head in frame: crop from near the top */
-    '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';background-position:50% 12%':'')+'">'+
+    '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.hero):'')+'">'+
     '<div class="pdx-ov"></div>'+
     '<div class="pdx-in"><div class="pdx-t">'+title+'</div>'+
     (sub?'<div class="pdx-s">'+sub+'</div>':'')+
@@ -369,7 +402,7 @@ function renderProgram(){
       if(d.rest) return '<div class="pdx-rest" onclick="markRest(\''+p.id+'\','+gi+')">'+glyph('moon')+
         '<span>Day '+(gi+1)+' · Rest &amp; recover</span>'+(isDone?'<b>✓</b>':'')+'</div>';
       return '<div class="fwr pdx-ep'+(isDone?' done':'')+'" onclick="openDay(\''+p.id+'\','+gi+')">'+
-        '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop((d.name||'')+gi)+'">'+
+        '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop((d.name||'')+gi,p)+'">'+
           (isDone?'<span class="fnew">DONE</span>':'')+'</div>'+
         '<div class="tx"><div class="t">'+(d.name||'Workout')+'</div>'+
         '<div class="m">'+(/^Day \d+$/.test(d.name||'')?'':'Day '+(gi+1)+' · ')+(d.ex?d.ex.length:0)+' exercises · '+p.dur+'min</div></div>'+
