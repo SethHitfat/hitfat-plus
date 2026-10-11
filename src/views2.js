@@ -273,13 +273,31 @@ function backToProgram(){ hidePanels(); $('progdetail').style.display='block'; r
    sessions as a list of episodes; related programs at the end. */
 let pdxMore=false;
 function pdxToggle(){ pdxMore=!pdxMore; renderProgram(); }
-function pdxHero(p,kicker,title,sub,meta){
-  return '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')">'+
-    '<div class="pdx-ov"></div>'+
+/* The bar that stays at the top as the page scrolls, as in Fitness+: the
+   back button over the hero at first, then a blurred bar with the page's
+   one action as a pill in the middle once the hero has gone. */
+function pdxHero(p,kicker,title,sub,meta,pill){
+  pdxBarWatch();
+  return '<div class="pdx-bar"><div class="pdx-bar-in">'+
     '<button class="pdx-back" aria-label="Back" onclick="'+(kicker==='day'?'backToProgram()':'closeProgramDetail()')+'">'+glyph('chevleft')+'</button>'+
+    (pill?'<button class="pdx-pill" onclick="'+pill.go+'" tabindex="-1">'+glyph(pill.icon)+pill.label+'</button>':'')+
+    '<span class="pdx-bar-r"></span></div></div>'+
+    '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')">'+
+    '<div class="pdx-ov"></div>'+
     '<div class="pdx-in"><div class="pdx-t">'+title+'</div>'+
     (sub?'<div class="pdx-s">'+sub+'</div>':'')+
     (meta?'<div class="pdx-m">'+meta+'</div>':'')+'</div></div>';
+}
+let _pdxWatch=false;
+function pdxBarWatch(){
+  if(_pdxWatch) return; _pdxWatch=true;
+  try{
+    const sc=$('screen'); if(!sc || !sc.addEventListener) return;
+    sc.addEventListener('scroll',()=>{
+      const on=sc.scrollTop>330;
+      Array.prototype.forEach.call(document.querySelectorAll('.pdx-bar'),b=>b.classList.toggle('on',on));
+    },{passive:true});
+  }catch(e){}
 }
 function pdxSub(p){
   if(!p.weeks) return (p.goal||p.level||'Workout');
@@ -291,11 +309,13 @@ function renderProgram(){
   const tot=progDays(p), done=progDone(p.id), pct=tot?Math.round(done/tot*100):0;
   const owned=ownsProgram(p), multi=!!(p.weeks&&p.weeks.length);
   const meta=[p.level, multi?planPerWeek(p)+' days a week':'', p.dur+' min'+(multi?' a day':'')].filter(Boolean).join(' · ');
-  let h=pdxHero(p,'program',p.name,pdxSub(p),meta);
-
   /* the one action, then Preview */
   let nextGi=-1;
   if(multi){ let c=0; p.weeks.forEach(w=>w.days.forEach(d=>{ if(nextGi<0 && c>=done && !d.rest) nextGi=c; c++; })); }
+  const pill=!owned ? {icon:'lock',label:'Unlock',go:'openPaywall(\''+p.name.replace(/'/g,"\\'")+' is part of HITFAT+.\')'}
+           : !multi ? {icon:'play',label:'Start',go:'playSingle(\''+p.id+'\')'}
+           : nextGi>=0 ? {icon:'play',label:'Day '+(nextGi+1),go:'openDay(\''+p.id+'\','+nextGi+')'} : null;
+  let h=pdxHero(p,'program',p.name,pdxSub(p),meta,pill);
   h+='<div class="pdx-btns">';
   if(!owned){
     h+='<button class="bigbtn" onclick="openPaywall(\''+p.name.replace(/'/g,"\\'")+' is part of HITFAT+.\')">Unlock with HITFAT+</button>';
@@ -371,7 +391,7 @@ function openDay(pid,gi){
   curDay={p,day,gi};
   const exs=pickEx(day.ex, progEq(p));
   let h=pdxHero(p,'day',(day.name||'Workout'),p.name+' · Week '+wk+', Day '+dn,
-                exs.length+' exercises · '+(p.rounds||3)+' rounds · '+p.dur+' min');
+                exs.length+' exercises · '+(p.rounds||3)+' rounds · '+p.dur+' min',{icon:'play',label:'Start',go:'playDay()'});
   h+='<div class="pdx-btns"><button class="bigbtn" onclick="playDay()">'+glyph('play')+'Start Workout</button>'+
      '<button class="pdx-prev" onclick="completeDay()">'+glyph('check')+'Mark done without playing</button></div>';
   h+='<div class="fsec"><div class="ft">In This Workout</div><div class="fs">Tap a movement to watch it.</div></div>'+

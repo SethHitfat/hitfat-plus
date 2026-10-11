@@ -3165,5 +3165,15 @@ print("\n── ME, after the Fitness+ account sheet ──");
 })();
 
 
+print("\n── PROGRAM PAGE: the bar that stays ──");
+(function(){
+  var p=PROGRAMS.filter(function(x){return x.weeks;})[0];
+  noThrow("program page renders", function(){ openProgram(p.id); });
+  var h=document.getElementById('pgd-body').innerHTML;
+  ok("it has a bar with the back button", h.indexOf('pdx-bar')>=0 && h.indexOf('closeProgramDetail()')>0);
+  ok("...and the page's one action as a pill", h.indexOf('pdx-pill')>0);
+  ok("the back button is in the bar, once", h.split('class="pdx-back"').length-1===1);
+})();
+
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

@@ -3526,6 +3526,28 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 #ob .obsub + .obgrid, #ob .obsub + .obcard{margin-top:12px;}
 .obpill{color:#FF8A8D;} :root[data-theme="light"] .obpill{color:var(--lime);}
 
+/* ═══════════════════════════════════════════════════════════════
+   PROGRAM PAGE: the bar that stays, and episodes at Fitness+ size
+   ═══════════════════════════════════════════════════════════════ */
+.pdx-bar{position:sticky;top:0;z-index:6;height:0;margin:0 -18px;}
+.pdx-bar-in{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;transition:background .2s ease;}
+.pdx-bar.on .pdx-bar-in{background:rgba(28,28,30,.78);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);
+  box-shadow:0 .5px 0 var(--sep);}
+:root[data-theme="light"] .pdx-bar.on .pdx-bar-in{background:rgba(242,242,247,.82);}
+.pdx-bar .pdx-back{position:static;flex:none;}
+.pdx-bar-r{width:40px;flex:none;}
+.pdx-pill{display:inline-flex;align-items:center;gap:6px;border:none;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;
+  padding:9px 18px;border-radius:99px;background:var(--act,#DC1A22);color:#FFFFFF;opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.pdx-pill .gly{width:16px;height:16px;}
+.pdx-bar.on .pdx-pill{opacity:1;pointer-events:auto;}
+.pdx-ep{align-items:flex-start;}
+.pdx-ep .th{flex:0 0 48%;width:48%;height:auto;aspect-ratio:16/10;}
+.pdx-ep .tx{padding-top:4px;}
+.pdx-ep .tx .t{font-size:16px;line-height:1.25;}
+.pdx-ep .tx .m{font-size:14px;color:var(--dim);margin-top:4px;line-height:1.35;}
+.pdx-ep .pdx-chev{align-self:center;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -14218,13 +14240,31 @@ function backToProgram(){ hidePanels(); $('progdetail').style.display='block'; r
    sessions as a list of episodes; related programs at the end. */
 let pdxMore=false;
 function pdxToggle(){ pdxMore=!pdxMore; renderProgram(); }
-function pdxHero(p,kicker,title,sub,meta){
-  return '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')">'+
-    '<div class="pdx-ov"></div>'+
+/* The bar that stays at the top as the page scrolls, as in Fitness+: the
+   back button over the hero at first, then a blurred bar with the page's
+   one action as a pill in the middle once the hero has gone. */
+function pdxHero(p,kicker,title,sub,meta,pill){
+  pdxBarWatch();
+  return '<div class="pdx-bar"><div class="pdx-bar-in">'+
     '<button class="pdx-back" aria-label="Back" onclick="'+(kicker==='day'?'backToProgram()':'closeProgramDetail()')+'">'+glyph('chevleft')+'</button>'+
+    (pill?'<button class="pdx-pill" onclick="'+pill.go+'" tabindex="-1">'+glyph(pill.icon)+pill.label+'</button>':'')+
+    '<span class="pdx-bar-r"></span></div></div>'+
+    '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')">'+
+    '<div class="pdx-ov"></div>'+
     '<div class="pdx-in"><div class="pdx-t">'+title+'</div>'+
     (sub?'<div class="pdx-s">'+sub+'</div>':'')+
     (meta?'<div class="pdx-m">'+meta+'</div>':'')+'</div></div>';
+}
+let _pdxWatch=false;
+function pdxBarWatch(){
+  if(_pdxWatch) return; _pdxWatch=true;
+  try{
+    const sc=$('screen'); if(!sc || !sc.addEventListener) return;
+    sc.addEventListener('scroll',()=>{
+      const on=sc.scrollTop>330;
+      Array.prototype.forEach.call(document.querySelectorAll('.pdx-bar'),b=>b.classList.toggle('on',on));
+    },{passive:true});
+  }catch(e){}
 }
 function pdxSub(p){
   if(!p.weeks) return (p.goal||p.level||'Workout');
@@ -14236,11 +14276,13 @@ function renderProgram(){
   const tot=progDays(p), done=progDone(p.id), pct=tot?Math.round(done/tot*100):0;
   const owned=ownsProgram(p), multi=!!(p.weeks&&p.weeks.length);
   const meta=[p.level, multi?planPerWeek(p)+' days a week':'', p.dur+' min'+(multi?' a day':'')].filter(Boolean).join(' · ');
-  let h=pdxHero(p,'program',p.name,pdxSub(p),meta);
-
   /* the one action, then Preview */
   let nextGi=-1;
   if(multi){ let c=0; p.weeks.forEach(w=>w.days.forEach(d=>{ if(nextGi<0 && c>=done && !d.rest) nextGi=c; c++; })); }
+  const pill=!owned ? {icon:'lock',label:'Unlock',go:'openPaywall(\''+p.name.replace(/'/g,"\\'")+' is part of HITFAT+.\')'}
+           : !multi ? {icon:'play',label:'Start',go:'playSingle(\''+p.id+'\')'}
+           : nextGi>=0 ? {icon:'play',label:'Day '+(nextGi+1),go:'openDay(\''+p.id+'\','+nextGi+')'} : null;
+  let h=pdxHero(p,'program',p.name,pdxSub(p),meta,pill);
   h+='<div class="pdx-btns">';
   if(!owned){
     h+='<button class="bigbtn" onclick="openPaywall(\''+p.name.replace(/'/g,"\\'")+' is part of HITFAT+.\')">Unlock with HITFAT+</button>';
@@ -14316,7 +14358,7 @@ function openDay(pid,gi){
   curDay={p,day,gi};
   const exs=pickEx(day.ex, progEq(p));
   let h=pdxHero(p,'day',(day.name||'Workout'),p.name+' · Week '+wk+', Day '+dn,
-                exs.length+' exercises · '+(p.rounds||3)+' rounds · '+p.dur+' min');
+                exs.length+' exercises · '+(p.rounds||3)+' rounds · '+p.dur+' min',{icon:'play',label:'Start',go:'playDay()'});
   h+='<div class="pdx-btns"><button class="bigbtn" onclick="playDay()">'+glyph('play')+'Start Workout</button>'+
      '<button class="pdx-prev" onclick="completeDay()">'+glyph('check')+'Mark done without playing</button></div>';
   h+='<div class="fsec"><div class="ft">In This Workout</div><div class="fs">Tap a movement to watch it.</div></div>'+

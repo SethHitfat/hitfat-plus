@@ -1610,3 +1610,25 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .obwk-s .m{font-size:14px;color:var(--dim);margin-top:2px;}
 #ob .obsub + .obgrid, #ob .obsub + .obcard{margin-top:12px;}
 .obpill{color:#FF8A8D;} :root[data-theme="light"] .obpill{color:var(--lime);}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROGRAM PAGE: the bar that stays, and episodes at Fitness+ size
+   ═══════════════════════════════════════════════════════════════ */
+.pdx-bar{position:sticky;top:0;z-index:6;height:0;margin:0 -18px;}
+.pdx-bar-in{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;transition:background .2s ease;}
+.pdx-bar.on .pdx-bar-in{background:rgba(28,28,30,.78);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);
+  box-shadow:0 .5px 0 var(--sep);}
+:root[data-theme="light"] .pdx-bar.on .pdx-bar-in{background:rgba(242,242,247,.82);}
+.pdx-bar .pdx-back{position:static;flex:none;}
+.pdx-bar-r{width:40px;flex:none;}
+.pdx-pill{display:inline-flex;align-items:center;gap:6px;border:none;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;
+  padding:9px 18px;border-radius:99px;background:var(--act,#DC1A22);color:#FFFFFF;opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.pdx-pill .gly{width:16px;height:16px;}
+.pdx-bar.on .pdx-pill{opacity:1;pointer-events:auto;}
+.pdx-ep{align-items:flex-start;}
+.pdx-ep .th{flex:0 0 48%;width:48%;height:auto;aspect-ratio:16/10;}
+.pdx-ep .tx{padding-top:4px;}
+.pdx-ep .tx .t{font-size:16px;line-height:1.25;}
+.pdx-ep .tx .m{font-size:14px;color:var(--dim);margin-top:4px;line-height:1.35;}
+.pdx-ep .pdx-chev{align-self:center;}
