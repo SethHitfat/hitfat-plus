@@ -3244,7 +3244,7 @@ ok("a square picture in a tall poster takes the slice with the body", _pos('m2',
 ok("positions never leave 0–100%", Array.from(PHOTO).every(function(id){
     return [FA.wide,FA.row,FA.poster,FA.hero,FA.tall,FA.join].every(function(fa){
       var m=imgPos({id:id},fa).match(/([\d.]+)% ([\d.]+)%/); return m && +m[1]>=0 && +m[1]<=100 && +m[2]>=0 && +m[2]<=100; }); }));
-ok("a program with no picture of its own is untouched", imgPos({id:'p1'},FA.wide)==='');
+ok("a program with no picture of its own is untouched", imgPos({id:'bt1'},FA.wide)==='');
 
 print("\n── LIBRARY: COMING SOON WITHOUT A VIDEO ──");
 libEq='All'; noThrow("the Exercises page renders", function(){ openLibrary('All'); });
