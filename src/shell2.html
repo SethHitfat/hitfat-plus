@@ -412,16 +412,22 @@
   font-family:'Oswald';font-size:54px;color:var(--txt);text-shadow:0 2px 24px rgba(0,0,0,.7);}
 .scan-foot{flex:none;padding:14px 18px calc(28px + env(safe-area-inset-bottom,0px));
   background:linear-gradient(to top,#08080c 60%,transparent);}
-#sharemodal{position:fixed;inset:0;background:rgba(8,8,12,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
-  z-index:10001;display:none;align-items:center;justify-content:center;padding:24px;}
+#sharemodal{position:fixed;inset:0;background:rgba(0,0,0,.92);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  z-index:10001;display:none;align-items:center;justify-content:center;
+  padding:calc(16px + env(safe-area-inset-top,0px)) 20px calc(20px + env(safe-area-inset-bottom,0px));}
 #sharemodal.on{display:flex;}
-.share-in{width:100%;max-width:330px;display:flex;flex-direction:column;align-items:center;gap:14px;position:relative;}
-.share-x{position:absolute;top:-46px;right:0;width:38px;height:38px;border-radius:50%;background:var(--tint);
-  border:1px solid var(--hairline);color:var(--txt);font-size:17px;cursor:pointer;}
-.share-wrap{width:100%;border-radius:20px;overflow:hidden;background:#0b0b0d;min-height:220px;
-  display:grid;place-items:center;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(239,68,68,.2);}
-#share-img{width:100%;display:none;}
-#share-load{color:var(--dim2);font-size:13px;font-weight:600;padding:90px 0;}
+.share-in{width:100%;max-width:340px;display:flex;flex-direction:column;align-items:stretch;gap:14px;}
+.share-top{display:flex;align-items:center;justify-content:space-between;}
+.share-h{font-size:28px;font-weight:800;letter-spacing:-.6px;color:#FFFFFF;}
+.share-x{width:36px;height:36px;border-radius:50%;background:#2C2C2E;border:none;color:#FFFFFF;font-size:15px;cursor:pointer;}
+.share-wrap{align-self:center;height:min(58vh,560px);aspect-ratio:9/16;max-width:100%;border-radius:22px;overflow:hidden;background:#000;
+  display:grid;place-items:center;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.10);}
+#share-img{width:100%;height:100%;object-fit:cover;display:none;}
+#share-load{color:rgba(255,255,255,.62);font-size:14px;font-weight:600;padding:90px 0;}
+.share-btns{display:flex;flex-direction:column;gap:10px;}
+.share-btns .bigbtn{margin:0;border-radius:99px;}
+#sharemodal .share-btns .bigbtn.sec{background:#2C2C2E;color:#FF5A5F !important;border:none;box-shadow:none;}
+.share-f{font-size:13px;color:rgba(255,255,255,.62);text-align:center;}
 #scan-err{display:none;margin-top:10px;padding:10px 14px;border-radius:12px;text-align:center;
   background:rgba(239,68,68,.1);font-size:13px;color:#ff8a9c;font-weight:600;line-height:1.5;}
 
@@ -774,14 +780,14 @@
 
 <div id="sharemodal">
   <div class="share-in">
-    <button class="share-x" onclick="closeShare()">✕</button>
-    <div class="share-wrap"><img id="share-img" alt="HITFAT+ progress"><div id="share-load">Generating…</div></div>
+    <div class="share-top"><div class="share-h">Share</div><button class="share-x" aria-label="Close" onclick="closeShare()">✕</button></div>
+    <div class="share-wrap"><img id="share-img" alt="HITFAT+ summary"><div id="share-load">Making your card…</div></div>
     <canvas id="share-canvas" width="1080" height="1920" style="display:none;"></canvas>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;">
-      <button class="bigbtn" style="margin:0;" onclick="shareImage()">Share</button>
-      <button class="bigbtn sec" style="margin:0;" onclick="saveShare()">Save</button>
+    <div class="share-btns">
+      <button class="bigbtn" onclick="shareImage()">Share to Story</button>
+      <button class="bigbtn sec" onclick="saveShare()">Save Image</button>
     </div>
-    <div class="sub" style="text-align:center;">Tekan &amp; tahan gambar untuk simpan, atau Share terus ke IG story / WhatsApp.</div>
+    <div class="share-f">Or press and hold the card to save it.</div>
   </div>
 </div>
 
@@ -877,7 +883,7 @@
         <div><span>Streak</span><b class="hc-streak" id="pl-dn-streak">0</b><i id="pl-dn-streak-u">DAYS</i></div>
       </div>
       <div class="dweek" id="pl-dn-week"></div>
-      <div class="dbtns"><button class="dshare" onclick="openShare()">Share</button>
+      <div class="dbtns"><button class="dshare" onclick="openShare('workout')">Share</button>
       <button class="bigbtn" onclick="plClose()">Done</button></div>
     </div>
   </div>

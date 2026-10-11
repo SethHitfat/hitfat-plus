@@ -327,7 +327,11 @@ function weightChart(wl){
 /* ── SHARE CARD ──────────────────────────────────────────────────────
    1080×1920 canvas, drawn on device. Works with one user, which a
    leaderboard does not — this is the acquisition loop, not ranking. */
-function openShare(){
+/* kind 'workout' shares the session just finished (the player's Done
+   screen); anything else shares the progress window, as before. */
+let _shareKind='progress';
+function openShare(kind){
+  _shareKind=kind==='workout'&&typeof _lastWorkout!=='undefined'&&_lastWorkout?'workout':'progress';
   $('sharemodal').classList.add('on');
   $('share-img').style.display='none';
   $('share-load').style.display='block';
@@ -352,7 +356,7 @@ function shareImage(){
         if(b&&navigator.canShare){
           const f=new File([b],'hitfat-plus.png',{type:'image/png'});
           if(navigator.canShare({files:[f]})){
-            navigator.share({files:[f],title:'HITFAT+',text:'My progress with HITFAT+ 💪'}).catch(()=>{});
+            navigator.share({files:[f],title:'HITFAT+',text:_shareKind==='workout'?'Workout done with HITFAT+ 💪':'My progress with HITFAT+ 💪'}).catch(()=>{});
             return;
           }
         }
@@ -383,73 +387,100 @@ function _wrap(x,t,cx,y,maxW,lh){
   lines.forEach((l,i)=>x.fillText(l,cx,y+i*lh));
   return lines.length;
 }
+/* The card, after the Fitness+ workout summary: black, a red glow and a
+   little yellow, the HITFAT+ mark, the workout (or the window) by name, the
+   week as the three rings Home shows, and four tiles in red, yellow and
+   white. 1080×1920, so it drops straight into a story. */
+const SC_RED='#FF5A5F', SC_YEL='#FFC93C', SC_WHITE='#FFFFFF', SC_DIM='rgba(255,255,255,.62)', SC_TILE='#1C1C1E';
+function _scRing(x,cx,cy,r,w,pct,col){
+  x.lineCap='round'; x.lineWidth=w;
+  x.strokeStyle=col; x.globalAlpha=.22; x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.stroke();
+  x.globalAlpha=1;
+  const p=Math.max(0,Math.min(100,pct||0))/100;
+  if(p>0){ x.beginPath(); x.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+p*Math.PI*2); x.stroke(); }
+}
+function _scTile(x,tx,ty,tw,th,label,val,unit,col){
+  x.fillStyle=SC_TILE; _rr(x,tx,ty,tw,th,40); x.fill();
+  x.textAlign='left';
+  x.fillStyle=SC_WHITE; x.font="600 36px 'Inter',system-ui,sans-serif"; x.fillText(label,tx+40,ty+72);
+  x.fillStyle=col; x.font="700 108px 'Inter',system-ui,sans-serif"; x.fillText(val,tx+40,ty+th-46);
+  const vw=x.measureText(val).width;
+  x.fillStyle=SC_DIM; x.font="700 34px 'Inter',system-ui,sans-serif"; x.fillText(unit,tx+52+vw,ty+th-48);
+}
 function drawShareCard(){
-  const cv=$('share-canvas'), x=cv.getContext('2d'), W=1080, H=1920, cx=W/2;
+  const cv=$('share-canvas'), x=cv.getContext('2d'), W=1080, H=1920, cx=W/2, L=90;
   const tr=pgTraining(), nu=pgNutrition(), wl=weightLog(), streak=liveStreak();
+  const wk=(typeof _shareKind!=='undefined'&&_shareKind==='workout'&&typeof _lastWorkout!=='undefined')?_lastWorkout:null;
   x.clearRect(0,0,W,H);
-  x.fillStyle='#0b0b0d'; x.fillRect(0,0,W,H);
-  x.strokeStyle='rgba(239,68,68,.05)'; x.lineWidth=1;
-  for(let g=0;g<=W;g+=60){ x.beginPath();x.moveTo(g,0);x.lineTo(g,H);x.stroke(); }
-  for(let g=0;g<=H;g+=60){ x.beginPath();x.moveTo(0,g);x.lineTo(W,g);x.stroke(); }
-  let rg=x.createRadialGradient(W*.8,H*.12,40,W*.8,H*.12,720);
-  rg.addColorStop(0,'rgba(239,68,68,.30)'); rg.addColorStop(1,'rgba(239,68,68,0)');
-  x.fillStyle=rg; x.fillRect(0,0,W,H);
-  x.strokeStyle='rgba(239,68,68,.35)'; x.lineWidth=3; _rr(x,0,30,30,W-60,H-60,40); x.stroke();
+  x.fillStyle='#000000'; x.fillRect(0,0,W,H);
+  let g=x.createRadialGradient(W*.92,H*.06,20,W*.92,H*.06,900);
+  g.addColorStop(0,'rgba(220,26,34,.55)'); g.addColorStop(1,'rgba(220,26,34,0)');
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  g=x.createRadialGradient(W*.05,H*.98,20,W*.05,H*.98,760);
+  g.addColorStop(0,'rgba(255,194,26,.22)'); g.addColorStop(1,'rgba(255,194,26,0)');
+  x.fillStyle=g; x.fillRect(0,0,W,H);
 
-  x.textAlign='center';
-  x.fillStyle='#fff'; x.font="800 44px 'Inter',sans-serif";
-  x.fillText('HITFAT', cx-28, 180);
-  x.fillStyle='#EF4444'; x.fillText('+', cx+72, 180);
-  x.fillStyle='rgba(255,255,255,.45)'; x.font="800 22px 'Inter',sans-serif";
-  _spaced(x,_pgP==='week'?'THIS WEEK':'LAST 30 DAYS',cx,238,6);
+  // the mark
+  x.textAlign='left'; x.textBaseline='alphabetic';
+  x.fillStyle=SC_WHITE; x.font="800 54px 'Inter',system-ui,sans-serif"; x.fillText('HITFAT',L,170);
+  x.fillStyle=SC_RED; x.fillText('+',L+x.measureText('HITFAT').width+2,170);
 
-  // hero — weight change if there is one, otherwise sessions
-  let heroN, heroL, heroC='#fff';
-  if(wl.length>=2){
-    const d=Math.round((wl[wl.length-1].kg-wl[0].kg)*10)/10;
-    heroN=(d>0?'+':'')+d; heroL='KG CHANGE';
-    const goal=(HF.data.nutrition&&HF.data.nutrition.goal)||'lose';
-    heroC=((goal==='lose'&&d<0)||((goal==='muscle'||goal==='bulk')&&d>0))?'var(--ok)':'#fff';
-  } else { heroN=String(tr.sessions); heroL='SESSIONS'; heroC='#EF4444'; }
-  x.fillStyle=heroC; x.font="700 300px 'Oswald',sans-serif";
-  x.fillText(heroN, cx, 700);
-  x.fillStyle='rgba(255,255,255,.5)'; x.font="800 26px 'Inter',sans-serif";
-  _spaced(x,heroL,cx,760,5);
+  // what this is, by name
+  const kick=wk?'Workout Complete':(_pgP==='week'?'This Week':'Last 30 Days');
+  x.fillStyle=wk?'#30D158':SC_RED; x.font="700 44px 'Inter',system-ui,sans-serif"; x.fillText(kick,L,350);
+  x.fillStyle=SC_WHITE; x.font="800 112px 'Inter',system-ui,sans-serif";
+  const title=wk?wk.name:'My Progress';
+  x.textAlign='left';
+  const lines=_wrapL(x,title,L,468,W-2*L,116,2);
+  const dy=468+(lines-1)*116;
+  x.fillStyle=SC_DIM; x.font="500 42px 'Inter',system-ui,sans-serif";
+  x.fillText(new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}),L,dy+70);
 
-  // streak pill
-  const pill=streak>0?(streak+' DAY STREAK'):'START YOUR STREAK';
-  x.font="800 32px 'Inter',sans-serif";
-  const pw=x.measureText(pill).width+72, ph=74, py=850, px=cx-pw/2;
-  x.fillStyle='rgba(239,68,68,.14)'; _rr(x,px,py,pw,ph,37); x.fill();
-  x.strokeStyle='rgba(239,68,68,.5)'; x.lineWidth=2; _rr(x,px,py,pw,ph,37); x.stroke();
-  x.fillStyle='#ff6b8a'; x.textBaseline='middle'; x.fillText(pill,cx,py+ph/2+2); x.textBaseline='alphabetic';
-
-  // three stats
-  const cards=[[String(tr.sessions),'SESSIONS'],[tr.mins+'m','MINUTES'],
-               [nu.target?(nu.onTrack+'/'+nu.logged):String(tr.activeDays), nu.target?'ON TARGET':'ACTIVE DAYS']];
-  const cw=(W-120-48)/3, cy=1010;
-  cards.forEach((s,i)=>{
-    const cxx=60+i*(cw+24);
-    x.fillStyle='#f5f3ef'; _rr(x,cxx,cy,cw,200,28); x.fill();
-    x.fillStyle='#1a1a1a'; x.font="700 60px 'Oswald',sans-serif"; x.textAlign='center';
-    x.fillText(s[0],cxx+cw/2,cy+102);
-    x.fillStyle='rgba(0,0,0,.45)'; x.font="800 19px 'Inter',sans-serif";
-    _spaced(x,s[1],cxx+cw/2,cy+150,2);
+  // the week, as rings, with its numbers beside them
+  const days=daysThisWeek(), wg=HF.data.weekGoal||5, wm=weekMinutes(), cons=consistency();
+  const ry=dy+360, rcx=L+226;
+  _scRing(x,rcx,ry,200,52,days/wg*100,'#DC1A22');
+  _scRing(x,rcx,ry,138,52,wm/150*100,'#FFC21A');
+  _scRing(x,rcx,ry,76,52,cons,SC_WHITE);
+  const lx=rcx+270;
+  [['Days',days+'/'+wg,SC_RED],['Minutes',wm+'/150',SC_YEL],['Consistency',cons+'%',SC_WHITE]].forEach((r,i)=>{
+    const yy=ry-150+i*140;
+    x.fillStyle=SC_WHITE; x.font="600 36px 'Inter',system-ui,sans-serif"; x.fillText(r[0],lx,yy);
+    x.fillStyle=r[2]; x.font="700 64px 'Inter',system-ui,sans-serif"; x.fillText(r[1],lx,yy+70);
   });
 
-  const line = tr.sessions>=5 ? 'Seriously consistent. That is real discipline. 💪'
-             : tr.sessions>=3 ? 'Solid progress — keep pushing, do not ease off now.'
-             : tr.sessions>=1 ? 'You started. Do not stop. Every day counts.'
-             : 'Today is day one. Let us do this properly.';
-  x.fillStyle='rgba(255,255,255,.88)'; x.font="600 42px 'Inter',sans-serif"; x.textAlign='center';
-  _wrap(x,line,cx,1400,860,56);
+  // four tiles
+  let tiles;
+  if(wk) tiles=[['Time',String(wk.mins),'MIN',SC_RED],['Exercises',String(wk.exs),'DONE',SC_YEL],
+                ['Rounds',String(wk.rounds),'ROUNDS',SC_WHITE],['Streak',String(streak),streak===1?'DAY':'DAYS',SC_YEL]];
+  else {
+    let w4=[nu.target?'On Target':'Active Days', nu.target?(nu.onTrack+'/'+nu.logged):String(tr.activeDays), 'DAYS', SC_WHITE];
+    if(wl.length>=2){
+      const d=Math.round((wl[wl.length-1].kg-wl[0].kg)*10)/10;
+      const goal=(HF.data.nutrition&&HF.data.nutrition.goal)||'lose';
+      const good=(goal==='lose'&&d<0)||((goal==='muscle'||goal==='bulk')&&d>0);
+      w4=['Weight',(d>0?'+':'')+d,'KG',good?'#30D158':SC_WHITE];
+    }
+    tiles=[['Sessions',String(tr.sessions),'DONE',SC_RED],['Time',String(tr.mins),'MIN',SC_YEL],
+           w4,['Streak',String(streak),streak===1?'DAY':'DAYS',SC_YEL]];
+  }
+  const ty=ry+280, tw=(W-2*L-30)/2, th=250;
+  tiles.forEach((t,i)=>_scTile(x,L+(i%2)*(tw+30),ty+Math.floor(i/2)*(th+30),tw,th,t[0],t[1],t[2],t[3]));
 
-  x.strokeStyle='rgba(255,255,255,.1)'; x.lineWidth=2;
-  x.beginPath(); x.moveTo(150,1700); x.lineTo(W-150,1700); x.stroke();
-  x.fillStyle='rgba(255,255,255,.4)'; x.font="800 24px 'Inter',sans-serif";
-  _spaced(x,'TRAIN · EAT · RECOVER',cx,1766,3);
-  x.fillStyle='#EF4444'; x.font="700 70px 'Oswald',sans-serif";
-  _spaced(x,'HITFAT.IO',cx,1846,5);
+  // the way in
+  x.textAlign='left';
+  x.fillStyle=SC_WHITE; x.font="700 44px 'Inter',system-ui,sans-serif"; x.fillText('Train with HITFAT+',L,H-120);
+  x.fillStyle=SC_DIM; x.font="500 38px 'Inter',system-ui,sans-serif"; x.fillText('app.hitfat.io',L,H-66);
+}
+/* left-aligned wrap, at most `max` lines, the last one cut with an ellipsis */
+function _wrapL(x,t,lx,y,maxW,lh,max){
+  const words=String(t).split(' '); let line='', lines=[];
+  words.forEach(w=>{ const tst=line?line+' '+w:w;
+    if(x.measureText(tst).width>maxW&&line){ lines.push(line); line=w; } else line=tst; });
+  if(line) lines.push(line);
+  if(lines.length>max){ lines=lines.slice(0,max); lines[max-1]=lines[max-1].replace(/\s*\S*$/,'')+'…'; }
+  lines.forEach((l,i)=>x.fillText(l,lx,y+i*lh));
+  return lines.length;
 }
 
 /* ── One measurement, in full ─────────────────────────────────────────

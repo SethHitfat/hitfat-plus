@@ -8,6 +8,7 @@
    not restart with a black frame.                                             */
 
 const REST_SECS=20;
+let _lastWorkout=null;
 let pl=null, plTick=null;
 
 function vimeoSrc(id){
@@ -222,6 +223,8 @@ function plFinish(){
      member's and is written first — the server copy can fail and be re-sent
      without anyone losing a session they actually did. */
   if(m.t42day && typeof t42RecordWorkout==='function') t42RecordWorkout(m, mins);
+  /* what the share card shows when opened from here */
+  _lastWorkout={name:m.name||'Workout', mins, exs:pl.exs.length, rounds:pl.rounds};
   $('pl-dn-ex').textContent=pl.exs.length;
   $('pl-dn-min').textContent=mins;
   $('pl-dn-rnd').textContent=pl.rounds;

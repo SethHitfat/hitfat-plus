@@ -547,6 +547,12 @@ ok("finish advances the day", progDone(_p.id)===1, progDone(_p.id));
 ok("done overlay shown",     document.getElementById('pl-done').className.indexOf('on')>=0);
 ok("the summary names the workout", document.getElementById('pl-dn-name').textContent.length>0);
 ok("...and shows the week as rings", document.getElementById('pl-dn-week').innerHTML.indexOf('hrings')>0);
+ok("finishing keeps the workout for the share card", _lastWorkout && _lastWorkout.exs===pl.exs.length && _lastWorkout.name.length>0);
+_canvas={fills:0,texts:0,strokes:0,nan:0,rects:0};
+noThrow("the workout share card draws", function(){ _shareKind='workout'; drawShareCard(); });
+ok("...with its rings, tiles and words, and no NaN", _canvas.strokes>=6 && _canvas.fills>=4 && _canvas.texts>20 && _canvas.nan===0,
+   JSON.stringify(_canvas));
+_shareKind='progress';
 noThrow("player closes",     function(){ plClose(); });
 ok("player state released",  pl===null);
 ok("iframe emptied",         document.getElementById('pl-video').src==='');
