@@ -172,16 +172,20 @@ function maxPlanDays(){ return ownsAll() ? 14 : FREE_PLAN_DAYS; }
 function maxSavedPlans(){ return ownsAll() ? 20 : FREE_PLAN_SAVED; }
 
 /* ── STORE panel ──────────────────────────────────────────  */
-let _storeBackSeg='explore';
+let _storeBackSeg='explore', _storeBackTab='train';
 function openStore(focus){
   /* Remember where to go back to. Without this, Back returned to TRAIN, which
      saw trSeg still set to 'store' and immediately reopened the store — the
-     button looked broken because nothing on screen ever changed. */
+     button looked broken because nothing on screen ever changed. The Store
+     is reached from Me and from the paywall now, not only from Train, so
+     the tab is remembered too. */
   if(typeof trSeg!=='undefined' && trSeg!=='store') _storeBackSeg=trSeg;
+  if(typeof curTab!=='undefined' && curTab) _storeBackTab=curTab;
   hidePanels(); $('store').style.display='block';
   renderStore(focus||'plans'); $('screen').scrollTop=0;
 }
 function closeStore(){
+  if(_storeBackTab && _storeBackTab!=='train') return switchTab(_storeBackTab);
   if(typeof trSeg!=='undefined') trSeg=_storeBackSeg||'explore';
   switchTab('train');
 }

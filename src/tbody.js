@@ -938,6 +938,9 @@ ok("back does not bounce",       trSeg!=='store', trSeg);
 ok("back restores the old tab",  trSeg==='explore', trSeg);
 setTrSeg('plans'); setTrSeg('store'); closeStore();
 ok("back remembers where you were", trSeg==='plans', trSeg);
+ok("Train has no Store pill", TR_SEGS.every(function(x){ return x[0]!=='store'; }));
+switchTab('me'); openStore(); closeStore();
+ok("the Store opened from Me goes back to Me", curTab==='me' && document.getElementById('me').style.display==='block', curTab);
 
 /* BAR programs — paused (BAR_ENABLED=false). The programs are still built,
    so switching it back on needs no rework; they just reach no screen. */

@@ -4,7 +4,7 @@
    and a workout list. Content is HITFAT+'s own.                               */
 
 let trSeg='explore';
-const TR_SEGS=[['foryou','For You'],['explore','Explore'],['plans','Plans'],['recovery','Recovery'],['bar','HITFAT BAR'],['store','Store'],['library','Library']]
+const TR_SEGS=[['foryou','For You'],['explore','Explore'],['plans','Plans'],['recovery','Recovery'],['bar','HITFAT BAR'],['library','Library']]
   .filter(s=>BAR_ENABLED || s[0]!=='bar');
 function setTrSeg(s){
   /* Remember where we came from BEFORE overwriting trSeg — openStore() runs
