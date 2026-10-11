@@ -1,4 +1,7 @@
 var pass=0,fail=0;
+/* T42 is hidden in the app for now (T42_LIVE=false); the suite below tests
+   it as it will be when it returns. The hidden state is tested at the end. */
+T42_LIVE=true;
 function ok(n,c,x){ if(c){pass++;print("  ok  "+n);} else {fail++;print("  FAIL "+n+(x!==undefined?"  → "+x:""));} }
 function noThrow(n,fn){ try{ fn(); pass++; print("  ok  "+n); }catch(e){ fail++; print("  FAIL "+n+"  → "+e); } }
 
@@ -3271,6 +3274,23 @@ print("\n── THE RENEWAL REMINDER ──");
   _ent.plusUntil=new Date(Date.now()-864e5).toISOString();
   ok("none once it has ended", renewCard()==='');
   _ent.plusUntil=keep.p; _ent.coachUntil=keep.c;
+})();
+
+print("\n── T42 HIDDEN ──");
+(function(){
+  T42_LIVE=false;
+  var keep={st:T42.state,ch:T42.challenge,past:T42.past};
+  T42.state='ready'; T42.challenge={id:'x',name:'T42',start_date:iso(10),total_days:42}; T42.past=null;
+  ok("no T42 card on Home", t42HomeCard()==='');
+  ok("no T42 pill in Train", !t42InTrain());
+  switchTab('train'); ok("...so the pills do not offer it", document.getElementById('tr-segs').innerHTML.indexOf("setTrSeg('t42')")<0);
+  switchTab('me'); ok("no T42 row in Me", document.getElementById('me-body').innerHTML.indexOf('openT42()')<0);
+  openT42(); ok("a T42 link lands on Home instead", curTab==='home' && document.getElementById('t42').style.display!=='block');
+  pwTier='coach'; pwSku='sub_coach_12m'; var h=paywallHTML(true);
+  ok("the Coach membership does not offer a T42 place", h.indexOf('T42')<0, h.match(/[^>]*T42[^<]*/));
+  pwTier='plus'; pwSku='sub_plus_12m';
+  T42.state=keep.st; T42.challenge=keep.ch; T42.past=keep.past;
+  T42_LIVE=true;
 })();
 
 print("\n"+pass+" passed, "+fail+" failed");

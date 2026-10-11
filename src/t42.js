@@ -615,6 +615,7 @@ function t42StateCard(){
 }
 
 function openT42(){
+  if(typeof T42_LIVE!=='undefined' && !T42_LIVE){ switchTab('home'); return; }
   hidePanels(); $('t42').style.display='block'; $('screen').scrollTop=0;
   if(T42_DEMO) t42DemoMount();
   t42DraftLoad();
@@ -1721,6 +1722,7 @@ function t42Stat(label,val,tone){
    ═══════════════════════════════════════════════════════════════ */
 
 function t42HomeCard(){
+  if(typeof T42_LIVE!=='undefined' && !T42_LIVE) return '';
   if(T42.state==='nosetup'||T42.state==='error') return '';
   if(!T42.challenge) return '';
 

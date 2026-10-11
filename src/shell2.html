@@ -1056,7 +1056,7 @@ async function onSignedIn(session){
      card never drew, for anyone. Its own try, so a T42 failure cannot cost
      the member their Club card. */
   try{
-    if(typeof T42!=='undefined'){
+    if(typeof T42!=='undefined' && T42_LIVE){
       await T42.load(true);
       if($('home') && $('home').style.display!=='none') renderHome();
     }

@@ -258,6 +258,8 @@ function t42DemoPill(){
 }
 function t42DemoHide(){ var el=document.getElementById('t42-demo'); if(el) el.remove(); }
 function t42DemoMount(){
+  /* the T42 stage picker belongs to T42; while T42 is hidden, ?demo only opens the content */
+  if(typeof T42_LIVE!=='undefined' && !T42_LIVE) return;
   if(!T42_DEMO || typeof document==='undefined' || !document.body || document.getElementById('t42-demo')) return;
   var el=document.createElement('div'); el.id='t42-demo';
   document.body.appendChild(el); t42DemoSheet(false);

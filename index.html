@@ -6149,6 +6149,12 @@ const COACH_WA='60176132170', COACH_GROUP_URL='';
    sub_ SKUs (deployed 9 Oct 2026). Set false to open everything again —
    demo mode always does — so no one meets a lock that has nothing to sell. */
 var MEMBERSHIP_LIVE=true;
+/* T42 is hidden from the app until it is announced again (11 Oct 2026):
+   no Home card, no Train pill, no Me row, nothing loaded at start, and
+   the Coach membership does not offer a T42 place. Everything T42 is
+   still here — set this true to bring it all back. The admin page and
+   the server are untouched. */
+var T42_LIVE=false;
 function contentOpen(){
   return !MEMBERSHIP_LIVE || (typeof T42_DEMO!=='undefined' && T42_DEMO) || hasPlus();
 }
@@ -6658,7 +6664,7 @@ function paywallHTML(sheet){
      '<button class="'+(pwTier==='plus'?'on':'')+'" onclick="pwSetTier(\'plus\')">HITFAT+</button>'+
      '<button class="'+(pwTier==='coach'?'on':'')+'" onclick="pwSetTier(\'coach\')">HITFAT+ Coach</button></div>';
   h+='<div class="pwq">What you get</div>';
-  h+='<div class="sub-perks">'+info.perks.map(x=>
+  h+='<div class="sub-perks">'+info.perks.filter(x=>T42_LIVE||x[1].indexOf('T42')<0).map(x=>
      '<div class="sub-perk">'+ic(x[0])+'<div><div class="t">'+x[1]+'</div><div class="m">'+x[2]+'</div></div></div>').join('')+'</div>';
   h+='<div class="pwq">Choose your plan</div>';
   h+='<div class="sub-plans">'+plans.map(p=>{
@@ -6672,7 +6678,7 @@ function paywallHTML(sheet){
      }).join('')+'</div>';
   h+='<button class="bigbtn sub-cta" onclick="pwBuy()">Continue · RM'+chosen.price+'</button>';
   h+='<div class="sub-fine">One payment for '+chosen.months+' months — FPX or DuitNow. It does not renew by itself; '+
-     'we remind you before it ends. '+(pwTier==='coach'?'Includes one T42 edition during your membership.':'T42 challenges are sold separately.')+
+     'we remind you before it ends. '+(T42_LIVE?(pwTier==='coach'?'Includes one T42 edition during your membership.':'T42 challenges are sold separately.'):'')+
      ' All purchases are final. <a href="/terms" target="_blank" rel="noopener">Terms</a> · <a href="/refund" target="_blank" rel="noopener">Refunds</a></div>';
   return h;
 }
@@ -6698,12 +6704,12 @@ function storeMembership(){
      [[PROGRAMS.filter(p=>p.weeks).length,'programs'],[PROGRAMS.filter(p=>!p.weeks).length,'single sessions'],
       [libDB().length,'filmed movements'],['14','day meal plans']].map(x=>
      '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
-  h+='<div class="nfoot">Your calorie target, meal log, weight and progress stay open without a membership. T42 participants train T42 either way.</div>';
+  h+='<div class="nfoot">Your calorie target, meal log, weight and progress stay open without a membership.'+(T42_LIVE?' T42 participants train T42 either way.':'')+'</div>';
   $('store-body').innerHTML=h;
 }
 function coachUpsell(){
   pwTier='coach'; if(!subPlan(pwSku)||subPlan(pwSku).tier!=='coach') pwSku='sub_coach_12m';
-  return '<div class="nhead"><div class="nhead-t">Add a coach</div><div class="nhead-s">A monthly review, the members group and a T42 place.</div></div>'+paywallHTML(false);
+  return '<div class="nhead"><div class="nhead-t">Add a coach</div><div class="nhead-s">A monthly review and the members group'+(T42_LIVE?', and a T42 place':'')+'.</div></div>'+paywallHTML(false);
 }
 
 /* ── the lock, wherever content is shown ── */
@@ -10456,6 +10462,7 @@ function t42StateCard(){
 }
 
 function openT42(){
+  if(typeof T42_LIVE!=='undefined' && !T42_LIVE){ switchTab('home'); return; }
   hidePanels(); $('t42').style.display='block'; $('screen').scrollTop=0;
   if(T42_DEMO) t42DemoMount();
   t42DraftLoad();
@@ -11562,6 +11569,7 @@ function t42Stat(label,val,tone){
    ═══════════════════════════════════════════════════════════════ */
 
 function t42HomeCard(){
+  if(typeof T42_LIVE!=='undefined' && !T42_LIVE) return '';
   if(T42.state==='nosetup'||T42.state==='error') return '';
   if(!T42.challenge) return '';
 
@@ -14288,6 +14296,8 @@ function t42DemoPill(){
 }
 function t42DemoHide(){ var el=document.getElementById('t42-demo'); if(el) el.remove(); }
 function t42DemoMount(){
+  /* the T42 stage picker belongs to T42; while T42 is hidden, ?demo only opens the content */
+  if(typeof T42_LIVE!=='undefined' && !T42_LIVE) return;
   if(!T42_DEMO || typeof document==='undefined' || !document.body || document.getElementById('t42-demo')) return;
   var el=document.createElement('div'); el.id='t42-demo';
   document.body.appendChild(el); t42DemoSheet(false);
@@ -14860,10 +14870,10 @@ function renderMe(){
     h+=fsec('Your Coach','')+'<div class="glist">'+
       grow('person','Monthly review','Message coach','coachReview()')+
       (COACH_GROUP_URL?grow('people','Members group','WhatsApp','coachGroup()'):'')+
-      grow('trophy','T42 included','One edition','openT42()')+'</div>';
+      (T42_LIVE?grow('trophy','T42 included','One edition','openT42()'):'')+'</div>';
   }
   h+=fsec('Challenges','')+'<div class="glist">';
-  if(typeof T42!=='undefined' && T42.state==='ready' && (T42.challenge||T42.past))
+  if(T42_LIVE && typeof T42!=='undefined' && T42.state==='ready' && (T42.challenge||T42.past))
     h+=grow('trophy','T42 Challenge', meT42Line(), 'openT42()');
   if(typeof openClub==='function' && typeof Club!=='undefined' && Club.state==='ready' && (Club.isMember()||Club.isStaff()))
     h+=grow('building','HITFAT Club', Club.isStaff()?'Staff':'Member', 'openClub()');
@@ -16512,7 +16522,7 @@ function activityMatch(k,p){
    open (or one has finished for this member), it is the first chip and the
    first card. It opens the T42 panel — the challenge lives there. */
 function t42InTrain(){
-  return typeof T42!=='undefined' && T42.state==='ready' && !!(T42.challenge||T42.past);
+  return T42_LIVE && typeof T42!=='undefined' && T42.state==='ready' && !!(T42.challenge||T42.past);
 }
 function renderTrain(){
   if(trSeg==='t42'){ trSeg='foryou'; if(typeof openT42==='function') openT42(); return; }
@@ -17118,7 +17128,7 @@ async function onSignedIn(session){
      card never drew, for anyone. Its own try, so a T42 failure cannot cost
      the member their Club card. */
   try{
-    if(typeof T42!=='undefined'){
+    if(typeof T42!=='undefined' && T42_LIVE){
       await T42.load(true);
       if($('home') && $('home').style.display!=='none') renderHome();
     }

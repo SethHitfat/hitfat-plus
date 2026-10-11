@@ -151,7 +151,7 @@ function activityMatch(k,p){
    open (or one has finished for this member), it is the first chip and the
    first card. It opens the T42 panel — the challenge lives there. */
 function t42InTrain(){
-  return typeof T42!=='undefined' && T42.state==='ready' && !!(T42.challenge||T42.past);
+  return T42_LIVE && typeof T42!=='undefined' && T42.state==='ready' && !!(T42.challenge||T42.past);
 }
 function renderTrain(){
   if(trSeg==='t42'){ trSeg='foryou'; if(typeof openT42==='function') openT42(); return; }

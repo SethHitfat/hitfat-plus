@@ -99,6 +99,12 @@ const COACH_WA='60176132170', COACH_GROUP_URL='';
    sub_ SKUs (deployed 9 Oct 2026). Set false to open everything again —
    demo mode always does — so no one meets a lock that has nothing to sell. */
 var MEMBERSHIP_LIVE=true;
+/* T42 is hidden from the app until it is announced again (11 Oct 2026):
+   no Home card, no Train pill, no Me row, nothing loaded at start, and
+   the Coach membership does not offer a T42 place. Everything T42 is
+   still here — set this true to bring it all back. The admin page and
+   the server are untouched. */
+var T42_LIVE=false;
 function contentOpen(){
   return !MEMBERSHIP_LIVE || (typeof T42_DEMO!=='undefined' && T42_DEMO) || hasPlus();
 }
@@ -608,7 +614,7 @@ function paywallHTML(sheet){
      '<button class="'+(pwTier==='plus'?'on':'')+'" onclick="pwSetTier(\'plus\')">HITFAT+</button>'+
      '<button class="'+(pwTier==='coach'?'on':'')+'" onclick="pwSetTier(\'coach\')">HITFAT+ Coach</button></div>';
   h+='<div class="pwq">What you get</div>';
-  h+='<div class="sub-perks">'+info.perks.map(x=>
+  h+='<div class="sub-perks">'+info.perks.filter(x=>T42_LIVE||x[1].indexOf('T42')<0).map(x=>
      '<div class="sub-perk">'+ic(x[0])+'<div><div class="t">'+x[1]+'</div><div class="m">'+x[2]+'</div></div></div>').join('')+'</div>';
   h+='<div class="pwq">Choose your plan</div>';
   h+='<div class="sub-plans">'+plans.map(p=>{
@@ -622,7 +628,7 @@ function paywallHTML(sheet){
      }).join('')+'</div>';
   h+='<button class="bigbtn sub-cta" onclick="pwBuy()">Continue · RM'+chosen.price+'</button>';
   h+='<div class="sub-fine">One payment for '+chosen.months+' months — FPX or DuitNow. It does not renew by itself; '+
-     'we remind you before it ends. '+(pwTier==='coach'?'Includes one T42 edition during your membership.':'T42 challenges are sold separately.')+
+     'we remind you before it ends. '+(T42_LIVE?(pwTier==='coach'?'Includes one T42 edition during your membership.':'T42 challenges are sold separately.'):'')+
      ' All purchases are final. <a href="/terms" target="_blank" rel="noopener">Terms</a> · <a href="/refund" target="_blank" rel="noopener">Refunds</a></div>';
   return h;
 }
@@ -648,12 +654,12 @@ function storeMembership(){
      [[PROGRAMS.filter(p=>p.weeks).length,'programs'],[PROGRAMS.filter(p=>!p.weeks).length,'single sessions'],
       [libDB().length,'filmed movements'],['14','day meal plans']].map(x=>
      '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
-  h+='<div class="nfoot">Your calorie target, meal log, weight and progress stay open without a membership. T42 participants train T42 either way.</div>';
+  h+='<div class="nfoot">Your calorie target, meal log, weight and progress stay open without a membership.'+(T42_LIVE?' T42 participants train T42 either way.':'')+'</div>';
   $('store-body').innerHTML=h;
 }
 function coachUpsell(){
   pwTier='coach'; if(!subPlan(pwSku)||subPlan(pwSku).tier!=='coach') pwSku='sub_coach_12m';
-  return '<div class="nhead"><div class="nhead-t">Add a coach</div><div class="nhead-s">A monthly review, the members group and a T42 place.</div></div>'+paywallHTML(false);
+  return '<div class="nhead"><div class="nhead-t">Add a coach</div><div class="nhead-s">A monthly review and the members group'+(T42_LIVE?', and a T42 place':'')+'.</div></div>'+paywallHTML(false);
 }
 
 /* ── the lock, wherever content is shown ── */

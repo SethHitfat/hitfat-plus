@@ -566,10 +566,10 @@ function renderMe(){
     h+=fsec('Your Coach','')+'<div class="glist">'+
       grow('person','Monthly review','Message coach','coachReview()')+
       (COACH_GROUP_URL?grow('people','Members group','WhatsApp','coachGroup()'):'')+
-      grow('trophy','T42 included','One edition','openT42()')+'</div>';
+      (T42_LIVE?grow('trophy','T42 included','One edition','openT42()'):'')+'</div>';
   }
   h+=fsec('Challenges','')+'<div class="glist">';
-  if(typeof T42!=='undefined' && T42.state==='ready' && (T42.challenge||T42.past))
+  if(T42_LIVE && typeof T42!=='undefined' && T42.state==='ready' && (T42.challenge||T42.past))
     h+=grow('trophy','T42 Challenge', meT42Line(), 'openT42()');
   if(typeof openClub==='function' && typeof Club!=='undefined' && Club.state==='ready' && (Club.isMember()||Club.isStaff()))
     h+=grow('building','HITFAT Club', Club.isStaff()?'Staff':'Member', 'openClub()');
