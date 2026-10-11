@@ -14436,8 +14436,9 @@ function renderHome(){
   // 1) header — the date small, the greeting large, the avatar
   $('home-hdr').innerHTML='<div class="hsum">'+
     '<div class="hsum-l"><div class="k">'+dateLine+'</div>'+
-    '<div class="t">'+(nm?'Hi, '+hesc(nm.split(/\s+/)[0]):'Summary')+'</div></div>'+
-    '<div class="hsum-av" onclick="switchTab(\'me\')">'+avatarHTML(40)+'</div></div>';
+    '<div class="t">'+(nm?'Hi, '+hesc(nm.split(/\s+/)[0]):'Summary')+'</div></div></div>';
+  /* The avatar already sits in the bar above, on every tab; a second one
+     beside the greeting showed the same initial twice. */
 
   // 2) the week — today a white pill, trained days marked
   const off=(now.getDay()+6)%7, mon=new Date(now); mon.setDate(now.getDate()-off);
