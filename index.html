@@ -3725,6 +3725,11 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 /* Collections, stacked: the Explore poster at full width */
 .fcolls{display:flex;flex-direction:column;gap:12px;}
 .fcolls .fcoll{width:auto;min-height:200px;}
+/* a movement still being filmed: listed, not playable */
+.librow.soon{cursor:default;}
+.librow.soon:active{background:none;}
+.librow.soon .t{color:var(--dim);}
+.librow .soon-tag{background:rgba(255,194,26,.16);color:var(--yel-t);}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -7895,6 +7900,7 @@ function playSingle(id){
 /* one movement on its own — used from the library so a clip is always one tap away */
 function playExercise(name){
   const e=DB.find(x=>x.n===name); if(!e) return;
+  if(!e.v){ toast(e.n+' is coming soon — its video is being filmed.'); return; }
   if(needPlus('Every movement in the library is part of HITFAT+.')) return;
   startWorkout([e],{rounds:1, key:'ex-'+name+'-'+iso(0), name:e.n});
 }
@@ -14578,6 +14584,7 @@ let curProg=null, curWeek=1;
 function findProg(id){ return PROGRAMS.find(p=>p.id===id)||CHALLENGES.find(c=>c.id===id); }
 function openProgram(id){
   const p=findProg(id); if(!p) return;
+  if(!progClipsReady(p)){ toast(p.name+' is coming soon — its videos are being filmed.'); return; }
   /* Every program opens its page — the way Fitness+ shows an episode to
      someone who has not subscribed. A locked one says so on its button;
      its days and its player still refuse (openDay, playDay, playSingle). */
@@ -14744,15 +14751,37 @@ function renderLibrary(){
   const list=lib.filter(e=>libEq==='All'||e.eq===libEq);
   /* The Library's sub-pages share one head (Library, then the name), and the
      movements are one grouped list with a play button each, as the day page
-     lists its exercises. */
-  $('lib-body').innerHTML='<div class="hgroup"><div class="k">Library</div><h2>Exercises</h2>'+
-    '<p>'+libDB().length+' movements, each with a demo video.</p></div>'+
-    '<div class="filters">'+eqs.map(q=>'<button class="chip'+(q===libEq?' y':'')+'" onclick="libEq=\''+q+'\';renderLibrary()">'+q+'</button>').join('')+'</div>'+
-    '<div class="liblist">'+
-    list.map(e=>'<div class="librow" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
+     lists its exercises. A movement still being filmed is not offered as if
+     it played: it sits in Coming Soon at the end, with no play button. */
+  const ready=list.filter(hasClip), soon=list.filter(e=>!hasClip(e));
+  const nReady=lib.filter(hasClip).length, nSoon=lib.length-nReady;
+  const row=e=>'<div class="librow" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
       '<div class="tx"><div class="t">'+e.n+'</div>'+
       '<div class="m">'+e.m+' · '+e.eq+' · '+(e.dur||45)+'s</div></div>'+
-      '<span class="libplay" aria-label="Play">'+glyph('play')+'</span></div>').join('')+'</div>';
+      '<span class="libplay" aria-label="Play">'+glyph('play')+'</span></div>';
+  const soonRow=e=>'<div class="librow soon"><div class="tx"><div class="t">'+e.n+'</div>'+
+      '<div class="m">'+e.m+' · '+e.eq+'</div></div><span class="soon-tag">Soon</span></div>';
+  $('lib-body').innerHTML='<div class="hgroup"><div class="k">Library</div><h2>Exercises</h2>'+
+    '<p>'+nReady+' movements with a demo video'+(nSoon?' · '+nSoon+' coming soon':'')+'.</p></div>'+
+    '<div class="filters">'+eqs.map(q=>'<button class="chip'+(q===libEq?' y':'')+'" onclick="libEq=\''+q+'\';renderLibrary()">'+q+'</button>').join('')+'</div>'+
+    (ready.length?'<div class="liblist">'+ready.map(row).join('')+'</div>':'')+
+    (soon.length?fsec('Coming Soon','Being filmed now. They play here as soon as the video is in.')+
+      '<div class="liblist">'+soon.map(soonRow).join('')+'</div>':'');
+}
+
+/* A movement plays only with its video. A program is ready only when every
+   movement in it has one; until then it is Coming Soon rather than a page
+   whose player shows "clip coming soon" halfway through a session. */
+function hasClip(e){ return !!(e && e.v); }
+const _clipsReady={};
+function progClipsReady(p){
+  if(!p) return false;
+  if(p.id in _clipsReady) return _clipsReady[p.id];
+  const names=[];
+  (p.weeks||[]).forEach(w=>(w.days||[]).forEach(d=>(d.ex||[]).forEach(n=>names.push(n))));
+  (p.ex||[]).forEach(n=>names.push(n));
+  const ok=names.every(n=>{ const e=DB.find(x=>x.n===n); return hasClip(e); });
+  return (_clipsReady[p.id]=ok);
 }
 
 /* ── ME ── */
@@ -16696,7 +16725,7 @@ function trLibrary(){
   const rows=[
     ['workout',  'Workouts',     singles.length,              "openLibList('workouts')"],
     ['clipboard','Programs',     plans.length,                "openLibList('programs')"],
-    ['play',     'Exercises',    libDB().length,              "openLibrary()"],
+    ['play',     'Exercises',    libDB().filter(hasClip).length, "openLibrary()"],
     ['trophy',   'Collections',  CHALLENGES.length,           "openLibList('collections')"],
     ['repeat',   'In Progress',  going.length,                "openActivity('Started')"],
     ['medal',    'Finished',     done.length,                 "openActivity('Finished')"],

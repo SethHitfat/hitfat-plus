@@ -270,6 +270,7 @@ function playSingle(id){
 /* one movement on its own — used from the library so a clip is always one tap away */
 function playExercise(name){
   const e=DB.find(x=>x.n===name); if(!e) return;
+  if(!e.v){ toast(e.n+' is coming soon — its video is being filmed.'); return; }
   if(needPlus('Every movement in the library is part of HITFAT+.')) return;
   startWorkout([e],{rounds:1, key:'ex-'+name+'-'+iso(0), name:e.n});
 }

@@ -394,7 +394,7 @@ function trLibrary(){
   const rows=[
     ['workout',  'Workouts',     singles.length,              "openLibList('workouts')"],
     ['clipboard','Programs',     plans.length,                "openLibList('programs')"],
-    ['play',     'Exercises',    libDB().length,              "openLibrary()"],
+    ['play',     'Exercises',    libDB().filter(hasClip).length, "openLibrary()"],
     ['trophy',   'Collections',  CHALLENGES.length,           "openLibList('collections')"],
     ['repeat',   'In Progress',  going.length,                "openActivity('Started')"],
     ['medal',    'Finished',     done.length,                 "openActivity('Finished')"],

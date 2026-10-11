@@ -305,6 +305,7 @@ let curProg=null, curWeek=1;
 function findProg(id){ return PROGRAMS.find(p=>p.id===id)||CHALLENGES.find(c=>c.id===id); }
 function openProgram(id){
   const p=findProg(id); if(!p) return;
+  if(!progClipsReady(p)){ toast(p.name+' is coming soon — its videos are being filmed.'); return; }
   /* Every program opens its page — the way Fitness+ shows an episode to
      someone who has not subscribed. A locked one says so on its button;
      its days and its player still refuse (openDay, playDay, playSingle). */
@@ -471,15 +472,37 @@ function renderLibrary(){
   const list=lib.filter(e=>libEq==='All'||e.eq===libEq);
   /* The Library's sub-pages share one head (Library, then the name), and the
      movements are one grouped list with a play button each, as the day page
-     lists its exercises. */
-  $('lib-body').innerHTML='<div class="hgroup"><div class="k">Library</div><h2>Exercises</h2>'+
-    '<p>'+libDB().length+' movements, each with a demo video.</p></div>'+
-    '<div class="filters">'+eqs.map(q=>'<button class="chip'+(q===libEq?' y':'')+'" onclick="libEq=\''+q+'\';renderLibrary()">'+q+'</button>').join('')+'</div>'+
-    '<div class="liblist">'+
-    list.map(e=>'<div class="librow" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
+     lists its exercises. A movement still being filmed is not offered as if
+     it played: it sits in Coming Soon at the end, with no play button. */
+  const ready=list.filter(hasClip), soon=list.filter(e=>!hasClip(e));
+  const nReady=lib.filter(hasClip).length, nSoon=lib.length-nReady;
+  const row=e=>'<div class="librow" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
       '<div class="tx"><div class="t">'+e.n+'</div>'+
       '<div class="m">'+e.m+' · '+e.eq+' · '+(e.dur||45)+'s</div></div>'+
-      '<span class="libplay" aria-label="Play">'+glyph('play')+'</span></div>').join('')+'</div>';
+      '<span class="libplay" aria-label="Play">'+glyph('play')+'</span></div>';
+  const soonRow=e=>'<div class="librow soon"><div class="tx"><div class="t">'+e.n+'</div>'+
+      '<div class="m">'+e.m+' · '+e.eq+'</div></div><span class="soon-tag">Soon</span></div>';
+  $('lib-body').innerHTML='<div class="hgroup"><div class="k">Library</div><h2>Exercises</h2>'+
+    '<p>'+nReady+' movements with a demo video'+(nSoon?' · '+nSoon+' coming soon':'')+'.</p></div>'+
+    '<div class="filters">'+eqs.map(q=>'<button class="chip'+(q===libEq?' y':'')+'" onclick="libEq=\''+q+'\';renderLibrary()">'+q+'</button>').join('')+'</div>'+
+    (ready.length?'<div class="liblist">'+ready.map(row).join('')+'</div>':'')+
+    (soon.length?fsec('Coming Soon','Being filmed now. They play here as soon as the video is in.')+
+      '<div class="liblist">'+soon.map(soonRow).join('')+'</div>':'');
+}
+
+/* A movement plays only with its video. A program is ready only when every
+   movement in it has one; until then it is Coming Soon rather than a page
+   whose player shows "clip coming soon" halfway through a session. */
+function hasClip(e){ return !!(e && e.v); }
+const _clipsReady={};
+function progClipsReady(p){
+  if(!p) return false;
+  if(p.id in _clipsReady) return _clipsReady[p.id];
+  const names=[];
+  (p.weeks||[]).forEach(w=>(w.days||[]).forEach(d=>(d.ex||[]).forEach(n=>names.push(n))));
+  (p.ex||[]).forEach(n=>names.push(n));
+  const ok=names.every(n=>{ const e=DB.find(x=>x.n===n); return hasClip(e); });
+  return (_clipsReady[p.id]=ok);
 }
 
 /* ── ME ── */

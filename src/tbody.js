@@ -975,8 +975,12 @@ ok("...while the exercises stay for the plans", BAR_DB.every(function(e){ return
 /* the player must not leave the previous clip running under a new name */
 var _noclip=BAR_DB.filter(function(e){ return !e.v; })[0];
 ok("an unfilmed movement still exists to test with", !!_noclip);
+ok("the Library does not offer an unfilmed movement as playable", (function(){
+    var t0=toast, said=''; toast=function(m){ said=m; }; plClose&&pl&&plClose(); playExercise(_noclip.n); toast=t0;
+    return !pl && said.indexOf('coming soon')>0; })());
+/* the player itself, reached another way (a T42 plan day), still blanks */
 ok("a clipless exercise blanks the video", (function(){
-    playExercise(_noclip.n);
+    startWorkout([_noclip],{rounds:1,key:'noclip',name:_noclip.n});
     var f=document.getElementById('pl-video');
     return String(f.src||'').indexOf('vimeo')<0; })());
 ok("and says so on screen",      document.getElementById('pl-nofilm').style.display==='grid');
@@ -3238,6 +3242,22 @@ ok("positions never leave 0–100%", Array.from(PHOTO).every(function(id){
     return [FA.wide,FA.row,FA.poster,FA.hero,FA.tall,FA.join].every(function(fa){
       var m=imgPos({id:id},fa).match(/([\d.]+)% ([\d.]+)%/); return m && +m[1]>=0 && +m[1]<=100 && +m[2]>=0 && +m[2]<=100; }); }));
 ok("a program with no picture of its own is untouched", imgPos({id:'p1'},FA.wide)==='');
+
+print("\n── LIBRARY: COMING SOON WITHOUT A VIDEO ──");
+libEq='All'; noThrow("the Exercises page renders", function(){ openLibrary('All'); });
+var _lh=document.getElementById('lib-body').innerHTML, _nv=libDB().filter(function(e){return !e.v;}).length;
+ok("it no longer says every movement has a video", _lh.indexOf('each with a demo video')<0);
+ok("it counts what plays and what is coming", _lh.indexOf(libDB().filter(hasClip).length+' movements with a demo video')>0 &&
+   (_nv===0 || _lh.indexOf(_nv+' coming soon')>0));
+ok("unfilmed movements sit in Coming Soon with no play button", _nv===0 ||
+   (_lh.split('class="librow soon"').length-1===_nv && _lh.indexOf('Coming Soon')>0));
+ok("every program in the catalogue has all its videos", PROGRAMS.filter(function(p){ return !p.rehab; }).every(progClipsReady));
+ok("a program missing a video does not open", (function(){
+    var fake={id:'zz-test',name:'Test',weeks:[{days:[{name:'D',ex:[_noclip.n]}]}]};
+    PROGRAMS.push(fake); var t0=toast, said=''; toast=function(m){ said=m; };
+    var was=document.getElementById('progdetail').style.display; document.getElementById('progdetail').style.display='none';
+    openProgram('zz-test'); toast=t0; PROGRAMS.pop();
+    return said.indexOf('coming soon')>0 && document.getElementById('progdetail').style.display==='none'; })());
 
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

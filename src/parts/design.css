@@ -1722,3 +1722,8 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 /* Collections, stacked: the Explore poster at full width */
 .fcolls{display:flex;flex-direction:column;gap:12px;}
 .fcolls .fcoll{width:auto;min-height:200px;}
+/* a movement still being filmed: listed, not playable */
+.librow.soon{cursor:default;}
+.librow.soon:active{background:none;}
+.librow.soon .t{color:var(--dim);}
+.librow .soon-tag{background:rgba(255,194,26,.16);color:var(--yel-t);}
