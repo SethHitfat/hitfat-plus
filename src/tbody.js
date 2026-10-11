@@ -3296,7 +3296,7 @@ print("\n── T42 HIDDEN ──");
 
 print("\n── ACTIVITY TILES HAVE THEIR OWN PICTURES ──");
 ok("bottle workouts have pictures", ['bt1','bt2','p34'].every(function(id){return PHOTO.has(id) && FOCAL[id];}));
-ok("five activity tiles use a studio picture", ACTIVITIES.filter(function(a){return /^\/img\/p\/act-/.test(a.img);}).length===5);
+ok("every activity tile uses a studio picture", ACTIVITIES.every(function(a){return /^\/img\/p\/act-/.test(a.img);}));
 ok("the activity row shows the picture", factCard(ACTIVITIES[0]).indexOf("/img/p/act-fatloss.jpg")>0);
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");
