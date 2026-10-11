@@ -1282,6 +1282,8 @@ HF.apply(null);
 noThrow("no target shows setup",  function(){ renderEat(); });
 ok("setup asks for the basics",   document.getElementById('eat-body').innerHTML.indexOf('e-w')>0);
 ok("no segments before setup",    document.getElementById('eat-segs').innerHTML==='');
+ok("setup asks like Build Your Plan", document.getElementById('eat-body').innerHTML.indexOf('esfields')>0 &&
+   document.getElementById('eat-body').innerHTML.indexOf('obtile')>0 && document.getElementById('eat-body').innerHTML.indexOf('obseg')>0);
 _eg='male'; _egoal='lose';
 document.getElementById('e-w').value='88';
 document.getElementById('e-h').value='175';
@@ -1289,6 +1291,7 @@ document.getElementById('e-a').value='32';
 noThrow("target saves",           function(){ saveNutrition(); });
 ok("target computed",             HF.data.nutrition.cal>1200, HF.data.nutrition.cal);
 ok("segments appear after setup", document.getElementById('eat-segs').innerHTML.indexOf('setEatSeg')>0);
+ok("...as a segmented control", document.getElementById('eat-segs').innerHTML.indexOf('obseg')>0);
 ok("three segments",              EAT_SEGS.length===3);
 ok("every segment has a handler", EAT_SEGS.every(function(s){
     return document.getElementById('eat-segs').innerHTML.indexOf("setEatSeg('"+s[0]+"')")>0; }));

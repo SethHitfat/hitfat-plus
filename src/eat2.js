@@ -86,8 +86,8 @@ function eatHead(){
 function renderEat(){
   const n=HF.data.nutrition||{};
   if(!n.cal){ $('eat-segs').innerHTML=''; renderEatSetup(); return; }
-  $('eat-segs').innerHTML=eatHead()+'<div class="segs">'+EAT_SEGS.map(s=>
-    '<button class="seg'+(eatSeg===s[0]?' on':'')+'" onclick="setEatSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
+  $('eat-segs').innerHTML=eatHead()+'<div class="obseg eseg">'+EAT_SEGS.map(s=>
+    '<button class="'+(eatSeg===s[0]?'on':'')+'" onclick="setEatSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
   if(eatSeg==='plan') return eatPlan();
   if(eatSeg==='log')  return eatLog();
   eatToday();
@@ -289,28 +289,34 @@ function logFav(i){
 }
 
 let _eg='male', _egoal='lose';
+/* The target, set the way Build Your Plan asks: a large title, the three
+   numbers as one grouped list with their units, sex as a segmented
+   control, the goal as tiles, one pill to save. */
+const EAT_GOALS=[['lose','Lose Fat','A steady deficit','flame'],['maintain','Maintain','Hold where you are','scale'],
+                 ['muscle','Build Muscle','A small surplus','workout'],['bulk','Bulk','More, to grow','trophy']];
 function renderEatSetup(){
-  $('eat-body').innerHTML=
-    '<div class="ehero"><div class="k">First, your target</div>'+
-    '<div class="n" style="font-size:40px;margin-top:12px;">Set your<br>daily calories</div>'+
-    '<div class="u" style="margin-top:10px;">Weight, height, age and goal — that is all it takes. Everything else on this tab builds itself from it.</div></div>'+
-    fsec('About you','')+
-    '<input class="inp" id="e-w" type="number" inputmode="decimal" placeholder="Weight (kg)">'+
-    '<input class="inp" id="e-h" type="number" inputmode="decimal" placeholder="Height (cm)">'+
-    '<input class="inp" id="e-a" type="number" inputmode="numeric" placeholder="Age">'+
-    '<div class="qh">Sex</div><div class="filters">'+
-    '<button class="chip" id="e-m" onclick="_eg=\'male\';renderPick()">Male</button>'+
-    '<button class="chip" id="e-f" onclick="_eg=\'female\';renderPick()">Female</button></div>'+
-    '<div class="qh">Goal</div><div class="filters">'+
-    ['lose','maintain','muscle','bulk'].map(g=>'<button class="chip" id="e-g-'+g+'" onclick="_egoal=\''+g+'\';renderPick()">'+
-      ({lose:'Lose fat',maintain:'Maintain',muscle:'Muscle',bulk:'Bulk'})[g]+'</button>').join('')+'</div>'+
-    '<button class="bigbtn" onclick="saveNutrition()">Save target</button>';
+  const fld=(id,label,unit,mode)=>'<label class="esf"><span>'+label+'</span>'+
+    '<input class="inp" id="'+id+'" type="number" inputmode="'+mode+'" placeholder="0">'+
+    '<em>'+unit+'</em></label>';
+  $('eat-body').innerHTML=eatHead()+
+    '<div class="esetk">First, your target</div>'+
+    '<div class="esett">Set Your Daily Calories</div>'+
+    '<div class="esets">Weight, height, age and goal — that is all it takes. Everything else on this tab builds itself from it.</div>'+
+    '<div class="obq">About You</div>'+
+    '<div class="esfields">'+fld('e-w','Weight','kg','decimal')+fld('e-h','Height','cm','decimal')+fld('e-a','Age','years','numeric')+'</div>'+
+    '<div class="obq">Sex</div>'+
+    '<div class="obseg"><button id="e-m" onclick="_eg=\'male\';renderPick()">Male</button>'+
+    '<button id="e-f" onclick="_eg=\'female\';renderPick()">Female</button></div>'+
+    '<div class="obq">Your Goal</div>'+
+    '<div class="obgrid">'+EAT_GOALS.map(g=>'<button class="obtile" id="e-g-'+g[0]+'" onclick="_egoal=\''+g[0]+'\';renderPick()">'+
+      '<span class="obtile-ic">'+glyph(g[3])+'</span><span class="obtile-t">'+g[1]+'</span><span class="obtile-s">'+g[2]+'</span></button>').join('')+'</div>'+
+    '<button class="bigbtn esave" onclick="saveNutrition()">Save Target</button>';
   renderPick();
 }
 function renderPick(){
   const m=$('e-m'), f=$('e-f');
-  if(m) m.className='chip'+(_eg==='male'?' y':''); if(f) f.className='chip'+(_eg==='female'?' y':'');
-  ['lose','maintain','muscle','bulk'].forEach(g=>{ const b=$('e-g-'+g); if(b) b.className='chip'+(_egoal===g?' y':''); });
+  if(m) m.className=_eg==='male'?'on':''; if(f) f.className=_eg==='female'?'on':'';
+  EAT_GOALS.forEach(g=>{ const b=$('e-g-'+g[0]); if(b) b.className='obtile'+(_egoal===g[0]?' on':''); });
 }
 function saveNutrition(){
   const w=parseFloat(($('e-w')||{}).value), h=parseFloat(($('e-h')||{}).value), a=parseInt(($('e-a')||{}).value,10);

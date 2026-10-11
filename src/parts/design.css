@@ -1649,3 +1649,27 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .pgstats .big.hc-days{color:var(--lime);} .pgstats .big.hc-mins{color:var(--yel-t);}
 .pgacts{display:flex;flex-direction:column;gap:10px;margin-top:24px;}
 .pgacts .bigbtn{margin:0;border-radius:99px;}
+
+/* ═══════════════════════════════════════════════════════════════
+   EAT: the target set like Build Your Plan, the tabs as a segment
+   ═══════════════════════════════════════════════════════════════ */
+#eat .eseg{margin:4px 0 2px;}
+#eat .eseg button{padding:8px 4px;}
+.esetk{font-size:15px;font-weight:700;color:var(--lime);margin-top:6px;}
+.esett{font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.08;color:var(--txt);margin-top:2px;}
+.esets{font-size:15px;color:var(--dim);line-height:1.45;margin-top:8px;}
+.esfields{border-radius:14px;overflow:hidden;background:var(--surface);}
+:root[data-theme="light"] .esfields{background:#FFFFFF;box-shadow:var(--lift-1);}
+.esf{display:flex;align-items:center;gap:10px;padding:0 16px;min-height:52px;cursor:text;}
+.esf + .esf{border-top:.5px solid var(--sep);}
+.esf span{flex:1;font-size:17px;color:var(--txt);}
+.esf .inp{width:96px;flex:none;margin:0;padding:10px 0;border:none;border-radius:0;background:transparent;box-shadow:none;
+  text-align:right;font-size:17px;font-weight:600;color:var(--txt);}
+.esf .inp:focus{outline:none;box-shadow:none;background:transparent;}
+.esf .inp::placeholder{color:var(--dim2);font-weight:400;}
+.esf em{font-style:normal;font-size:15px;color:var(--dim);min-width:40px;}
+#eat .obgrid .obtile{background:var(--surface);}
+:root[data-theme="light"] #eat .obgrid .obtile{background:#FFFFFF;box-shadow:var(--lift-1);}
+#eat .obgrid .obtile.on{box-shadow:inset 0 0 0 2px var(--lime);}
+.esave{margin-top:22px;border-radius:99px;}
+:root[data-theme="light"] #eat .obgrid .obtile.on, #eat .obgrid .obtile.on{box-shadow:inset 0 0 0 2px var(--lime);}
