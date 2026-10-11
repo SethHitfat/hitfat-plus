@@ -293,6 +293,10 @@ ok("goal counts down", document.getElementById('prog-body').innerHTML.indexOf('k
 ok("weight chart needs 2 points", weightChart([{iso:iso(0),kg:80}])==='');
 HF.markDone('a',{name:'X',mins:30});
 noThrow("period switch", function(){ setPgP('month'); setPgP('week'); });
+ok("the window is a segmented control at the top", document.getElementById('prog-body').innerHTML.indexOf('pgper')>0 &&
+   document.getElementById('prog-body').innerHTML.indexOf('pgper')<document.getElementById('prog-body').innerHTML.indexOf('Progress Score'));
+ok("the score explains itself inside its card", document.getElementById('prog-body').innerHTML.indexOf('pgscard')>0 &&
+   document.getElementById('prog-body').innerHTML.indexOf('pgnotes')>document.getElementById('prog-body').innerHTML.indexOf('pgscard'));
 ok("training counted", pgTraining().sessions===1, pgTraining().sessions);
 _canvas={fills:0,texts:0,strokes:0,nan:0,rects:0};
 noThrow("share card draws",      function(){ drawShareCard(); });

@@ -169,15 +169,20 @@ function renderProgress(){
   /* The date small, the title large — the Home header's shape. */
   const dl=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
   let h='<div class="hsum"><div class="hsum-l"><div class="k">'+dl+'</div><div class="t">Progress</div></div></div>';
+  /* The window for the whole page, as a Fitness+ segmented control at the
+     top rather than a pair of chips halfway down. */
+  h+='<div class="obseg pgper">'+
+     '<button class="'+(pgDays()===7?'on':'')+'" onclick="setPgP(\'week\')">Week</button>'+
+     '<button class="'+(pgDays()===7?'':'on')+'" onclick="setPgP(\'month\')">Month</button></div>';
 
   /* ── score ── one ring and the four parts it is made of, the way the
      Activity card shows its rings and their numbers. */
   h+=fsec('Progress Score','Four parts of 25, each from what you did.')+
-     '<div class="hact">'+pgRing(sc.score,'#FF453A',112,sc.score,'/100')+
+     '<div class="pgscard"><div class="hact">'+pgRing(sc.score,'#FF453A',112,sc.score,'/100')+
      '<div class="hact-r"><div class="hact-s"><div class="l">This month</div><div class="v hc-mins">'+sc.band+'</div></div>'+
      sc.parts.map(p=>'<div class="pgpart"><span>'+p.label+'</span><b>'+p.got+'<small>/25</small></b></div>').join('')+
      '</div></div>'+
-     '<div class="pgnotes">'+sc.parts.map(p=>'<div><b>'+p.label+'</b> · '+p.note+'</div>').join('')+'</div>';
+     '<div class="pgnotes">'+sc.parts.map(p=>'<div><b>'+p.label+'</b><span>'+p.note+'</span></div>').join('')+'</div></div>';
 
   /* ── this month ── every tile is left out when its measurement has never
      been entered, rather than printed as a dash. */
@@ -192,11 +197,8 @@ function renderProgress(){
     pgTile('Days logged', nu.logged||0, '', 'of '+pgDays()+' days', null, false),
     pgTile('Streak', streak, streak===1?'day':'days', streak?'Keep it up':'Start today', null, false)
   ].filter(Boolean).join('');
-  h+=fsec('Highlights','Tap a measurement for its trend.')+
-     '<div class="pgseg">'+
-     '<button class="seg'+(pgDays()===7?' on':'')+'" onclick="setPgP(\'week\')">This week</button>'+
-     '<button class="seg'+(pgDays()===7?'':' on')+'" onclick="setPgP(\'month\')">Last 30 days</button>'+
-     '</div><div class="pggrid">'+tiles+'</div>';
+  h+=fsec('Highlights',(pgDays()===7?'This week':'The last 30 days')+'. Tap a measurement for its trend.')+
+     '<div class="pggrid">'+tiles+'</div>';
 
   /* ── goal ── */
   if(HF.data.goalKg && wl.length){
@@ -218,9 +220,9 @@ function renderProgress(){
   h+=fsec('Training','Filled days are days you trained.')+
      '<div class="acard"><div class="ah">'+ic('workout')+'<div class="t">'+(pgDays()===7?'This week':'Last 30 days')+'</div></div>'+
      '<div class="arow pgstats">'+
-     '<div><div class="big">'+tr.sessions+'</div><div class="sub">sessions</div></div>'+
-     '<div><div class="big">'+tr.mins+'</div><div class="sub">minutes</div></div>'+
-     '<div><div class="big">'+tr.activeDays+'</div><div class="sub">active days</div></div></div>'+
+     '<div><div class="big hc-days">'+tr.sessions+'</div><div class="sub">'+(tr.sessions===1?'session':'sessions')+'</div></div>'+
+     '<div><div class="big hc-mins">'+tr.mins+'</div><div class="sub">minutes</div></div>'+
+     '<div><div class="big hc-cons">'+tr.activeDays+'</div><div class="sub">'+(tr.activeDays===1?'active day':'active days')+'</div></div></div>'+
      pgCalendar()+
      '<div class="pglegend"><i class="pgd on"></i><span>Trained</span><i class="pgd"></i><span>Rest</span></div>'+
      '</div>';
@@ -245,7 +247,7 @@ function renderProgress(){
   if(wd!==null) ins.push({ok:(wd<0)===goodDown||wd===0, t:'Weight '+(wd<0?'trending down':wd>0?'trending up':'holding'),
                           s:fmtDelta(wd,'kg')+' over 30 days'});
   if(tr.sessions) ins.push({ok:tr.sessions>=(HF.data.weekGoal||5)*2, t:'Training',
-                          s:tr.sessions+' sessions, '+tr.mins+' minutes this month'});
+                          s:tr.sessions+(tr.sessions===1?' session, ':' sessions, ')+tr.mins+' minutes '+(pgDays()===7?'this week':'in 30 days')});
   if(nu.logged) ins.push({ok:nu.logged>=pgDays()*0.6, t:'Food logging',
                           s:nu.logged+' of '+pgDays()+' days'});
   if(streak) ins.push({ok:streak>=3, t:'Streak', s:streak+' day'+(streak===1?'':'s')+' running'});
@@ -267,8 +269,8 @@ function renderProgress(){
   const going=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>0&&progDone(p.id)<progDays(p));
   if(going.length) h+=fsec('Programs','In progress.')+going.map(frow).join('');
 
-  h+='<button class="bigbtn" onclick="askMeasure()" style="margin-top:22px;">Log Measurements</button>'+
-     '<button class="bigbtn sec" onclick="openShare()">Share Progress Card</button>';
+  h+='<div class="pgacts"><button class="bigbtn" onclick="askMeasure()">Log Measurements</button>'+
+     '<button class="bigbtn sec" onclick="openShare()">Share Progress Card</button></div>';
   $('prog-body').innerHTML=h;
 }
 
