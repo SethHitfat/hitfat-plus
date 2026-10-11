@@ -79,7 +79,7 @@ const FOCAL={
   sig1:[47,13,1], sig2:[48,20,1], sig3:[47,15,1], sig4:[48,10,1], tw1:[55,15,0.593],
   tw2:[60,44,0.593], bt1:[50,18,1.087], bt2:[60,32,1.087], p34:[50,45,1.087]
 };
-const FA={wide:1.77, row:1.65, poster:1.5, hero:0.87, tall:0.67, join:0.6};
+const FA={wide:1.77, row:1.65, poster:1.5, hero:0.87, card:0.75, tall:0.67, join:0.6};
 function imgPos(p,frame){
   const f=hasPhoto(p)&&FOCAL[p.id]; if(!f) return '';
   const fx=f[0]/100, fy=f[1]/100, ar=f[2], fa=frame||FA.row;

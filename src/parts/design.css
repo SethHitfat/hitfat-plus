@@ -1078,9 +1078,10 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fsec .ft .cv{font-size:22px;color:var(--dim2);font-weight:500;}
 .fsec .fs{font-size:14px;margin-top:3px;color:var(--dim2);}
 
-/* the sampler: 16:9 cards, two and a bit on a phone */
-.fland{width:168px;}
-.fland .im{width:168px;height:95px;border-radius:12px;}
+/* most pictures stand upright, so the card does too: a wide card showed
+   only a slice of the face and chest */
+.fland{width:150px;}
+.fland .im{width:150px;height:200px;border-radius:12px;}
 .fland .t{font-size:15px;font-weight:500;margin-top:8px;}
 .fland .m{font-size:13px;color:var(--dim2);}
 .fnew{font-size:10px;font-weight:700;letter-spacing:.3px;padding:3px 7px;border-radius:6px;}
