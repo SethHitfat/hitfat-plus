@@ -2044,3 +2044,21 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .jm{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font-size:12px;color:var(--dim);margin-top:5px;font-variant-numeric:tabular-nums;}
 .jm b{font-size:15px;color:var(--txt);}
 .jm .p{color:#2F7BF6;font-weight:700;} .jm .c{color:#34C759;font-weight:700;} .jm .f{color:#E0A800;font-weight:700;}
+/* ═══ leaderboards ═══ */
+.lb-list{background:var(--surface);border-radius:18px;padding:4px 12px;}
+.lb-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
+.lb-row:last-child{border-bottom:none;}
+.lb-row.me{background:var(--accent-wash);margin:0 -12px;padding:10px 12px;border-radius:12px;border-bottom-color:transparent;}
+.lb-rk{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--dim);
+  font-variant-numeric:tabular-nums;}
+.lb-rk.t1{background:#FFC21A;color:#000;} .lb-rk.t2{background:#C9CDD3;color:#000;} .lb-rk.t3{background:#D08A4E;color:#000;}
+.lb-av{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;
+  background:var(--surface2);color:var(--txt);}
+.lb-n{flex:1;min-width:0;font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-n em{font-style:normal;font-size:11px;font-weight:800;color:var(--lime);margin-left:4px;text-transform:uppercase;letter-spacing:.04em;}
+.lb-v{flex:none;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;}
+.lb-gap{text-align:center;color:var(--dim);padding:2px 0;}
+.lb-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 2px 0;font-size:12px;color:var(--dim);}
+.lb-foot button{border:none;background:none;color:var(--lime);font:inherit;font-weight:700;cursor:pointer;padding:4px 0;}
+.lb-note{font-size:12px;color:var(--dim);margin:6px 2px 0;}
+.lb-empty{background:var(--surface);border-radius:18px;padding:18px;text-align:center;color:var(--dim);font-size:14px;line-height:1.45;}

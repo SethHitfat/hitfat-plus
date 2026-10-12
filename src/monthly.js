@@ -92,6 +92,58 @@ function monthlyCard(){
     '</div>';
 }
 
+/* ── LEADERBOARDS ──
+   Two boards, computed on the server from what people log: this month's
+   challenge (days trained) and BURN30 (the day reached). First names only;
+   anyone can leave the boards and still see their own place. */
+let _lbCache={};
+async function fetchBoard(kind){
+  const c=_lbCache[kind]; if(c && Date.now()-c.t<60000) return c.v;
+  if(!sb || !HF.userId) return null;
+  const r = kind==='burn30' ? await sb.rpc('plus_lb_burn30') : await sb.rpc('plus_lb_month',{p_month:monthKey()});
+  if(r.error) throw r.error;
+  _lbCache[kind]={t:Date.now(), v:r.data};
+  return r.data;
+}
+function lbValue(kind,row){ return kind==='burn30' ? (row.day>=30?'Finished':'Day '+row.day) : row.days+(row.days===1?' day':' days'); }
+function lbRow(kind,row){
+  const top=row.rank<=3 ? ' t'+row.rank : '';
+  return '<div class="lb-row'+(row.me?' me':'')+'"><span class="lb-rk'+top+'">'+row.rank+'</span>'+
+    '<span class="lb-av">'+hesc(String(row.name||'M').charAt(0).toUpperCase())+'</span>'+
+    '<span class="lb-n">'+hesc(row.name||'Member')+(row.me?' <em>You</em>':'')+'</span>'+
+    '<span class="lb-v">'+lbValue(kind,row)+'</span></div>';
+}
+function boardHTML(kind,d){
+  if(!d) return '<div class="lb-empty">Sign in to see where you stand.</div>';
+  const hidden=!!(HF.data.prefs&&HF.data.prefs.lbHide);
+  let h='';
+  if(!d.top || !d.top.length)
+    h+='<div class="lb-empty">'+(kind==='burn30'?'No one has started BURN30 yet. Day 1 puts you on the board.':'No one has trained this month yet. One session puts you on the board.')+'</div>';
+  else {
+    h+='<div class="lb-list">'+d.top.map(r=>lbRow(kind,r)).join('');
+    if(d.me && !d.top.some(r=>r.me)) h+='<div class="lb-gap">···</div>'+lbRow(kind,{rank:d.me.rank,name:(HF.data.prefs&&HF.data.prefs.name||'').split(' ')[0]||'Member',days:d.me.days,day:d.me.day,me:true});
+    h+='</div>';
+  }
+  h+='<div class="lb-foot"><span>'+(d.count||0)+(d.count===1?' person':' people')+' on the board'+
+     (kind==='burn30'&&d.finished?' · '+d.finished+' finished':'')+'</span>'+
+     '<button onclick="setLbHide('+(!hidden)+')">'+(hidden?'Show me on the boards':'Hide me from the boards')+'</button></div>';
+  if(!(HF.data.prefs&&HF.data.prefs.name)) h+='<div class="lb-note">You show up as "Member" until you add your first name in Me.</div>';
+  if(hidden) h+='<div class="lb-note">You are hidden. Others do not see you; you still see your place.</div>';
+  return h;
+}
+function loadBoard(kind,elId){
+  const el=$(elId); if(!el) return;
+  if(!_lbCache[kind]) el.innerHTML='<div class="lb-empty">Loading the board…</div>';
+  fetchBoard(kind).then(d=>{ const e=$(elId); if(e) e.innerHTML=boardHTML(kind,d); })
+    .catch(()=>{ const e=$(elId); if(e) e.innerHTML='<div class="lb-empty">The board could not load. Try again in a moment.</div>'; });
+}
+function setLbHide(v){
+  HF.data.prefs=HF.data.prefs||{}; HF.data.prefs.lbHide=!!v; HF.save(); _lbCache={};
+  toast(v?'Hidden from the boards':'Back on the boards');
+  /* the cloud save waits a moment; read the board after it */
+  setTimeout(()=>{ if($('lb-month')) loadBoard('month','lb-month'); if($('lb-burn30')) loadBoard('burn30','lb-burn30'); },1500);
+}
+
 /* ── the panel ── */
 function openMonthly(){
   hidePanels(); $('monthly').style.display='block';
@@ -133,6 +185,9 @@ function renderMonthly(){
   }
   h+='</div>';
 
+  h+=fsec('Leaderboard','Days trained this month, everyone on HITFAT+.');
+  h+='<div id="lb-month"></div>';
+
   h+=fsec('How it works','');
   h+='<div class="flib">'+[
       ['📅','A new challenge every month','It changes by itself on the first'],
@@ -162,6 +217,7 @@ function renderMonthly(){
     }).join('')+'</div>';
 
   $('mth-body').innerHTML=h;
+  loadBoard('month','lb-month');
 }
 
 

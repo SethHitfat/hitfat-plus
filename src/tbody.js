@@ -3476,5 +3476,23 @@ print("\n── EAT · JOURNAL ──");
   ok("an empty journal points at the scanner", h.indexOf('Your journal starts')>0 && h.indexOf('openScan()')>0);
   eatSeg='today'; HF.data.meals=keepMeals; HF.data.nutrition=keepN;
 })();
+
+print("\n── LEADERBOARDS ──");
+(function(){
+  var keepPrefs=HF.data.prefs; HF.data.prefs={name:'Aiman Rahim'};
+  var d={month:'2026-10',count:3,top:[{rank:1,name:'Siti',days:18,me:false},{rank:2,name:'Aiman',days:12,me:true},{rank:3,name:'Member',days:9,me:false}],me:{rank:2,days:12,hidden:false}};
+  var h=boardHTML('month',d);
+  ok("the board lists ranks, first names and days", (h.match(/class="lb-row/g)||[]).length===3 && h.indexOf('18 days')>0 && h.indexOf('Siti')>0);
+  ok("...marks you", h.indexOf('lb-row me')>0 && h.indexOf('<em>You</em>')>0);
+  ok("...gold, silver and bronze", h.indexOf('lb-rk t1')>0 && h.indexOf('lb-rk t3')>0);
+  ok("...and offers to hide you", h.indexOf('setLbHide(true)')>0);
+  d={count:60,top:[{rank:1,name:'A',day:30,me:false}],me:{rank:41,day:6,hidden:false},finished:4};
+  h=boardHTML('burn30',d);
+  ok("BURN30 shows the day, finishers, and your place below the top", h.indexOf('Finished')>0 && h.indexOf('4 finished')>0 && h.indexOf('lb-gap')>0 && h.indexOf('Day 6')>0);
+  ok("an empty board says how to get on it", boardHTML('month',{count:0,top:[]}).indexOf('One session puts you on the board')>0);
+  ok("no sign-in, no board", boardHTML('month',null).indexOf('Sign in')>=0);
+  HF.data.prefs={}; ok("no name shows as Member, with a hint", boardHTML('month',{count:1,top:[{rank:1,name:'Member',days:1,me:true}]}).indexOf('add your first name')>0);
+  HF.data.prefs=keepPrefs;
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

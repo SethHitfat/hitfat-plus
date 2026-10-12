@@ -167,6 +167,7 @@ function renderWL30(){
   else if(wlTab==='guide') h+=wlGuide();
   else h+=wlPlan();
   $('pgd-body').innerHTML=h;
+  if(wlTab==='progress' && owned) loadBoard('burn30','lb-burn30');
 }
 
 /* The poster heads every page of the program, so tapping it on Home opens
@@ -362,6 +363,8 @@ function wlProgress(){
   let h='<div class="wl-stats">'+[[done,'Days done'],[liveStreak(),'Day streak'],[Math.round(mins),'Minutes']]
     .map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
 
+  h+=fsec('Leaderboard','Everyone on BURN30, by the day they have reached.');
+  h+='<div id="lb-burn30"></div>';
   h+=fsec('Badges','One for every week you finish.');
   h+='<div class="wl-badges">'+WL30_PHASES.map((ph,i)=>{
     const got=done>=ph.to;

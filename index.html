@@ -4082,6 +4082,24 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .jm{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font-size:12px;color:var(--dim);margin-top:5px;font-variant-numeric:tabular-nums;}
 .jm b{font-size:15px;color:var(--txt);}
 .jm .p{color:#2F7BF6;font-weight:700;} .jm .c{color:#34C759;font-weight:700;} .jm .f{color:#E0A800;font-weight:700;}
+/* ═══ leaderboards ═══ */
+.lb-list{background:var(--surface);border-radius:18px;padding:4px 12px;}
+.lb-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
+.lb-row:last-child{border-bottom:none;}
+.lb-row.me{background:var(--accent-wash);margin:0 -12px;padding:10px 12px;border-radius:12px;border-bottom-color:transparent;}
+.lb-rk{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--dim);
+  font-variant-numeric:tabular-nums;}
+.lb-rk.t1{background:#FFC21A;color:#000;} .lb-rk.t2{background:#C9CDD3;color:#000;} .lb-rk.t3{background:#D08A4E;color:#000;}
+.lb-av{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;
+  background:var(--surface2);color:var(--txt);}
+.lb-n{flex:1;min-width:0;font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-n em{font-style:normal;font-size:11px;font-weight:800;color:var(--lime);margin-left:4px;text-transform:uppercase;letter-spacing:.04em;}
+.lb-v{flex:none;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;}
+.lb-gap{text-align:center;color:var(--dim);padding:2px 0;}
+.lb-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 2px 0;font-size:12px;color:var(--dim);}
+.lb-foot button{border:none;background:none;color:var(--lime);font:inherit;font-weight:700;cursor:pointer;padding:4px 0;}
+.lb-note{font-size:12px;color:var(--dim);margin:6px 2px 0;}
+.lb-empty{background:var(--surface);border-radius:18px;padding:18px;text-align:center;color:var(--dim);font-size:14px;line-height:1.45;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -6409,6 +6427,7 @@ function renderWL30(){
   else if(wlTab==='guide') h+=wlGuide();
   else h+=wlPlan();
   $('pgd-body').innerHTML=h;
+  if(wlTab==='progress' && owned) loadBoard('burn30','lb-burn30');
 }
 
 /* The poster heads every page of the program, so tapping it on Home opens
@@ -6604,6 +6623,8 @@ function wlProgress(){
   let h='<div class="wl-stats">'+[[done,'Days done'],[liveStreak(),'Day streak'],[Math.round(mins),'Minutes']]
     .map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
 
+  h+=fsec('Leaderboard','Everyone on BURN30, by the day they have reached.');
+  h+='<div id="lb-burn30"></div>';
   h+=fsec('Badges','One for every week you finish.');
   h+='<div class="wl-badges">'+WL30_PHASES.map((ph,i)=>{
     const got=done>=ph.to;
@@ -6868,6 +6889,58 @@ function monthlyCard(){
     '</div>';
 }
 
+/* ── LEADERBOARDS ──
+   Two boards, computed on the server from what people log: this month's
+   challenge (days trained) and BURN30 (the day reached). First names only;
+   anyone can leave the boards and still see their own place. */
+let _lbCache={};
+async function fetchBoard(kind){
+  const c=_lbCache[kind]; if(c && Date.now()-c.t<60000) return c.v;
+  if(!sb || !HF.userId) return null;
+  const r = kind==='burn30' ? await sb.rpc('plus_lb_burn30') : await sb.rpc('plus_lb_month',{p_month:monthKey()});
+  if(r.error) throw r.error;
+  _lbCache[kind]={t:Date.now(), v:r.data};
+  return r.data;
+}
+function lbValue(kind,row){ return kind==='burn30' ? (row.day>=30?'Finished':'Day '+row.day) : row.days+(row.days===1?' day':' days'); }
+function lbRow(kind,row){
+  const top=row.rank<=3 ? ' t'+row.rank : '';
+  return '<div class="lb-row'+(row.me?' me':'')+'"><span class="lb-rk'+top+'">'+row.rank+'</span>'+
+    '<span class="lb-av">'+hesc(String(row.name||'M').charAt(0).toUpperCase())+'</span>'+
+    '<span class="lb-n">'+hesc(row.name||'Member')+(row.me?' <em>You</em>':'')+'</span>'+
+    '<span class="lb-v">'+lbValue(kind,row)+'</span></div>';
+}
+function boardHTML(kind,d){
+  if(!d) return '<div class="lb-empty">Sign in to see where you stand.</div>';
+  const hidden=!!(HF.data.prefs&&HF.data.prefs.lbHide);
+  let h='';
+  if(!d.top || !d.top.length)
+    h+='<div class="lb-empty">'+(kind==='burn30'?'No one has started BURN30 yet. Day 1 puts you on the board.':'No one has trained this month yet. One session puts you on the board.')+'</div>';
+  else {
+    h+='<div class="lb-list">'+d.top.map(r=>lbRow(kind,r)).join('');
+    if(d.me && !d.top.some(r=>r.me)) h+='<div class="lb-gap">···</div>'+lbRow(kind,{rank:d.me.rank,name:(HF.data.prefs&&HF.data.prefs.name||'').split(' ')[0]||'Member',days:d.me.days,day:d.me.day,me:true});
+    h+='</div>';
+  }
+  h+='<div class="lb-foot"><span>'+(d.count||0)+(d.count===1?' person':' people')+' on the board'+
+     (kind==='burn30'&&d.finished?' · '+d.finished+' finished':'')+'</span>'+
+     '<button onclick="setLbHide('+(!hidden)+')">'+(hidden?'Show me on the boards':'Hide me from the boards')+'</button></div>';
+  if(!(HF.data.prefs&&HF.data.prefs.name)) h+='<div class="lb-note">You show up as "Member" until you add your first name in Me.</div>';
+  if(hidden) h+='<div class="lb-note">You are hidden. Others do not see you; you still see your place.</div>';
+  return h;
+}
+function loadBoard(kind,elId){
+  const el=$(elId); if(!el) return;
+  if(!_lbCache[kind]) el.innerHTML='<div class="lb-empty">Loading the board…</div>';
+  fetchBoard(kind).then(d=>{ const e=$(elId); if(e) e.innerHTML=boardHTML(kind,d); })
+    .catch(()=>{ const e=$(elId); if(e) e.innerHTML='<div class="lb-empty">The board could not load. Try again in a moment.</div>'; });
+}
+function setLbHide(v){
+  HF.data.prefs=HF.data.prefs||{}; HF.data.prefs.lbHide=!!v; HF.save(); _lbCache={};
+  toast(v?'Hidden from the boards':'Back on the boards');
+  /* the cloud save waits a moment; read the board after it */
+  setTimeout(()=>{ if($('lb-month')) loadBoard('month','lb-month'); if($('lb-burn30')) loadBoard('burn30','lb-burn30'); },1500);
+}
+
 /* ── the panel ── */
 function openMonthly(){
   hidePanels(); $('monthly').style.display='block';
@@ -6909,6 +6982,9 @@ function renderMonthly(){
   }
   h+='</div>';
 
+  h+=fsec('Leaderboard','Days trained this month, everyone on HITFAT+.');
+  h+='<div id="lb-month"></div>';
+
   h+=fsec('How it works','');
   h+='<div class="flib">'+[
       ['📅','A new challenge every month','It changes by itself on the first'],
@@ -6938,6 +7014,7 @@ function renderMonthly(){
     }).join('')+'</div>';
 
   $('mth-body').innerHTML=h;
+  loadBoard('month','lb-month');
 }
 
 
