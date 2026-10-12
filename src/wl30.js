@@ -141,7 +141,7 @@ function renderWL30(){
   if(wlWeek<0) wlWeek=wlPhaseIndex(Math.min(nx,tot-1));
   const pill=!owned ? {icon:'lock',label:'RM'+WL30_PRICE,go:'wlBuy()'}
            : nx<tot ? {icon:'play',label:'Day '+(nx+1),go:'wlOpenDay('+nx+')'} : null;
-  let h=pdxHero(p,'program',p.name,
+  let h=wlHero('program','',
     owned ? (nx<tot ? 'Day '+(nx+1)+' of '+tot+' · '+wlPhaseOf(nx).n : 'Program complete') : WL30_SUB+' · Beginner · At home',
     owned ? pct+'% complete' : 'One payment · yours for good', pill);
 
@@ -167,6 +167,17 @@ function renderWL30(){
   else if(wlTab==='guide') h+=wlGuide();
   else h+=wlPlan();
   $('pgd-body').innerHTML=h;
+}
+
+/* The poster heads every page of the program, so tapping it on Home opens
+   the same picture: whole on the program's home, its top (the name and the
+   two faces) as a banner on a day. The poster carries the name, so the home
+   adds no title over it. */
+function wlHero(kicker,title,sub,meta,pill){
+  return pdxBar(kicker,pill)+
+    '<div class="wl-hero'+(kicker==='day'?' day':'')+'"><img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days, 30 workouts, zero gym"></div>'+
+    '<div class="wl-hero-tx">'+(title?'<div class="t">'+title+'</div>':'')+
+    '<div class="s">'+sub+'</div>'+(meta?'<div class="m">'+meta+'</div>':'')+'</div>';
 }
 
 /* Plan: today, the checklist, the 30-day calendar, then the week as episodes */
@@ -234,7 +245,7 @@ function wlOpenDay(gi){
   curProg=p;
   let day=null, c=0; p.weeks.forEach(w=>w.days.forEach(x=>{ if(c===gi) day=x; c++; }));
   curDay={p, day, gi};
-  let h=pdxHero(p,'day',d.n,'Day '+(gi+1)+' of 30 · '+ph.n,
+  let h=wlHero('day',d.n,'Day '+(gi+1)+' of 30 · '+ph.n,
     wlMinutes(d)+' min · '+exs.length+' moves · '+d.r+(d.r===1?' round':' rounds'),
     owned?{icon:'play',label:'Start',go:'playDay()'}:{icon:'lock',label:'RM'+WL30_PRICE,go:'wlBuy()'});
   h+='<div class="pdx-btns">'+(owned
@@ -504,8 +515,8 @@ function wlHomeCard(){
   const owned=wlOwned(), done=wlDone(), tot=WL30_DAYS.length, nx=wlNext();
   if(owned && nx>=tot) return '';
   const d=WL30_DAYS[Math.min(nx,tot-1)];
-  /* the card is nearly square on a phone, so frame the picture for that */
-  const bg='background-image:url(\''+progImg(WL30)+'\');'+(hasPhoto(WL30)?imgPos(WL30,1.05):'');
+  /* the poster from its top, so its name shows whole above the day */
+  const bg='background-image:url(\''+progImg(WL30)+'\');background-position:50% 0;';
   if(owned && done){
     const pct=Math.round(done/tot*100);
     return '<div class="wl-home" style="'+bg+'" onclick="openProgram(\''+WL30_ID+'\')"><div class="ov"></div><div class="in">'+

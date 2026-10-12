@@ -1902,3 +1902,11 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .wl-poster-b .t{font-size:16px;font-weight:700;margin-top:2px;}
 .wl-poster-b .bigbtn{margin:0;width:auto;flex:none;padding:12px 18px;font-size:15px;}
 .wl-buy-poster{display:block;width:100%;border-radius:20px;margin:4px 0 14px;}
+/* the poster as the program's own header */
+.wl-hero{margin:-6px -18px 0;background:#0B0B0D;}
+.wl-hero img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;}
+.wl-hero.day img{aspect-ratio:5/4;object-position:50% 0;}
+.wl-hero-tx{padding:14px 0 0;}
+.wl-hero-tx .t{font-size:30px;font-weight:800;letter-spacing:-.7px;line-height:1.08;}
+.wl-hero-tx .s{font-size:17px;color:var(--txt);margin-top:4px;}
+.wl-hero-tx .m{font-size:13px;color:var(--dim);margin-top:4px;}

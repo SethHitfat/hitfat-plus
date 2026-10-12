@@ -35,7 +35,7 @@ function factCard(a){
 }
 /* big program card — title over the image */
 function fbigCard(p){
-  const sub = p.weeks ? wks(p.weeks.length).replace(/^\w/,c=>c.toUpperCase())+' of '+(p.goal||'training').toLowerCase() : p.level;
+  const sub = p.oneTime ? p.sub : p.weeks ? wks(p.weeks.length).replace(/^\w/,c=>c.toUpperCase())+' of '+(p.goal||'training').toLowerCase() : p.level;
   return '<div class="fbig" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.poster):'')+'">'+
     '<div class="ov"></div>'+lockTag(p)+'<div class="in"><div class="t">'+p.name+'</div>'+
     '<div class="s">'+sub+'</div></div>'+
@@ -585,7 +585,7 @@ function trRecoverySoon(){
   h+='<div class="pdx-eps">'+REHAB_PLANS.map(p=>
     '<div class="fwr pdx-ep soon"><div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name,p)+'"></div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+wks(p.weeks.length)+' · '+progDays(p)+' days</div>'+
+    '<div class="m">'+(p.oneTime?p.sub:wks(p.weeks.length)+' · '+progDays(p)+' days')+'</div>'+
     '<span class="soon-tag">Soon</span></div></div>').join('')+'</div>';
   $('tr-body').innerHTML=h;
 }

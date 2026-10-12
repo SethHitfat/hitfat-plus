@@ -3905,6 +3905,14 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .wl-poster-b .t{font-size:16px;font-weight:700;margin-top:2px;}
 .wl-poster-b .bigbtn{margin:0;width:auto;flex:none;padding:12px 18px;font-size:15px;}
 .wl-buy-poster{display:block;width:100%;border-radius:20px;margin:4px 0 14px;}
+/* the poster as the program's own header */
+.wl-hero{margin:-6px -18px 0;background:#0B0B0D;}
+.wl-hero img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;}
+.wl-hero.day img{aspect-ratio:5/4;object-position:50% 0;}
+.wl-hero-tx{padding:14px 0 0;}
+.wl-hero-tx .t{font-size:30px;font-weight:800;letter-spacing:-.7px;line-height:1.08;}
+.wl-hero-tx .s{font-size:17px;color:var(--txt);margin-top:4px;}
+.wl-hero-tx .m{font-size:13px;color:var(--dim);margin-top:4px;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -6189,7 +6197,7 @@ function renderWL30(){
   if(wlWeek<0) wlWeek=wlPhaseIndex(Math.min(nx,tot-1));
   const pill=!owned ? {icon:'lock',label:'RM'+WL30_PRICE,go:'wlBuy()'}
            : nx<tot ? {icon:'play',label:'Day '+(nx+1),go:'wlOpenDay('+nx+')'} : null;
-  let h=pdxHero(p,'program',p.name,
+  let h=wlHero('program','',
     owned ? (nx<tot ? 'Day '+(nx+1)+' of '+tot+' · '+wlPhaseOf(nx).n : 'Program complete') : WL30_SUB+' · Beginner · At home',
     owned ? pct+'% complete' : 'One payment · yours for good', pill);
 
@@ -6215,6 +6223,17 @@ function renderWL30(){
   else if(wlTab==='guide') h+=wlGuide();
   else h+=wlPlan();
   $('pgd-body').innerHTML=h;
+}
+
+/* The poster heads every page of the program, so tapping it on Home opens
+   the same picture: whole on the program's home, its top (the name and the
+   two faces) as a banner on a day. The poster carries the name, so the home
+   adds no title over it. */
+function wlHero(kicker,title,sub,meta,pill){
+  return pdxBar(kicker,pill)+
+    '<div class="wl-hero'+(kicker==='day'?' day':'')+'"><img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days, 30 workouts, zero gym"></div>'+
+    '<div class="wl-hero-tx">'+(title?'<div class="t">'+title+'</div>':'')+
+    '<div class="s">'+sub+'</div>'+(meta?'<div class="m">'+meta+'</div>':'')+'</div>';
 }
 
 /* Plan: today, the checklist, the 30-day calendar, then the week as episodes */
@@ -6282,7 +6301,7 @@ function wlOpenDay(gi){
   curProg=p;
   let day=null, c=0; p.weeks.forEach(w=>w.days.forEach(x=>{ if(c===gi) day=x; c++; }));
   curDay={p, day, gi};
-  let h=pdxHero(p,'day',d.n,'Day '+(gi+1)+' of 30 · '+ph.n,
+  let h=wlHero('day',d.n,'Day '+(gi+1)+' of 30 · '+ph.n,
     wlMinutes(d)+' min · '+exs.length+' moves · '+d.r+(d.r===1?' round':' rounds'),
     owned?{icon:'play',label:'Start',go:'playDay()'}:{icon:'lock',label:'RM'+WL30_PRICE,go:'wlBuy()'});
   h+='<div class="pdx-btns">'+(owned
@@ -6552,8 +6571,8 @@ function wlHomeCard(){
   const owned=wlOwned(), done=wlDone(), tot=WL30_DAYS.length, nx=wlNext();
   if(owned && nx>=tot) return '';
   const d=WL30_DAYS[Math.min(nx,tot-1)];
-  /* the card is nearly square on a phone, so frame the picture for that */
-  const bg='background-image:url(\''+progImg(WL30)+'\');'+(hasPhoto(WL30)?imgPos(WL30,1.05):'');
+  /* the poster from its top, so its name shows whole above the day */
+  const bg='background-image:url(\''+progImg(WL30)+'\');background-position:50% 0;';
   if(owned && done){
     const pct=Math.round(done/tot*100);
     return '<div class="wl-home" style="'+bg+'" onclick="openProgram(\''+WL30_ID+'\')"><div class="ov"></div><div class="in">'+
@@ -7002,7 +7021,7 @@ function prodCard(p){
     (isSignature(p)?'<span class="sigb">SIGNATURE</span>':'')+
     '<span class="pr">RM'+programPrice(p)+'</span></div>'+
     '<div class="in"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+wks(p.weeks.length)+' · '+tot+' days · '+p.level+'</div>'+
+    '<div class="m">'+(p.oneTime?p.sub:wks(p.weeks.length)+' · '+tot+' days')+' · '+p.level+'</div>'+
     (done>0?'<div class="m" style="color:var(--hyrox);">'+Math.round(done/tot*100)+'% started</div>':'')+
     '</div></div>';
 }
@@ -15087,7 +15106,7 @@ const FOCAL={
   p6:[50,22,0.593], p7:[40,45,1.806], p9:[55,36,0.593], reset12:[48,13,1], rh1:[65,25,1.34],
   rh2:[70,15,1.34], rh3:[55,30,1.806], rh4:[55,35,1.798], rh5:[65,10,1.34], rh6:[60,35,1.34],
   sig1:[47,13,1], sig2:[48,20,1], sig3:[47,15,1], sig4:[48,10,1], tw1:[55,15,0.593],
-  tw2:[60,44,0.593], bt1:[50,18,1.087], bt2:[60,32,1.087], p34:[50,45,1.087], wl30:[50,14,1.333]
+  tw2:[60,44,0.593], bt1:[50,18,1.087], bt2:[60,32,1.087], p34:[50,45,1.087], wl30:[50,39,0.8]
 };
 const FA={wide:1.77, row:1.65, poster:1.5, hero:0.87, card:0.75, tall:0.67, join:0.6};
 function imgPos(p,frame){
@@ -15137,7 +15156,7 @@ function frow(p,badge){
     '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name,p)+'">'+
     (badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+(p.weeks?wks(p.weeks.length)+' · '+tot+' days':(p.level+' · '+p.dur+' min'))+'</div>'+
+    '<div class="m">'+(p.weeks?(p.oneTime?p.sub:wks(p.weeks.length)+' · '+tot+' days'):(p.level+' · '+p.dur+' min'))+'</div>'+
     (done>0?'<div class="m" style="color:var(--hyrox);">'+pct+'% done</div>'
            :'<div class="m">'+(p.goal||'')+'</div>')+
     '</div><div class="chev">›</div></div>';
@@ -15354,12 +15373,15 @@ function pdxToggle(){ pdxMore=!pdxMore; renderProgram(); }
 /* The bar that stays at the top as the page scrolls, as in Fitness+: the
    back button over the hero at first, then a blurred bar with the page's
    one action as a pill in the middle once the hero has gone. */
-function pdxHero(p,kicker,title,sub,meta,pill){
+function pdxBar(kicker,pill){
   pdxBarWatch();
   return '<div class="pdx-bar"><div class="pdx-bar-in">'+
     '<button class="pdx-back" aria-label="Back" onclick="'+(kicker==='day'?'backToProgram()':'closeProgramDetail()')+'">'+glyph('chevleft')+'</button>'+
     (pill?'<button class="pdx-pill" onclick="'+pill.go+'" tabindex="-1">'+glyph(pill.icon)+pill.label+'</button>':'')+
-    '<span class="pdx-bar-r"></span></div></div>'+
+    '<span class="pdx-bar-r"></span></div></div>';
+}
+function pdxHero(p,kicker,title,sub,meta,pill){
+  return pdxBar(kicker,pill)+
     /* tall pictures keep the head in frame: crop from near the top */
     '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.hero):'')+'">'+
     '<div class="pdx-ov"></div>'+
@@ -17119,7 +17141,7 @@ function factCard(a){
 }
 /* big program card — title over the image */
 function fbigCard(p){
-  const sub = p.weeks ? wks(p.weeks.length).replace(/^\w/,c=>c.toUpperCase())+' of '+(p.goal||'training').toLowerCase() : p.level;
+  const sub = p.oneTime ? p.sub : p.weeks ? wks(p.weeks.length).replace(/^\w/,c=>c.toUpperCase())+' of '+(p.goal||'training').toLowerCase() : p.level;
   return '<div class="fbig" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.poster):'')+'">'+
     '<div class="ov"></div>'+lockTag(p)+'<div class="in"><div class="t">'+p.name+'</div>'+
     '<div class="s">'+sub+'</div></div>'+
@@ -17669,7 +17691,7 @@ function trRecoverySoon(){
   h+='<div class="pdx-eps">'+REHAB_PLANS.map(p=>
     '<div class="fwr pdx-ep soon"><div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name,p)+'"></div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+wks(p.weeks.length)+' · '+progDays(p)+' days</div>'+
+    '<div class="m">'+(p.oneTime?p.sub:wks(p.weeks.length)+' · '+progDays(p)+' days')+'</div>'+
     '<span class="soon-tag">Soon</span></div></div>').join('')+'</div>';
   $('tr-body').innerHTML=h;
 }

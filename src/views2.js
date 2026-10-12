@@ -77,7 +77,7 @@ const FOCAL={
   p6:[50,22,0.593], p7:[40,45,1.806], p9:[55,36,0.593], reset12:[48,13,1], rh1:[65,25,1.34],
   rh2:[70,15,1.34], rh3:[55,30,1.806], rh4:[55,35,1.798], rh5:[65,10,1.34], rh6:[60,35,1.34],
   sig1:[47,13,1], sig2:[48,20,1], sig3:[47,15,1], sig4:[48,10,1], tw1:[55,15,0.593],
-  tw2:[60,44,0.593], bt1:[50,18,1.087], bt2:[60,32,1.087], p34:[50,45,1.087], wl30:[50,14,1.333]
+  tw2:[60,44,0.593], bt1:[50,18,1.087], bt2:[60,32,1.087], p34:[50,45,1.087], wl30:[50,39,0.8]
 };
 const FA={wide:1.77, row:1.65, poster:1.5, hero:0.87, card:0.75, tall:0.67, join:0.6};
 function imgPos(p,frame){
@@ -127,7 +127,7 @@ function frow(p,badge){
     '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name,p)+'">'+
     (badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+(p.weeks?wks(p.weeks.length)+' · '+tot+' days':(p.level+' · '+p.dur+' min'))+'</div>'+
+    '<div class="m">'+(p.weeks?(p.oneTime?p.sub:wks(p.weeks.length)+' · '+tot+' days'):(p.level+' · '+p.dur+' min'))+'</div>'+
     (done>0?'<div class="m" style="color:var(--hyrox);">'+pct+'% done</div>'
            :'<div class="m">'+(p.goal||'')+'</div>')+
     '</div><div class="chev">›</div></div>';
@@ -344,12 +344,15 @@ function pdxToggle(){ pdxMore=!pdxMore; renderProgram(); }
 /* The bar that stays at the top as the page scrolls, as in Fitness+: the
    back button over the hero at first, then a blurred bar with the page's
    one action as a pill in the middle once the hero has gone. */
-function pdxHero(p,kicker,title,sub,meta,pill){
+function pdxBar(kicker,pill){
   pdxBarWatch();
   return '<div class="pdx-bar"><div class="pdx-bar-in">'+
     '<button class="pdx-back" aria-label="Back" onclick="'+(kicker==='day'?'backToProgram()':'closeProgramDetail()')+'">'+glyph('chevleft')+'</button>'+
     (pill?'<button class="pdx-pill" onclick="'+pill.go+'" tabindex="-1">'+glyph(pill.icon)+pill.label+'</button>':'')+
-    '<span class="pdx-bar-r"></span></div></div>'+
+    '<span class="pdx-bar-r"></span></div></div>';
+}
+function pdxHero(p,kicker,title,sub,meta,pill){
+  return pdxBar(kicker,pill)+
     /* tall pictures keep the head in frame: crop from near the top */
     '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.hero):'')+'">'+
     '<div class="pdx-ov"></div>'+

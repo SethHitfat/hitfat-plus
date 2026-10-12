@@ -263,7 +263,7 @@ function prodCard(p){
     (isSignature(p)?'<span class="sigb">SIGNATURE</span>':'')+
     '<span class="pr">RM'+programPrice(p)+'</span></div>'+
     '<div class="in"><div class="t">'+p.name+'</div>'+
-    '<div class="m">'+wks(p.weeks.length)+' · '+tot+' days · '+p.level+'</div>'+
+    '<div class="m">'+(p.oneTime?p.sub:wks(p.weeks.length)+' · '+tot+' days')+' · '+p.level+'</div>'+
     (done>0?'<div class="m" style="color:var(--hyrox);">'+Math.round(done/tot*100)+'% started</div>':'')+
     '</div></div>';
 }
