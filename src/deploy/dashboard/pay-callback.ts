@@ -53,6 +53,7 @@ const CATALOGUE: Record<string, Sku> = {
   "prog_m1": { price: 29, kind: "program" },        // 21 Day Home
   "prog_m2": { price: 39, kind: "program" },        // 8 Week Beginner Training
   "prog_m3": { price: 29, kind: "program" },        // 22 Minutes Hardcore
+  "prog_wl30": { price: 39, kind: "program" },      // 30-Day Weight Loss · sold on its own, also on its landing page
   "scan_c20": { price: 19, kind: "credits", credits: 20 },
   "scan_c60": { price: 45, kind: "credits", credits: 60 },
   "scan_m": { price: 19, kind: "pass", days: 30 },

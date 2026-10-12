@@ -89,7 +89,7 @@ const HF={
     weight:[],meals:{},burn:{},favs:[],custom:null,nutrition:{},scanQuota:{used:0,month:''},owned:{},purchases:[],
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
     body:[],goalKg:null,
-    challengeJoined:{},badges:{} }; },
+    challengeJoined:{},badges:{},wl30:{} }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
   apply(o){
@@ -107,6 +107,7 @@ const HF={
       d.streak=o.streak||0; d.lastISO=o.lastISO||null; d.weekGoal=o.weekGoal||5; d.note=o.note||'';
       d.mealPlans=Array.isArray(o.mealPlans)?o.mealPlans.slice():[]; d.wc=o.wc||0;
       d.challengeJoined=Object.assign({},o.challengeJoined||{}); d.badges=Object.assign({},o.badges||{});
+      d.wl30=(o.wl30&&typeof o.wl30==='object')?JSON.parse(JSON.stringify(o.wl30)):{};
     }
     this.data=d;
   },

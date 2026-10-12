@@ -41,6 +41,7 @@ const FREE_PROGRAMS=['fl30','core14','mch','m4','am21',
 /* Price follows length, because that is what the buyer is actually
    comparing. Change these numbers freely — nothing derives from them. */
 function programPrice(p){
+  if(p && p.price) return p.price;            // a program sold on its own names its price
   const wk=(p.weeks||[]).length;
   if(isSignature(p)){                       // the flagship tier sits one step up
     if(wk>=12) return 89;
@@ -146,9 +147,12 @@ function scanAccess(){
 }
 function canScan(){ return scanAccess().left>0; }
 
+let _claimedFor=null;
 async function loadEntitlement(){
   _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, loaded:true};
   if(!sb || !HF.userId) return _ent;
+  /* once a session: anything bought on a landing page under this email */
+  if(_claimedFor!==HF.userId){ _claimedFor=HF.userId; await claimLandingPurchases(); }
   try{
     const r=await sb.from('plus_entitlements')
                     .select('sku, kind, credits_left, expires_at')
@@ -331,6 +335,7 @@ let _prod=null;
 function openProduct(sku){
   /* Programs, All Access and scan packs are part of the membership now.
      Every old way into a product sheet lands on the paywall instead. */
+  if(sku==='prog_'+WL30_ID) return wlBuy();
   if(sku===BUNDLE_SKU || String(sku).indexOf('prog_')===0 || String(sku).indexOf('scan_')===0){
     const p=String(sku).indexOf('prog_')===0 ? PROGRAMS.filter(x=>'prog_'+x.id===sku)[0] : null;
     return openPaywall(p ? p.name+' is part of HITFAT+.' : '');
@@ -511,7 +516,7 @@ function coConfirm(state){
     wait:['co-wait','Confirming your payment','This usually takes a few seconds. You can keep this open.','',''],
     ok:['co-ok',(t==='coach'?'Welcome to HITFAT+ Coach':t?'Welcome to HITFAT+':'Payment confirmed'),
         (until?'Everything is open until '+fmtDate(until)+'.':'Your purchase is unlocked.'),
-        'Start training','closeProduct();switchTab(\'train\')'],
+        'Start training',(_paySku==='prog_'+WL30_ID?'closeProduct();openProgram(WL30_ID)':'closeProduct();switchTab(\'train\')')],
     late:['co-late','Not confirmed yet','Your bank has not told us yet. It unlocks by itself once it does — nothing to do but wait.',
         'OK','closeProduct()']
   }[state];
@@ -539,7 +544,7 @@ function handlePaidRedirect(){
        entitlements — T42 waits for it itself. */
     if(sku && sku.indexOf('t42:')===0 && typeof t42AwaitPayment==='function'){
       localStorage.removeItem('hf_plus_pending'); t42AwaitPayment(); return; }
-    if(sku){ localStorage.removeItem('hf_plus_pending'); awaitPayment(); return; }
+    if(sku){ localStorage.removeItem('hf_plus_pending'); _paySku=sku; awaitPayment(); return; }
     refreshPurchases();
   }catch(e){}
 }
@@ -663,6 +668,12 @@ function coachUpsell(){
 }
 
 /* ── the lock, wherever content is shown ── */
+/* Where a locked program sends someone: the one sold on its own to its own
+   offer, everything else to the membership. */
+function lockedProgram(p){
+  if(p && p.oneTime && typeof wlBuy==='function') return wlBuy();
+  openPaywall(p.name+' is part of HITFAT+.');
+}
 function lockTag(p){
   return (p && !ownsProgram(p)) ? '<span class="lockt" aria-label="HITFAT+">'+glyph('lock')+'</span>' : '';
 }

@@ -1112,7 +1112,7 @@ _guest();
 ok("a new account is not a member",   !hasPlus() && memberTier()===null);
 ok("...and every program is locked",  PROGRAMS.every(function(p){ return !ownsProgram(p); }));
 ok("...single sessions included",     PROGRAMS.filter(function(p){return !p.weeks;}).every(function(p){ return !ownsProgram(p); }));
-var _lp=trainingPlans().filter(function(p){ return p.id!=='custom'; })[0];
+var _lp=trainingPlans().filter(function(p){ return p.id!=='custom' && !p.hub; })[0];
 openProgram(_lp.id);
 var _lph=document.getElementById('pgd-body').innerHTML;
 /* As on Fitness+: the page opens for anyone; a locked one says so on its
@@ -3298,5 +3298,88 @@ print("\n── ACTIVITY TILES HAVE THEIR OWN PICTURES ──");
 ok("bottle workouts have pictures", ['bt1','bt2','p34'].every(function(id){return PHOTO.has(id) && FOCAL[id];}));
 ok("every activity tile uses a studio picture", ACTIVITIES.every(function(a){return /^\/img\/p\/act-/.test(a.img);}));
 ok("the activity row shows the picture", factCard(ACTIVITIES[0]).indexOf("/img/p/act-fatloss.jpg")>0);
+
+print("\n── 30-DAY WEIGHT LOSS ──");
+(function(){
+  var keepEnt=_ent, keepSW=startWorkout, keepProg=HF.data.progress[WL30_ID], keepWl=HF.data.wl30, keepNut=HF.data.nutrition;
+  var played=null; startWorkout=function(exs,meta){ played={exs:exs,meta:meta}; };
+  var html=function(id){ return document.getElementById(id).innerHTML; };
+
+  ok("thirty days, in five phases that cover them all", WL30_DAYS.length===30 && progDays(WL30)===30 &&
+     WL30_PHASES[0].from===1 && WL30_PHASES[WL30_PHASES.length-1].to===30 &&
+     WL30_PHASES.every(function(p,i){ return i===0 || p.from===WL30_PHASES[i-1].to+1; }));
+  var bad=[]; WL30_DAYS.forEach(function(d,i){ pickEx(d.ex,null).forEach(function(e,j){
+    if(e.n!==d.ex[j] || !e.v || ['Bodyweight','Chair','Bottle','Towel'].indexOf(e.eq)<0) bad.push('day '+(i+1)+': '+d.ex[j]); }); });
+  ok("every movement is filmed and needs only home kit", bad.length===0, bad.join(', '));
+  ok("day 1 and day 30 are the same fit test", WL30_DAYS[0].k==='test' && WL30_DAYS[29].k==='test' &&
+     WL30_DAYS[0].ex.join()===WL30_DAYS[29].ex.join());
+  ok("it gets harder: two rounds in week 1, three after", WL30_DAYS.slice(1,6).every(function(d){return d.r===2;}) &&
+     WL30_DAYS.slice(7,13).every(function(d){return d.r===3;}));
+  ok("every day has a coach's note", WL30_DAYS.every(function(d){ return d.tip && d.tip.length>20; }));
+  ok("sold for RM39, the price the server knows", programPrice(WL30)===39 && isPaidProgram(WL30));
+  ok("it is one of the training plans", trainingPlans().some(function(p){ return p.id===WL30_ID; }));
+
+  /* someone who has bought nothing */
+  _guest(); HF.data.progress[WL30_ID]=0;
+  ok("locked to a guest", !ownsProgram(WL30));
+  noThrow("its page opens for a guest", function(){ openProgram(WL30_ID); });
+  var pg=html('pgd-body');
+  ok("...as its own home, not the ordinary program page", pg.indexOf('wl-cal')>0 && pg.indexOf('Your 30 Days')>0);
+  ok("...with its price and the membership beside it", pg.indexOf('RM39')>0 && pg.indexOf('Included with HITFAT+')>0);
+  ok("...and all thirty days on the calendar", (pg.match(/class="wl-day /g)||[]).length===30);
+  ['food','progress'].forEach(function(t){ wlSetTab(t);
+    ok("a guest's "+t+" tab shows the offer", html('pgd-body').indexOf('wl-lock')>0); });
+  wlSetTab('guide'); ok("the guide is open to everyone", html('pgd-body').indexOf('How It Works')>0 && html('pgd-body').indexOf('wl-lock')<0);
+  wlSetTab('plan');
+  openDay(WL30_ID,4); ok("a day opens for a guest, locked", html('dd-body').indexOf('Unlock · RM39')>0 && html('dd-body').indexOf("Coach's note")>0);
+  played=null; playDay(); ok("...and its player sells the program instead", played===null && html('pw-body').indexOf('Buy for RM39')>0);
+  ok("the offer can be bought in the app", html('pw-body').indexOf("startCheckout('prog_wl30')")>0);
+  ok("...or claimed with an order number from the website", html('pw-body').indexOf('wl-order')>0);
+  ok("checkout knows what it is", checkoutItem('prog_wl30').price===39);
+  ok("an old product link lands on the same offer", (openProduct('prog_wl30'), html('pw-body').indexOf('Buy for RM39')>0));
+  ok("Home offers it to a guest", wlHomeCard().indexOf('New Program')>0 && wlHomeCard().indexOf('RM39')>0);
+
+  /* someone who bought only this */
+  _guest(); _ent.skus['prog_wl30']=true;
+  ok("bought on its own, it opens", ownsProgram(WL30));
+  ok("...and the rest of the app stays locked", !contentOpen() && PROGRAMS.filter(function(p){return p.id!==WL30_ID;}).every(function(p){ return !ownsProgram(p); }));
+  openProgram(WL30_ID); pg=html('pgd-body');
+  ok("its home starts at day 1", pg.indexOf('Start Day 1')>0 && pg.indexOf("Today's Checklist")>0);
+  openDay(WL30_ID,2); played=null; playDay();
+  ok("a day plays with its own rounds", played && played.meta.rounds===2 && played.meta.pid===WL30_ID && played.exs.length===6);
+  played=null; playExercise(WL30_DAYS[2].ex[0]);
+  ok("...and its movements play without the membership", played && played.exs[0].n===WL30_DAYS[2].ex[0]);
+  played=null; playExercise('Kettlebell Swing'); ok("...but the rest of the library does not", played===null);
+  HF.data.progress[WL30_ID]=5; openProgram(WL30_ID); pg=html('pgd-body');
+  ok("progress shows on the calendar", (pg.match(/wl-day done/g)||[]).length===5 && pg.indexOf('wl-day now')>0 && pg.indexOf('Day 6 of 30')>0);
+  ok("Home carries on from the day reached", wlHomeCard().indexOf('Start Day 6')>0);
+  wlTick('water'); ok("the checklist ticks", wlData().check[iso(0)].water===true);
+
+  /* nutrition: asks for three numbers, then builds thirty days */
+  HF.data.nutrition={}; HF.data.wl30={}; _wlPlan=null;
+  wlSetTab('food'); ok("the meal plan asks for weight, height and age first", html('pgd-body').indexOf('Build My Meal Plan')>0);
+  HF.data.wl30={profile:{gender:'female', wt:72, ht:158, age:34}}; _wlPlan=null; wlMenuDay=-1;
+  wlSetTab('food'); pg=html('pgd-body');
+  var mp=wlMealPlan();
+  ok("...then plans all thirty days", mp && mp.days.length===30 && mp.nut.cal>=1200);
+  ok("...with today's menu, a shopping list and the hand guide", pg.indexOf('Shopping List')>0 && pg.indexOf('Portion Guide')>0 && pg.indexOf('Breakfast')>0);
+
+  /* progress */
+  wlSetFit('d1','squat','20'); wlSetFit('d30','squat','30');
+  wlSetTab('progress'); pg=html('pgd-body');
+  ok("the fit test compares day 1 with day 30", pg.indexOf('+50%')>0);
+  ok("five badges, none earned at day 5", (pg.match(/class="wl-badge"/g)||[]).length===5);
+  HF.data.progress[WL30_ID]=30; wlSetTab('progress'); pg=html('pgd-body');
+  ok("finishing earns every badge and the certificate", (pg.match(/wl-badge on/g)||[]).length===5 && pg.indexOf('30 Days Complete')>0);
+  ok("a finished program leaves Home", wlHomeCard()==='');
+
+  /* a member has it as part of HITFAT+ */
+  _member(); HF.data.progress[WL30_ID]=0;
+  ok("members have it included", ownsProgram(WL30) && wlHomeCard().indexOf('Included in HITFAT+')>0);
+
+  ok("the app claims website purchases when it loads what you own", /claimLandingPurchases/.test(String(loadEntitlement)));
+  startWorkout=keepSW; _ent=keepEnt; HF.data.progress[WL30_ID]=keepProg||0; HF.data.wl30=keepWl||{}; HF.data.nutrition=keepNut; _wlPlan=null;
+  wlTab='plan'; wlWeek=-1; wlMenuDay=-1; closeProduct();
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

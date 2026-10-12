@@ -87,6 +87,7 @@
     <div class="tabs">
       <button id="t-find" class="on" onclick="tab('find')">Find</button>
       <button id="t-orders" onclick="tab('orders')">Recent orders</button>
+      <button id="t-landing" onclick="tab('landing')">Programs</button>
       <button id="t-log" onclick="tab('log')">Log</button>
     </div>
 
@@ -104,6 +105,22 @@
       <div class="card scroll" style="margin-top:12px" id="orders"></div>
     </section>
 
+    <section id="s-landing" class="hide">
+      <div class="sub">Programs sold on their own (the 30-Day Weight Loss) and bought on a landing page. A purchase opens on the buyer's account the next time they sign in to HITFAT+ with the same email; <b>Waiting</b> means they have not signed in yet.</div>
+      <h2>Record a payment</h2>
+      <div class="card"><div class="sub" style="margin:0 0 10px">Paid another way (bank transfer, cash)? Record it under the email they will sign in with.</div><div class="row">
+        <input id="l-email" type="email" placeholder="Buyer's email" style="flex:1;min-width:200px">
+        <select id="l-sku"><option value="prog_wl30">30-Day Weight Loss</option></select>
+        <input id="l-note" placeholder="Why (e.g. bank transfer 12 Oct)" style="flex:1;min-width:200px">
+        <button class="btn" onclick="landingAdd()">Record</button></div></div>
+      <h2>Purchases</h2>
+      <div class="card scroll" id="landing"></div>
+      <h2>Webhook for the Bayarcash form</h2>
+      <div class="card"><div class="sub" style="margin:0 0 10px">Paste this address into the landing-page form's webhook (callback) setting. It contains a secret — do not post it anywhere public.</div>
+        <div class="row"><button class="btn sec sm" onclick="landingHook()">Show the address</button></div>
+        <div class="mono" id="l-hook" style="word-break:break-all;margin-top:10px"></div></div>
+    </section>
+
     <section id="s-log" class="hide">
       <div class="sub">Every unlock, grant, end and delete made here.</div>
       <div class="card scroll" style="margin-top:12px" id="log"></div>
@@ -119,7 +136,8 @@ const SUPA_KEY='sb_publishable_aZ5NIn03riGJ_ikX0R5-rQ_oOfoS0G7';
 let sb=null; try{ sb=window.supabase.createClient(SUPA_URL,SUPA_KEY); }catch(e){}
 const $=id=>document.getElementById(id);
 const SKUS=[['sub_plus_6m','HITFAT+ · 6 months'],['sub_plus_12m','HITFAT+ · 12 months'],
-            ['sub_coach_6m','HITFAT+ Coach · 6 months'],['sub_coach_12m','HITFAT+ Coach · 12 months']];
+            ['sub_coach_6m','HITFAT+ Coach · 6 months'],['sub_coach_12m','HITFAT+ Coach · 12 months'],
+            ['prog_wl30','30-Day Weight Loss (for good)']];
 const SKU_NAME=Object.fromEntries(SKUS);
 let cur=null;
 
@@ -154,8 +172,8 @@ async function afterAuth(loud){
 async function signOut(){ try{ await sb.auth.signOut(); }catch(e){} location.reload(); }
 
 function tab(t){
-  ['find','orders','log'].forEach(x=>{ $('s-'+x).classList.toggle('hide',x!==t); $('t-'+x).classList.toggle('on',x===t); });
-  if(t==='orders') loadOrders(); if(t==='log') loadLog();
+  ['find','orders','landing','log'].forEach(x=>{ $('s-'+x).classList.toggle('hide',x!==t); $('t-'+x).classList.toggle('on',x===t); });
+  if(t==='orders') loadOrders(); if(t==='landing') loadLanding(); if(t==='log') loadLog();
 }
 
 /* ── find ── */
@@ -228,7 +246,7 @@ async function grant(){
   if(note.length<3) return toast('Say why, in a few words.');
   const r=await sb.rpc('plus_admin_grant',{p_user:cur.user.id,p_sku:sku,p_note:note});
   if(r.error) return toast(msg(r.error));
-  toast(SKU_NAME[sku]+' until '+day(r.data.until)); openUser(cur.user.id);
+  toast(SKU_NAME[sku]+(r.data.until?' until '+day(r.data.until):' given')); openUser(cur.user.id);
 }
 async function endEnt(id){
   const note=prompt('End this membership now? Say why.'); if(note===null) return;
@@ -255,6 +273,33 @@ async function loadOrders(){
     l.map(o=>'<tr class="click" onclick="tab(\'find\');$(\'q\').value=\''+esc(o.email||'')+'\';find().then(()=>openUser(\''+o.user_id+'\'))"><td>'+when(o.created_at)+'</td><td>'+esc(o.email||'—')+
       '</td><td>'+esc(SKU_NAME[o.sku]||o.sku)+'</td><td>'+rm(o.amount)+'</td><td>'+statusPill(o.status)+'</td><td class="mono">'+esc(o.order_number)+'</td></tr>').join('')+'</table>'
     :'<div class="sub">No orders yet.</div>';
+}
+/* ── programs bought on a landing page ── */
+async function loadLanding(){
+  $('landing').innerHTML='<div class="sub">Loading…</div>';
+  const r=await sb.rpc('plus_admin_landing_recent',{p_limit:200});
+  if(r.error){ $('landing').innerHTML='<div class="err">'+esc(msg(r.error))+'</div>'; return; }
+  const l=r.data||[];
+  $('landing').innerHTML=l.length?'<table><tr><th>Paid</th><th>Email</th><th>Name</th><th>What</th><th>Amount</th><th>Opened</th><th>Order</th></tr>'+
+    l.map(x=>'<tr><td>'+when(x.paid_at)+'</td><td>'+esc(x.email)+'</td><td>'+esc(x.name||'—')+(x.phone?'<div class="sub">'+esc(x.phone)+'</div>':'')+
+      '</td><td>'+esc(SKU_NAME[x.sku]||x.sku)+(x.source==='manual'?' <span class="pill p-dim">manual</span>':'')+'</td><td>'+rm(x.amount)+'</td><td>'+
+      (x.claimed_at?'<span class="pill p-ok">'+day(x.claimed_at)+'</span>'+(x.claimed_email&&x.claimed_email.toLowerCase()!==String(x.email).toLowerCase()?'<div class="sub">as '+esc(x.claimed_email)+'</div>':'')
+                   :'<span class="pill p-wait">Waiting</span>')+
+      '</td><td class="mono">'+esc(x.order_number||'')+'</td></tr>').join('')+'</table>'
+    :'<div class="sub">No purchases yet.</div>';
+}
+async function landingAdd(){
+  const email=$('l-email').value.trim(), sku=$('l-sku').value, note=$('l-note').value.trim();
+  if(email.indexOf('@')<1) return toast('Enter the buyer\'s email.');
+  if(note.length<3) return toast('Say why, in a few words.');
+  const r=await sb.rpc('plus_admin_landing_add',{p_email:email,p_sku:sku,p_note:note});
+  if(r.error) return toast(msg(r.error));
+  toast('Recorded · '+r.data.order_number); $('l-email').value=''; $('l-note').value=''; loadLanding();
+}
+async function landingHook(){
+  const r=await sb.rpc('plus_admin_landing_hook');
+  if(r.error) return toast(msg(r.error));
+  $('l-hook').textContent=SUPA_URL+'/functions/v1/plus-landing?sku=prog_wl30&key='+r.data;
 }
 async function loadLog(){
   $('log').innerHTML='<div class="sub">Loading…</div>';

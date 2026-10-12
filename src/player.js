@@ -257,9 +257,10 @@ function plClose(){
 function playDay(){
   if(!curDay) return;
   const {p,day,gi}=curDay;
-  if(!ownsProgram(p)) return openPaywall(p.name+' is part of HITFAT+.');
+  if(!ownsProgram(p)) return lockedProgram(p);
   const exs=pickEx(day.ex, progEq(p));
-  startWorkout(exs,{rounds:p.rounds||3, pid:p.id, gi, key:p.id+'-d'+gi, name:day.name||'Workout'});
+  /* a day may set its own rounds — the 30-day program grows from 2 to 3 */
+  startWorkout(exs,{rounds:day.r||p.rounds||3, pid:p.id, gi, key:p.id+'-d'+gi, name:day.name||'Workout'});
 }
 function playSingle(id){
   const p=findProg(id); if(!p||p.weeks) return;
@@ -271,7 +272,10 @@ function playSingle(id){
 function playExercise(name){
   const e=DB.find(x=>x.n===name); if(!e) return;
   if(!e.v){ toast(e.n+' is coming soon — its video is being filmed.'); return; }
-  if(needPlus('Every movement in the library is part of HITFAT+.')) return;
+  /* A program bought on its own plays its own movements, without the
+     membership the rest of the library needs. */
+  const inOwnDay=!!(curDay && curDay.day && (curDay.day.ex||[]).indexOf(name)>=0 && ownsProgram(curDay.p));
+  if(!inOwnDay && needPlus('Every movement in the library is part of HITFAT+.')) return;
   startWorkout([e],{rounds:1, key:'ex-'+name+'-'+iso(0), name:e.n});
 }
 

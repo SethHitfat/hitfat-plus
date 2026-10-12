@@ -54,7 +54,7 @@ const PHOTO=new Set([
   'kb2','kb3','lad4','m1','m2','m3','m4','mch','mdb','men6','min3','mkb','p1','p10','p11','p12','p13',
   'p14','p15','p16','p17','p18','p19','p2','p20','p21','p22','p23','p24','p25','p26','p27','p28',
   'p29','p30','p31','p32','p33','p4','p5','p6','p7','p9','reset12','rh1','rh2','rh3','rh4','rh5',
-  'rh6','sig1','sig2','sig3','sig4','tw1','tw2','bt1','bt2','p34']);
+  'rh6','sig1','sig2','sig3','sig4','tw1','tw2','bt1','bt2','p34','wl30']);
 function hasPhoto(p){ return !!(p && PHOTO.has(p.id)); }
 /* Where the person is in each picture: x is the middle of the body, y the
    face (or the middle of the body when it lies flat), both in %, then the
@@ -77,7 +77,7 @@ const FOCAL={
   p6:[50,22,0.593], p7:[40,45,1.806], p9:[55,36,0.593], reset12:[48,13,1], rh1:[65,25,1.34],
   rh2:[70,15,1.34], rh3:[55,30,1.806], rh4:[55,35,1.798], rh5:[65,10,1.34], rh6:[60,35,1.34],
   sig1:[47,13,1], sig2:[48,20,1], sig3:[47,15,1], sig4:[48,10,1], tw1:[55,15,0.593],
-  tw2:[60,44,0.593], bt1:[50,18,1.087], bt2:[60,32,1.087], p34:[50,45,1.087]
+  tw2:[60,44,0.593], bt1:[50,18,1.087], bt2:[60,32,1.087], p34:[50,45,1.087], wl30:[47,15,1]
 };
 const FA={wide:1.77, row:1.65, poster:1.5, hero:0.87, card:0.75, tall:0.67, join:0.6};
 function imgPos(p,frame){
@@ -245,7 +245,7 @@ function renderHome(){
   }).join('')+'</div>';
 
   // 3) membership, then T42
-  if($('home-t42')) $('home-t42').innerHTML=(contentOpen()?'':fyJoinCard())+renewCard()+
+  if($('home-t42')) $('home-t42').innerHTML=wlHomeCard()+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
   // 4) Up Next — the plan in progress, or the way to pick one
@@ -375,6 +375,7 @@ function pdxSub(p){
 }
 function renderProgram(){
   const p=curProg; if(!p) return;
+  if(p.hub) return renderWL30();
   const tot=progDays(p), done=progDone(p.id), pct=tot?Math.round(done/tot*100):0;
   const owned=ownsProgram(p), multi=!!(p.weeks&&p.weeks.length);
   const meta=[p.level, multi?planPerWeek(p)+' days a week':'', p.dur+' min'+(multi?' a day':'')].filter(Boolean).join(' · ');
@@ -450,7 +451,8 @@ function markRest(pid,gi){
 let curDay=null;
 function openDay(pid,gi){
   const p=findProg(pid); if(!p) return;
-  if(!ownsProgram(p)) return openPaywall(p.name+' is part of HITFAT+.');
+  if(p.hub) return wlOpenDay(gi);
+  if(!ownsProgram(p)) return lockedProgram(p);
   curProg=p;
   let c=0, day=null, wk=1, dn=1;
   for(let wi=0;wi<p.weeks.length;wi++) for(let di=0;di<p.weeks[wi].days.length;di++){
