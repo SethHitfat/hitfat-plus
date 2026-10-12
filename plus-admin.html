@@ -106,11 +106,11 @@
     </section>
 
     <section id="s-landing" class="hide">
-      <div class="sub">Programs sold on their own (the 30-Day Weight Loss) and bought on a landing page. A purchase opens on the buyer's account the next time they sign in to HITFAT+ with the same email; <b>Waiting</b> means they have not signed in yet.</div>
+      <div class="sub">Programs sold on their own (BURN30, the 30-Day Weight Loss) and bought on a landing page. A purchase opens on the buyer's account the next time they sign in to HITFAT+ with the same email; <b>Waiting</b> means they have not signed in yet.</div>
       <h2>Record a payment</h2>
       <div class="card"><div class="sub" style="margin:0 0 10px">Paid another way (bank transfer, cash)? Record it under the email they will sign in with.</div><div class="row">
         <input id="l-email" type="email" placeholder="Buyer's email" style="flex:1;min-width:200px">
-        <select id="l-sku"><option value="prog_wl30">30-Day Weight Loss</option></select>
+        <select id="l-sku"><option value="prog_wl30">BURN30 · 30-Day Weight Loss</option></select>
         <input id="l-note" placeholder="Why (e.g. bank transfer 12 Oct)" style="flex:1;min-width:200px">
         <button class="btn" onclick="landingAdd()">Record</button></div></div>
       <h2>Purchases</h2>
@@ -137,7 +137,7 @@ let sb=null; try{ sb=window.supabase.createClient(SUPA_URL,SUPA_KEY); }catch(e){
 const $=id=>document.getElementById(id);
 const SKUS=[['sub_plus_6m','HITFAT+ · 6 months'],['sub_plus_12m','HITFAT+ · 12 months'],
             ['sub_coach_6m','HITFAT+ Coach · 6 months'],['sub_coach_12m','HITFAT+ Coach · 12 months'],
-            ['prog_wl30','30-Day Weight Loss (for good)']];
+            ['prog_wl30','BURN30 · 30-Day Weight Loss (for good)']];
 const SKU_NAME=Object.fromEntries(SKUS);
 let cur=null;
 

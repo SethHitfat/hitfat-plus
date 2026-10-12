@@ -1,4 +1,4 @@
-/* ═══════════════ 30-DAY WEIGHT LOSS ═══════════════
+/* ═══════════════ BURN30 · 30-DAY WEIGHT LOSS ═══════════════
    The first program sold on its own: RM39, one payment, yours for good. It
    is bought on its landing page (Bayarcash), or in the app, and is part of
    HITFAT+ for members. Someone who owns only this sees the rest of the app
@@ -16,6 +16,8 @@
    program page.                                                          */
 
 const WL30_ID='wl30', WL30_PRICE=39;
+/* its name, the way Beachbody names a program, and what it is */
+const WL30_NAME='BURN30', WL30_SUB='30-Day Weight Loss', WL30_POSTER='/img/p/burn30-poster.jpg';
 const WL30_TEST=['Bodyweight Squat','Knee Push Ups','Jumping Jack','Crunch','Plank'];
 const WL30_RECOVER=['IC Warm','Bird Dog','Dead Bug','Hip Thrust','Calf Raises'];
 const WL30_PHASES=[
@@ -99,7 +101,7 @@ const WL30=(function(){
   const weeks=[];
   for(let i=0;i<WL30_DAYS.length;i+=7)
     weeks.push({days:WL30_DAYS.slice(i,i+7).map(d=>({name:d.n, ex:d.ex, r:d.r, k:d.k, tip:d.tip}))});
-  return {id:WL30_ID, name:'30-Day Weight Loss', goal:'Fat Loss', level:'Beginner', dur:20, rounds:3,
+  return {id:WL30_ID, name:WL30_NAME, sub:WL30_SUB, goal:'Fat Loss', level:'Beginner', dur:20, rounds:3,
     c1:'#2a1016', c2:'#0b0b0d', ac:'#EF4444', icon:'✦', weeks, hub:true, oneTime:true, price:WL30_PRICE,
     desc:'Thirty days to lose fat and build the habit, made for beginners. A workout every day at home — '+
          'a chair, two bottles of water and a mat are all you need — with a meal plan for the month, '+
@@ -140,13 +142,13 @@ function renderWL30(){
   const pill=!owned ? {icon:'lock',label:'RM'+WL30_PRICE,go:'wlBuy()'}
            : nx<tot ? {icon:'play',label:'Day '+(nx+1),go:'wlOpenDay('+nx+')'} : null;
   let h=pdxHero(p,'program',p.name,
-    owned ? (nx<tot ? 'Day '+(nx+1)+' of '+tot+' · '+wlPhaseOf(nx).n : 'Program complete') : '30 days · Beginner · At home',
+    owned ? (nx<tot ? 'Day '+(nx+1)+' of '+tot+' · '+wlPhaseOf(nx).n : 'Program complete') : WL30_SUB+' · Beginner · At home',
     owned ? pct+'% complete' : 'One payment · yours for good', pill);
 
   h+='<div class="pdx-btns">';
   if(!owned){
     h+='<button class="bigbtn" onclick="wlBuy()">Get the Program · RM'+WL30_PRICE+'</button>'+
-       '<button class="pdx-prev" onclick="openPaywall(\'The 30-Day Weight Loss is included in HITFAT+.\')">'+glyph('star')+'Included with HITFAT+</button>';
+       '<button class="pdx-prev" onclick="openPaywall(\'BURN30 is included in HITFAT+.\')">'+glyph('star')+'Included with HITFAT+</button>';
   } else if(nx<tot){
     h+='<button class="bigbtn" onclick="wlOpenDay('+nx+')">'+glyph('play')+(done?'Continue · Day '+(nx+1):'Start Day 1')+'</button>';
   } else {
@@ -356,7 +358,7 @@ function wlProgress(){
       '<b>'+ph.n+'</b><span>'+(got?'Earned':'Day '+ph.to)+'</span></div>';
   }).join('')+'</div>';
   if(done>=WL30_DAYS.length) h+='<div class="wl-cert">'+ic('trophy')+'<div class="t">30 Days Complete</div>'+
-    '<div class="s">'+hesc(((HF.data.prefs&&HF.data.prefs.name)||'You').trim())+' finished the HITFAT+ 30-Day Weight Loss.</div>'+
+    '<div class="s">'+hesc(((HF.data.prefs&&HF.data.prefs.name)||'You').trim())+' finished HITFAT BURN30 — 30 workouts in 30 days.</div>'+
     '<button class="bigbtn" onclick="wlShare()">'+glyph('share')+'Share It</button></div>';
 
   /* fit test, day 1 against day 30 */
@@ -410,8 +412,8 @@ function wlAddPhoto(n,input){
   r.readAsDataURL(f);
 }
 function wlShare(){
-  const t='I just finished the HITFAT+ 30-Day Weight Loss — 30 workouts in 30 days.';
-  try{ if(navigator.share){ navigator.share({title:'30 Days Complete', text:t, url:'https://app.hitfat.io'}); return; } }catch(e){}
+  const t='I just finished HITFAT BURN30 — 30 workouts in 30 days.';
+  try{ if(navigator.share){ navigator.share({title:'BURN30 Complete', text:t, url:'https://app.hitfat.io'}); return; } }catch(e){}
   try{ navigator.clipboard.writeText(t+' https://app.hitfat.io'); toast('Copied — paste it anywhere'); }catch(e){ toast(t); }
 }
 
@@ -461,8 +463,7 @@ function wlBuy(){
   if(wlOwned()) return openProgram(WL30_ID);
   $('pw-body').innerHTML=
     '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
-    '<div class="wl-buy-hero" style="background-image:url(\''+progImg(WL30)+'\');'+(hasPhoto(WL30)?imgPos(WL30,FA.wide):'')+'"><div class="ov"></div>'+
-    '<div class="in"><div class="k">HITFAT+ Program</div><div class="t">30-Day Weight Loss</div></div></div>'+
+    '<img class="wl-buy-poster" src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days, 30 workouts, zero gym">'+
     '<div class="pwlist">'+[
       ['workout','30 workouts, made for beginners','15–25 minutes at home, video for every move'],
       ['food','A meal plan for the month','Your calories, Malaysian food, a weekly shopping list'],
@@ -471,7 +472,7 @@ function wlBuy(){
       .map(b=>'<div class="pwf"><div class="ic">'+ic(b[0])+'</div><div><div class="t">'+b[1]+'</div><div class="m">'+b[2]+'</div></div></div>').join('')+'</div>'+
     '<div class="pwprice"><div class="p">RM'+WL30_PRICE+'</div><div class="per">one payment</div></div>'+
     '<button class="bigbtn" onclick="startCheckout(\'prog_'+WL30_ID+'\')">Buy for RM'+WL30_PRICE+'</button>'+
-    '<button class="authalt" onclick="openPaywall(\'The 30-Day Weight Loss is included in HITFAT+.\')">Or get everything with HITFAT+</button>'+
+    '<button class="authalt" onclick="openPaywall(\'BURN30 is included in HITFAT+.\')">Or get everything with HITFAT+</button>'+
     '<div class="wl-claim"><div class="t">Bought it on our website?</div>'+
     '<div class="s">Sign in with the email you paid with and it opens by itself. Paid with a different email? Enter the order number from your receipt.</div>'+
     '<div class="wl-claim-f"><input id="wl-order" placeholder="Order number" autocomplete="off"><button onclick="wlClaim()">Unlock</button></div></div>';
@@ -508,14 +509,16 @@ function wlHomeCard(){
   if(owned && done){
     const pct=Math.round(done/tot*100);
     return '<div class="wl-home" style="'+bg+'" onclick="openProgram(\''+WL30_ID+'\')"><div class="ov"></div><div class="in">'+
-      '<div class="k">30-Day Weight Loss · Day '+(nx+1)+'</div><div class="t">'+d.n+'</div>'+
+      '<div class="k">BURN30 · Day '+(nx+1)+'</div><div class="t">'+d.n+'</div>'+
       '<div class="m">'+wlMinutes(d)+' min · '+pct+'% of the program done</div>'+
       '<div class="pbar"><i style="width:'+pct+'%"></i></div>'+
       '<button class="bigbtn" onclick="event.stopPropagation();wlOpenDay('+nx+')">'+glyph('play')+'Start Day '+(nx+1)+'</button></div></div>';
   }
-  return '<div class="wl-home" style="'+bg+'" onclick="openProgram(\''+WL30_ID+'\')"><div class="ov"></div><div class="in">'+
-    '<div class="k">'+(owned?(contentOpen()?'New · Included in HITFAT+':'Yours · Ready when you are'):'New Program')+'</div><div class="t">30-Day Weight Loss</div>'+
-    '<div class="m">30 workouts at home, a meal plan and a fit test. '+(owned?'Start with day 1.':'RM'+WL30_PRICE+', yours for good.')+'</div>'+
+  /* not started: the poster, as Beachbody shows a program before you begin */
+  return '<div class="wl-poster" onclick="openProgram(\''+WL30_ID+'\')">'+
+    '<img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days, 30 workouts, zero gym" loading="lazy">'+
+    '<div class="wl-poster-b"><div class="tx"><div class="k">'+(owned?(contentOpen()?'New · Included in HITFAT+':'Yours · Ready when you are'):'New Program')+'</div>'+
+    '<div class="t">'+(owned?WL30_SUB:'RM'+WL30_PRICE+' · yours for good')+'</div></div>'+
     '<button class="bigbtn" onclick="event.stopPropagation();'+(owned?'wlOpenDay(0)':'openProgram(\''+WL30_ID+'\')')+'">'+
     (owned?glyph('play')+'Start Day 1':'See the Program')+'</button></div></div>';
 }

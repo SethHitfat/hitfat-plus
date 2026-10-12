@@ -3337,7 +3337,8 @@ print("\n── 30-DAY WEIGHT LOSS ──");
   ok("...or claimed with an order number from the website", html('pw-body').indexOf('wl-order')>0);
   ok("checkout knows what it is", checkoutItem('prog_wl30').price===39);
   ok("an old product link lands on the same offer", (openProduct('prog_wl30'), html('pw-body').indexOf('Buy for RM39')>0));
-  ok("Home offers it to a guest", wlHomeCard().indexOf('New Program')>0 && wlHomeCard().indexOf('RM39')>0);
+  ok("Home offers it to a guest, on its poster", wlHomeCard().indexOf('New Program')>0 && wlHomeCard().indexOf('RM39')>0 && wlHomeCard().indexOf(WL30_POSTER)>0);
+  ok("it goes by its name, BURN30", WL30.name==='BURN30' && checkoutItem('prog_wl30').name==='BURN30' && html('pgd-body').indexOf('BURN30')>0);
 
   /* someone who bought only this */
   _guest(); _ent.skus['prog_wl30']=true;

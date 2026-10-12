@@ -420,6 +420,7 @@ function checkoutItem(sku){
   if(sc) return {name:sc.name, line:sc.note, price:sc.price};
   if(sku===BUNDLE_SKU) return {name:'All Access', line:'Every program, yours for good', price:BUNDLE_PRICE};
   const p=PROGRAMS.filter(x=>'prog_'+x.id===sku)[0];
+  if(p && p.oneTime) return {name:p.name, line:p.sub+' · yours for good', price:programPrice(p)};
   return p ? {name:p.name, line:wks(p.weeks.length)+' program', price:programPrice(p)} : null;
 }
 
