@@ -89,7 +89,7 @@ const HF={
     weight:[],meals:{},burn:{},favs:[],custom:null,nutrition:{},scanQuota:{used:0,month:''},owned:{},purchases:[],
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
     body:[],goalKg:null,
-    challengeJoined:{},badges:{},wl30:{} }; },
+    challengeJoined:{},badges:{},wl30:{},coach:{} }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
   apply(o){
@@ -108,6 +108,7 @@ const HF={
       d.mealPlans=Array.isArray(o.mealPlans)?o.mealPlans.slice():[]; d.wc=o.wc||0;
       d.challengeJoined=Object.assign({},o.challengeJoined||{}); d.badges=Object.assign({},o.badges||{});
       d.wl30=(o.wl30&&typeof o.wl30==='object')?JSON.parse(JSON.stringify(o.wl30)):{};
+      d.coach=(o.coach&&typeof o.coach==='object')?JSON.parse(JSON.stringify(o.coach)):{};
     }
     this.data=d;
   },
@@ -160,7 +161,7 @@ function daysThisWeek(){ const ws=weekStartISO(), seen={};
 function doneToday(){ const t=iso(0); return Object.values(HF.data.sessions).some(s=>sessionISO(s)===t); }
 
 /* ── PANELS — never hand-write a hide list ── */
-const PANELS=['home','train','eat','progress','me','progdetail','daydetail','library','mealplan','store','monthly','club','t42'];
+const PANELS=['home','train','eat','progress','me','progdetail','daydetail','library','mealplan','store','monthly','club','t42','aicoach'];
 function hidePanels(){ PANELS.forEach(id=>{ const e=$(id); if(e) e.style.display='none'; }); }
 let curTab='home';
 function switchTab(tab){

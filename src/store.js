@@ -595,7 +595,7 @@ const TIER_INFO={
   coach:{name:'HITFAT+ Coach', line:'The app, and a coach who checks in on you.',
     perks:[['check','Everything in HITFAT+','Every program, scan, meal plan and video'],
            ['trophy','One T42 challenge included','Claim a place in the next edition, no extra payment'],
-           ['person','Monthly coach review','Your numbers, looked at by a HITFAT coach each month'],
+           ['spark','AI Coach','A 4-week plan written for you, adjusted every week from your logs'],
            ['people','Members-only group','Questions answered, with the people training alongside you']]}
 };
 function subPlan(sku){ return SUB_PLANS.filter(x=>x.sku===sku)[0]; }

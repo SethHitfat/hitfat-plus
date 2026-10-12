@@ -257,7 +257,7 @@ function renderHome(){
   }).join('')+'</div>';
 
   // 3) membership, then T42
-  if($('home-t42')) $('home-t42').innerHTML=wlHomeCard()+(contentOpen()?'':fyJoinCard())+renewCard()+
+  if($('home-t42')) $('home-t42').innerHTML=wlHomeCard()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
   // 4) Up Next — the plan in progress, or the way to pick one
@@ -586,7 +586,8 @@ function renderMe(){
   }
   if(tier==='coach'){
     h+=fsec('Your Coach','')+'<div class="glist">'+
-      grow('person','Monthly review','Message coach','coachReview()')+
+      grow('spark','AI Coach',(typeof aicPlan==='function'&&aicPlan())?'Your plan':'Get your plan','openAICoach()')+
+      grow('person','A HITFAT coach','WhatsApp','coachReview()')+
       (COACH_GROUP_URL?grow('people','Members group','WhatsApp','coachGroup()'):'')+
       (T42_LIVE?grow('trophy','T42 included','One edition','openT42()'):'')+'</div>';
   }
@@ -619,7 +620,7 @@ function renderMe(){
 function coachReview(){
   const p=HF.data.prefs||{};
   window.open('https://wa.me/'+COACH_WA+'?text='+encodeURIComponent(
-    'Hi coach, this is '+((p.name||'').trim()||'a HITFAT+ Coach member')+' — I would like my monthly review.'),'_blank');
+    'Hi coach, this is '+((p.name||'').trim()||'a HITFAT+ Coach member')+' — I have a question for a coach.'),'_blank');
 }
 function coachGroup(){ if(COACH_GROUP_URL) window.open(COACH_GROUP_URL,'_blank'); }
 

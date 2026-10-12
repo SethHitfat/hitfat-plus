@@ -775,6 +775,11 @@
       <div id="dd-body"></div>
     </div>
 
+    <div id="aicoach" class="pad" style="display:none;">
+      <button class="back" onclick="switchTab('home')"><span class="bk-c" aria-hidden="true"></span>Back</button>
+      <div id="aic-body"></div>
+    </div>
+
     <div id="monthly" class="pad" style="display:none;">
       <button class="back" onclick="switchTab('home')"><span class="bk-c" aria-hidden="true"></span>Back</button>
       <div id="mth-body"></div>
@@ -1074,7 +1079,7 @@ async function scanToken(){
 function toast(m){ const t=$('toast'); if(!t) return; t.textContent=m; t.classList.add('on');
   clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('on'),1900); }
 
-/*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__WL30__*//*__MONTHLY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
+/*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__WL30__*//*__MONTHLY__*//*__AICOACH__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
 /*__ICONS__*//*__CLUB__*//*__T42__*//*__T42DEMO__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
 
 /* The splash plays its whole sequence once (about 1.9 s from the page

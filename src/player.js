@@ -269,7 +269,9 @@ function plClose(){
      the home tab after the session their challenge asked for is the app
      losing their place for them. */
   const t42=pl&&pl.meta&&pl.meta.t42day;
+  const aic=pl&&pl.meta&&pl.meta.aic;
   exitPlayer();
+  if(aic && typeof aicAfterSession==='function') return aicAfterSession(aic);
   if(t42 && typeof openT42==='function') return openT42();
   if(back) backToProgram(); else switchTab('home');
 }
