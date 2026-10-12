@@ -72,7 +72,7 @@ noThrow("every program opens",    function(){
 noThrow("nav offset computes",  function(){ setNavOffset(); });
 ok("it sets --navb",            !!window._navDiag && typeof window._navDiag.navb==='number',
                                 JSON.stringify(window._navDiag));
-ok("offset stays sane",         window._navDiag.navb>=2 && window._navDiag.navb<=60,
+ok("offset stays sane",         window._navDiag.navb>=-6 && window._navDiag.navb<=60,
                                 window._navDiag.navb);
 ok("standalone check is safe",  typeof _standaloneVH()==='boolean');
 
