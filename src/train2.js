@@ -193,7 +193,9 @@ function fqCard(){
    the button that starts it. Then what suits them, short sessions, and the
    programs most people start with. */
 function fyJoinCard(){
+  /* the program sold on its own has its own card; the membership shows the rest */
   const pics=[], seen=[]; trainingPlans().concat(PROGRAMS.filter(p=>!p.weeks)).forEach(p=>{
+    if(p.oneTime) return;
     const u=progImg(p); if(seen.indexOf(u)<0){ seen.push(u); pics.push({u,p}); } });
   const m=(SUB_PLANS[0].price/12).toFixed(2);
   return '<div class="fyjoin"><div class="fyjoin-grid">'+pics.slice(0,6).map(x=>
