@@ -28,8 +28,9 @@ export async function grant(admin: any, user_id: string, sku: string, order_numb
 
   /* A membership bought while one of the same tier is still running starts
      where that one ends. Renewing early must add months, not overwrite them. */
-  if (sku.startsWith('sub_')) {
-    const tier = sku.startsWith('sub_coach') ? 'sub_coach' : 'sub_plus';
+  if (sku.startsWith('sub_') || sku.startsWith('scan_d')) {
+    /* a Meal Scan add-on renews the same way, by its own SKU */
+    const tier = sku.startsWith('scan_d') ? sku : sku.startsWith('sub_coach') ? 'sub_coach' : 'sub_plus';
     const { data: live } = await admin.from('plus_entitlements')
       .select('expires_at').eq('user_id', user_id).like('sku', tier + '%')
       .gt('expires_at', new Date().toISOString())

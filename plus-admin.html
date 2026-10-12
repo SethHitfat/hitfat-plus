@@ -138,7 +138,7 @@ const $=id=>document.getElementById(id);
 const SKUS=[['sub_plus_6m','HITFAT+ · 6 months'],['sub_plus_12m','HITFAT+ · 12 months'],
             ['sub_coach_6m','HITFAT+ Coach · 6 months'],['sub_coach_12m','HITFAT+ Coach · 12 months'],
             ['prog_wl30','BURN30 · 30-Day Weight Loss (for good)']];
-const SKU_NAME=Object.fromEntries(SKUS);
+const SKU_NAME=Object.assign(Object.fromEntries(SKUS),{scan_d3:'Meal Scan 3 · 30 days',scan_d6:'Meal Scan 6 · 30 days',scan_dx:'Meal Scan Unlimited · 30 days'});
 let cur=null;
 
 function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2800); }

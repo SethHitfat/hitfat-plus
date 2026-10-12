@@ -1142,8 +1142,10 @@ ok("...and plays nothing",            document.getElementById('pwm').className.i
 noThrow("meal plans are locked",      function(){ openMealPlan(); });
 ok("...to the paywall",               document.getElementById('mpm').className.indexOf('on')<0 &&
                                       document.getElementById('pwm').className.indexOf('on')>=0); closeProduct();
-noThrow("the AI scan is locked",      function(){ openScan(); });
-ok("...to the paywall",               document.getElementById('scan').className.indexOf('on')<0); closeProduct();
+noThrow("a guest can open the AI scan", function(){ openScan(); });
+ok("...with free scans, or the scan plans", canScan() ? document.getElementById('scan').className.indexOf('on')>=0
+                                      : document.getElementById('pw-body').innerHTML.indexOf('AI Meal Scan')>0);
+closeScan(); closeProduct();
 ok("cards carry a lock",              frow(PROGRAMS[0]).indexOf('lockt')>0);
 ok("old product links land on the paywall", (function(){ openProduct(BUNDLE_SKU);
    var on=document.getElementById('pw-body').innerHTML.indexOf('sub_plus_12m')>0; closeProduct(); return on; })());
@@ -1164,7 +1166,7 @@ ok("...14-day meal plans",            maxPlanDays()===14);
 _member();
 ok("a member is a member",            hasPlus() && memberTier()==='plus' && !!memberUntil());
 ok("...everything opens",             PROGRAMS.every(ownsProgram));
-ok("...and scans without limit",      scanAccess().left===Infinity);
+ok("...and 3 scans a day",            scanAccess().daily===3 && scanAccess().mode==='pass');
 _member('coach');
 ok("coach includes HITFAT+",          hasPlus() && hasCoach() && memberTier()==='coach');
 _ent.coachUntil=new Date(Date.now()-864e5).toISOString();
@@ -3398,6 +3400,31 @@ print("\n── MEAL SCAN: PORTION AND NAME ──");
   _scanName='Nasi lemak ayam';
   ok("a renamed dish is logged by its new name", scanToMeal().name==='Nasi lemak ayam');
   _scanData=keep; _scanPortion=1; _scanName='';
+})();
+
+print("\n── MEAL SCAN PLANS ──");
+(function(){
+  var keepEnt=_ent, keepQ=HF.data.scanQuota;
+  ok("three add-ons on sale, priced as agreed", SCAN_PRODUCTS.filter(function(s){return !s.legacy;}).map(function(s){return s.sku+':'+s.price;}).join()==='scan_d3:9.9,scan_d6:14.9,scan_dx:24.9');
+  ok("the daily allowances", scanDailyFor('scan_d3')===3 && scanDailyFor('scan_d6')===6 && scanDailyFor('scan_dx')===15 && scanDailyFor('sub_plus_12m')===3 && scanDailyFor('prog_wl30')===0);
+  ok("checkout shows ringgit and sen", checkoutItem('scan_d6').price===14.9 && fmtRM(14.9)==='RM14.90' && fmtRM(249)==='RM249');
+  _guest(); HF.data.scanQuota={month:thisMonth(), used:3};
+  ok("a guest past 3 free scans cannot scan", !canScan() && scanAccess().mode==='none');
+  openScan(); var h=document.getElementById('pw-body').innerHTML;
+  ok("...and is shown the plans", h.indexOf("startCheckout('scan_d3')")>0 && h.indexOf("startCheckout('scan_dx')")>0 && h.indexOf('RM9.90')>0);
+  ok("...with the membership beside them", h.indexOf('Or join HITFAT+')>0);
+  closeProduct();
+  _member(); HF.data.scanQuota={month:thisMonth(), used:0, day:iso(0), today:2};
+  ok("a member has 1 of 3 left after 2 today", scanAccess().left===1 && /1 of 3 scans left today/.test(scanAccess().label));
+  scanBump(3); ok("...and none after the third", !canScan());
+  openScanPlans(); h=document.getElementById('pw-body').innerHTML;
+  ok("a member is offered only the bigger allowances", h.indexOf("startCheckout('scan_d3')")<0 && h.indexOf("startCheckout('scan_d6')")>0 && h.indexOf('Or join HITFAT+')<0);
+  closeProduct();
+  _guest(); _ent.scanDaily=6; HF.data.scanQuota={month:thisMonth(), used:0, day:iso(0), today:4};
+  ok("an add-on gives its own allowance", scanAccess().daily===6 && scanAccess().left===2);
+  HF.data.scanQuota={month:thisMonth(), used:0, day:'2000-01-01', today:6};
+  ok("the day's count resets", scanAccess().left===6);
+  _ent=keepEnt; HF.data.scanQuota=keepQ;
 })();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

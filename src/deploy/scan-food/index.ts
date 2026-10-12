@@ -28,6 +28,22 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 const MODEL = 'claude-sonnet-5-5';
 
 const FREE_SCANS_PER_MONTH = 3;
+
+/* Scans a day by what is live on the account (12 Oct 2026). A HITFAT+
+   membership gives 3; the Meal Scan add-ons give 3, 6, or "unlimited",
+   which is fair use at 15 so one account cannot run up the bill. The old
+   scan passes count as unlimited. The highest live allowance applies. */
+const MEMBER_SCANS_DAY = 3;
+const SCANS_DAY: Record<string, number> = { scan_d3: 3, scan_d6: 6, scan_dx: 15, scan_m: 15, scan_y: 15 };
+function dailyFor(sku: string): number {
+  if (sku.startsWith('sub_')) return MEMBER_SCANS_DAY;
+  return SCANS_DAY[sku] || 0;
+}
+/* Midnight in Malaysia (UTC+8), as an instant — "today" for the daily count. */
+function dayStartMY(): string {
+  const MYT = 8 * 3600e3;
+  return new Date(Math.floor((Date.now() + MYT) / 864e5) * 864e5 - MYT).toISOString();
+}
 const MAX_IMAGE_BYTES = 1_500_000;   // ~1.1MB of base64; the client sends ~60KB
 
 const CORS = {
@@ -109,14 +125,40 @@ Deno.serve(async (req: Request) => {
     if (eErr) return json({ error: 'Could not check your account. Try again shortly.' }, 503);
 
     const now = Date.now();
-    const livePass = (ents || []).find((e) =>
-      e.kind === 'pass' && e.expires_at && new Date(e.expires_at).getTime() > now);
+    const daily = (ents || [])
+      .filter((e) => e.kind === 'pass' && e.expires_at && new Date(e.expires_at).getTime() > now)
+      .reduce((m, e) => Math.max(m, dailyFor(String(e.sku))), 0);
 
     let creditRow: any = null;
     let mode: 'free' | 'pass' | 'credits' = 'free';
+    let usedToday = 0;
+    const pickCredit = () => (ents || [])
+      .filter((e) => e.kind === 'credits' && (e.credits_left ?? 0) > 0)
+      .sort((a, b) => (a.credits_left ?? 0) - (b.credits_left ?? 0))[0] || null;
 
-    if (livePass) {
-      mode = 'pass';
+    if (daily > 0) {
+      const { count, error: dErr } = await admin
+        .from('plus_scans')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('created_at', dayStartMY());
+      if (dErr) return json({ error: 'Could not verify your scans for today. Try again shortly.' }, 503);
+      usedToday = count ?? 0;
+      if (usedToday < daily) {
+        mode = 'pass';
+      } else {
+        /* a leftover credit from the old packs still buys one more */
+        creditRow = pickCredit();
+        if (!creditRow) {
+          return json({
+            error: `You have used all ${daily} scans for today. They reset at midnight.`,
+            code: 'daily_limit',
+            used: usedToday,
+            limit: daily,
+          }, 402);
+        }
+        mode = 'credits';
+      }
     } else {
       const month = new Date().toISOString().slice(0, 7);
       const { count, error: cErr } = await admin
@@ -129,9 +171,7 @@ Deno.serve(async (req: Request) => {
       if ((count ?? 0) < FREE_SCANS_PER_MONTH) {
         mode = 'free';
       } else {
-        creditRow = (ents || [])
-          .filter((e) => e.kind === 'credits' && (e.credits_left ?? 0) > 0)
-          .sort((a, b) => (a.credits_left ?? 0) - (b.credits_left ?? 0))[0] || null;
+        creditRow = pickCredit();
 
         if (!creditRow) {
           return json({
@@ -243,6 +283,7 @@ Deno.serve(async (req: Request) => {
       estimated_calories: kcal,
       mode,
       model: MODEL,
+      scans: daily > 0 ? { daily, today: usedToday + 1 } : undefined,
     });
 
   } catch (e) {

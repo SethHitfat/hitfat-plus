@@ -66,22 +66,37 @@ function isRehabProgram(p){ return !!(p && p.rehab); }
 const BUNDLE_SKU='bundle_all', BUNDLE_PRICE=199;
 const BAR_PRICE=139, BAR_WAS=399, BAR_URL='https://hitfat.my/hitfatbar';
 
-/* Meal Scan sells three ways. Credits match the cost exactly; the passes
-   trade a little margin for a price people find easier to say yes to. */
+/* Meal Scan, by the day (12 Oct 2026). Free: 3 a month. HITFAT+ members: 3 a
+   day, in the membership. On top, three 30-day add-ons by daily allowance;
+   "Unlimited" has a fair-use ceiling the server enforces (scan-food), so one
+   account cannot run up the AI bill. Each scan is a Sonnet call, about
+   RM0.04. The credit packs and old passes are no longer sold; they stay
+   listed (legacy) so anyone holding one keeps it and the price check still
+   matches the server's catalogue. */
 const SCAN_PRODUCTS=[
-  {sku:'scan_c20',  kind:'credits', credits:20,  price:19, name:'20 scans',  note:'about RM0.95 each'},
-  {sku:'scan_c60',  kind:'credits', credits:60,  price:45, name:'60 scans',  note:'about RM0.75 each · best value'},
-  {sku:'scan_m',    kind:'pass',    days:30,     price:19, name:'30-day pass', note:'unlimited for 30 days'},
-  {sku:'scan_y',    kind:'pass',    days:365,    price:99, name:'1-year pass', note:'unlimited for a year'}
+  {sku:'scan_d3', kind:'pass', days:30, daily:3,  price:9.9,  name:'Scan 3',         note:'3 scans a day for 30 days'},
+  {sku:'scan_d6', kind:'pass', days:30, daily:6,  price:14.9, name:'Scan 6',         note:'6 scans a day for 30 days'},
+  {sku:'scan_dx', kind:'pass', days:30, daily:15, price:24.9, name:'Scan Unlimited', note:'Scan every meal and snack for 30 days', unlimited:true},
+  {sku:'scan_c20',  kind:'credits', credits:20,  price:19, name:'20 scans',  note:'about RM0.95 each', legacy:true},
+  {sku:'scan_c60',  kind:'credits', credits:60,  price:45, name:'60 scans',  note:'about RM0.75 each', legacy:true},
+  {sku:'scan_m',    kind:'pass',    days:30,     price:19, daily:15, name:'30-day pass', note:'30 days', legacy:true},
+  {sku:'scan_y',    kind:'pass',    days:365,    price:99, daily:15, name:'1-year pass', note:'a year', legacy:true}
 ];
-const SCAN_FREE_TIER=3;
+const SCAN_FREE_TIER=3, MEMBER_SCANS_DAY=3;
+/* how many scans a day a live pass gives */
+function scanDailyFor(sku){
+  if(String(sku).indexOf('sub_')===0) return MEMBER_SCANS_DAY;
+  const s=SCAN_PRODUCTS.filter(x=>x.sku===sku)[0];
+  return (s && s.daily) || 0;
+}
+function fmtRM(n){ return 'RM'+(Math.round(n*100)/100).toFixed(2).replace(/\.00$/,''); }
 
 /* the meal plan limit on free — plan generation costs nothing to serve, so
    this is merchandising, and it is capped gently on purpose */
 const FREE_PLAN_DAYS=3, FREE_PLAN_SAVED=1;
 
 /* ── what the user owns ───────────────────────────────────  */
-let _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, loaded:false};
+let _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, scanDaily:0, scanPlanUntil:null, loaded:false};
 
 /* ── the membership ──
    Prices are the server's too (deploy/_shared/catalogue.ts); build.py
@@ -137,10 +152,16 @@ function ownsBar(){ return owns('bar'); }
    that order, which is also the order the edge function checks. */
 function scanAccess(){
   /* A member scans without limit: the membership is a pass on the server. */
-  if(hasPlus() && memberUntil()) return {mode:'pass', label:'Unlimited with HITFAT+', left:Infinity};
+  /* a daily allowance: the membership's 3, or an add-on's */
+  let daily=Math.max(_ent.scanDaily||0, (hasCoach()||liveDate(_ent.plusUntil))?MEMBER_SCANS_DAY:0);
+  if(!daily && typeof T42_DEMO!=='undefined' && T42_DEMO) daily=MEMBER_SCANS_DAY;
+  if(daily){
+    const left=Math.max(0, daily-scanUsedToday());
+    if(left>0 || !(_ent.credits>0))
+      return {mode:'pass', daily, left, label:left+' of '+daily+' scans left today'};
+    return {mode:'credits', daily, label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
+  }
   const used=scanUsed(), freeLeft=Math.max(0, SCAN_FREE_TIER-used);
-  if(_ent.passUntil && new Date(_ent.passUntil)>new Date())
-    return {mode:'pass', label:'Unlimited until '+new Date(_ent.passUntil).toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'}), left:Infinity};
   if(freeLeft>0)   return {mode:'free',    label:freeLeft+' of '+SCAN_FREE_TIER+' free scans left this month', left:freeLeft};
   if(_ent.credits>0) return {mode:'credits', label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
   return {mode:'none', label:'No scans left — free resets next month', left:0};
@@ -149,7 +170,7 @@ function canScan(){ return scanAccess().left>0; }
 
 let _claimedFor=null;
 async function loadEntitlement(){
-  _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, loaded:true};
+  _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, scanDaily:0, scanPlanUntil:null, loaded:true};
   if(!sb || !HF.userId) return _ent;
   /* once a session: anything bought on a landing page under this email */
   if(_claimedFor!==HF.userId){ _claimedFor=HF.userId; await claimLandingPurchases(); }
@@ -163,6 +184,10 @@ async function loadEntitlement(){
       if(!live) return;
       if(e.kind==='pass'){
         if(!_ent.passUntil || new Date(e.expires_at)>new Date(_ent.passUntil)) _ent.passUntil=e.expires_at;
+        /* the most scans a day any live pass gives */
+        const d=scanDailyFor(e.sku);
+        if(d>_ent.scanDaily) _ent.scanDaily=d;
+        if(String(e.sku).indexOf('scan_')===0 && (!_ent.scanPlanUntil || new Date(e.expires_at)>new Date(_ent.scanPlanUntil))) _ent.scanPlanUntil=e.expires_at;
         /* A membership is a pass too — the scan function already treats any
            live pass as unlimited scanning — and its SKU says which tier. */
         if(String(e.sku).indexOf('sub_coach')===0){
@@ -268,29 +293,29 @@ function prodCard(p){
     '</div></div>';
 }
 
-function storeScan(){
-  const a=scanAccess();
-  let h='';
-  h+='<div class="ehero"><div class="k">AI Meal Scan</div>'+
-     '<div class="row"><div style="flex:1;min-width:0;">'+
-     '<div class="n" style="font-size:40px;">'+(a.mode==='pass'?'Unlimited':a.left===Infinity?'Unlimited':a.left)+'</div>'+
-     '<div class="u">'+a.label+'</div></div></div></div>';
-  h+=fsec('How it is priced','Every scan is a real AI call, so you pay for what you use');
-  h+='<div class="prods">'+SCAN_PRODUCTS.map(s=>
-    '<div class="prod flat" onclick="openProduct(\''+s.sku+'\')">'+
-    '<div class="in"><div class="t">'+s.name+'</div><div class="m">'+s.note+'</div>'+
-    '<div class="pbig">RM'+s.price+'</div></div></div>').join('')+'</div>';
-  h+='<div class="mpnote">Credits never expire. Passes run from the day you buy and do not auto-renew — nothing recurring, nothing to cancel.</div>';
-  h+=fsec('Always free','');
-  h+='<div class="flib">'+[
-      ['✏️','Manual logging','Unlimited, forever — type any meal in'],
-      ['📷',SCAN_FREE_TIER+' scans a month','Resets on the first of the month'],
-      ['📊','Your daily target and dashboard','Calories, macros, burn, the lot'],
-      ['🍽️','Meal plans up to '+FREE_PLAN_DAYS+' days','Full 14-day plans come with All Access']
-    ].map(x=>'<div class="row" style="cursor:default;"><div class="ic">'+ic(x[0])+'</div>'+
-      '<div style="flex:1;"><div style="font-size:15px;font-weight:600;color:var(--txt);">'+x[1]+'</div>'+
-      '<div style="font-size:13px;color:var(--dim);margin-top:3px;">'+x[2]+'</div></div></div>').join('')+'</div>';
-  $('store-body').innerHTML=h;
+/* ── Meal Scan plans ──
+   One sheet for every way into more scans: running out, a plan link, the
+   Eat tab. A member sees only the bigger allowances; Scan 3 is what the
+   membership already gives them. */
+function openScanPlans(reason){
+  const a=scanAccess(), member=hasPlus();
+  const plans=SCAN_PRODUCTS.filter(s=>!s.legacy && !(member && s.daily<=MEMBER_SCANS_DAY));
+  let h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
+    '<div class="sp-head">'+ic('photo')+'<div class="t">AI Meal Scan</div>'+
+    '<div class="s">'+(reason?hesc(reason)+' ':'')+'Photograph a plate and get its calories and macros.</div>'+
+    '<div class="sp-now">'+hesc(a.label)+'</div></div>';
+  h+='<div class="sp-plans">'+plans.map(s=>
+    '<button class="sp-plan'+(s.sku==='scan_d6'?' best':'')+'" onclick="startCheckout(\''+s.sku+'\')">'+
+      (s.sku==='scan_d6'?'<span class="sp-tag">Most popular</span>':'')+
+      '<div class="tx"><div class="n">'+s.name+'</div><div class="m">'+s.note+'</div></div>'+
+      '<div class="p"><b>'+fmtRM(s.price)+'</b><small>30 days</small></div></button>').join('')+'</div>';
+  h+='<div class="sp-fine">One payment for 30 days, no auto-renew. '+(plans.some(s=>s.unlimited)?'Unlimited is fair use, up to 15 scans a day. ':'')+
+     'Your count resets at midnight.</div>';
+  if(!member) h+='<button class="authalt" onclick="openPaywall(\'HITFAT+ includes '+MEMBER_SCANS_DAY+' AI meal scans a day.\')">Or join HITFAT+, with '+MEMBER_SCANS_DAY+' scans a day included</button>';
+  h+='<button class="authalt" onclick="closeProduct();closeScan&&closeScan();openManual&&openManual()">Log a meal by hand</button>';
+  $('pw-body').innerHTML=h;
+  $('pwm').classList.add('on');
+  try{ $('pwm').scrollTop=0; }catch(e){}
 }
 
 function storeBar(){
@@ -336,7 +361,8 @@ function openProduct(sku){
   /* Programs, All Access and scan packs are part of the membership now.
      Every old way into a product sheet lands on the paywall instead. */
   if(sku==='prog_'+WL30_ID) return wlBuy();
-  if(sku===BUNDLE_SKU || String(sku).indexOf('prog_')===0 || String(sku).indexOf('scan_')===0){
+  if(String(sku).indexOf('scan_')===0) return openScanPlans();
+  if(sku===BUNDLE_SKU || String(sku).indexOf('prog_')===0){
     const p=String(sku).indexOf('prog_')===0 ? PROGRAMS.filter(x=>'prog_'+x.id===sku)[0] : null;
     return openPaywall(p ? p.name+' is part of HITFAT+.' : '');
   }
@@ -417,7 +443,7 @@ function checkoutItem(sku){
             price:sp.price, sub:true, from:liveDate(cur)?fmtDate(from):'Today', to:fmtDate(to)};
   }
   const sc=SCAN_PRODUCTS.filter(x=>x.sku===sku)[0];
-  if(sc) return {name:sc.name, line:sc.note, price:sc.price};
+  if(sc) return {name:'Meal '+sc.name, line:sc.note+' · no auto-renew', price:sc.price};
   if(sku===BUNDLE_SKU) return {name:'All Access', line:'Every program, yours for good', price:BUNDLE_PRICE};
   const p=PROGRAMS.filter(x=>'prog_'+x.id===sku)[0];
   if(p && p.oneTime) return {name:p.name, line:p.sub+' · yours for good', price:programPrice(p)};
@@ -441,7 +467,7 @@ function startCheckout(sku){
   if(it.sub) h+='<div class="co-row"><span>Starts</span><b>'+it.from+'</b></div>'+
                 '<div class="co-row"><span>Ends</span><b>'+it.to+'</b></div>'+
                 '<div class="co-row"><span>Renews</span><b>No — one payment</b></div>';
-  h+='<div class="co-row co-tot"><span>Total</span><b>RM'+it.price+'</b></div></div>';
+  h+='<div class="co-row co-tot"><span>Total</span><b>'+fmtRM(it.price)+'</b></div></div>';
   h+='<div class="pwq">Pay with</div>';
   h+='<div class="paychs co-pay">'+PAY_CHANNELS.map((c,i)=>
      '<button class="paych'+(i===0?' on':'')+'" onclick="setPayChannel('+c[0]+')">'+ic(c[3])+
@@ -451,7 +477,7 @@ function startCheckout(sku){
      only on a page nobody opens until afterwards. */
   h+='<div class="co-legal">All purchases are final and non-refundable. '+
      '<a href="/terms" target="_blank" rel="noopener">Terms</a> · <a href="/refund" target="_blank" rel="noopener">Refund Policy</a></div>';
-  h+='<button class="bigbtn sub-cta" id="pay-go" onclick="payNow()">Pay RM'+it.price+'</button>';
+  h+='<button class="bigbtn sub-cta" id="pay-go" onclick="payNow()">Pay '+fmtRM(it.price)+'</button>';
   h+='<button class="authalt" onclick="closeProduct()">Cancel</button>';
   $('pw-body').innerHTML='<div class="co">'+h+'</div>';
   /* Usually the sheet is already open because the paywall put it there, but
@@ -481,7 +507,7 @@ async function payNow(){
 
 /* Ask the server what actually settled. The browser never grants itself
    anything — a hand-typed ?paid= in the URL unlocks nothing. */
-function entSig(){ return JSON.stringify([Object.keys(_ent.skus).sort(), _ent.credits, _ent.passUntil, _ent.plusUntil, _ent.coachUntil]); }
+function entSig(){ return JSON.stringify([Object.keys(_ent.skus).sort(), _ent.credits, _ent.passUntil, _ent.plusUntil, _ent.coachUntil, _ent.scanDaily]); }
 async function refreshPurchases(){
   if(!sb || !HF.userId) return 0;
   const before=entSig();
@@ -563,7 +589,7 @@ let pwTier='plus', pwSku='sub_plus_12m', pwReason='';
 const TIER_INFO={
   plus:{name:'HITFAT+', line:'Everything in the app, for as long as you are a member.',
     perks:[['workout','Every program and session','Signature, strength, fat loss'+(RECOVERY_LIVE?', recovery':'')+' — '+PROGRAMS.filter(p=>p.weeks).length+' programs'],
-           ['photo','AI meal scan','Photograph a plate, get calories and macros'],
+           ['photo','AI meal scan, '+MEMBER_SCANS_DAY+' a day','Photograph a plate, get calories and macros'],
            ['food','Meal plans up to 14 days','Malaysian menus, MDG 2020 and CPG MOH 2023'],
            ['play','Every movement, on video','The full exercise library, with the camera mirror']]},
   coach:{name:'HITFAT+ Coach', line:'The app, and a coach who checks in on you.',

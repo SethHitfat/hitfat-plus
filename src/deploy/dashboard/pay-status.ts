@@ -53,6 +53,12 @@ const CATALOGUE: Record<string, Sku> = {
   "prog_m2": { price: 39, kind: "program" },        // 8 Week Beginner Training
   "prog_m3": { price: 29, kind: "program" },        // 22 Minutes Hardcore
   "prog_wl30": { price: 39, kind: "program" },      // 30-Day Weight Loss · sold on its own, also on its landing page
+  /* Meal Scan add-ons (12 Oct 2026): 30 days of a daily allowance, enforced in
+     scan-food. The credit packs and old passes below are no longer sold and
+     stay so a late callback still grants. */
+  "scan_d3": { price: 9.9, kind: "pass", days: 30 },
+  "scan_d6": { price: 14.9, kind: "pass", days: 30 },
+  "scan_dx": { price: 24.9, kind: "pass", days: 30 },
   "scan_c20": { price: 19, kind: "credits", credits: 20 },
   "scan_c60": { price: 45, kind: "credits", credits: 60 },
   "scan_m": { price: 19, kind: "pass", days: 30 },
@@ -147,8 +153,9 @@ async function grant(admin: any, user_id: string, sku: string, order_number: str
 
   /* A membership bought while one of the same tier is still running starts
      where that one ends. Renewing early must add months, not overwrite them. */
-  if (sku.startsWith('sub_')) {
-    const tier = sku.startsWith('sub_coach') ? 'sub_coach' : 'sub_plus';
+  if (sku.startsWith('sub_') || sku.startsWith('scan_d')) {
+    /* a Meal Scan add-on renews the same way, by its own SKU */
+    const tier = sku.startsWith('scan_d') ? sku : sku.startsWith('sub_coach') ? 'sub_coach' : 'sub_plus';
     const { data: live } = await admin.from('plus_entitlements')
       .select('expires_at').eq('user_id', user_id).like('sku', tier + '%')
       .gt('expires_at', new Date().toISOString())

@@ -95,7 +95,7 @@ open('plus_body.js','w').write(shell.split('<script>')[-1].split('</script>')[0]
 # what they are charged. A price changed in one and not the other means the app
 # advertises RM29 while Bayarcash asks for RM39 — so the build refuses to ship it.
 import json as _json, subprocess as _sp
-_server = dict(re.findall(r'"(\w+)":\s*\{\s*price:\s*(\d+)', open('deploy/_shared/catalogue.ts').read()))
+_server = dict(re.findall(r'"(\w+)":\s*\{\s*price:\s*(\d+(?:\.\d+)?)', open('deploy/_shared/catalogue.ts').read()))
 _r = _sp.run(['/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Helpers/jsc','pricecheck.js'],
              capture_output=True, text=True)
 if _r.returncode != 0:

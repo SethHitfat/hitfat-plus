@@ -18,7 +18,13 @@ const SCAN_FN=SUPA_URL+'/functions/v1/scan-food';
 function thisMonth(){ return iso(0).slice(0,7); }
 function scanUsed(){ const q=HF.data.scanQuota||{}; return q.month===thisMonth()?(q.used||0):0; }
 function scanLeft(){ return Math.max(0, SCAN_FREE_TIER - scanUsed()); }
-function scanBump(){ HF.data.scanQuota={month:thisMonth(), used:scanUsed()+1}; HF.save(); }
+/* scans made today, against a daily allowance (the server keeps the real count) */
+function scanUsedToday(){ const q=HF.data.scanQuota||{}; return q.day===iso(0)?(q.today||0):0; }
+function scanBump(today){
+  HF.data.scanQuota={month:thisMonth(), used:scanUsed()+1, day:iso(0),
+    today:(typeof today==='number')?today:scanUsedToday()+1};
+  HF.save();
+}
 
 function tdee(w,h,a,gender,goal){
   const bmr = gender==='male' ? 10*w+6.25*h-5*a+5 : 10*w+6.25*h-5*a-161;
@@ -193,7 +199,7 @@ function eatToday(){
   // tools, as the bright tiles Browse Programs uses
   h+=fsec('Tools','Log faster, plan ahead.');
   h+='<div class="hscroll">'+
-     eatTile('Scan a Meal', contentOpen()?'AI reads the plate':'With HITFAT+','linear-gradient(135deg,#5A0A0E 0%,#C21A14 55%,#FF6A5C 100%)','photo','openScan()')+
+     eatTile('Scan a Meal', canScan()?'AI reads the plate':'Get more scans','linear-gradient(135deg,#5A0A0E 0%,#C21A14 55%,#FF6A5C 100%)','photo','openScan()')+
      eatTile('Meal Plan', contentOpen()?'Malaysian menus':'With HITFAT+','linear-gradient(135deg,#3A2600 0%,#A87400 55%,#FFC21A 100%)','clipboard',"setEatSeg('plan')")+
      eatTile('Log Exercise','Earn calories back','linear-gradient(135deg,#1C1C1E 0%,#4A0C10 55%,#B81A1F 100%)','flame','openBurn()')+
      '</div>';
@@ -249,7 +255,7 @@ function eatLog(){
   let h='';
   h+=fsec('Add Food','Scan the plate, or type it in.');
   h+='<div class="hscroll">'+
-     eatTile('Scan with AI', contentOpen()?hesc(scanAccess().label):'With HITFAT+','linear-gradient(135deg,#5A0A0E 0%,#C21A14 55%,#FF6A5C 100%)','photo','openScan()')+
+     eatTile('Scan with AI', hesc(scanAccess().label),'linear-gradient(135deg,#5A0A0E 0%,#C21A14 55%,#FF6A5C 100%)','photo','openScan()')+
      eatTile('Add Manually','Always open, unlimited','linear-gradient(135deg,#1C1C1E 0%,#3A3A3C 55%,#6E6E73 100%)','pencil','openManual()')+
      '</div>';
 
@@ -409,8 +415,9 @@ function setScanPortion(f){ _scanPortion=f; renderScanResult(_scanData); }
 function editScanName(){ _scanEditing=true; renderScanResult(_scanData); setTimeout(()=>{ const i=$('scan-name-in'); if(i){ i.focus(); i.select(); } },50); }
 function saveScanName(){ const i=$('scan-name-in'); const v=i?String(i.value||'').trim().slice(0,80):''; if(v) _scanName=v; _scanEditing=false; renderScanResult(_scanData); }
 function openScan(){
-  if(needPlus('AI meal scan is part of HITFAT+. Logging by hand stays open.')) return;
-  if(!canScan()){ openPaywall('Your scans have run out.'); return; }
+  /* Everyone may scan: 3 a month free, 3 a day for members, more with an
+     add-on. Out of scans opens the plans, not a wall. */
+  if(!canScan()){ openScanPlans('You have used your scans.'); return; }
   _scanData=null; _scanPortion=1; _scanName=''; _scanEditing=false;
   $('scan').classList.add('on');
   $('scan-prev').style.display='none'; $('scan-prev').src='';
@@ -477,7 +484,7 @@ function onScanFile(input){
           $('scan-live').textContent='Done';
           /* The server already recorded this scan. Mirror it locally so the
              count on screen matches without a second round trip. */
-          scanBump();
+          scanBump(res.j && res.j.scans && typeof res.j.scans.today==='number' ? res.j.scans.today : undefined);
           _scanData=res.j;
           renderScanResult(res.j);
         })
@@ -485,7 +492,9 @@ function onScanFile(input){
           if(tok!==_scanTok) return;
           $('scan-frame').classList.remove('on'); stopScanAnim();
           $('scan-live').textContent='Error';
-          if(err && err.code==='quota_exceeded'){ closeScan(); openPaywall('Your scans have run out.'); return; }
+          if(err && (err.code==='quota_exceeded' || err.code==='daily_limit')){
+            if(err.code==='daily_limit') scanBump(scanAccess().daily||0);
+            closeScan(); openScanPlans(err.message); return; }
           const el=$('scan-err');
           el.textContent=(err&&err.message)||'Scan failed. Try clearer lighting, or log it manually.';
           el.style.display='block';

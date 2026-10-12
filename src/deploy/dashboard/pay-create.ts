@@ -54,6 +54,12 @@ const CATALOGUE: Record<string, Sku> = {
   "prog_m2": { price: 39, kind: "program" },        // 8 Week Beginner Training
   "prog_m3": { price: 29, kind: "program" },        // 22 Minutes Hardcore
   "prog_wl30": { price: 39, kind: "program" },      // 30-Day Weight Loss · sold on its own, also on its landing page
+  /* Meal Scan add-ons (12 Oct 2026): 30 days of a daily allowance, enforced in
+     scan-food. The credit packs and old passes below are no longer sold and
+     stay so a late callback still grants. */
+  "scan_d3": { price: 9.9, kind: "pass", days: 30 },
+  "scan_d6": { price: 14.9, kind: "pass", days: 30 },
+  "scan_dx": { price: 24.9, kind: "pass", days: 30 },
   "scan_c20": { price: 19, kind: "credits", credits: 20 },
   "scan_c60": { price: 45, kind: "credits", credits: 60 },
   "scan_m": { price: 19, kind: "pass", days: 30 },
