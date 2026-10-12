@@ -1882,8 +1882,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .wl-lock .t{font-size:20px;font-weight:800;margin-top:10px;}
 .wl-lock .s{font-size:14px;color:var(--dim);margin-top:6px;line-height:1.45;}
 .wl-lock .bigbtn{margin-top:16px;}
-.wl-home .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.82) 100%);}
-.wl-home .k,.wl-poster-b .k{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--wl-y);}
+.wl-poster-b .k{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--wl-y);}
 .wl-claim{margin:18px 0 6px;padding:14px;border-radius:16px;background:var(--surface);}
 .wl-claim .t{font-size:15px;font-weight:700;}
 .wl-claim .s{font-size:13px;color:var(--dim);margin-top:4px;line-height:1.4;}
@@ -1891,16 +1890,10 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .wl-claim-f input{flex:1;min-width:0;font:inherit;padding:11px 12px;border-radius:12px;border:none;background:var(--surface2);color:var(--txt);}
 .wl-claim-f button{flex:none;font:inherit;font-weight:700;padding:0 16px;border:none;border-radius:99px;background:var(--txt);color:var(--bg);cursor:pointer;}
 /* Home */
-.wl-home{position:relative;min-height:340px;border-radius:22px;overflow:hidden;background:#1C1C1E center/cover no-repeat;margin:4px 0 22px;
-  display:flex;align-items:flex-end;cursor:pointer;}
-.wl-home .in{position:relative;padding:18px;color:#fff;width:100%;}
-.wl-home .t{font-size:28px;font-weight:800;letter-spacing:-.6px;margin-top:4px;line-height:1.1;}
-.wl-home .m{font-size:14px;color:rgba(255,255,255,.8);margin-top:6px;line-height:1.4;}
-.wl-home .pbar{margin-top:12px;background:rgba(255,255,255,.22);}
-.wl-home .bigbtn{margin:14px 0 0;}
 /* the poster: the program before it is started, and on its offer */
 .wl-poster{border-radius:22px;overflow:hidden;background:#0B0B0D;margin:4px 0 22px;cursor:pointer;}
-.wl-poster img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;}
+.wl-poster img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;}
+.wl-poster-b .pbar{margin-top:8px;background:rgba(255,255,255,.18);}
 .wl-poster-b{display:flex;align-items:center;gap:12px;padding:14px 16px 16px;background:#141416;color:#fff;}
 .wl-poster-b .tx{flex:1;min-width:0;}
 .wl-poster-b .t{font-size:16px;font-weight:700;margin-top:2px;}
@@ -1908,8 +1901,9 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .wl-buy-poster{display:block;width:100%;border-radius:20px;margin:4px 0 14px;}
 /* the poster as the program's own header */
 .wl-hero{margin:-6px -18px 0;background:#0B0B0D;}
-.wl-hero img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;}
-.wl-hero.day img{aspect-ratio:5/4;object-position:50% 0;}
+.wl-hero img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;}
+/* a day: the athlete, above the poster's own title */
+.wl-hero.day img{aspect-ratio:16/9;object-position:50% 0;}
 .wl-hero-tx{padding:14px 0 0;}
 .wl-hero-tx .t{font-size:30px;font-weight:800;letter-spacing:-.7px;line-height:1.08;}
 .wl-hero-tx .s{font-size:17px;color:var(--txt);margin-top:4px;}

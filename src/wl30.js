@@ -17,7 +17,7 @@
 
 const WL30_ID='wl30', WL30_PRICE=39;
 /* its name, the way Beachbody names a program, and what it is */
-const WL30_NAME='BURN30', WL30_SUB='30-Day Weight Loss', WL30_POSTER='/img/p/burn30-poster.jpg';
+const WL30_NAME='BURN30', WL30_SUB='30-Day Weight Loss', WL30_POSTER='/img/p/burn30-poster.jpg?v=2';
 const WL30_TEST=['Bodyweight Squat','Knee Push Ups','Jumping Jack','Crunch','Plank'];
 const WL30_RECOVER=['IC Warm','Bird Dog','Dead Bug','Hip Thrust','Calf Raises'];
 const WL30_PHASES=[
@@ -175,7 +175,7 @@ function renderWL30(){
    adds no title over it. */
 function wlHero(kicker,title,sub,meta,pill){
   return pdxBar(kicker,pill)+
-    '<div class="wl-hero'+(kicker==='day'?' day':'')+'"><img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days, 30 workouts, zero gym"></div>'+
+    '<div class="wl-hero'+(kicker==='day'?' day':'')+'"><img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days at home"></div>'+
     '<div class="wl-hero-tx">'+(title?'<div class="t">'+title+'</div>':'')+
     '<div class="s">'+sub+'</div>'+(meta?'<div class="m">'+meta+'</div>':'')+'</div>';
 }
@@ -474,7 +474,7 @@ function wlBuy(){
   if(wlOwned()) return openProgram(WL30_ID);
   $('pw-body').innerHTML=
     '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
-    '<img class="wl-buy-poster" src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days, 30 workouts, zero gym">'+
+    '<img class="wl-buy-poster" src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days at home">'+
     '<div class="pwlist">'+[
       ['workout','30 workouts, made for beginners','15–25 minutes at home, video for every move'],
       ['food','A meal plan for the month','Your calories, Malaysian food, a weekly shopping list'],
@@ -515,19 +515,18 @@ function wlHomeCard(){
   const owned=wlOwned(), done=wlDone(), tot=WL30_DAYS.length, nx=wlNext();
   if(owned && nx>=tot) return '';
   const d=WL30_DAYS[Math.min(nx,tot-1)];
-  /* the poster from its top, so its name shows whole above the day */
-  const bg='background-image:url(\''+progImg(WL30)+'\');background-position:50% 0;';
+  const img='<img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days at home" loading="lazy">';
+  /* started: the same poster, with the day it is on underneath */
   if(owned && done){
     const pct=Math.round(done/tot*100);
-    return '<div class="wl-home" style="'+bg+'" onclick="openProgram(\''+WL30_ID+'\')"><div class="ov"></div><div class="in">'+
-      '<div class="k">BURN30 · Day '+(nx+1)+'</div><div class="t">'+d.n+'</div>'+
-      '<div class="m">'+wlMinutes(d)+' min · '+pct+'% of the program done</div>'+
-      '<div class="pbar"><i style="width:'+pct+'%"></i></div>'+
+    return '<div class="wl-poster" onclick="openProgram(\''+WL30_ID+'\')">'+img+
+      '<div class="wl-poster-b"><div class="tx"><div class="k">Day '+(nx+1)+' · '+wlMinutes(d)+' min</div>'+
+      '<div class="t">'+d.n+'</div><div class="pbar"><i style="width:'+pct+'%"></i></div></div>'+
       '<button class="bigbtn" onclick="event.stopPropagation();wlOpenDay('+nx+')">'+glyph('play')+'Start Day '+(nx+1)+'</button></div></div>';
   }
   /* not started: the poster, as Beachbody shows a program before you begin */
   return '<div class="wl-poster" onclick="openProgram(\''+WL30_ID+'\')">'+
-    '<img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days, 30 workouts, zero gym" loading="lazy">'+
+    img+
     '<div class="wl-poster-b"><div class="tx"><div class="k">'+(owned?(contentOpen()?'New · Included in HITFAT+':'Yours · Ready when you are'):'New Program')+'</div>'+
     '<div class="t">'+(owned?WL30_SUB:'RM'+WL30_PRICE+' · yours for good')+'</div></div>'+
     '<button class="bigbtn" onclick="event.stopPropagation();'+(owned?'wlOpenDay(0)':'openProgram(\''+WL30_ID+'\')')+'">'+

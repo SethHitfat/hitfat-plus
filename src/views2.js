@@ -79,7 +79,7 @@ const FOCAL={
   p6:[50,22,0.593], p7:[40,46,1.859,1], p9:[55,36,0.593], reset12:[48,13,1], rh1:[65,25,1.34],
   rh2:[70,15,1.34], rh3:[63,32,1.898,1], rh4:[55,35,1.798], rh5:[65,10,1.34], rh6:[60,35,1.34],
   sig1:[47,13,1], sig2:[48,20,1], sig3:[47,15,1], sig4:[48,10,1], tw1:[55,15,0.593],
-  tw2:[60,44,0.634], bt1:[50,20,1.19], bt2:[60,35,1.196,1], p34:[50,50,1.192,1], wl30:[50,39,0.8]
+  tw2:[60,44,0.634], bt1:[50,20,1.19], bt2:[60,35,1.196,1], p34:[50,50,1.192,1], wl30:[55,16,1,1.6,0.6]
 };
 const FA={wide:1.77, row:1.65, poster:1.5, hero:0.87, card:0.75, tall:0.67, join:0.6};
 /* Many studio pictures stand their person right of centre. A frame no
@@ -94,8 +94,13 @@ function imgPos(p,frame){
   const clamp=(x,lo,hi)=>Math.min(Math.max(x,lo),hi);
   const off=z=>{ const W=W0*z; return Math.abs(fx*W-clamp(fx*W-0.5,0,W-1)-0.5); };
   let z=1; while(z<zmax-1e-9 && off(z)>0.06) z=Math.round((z+0.05)*100)/100;
+  /* A fifth number keeps the frame above that fraction of the picture: a
+     poster with its own title along the bottom shows only the athlete in a
+     card, not the top half of the letters. */
+  const keep=f[4]||1, topAt=z=>clamp(fy*H0*z-0.33,0,H0*z-1);
+  while(keep<1 && z<zmax-1e-9 && (topAt(z)+1)/(H0*z)>keep) z=Math.round((z+0.05)*100)/100;
   const W=W0*z, H=H0*z;
-  const left=clamp(fx*W-0.5,0,W-1), top=clamp(fy*H-0.33,0,H-1);   // the face a third of the way down
+  const left=clamp(fx*W-0.5,0,W-1), top=topAt(z);   // the face a third of the way down
   const px=(W-1)>0.001 ? left/(W-1)*100 : 50, py=(H-1)>0.001 ? top/(H-1)*100 : 50;
   return (z>1?'background-size:'+(W*100).toFixed(1)+'% auto;':'')+
     'background-position:'+px.toFixed(1)+'% '+py.toFixed(1)+'%;';
