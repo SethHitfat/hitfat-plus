@@ -89,7 +89,7 @@ const HF={
     weight:[],meals:{},burn:{},favs:[],custom:null,nutrition:{},scanQuota:{used:0,month:''},owned:{},purchases:[],
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
     body:[],goalKg:null,
-    challengeJoined:{},badges:{},wl30:{},coach:{} }; },
+    challengeJoined:{},badges:{},wl30:{},coach:{},academy:{} }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
   apply(o){
@@ -109,6 +109,7 @@ const HF={
       d.challengeJoined=Object.assign({},o.challengeJoined||{}); d.badges=Object.assign({},o.badges||{});
       d.wl30=(o.wl30&&typeof o.wl30==='object')?JSON.parse(JSON.stringify(o.wl30)):{};
       d.coach=(o.coach&&typeof o.coach==='object')?JSON.parse(JSON.stringify(o.coach)):{};
+      d.academy=(o.academy&&typeof o.academy==='object')?JSON.parse(JSON.stringify(o.academy)):{};
     }
     this.data=d;
   },
@@ -161,7 +162,7 @@ function daysThisWeek(){ const ws=weekStartISO(), seen={};
 function doneToday(){ const t=iso(0); return Object.values(HF.data.sessions).some(s=>sessionISO(s)===t); }
 
 /* ── PANELS — never hand-write a hide list ── */
-const PANELS=['home','train','eat','progress','me','progdetail','daydetail','library','mealplan','store','monthly','club','t42','aicoach'];
+const PANELS=['home','train','eat','progress','me','progdetail','daydetail','library','mealplan','store','monthly','club','t42','aicoach','academy'];
 function hidePanels(){ PANELS.forEach(id=>{ const e=$(id); if(e) e.style.display='none'; }); }
 let curTab='home';
 function switchTab(tab){

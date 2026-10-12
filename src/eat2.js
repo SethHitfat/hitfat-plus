@@ -72,7 +72,7 @@ function dayStatus(kcal){
    gradient and type; swap in photos when the shoot happens.                   */
 
 let eatSeg='today';
-const EAT_SEGS=[['today','Today'],['plan','Plan'],['log','Log'],['journal','Journal']];
+const EAT_SEGS=[['today','Today'],['plan','Plan'],['log','Log'],['journal','Journal'],['learn','Learn']];
 function setEatSeg(s){ eatSeg=s; renderEat(); $('screen').scrollTop=0; }
 
 function egrad(c1,c2,ac){
@@ -97,6 +97,7 @@ function renderEat(){
   if(eatSeg==='plan') return eatPlan();
   if(eatSeg==='log')  return eatLog();
   if(eatSeg==='journal') return eatJournal();
+  if(eatSeg==='learn') return eatLearn();
   eatToday();
 }
 
