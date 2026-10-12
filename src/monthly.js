@@ -185,7 +185,7 @@ function renderMonthly(){
   }
   h+='</div>';
 
-  h+=fsec('Leaderboard','Days trained this month, everyone on HITFAT+.');
+  h+=fsec('Leaderboard','Days trained this month. A workout of 4 minutes or more, played in the app, counts.');
   h+='<div id="lb-month"></div>';
 
   h+=fsec('How it works','');

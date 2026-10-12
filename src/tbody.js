@@ -3494,5 +3494,20 @@ print("\n── LEADERBOARDS ──");
   HF.data.prefs={}; ok("no name shows as Member, with a hint", boardHTML('month',{count:1,top:[{rank:1,name:'Member',days:1,me:true}]}).indexOf('add your first name')>0);
   HF.data.prefs=keepPrefs;
 })();
+
+print("\n── WORKOUTS RECORDED ON THE SERVER ──");
+(function(){
+  var calls=[], keepSb=sb, keepUid=HF.userId;
+  sb={rpc:function(fn,args){ calls.push([fn,args]); return Promise.resolve({data:'sess-1',error:null}); }};
+  HF.userId='u-test';
+  var fake={meta:{pid:'wl30',gi:4,name:'Upper & Core'}};
+  pl=fake; plSessionStart(fake);
+  ok("a workout's start is sent with its program and day", calls[0][0]==='plus_session_start' && calls[0][1].p_program==='wl30' && calls[0][1].p_day===4);
+  fake.sid='sess-1'; plSessionFinish(fake);
+  ok("...and its finish, once", calls[1][0]==='plus_session_finish' && calls[1][1].p_id==='sess-1' && fake.sid===null);
+  plSessionFinish(fake); ok("...not twice", calls.length===2);
+  sb=null; noThrow("offline, nothing is sent and nothing breaks", function(){ plSessionStart({meta:{}}); plSessionFinish({sid:'x'}); });
+  sb=keepSb; HF.userId=keepUid; pl=null;
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

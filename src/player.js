@@ -82,6 +82,26 @@ function startWorkout(exs,meta){
   plSetMode(plCam.mode);
   renderPl(); setClip(exs[0]);
   plReady();
+  plSessionStart(pl);
+}
+/* The server keeps its own record of a workout, with its own clock: a start
+   now, a finish at the end. That record is what the leaderboards count
+   (35-plus-sessions.sql), so a session counts only when it really ran.
+   Offline, nothing is sent and nothing breaks; the diary is the member's. */
+function plSessionStart(p){
+  try{
+    if(!sb || !HF.userId || !p) return;
+    const m=p.meta||{};
+    sb.rpc('plus_session_start',{p_program:m.pid||null, p_day:(typeof m.gi==='number'?m.gi:null), p_label:m.name||''})
+      .then(r=>{ if(r && !r.error && pl===p) p.sid=r.data; }).catch(()=>{});
+  }catch(e){}
+}
+function plSessionFinish(p){
+  try{
+    if(!sb || !p || !p.sid) return;
+    const id=p.sid; p.sid=null;
+    sb.rpc('plus_session_finish',{p_id:id}).then(()=>{ if(typeof _lbCache!=='undefined') _lbCache={}; }).catch(()=>{});
+  }catch(e){}
 }
 function exitPlayer(){
   stopTick();
@@ -223,6 +243,7 @@ function plFinish(){
      member's and is written first — the server copy can fail and be re-sent
      without anyone losing a session they actually did. */
   if(m.t42day && typeof t42RecordWorkout==='function') t42RecordWorkout(m, mins);
+  plSessionFinish(pl);
   /* what the share card shows when opened from here */
   _lastWorkout={name:m.name||'Workout', mins, exs:pl.exs.length, rounds:pl.rounds};
   $('pl-dn-ex').textContent=pl.exs.length;

@@ -363,7 +363,7 @@ function wlProgress(){
   let h='<div class="wl-stats">'+[[done,'Days done'],[liveStreak(),'Day streak'],[Math.round(mins),'Minutes']]
     .map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
 
-  h+=fsec('Leaderboard','Everyone on BURN30, by the day they have reached.');
+  h+=fsec('Leaderboard','Everyone on BURN30, by the days they have played.');
   h+='<div id="lb-burn30"></div>';
   h+=fsec('Badges','One for every week you finish.');
   h+='<div class="wl-badges">'+WL30_PHASES.map((ph,i)=>{
