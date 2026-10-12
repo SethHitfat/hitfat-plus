@@ -577,7 +577,7 @@ function renderMe(){
   if(tier){
     h+=fsec('Membership','')+'<div class="glist">'+
       grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+', until?'Until '+fmtDate(until):'All Access', "openStore()")+
-      grow('spark','AI Coach',(typeof aicPlan==='function'&&aicPlan())?'Your plan':'Get your plan','openAICoach()')+'</div>';
+      (AICOACH_LIVE?grow('spark','AI Coach',(typeof aicPlan==='function'&&aicPlan())?'Your plan':'Get your plan','openAICoach()'):'')+'</div>';
   } else {
     /* Not a member: the offer, as a poster, not a grey row that says no. */
     h+='<div class="mepromo" onclick="openStore()"><div class="pw-mark">HITFAT<span>+</span></div>'+

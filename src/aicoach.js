@@ -295,6 +295,7 @@ async function aicAsk(){
 
 /* ── Home: today's session, or the invitation ── */
 function aicHomeCard(){
+  if(!AICOACH_LIVE) return '';
   if(!(aicIsDemo() || (typeof hasPlus==='function' && hasPlus()))) return '';
   const p=aicPlan();
   if(!p) return '<div class="aic-card" onclick="openAICoach()">'+aicMark()+'<div class="tx"><div class="k">New in HITFAT+</div>'+

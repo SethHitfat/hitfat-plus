@@ -21,6 +21,9 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const MODEL = 'claude-sonnet-5-5';
+/* Hidden in the app (AICOACH_LIVE in store.js) until it does more than
+   Build Your Own; while false, only admins may call it. */
+const AICOACH_LIVE = false;
 const LIMITS: Record<string, [number, number]> = {      // calls, per hours
   plan: [3, 24 * 30], review: [3, 24 * 7], ask: [15, 24],
 };
@@ -148,7 +151,7 @@ Deno.serve(async (req: Request) => {
     const { data: ents } = await admin.from('plus_entitlements').select('sku, expires_at')
       .eq('user_id', user.id).or('sku.like.sub_plus%,sku.like.sub_coach%,sku.eq.bundle_all');
     const live = (t: string | null) => !!t && new Date(t).getTime() > Date.now();
-    let allowed = (ents || []).some((e: any) => e.sku === 'bundle_all' ? (!e.expires_at || live(e.expires_at)) : live(e.expires_at));
+    let allowed = AICOACH_LIVE && (ents || []).some((e: any) => e.sku === 'bundle_all' ? (!e.expires_at || live(e.expires_at)) : live(e.expires_at));
     if (!allowed) {
       const { data: staff } = await admin.from('club_members').select('role')
         .eq('user_id', user.id).eq('role', 'admin').limit(1);

@@ -3523,6 +3523,8 @@ print("\n── LEADERBOARD, EASY TO FIND ──");
 print("\n── AI COACH ──");
 (function(){
   var keepEnt=_ent, keepCoach=HF.data.coach, keepSW=startWorkout, keepSave=HF.save;
+  ok("the AI coach is hidden: no Home card, no perk", (function(){ _member('plus'); return aicHomeCard()===''; })() && paywallHTML(true).indexOf('AI Coach')<0);
+  AICOACH_LIVE=true;
   HF.save=function(){};
   var lib=aicLibrary({equipment:['Dumbbell']});
   ok("the coach chooses only filmed moves", lib.length>20 && lib.every(function(x){ var n=x.split('|')[0]; return DB.some(function(e){ return e.n===n && e.v; }); }));
@@ -3568,7 +3570,7 @@ print("\n── AI COACH ──");
   ok("...harder each week", dp.weeks[3].days[0].blocks[0].sets>dp.weeks[0].days[0].blocks[0].sets);
   aicData().plan=dp; aicSay('coach','hi');
   ok("...and kept apart from the member's own data", HF.data.coach!==aicStore() && saved===0);
-  T42_DEMO=false; _aicDemo=null;
+  T42_DEMO=false; _aicDemo=null; AICOACH_LIVE=false;
   startWorkout=keepSW; _ent=keepEnt; HF.data.coach=keepCoach||{}; HF.save=keepSave;
 })();
 print("\n"+pass+" passed, "+fail+" failed");

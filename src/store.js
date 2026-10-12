@@ -121,6 +121,11 @@ var MEMBERSHIP_LIVE=true;
    still here — set this true to bring it all back. The admin page and
    the server are untouched. */
 var T42_LIVE=false;
+/* The AI coach is hidden until it does more than Build Your Own (13 Oct
+   2026): no Home card, no Me row, no paywall perk, and the ai-coach
+   function answers admins only. Everything is still here — set this true
+   (and AICOACH_LIVE in the function) to bring it back. */
+var AICOACH_LIVE=false;
 function contentOpen(){
   return !MEMBERSHIP_LIVE || (typeof T42_DEMO!=='undefined' && T42_DEMO) || hasPlus();
 }
@@ -589,12 +594,12 @@ let pwTier='plus', pwSku='sub_plus_12m', pwReason='';
 const TIER_INFO={
   plus:{name:'HITFAT+', line:'Everything in the app, for as long as you are a member.',
     perks:[['workout','Every program and session','Signature, strength, fat loss'+(RECOVERY_LIVE?', recovery':'')+' — '+PROGRAMS.filter(p=>p.weeks).length+' programs'],
-           ['spark','AI Coach','A 4-week plan written for you, adjusted every week from your logs'],
+           ...(AICOACH_LIVE?[['spark','AI Coach','A 4-week plan written for you, adjusted every week from your logs']]:[]),
            ['photo','AI meal scan, '+MEMBER_SCANS_DAY+' a day','Photograph a plate, get calories and macros'],
            ['food','Meal plans up to 14 days','Malaysian menus, MDG 2020 and CPG MOH 2023'],
            ['play','Every movement, on video','The full exercise library, with the camera mirror']]},
   coach:{name:'HITFAT+ Coach', line:'The app, and a coach who checks in on you.',
-    perks:[['check','Everything in HITFAT+','AI Coach, every program, scan, meal plan and video'],
+    perks:[['check','Everything in HITFAT+','Every program, scan, meal plan and video'],
            ['trophy','One T42 challenge included','Claim a place in the next edition, no extra payment'],
            ['person','Monthly coach review','Your numbers, looked at by a HITFAT coach each month'],
            ['people','Members-only group','Questions answered, with the people training alongside you']]}
