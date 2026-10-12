@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · ai-coach
-   The AI coach for HITFAT+ Coach members (36-plus-ai-coach.sql).
+   The AI coach for every HITFAT+ member, Plus or Coach (36-plus-ai-coach.sql).
 
      action 'plan'    a 4-week plan from the member's answers, built only
                       from the filmed library the app sends
@@ -8,7 +8,8 @@
                       rewrites the next week to suit how it went
      action 'ask'     answers a question with the plan and logs in view
 
-   Only a live HITFAT+ Coach membership (or a HITFAT admin, for testing)
+   Only a live HITFAT+ membership (Plus, Coach, or the all-programs bundle;
+   or a HITFAT admin, for testing)
    may call it, and each member is held to a fair number of calls: plans
    3 a month, reviews 3 a week, questions 15 a day. The plan is saved in
    plus_coach_plans so it follows the member to a new phone.
@@ -142,17 +143,18 @@ Deno.serve(async (req: Request) => {
     const user = ud?.user;
     if (!user || !user.id || user.role === 'anon') return json({ error: 'Sign in first.' }, 401);
 
-    /* ── a Coach member, or an admin trying it out ── */
+    /* ── a member (Plus, Coach or the bundle), or an admin trying it out ── */
     const nowIso = new Date().toISOString();
-    const { data: coachRows } = await admin.from('plus_entitlements').select('id')
-      .eq('user_id', user.id).like('sku', 'sub_coach%').gt('expires_at', nowIso).limit(1);
-    let allowed = !!(coachRows && coachRows.length);
+    const { data: ents } = await admin.from('plus_entitlements').select('sku, expires_at')
+      .eq('user_id', user.id).or('sku.like.sub_plus%,sku.like.sub_coach%,sku.eq.bundle_all');
+    const live = (t: string | null) => !!t && new Date(t).getTime() > Date.now();
+    let allowed = (ents || []).some((e: any) => e.sku === 'bundle_all' ? (!e.expires_at || live(e.expires_at)) : live(e.expires_at));
     if (!allowed) {
       const { data: staff } = await admin.from('club_members').select('role')
         .eq('user_id', user.id).eq('role', 'admin').limit(1);
       allowed = !!(staff && staff.length);
     }
-    if (!allowed) return json({ error: 'The AI coach is part of HITFAT+ Coach.', code: 'not_coach' }, 403);
+    if (!allowed) return json({ error: 'Your AI coach comes with HITFAT+.', code: 'not_coach' }, 403);
 
     let body: any = {};
     try { body = await req.json(); } catch { return json({ error: 'Bad request.' }, 400); }

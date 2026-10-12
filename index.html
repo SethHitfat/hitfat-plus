@@ -7132,7 +7132,7 @@ function renderMonthly(){
 
 
 /* ═══════════════ AI COACH ═══════════════
-   HITFAT+ Coach members get a coach that is an AI (ai-coach edge
+   Every HITFAT+ member (Plus or Coach) gets a coach that is an AI (ai-coach edge
    function, 36-plus-ai-coach.sql), working the way TrainHeroic's coaches
    do: a plan written for the member, followed with the app's own filmed
    videos, logged after each session, reviewed each week, with the next
@@ -7225,7 +7225,7 @@ function aicIntake(){
   const f=_aicForm||(_aicForm=Object.assign({goal:'lose', level:prefs.level||'Beginner', days:3, minutes:30,
       equipment:['Bodyweight'], limits:[], notes:''}, c.intake||{}));
   const chip=(on,label,go)=>'<button class="aic-chip'+(on?' on':'')+'" onclick="'+go+'">'+label+'</button>';
-  let h='<div class="aic-hero">'+aicMark()+'<div class="k">HITFAT+ Coach</div><div class="t">Your AI Coach</div>'+
+  let h='<div class="aic-hero">'+aicMark()+'<div class="k">HITFAT+</div><div class="t">Your AI Coach</div>'+
     '<div class="s">Answer a few questions. Your coach writes a 4-week plan for you from HITFAT\'s filmed workouts, '+
     'then reads your logs every week and adjusts what comes next.</div></div>';
   h+='<div class="aic-q">Your goal</div><div class="aic-chips">'+AIC_GOALS.map(g=>chip(f.goal===g[0],glyph(g[2])+g[1],"aicSet('goal','"+g[0]+"')")).join('')+'</div>';
@@ -7264,7 +7264,7 @@ async function aicGenerate(){
     HF.save(); aicWeek=-1;
     toast('Your plan is ready');
   }catch(e){
-    if(e.code==='not_coach'){ aicBusy=''; renderAICoach(); pwTier='coach'; openPaywall('Your AI coach is part of HITFAT+ Coach.'); return; }
+    if(e.code==='not_coach'){ aicBusy=''; renderAICoach(); pwTier='plus'; openPaywall('Your AI coach comes with HITFAT+.'); return; }
     toast(e.message||'The coach could not build a plan. Try again.');
   }
   aicBusy=''; renderAICoach();
@@ -7419,9 +7419,9 @@ async function aicAsk(){
 
 /* ── Home: today's session, or the invitation ── */
 function aicHomeCard(){
-  if(!(typeof hasCoach==='function' && hasCoach())) return '';
+  if(!(typeof hasPlus==='function' && hasPlus())) return '';
   const p=aicPlan();
-  if(!p) return '<div class="aic-card" onclick="openAICoach()">'+aicMark()+'<div class="tx"><div class="k">HITFAT+ Coach</div>'+
+  if(!p) return '<div class="aic-card" onclick="openAICoach()">'+aicMark()+'<div class="tx"><div class="k">New in HITFAT+</div>'+
     '<div class="t">Meet your AI Coach</div><div class="s">Answer a few questions and get a 4-week plan written for you.</div></div><span class="pdx-chev">›</span></div>';
   const nx=aicNext();
   return '<div class="aic-card" onclick="openAICoach()">'+aicMark()+'<div class="tx"><div class="k">Your AI Coach · Week '+(aicWeekNow()+1)+'</div>'+
@@ -8019,13 +8019,14 @@ let pwTier='plus', pwSku='sub_plus_12m', pwReason='';
 const TIER_INFO={
   plus:{name:'HITFAT+', line:'Everything in the app, for as long as you are a member.',
     perks:[['workout','Every program and session','Signature, strength, fat loss'+(RECOVERY_LIVE?', recovery':'')+' — '+PROGRAMS.filter(p=>p.weeks).length+' programs'],
+           ['spark','AI Coach','A 4-week plan written for you, adjusted every week from your logs'],
            ['photo','AI meal scan, '+MEMBER_SCANS_DAY+' a day','Photograph a plate, get calories and macros'],
            ['food','Meal plans up to 14 days','Malaysian menus, MDG 2020 and CPG MOH 2023'],
            ['play','Every movement, on video','The full exercise library, with the camera mirror']]},
   coach:{name:'HITFAT+ Coach', line:'The app, and a coach who checks in on you.',
-    perks:[['check','Everything in HITFAT+','Every program, scan, meal plan and video'],
+    perks:[['check','Everything in HITFAT+','AI Coach, every program, scan, meal plan and video'],
            ['trophy','One T42 challenge included','Claim a place in the next edition, no extra payment'],
-           ['spark','AI Coach','A 4-week plan written for you, adjusted every week from your logs'],
+           ['person','Monthly coach review','Your numbers, looked at by a HITFAT coach each month'],
            ['people','Members-only group','Questions answered, with the people training alongside you']]}
 };
 function subPlan(sku){ return SUB_PLANS.filter(x=>x.sku===sku)[0]; }
@@ -16327,7 +16328,8 @@ function renderMe(){
   const tier=memberTier(), until=memberUntil();
   if(tier){
     h+=fsec('Membership','')+'<div class="glist">'+
-      grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+', until?'Until '+fmtDate(until):'All Access', "openStore()")+'</div>';
+      grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+', until?'Until '+fmtDate(until):'All Access', "openStore()")+
+      grow('spark','AI Coach',(typeof aicPlan==='function'&&aicPlan())?'Your plan':'Get your plan','openAICoach()')+'</div>';
   } else {
     /* Not a member: the offer, as a poster, not a grey row that says no. */
     h+='<div class="mepromo" onclick="openStore()"><div class="pw-mark">HITFAT<span>+</span></div>'+
@@ -16337,8 +16339,7 @@ function renderMe(){
   }
   if(tier==='coach'){
     h+=fsec('Your Coach','')+'<div class="glist">'+
-      grow('spark','AI Coach',(typeof aicPlan==='function'&&aicPlan())?'Your plan':'Get your plan','openAICoach()')+
-      grow('person','A HITFAT coach','WhatsApp','coachReview()')+
+      grow('person','Monthly review','Message coach','coachReview()')+
       (COACH_GROUP_URL?grow('people','Members group','WhatsApp','coachGroup()'):'')+
       (T42_LIVE?grow('trophy','T42 included','One edition','openT42()'):'')+'</div>';
   }
@@ -16371,7 +16372,7 @@ function renderMe(){
 function coachReview(){
   const p=HF.data.prefs||{};
   window.open('https://wa.me/'+COACH_WA+'?text='+encodeURIComponent(
-    'Hi coach, this is '+((p.name||'').trim()||'a HITFAT+ Coach member')+' — I have a question for a coach.'),'_blank');
+    'Hi coach, this is '+((p.name||'').trim()||'a HITFAT+ Coach member')+' — I would like my monthly review.'),'_blank');
 }
 function coachGroup(){ if(COACH_GROUP_URL) window.open(COACH_GROUP_URL,'_blank'); }
 

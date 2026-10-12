@@ -576,7 +576,8 @@ function renderMe(){
   const tier=memberTier(), until=memberUntil();
   if(tier){
     h+=fsec('Membership','')+'<div class="glist">'+
-      grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+', until?'Until '+fmtDate(until):'All Access', "openStore()")+'</div>';
+      grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+', until?'Until '+fmtDate(until):'All Access', "openStore()")+
+      grow('spark','AI Coach',(typeof aicPlan==='function'&&aicPlan())?'Your plan':'Get your plan','openAICoach()')+'</div>';
   } else {
     /* Not a member: the offer, as a poster, not a grey row that says no. */
     h+='<div class="mepromo" onclick="openStore()"><div class="pw-mark">HITFAT<span>+</span></div>'+
@@ -586,8 +587,7 @@ function renderMe(){
   }
   if(tier==='coach'){
     h+=fsec('Your Coach','')+'<div class="glist">'+
-      grow('spark','AI Coach',(typeof aicPlan==='function'&&aicPlan())?'Your plan':'Get your plan','openAICoach()')+
-      grow('person','A HITFAT coach','WhatsApp','coachReview()')+
+      grow('person','Monthly review','Message coach','coachReview()')+
       (COACH_GROUP_URL?grow('people','Members group','WhatsApp','coachGroup()'):'')+
       (T42_LIVE?grow('trophy','T42 included','One edition','openT42()'):'')+'</div>';
   }
@@ -620,7 +620,7 @@ function renderMe(){
 function coachReview(){
   const p=HF.data.prefs||{};
   window.open('https://wa.me/'+COACH_WA+'?text='+encodeURIComponent(
-    'Hi coach, this is '+((p.name||'').trim()||'a HITFAT+ Coach member')+' — I have a question for a coach.'),'_blank');
+    'Hi coach, this is '+((p.name||'').trim()||'a HITFAT+ Coach member')+' — I would like my monthly review.'),'_blank');
 }
 function coachGroup(){ if(COACH_GROUP_URL) window.open(COACH_GROUP_URL,'_blank'); }
 

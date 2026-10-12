@@ -1,5 +1,5 @@
 /* ═══════════════ AI COACH ═══════════════
-   HITFAT+ Coach members get a coach that is an AI (ai-coach edge
+   Every HITFAT+ member (Plus or Coach) gets a coach that is an AI (ai-coach edge
    function, 36-plus-ai-coach.sql), working the way TrainHeroic's coaches
    do: a plan written for the member, followed with the app's own filmed
    videos, logged after each session, reviewed each week, with the next
@@ -92,7 +92,7 @@ function aicIntake(){
   const f=_aicForm||(_aicForm=Object.assign({goal:'lose', level:prefs.level||'Beginner', days:3, minutes:30,
       equipment:['Bodyweight'], limits:[], notes:''}, c.intake||{}));
   const chip=(on,label,go)=>'<button class="aic-chip'+(on?' on':'')+'" onclick="'+go+'">'+label+'</button>';
-  let h='<div class="aic-hero">'+aicMark()+'<div class="k">HITFAT+ Coach</div><div class="t">Your AI Coach</div>'+
+  let h='<div class="aic-hero">'+aicMark()+'<div class="k">HITFAT+</div><div class="t">Your AI Coach</div>'+
     '<div class="s">Answer a few questions. Your coach writes a 4-week plan for you from HITFAT\'s filmed workouts, '+
     'then reads your logs every week and adjusts what comes next.</div></div>';
   h+='<div class="aic-q">Your goal</div><div class="aic-chips">'+AIC_GOALS.map(g=>chip(f.goal===g[0],glyph(g[2])+g[1],"aicSet('goal','"+g[0]+"')")).join('')+'</div>';
@@ -131,7 +131,7 @@ async function aicGenerate(){
     HF.save(); aicWeek=-1;
     toast('Your plan is ready');
   }catch(e){
-    if(e.code==='not_coach'){ aicBusy=''; renderAICoach(); pwTier='coach'; openPaywall('Your AI coach is part of HITFAT+ Coach.'); return; }
+    if(e.code==='not_coach'){ aicBusy=''; renderAICoach(); pwTier='plus'; openPaywall('Your AI coach comes with HITFAT+.'); return; }
     toast(e.message||'The coach could not build a plan. Try again.');
   }
   aicBusy=''; renderAICoach();
@@ -286,9 +286,9 @@ async function aicAsk(){
 
 /* ── Home: today's session, or the invitation ── */
 function aicHomeCard(){
-  if(!(typeof hasCoach==='function' && hasCoach())) return '';
+  if(!(typeof hasPlus==='function' && hasPlus())) return '';
   const p=aicPlan();
-  if(!p) return '<div class="aic-card" onclick="openAICoach()">'+aicMark()+'<div class="tx"><div class="k">HITFAT+ Coach</div>'+
+  if(!p) return '<div class="aic-card" onclick="openAICoach()">'+aicMark()+'<div class="tx"><div class="k">New in HITFAT+</div>'+
     '<div class="t">Meet your AI Coach</div><div class="s">Answer a few questions and get a 4-week plan written for you.</div></div><span class="pdx-chev">›</span></div>';
   const nx=aicNext();
   return '<div class="aic-card" onclick="openAICoach()">'+aicMark()+'<div class="tx"><div class="k">Your AI Coach · Week '+(aicWeekNow()+1)+'</div>'+

@@ -2,7 +2,7 @@
 --  HITFAT+ · AI COACH
 --  Run after 35-plus-sessions.sql. Safe to run again.
 --
---  HITFAT+ Coach members get an AI coach (the ai-coach edge function):
+--  Every HITFAT+ member gets an AI coach (the ai-coach edge function):
 --  a 4-week plan generated for them from the filmed library, a weekly
 --  review that adjusts the next week, and questions answered with their
 --  plan and logs in view.
