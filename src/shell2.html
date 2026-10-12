@@ -38,18 +38,55 @@
 #localbar{position:fixed;left:0;right:0;top:0;z-index:70;background:#2a1206;color:#ffb37a;
   font:11px/1.4 'Inter',system-ui,sans-serif;font-weight:700;letter-spacing:.6px;text-align:center;
   padding:calc(5px + env(safe-area-inset-top,0px)) 10px 5px;border-bottom:1px solid rgba(255,179,122,.25);}
-#splash{position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:18px;transition:opacity .48s;}
+/* The splash: a short title sequence in the HITFAT red. A glow opens on
+   black, two neon streaks cross it, the HF shield is drawn up from its
+   base behind a line of light, the + spins in and keeps glowing, then the
+   name. It stays at least as long as the sequence takes (hideSplash). */
+#splash{position:fixed;inset:0;background:#000;z-index:99999;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;overflow:hidden;transition:opacity .5s ease;}
 #splash.gone{opacity:0;pointer-events:none;}
-#splash .mk{font-weight:900;font-size:46px;letter-spacing:-1.5px;color:var(--txt);animation:sIn .8s ease both;}
-#splash .mk .y{color:var(--hyrox);}
-#splash .tg{font-family:'Oswald';font-size:11px;font-weight:600;letter-spacing:6px;color:var(--dim2);
-  text-transform:uppercase;animation:sIn .8s ease .18s both;}
-#splash .bar{width:120px;height:2px;background:var(--tint);border-radius:2px;overflow:hidden;}
-#splash .bar i{display:block;height:100%;width:40%;background:var(--hyrox);border-radius:2px;animation:sBar 1.1s ease-in-out infinite;}
-@keyframes sIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#splash.gone .sp-logo{transform:scale(1.06);transition:transform .5s ease;}
+#splash .sp-glow{position:absolute;left:50%;top:50%;width:560px;height:560px;margin:-330px 0 0 -280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(220,26,34,.55) 0%,rgba(220,26,34,.2) 36%,rgba(220,26,34,0) 70%);
+  opacity:0;transform:scale(.25);animation:spGlow 1.3s cubic-bezier(.2,.7,.2,1) .05s forwards,spBreathe 2.6s ease-in-out 1.4s infinite;}
+#splash .sp-streak{position:absolute;left:50%;top:50%;width:150vmax;height:2px;margin-left:-75vmax;border-radius:2px;
+  background:linear-gradient(90deg,rgba(255,59,48,0),#FF3B30 45%,#FFFFFF 50%,#FF3B30 55%,rgba(255,59,48,0));
+  box-shadow:0 0 12px rgba(255,59,48,.9),0 0 30px rgba(220,26,34,.6);opacity:0;}
+#splash .sp-streak.a{transform:translateY(-140px) rotate(-28deg) translateX(-110%);animation:spStreakA 1.05s cubic-bezier(.5,0,.3,1) .2s both;}
+#splash .sp-streak.b{transform:translateY(90px) rotate(-28deg) translateX(110%);animation:spStreakB 1.05s cubic-bezier(.5,0,.3,1) .38s both;}
+#splash .sp-logo{position:relative;height:132px;width:99.6px;opacity:0;
+  animation:spRise .9s cubic-bezier(.2,.8,.2,1) .15s forwards;}
+#splash .sp-mark{display:block;width:100%;height:100%;clip-path:inset(100% 0 0 0);
+  animation:spWipe .75s cubic-bezier(.6,0,.2,1) .2s forwards;filter:drop-shadow(0 0 18px rgba(255,255,255,.25));}
+#splash .sp-scan{position:absolute;left:-12%;right:-12%;bottom:0;height:3px;border-radius:3px;background:#FFFFFF;
+  box-shadow:0 0 10px #FF3B30,0 0 26px rgba(220,26,34,.9);opacity:0;animation:spScan .75s cubic-bezier(.6,0,.2,1) .2s both;}
+#splash .sp-plus{position:absolute;left:101.9%;top:2.1%;width:21.8%;transform:scale(0) rotate(-180deg);
+  animation:spPlus .6s cubic-bezier(.3,1.6,.5,1) .9s forwards,spPlusGlow 1.8s ease-in-out 1.5s infinite;}
+#splash .sp-word{margin-top:30px;font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:30px;letter-spacing:-.6px;
+  color:#FFFFFF;opacity:0;animation:spIn .6s ease 1.1s forwards;}
+#splash .sp-word b{color:#FF3B30;font-weight:800;}
+#splash .tg{font-family:'Oswald',sans-serif;font-size:11px;font-weight:600;letter-spacing:6px;color:#8E8E93;margin-top:10px;
+  text-transform:uppercase;opacity:0;animation:spIn .6s ease 1.25s forwards;}
+#splash .bar{width:120px;height:2px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden;margin-top:26px;
+  opacity:0;animation:spIn .5s ease 1.35s forwards;}
+#splash .bar i{display:block;height:100%;width:40%;border-radius:2px;background:linear-gradient(90deg,#DC1A22,#FFC21A);
+  animation:sBar 1.1s ease-in-out infinite;}
+@keyframes spGlow{to{opacity:1;transform:scale(1)}}
+@keyframes spBreathe{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.75;transform:scale(1.06)}}
+@keyframes spStreakA{0%{opacity:0;transform:translateY(-140px) rotate(-28deg) translateX(-110%)}20%{opacity:1}100%{opacity:0;transform:translateY(-140px) rotate(-28deg) translateX(110%)}}
+@keyframes spStreakB{0%{opacity:0;transform:translateY(90px) rotate(-28deg) translateX(110%)}20%{opacity:1}100%{opacity:0;transform:translateY(90px) rotate(-28deg) translateX(-110%)}}
+@keyframes spRise{from{opacity:0;transform:translateY(18px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes spWipe{to{clip-path:inset(0 0 0 0)}}
+@keyframes spScan{0%{opacity:1;bottom:0}85%{opacity:1;bottom:100%}100%{opacity:0;bottom:100%}}
+@keyframes spPlus{to{transform:scale(1) rotate(0)}}
+@keyframes spPlusGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(255,59,48,.6))}50%{filter:drop-shadow(0 0 14px rgba(255,59,48,1))}}
+@keyframes spIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes sBar{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
-@media(prefers-reduced-motion:reduce){#splash *{animation:none!important;}}
+@media(prefers-reduced-motion:reduce){
+  #splash *{animation:none!important;}
+  #splash .sp-glow,#splash .sp-logo,#splash .sp-word,#splash .tg,#splash .bar{opacity:1;transform:none;}
+  #splash .sp-mark{clip-path:none;} #splash .sp-plus{transform:none;} #splash .sp-streak,#splash .sp-scan{display:none;}
+}
 #toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(16px);
   background:var(--hyrox-solid);color:var(--hyrox-ink);padding:12px 20px;border-radius:99px;font-size:15px;font-weight:800;
   opacity:0;pointer-events:none;transition:.25s;z-index:9000;box-shadow:0 10px 30px rgba(0,0,0,.45);}
@@ -623,8 +660,6 @@
    it — the glow already says which tab you are on. */
 .tab.active.tabmid{background:none;}
 
-.splogo{width:132px;height:132px;margin:0 auto 18px;background:center/cover no-repeat url('/img/icon/icon-512.png?v=2');
-  border-radius:30px;box-shadow:0 8px 34px rgba(220,26,34,.45);}
 /* ── monthly challenge ── */
 .mcard{background:radial-gradient(circle at 84% 10%,var(--card-glow),transparent 58%),
   linear-gradient(158deg,var(--card-a),var(--card-b) 80%);border:1px solid var(--hairline);
@@ -657,7 +692,7 @@
 <link rel="icon" type="image/png" sizes="64x64" href="/img/icon/favicon-64.png?v=2">
 <link rel="apple-touch-icon" href="/img/icon/apple-touch-icon.png?v=2">
 <link rel="manifest" href="/manifest.webmanifest">
-<!-- what an iPhone shows while the app opens: the icon on black, where the in-app splash then puts it -->
+<!-- what an iPhone shows while the app opens: plain black, so the splash sequence starts from nothing -->
 <link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/img/splash/splash-1320x2868.png">
 <link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/img/splash/splash-1206x2622.png">
 <link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/img/splash/splash-1290x2796.png">
@@ -674,7 +709,14 @@
 <body>
 
 <div id="splash">
-  <div class="splogo"></div>
+  <div class="sp-glow"></div>
+  <div class="sp-streak a"></div><div class="sp-streak b"></div>
+  <div class="sp-logo" role="img" aria-label="Hitfat+">
+    <img class="sp-mark" src="/img/brand/hf-mark.png" alt="">
+    <span class="sp-scan"></span>
+    <img class="sp-plus" src="/img/brand/hf-plus.png" alt="">
+  </div>
+  <div class="sp-word">Hitfat<b>+</b></div>
   <div class="tg">Train · Eat · Recover</div>
   <div class="bar"><i></i></div>
 </div>
@@ -1035,7 +1077,17 @@ function toast(m){ const t=$('toast'); if(!t) return; t.textContent=m; t.classLi
 /*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__WL30__*//*__MONTHLY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
 /*__ICONS__*//*__CLUB__*//*__T42__*//*__T42DEMO__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
 
-function hideSplash(){ const s=$('splash'); if(s&&!s.classList.contains('gone')){ s.classList.add('gone'); setTimeout(()=>{s.style.display='none';},500); } }
+/* The splash plays its whole sequence once (about 1.9 s from the page
+   starting) before it lifts, however fast the app is ready. */
+const SPLASH_MIN=1900;
+function hideSplash(){
+  const s=$('splash'); if(!s || s.classList.contains('gone')) return;
+  let left=0;
+  try{ const calm=window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+       if(!calm && typeof performance!=='undefined' && performance.now) left=SPLASH_MIN-performance.now(); }catch(e){}
+  if(left>0){ if(!s._wait) s._wait=setTimeout(()=>{ s._wait=null; hideSplash(); },left); return; }
+  s.classList.add('gone'); setTimeout(()=>{s.style.display='none';},500);
+}
 let _started=false;
 function startApp(){
   hideSplash();

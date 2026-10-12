@@ -32,7 +32,7 @@ need=['app','screen','pad','tabs','tab','hhdr','wk2','plan','ov','pi','join','ac
       'mpopt-h','mpitem','mpgap','mpgap-h','mpgap-s','mpopts','mpo',
       'ehero','estat','eslot','emacs','emac','ecta','elog','hit',
       'pw-in','pwtop','pwx','pwhero','pwmark','pwh','pws','pwlist','pwf','pwprice','pwfine','plocked','plock',
-      'prods','prod','pr','pbig','flat','paychs','paych','sigb','nofilm','fqwhy','fqcta','tabmid','tlogo','splogo','mcard','mtop','me','mtag','mn','mbar','mrow','mgrid','mday','mbadges','mbadge',
+      'prods','prod','pr','pbig','flat','paychs','paych','sigb','nofilm','fqwhy','fqcta','tabmid','tlogo','mcard','mtop','me','mtag','mn','mbar','mrow','mgrid','mday','mbadges','mbadge',
       # HITFAT Club — check-in, body and rewards
       'cstats','cstat','cs-l','cs-v','cs-m','chero','chero-k','chero-s','chero-go',
       'cacts','cact','cpill','cweek','cwd','cpts','cpts-l','cpts-n','cpts-next','cshield',
