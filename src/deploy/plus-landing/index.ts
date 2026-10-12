@@ -18,18 +18,10 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
-import { CATALOGUE } from '../_shared/catalogue.ts';
+import { CATALOGUE, CORS, json } from '../_shared/catalogue.ts';
 
 /* the programs sold on their own — the same list as plus_landing_sku() */
 const LANDING_SKUS = ['prog_wl30'];
-
-const CORS = {
-  'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
-const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: CORS });
 
 /* First non-empty value among several possible field names, nested too. */
 function pick(o: Record<string, unknown>, keys: string[]): string {
