@@ -74,14 +74,50 @@ no commentary. Use exactly these keys:
   "carbs_g": number,
   "fat_g": number,
   "confidence": "high" | "medium" | "low",
-  "breakdown": [ { "ingredient": "string", "weight_g": number, "calories": number } ]
+  "breakdown": [ { "ingredient": "string", "weight_g": number, "calories": number, "x": number, "y": number } ]
 }
 
 Rules:
+- In breakdown, x and y are where that item sits in the photo: the centre of
+  it, as a percentage of the photo's width (x) and height (y), 0 to 100.
 - If the image contains no food, set food_name to "" and estimated_calories to 0.
 - Estimate the portion actually shown, not a standard serving.
 - Malaysian cooking is oilier than most databases assume. Account for that.
 - Never invent a dish you cannot see. Low confidence is a valid answer.`;
+
+/* A nutrition label is read, not estimated (12 Oct 2026): every number as
+   printed, per serving. Malaysian labels often print per 100 g and per
+   serving side by side, in English or Malay. */
+const LABEL_SYSTEM = `You read a food's nutrition information panel from a photograph.
+Labels may be in English or Malay ("Maklumat Pemakanan", "Tenaga", "Protein",
+"Karbohidrat", "Lemak", "Gula", "Natrium", "Saiz hidangan").
+
+Reply with a single JSON object and nothing else. No markdown, no code fence,
+no commentary. Use exactly these keys:
+
+{
+  "food_name": "the product's name if it is visible, otherwise 'Packaged food'",
+  "food_name_bm": "",
+  "portion_size": "the serving size exactly as printed, e.g. '1 serving · 30 g'",
+  "estimated_calories": number,
+  "protein_g": number,
+  "carbs_g": number,
+  "fat_g": number,
+  "sugar_g": number or null,
+  "fiber_g": number or null,
+  "sodium_mg": number or null,
+  "confidence": "high" | "medium" | "low",
+  "breakdown": []
+}
+
+Rules:
+- Copy the numbers exactly as printed. Do not estimate or round differently.
+- Use the PER SERVING column. If there is only a per 100 g (or 100 ml)
+  column, use it and set portion_size to "100 g" (or "100 ml").
+- Energy printed only in kJ: divide by 4.184 for kcal.
+- Sodium printed in g: give it in mg.
+- If no nutrition panel is readable, set food_name to "" and estimated_calories to 0,
+  and confidence to "low".`;
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
@@ -209,13 +245,15 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 1024,
-        system: SYSTEM,
+        system: body?.mode === 'label' ? LABEL_SYSTEM : SYSTEM,
         messages: [{
           role: 'user',
           content: [
             { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } },
-            { type: 'text',  text: `Identify this meal and estimate its nutrition. Context: ${
-              String(body?.context || 'Malaysian food').slice(0, 120)}.` },
+            { type: 'text',  text: body?.mode === 'label'
+                ? 'Read this nutrition label.'
+                : `Identify this meal and estimate its nutrition. Context: ${
+                    String(body?.context || 'Malaysian food').slice(0, 120)}.` },
           ],
         }],
       }),

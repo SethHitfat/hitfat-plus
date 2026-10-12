@@ -3946,16 +3946,11 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .wl-hero-tx .t{font-size:30px;font-weight:800;letter-spacing:-.7px;line-height:1.08;}
 .wl-hero-tx .s{font-size:17px;color:var(--txt);margin-top:4px;}
 .wl-hero-tx .m{font-size:13px;color:var(--dim);margin-top:4px;}
-/* meal scan: the portion eaten, renaming a dish, how to take the photo */
-.scan-por{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 2px;font-size:14px;color:var(--dim);}
-.scan-por-b{display:flex;gap:4px;background:var(--surface2);border-radius:99px;padding:3px;}
-.scan-por-b button{border:none;background:none;color:var(--txt);font:inherit;font-size:13px;font-weight:600;padding:6px 11px;border-radius:99px;cursor:pointer;}
-.scan-por-b button.on{background:var(--txt);color:var(--bg);}
+/* meal scan: renaming a dish */
 .scan-fix{border:none;background:none;color:var(--lime);font:inherit;font-size:13px;font-weight:600;padding:4px 0;cursor:pointer;}
 .scan-rename{display:flex;gap:8px;}
 .scan-rename input{flex:1;min-width:0;font:inherit;font-size:17px;font-weight:700;padding:10px 12px;border-radius:12px;border:none;background:var(--surface2);color:var(--txt);}
 .scan-rename button{flex:none;border:none;border-radius:99px;padding:0 16px;font:inherit;font-weight:700;background:var(--txt);color:var(--bg);cursor:pointer;}
-.scan-tips{text-align:center;font-size:12px;color:var(--dim);margin-top:10px;}
 /* Meal Scan plans sheet */
 .sp-head{text-align:center;padding:4px 6px 16px;}
 .sp-head > .ic,.sp-head > svg{width:34px;height:34px;color:var(--lime);}
@@ -3975,6 +3970,88 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .sp-tag{position:absolute;top:-9px;left:16px;font-size:11px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;
   padding:3px 8px;border-radius:99px;background:var(--act);color:#fff;}
 .sp-fine{font-size:12px;color:var(--dim);text-align:center;margin:12px 6px 4px;line-height:1.45;}
+/* ═══ the scanner, after MacroSnap ═══ */
+#scan{background:#000;}
+#scan-video,#scan-prev{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+#scan-video{opacity:0;transition:opacity .25s;}
+#scan.live #scan-video{opacity:1;}
+#scan-prev{display:none;z-index:1;}
+#scan .sc-shade{position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 58%,rgba(0,0,0,.8) 100%);}
+#scan .sc-top{position:absolute;left:0;right:0;top:0;z-index:5;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;
+  padding:calc(12px + env(safe-area-inset-top,0px)) 16px 8px;}
+#scan .sc-btn{width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.16);color:#fff;font-size:16px;cursor:pointer;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);}
+#scan .sc-btn.on{background:#FFC21A;color:#000;}
+#scan .sc-btn[hidden]{display:none;}
+#scan .sc-title{color:#fff;font-weight:700;font-size:16px;text-align:center;}
+#scan .sc-frame{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:76%;max-width:340px;aspect-ratio:1;z-index:4;pointer-events:none;}
+#scan[data-mode="barcode"] .sc-frame{aspect-ratio:1.7;}
+#scan[data-mode="label"] .sc-frame{aspect-ratio:.72;width:62%;}
+#scan .sc-frame .c{position:absolute;border-color:#fff;width:34px;height:34px;}
+#scan .sc-frame .line{display:none;position:absolute;left:4%;right:4%;height:2px;animation:scLine 1.8s ease-in-out infinite;
+  background:linear-gradient(90deg,transparent,#FF3B30 50%,transparent);box-shadow:0 0 12px 3px rgba(255,59,48,.5);}
+#scan[data-mode="barcode"].live .sc-frame .line,#scan.frozen .sc-frame .line{display:block;}
+#scan .sc-hint{position:absolute;left:16px;right:16px;top:calc(44% + 39vw);z-index:4;text-align:center;color:#fff;font-size:14px;font-weight:600;
+  text-shadow:0 1px 10px rgba(0,0,0,.6);}
+@media (min-width:450px){ #scan .sc-hint{top:calc(44% + 180px);} }
+#scan #scan-pct{z-index:6;}
+#scan .sc-bottom{position:absolute;left:0;right:0;bottom:0;z-index:5;padding:0 16px calc(18px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;align-items:center;gap:12px;}
+#scan .sc-modes{display:flex;gap:6px;background:rgba(255,255,255,.14);padding:4px;border-radius:16px;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);}
+#scan .sc-modes button{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:86px;border:none;background:none;color:rgba(255,255,255,.75);
+  font:inherit;font-size:12px;font-weight:600;padding:8px 10px;border-radius:12px;cursor:pointer;}
+#scan .sc-modes button .gly{width:18px;height:18px;}
+#scan .sc-modes button.on{background:#fff;color:#000;}
+#scan .sc-ctrl{display:flex;align-items:center;justify-content:center;gap:42px;}
+#scan .sc-side{width:46px;height:46px;border-radius:50%;border:none;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+#scan .sc-shut{width:74px;height:74px;border-radius:50%;border:4px solid #fff;background:none;padding:4px;cursor:pointer;}
+#scan .sc-shut i{display:block;width:100%;height:100%;border-radius:50%;background:#fff;transition:transform .1s;}
+#scan .sc-shut:active i{transform:scale(.9);}
+#scan[data-mode="barcode"] .sc-shut{opacity:.35;}
+#scan:not([data-mode="barcode"]) #scan-typebtn{visibility:hidden;}
+#scan .sc-code{display:flex;gap:8px;width:100%;max-width:360px;}
+#scan .sc-code[hidden]{display:none;}
+#scan .sc-code input{flex:1;min-width:0;font:inherit;font-size:16px;padding:11px 14px;border-radius:12px;border:none;background:rgba(255,255,255,.92);color:#000;}
+#scan .sc-code button{flex:none;border:none;border-radius:99px;padding:0 18px;font:inherit;font-weight:700;background:#fff;color:#000;cursor:pointer;}
+#scan .sc-left{font-size:12px;color:rgba(255,255,255,.8);}
+#scan .sc-tips{font-size:11px;color:rgba(255,255,255,.55);text-align:center;}
+#scan[data-mode="barcode"] .sc-tips{display:none;}
+#scan #scan-err{display:none;color:#FF8A8D;font-size:13px;text-align:center;}
+#scan.frozen #scan-prev{display:block;}
+#scan.frozen .sc-bottom{opacity:.0;pointer-events:none;}
+/* the result sheet */
+#scan-sheet{max-height:86%;overflow:auto;border-radius:24px 24px 0 0;z-index:8;}
+.sr-grab{width:36px;height:4px;background:var(--hairline);border-radius:2px;margin:0 auto 12px;}
+.sr-photo{position:relative;height:200px;border-radius:18px;background:#111 center/cover no-repeat;margin-bottom:14px;}
+.sr-photo.prod{background-size:contain;background-color:#fff;}
+.sr-pin{position:absolute;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  font-size:12px;font-weight:700;color:#111;background:rgba(255,255,255,.94);padding:5px 10px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,.25);}
+.sr-pin i{width:7px;height:7px;border-radius:50%;background:#FF3B30;box-shadow:0 0 0 3px rgba(255,59,48,.25);}
+.sr-head{display:flex;align-items:flex-start;gap:12px;}
+.sr-name{flex:1;min-width:0;}
+.sr-name .t{font-size:21px;font-weight:800;letter-spacing:-.3px;line-height:1.2;}
+.sr-name .s{font-size:13px;color:var(--dim);margin-top:3px;}
+.sr-qty{flex:none;display:flex;align-items:center;border-radius:12px;box-shadow:inset 0 0 0 1px var(--hairline);}
+.sr-qty button{width:36px;height:38px;border:none;background:none;color:var(--txt);font-size:18px;cursor:pointer;}
+.sr-qty b{min-width:30px;text-align:center;font-size:16px;font-variant-numeric:tabular-nums;}
+.sr-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0;}
+.sr-tile{background:var(--surface2);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;}
+.sr-tile small{font-size:12px;color:var(--dim);}
+.sr-tile b{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;}
+.sr-tile em{font-style:normal;font-size:11px;color:var(--dim);}
+.sr-ic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;margin-bottom:4px;}
+.sr-ic.k{background:none;color:var(--txt);} .sr-ic.k .gly{width:20px;height:20px;}
+.sr-ic.p{background:#2F7BF6;} .sr-ic.c{background:#34C759;} .sr-ic.f{background:#FFC21A;color:#000;}
+.sr-log{margin-top:14px;}
+.sr-row{display:flex;justify-content:center;gap:18px;}
+.sr-more{margin-top:10px;border-radius:14px;background:var(--surface2);padding:12px 14px;}
+.sr-more summary{font-weight:700;font-size:14px;cursor:pointer;}
+.sr-nf{text-align:center;padding:10px 4px 6px;}
+.sr-nf > .ic,.sr-nf > svg{width:34px;height:34px;color:var(--lime);}
+.sr-nf .t{font-size:20px;font-weight:800;margin-top:8px;}
+.sr-nf .s{font-size:14px;color:var(--dim);margin:6px 0 14px;line-height:1.45;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -4416,42 +4493,37 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 <div class="sheet" id="burnsheet"><div class="sheet-in" id="burn-body"></div></div>
 <div class="sheet" id="mansheet"><div class="sheet-in" id="man-body"></div></div>
 
-<!-- full-screen scan -->
-<div id="scan">
-  <div class="scan-hdr">
-    <button class="scan-back" onclick="closeScan()">←</button>
-    <div style="flex:1;">
-      <div style="font-weight:800;font-size:20px;letter-spacing:-.3px;">Meal Scan</div>
-      <div style="font-size:11px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--hyrox);margin-top:1px;">AI · HITFAT+</div>
-    </div>
-    <div class="scan-dot"></div>
+<!-- full-screen scanner: the live camera, three modes, one shutter -->
+<div id="scan" data-mode="meal">
+  <video id="scan-video" playsinline muted autoplay></video>
+  <img id="scan-prev" alt="">
+  <div class="sc-shade"></div>
+  <div class="sc-top">
+    <button class="sc-btn" onclick="closeScan()" aria-label="Close">✕</button>
+    <div class="sc-title">Meal Scanner</div>
+    <button class="sc-btn" id="scan-torch" hidden onclick="scanTorch()" aria-label="Flash">⚡</button>
   </div>
-
-  <div class="scan-img">
-    <div class="scan-grid"></div>
-    <img id="scan-prev" alt="">
-    <div class="scan-badge"><span class="d"></span><span id="scan-live">Ready</span></div>
-    <div class="scan-ph" id="scan-ph">
-      <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
-      <div class="hint">Point at your food</div>
-    </div>
-    <div class="scan-frame" id="scan-frame">
-      <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
-      <div class="line"></div>
-    </div>
-    <div id="scan-pct"></div>
+  <div class="sc-frame" id="scan-frame">
+    <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+    <div class="line"></div>
   </div>
-
-  <div class="scan-foot">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <button class="bigbtn" style="margin:0;" onclick="pickPhoto(true)">📷 Camera</button>
-      <button class="bigbtn sec" style="margin:0;" onclick="pickPhoto(false)">🖼 Gallery</button>
+  <div class="sc-hint" id="scan-hint">Point at your plate, from above</div>
+  <div id="scan-pct"></div>
+  <div class="sc-bottom">
+    <div class="sc-modes" id="scan-modes"></div>
+    <div class="sc-ctrl">
+      <button class="sc-side" onclick="pickPhoto(false)" aria-label="Choose from photos">🖼</button>
+      <button class="sc-shut" id="scan-shut" onclick="scanShoot()" aria-label="Scan"><i></i></button>
+      <button class="sc-side" onclick="scanTypeCode()" aria-label="Type a barcode number" id="scan-typebtn">123</button>
     </div>
-    <div class="scan-tips">From above · the whole plate in view · a spoon beside it for size</div>
-    <div class="sub" style="text-align:center;margin-top:9px;" id="scan-left"></div>
+    <div class="sc-code" id="scan-code" hidden>
+      <input id="scan-code-in" inputmode="numeric" placeholder="Number under the barcode" aria-label="Barcode number"
+        onkeydown="if(event.key==='Enter')scanCodeGo()"><button onclick="scanCodeGo()">Find</button>
+    </div>
+    <div class="sc-left" id="scan-left"></div>
+    <div class="sc-tips">From above · the whole plate in view · a spoon beside it for size</div>
     <div id="scan-err"></div>
   </div>
-
   <div class="sheet" id="scan-sheet"></div>
 </div>
 
@@ -16227,6 +16299,7 @@ function eatLog(){
   h+=fsec('Add Food','Scan the plate, or type it in.');
   h+='<div class="hscroll">'+
      eatTile('Scan with AI', hesc(scanAccess().label),'linear-gradient(135deg,#5A0A0E 0%,#C21A14 55%,#FF6A5C 100%)','photo','openScan()')+
+     eatTile('Scan Barcode','Packaged food · free','linear-gradient(135deg,#0B2A4A 0%,#1E5BA8 55%,#5AA0FF 100%)','qr',"openScan('barcode')")+
      eatTile('Add Manually','Always open, unlimited','linear-gradient(135deg,#1C1C1E 0%,#3A3A3C 55%,#6E6E73 100%)','pencil','openManual()')+
      '</div>';
 
@@ -16376,29 +16449,105 @@ function saveManual(){
   toast('Meal logged'); closeManual();
 }
 
-/* ── SCAN ── */
+/* ── SCAN ──
+   One scanner, three ways in, after Everfit's MacroSnap: a meal (the AI
+   reads the plate), a barcode (the product's own label, from Open Food
+   Facts: free, no AI, no scan used) and a nutrition label (the AI reads the
+   printed panel). A live camera when the phone gives one; the phone's own
+   camera and the gallery when it does not. */
 let _scanData=null, _scanTok=0, _pctTimer=null;
-/* A photo cannot weigh food, so the person sets the portion they actually
-   ate against the one the AI saw, and can rename a dish it got wrong. */
-let _scanPortion=1, _scanName='', _scanEditing=false;
-const SCAN_PORTIONS=[[0.75,'Smaller'],[1,'As shown'],[1.3,'Bigger']];
+/* A photo cannot weigh food: the person sets how many portions they ate
+   and can rename a dish the AI got wrong. */
+let _scanPortion=1, _scanName='', _scanEditing=false, _scanImg='';
+let _scanMode='meal', _scanStream=null, _scanTorchOn=false, _bcReader=null, _bcTimer=null, _bcDone=false;
+const SCAN_MODES=[['meal','Scan meal','photo'],['barcode','Barcode','qr'],['label','Food label','doc']];
+const SCAN_HINT={meal:'Point at your plate, from above', barcode:'Line the barcode up inside the frame', label:'Fill the frame with the nutrition panel'};
+const ZXING_URL='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
+const OFF_URL='https://world.openfoodfacts.org/api/v2/product/';
 function setScanPortion(f){ _scanPortion=f; renderScanResult(_scanData); }
+function scanQty(dir){ _scanPortion=Math.min(10,Math.max(0.5,Math.round(((_scanPortion||1)+dir*0.5)*2)/2)); renderScanResult(_scanData); }
+function fmtQty(q){ return String(Math.round(q*100)/100); }
 function editScanName(){ _scanEditing=true; renderScanResult(_scanData); setTimeout(()=>{ const i=$('scan-name-in'); if(i){ i.focus(); i.select(); } },50); }
 function saveScanName(){ const i=$('scan-name-in'); const v=i?String(i.value||'').trim().slice(0,80):''; if(v) _scanName=v; _scanEditing=false; renderScanResult(_scanData); }
-function openScan(){
-  /* Everyone may scan: 3 a month free, 3 a day for members, more with an
-     add-on. Out of scans opens the plans, not a wall. */
-  if(!canScan()){ openScanPlans('You have used your scans.'); return; }
-  _scanData=null; _scanPortion=1; _scanName=''; _scanEditing=false;
+
+function openScan(mode){
+  _scanData=null; _scanPortion=1; _scanName=''; _scanEditing=false; _scanImg='';
   $('scan').classList.add('on');
-  $('scan-prev').style.display='none'; $('scan-prev').src='';
-  $('scan-ph').style.display='flex'; $('scan-frame').classList.remove('on');
   $('scan-sheet').classList.remove('on');
-  $('scan-err').style.display='none';
-  $('scan-live').textContent='Ready';
-  $('scan-left').textContent=scanAccess().label;
+  setScanMode(mode||_scanMode||'meal', true);
+  startScanCam();
 }
-function closeScan(){ $('scan').classList.remove('on'); stopScanAnim(); renderEat(); }
+function closeScan(){
+  stopScanCam(); stopScanAnim();
+  $('scan').classList.remove('on','frozen');
+  $('scan-sheet').classList.remove('on');
+  renderEat();
+}
+function setScanMode(m, quiet){
+  _scanMode=m; _bcDone=false;
+  const s=$('scan'); if(s){ s.classList.remove('frozen'); if(s.setAttribute) s.setAttribute('data-mode',m); }
+  $('scan-modes').innerHTML=SCAN_MODES.map(x=>
+    '<button class="'+(x[0]===m?'on':'')+'" onclick="setScanMode(\''+x[0]+'\')">'+glyph(x[2])+'<span>'+x[1]+'</span></button>').join('');
+  $('scan-hint').textContent=SCAN_HINT[m];
+  $('scan-err').style.display='none';
+  $('scan-code').hidden=true;
+  /* a barcode is looked up, not read by the AI, so it costs no scan */
+  $('scan-left').textContent = m==='barcode' ? 'Barcodes are free and unlimited' : scanAccess().label;
+  if(!quiet){ $('scan-sheet').classList.remove('on'); _scanImg=''; const p=$('scan-prev'); if(p){ p.src=''; p.style.display='none'; } }
+  if(m==='barcode') startBarcode(); else stopBarcode();
+}
+function scanAgain(){ $('scan-sheet').classList.remove('on'); setScanMode(_scanMode); if(!_scanStream) startScanCam(); }
+
+/* ── the live camera ── */
+async function startScanCam(){
+  stopScanCam();
+  const v=$('scan-video');
+  if(!v || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return scanNoCam();
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:960}},audio:false});
+    if(!$('scan').classList.contains('on')){ s.getTracks().forEach(t=>t.stop()); return; }
+    _scanStream=s; v.srcObject=s; v.muted=true;
+    try{ if(v.setAttribute) v.setAttribute('playsinline',''); if(v.play) await v.play(); }catch(e){}
+    $('scan').classList.add('live');
+    let caps={}; try{ const tr=s.getVideoTracks()[0]; caps=(tr&&tr.getCapabilities)?tr.getCapabilities():{}; }catch(e){}
+    $('scan-torch').hidden=!caps.torch;
+    if(_scanMode==='barcode') startBarcode();
+  }catch(e){ scanNoCam(); }
+}
+function stopScanCam(){
+  stopBarcode();
+  if(_scanStream){ try{ _scanStream.getTracks().forEach(t=>t.stop()); }catch(e){} _scanStream=null; }
+  const v=$('scan-video'); if(v){ try{ v.srcObject=null; }catch(e){} }
+  const s=$('scan'); if(s) s.classList.remove('live');
+  _scanTorchOn=false;
+}
+/* no camera in the page: the shutter opens the phone's own camera instead */
+function scanNoCam(){ const s=$('scan'); if(s) s.classList.remove('live'); }
+async function scanTorch(){
+  try{ const tr=_scanStream&&_scanStream.getVideoTracks()[0]; if(!tr) return;
+    _scanTorchOn=!_scanTorchOn; await tr.applyConstraints({advanced:[{torch:_scanTorchOn}]});
+    $('scan-torch').classList.toggle('on',_scanTorchOn); }catch(e){}
+}
+/* the frame on screen, as a small JPEG: 600px is plenty for the AI */
+function scanFrameJPEG(src,w,h){
+  const M=600; let W=w,H=h;
+  if(W>M){ H=Math.round(H*M/W); W=M; } if(H>M){ W=Math.round(W*M/H); H=M; }
+  const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  cv.getContext('2d').drawImage(src,0,0,W,H);
+  const url=cv.toDataURL('image/jpeg',0.72); cv.width=1; cv.height=1;
+  return url;
+}
+function scanShoot(){
+  if(_scanMode==='barcode'){ scanTypeCode(); return; }
+  if(!canScan()){ openScanPlans('You have used your scans.'); return; }
+  const v=$('scan-video');
+  if(_scanStream && v && v.videoWidth){
+    const url=scanFrameJPEG(v,v.videoWidth,v.videoHeight);
+    try{ navigator.vibrate&&navigator.vibrate(20); }catch(e){}
+    stopScanCam();
+    sendScan(url);
+  } else pickPhoto(true);
+}
 function pickPhoto(useCamera){
   const inp=document.createElement('input');
   inp.type='file'; inp.accept='image/*';
@@ -16407,6 +16556,21 @@ function pickPhoto(useCamera){
   inp.onchange=()=>onScanFile(inp);
   document.body.appendChild(inp); inp.click();
   setTimeout(()=>{ try{ document.body.removeChild(inp); }catch(e){} },30000);
+}
+function onScanFile(input){
+  const file=input.files&&input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      if(_scanMode==='barcode') return scanBarcodeImage(img);
+      if(!canScan()){ openScanPlans('You have used your scans.'); return; }
+      stopScanCam();
+      sendScan(scanFrameJPEG(img,img.width,img.height));
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 function startScanAnim(){
   stopScanAnim();
@@ -16418,62 +16582,141 @@ function stopScanAnim(){
   if(_pctTimer){ clearInterval(_pctTimer); _pctTimer=null; }
   const el=$('scan-pct'); if(el){ el.textContent='100%'; setTimeout(()=>{ el.style.display='none'; },400); }
 }
-function onScanFile(input){
-  const file=input.files&&input.files[0]; if(!file) return;
-  _scanTok++; const tok=_scanTok;
-  $('scan-err').style.display='none'; $('scan-ph').style.display='none';
-  $('scan-live').textContent='Scanning';
-  const reader=new FileReader();
-  reader.onload=e=>{
-    if(tok!==_scanTok) return;
-    const url=e.target.result;
-    const prev=$('scan-prev'); prev.src=url; prev.style.display='block';
-    $('scan-frame').classList.add('on'); startScanAnim();
-    const img=new Image();
-    img.onload=()=>{
+
+/* ── a meal or a label: the AI reads it ── */
+function sendScan(url){
+  _scanTok++; const tok=_scanTok, mode=_scanMode;
+  _scanImg=url;
+  const prev=$('scan-prev'); prev.src=url; prev.style.display='block';
+  $('scan').classList.add('frozen');
+  $('scan-err').style.display='none';
+  $('scan-hint').textContent = mode==='label' ? 'Reading the label…' : 'Reading the plate…';
+  startScanAnim();
+  const b64=url.split(',')[1];
+  scanToken().then(tk=>{
+    if(!tk) throw new Error('Sign in to use Meal Scan.');
+    return fetch(SCAN_FN,{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk,'apikey':SUPA_KEY},
+      body:JSON.stringify({image_base64:b64, mode, context:'Malaysian food', region:'Malaysia'})});
+  })
+    .then(r=>r.json().then(j=>({ok:r.ok,status:r.status,j})))
+    .then(res=>{
       if(tok!==_scanTok) return;
-      // downscale before upload — a full phone photo is megabytes of nothing useful
-      let w=img.width,h=img.height; const M=600;
-      if(w>M){ h=Math.round(h*M/w); w=M; }
-      if(h>M){ w=Math.round(w*M/h); h=M; }
-      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
-      cv.getContext('2d').drawImage(img,0,0,w,h);
-      const b64=cv.toDataURL('image/jpeg',0.7).split(',')[1];
-      cv.width=1; cv.height=1;
-      scanToken().then(tk=>{
-        if(!tk) throw new Error('Sign in to use Meal Scan.');
-        return fetch(SCAN_FN,{method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk,'apikey':SUPA_KEY},
-          body:JSON.stringify({image_base64:b64,context:'Malaysian food',region:'Malaysia'})});
-      })
-        .then(r=>r.json().then(j=>({ok:r.ok,status:r.status,j})))
-        .then(res=>{
-          if(tok!==_scanTok) return;
-          $('scan-frame').classList.remove('on'); stopScanAnim();
-          if(!res.ok) throw Object.assign(new Error((res.j&&res.j.error)||'Scan failed'),
-                                          {status:res.status, code:res.j&&res.j.code});
-          $('scan-live').textContent='Done';
-          /* The server already recorded this scan. Mirror it locally so the
-             count on screen matches without a second round trip. */
-          scanBump(res.j && res.j.scans && typeof res.j.scans.today==='number' ? res.j.scans.today : undefined);
-          _scanData=res.j;
-          renderScanResult(res.j);
-        })
-        .catch(err=>{
-          if(tok!==_scanTok) return;
-          $('scan-frame').classList.remove('on'); stopScanAnim();
-          $('scan-live').textContent='Error';
-          if(err && (err.code==='quota_exceeded' || err.code==='daily_limit')){
-            if(err.code==='daily_limit') scanBump(scanAccess().daily||0);
-            closeScan(); openScanPlans(err.message); return; }
-          const el=$('scan-err');
-          el.textContent=(err&&err.message)||'Scan failed. Try clearer lighting, or log it manually.';
-          el.style.display='block';
-        });
-    };
-    img.src=url;
-  };
-  reader.readAsDataURL(file);
+      stopScanAnim();
+      if(!res.ok) throw Object.assign(new Error((res.j&&res.j.error)||'Scan failed'),
+                                      {status:res.status, code:res.j&&res.j.code});
+      /* the server already counted this scan; mirror it so the screen agrees */
+      scanBump(res.j && res.j.scans && typeof res.j.scans.today==='number' ? res.j.scans.today : undefined);
+      _scanData=Object.assign({kind:mode},res.j);
+      renderScanResult(_scanData);
+    })
+    .catch(err=>{
+      if(tok!==_scanTok) return;
+      stopScanAnim();
+      $('scan').classList.remove('frozen'); prev.style.display='none';
+      if(err && (err.code==='quota_exceeded' || err.code==='daily_limit')){
+        if(err.code==='daily_limit') scanBump(scanAccess().daily||0);
+        closeScan(); openScanPlans(err.message); return; }
+      const el=$('scan-err');
+      el.textContent=(err&&err.message)||'Scan failed. Try clearer lighting, or log it by hand.';
+      el.style.display='block';
+      $('scan-hint').textContent=SCAN_HINT[mode];
+      startScanCam();
+    });
+}
+
+/* ── a barcode: read on the phone, looked up in Open Food Facts ── */
+function loadZXing(){
+  if(window.ZXing) return Promise.resolve(window.ZXing);
+  if(window._zxingP) return window._zxingP;
+  window._zxingP=new Promise((ok,no)=>{
+    const s=document.createElement('script'); s.src=ZXING_URL; s.async=true;
+    s.onload=()=>window.ZXing?ok(window.ZXing):no(new Error('no ZXing'));
+    s.onerror=()=>{ window._zxingP=null; no(new Error('barcode reader did not load')); };
+    document.head.appendChild(s);
+  });
+  return window._zxingP;
+}
+async function startBarcode(){
+  stopBarcode();
+  if(_scanMode!=='barcode' || !_scanStream) return;
+  const v=$('scan-video'); _bcDone=false;
+  try{
+    if('BarcodeDetector' in window){
+      const det=new window.BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128']});
+      _bcTimer=setInterval(async()=>{
+        if(_bcDone || !v.videoWidth) return;
+        try{ const r=await det.detect(v); if(r && r[0] && r[0].rawValue) onBarcode(r[0].rawValue); }catch(e){}
+      },300);
+      return;
+    }
+    const Z=await loadZXing();
+    if(_scanMode!=='barcode' || !_scanStream) return;
+    _bcReader=new Z.BrowserMultiFormatReader();
+    _bcReader.decodeFromVideoElementContinuously(v,(res)=>{ if(res && !_bcDone) onBarcode(res.getText()); });
+  }catch(e){
+    $('scan-hint').textContent='Type the number under the barcode instead';
+    scanTypeCode();
+  }
+}
+function stopBarcode(){
+  if(_bcTimer){ clearInterval(_bcTimer); _bcTimer=null; }
+  if(_bcReader){ try{ _bcReader.reset(); }catch(e){} _bcReader=null; }
+}
+async function scanBarcodeImage(img){
+  try{
+    if('BarcodeDetector' in window){
+      const r=await new window.BarcodeDetector().detect(img);
+      if(r && r[0]) return onBarcode(r[0].rawValue);
+    } else {
+      const Z=await loadZXing(); const res=await new Z.BrowserMultiFormatReader().decodeFromImageElement(img);
+      if(res) return onBarcode(res.getText());
+    }
+  }catch(e){}
+  const el=$('scan-err'); el.textContent='No barcode found in that photo. Try again, or type the number.'; el.style.display='block';
+}
+function scanTypeCode(){ const c=$('scan-code'); c.hidden=false; setTimeout(()=>{ const i=$('scan-code-in'); if(i) i.focus(); },50); }
+function scanCodeGo(){ const v=String((($('scan-code-in')||{}).value)||'').replace(/\D/g,''); if(v.length<8){ toast('Type the full number under the barcode'); return; } onBarcode(v); }
+function onBarcode(code){
+  if(_bcDone) return; _bcDone=true;
+  stopBarcode();
+  try{ navigator.vibrate&&navigator.vibrate(30); }catch(e){}
+  $('scan-hint').textContent='Looking up '+code+'…';
+  lookupBarcode(code).then(d=>{
+    if(_scanMode!=='barcode') return;
+    if(!d){ scanNotFound(code); return; }
+    stopScanCam(); $('scan').classList.add('frozen');
+    _scanImg=d.image||''; _scanData=d; _scanPortion=1;
+    renderScanResult(d);
+  }).catch(()=>{ _bcDone=false; const el=$('scan-err'); el.textContent='Could not look that up — check your connection.'; el.style.display='block'; });
+}
+/* a product's macros, per serving when the label gives one, else per 100 g */
+function offToScan(code,p){
+  const n=(p&&p.nutriments)||{}, num=x=>{ const v=Number(x); return isFinite(v)?v:null; };
+  const per=num(n['energy-kcal_serving'])!==null || num(n.proteins_serving)!==null ? 'serving' : '100g';
+  const g=k=>num(n[k+'_'+per]);
+  let kcal=num(n['energy-kcal_'+per]);
+  if(kcal===null && num(n['energy_'+per])!==null) kcal=num(n['energy_'+per])/4.184;   // kJ on the label
+  if(kcal===null && g('proteins')===null) return null;
+  const name=[p.brands?String(p.brands).split(',')[0].trim():'', p.product_name||p.generic_name||''].filter(Boolean).join(' ').trim();
+  return {kind:'barcode', code, food_name:name||('Product '+code), food_name_bm:'',
+    portion_size: per==='serving' ? ('1 serving'+(p.serving_size?' · '+p.serving_size:'')) : '100 g',
+    estimated_calories:Math.round(kcal||0), protein_g:Math.round(g('proteins')||0), carbs_g:Math.round(g('carbohydrates')||0), fat_g:Math.round(g('fat')||0),
+    sugar_g:g('sugars'), fiber_g:g('fiber'), sodium_mg:g('sodium')!==null?Math.round(g('sodium')*1000):null,
+    confidence:'high', breakdown:[], image:p.image_front_small_url||''};
+}
+async function lookupBarcode(code){
+  const r=await fetch(OFF_URL+encodeURIComponent(code)+'.json?fields=product_name,generic_name,brands,nutriments,serving_size,image_front_small_url');
+  if(!r.ok) return null;
+  const j=await r.json();
+  return (j && j.status===1 && j.product) ? offToScan(code,j.product) : null;
+}
+function scanNotFound(code){
+  const h='<div class="sr-grab"></div><div class="sr-nf">'+ic('qr')+'<div class="t">Not in the product list yet</div>'+
+    '<div class="s">Barcode '+hesc(code)+'. Photograph its nutrition label and every number logs as printed.</div>'+
+    '<button class="bigbtn" onclick="setScanMode(\'label\')">Scan the label instead</button>'+
+    '<button class="authalt" onclick="closeScan();openManual()">Type it in</button></div>';
+  $('scan-sheet').innerHTML=h; $('scan-sheet').classList.add('on');
 }
 
 /* ── RESULT ── */
@@ -16521,73 +16764,70 @@ function burnOptions(kcal){
 }
 let _mrt=0;
 function setMRT(i){ _mrt=i; renderScanResult(_scanData); }
+/* ── the result, after MacroSnap: the photo with what is on it, the
+   servings, four macro tiles, the ingredients, one Log button ── */
 function renderScanResult(d){
   if(!d) return;
-  const k=_scanPortion||1;
+  const k=_scanPortion||1, kind=d.kind||'meal';
   const kcal=Math.round(Number(d.estimated_calories||d.calories||0)*k);
   const p=Math.round(Number(d.protein_g||d.protein||0)*k);
   const c=Math.round(Number(d.carbs_g||d.carbs||0)*k);
   const f=Math.round(Number(d.fat_g||d.fat||0)*k);
   const name=(_scanName||d.food_name||'').trim();
   const unknown=!name||/^(n\/a|unknown)$/i.test(name);
-  const b=mealBadge(kcal);
-  let h='<div style="width:36px;height:4px;background:var(--hairline);border-radius:2px;margin:0 auto 14px;"></div>';
-  h+='<div class="sub" style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">'+
-     '<span style="width:6px;height:6px;border-radius:50%;background:var(--hyrox);"></span>AI Meal Scan · HITFAT+</div>';
-  if(_scanEditing && !unknown)
+  let h='<div class="sr-grab"></div>';
+  if(unknown){
+    h+='<div class="sr-nf">'+ic('photo')+'<div class="t">Could not identify the food</div>'+
+       '<div class="s">Try a brighter photo from above, or log it by hand.</div>'+
+       '<button class="bigbtn" onclick="scanAgain()">Try again</button>'+
+       '<button class="authalt" onclick="closeScan();openManual()">Log it by hand</button></div>';
+    $('scan-sheet').innerHTML=h; $('scan-sheet').classList.add('on'); return;
+  }
+  /* the photo, with what the AI found pinned where it found it */
+  if(_scanImg){
+    const pins=(kind==='meal'?(d.breakdown||[]):[]).filter(it=>isFinite(it.x)&&isFinite(it.y)).slice(0,5);
+    h+='<div class="sr-photo'+(kind==='barcode'?' prod':'')+'" style="background-image:url(\''+_scanImg+'\')">'+
+      pins.map(it=>'<span class="sr-pin" style="left:'+Math.min(88,Math.max(12,it.x))+'%;top:'+Math.min(88,Math.max(10,it.y))+'%"><i></i>'+hesc(it.ingredient||it.name||'')+'</span>').join('')+'</div>';
+  }
+  const unit=kind==='meal'?'Portion':'Servings';
+  h+='<div class="sr-head"><div class="sr-name">';
+  if(_scanEditing)
     h+='<div class="scan-rename"><input id="scan-name-in" value="'+hesc(name)+'" aria-label="Food name" onkeydown="if(event.key===\'Enter\')saveScanName()">'+
        '<button onclick="saveScanName()">Save</button></div>';
   else
-    h+='<div style="font-size:20px;font-weight:800;line-height:1.2;">'+(unknown?'Could not identify the food':hesc(name))+'</div>';
-  if(!_scanName && d.food_name_bm && d.food_name_bm.trim().toLowerCase()!==name.toLowerCase()) h+='<div class="sub">'+hesc(d.food_name_bm)+'</div>';
-  if(d.portion_size) h+='<div class="sub" style="margin-top:2px;">'+hesc(d.portion_size)+'</div>';
-  if(!unknown && !_scanEditing) h+='<button class="scan-fix" onclick="editScanName()">Wrong food? Rename it</button>';
-  if(unknown){
-    h+='<div class="empty" style="padding:22px 0;">Try a brighter photo, or log it by hand.</div>'+
-       '<button class="bigbtn" onclick="closeScan();openManual()">Log it manually</button>'+
-       '<button class="bigbtn sec" onclick="$(\'scan-sheet\').classList.remove(\'on\')">Back</button>';
-    $('scan-sheet').innerHTML=h; $('scan-sheet').classList.add('on'); return;
-  }
-  /* The verdict, then the meal against the day it has to fit in. */
-  const tone=b.label==='GOOD TO EAT'?'ok':b.label==='SKIP IT TODAY'?'risk':'warn';
-  const n=HF.data.nutrition||{};
-  h+='<div style="margin:12px 0 4px;"><span class="npill '+tone+'">'+b.label.charAt(0)+b.label.slice(1).toLowerCase()+'</span></div>';
-  /* the portion actually eaten, against the one in the photo */
-  h+='<div class="scan-por"><span>Your portion</span><div class="scan-por-b">'+SCAN_PORTIONS.map(x=>
-      '<button class="'+(k===x[0]?'on':'')+'" onclick="setScanPortion('+x[0]+')">'+x[1]+'</button>').join('')+'</div></div>';
+    h+='<div class="t">'+hesc(name)+'</div>'+
+       '<div class="s">'+[!_scanName&&d.food_name_bm&&d.food_name_bm.trim().toLowerCase()!==name.toLowerCase()?hesc(d.food_name_bm):'', d.portion_size?hesc(d.portion_size):''].filter(Boolean).join(' · ')+'</div>'+
+       '<button class="scan-fix" onclick="editScanName()">'+(kind==='meal'?'Wrong food? Rename it':'Rename')+'</button>';
+  h+='</div><div class="sr-qty" aria-label="'+unit+'"><button onclick="scanQty(-1)" aria-label="Less">−</button><b>'+fmtQty(k)+'</b><button onclick="scanQty(1)" aria-label="More">+</button></div></div>';
   if(String(d.confidence||'').toLowerCase()==='low')
     h+=nCall('warn','Not sure about this one','Check the name and the portion before you log it. A photo from above, with the whole plate in view, scans better.');
-  h+='<div class="nbox nscan"><div class="nscan-k">≈ <b>'+kcal.toLocaleString()+'</b> kcal'+
-     (n.cal?'<span> · '+Math.round(kcal/n.cal*100)+'% of your day</span>':'')+'</div>'+
-     nMacro('Protein',p,n.pt||Math.max(p,1),'var(--mac-p)')+
-     nMacro('Carbs',c,n.ct||Math.max(c,1),'var(--mac-c)')+
-     nMacro('Fat',f,n.ft||Math.max(f,1),'var(--ok)')+'</div>';
-  // tabs
-  h+='<div class="segs nscan-segs">'+['Overview','Coach','Action'].map((t,i)=>
-      '<button class="seg'+(_mrt===i?' on':'')+'" onclick="setMRT('+i+')">'+t+'</button>').join('')+'</div>';
-  if(_mrt===0){
-    if(d.breakdown&&d.breakdown.length){
-      h+='<div class="nsub"><span>What is in it</span><span>'+(d.portion_size?hesc(d.portion_size):'1 serving')+'</span></div>'+
-         '<div class="nlist">'+d.breakdown.map(it=>{
-        const wt=it.weight_g?(it.weight_g+' g'):(it.weight_ml?(it.weight_ml+' ml'):'');
+  const n=HF.data.nutrition||{};
+  h+='<div class="sr-tiles">'+
+     '<div class="sr-tile"><span class="sr-ic k">'+glyph('flame')+'</span><small>Calories</small><b>'+(kind==='meal'?'≈ ':'')+kcal.toLocaleString()+'</b>'+(n.cal?'<em>'+Math.round(kcal/n.cal*100)+'% of your day</em>':'')+'</div>'+
+     '<div class="sr-tile"><span class="sr-ic p">P</span><small>Protein</small><b>'+p+' g</b></div>'+
+     '<div class="sr-tile"><span class="sr-ic c">C</span><small>Carbs</small><b>'+c+' g</b></div>'+
+     '<div class="sr-tile"><span class="sr-ic f">F</span><small>Fat</small><b>'+f+' g</b></div></div>';
+  if(kind==='meal' && d.breakdown && d.breakdown.length){
+    h+='<div class="nsub"><span>Ingredients</span><span>'+(d.portion_size?hesc(d.portion_size):'1 serving')+'</span></div>'+
+       '<div class="nlist">'+d.breakdown.map(it=>{
+        const wt=it.weight_g?(Math.round(it.weight_g*k)+' g'):(it.weight_ml?(Math.round(it.weight_ml*k)+' ml'):'');
         return '<div class="nli"><div class="nli-b"><div class="nli-t">'+hesc(it.ingredient||it.name||'')+'</div>'+
           (wt?'<div class="nli-s">'+wt+'</div>':'')+'</div><span class="nval">'+Math.round((it.calories||0)*k)+'</span></div>';
       }).join('')+'</div>';
-    }
-    h+='<div class="nsub"><span>To burn this meal</span><span>for your weight</span></div>'+
-       '<div class="nlist">'+burnOptions(kcal).map(x=>nLiStatic(x[0],x[1],'<span class="nval">'+x[2]+'</span>')).join('')+'</div>';
-  } else if(_mrt===1){
-    h+=nCall('info','Coach says',coachText(kcal,p,c,f));
-  } else {
-    h+='<div class="nlist" style="margin-top:12px;">'+coachActions(kcal,p,c,f).map(t=>nLiStatic(t[0],'',t[1])).join('')+'</div>';
-    if(n.cal){ const eaten=mealTotals().kcal, rem=Math.max(0,n.cal-eaten+burnTotal());
-      h+='<div class="nbox" style="margin-top:10px;"><div class="nsum-r"><span>Calories left today</span><b>'+rem.toLocaleString()+' kcal</b></div>'+
-         '<div class="nsum-r" style="margin-top:6px;"><span>Target '+n.cal.toLocaleString()+' · eaten '+eaten.toLocaleString()+'</span></div></div>'; }
   }
-  h+='<div class="nactions">'+
-     '<button class="bigbtn sec" onclick="saveFav()">Save as usual</button>'+
-     '<button class="bigbtn" onclick="logScanned()">Log this meal</button></div>'+
-     '<div class="nfoot" style="text-align:center;">An estimate from a photo, usually within 20–30%. Oil and sauce are the hardest to see.</div>';
+  if(kind!=='meal'){
+    const extra=[['Sugar',d.sugar_g,' g'],['Fibre',d.fiber_g,' g'],['Sodium',d.sodium_mg,' mg']].filter(x=>x[1]!==null&&x[1]!==undefined&&x[1]!=='');
+    if(extra.length) h+='<div class="nlist">'+extra.map(x=>'<div class="nli"><div class="nli-b"><div class="nli-t">'+x[0]+'</div></div><span class="nval">'+Math.round(x[1]*k*10)/10+x[2]+'</span></div>').join('')+'</div>';
+  }
+  h+='<button class="bigbtn sr-log" onclick="logScanned()">Log '+(k===1?'it':fmtQty(k)+' '+(kind==='meal'?'portions':'servings'))+'</button>'+
+     '<div class="sr-row"><button class="authalt" onclick="saveFav()">Save as usual</button><button class="authalt" onclick="scanAgain()">Scan another</button></div>';
+  /* the coach's read and what it takes to burn it, folded away */
+  h+='<details class="sr-more"><summary>Coach tip · how long to burn it</summary>'+
+     nCall('info','',coachText(kcal,p,c,f))+
+     '<div class="nlist">'+burnOptions(kcal).map(x=>nLiStatic(x[0],x[1],'<span class="nval">'+x[2]+'</span>')).join('')+'</div></details>';
+  h+='<div class="nfoot" style="text-align:center;">'+(kind==='meal'
+     ? 'An estimate from a photo, usually within 20–30%. Oil and sauce are the hardest to see.'
+     : kind==='barcode' ? 'From the product\'s label via Open Food Facts.' : 'Read from the label you photographed.')+'</div>';
   $('scan-sheet').innerHTML=h;
   $('scan-sheet').classList.add('on');
 }
@@ -16599,7 +16839,7 @@ function scanToMeal(){
     p:Math.round(Number(d.protein_g||d.protein||0)*k),
     c:Math.round(Number(d.carbs_g||d.carbs||0)*k),
     f:Math.round(Number(d.fat_g||d.fat||0)*k),
-    slot:slotNow(),
+    slot:slotNow(), src:d.kind||'meal',
     comps:(d.breakdown||[]).map(x=>({name:x.ingredient||x.name||'',kcal:Math.round((x.calories||0)*k)})) };
 }
 function logScanned(){
