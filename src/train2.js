@@ -19,7 +19,9 @@ function fsec(title,sub,chev){
 }
 function grad(p){ return 'radial-gradient(circle at 78% 16%,'+hexA(p.ac||p.c1,.34)+',transparent 58%),'+
                          'linear-gradient(158deg,'+(p.c1||'#222')+','+(p.c2||'var(--cardbot)')+')'; }
-function metaOf(p){ return p.weeks ? (p.weeks.length+' wk · '+p.level) : (p.dur+'min · '+p.level); }
+/* how long a plan runs: weeks, or the days a program sold on its own is named for */
+function planLenShort(p){ return p.oneTime ? progDays(p)+' days' : p.weeks.length+' wk'; }
+function metaOf(p){ return p.weeks ? (planLenShort(p)+' · '+p.level) : (p.dur+'min · '+p.level); }
 
 /* landscape card — image on top, title and meta UNDER it (the sampler pattern) */
 function flandCard(p,badge){
@@ -319,7 +321,7 @@ function ncard(p,rank){
       '<div class="ic">'+glyph((p.icon||''))+'</div>'+
       (done>0?'<div class="pb"><i style="width:'+pct+'%"></i></div>':'')+
       '<div class="in"><div class="t">'+p.name+'</div>'+
-      '<div class="m">'+p.weeks.length+' wk · '+p.dur+' min</div></div>'+
+      '<div class="m">'+planLenShort(p)+' · '+p.dur+' min</div></div>'+
     '</div></div>';
 }
 /* Netflix repeats a title across rows on purpose — different lens, same
@@ -559,7 +561,7 @@ function barCard(p,showProgress){
     '<div class="bc-b">'+
       '<div class="bc-k" style="color:'+(p.ac||'var(--hitfat)')+'">'+(p.level||'')+'</div>'+
       '<div class="bc-n">'+p.name+'</div>'+
-      '<div class="bc-m">'+((p.weeks||[]).length||p.wk||'')+' wk · '+p.dur+' min</div>'+
+      '<div class="bc-m">'+(p.oneTime?planLenShort(p):((p.weeks||[]).length||p.wk||'')+' wk')+' · '+p.dur+' min</div>'+
       (showProgress
         ? '<div class="bc-bar"><i style="width:'+pct+'%;background:'+(p.ac||'var(--hitfat)')+'"></i></div>'+
           '<div class="bc-m">'+done+' of '+total+' days</div>'
