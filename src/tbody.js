@@ -3557,6 +3557,18 @@ print("\n── AI COACH ──");
   ok("...and a review once a session is logged", h.indexOf('aicReview(0)')>0);
   HF.data.coach.reviewed={0:true}; ok("...not twice", aicHome(plan).indexOf('aicReview(0)')<0);
   ok("a set reads as sets × reps and rest", aicBlockLine(day.blocks[0])==='3 × 12 · rest 45s' && aicBlockLine(day.blocks[2])==='2 × 40s · rest 30s');
+  /* demo mode: a plan made here, nothing kept in the member's data */
+  T42_DEMO=true; _aicDemo=null; _guest(); var saved=0; HF.save=function(){ saved++; };
+  ok("demo mode shows the coach to anyone", aicHomeCard().indexOf('Meet your AI Coach')>0);
+  var dp=aicDemoPlan({goal:'muscle', days:4, minutes:20, equipment:['Bodyweight']});
+  ok("a demo plan has 4 weeks of the days asked for", dp.weeks.length===4 && dp.weeks.every(function(w){ return w.days.length===4; }));
+  ok("...every move filmed, none twice in a day", dp.weeks.every(function(w){ return w.days.every(function(d){
+    return d.blocks.length===5 && new Set(d.blocks.map(function(b){ return b.ex; })).size===5 &&
+      d.blocks.every(function(b){ return DB.some(function(e){ return e.n===b.ex && e.v; }); }); }); }));
+  ok("...harder each week", dp.weeks[3].days[0].blocks[0].sets>dp.weeks[0].days[0].blocks[0].sets);
+  aicData().plan=dp; aicSay('coach','hi');
+  ok("...and kept apart from the member's own data", HF.data.coach!==aicStore() && saved===0);
+  T42_DEMO=false; _aicDemo=null;
   startWorkout=keepSW; _ent=keepEnt; HF.data.coach=keepCoach||{}; HF.save=keepSave;
 })();
 print("\n"+pass+" passed, "+fail+" failed");

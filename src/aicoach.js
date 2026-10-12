@@ -13,7 +13,11 @@
    6. Questions, answered with the plan and the logs in view.
 
    The plan lives in plus_coach_plans on the server and is cached in
-   HF.data.coach, with the logs and the conversation. */
+   HF.data.coach, with the logs and the conversation.
+
+   In demo mode (?demo) nothing reaches the server or the member's data:
+   the plan is put together here from the library, the coach's words are
+   written in advance, and it all lives only on screen. */
 
 const AIC_GOALS=[['lose','Lose fat','flame'],['muscle','Build muscle','workout'],['fit','Get fitter','bolt'],['strong','Get stronger','trophy'],['move','Move better','leaf']];
 const AIC_LEVELS=['Beginner','Intermediate','Advanced'];
@@ -22,12 +26,16 @@ const AIC_LIMITS=[['knee','Knees'],['back','Lower back'],['shoulder','Shoulders'
 let aicView=null, aicBusy='', aicWeek=-1, _aicForm=null;
 
 function aicFn(){ return SUPA_URL+'/functions/v1/ai-coach'; }
+let _aicDemo=null;
+function aicIsDemo(){ return typeof T42_DEMO!=='undefined' && !!T42_DEMO; }
+function aicStore(){ return aicIsDemo() ? (_aicDemo||(_aicDemo={})) : (HF.data.coach||(HF.data.coach={})); }
+function aicSave(){ if(!aicIsDemo()) aicSave(); }
 function aicData(){
-  const c=HF.data.coach||(HF.data.coach={});
+  const c=aicStore();
   c.done=c.done||{}; c.feed=c.feed||[]; c.reviewed=c.reviewed||{};
   return c;
 }
-function aicPlan(){ const c=HF.data.coach; return c && c.plan && Array.isArray(c.plan.weeks) ? c.plan : null; }
+function aicPlan(){ const c=aicStore(); return c && c.plan && Array.isArray(c.plan.weeks) ? c.plan : null; }
 /* the plan's week today: one per 7 days from when it was made, 0 to 3 */
 function aicWeekNow(){
   const c=aicData(); if(!c.start) return 0;
@@ -69,7 +77,7 @@ async function aicCall(payload){
 }
 function aicSay(from,text){
   const c=aicData(); c.feed.push({from, text:String(text||''), at:new Date().toISOString()});
-  c.feed=c.feed.slice(-60); HF.save();
+  c.feed=c.feed.slice(-60); aicSave();
 }
 
 /* ── the page ── */
@@ -123,12 +131,13 @@ async function aicGenerate(){
     first_name:((HF.data.prefs&&HF.data.prefs.name)||'').split(' ')[0]||null});
   aicBusy='plan'; renderAICoach(); $('screen').scrollTop=0;
   try{
-    const r=await aicCall({action:'plan', intake, library:aicLibrary(intake)});
+    const r=aicIsDemo() ? await aicDemoWait({id:'demo', plan:aicDemoPlan(intake)})
+                        : await aicCall({action:'plan', intake, library:aicLibrary(intake)});
     const c=aicData();
     c.intake=_aicForm; c.plan=r.plan; c.planId=r.id; c.start=iso(0);
     c.done={}; c.reviewed={}; c.redo=false;
     if(r.plan.coach_note) aicSay('coach', r.plan.coach_note);
-    HF.save(); aicWeek=-1;
+    aicSave(); aicWeek=-1;
     toast('Your plan is ready');
   }catch(e){
     if(e.code==='not_coach'){ aicBusy=''; renderAICoach(); pwTier='plus'; openPaywall('Your AI coach comes with HITFAT+.'); return; }
@@ -252,7 +261,7 @@ function aicSaveLog(w,d){
   const logs=day.blocks.map((b,i)=>({ex:b.ex, sets:b.sets, planned:b.secs?b.secs+'s':b.reps, reps:num('aic-r'+i), kg:num('aic-k'+i)}));
   const note=String((($('aic-note')||{}).value)||'').trim().slice(0,300);
   aicData().done[aicKey(w,d)]={at:new Date().toISOString(), rpe:_aicRpe||null, note, logs};
-  HF.save(); closeProduct(); toast('Logged for your coach'); aicView=null; renderAICoach();
+  aicSave(); closeProduct(); toast('Logged for your coach'); aicView=null; renderAICoach();
 }
 
 /* ── the weekly review ── */
@@ -262,10 +271,10 @@ async function aicReview(w){
     return {session:day.name, done:!!x, effort:x&&x.rpe||null, note:x&&x.note||'', moves:x&&x.logs||[]}; });
   aicBusy='review'; renderAICoach();
   try{
-    const r=await aicCall({action:'review', week:w, plan_id:c.planId, intake:c.intake||{}, logs,
+    const r=aicIsDemo() ? await aicDemoWait({message:AIC_DEMO_REVIEW, next_week:null}) : await aicCall({action:'review', week:w, plan_id:c.planId, intake:c.intake||{}, logs,
       next_week:p.weeks[w+1]||null, library:aicLibrary(c.intake||{})});
     if(r.next_week && p.weeks[w+1]) p.weeks[w+1]=r.next_week;
-    c.reviewed[w]=true; aicSay('coach', r.message); HF.save();
+    c.reviewed[w]=true; aicSay('coach', r.message); aicSave();
     toast(r.next_week?'Next week is updated':'Your coach has replied');
   }catch(e){ toast(e.message||'The coach could not review your week.'); }
   aicBusy=''; renderAICoach();
@@ -278,7 +287,7 @@ async function aicAsk(){
   aicSay('me', q); aicBusy='ask'; renderAICoach();
   try{
     const recent=Object.keys(c.done).sort().slice(-6).map(k=>Object.assign({day:k},c.done[k]));
-    const r=await aicCall({action:'ask', question:q, intake:c.intake||{}, week_plan:p&&p.weeks[aicWeekNow()]||null, logs:recent});
+    const r=aicIsDemo() ? await aicDemoWait({answer:AIC_DEMO_ANSWER}) : await aicCall({action:'ask', question:q, intake:c.intake||{}, week_plan:p&&p.weeks[aicWeekNow()]||null, logs:recent});
     aicSay('coach', r.answer);
   }catch(e){ aicSay('coach', e.message||'I could not answer just now. Try again in a moment.'); }
   aicBusy=''; renderAICoach();
@@ -286,7 +295,7 @@ async function aicAsk(){
 
 /* ── Home: today's session, or the invitation ── */
 function aicHomeCard(){
-  if(!(typeof hasPlus==='function' && hasPlus())) return '';
+  if(!(aicIsDemo() || (typeof hasPlus==='function' && hasPlus()))) return '';
   const p=aicPlan();
   if(!p) return '<div class="aic-card" onclick="openAICoach()">'+aicMark()+'<div class="tx"><div class="k">New in HITFAT+</div>'+
     '<div class="t">Meet your AI Coach</div><div class="s">Answer a few questions and get a 4-week plan written for you.</div></div><span class="pdx-chev">›</span></div>';
@@ -294,4 +303,40 @@ function aicHomeCard(){
   return '<div class="aic-card" onclick="openAICoach()">'+aicMark()+'<div class="tx"><div class="k">Your AI Coach · Week '+(aicWeekNow()+1)+'</div>'+
     '<div class="t">'+(aicFinished()?'Plan complete':nx?hesc(nx.day.name):'Week done')+'</div>'+
     '<div class="s">'+(aicFinished()?'Build your next four weeks':nx?nx.day.minutes+' min · '+nx.day.blocks.length+' moves':'Review it with your coach')+'</div></div><span class="pdx-chev">›</span></div>';
+}
+
+/* ── demo mode: a plan from the library, the coach's words written in advance ── */
+const AIC_DEMO_REVIEW='Strong first week. You finished every session and kept your effort around 7, which is exactly where we want it. '+
+  'Your squats looked solid, so next week I have added two reps to each lower-body move and cut the rest to 40 seconds. '+
+  'Keep the same slow tempo on the way down.';
+const AIC_DEMO_ANSWER='Good question. On rest days, walk 20 to 30 minutes and keep your protein up: eggs, chicken, tempeh or tofu with every meal. '+
+  'If you are eating out, nasi campur with more lauk and sayur and less rice works well. Sleep 7 hours if you can.';
+function aicDemoWait(v){ return new Promise(r=>setTimeout(()=>r(v), 2200)); }
+function aicDemoPlan(intake){
+  const lib=aicLibrary(intake).map(x=>x.split('|'));
+  const pool=ms=>lib.filter(x=>ms.indexOf(x[3])>=0).map(x=>x[0]);
+  const P={lower:pool(['Legs','Glutes','Calves']), upper:pool(['Chest','Shoulders','Arms','Triceps','Back']),
+           core:pool(['Core']), burn:pool(['Cardio','Full Body','Power'])};
+  const KINDS=[['Lower Body Strength',['lower','lower','lower','core','burn']],
+               ['Upper Body Push & Pull',['upper','upper','upper','core','core']],
+               ['Full Body Burn',['burn','lower','upper','burn','core']],
+               ['Core & Conditioning',['core','core','burn','burn','lower']]];
+  const days=Math.max(2,Math.min(6,intake.days||3)), mins=intake.minutes||30;
+  const weeks=[0,1,2,3].map(w=>({focus:['Learn the moves','More reps','Less rest','Your hardest week'][w],
+    days:Array.from({length:days},(_,d)=>{
+      const k=KINDS[d%KINDS.length], seen={};
+      return {name:k[0], minutes:mins, blocks:k[1].map((g,i)=>{
+        const arr=P[g].length?P[g]:P.lower; let j=(d*7+i*3)%arr.length;
+        while(seen[arr[j]] && Object.keys(seen).length<arr.length) j=(j+1)%arr.length;
+        seen[arr[j]]=1;
+        const timed=g==='burn' || /plank|hold|wall sit/i.test(arr[j]);
+        return Object.assign({ex:arr[j], sets:w<2?3:4, rest:Math.max(20,45-w*5), note:i===0?'Slow on the way down':''},
+          timed?{secs:30+w*5}:{reps:10+w*2});
+      })};
+    })}));
+  const goal=(AIC_GOALS.find(g=>g[0]===intake.goal)||AIC_GOALS[0])[1].toLowerCase();
+  return {title:'Your 4-Week Plan', summary:days+' sessions a week, '+mins+' minutes each, harder every week.',
+    coach_note:'Welcome! You told me you want to '+goal+', so we will train '+days+' days a week for '+mins+' minutes. '+
+      'This week is about learning each move well: watch the video before you start, and go slow on the way down. '+
+      'Log every session and I will adjust next week to match.', weeks};
 }
