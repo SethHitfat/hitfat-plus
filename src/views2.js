@@ -61,37 +61,44 @@ function hasPhoto(p){ return !!(p && PHOTO.has(p.id)); }
    picture's width/height. A picture is cropped differently in every frame
    — a wide card shows a third of a tall picture, a tall poster nearly all
    of it — so the position is worked out per frame: the face sits a third
-   of the way down, the body across the middle, never past an edge. */
+   of the way down, the body across the middle, never past an edge. A
+   fourth number caps the zoom (1 = none): a body lying flat fills a wide
+   frame already, and zooming in on it only cuts off a head or the feet. */
 const FOCAL={
-  am21:[55,17,1], bws8:[55,48,1], c1:[80,25,1.344], c2:[72,57,1.38], c3:[78,50,1.344],
-  ch1:[45,20,1.806], ch2:[57,16,0.667], core14:[55,32,1], db1:[45,30,0.593], db2:[47,16,0.593],
+  am21:[55,17,1], bws8:[55,48,1], c1:[80,25,1.344], c2:[72,57,1.38,1], c3:[78,50,1.344,1],
+  ch1:[45,20,1.806,1], ch2:[57,16,0.667], core14:[55,32,1], db1:[45,30,0.593], db2:[47,16,0.593],
   db3:[47,12,0.593], f40:[45,12,1], fl30:[50,12,1], hiit4:[50,22,1], kb1:[50,15,0.593],
   kb2:[45,10,0.593], kb3:[50,7,0.593], lad4:[52,15,1], m1:[52,12,1], m2:[40,14,1],
-  m3:[55,25,1], m4:[30,55,1.806], mch:[57,15,1], mdb:[50,28,1], men6:[50,13,1],
-  min3:[48,15,1], mkb:[50,10,1], p1:[65,31,1.881], p10:[45,20,0.593], p11:[50,10,0.593],
-  p12:[50,18,0.593], p13:[45,24,0.593], p14:[70,28,1.806], p15:[78,40,1.806], p16:[55,18,0.593],
-  p17:[35,57,1.38], p18:[47,12,0.593], p19:[50,18,0.593], p2:[65,37,1.898], p20:[76,30,1.798],
-  p21:[76,52,1.38], p22:[45,12,0.593], p23:[55,22,0.593], p24:[50,22,0.593], p25:[50,8,0.593],
-  p26:[40,22,0.593], p27:[75,15,1.806], p28:[55,12,1.798], p29:[50,10,0.593], p30:[70,15,1.798],
+  m3:[55,25,1], m4:[17,55,1.806,1], mch:[57,15,1], mdb:[50,28,1], men6:[50,13,1],
+  min3:[48,15,1], mkb:[50,10,1], p1:[72,31,1.881,1], p10:[45,20,0.593], p11:[50,10,0.593],
+  p12:[50,18,0.593], p13:[45,24,0.593], p14:[70,28,1.806], p15:[78,40,1.806,1], p16:[55,18,0.593],
+  p17:[22,57,1.38,1], p18:[47,12,0.593], p19:[50,18,0.593], p2:[65,37,1.898,1], p20:[76,30,1.798,1],
+  p21:[80,52,1.38,1], p22:[45,12,0.593], p23:[55,22,0.593], p24:[50,22,0.593], p25:[50,8,0.593],
+  p26:[40,22,0.593], p27:[75,15,1.806], p28:[60,12,1.798], p29:[50,10,0.593], p30:[70,15,1.798],
   p31:[45,12,0.593], p32:[65,16,1.881], p33:[65,15,1.806], p4:[75,20,1.344], p5:[75,10,1.344],
-  p6:[50,22,0.593], p7:[40,46,1.859], p9:[55,36,0.593], reset12:[48,13,1], rh1:[65,25,1.34],
-  rh2:[70,15,1.34], rh3:[55,32,1.898], rh4:[55,35,1.798], rh5:[65,10,1.34], rh6:[60,35,1.34],
+  p6:[50,22,0.593], p7:[40,46,1.859,1], p9:[55,36,0.593], reset12:[48,13,1], rh1:[65,25,1.34],
+  rh2:[70,15,1.34], rh3:[63,32,1.898,1], rh4:[55,35,1.798], rh5:[65,10,1.34], rh6:[60,35,1.34],
   sig1:[47,13,1], sig2:[48,20,1], sig3:[47,15,1], sig4:[48,10,1], tw1:[55,15,0.593],
-  tw2:[60,44,0.593], bt1:[50,20,1.19], bt2:[60,35,1.196], p34:[50,50,1.192], wl30:[50,39,0.8]
+  tw2:[60,44,0.634], bt1:[50,20,1.19], bt2:[60,35,1.196,1], p34:[50,50,1.192,1], wl30:[50,39,0.8]
 };
 const FA={wide:1.77, row:1.65, poster:1.5, hero:0.87, card:0.75, tall:0.67, join:0.6};
+/* Many studio pictures stand their person right of centre. A frame no
+   wider than the picture can slide to them; a wider one cannot, so it
+   zooms in a little — up to 1.6× — until the person is near the middle.
+   Positions are in frame units: the picture is W frames wide, H high. */
+const IMG_ZOOM_MAX=1.6;
 function imgPos(p,frame){
   const f=hasPhoto(p)&&FOCAL[p.id]; if(!f) return '';
-  const fx=f[0]/100, fy=f[1]/100, ar=f[2], fa=frame||FA.row;
-  let px=50, py=50;
-  if(fa>ar){                         // wider than the picture: choose the band
-    const v=ar/fa, top=Math.min(Math.max(fy-0.33*v,0),1-v);
-    py=(1-v)>0.001 ? top/(1-v)*100 : 50; px=50;
-  } else {                           // narrower: choose the slice
-    const h=fa/ar, left=Math.min(Math.max(fx-0.5*h,0),1-h);
-    px=(1-h)>0.001 ? left/(1-h)*100 : 50; py=50;
-  }
-  return 'background-position:'+px.toFixed(1)+'% '+py.toFixed(1)+'%;';
+  const fx=f[0]/100, fy=f[1]/100, ar=f[2], fa=frame||FA.row, zmax=f[3]||IMG_ZOOM_MAX;
+  const W0=Math.max(1,ar/fa), H0=Math.max(1,fa/ar);
+  const clamp=(x,lo,hi)=>Math.min(Math.max(x,lo),hi);
+  const off=z=>{ const W=W0*z; return Math.abs(fx*W-clamp(fx*W-0.5,0,W-1)-0.5); };
+  let z=1; while(z<zmax-1e-9 && off(z)>0.06) z=Math.round((z+0.05)*100)/100;
+  const W=W0*z, H=H0*z;
+  const left=clamp(fx*W-0.5,0,W-1), top=clamp(fy*H-0.33,0,H-1);   // the face a third of the way down
+  const px=(W-1)>0.001 ? left/(W-1)*100 : 50, py=(H-1)>0.001 ? top/(H-1)*100 : 50;
+  return (z>1?'background-size:'+(W*100).toFixed(1)+'% auto;':'')+
+    'background-position:'+px.toFixed(1)+'% '+py.toFixed(1)+'%;';
 }
 function progImg(p){
   if(hasPhoto(p)) return '/img/p/'+p.id+'.jpg';

@@ -1120,7 +1120,11 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 /* collections: big illustrated challenge cards */
 .fcoll{flex:none;width:300px;min-height:190px;border-radius:18px;padding:18px;position:relative;overflow:hidden;cursor:pointer;
   display:flex;flex-direction:column;justify-content:flex-end;}
+.fcoll .ph{position:absolute;inset:0;background:center/cover no-repeat;}
+.fcoll .ph::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.82) 100%);}
+.fcoll .t,.fcoll .m,.fcoll .d{position:relative;}
 .fcoll .ic{position:absolute;top:16px;right:16px;opacity:.9;}
+.fcoll .ic{z-index:1;}
 .fcoll .ic .gly{width:34px;height:34px;stroke:#FFFFFF;}
 .fcoll .t{font-size:24px;font-weight:800;letter-spacing:-.5px;color:#FFFFFF;line-height:1.1;}
 .fcoll .m{font-size:11px;font-weight:700;letter-spacing:.8px;color:rgba(255,255,255,.88);margin-top:6px;}

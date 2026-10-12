@@ -90,7 +90,9 @@ function fwCols(list){
 
 /* ── Collections: the challenges, as big cards ── */
 function fcoll(c){
+  /* its studio photo under the words, where it has one */
   return '<div class="fcoll" onclick="openProgram(\''+c.id+'\')" style="background:'+grad(c)+'">'+
+    (hasPhoto(c)?'<div class="ph" style="background-image:url(\''+progImg(c)+'\');'+imgPos(c,FA.poster)+'"></div>':'')+
     '<div class="ic">'+glyph((c.icon||''))+'</div>'+
     '<div class="t">'+c.name+'</div>'+
     '<div class="m">'+(c.days||progDays(c))+' DAYS · '+(c.dur||'')+' MIN/DAY</div>'+
