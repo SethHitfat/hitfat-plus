@@ -4052,6 +4052,36 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .sr-nf > .ic,.sr-nf > svg{width:34px;height:34px;color:var(--lime);}
 .sr-nf .t{font-size:20px;font-weight:800;margin-top:8px;}
 .sr-nf .s{font-size:14px;color:var(--dim);margin:6px 0 14px;line-height:1.45;}
+/* ═══ Eat · Journal: the macros report and the food journal ═══ */
+.mrep{background:var(--surface);border-radius:20px;padding:16px 14px 12px;}
+.mrep-top{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.mrep-top div{display:flex;flex-direction:column;}
+.mrep-top b{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;}
+.mrep-top span{font-size:11px;color:var(--dim);}
+.mchart{display:block;width:100%;height:auto;}
+.mchart .mc-p{fill:#2F7BF6;} .mchart .mc-c{fill:#34C759;} .mchart .mc-f{fill:#FFC21A;}
+.mchart .mc-goal{stroke:var(--lime);stroke-width:1.5;stroke-dasharray:4 4;}
+.mchart text{font-family:inherit;font-size:10px;fill:var(--dim);}
+.mchart .mc-v{font-size:9px;font-weight:700;fill:var(--txt);}
+.mchart .mc-gl{fill:var(--lime);font-weight:700;}
+.mchart .mc-d.now{fill:var(--txt);font-weight:800;}
+.mrep-key{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;font-size:12px;color:var(--dim);}
+.mrep-key span{display:inline-flex;align-items:center;gap:5px;}
+.mrep-key i{width:9px;height:9px;border-radius:3px;display:inline-block;}
+.mrep-key i.p{background:#2F7BF6;} .mrep-key i.c{background:#34C759;} .mrep-key i.f{background:#FFC21A;}
+.mrep-key i.g{height:2px;border-radius:0;background:var(--lime);}
+.jday{display:flex;justify-content:space-between;gap:10px;margin:18px 2px 8px;font-size:13px;color:var(--dim);}
+.jday span:first-child{font-size:16px;font-weight:800;color:var(--txt);}
+.jlist{display:flex;flex-direction:column;gap:8px;}
+.jcard{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:16px;padding:10px;}
+.jph{flex:none;width:64px;height:64px;border-radius:12px;background:var(--surface2) center/cover no-repeat;display:grid;place-items:center;color:var(--dim);}
+.jph .ic,.jph svg{width:24px;height:24px;}
+.jtx{flex:1;min-width:0;}
+.jt{font-size:15px;font-weight:700;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.js{font-size:12px;color:var(--dim);margin-top:2px;}
+.jm{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font-size:12px;color:var(--dim);margin-top:5px;font-variant-numeric:tabular-nums;}
+.jm b{font-size:15px;color:var(--txt);}
+.jm .p{color:#2F7BF6;font-weight:700;} .jm .c{color:#34C759;font-weight:700;} .jm .f{color:#E0A800;font-weight:700;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -16115,7 +16145,7 @@ function dayStatus(kcal){
    gradient and type; swap in photos when the shoot happens.                   */
 
 let eatSeg='today';
-const EAT_SEGS=[['today','Today'],['plan','Plan'],['log','Log']];
+const EAT_SEGS=[['today','Today'],['plan','Plan'],['log','Log'],['journal','Journal']];
 function setEatSeg(s){ eatSeg=s; renderEat(); $('screen').scrollTop=0; }
 
 function egrad(c1,c2,ac){
@@ -16139,6 +16169,7 @@ function renderEat(){
     '<button class="'+(eatSeg===s[0]?'on':'')+'" onclick="setEatSeg(\''+s[0]+'\')">'+s[1]+'</button>').join('')+'</div>';
   if(eatSeg==='plan') return eatPlan();
   if(eatSeg==='log')  return eatLog();
+  if(eatSeg==='journal') return eatJournal();
   eatToday();
 }
 
@@ -16248,6 +16279,104 @@ function eatToday(){
      '</div>';
 
   h+='<button class="authalt" onclick="HF.data.nutrition={};HF.save();renderEat()">Change my daily target</button>';
+  $('eat-body').innerHTML=h;
+}
+/* ── JOURNAL ──
+   After Everfit's nutrition dashboard: the week as a macros report, then
+   every meal of the last two weeks as a card with its photo. */
+const MEAL_PH='hf_meal_ph_', MEAL_PH_KEEP=150;
+function mealPhotoKey(id){ return MEAL_PH+(HF.userId||'me')+'_'+id; }
+function mealPhoto(m){
+  if(m && m.img) return m.img;
+  if(!m || !m.id) return '';
+  try{ return localStorage.getItem(mealPhotoKey(m.id))||''; }catch(e){ return ''; }
+}
+function saveMealPhoto(id,dataUrl){
+  try{
+    const img=new Image();
+    img.onload=()=>{
+      const S=160, s=Math.max(S/img.width,S/img.height), cv=document.createElement('canvas');
+      cv.width=S; cv.height=S;
+      cv.getContext('2d').drawImage(img,(S-img.width*s)/2,(S-img.height*s)/2,img.width*s,img.height*s);
+      try{
+        localStorage.setItem(mealPhotoKey(id),cv.toDataURL('image/jpeg',0.7));
+        /* the newest MEAL_PH_KEEP stay; older thumbnails make room */
+        const ik=MEAL_PH+'idx_'+(HF.userId||'me'); let idx=[];
+        try{ idx=JSON.parse(localStorage.getItem(ik)||'[]'); }catch(e){}
+        idx.push(id);
+        while(idx.length>MEAL_PH_KEEP){ const old=idx.shift(); try{ localStorage.removeItem(mealPhotoKey(old)); }catch(e){} }
+        localStorage.setItem(ik,JSON.stringify(idx));
+      }catch(e){}
+      cv.width=1; cv.height=1;
+    };
+    img.src=dataUrl;
+  }catch(e){}
+}
+function isoBack(n){ return iso(-n); }
+function journalDayName(d){
+  if(d===iso(0)) return 'Today';
+  if(d===iso(-1)) return 'Yesterday';
+  return new Date(d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'});
+}
+function weekReport(){
+  const n=HF.data.nutrition||{}, days=[];
+  for(let i=6;i>=0;i--){ const d=iso(-i), t=mealTotals(d); days.push({d, t, logged:mealsFor(d).length>0}); }
+  const logged=days.filter(x=>x.logged);
+  const avg=k=>logged.length?Math.round(logged.reduce((s,x)=>s+x.t[k],0)/logged.length):0;
+  const onTarget=logged.filter(x=>n.cal && x.t.kcal>=n.cal*0.85 && x.t.kcal<=n.cal*1.1).length;
+  return {days, logged:logged.length, avgKcal:avg('kcal'), avgP:avg('p'), onTarget, target:n.cal||0};
+}
+/* stacked bars: calories from protein, carbs and fat, a day each, against the target */
+function macroChart(r){
+  const W=320, H=170, padL=6, padB=22, top=14, bw=26;
+  const max=Math.max(r.target*1.2, ...r.days.map(x=>x.t.p*4+x.t.c*4+x.t.f*9), 1);
+  const y=v=>top+(H-padB-top)*(1-v/max);
+  const step=(W-padL*2)/7;
+  let s='<svg class="mchart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Calories by macro, last 7 days">';
+  if(r.target){ const ty=y(r.target);
+    s+='<line x1="0" x2="'+W+'" y1="'+ty+'" y2="'+ty+'" class="mc-goal"/><text x="'+(W-2)+'" y="'+(ty-4)+'" text-anchor="end" class="mc-gl">'+r.target.toLocaleString()+'</text>'; }
+  r.days.forEach((x,i)=>{
+    const cx=padL+step*i+step/2, segs=[['p',x.t.p*4],['c',x.t.c*4],['f',x.t.f*9]];
+    let base=H-padB;
+    segs.forEach(sg=>{ if(sg[1]<=0) return; const h=(H-padB-top)*sg[1]/max;
+      s+='<rect x="'+(cx-bw/2)+'" y="'+(base-h)+'" width="'+bw+'" height="'+Math.max(1,h)+'" rx="3" class="mc-'+sg[0]+'"/>'; base-=h; });
+    if(x.logged) s+='<text x="'+cx+'" y="'+(base-4)+'" text-anchor="middle" class="mc-v">'+x.t.kcal.toLocaleString()+'</text>';
+    const dn=new Date(x.d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short'}).slice(0,1);
+    s+='<text x="'+cx+'" y="'+(H-6)+'" text-anchor="middle" class="mc-d'+(x.d===iso(0)?' now':'')+'">'+dn+'</text>';
+  });
+  return s+'</svg>';
+}
+function journalCard(m,d,i){
+  const ph=mealPhoto(m), slot=(SLOTS.filter(s=>s.k===(m.slot||'snack'))[0]||SLOTS[3]).n;
+  return '<div class="jcard">'+
+    (ph?'<div class="jph" style="background-image:url(\''+ph.replace(/'/g,"%27")+'\')"></div>'
+       :'<div class="jph none">'+ic(m.src==='barcode'?'qr':'food')+'</div>')+
+    '<div class="jtx"><div class="jt">'+hesc(m.bm||m.name)+'</div>'+
+    '<div class="js">'+slot+(m.time?' · '+hesc(m.time):'')+'</div>'+
+    '<div class="jm"><b>'+(m.kcal||0).toLocaleString()+'</b> kcal<span class="p">P '+(m.p||0)+'g</span><span class="c">C '+(m.c||0)+'g</span><span class="f">F '+(m.f||0)+'g</span></div></div>'+
+    (d===iso(0)?'<button class="ndel" aria-label="Remove" onclick="delMeal('+i+')">✕</button>':'')+'</div>';
+}
+function eatJournal(){
+  const r=weekReport();
+  let h=fsec('Macros Report','Calories from protein, carbs and fat, this week.');
+  h+='<div class="mrep"><div class="mrep-top">'+
+     '<div><b>'+(r.logged?r.avgKcal.toLocaleString():'—')+'</b><span>avg kcal a day</span></div>'+
+     '<div><b>'+(r.logged?r.avgP+' g':'—')+'</b><span>avg protein</span></div>'+
+     '<div><b>'+r.onTarget+'/'+r.logged+'</b><span>days on target</span></div></div>'+
+     macroChart(r)+
+     '<div class="mrep-key"><span><i class="p"></i>Protein</span><span><i class="c"></i>Carbs</span><span><i class="f"></i>Fat</span><span><i class="g"></i>Target</span></div></div>';
+  h+=fsec('Food Journal','The last two weeks, newest first.');
+  let any=false;
+  for(let i=0;i<14;i++){
+    const d=iso(-i), list=mealsFor(d);
+    if(!list.length) continue; any=true;
+    const t=mealTotals(d);
+    h+='<div class="jday"><span>'+journalDayName(d)+'</span><span>'+list.length+(list.length>1?' meals':' meal')+' · '+t.kcal.toLocaleString()+' kcal</span></div>'+
+       '<div class="jlist">'+list.map((m,j)=>({m,j})).reverse().map(x=>journalCard(x.m,d,x.j)).join('')+'</div>';
+  }
+  if(!any) h+='<div class="nempty">'+ic('food')+'<div class="nempty-t">Your journal starts with your first meal</div>'+
+    '<div class="nempty-s">Scan a plate, a barcode or a label, or add a meal by hand.</div>'+
+    '<button class="bigbtn" onclick="openScan()">Scan a Meal</button></div>';
   $('eat-body').innerHTML=h;
 }
 function eatTile(t,sub,g,icon,go){
@@ -16378,11 +16507,13 @@ function saveNutrition(){
 }
 function logMeal(m){
   const d=iso(0);
+  const id=m.id||(Date.now().toString(36)+Math.random().toString(36).slice(2,6));
   HF.data.meals[d]=(HF.data.meals[d]||[]).concat([Object.assign({
     time:new Date().toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',hour12:true}),
     slot:slotNow(), p:0,c:0,f:0, comps:[]
-  },m)]);
+  },m,{id})]);
   HF.save();
+  return id;
 }
 function delMeal(i){ const d=iso(0); (HF.data.meals[d]||[]).splice(i,1); HF.save(); renderEat(); }
 
@@ -16844,7 +16975,12 @@ function scanToMeal(){
 }
 function logScanned(){
   const m=scanToMeal(); if(!m) return;
-  logMeal(m); _scanData=null; toast('Meal logged'); closeScan();
+  /* a product's picture is a link and travels with the meal; a photo taken
+     here stays on this phone, as a small thumbnail */
+  if(/^https?:/.test(_scanImg)) m.img=_scanImg;
+  const id=logMeal(m);
+  if(/^data:image/.test(_scanImg)) saveMealPhoto(id,_scanImg);
+  _scanData=null; toast('Meal logged'); closeScan();
 }
 function saveFav(){
   const m=scanToMeal(); if(!m) return;

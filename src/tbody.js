@@ -1312,7 +1312,7 @@ noThrow("target saves",           function(){ saveNutrition(); });
 ok("target computed",             HF.data.nutrition.cal>1200, HF.data.nutrition.cal);
 ok("segments appear after setup", document.getElementById('eat-segs').innerHTML.indexOf('setEatSeg')>0);
 ok("...as a segmented control", document.getElementById('eat-segs').innerHTML.indexOf('obseg')>0);
-ok("three segments",              EAT_SEGS.length===3);
+ok("four segments, the journal last", EAT_SEGS.length===4 && EAT_SEGS[3][0]==="journal");
 ok("every segment has a handler", EAT_SEGS.every(function(s){
     return document.getElementById('eat-segs').innerHTML.indexOf("setEatSeg('"+s[0]+"')")>0; }));
 ok("Today is the default",        eatSeg==='today');
@@ -3453,6 +3453,28 @@ print("\n── SCANNER: MODES, BARCODE, LABEL ──");
   ok("a meal shows its ingredients pinned on the photo", (h.match(/class="sr-pin"/g)||[]).length===2 && h.indexOf('Chicken')>0);
   ok("...four macro tiles", (h.match(/class="sr-tile"/g)||[]).length===4);
   closeScan(); _scanData=keep; _scanPortion=1; _scanImg='';
+})();
+
+print("\n── EAT · JOURNAL ──");
+(function(){
+  var keepMeals=HF.data.meals, keepN=HF.data.nutrition;
+  HF.data.nutrition={cal:2000,pt:120,ct:250,ft:60,w:70,h:170,a:30,gender:'male',goal:'lose'};
+  HF.data.meals={};
+  var id=logMeal({name:'Nasi Ayam',kcal:650,p:30,c:80,f:22,slot:'lunch'});
+  ok("a logged meal gets an id", typeof id==='string' && id.length>4 && mealsFor()[0].id===id);
+  HF.data.meals[iso(-1)]=[{id:'y1',name:'Oats',kcal:350,p:15,c:55,f:8,slot:'breakfast',time:'8:00 am'},
+                         {id:'y2',name:'Gardenia Roti Putih',kcal:358,p:12,c:66,f:4,slot:'snack',src:'barcode',img:'https://images.openfoodfacts.org/x.jpg'}];
+  var r=weekReport();
+  ok("the week report averages the days with meals", r.logged===2 && r.avgKcal===Math.round((650+708)/2) && r.target===2000);
+  eatSeg='journal'; renderEat(); var h=document.getElementById('eat-body').innerHTML;
+  ok("the journal shows the report and the chart", h.indexOf('Macros Report')>0 && h.indexOf('class="mchart"')>0 && (h.match(/class="mc-p"/g)||[]).length===2);
+  ok("...today and yesterday, newest first", h.indexOf('>Today<')>0 && h.indexOf('>Yesterday<')>0 && h.indexOf('>Today<')<h.indexOf('>Yesterday<'));
+  ok("...each meal as a card with its macros", (h.match(/class="jcard"/g)||[]).length===3 && h.indexOf('P 30g')>0);
+  ok("...a product keeps its picture", h.indexOf('images.openfoodfacts.org/x.jpg')>0);
+  ok("...only today's meals can be removed", (h.match(/delMeal\(/g)||[]).length===1);
+  HF.data.meals={}; renderEat(); h=document.getElementById('eat-body').innerHTML;
+  ok("an empty journal points at the scanner", h.indexOf('Your journal starts')>0 && h.indexOf('openScan()')>0);
+  eatSeg='today'; HF.data.meals=keepMeals; HF.data.nutrition=keepN;
 })();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");
