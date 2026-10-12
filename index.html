@@ -4226,7 +4226,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .ac-tag{flex:none;font-size:11px;font-weight:700;padding:4px 8px;border-radius:99px;background:var(--surface2);color:var(--dim);}
 .ac-tag .gly{width:14px;height:14px;display:block;}
 .ac-tag.free{background:var(--accent-wash);color:var(--hitfat);}
-.ac-video{margin:-6px -18px 0;aspect-ratio:16/9;background:#0B0B0D;position:relative;max-width:calc(100% + 36px);}
+.ac-video{width:min(100%,calc(56vh * 9 / 16));aspect-ratio:9/16;margin:0 auto;border-radius:20px;overflow:hidden;background:#0B0B0D;position:relative;}
 .ac-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
 .ac-soon{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:rgba(255,255,255,.6);font-size:14px;font-weight:600;}
 .ac-soon .gly{width:34px;height:34px;fill:currentColor;stroke:none;}
@@ -4234,6 +4234,10 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .ac-ep-h .k{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--hitfat);}
 .ac-ep-h .t{font-size:26px;font-weight:800;letter-spacing:-.5px;color:var(--txt);margin-top:4px;text-wrap:balance;}
 .ac-ep-h .s{font-size:15px;color:var(--dim);margin-top:8px;line-height:1.5;}
+.ac-mis{padding:14px 16px;border-radius:16px;background:var(--surface);margin:0 0 10px;box-shadow:inset 3px 0 0 var(--hitfat);}
+.ac-mis .k{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--hitfat);}
+.ac-mis .k .gly{width:14px;height:14px;}
+.ac-mis .t{font-size:16px;font-weight:600;color:var(--txt);margin-top:4px;line-height:1.4;}
 .ac-act{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:var(--accent-wash);cursor:pointer;margin:4px 0 18px;}
 .ac-act .ic{flex:none;width:38px;height:38px;border-radius:12px;background:var(--hitfat);display:grid;place-items:center;color:#fff;}
 .ac-act .ic .gly{width:20px;height:20px;}
@@ -7570,8 +7574,10 @@ function aicDemoPlan(intake){
    The first AC_FREE episodes are open to everyone; the rest are HITFAT+.
    Progress is kept in HF.data.academy: {done:{ep01:{at,score}}, last}.
 
-   To publish an episode, fill its v (the Vimeo id, or 'id/hash' for an
-   unlisted video), sum and quiz. Until then it shows as coming soon. */
+   Each episode: v (the Vimeo id, or 'id/hash' for an unlisted video), d
+   (seconds), sum, mis (the 7-day mission the video ends with) and quiz,
+   written from the video's own transcript. Videos are vertical (9:16).
+   An episode without v shows as coming soon. */
 
 const AC_FREE=2;
 const AC_MODS=[
@@ -7583,25 +7589,80 @@ const AC_MODS=[
   ['Pelan Kau','Semua sekali, dalam 7 hari']
 ];
 /* m: module index. act: [label, onclick] or null. quiz: [{q, o:[...], a:index, why}] */
+function acMins(e){ return e.d?Math.max(1,Math.round(e.d/60))+' min':''; }
 const AC_EPS=[
-  {id:'ep01',m:0,t:'Baca Penimbang',            v:'',sum:'',quiz:[],act:['Log berat hari ini','acDo(\'weight\')']},
-  {id:'ep02',m:0,t:'Defisit Tanpa Lapar',       v:'',sum:'',quiz:[],act:['Tengok target kalori kau','acDo(\'today\')']},
-  {id:'ep03',m:0,t:'Turun Berat, Bukan Lemak?', v:'',sum:'',quiz:[],act:['Log ukuran badan','acDo(\'measure\')']},
-  {id:'ep04',m:1,t:'Protein',                   v:'',sum:'',quiz:[],act:['Tengok protein minggu ini','acDo(\'journal\')']},
-  {id:'ep05',m:1,t:'Karbohidrat & Nasi',        v:'',sum:'',quiz:[],act:['Scan pinggan nasi kau','acDo(\'scan\')']},
-  {id:'ep06',m:1,t:'Lemak, Santan & Goreng',    v:'',sum:'',quiz:[],act:['Log makanan hari ini','acDo(\'log\')']},
-  {id:'ep07',m:2,t:'Mamak & Warung',            v:'',sum:'',quiz:[],act:['Scan makanan mamak kau','acDo(\'scan\')']},
-  {id:'ep08',m:2,t:'Kenduri, Raya & Buffet',    v:'',sum:'',quiz:[],act:['Scan pinggan kenduri','acDo(\'scan\')']},
-  {id:'ep09',m:2,t:'Minum Petang',              v:'',sum:'',quiz:[],act:['Scan barcode minuman','acDo(\'barcode\')']},
-  {id:'ep10',m:2,t:'Baca Label Makanan',        v:'',sum:'',quiz:[],act:['Scan label makanan','acDo(\'label\')']},
-  {id:'ep11',m:3,t:'Kurang Tidur',              v:'',sum:'',quiz:[],act:null},
-  {id:'ep12',m:3,t:'Makan Ikut Emosi',          v:'',sum:'',quiz:[],act:['Tengok Journal makan kau','acDo(\'journal\')']},
-  {id:'ep13',m:3,t:'Lapar Atau Dahaga?',        v:'',sum:'',quiz:[],act:null},
-  {id:'ep14',m:3,t:'Plateau',                   v:'',sum:'',quiz:[],act:['Tengok trend berat kau','acDo(\'progress\')']},
-  {id:'ep15',m:4,t:'Makan Sekitar Latihan',     v:'',sum:'',quiz:[],act:['Pergi ke latihan hari ini','acDo(\'train\')']},
-  {id:'ep16',m:4,t:'Supplement',                v:'',sum:'',quiz:[],act:null},
-  {id:'ep17',m:4,t:'IF & Ramadan',              v:'',sum:'',quiz:[],act:['Bina meal plan','acDo(\'mealplan\')']},
-  {id:'ep18',m:5,t:'Recap: Pelan 7 Hari',       v:'',sum:'',quiz:[],act:['Bina meal plan 7 hari kau','acDo(\'mealplan\')']}
+  {id:'ep01',m:0,t:'Baca Penimbang',v:'1235197765',d:173,act:['Log berat hari ini','acDo(\'weight\')'],
+   sum:"Kenapa berat naik turun setiap hari, dan tiga langkah untuk baca penimbang dengan betul.",
+   mis:"Mula rekod berat esok pagi.",
+   quiz:[{"q": "Malam tadi makan masakan masin, pagi ni berat naik 1 kg. Apa yang paling mungkin naik?", "o": ["Lemak", "Air", "Otot"], "a": 1, "why": "Makanan masin buat badan pegang air. Itu bukan lemak."}, {"q": "Cara paling tepat untuk menilai berat anda?", "o": ["Bandingkan purata 7 hari minggu ini dengan minggu lepas", "Timbang beberapa kali sehari, ambil yang paling rendah", "Tengok bacaan pagi ini sahaja"], "a": 0, "why": "Satu bacaan ialah gabungan banyak faktor. Purata 7 hari tunjuk arah sebenar."}, {"q": "Bila patut semak semula pemakanan?", "o": ["Bila berat naik 1 kg dalam sehari", "Bila purata tak berubah 2 hingga 3 minggu berturut-turut", "Setiap kali hampir haid"], "a": 1, "why": "Naik turun harian itu normal. Purata yang tersekat 2 hingga 3 minggu barulah tanda perlu semak."}]},
+  {id:'ep02',m:0,t:'Defisit Tanpa Lapar',v:'1235197763',d:203,act:['Tengok target kalori kau','acDo(\'today\')'],
+   sum:"Defisit kalori ialah masuk kurang sikit daripada keluar, secara konsisten. Kunci kenyang: protein, serat dan isi padu.",
+   mis:"Pilih satu pertukaran makanan dan buat 7 hari berturut-turut.",
+   quiz:[{"q": "Apa maksud defisit kalori?", "o": ["Makan sangat sedikit selama beberapa hari", "Masuk kurang sikit daripada keluar, secara konsisten", "Langkau sarapan setiap hari"], "a": 1, "why": "Kurang banyak selama 3 hari akan kalah dengan kurang sikit selama 3 bulan."}, {"q": "Tiga perkara yang buat hidangan lebih mengenyangkan?", "o": ["Protein, serat dan isi padu", "Gula, minyak dan garam", "Nasi, roti dan mi"], "a": 0, "why": "Protein dan serat buat kenyang lebih lama. Sayur dan buah beri isi padu dengan kalori rendah."}, {"q": "Ikut pinggan suku-suku separuh, separuh pinggan diisi dengan apa?", "o": ["Nasi", "Lauk protein", "Sayur dan buah"], "a": 2, "why": "Separuh sayur dan buah, suku protein, suku nasi."}]},
+  {id:'ep03',m:0,t:'Turun Berat, Bukan Lemak?',v:'1235197769',d:198,act:['Log ukuran badan','acDo(\'measure\')'],
+   sum:"Berat turun tak semestinya lemak turun. Matlamatnya turunkan lemak dan kekalkan otot.",
+   mis:"Ukur pinggang dan ambil satu gambar minggu ini. Ulang setiap minggu.",
+   quiz:[{"q": "A turun 3 kg tapi pinggang sama. B turun 1 kg tapi pinggang kecil 4 cm. Siapa kemungkinan besar buang lebih banyak lemak?", "o": ["A", "B", "Sama sahaja"], "a": 1, "why": "Pinggang yang mengecil ialah tanda lemak turun. Berat cuma satu nombor."}, {"q": "Kenapa otot penting semasa turun lemak?", "o": ["Otot buat badan kuat dan tegap, dan guna tenaga walaupun berehat", "Otot buat berat cepat turun", "Otot tak penting semasa diet"], "a": 0, "why": "Kehilangan otot buat badan kecil tapi lembik dan lemah."}, {"q": "Mana yang BUKAN cara jaga otot semasa turun lemak?", "o": ["Protein setiap kali makan", "Latihan kekuatan sekurang-kurangnya 2 kali seminggu", "Potong makan habis-habisan supaya berat turun laju"], "a": 2, "why": "Defisit perlu sikit sahaja. Makan terlalu sikit buat sebahagian berat yang hilang itu otot."}]},
+  {id:'ep04',m:1,t:'Protein',v:'1235197764',d:178,act:['Tengok protein minggu ini','acDo(\'journal\')'],
+   sum:"Protein buat kenyang lebih lama, jaga otot dan bantu defisit. Sasarkan satu tapak tangan setiap kali makan.",
+   mis:"Ada protein dalam setiap hidangan, 7 hari berturut-turut.",
+   quiz:[{"q": "Berapa banyak protein setiap kali makan, cara paling mudah?", "o": ["Satu tapak tangan (lelaki boleh sampai dua)", "Satu sudu teh", "Sepinggan penuh"], "a": 0, "why": "Guna tangan anda sebagai ukuran, setiap kali makan."}, {"q": "Sarapan mana lebih tinggi protein?", "o": ["Roti bakar kaya dan teh tarik", "Dua biji telur, roti dan teh O"], "a": 1, "why": "Telur beri protein. Roti kaya dan teh tarik kebanyakannya gula dan karbohidrat."}, {"q": "Mana yang BUKAN sebab protein membantu semasa turun lemak?", "o": ["Ia paling mengenyangkan", "Ia bantu kekalkan otot", "Ia tiada kalori"], "a": 2, "why": "Protein ada kalori. Tetapi ia mengenyangkan, jaga otot, dan badan guna lebih tenaga untuk hadamnya."}]},
+  {id:'ep05',m:1,t:'Karbohidrat & Nasi',v:'1235197789',d:195,act:['Scan pinggan nasi kau','acDo(\'scan\')'],
+   sum:"Nasi bukan musuh. Masalahnya saiz pinggan dan apa yang datang bersamanya.",
+   mis:"Nasi suku pinggan, 7 hari berturut-turut.",
+   quiz:[{"q": "Kenapa berat turun cepat minggu pertama bila buang nasi?", "o": ["Kebanyakannya air dan glikogen, bukan lemak", "Lemak terbakar lebih laju", "Metabolisme naik dua kali ganda"], "a": 0, "why": "Bila nasi kembali, berat itu pun kembali."}, {"q": "Cara mana lebih senang untuk turun lemak?", "o": ["Buang nasi terus, walaupun selalu teringin", "Nasi suku pinggan setiap hari, dengan lauk protein dan sayur"], "a": 1, "why": "Cara yang anda boleh buat setiap hari itulah yang menang. Konsisten lebih penting daripada sempurna."}, {"q": "Karbohidrat jenis mana yang paling perlu dikurangkan?", "o": ["Beras perang dan oat", "Karbohidrat bergula: air manis, kuih, biskut dan kek", "Buah-buahan"], "a": 1, "why": "Ia senang dimakan banyak tapi tak buat kenyang."}]},
+  {id:'ep06',m:1,t:'Lemak, Santan & Goreng',v:'1235197792',d:170,act:['Log makanan hari ini','acDo(\'log\')'],
+   sum:"Lemak diperlukan badan tetapi padat kalori. Cara masak paling memberi kesan.",
+   mis:"Satu hidangan tanpa goreng setiap hari, 7 hari berturut-turut.",
+   quiz:[{"q": "Satu gram lemak ada lebih kurang berapa kalori?", "o": ["4", "9", "20"], "a": 1, "why": "Karbohidrat dan protein lebih kurang 4 kalori setiap gram. Lemak lebih dua kali ganda."}, {"q": "Saiz yang sama. Mana lebih banyak lemak?", "o": ["Ayam goreng tepung", "Ayam bakar"], "a": 0, "why": "Ayam yang sama, tapi tepung dan minyak goreng menambah lemak dan kalori."}, {"q": "Untuk masakan bersantan, apa tipnya?", "o": ["Ambil lauk lebih, kuah kurang", "Tambah kuah supaya cepat kenyang", "Jangan makan langsung"], "a": 0, "why": "Kuah santan pekat menyumbang banyak lemak."}]},
+  {id:'ep07',m:2,t:'Mamak & Warung',v:'1235197794',d:145,act:['Scan makanan mamak kau','acDo(\'scan\')'],
+   sum:"Kalori di mamak datang dari minyak, gula dalam minuman dan saiz hidangan. Lepak boleh, pilih dengan bijak.",
+   mis:"Air tanpa gula setiap kali makan di luar, 7 hari berturut-turut.",
+   quiz:[{"q": "Tiga sumber utama kalori di mamak dan warung?", "o": ["Minyak, gula dalam minuman dan saiz hidangan", "Sayur, buah dan air", "Garam, cili dan rempah"], "a": 0, "why": "Mula dengan minuman: teh tarik, milo ais dan sirap bandung ada gula dan susu pekat."}, {"q": "Makan malam mana pilihan lebih baik?", "o": ["Maggi goreng dan milo ais", "Dua chapati, kuah dhal, ayam tandoori dan teh O kosong"], "a": 1, "why": "Ada protein, serat dari dhal dan minuman tanpa gula."}, {"q": "Nak roti canai juga. Apa tipnya?", "o": ["Tiga keping supaya kenyang", "Satu keping cukup, tambah telur untuk protein", "Celup dalam kuah kari yang banyak"], "a": 1, "why": "Tosai dan chapati biasanya kurang minyak daripada roti canai."}]},
+  {id:'ep08',m:2,t:'Kenduri, Raya & Buffet',v:'1235197795',d:155,act:['Scan pinggan kenduri','acDo(\'scan\')'],
+   sum:"Satu hari makan banyak tak musnahkan progres. Rancang, nikmati, dan kembali ke rutin esoknya.",
+   mis:"Satu pinggan tersusun di majlis seterusnya, tanpa tambah kali kedua.",
+   quiz:[{"q": "Apa nak buat sebelum ke kenduri?", "o": ["Pergi dalam keadaan sangat lapar", "Makan sesuatu yang ada protein dulu, seperti telur atau yogurt"], "a": 1, "why": "Datang terlalu lapar buat kita ambil pinggan penuh dan makan laju."}, {"q": "Di buffet, mana lebih senang dikawal?", "o": ["Ambil sikit-sikit semua lauk, lima kali pergi", "Satu pinggan tersusun dengan lauk kegemaran dan satu pencuci mulut kecil"], "a": 1, "why": "Anda masih nikmati makanan kegemaran tanpa makan berlebihan."}, {"q": "Esok selepas makan banyak di majlis, apa nak buat?", "o": ["Berlapar untuk tebus", "Terus kembali ke rutin biasa", "Puasa dua hari"], "a": 1, "why": "Protein, sayur, air kosong dan bergerak. Tak perlu tebus."}]},
+  {id:'ep09',m:2,t:'Minum Petang',v:'1235197808',d:151,act:['Scan barcode minuman','acDo(\'barcode\')'],
+   sum:"Lapar petang boleh dirancang. Pilih protein dan buah, kurangkan goreng dan gula.",
+   mis:"Minum petang dengan protein dan air tanpa gula, 7 hari berturut-turut.",
+   quiz:[{"q": "Kenapa selalu lapar waktu petang?", "o": ["Makan tengah hari kurang protein, atau terlalu lama tak makan", "Terlalu banyak minum air kosong", "Terlalu banyak makan sayur"], "a": 0, "why": "Sebab itu minum petang yang dirancang sebenarnya boleh membantu."}, {"q": "Snek mana buat kenyang sampai makan malam?", "o": ["Dua keping karipap dan teh tarik", "Yogurt dengan buah, atau telur rebus dan kopi O kosong"], "a": 1, "why": "Ada protein dan kurang gula. Karipap dan teh tarik cepat habis, cepat lapar."}, {"q": "Cara makan keropok yang disyorkan?", "o": ["Makan terus dari bungkusan besar", "Ambil satu genggam ke dalam pinggan dan simpan bungkusan"], "a": 1, "why": "Bungkusan besar memang senang dihabiskan tanpa sedar."}]},
+  {id:'ep10',m:2,t:'Baca Label Makanan',v:'1235197815',d:168,act:['Scan label makanan','acDo(\'label\')'],
+   sum:"Semak saiz hidangan, kalori dan gula di belakang bungkusan. Jangan percaya perkataan di depan.",
+   mis:"Semak label setiap kali membeli snek atau minuman, 7 hari berturut-turut.",
+   quiz:[{"q": "Label tulis 150 kcal setiap hidangan, dan satu bungkus ada 2 hidangan. Habis satu bungkus, berapa kalori?", "o": ["150 kcal", "300 kcal", "75 kcal"], "a": 1, "why": "Nombor kalori selalunya untuk satu hidangan, bukan satu bungkus."}, {"q": "Label tulis 20 g gula. Lebih kurang berapa sudu teh?", "o": ["2 sudu teh", "5 sudu teh", "10 sudu teh"], "a": 1, "why": "4 g gula lebih kurang satu sudu teh."}, {"q": "Gula di tempat pertama atau kedua dalam senarai ramuan bermaksud apa?", "o": ["Produk itu tinggi gula", "Produk itu rendah gula", "Tiada makna apa-apa"], "a": 0, "why": "Ramuan disusun daripada yang paling banyak."}]},
+  {id:'ep11',m:3,t:'Kurang Tidur',v:'1235197816',d:151,act:null,
+   sum:"Kurang tidur naikkan lapar, buat teringin manis dan kurang bergerak. Sasarkan sekurang-kurangnya 7 jam.",
+   mis:"Tidur dan bangun pada waktu yang sama, 7 hari berturut-turut.",
+   quiz:[{"q": "Apa berlaku pada hormon bila kurang tidur?", "o": ["Hormon lapar cenderung naik, hormon kenyang cenderung turun", "Kedua-duanya naik", "Tiada kesan"], "a": 0, "why": "Hasilnya anda rasa lebih lapar sepanjang hari."}, {"q": "Berapa jam tidur untuk kebanyakan orang dewasa?", "o": ["Sekurang-kurangnya 5 jam", "Sekurang-kurangnya 7 jam", "Tepat 10 jam"], "a": 1, "why": "Tidur cukup buat lapar lebih terkawal dan badan pulih lebih baik."}, {"q": "Mana yang BUKAN tip tidur yang disyorkan?", "o": ["Tidur dan bangun pada waktu yang sama", "Kurangkan skrin telefon sebelum tidur", "Minum kopi lewat petang"], "a": 2, "why": "Elak kafein lewat petang. Bilik gelap dan sejuk juga membantu."}]},
+  {id:'ep12',m:3,t:'Makan Ikut Emosi',v:'1235197821',d:159,act:['Tengok Journal makan kau','acDo(\'journal\')'],
+   sum:"Lapar emosi datang tiba-tiba dan mahukan makanan tertentu. Berhenti, tanya diri, tunggu 10 minit.",
+   mis:"Setiap kali teringin, tanya: lapar perut atau lapar perasaan? 7 hari berturut-turut.",
+   quiz:[{"q": "Mana ciri lapar emosi?", "o": ["Datang perlahan, dan apa-apa makanan pun boleh", "Datang tiba-tiba, dan mahukan makanan tertentu seperti manis atau goreng"], "a": 1, "why": "Lapar emosi juga tak hilang walaupun perut dah penuh."}, {"q": "Pukul 11 malam, baru habis kerja yang tertekan, tiba-tiba teringin coklat. Kemungkinan besar lapar jenis apa?", "o": ["Lapar fizikal", "Lapar emosi"], "a": 1, "why": "Datang tiba-tiba, nak makanan tertentu, dan dicetus oleh stres."}, {"q": "Kalau tetap makan sebab emosi, apa nak buat?", "o": ["Hukum diri dan langkau makan esok", "Jangan hukum diri. Makan perlahan, dan kembali ke rutin pada hidangan seterusnya"], "a": 1, "why": "Rasa bersalah hanya mengulang kitaran."}]},
+  {id:'ep13',m:3,t:'Lapar Atau Dahaga?',v:'1235197835',d:160,act:null,
+   sum:"Dahaga boleh terasa macam lapar. Air bantu tenaga dan latihan, dan menggantikan air manis.",
+   mis:"Habiskan satu botol air sebelum tengah hari, 7 hari berturut-turut.",
+   quiz:[{"q": "Tanda paling mudah anda cukup minum?", "o": ["Rasa sangat dahaga", "Air kencing berwarna kuning cair"], "a": 1, "why": "Kuning pekat tanda perlu minum lebih. Rasa dahaga datang agak lambat."}, {"q": "Tiba-tiba lapar di luar waktu makan. Apa cuba dulu?", "o": ["Makan kuih terus", "Minum segelas air dan tunggu 10 minit"], "a": 1, "why": "Kalau masih lapar, makan snek yang ada protein."}, {"q": "Berapa banyak air perlu diminum?", "o": ["Sama untuk semua orang", "Bergantung pada saiz badan, cuaca dan berapa banyak berpeluh"], "a": 1, "why": "Cuaca Malaysia panas, jadi selalunya kita perlukan lebih."}]},
+  {id:'ep14',m:3,t:'Plateau',v:'1235197844',d:188,act:['Tengok trend berat kau','acDo(\'progress\')'],
+   sum:"Turun lemak macam tangga, bukan gelongsor. Sahkan plateau dulu, kemudian buat satu perubahan kecil.",
+   mis:"Rekod semua yang anda makan dan minum selama 3 hari, termasuk snek dan air manis.",
+   quiz:[{"q": "Bila boleh dikatakan betul-betul plateau?", "o": ["Berat sama selama 3 hari", "Purata berat 7 hari dan pinggang tak berubah 2 hingga 3 minggu"], "a": 1, "why": "Kadang-kadang berat sama tapi pinggang mengecil."}, {"q": "Bila plateau, tindakan mana lebih bijak?", "o": ["Potong makan separuh", "Semak porsi dan langkah harian, kemudian buat satu perubahan kecil"], "a": 1, "why": "Perubahan kecil yang boleh dikekalkan lebih berkesan daripada langkah ekstrem."}, {"q": "Mana yang BUKAN sebab biasa plateau?", "o": ["Badan yang lebih kecil guna tenaga lebih sikit", "Porsi makin besar sikit demi sikit tanpa sedar", "Terlalu banyak minum air kosong"], "a": 2, "why": "Kurang tidur, stres dan haid juga boleh buat badan simpan air."}]},
+  {id:'ep15',m:4,t:'Makan Sekitar Latihan',v:'1235197846',d:170,act:['Pergi ke latihan hari ini','acDo(\'train\')'],
+   sum:"Sebelum latihan untuk tenaga, selepas latihan untuk pemulihan.",
+   mis:"Rancang makan sebelum dan selepas setiap sesi latihan minggu ini.",
+   quiz:[{"q": "Snek kecil sebelum latihan sebaiknya dimakan bila?", "o": ["30 hingga 60 minit sebelum", "5 minit sebelum", "5 jam sebelum"], "a": 0, "why": "Atau hidangan biasa 2 hingga 3 jam sebelum. Pilih karbohidrat ringan dengan sedikit protein."}, {"q": "Lepas kelas HIIT waktu malam, mana pilihan lebih baik?", "o": ["Tak makan langsung supaya bakar lebih lemak", "Nasi suku pinggan, ayam atau ikan, dan sayur"], "a": 1, "why": "Langkau makan selepas latihan boleh buat anda lebih lapar dan makan berlebihan nanti."}, {"q": "Untuk turun lemak, apa yang paling penting?", "o": ["Masa makan yang tepat", "Jumlah makanan sepanjang hari"], "a": 1, "why": "Waktu makan cuma membantu tenaga dan keselesaan."}]},
+  {id:'ep16',m:4,t:'Supplement',v:'1235197853',d:179,act:null,
+   sum:"Supplement ialah tambahan, bukan asas. Betulkan makan, tidur dan latihan dulu.",
+   mis:"Sebelum beli apa-apa supplement, tanya: protein, tidur dan air saya dah cukup?",
+   quiz:[{"q": "Apa itu whey protein?", "o": ["Pembakar lemak", "Protein dari susu, dalam bentuk serbuk", "Ubat kurus"], "a": 1, "why": "Berguna kalau susah cukupkan protein dari makanan, tapi bukan wajib."}, {"q": "Creatine membantu apa?", "o": ["Membakar lemak", "Prestasi latihan kekuatan dan intensiti tinggi"], "a": 1, "why": "Creatine bukan pembakar lemak. Berat mungkin naik sikit sebab otot simpan lebih air."}, {"q": "Sebelum beli supplement, apa yang perlu disemak?", "o": ["Ia berdaftar atau dinotifikasi dengan KKM", "Ia janji turun berat paling cepat", "Ia yang paling mahal"], "a": 0, "why": "Jauhi produk yang janji turun berat cepat. Tanya profesional kesihatan dulu, terutama jika ambil ubat."}]},
+  {id:'ep17',m:4,t:'IF & Ramadan',v:'1235197860',d:172,act:['Bina meal plan','acDo(\'mealplan\')'],
+   sum:"Intermittent fasting hanya satu cara capai defisit, bukan magik. Ramadan: berbuka bersederhana dan jangan tinggal sahur.",
+   mis:"Pilih cara makan yang anda boleh kekalkan.",
+   quiz:[{"q": "Kenapa intermittent fasting membantu sesetengah orang?", "o": ["Tempoh makan yang pendek biasanya kurangkan jumlah makan", "Ia bakar lemak secara magik", "Ia naikkan metabolisme dua kali ganda"], "a": 0, "why": "Untuk turun berat, hasilnya lebih kurang sama dengan kurangkan kalori cara biasa."}, {"q": "Kenapa ramai berat naik masa Ramadan walaupun berpuasa?", "o": ["Puasa lambatkan metabolisme", "Berbuka dan bersahur berlebihan, dengan banyak goreng dan air manis"], "a": 1, "why": "Bazar, kuih, air manis dan makan besar masa berbuka buat jumlah sehari lebih tinggi."}, {"q": "Mana tip Ramadan yang disyorkan?", "o": ["Tinggal sahur supaya kurang kalori", "Berbuka dengan kurma dan air kosong, solat dulu sebelum makan berat", "Beli banyak jenis kuih di bazar"], "a": 1, "why": "Susun pinggan suku-suku separuh, pilih satu kuih sahaja, dan jangan tinggal sahur."}]},
+  {id:'ep18',m:5,t:'Recap: Pelan 7 Hari',v:'1235197865',d:135,act:['Bina meal plan 7 hari kau','acDo(\'mealplan\')'],
+   sum:"Semua 17 episod dalam satu pelan 7 hari yang boleh dimulakan esok.",
+   mis:"Mula pelan 7 hari esok. Tersasar? Teruskan pada hidangan seterusnya.",
+   quiz:[{"q": "Hari 1 pelan 7 hari: apa yang dibuat?", "o": ["Susun pinggan: suku protein, suku nasi, separuh sayur dan buah", "Puasa sehari penuh", "Buang nasi sepenuhnya"], "a": 0, "why": "Setiap kali makan."}, {"q": "Minggu ini anda tersasar dua hari. Apa nak buat?", "o": ["Berhenti dan mula semula bulan depan", "Teruskan pada hidangan seterusnya"], "a": 1, "why": "Tak perlu sempurna. Konsisten mengalahkan sempurna."}, {"q": "Hari 7 pelan 7 hari: apa yang dibuat?", "o": ["Ukur pinggang, ambil gambar dan semak minggu anda", "Timbang tiga kali sehari", "Makan bebas sepanjang hari"], "a": 0, "why": "Berat bukan satu-satunya ukuran: tengok purata, pinggang, gambar dan kekuatan."}]},
 ];
 let acView=null, acQuiz=null;
 
@@ -7665,7 +7726,7 @@ function acRow(e){
     acFree(e)&&!contentOpen()?'<span class="ac-tag free">Percuma</span>':'';
   return '<div class="ac-ep'+(done?' done':'')+(ready?'':' soon')+'" onclick="acOpen(\''+e.id+'\')">'+
     '<span class="n">'+(done?glyph('check'):num)+'</span><div class="tx"><div class="t">'+hesc(e.t)+'</div>'+
-    '<div class="m">Episod '+num+(e.quiz.length?' · kuiz '+e.quiz.length+' soalan':'')+(done&&e.quiz.length&&acData().done[e.id].score!=null?' · '+acData().done[e.id].score+'/'+e.quiz.length:'')+'</div></div>'+
+    '<div class="m">Episod '+num+(e.d?' · '+acMins(e):'')+(e.quiz.length?' · kuiz '+e.quiz.length+' soalan':'')+(done&&e.quiz.length&&acData().done[e.id].score!=null?' · '+acData().done[e.id].score+'/'+e.quiz.length:'')+'</div></div>'+
     tag+'<span class="pdx-chev">›</span></div>';
 }
 function acOpen(id){
@@ -7682,8 +7743,9 @@ function acEpisode(e){
   let h='<div class="ac-video">'+(acReady(e)
     ?'<iframe src="'+acVimeo(e.v)+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="'+hesc(e.t)+'"></iframe>'
     :'<div class="ac-soon">'+glyph('play')+'<div>Video akan datang</div></div>')+'</div>';
-  h+='<div class="ac-ep-h"><div class="k">Modul '+(e.m+1)+' · Episod '+num+'</div><div class="t">'+hesc(e.t)+'</div>'+
+  h+='<div class="ac-ep-h"><div class="k">Modul '+(e.m+1)+' · Episod '+num+(e.d?' · '+acMins(e):'')+'</div><div class="t">'+hesc(e.t)+'</div>'+
      (e.sum?'<div class="s">'+hesc(e.sum)+'</div>':'')+'</div>';
+  if(e.mis) h+='<div class="ac-mis"><div class="k">'+glyph('target')+'Misi kau</div><div class="t">'+hesc(e.mis)+'</div></div>';
   if(e.act) h+='<div class="ac-act" onclick="'+e.act[1]+'"><span class="ic">'+glyph('bolt')+'</span><div class="tx"><div class="k">Buat sekarang</div>'+
      '<div class="t">'+hesc(e.act[0])+'</div></div><span class="pdx-chev">›</span></div>';
   h+=acQuizHTML(e);

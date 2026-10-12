@@ -2188,7 +2188,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .ac-tag{flex:none;font-size:11px;font-weight:700;padding:4px 8px;border-radius:99px;background:var(--surface2);color:var(--dim);}
 .ac-tag .gly{width:14px;height:14px;display:block;}
 .ac-tag.free{background:var(--accent-wash);color:var(--hitfat);}
-.ac-video{margin:-6px -18px 0;aspect-ratio:16/9;background:#0B0B0D;position:relative;max-width:calc(100% + 36px);}
+.ac-video{width:min(100%,calc(56vh * 9 / 16));aspect-ratio:9/16;margin:0 auto;border-radius:20px;overflow:hidden;background:#0B0B0D;position:relative;}
 .ac-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
 .ac-soon{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:rgba(255,255,255,.6);font-size:14px;font-weight:600;}
 .ac-soon .gly{width:34px;height:34px;fill:currentColor;stroke:none;}
@@ -2196,6 +2196,10 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .ac-ep-h .k{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--hitfat);}
 .ac-ep-h .t{font-size:26px;font-weight:800;letter-spacing:-.5px;color:var(--txt);margin-top:4px;text-wrap:balance;}
 .ac-ep-h .s{font-size:15px;color:var(--dim);margin-top:8px;line-height:1.5;}
+.ac-mis{padding:14px 16px;border-radius:16px;background:var(--surface);margin:0 0 10px;box-shadow:inset 3px 0 0 var(--hitfat);}
+.ac-mis .k{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--hitfat);}
+.ac-mis .k .gly{width:14px;height:14px;}
+.ac-mis .t{font-size:16px;font-weight:600;color:var(--txt);margin-top:4px;line-height:1.4;}
 .ac-act{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:var(--accent-wash);cursor:pointer;margin:4px 0 18px;}
 .ac-act .ic{flex:none;width:38px;height:38px;border-radius:12px;background:var(--hitfat);display:grid;place-items:center;color:#fff;}
 .ac-act .ic .gly{width:20px;height:20px;}

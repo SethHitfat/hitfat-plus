@@ -3580,13 +3580,20 @@ print("\n── NUTRITION ACADEMY ──");
   ok("18 episodes in six modules, in order", AC_EPS.length===18 && AC_EPS.every(function(e,i){ return e.id==='ep'+String(i+1).padStart(2,'0') && e.m>=0 && e.m<AC_MODS.length; }) &&
      AC_MODS.every(function(m,i){ return AC_EPS.some(function(e){ return e.m===i; }); }));
   ok("every 'Buat sekarang' goes somewhere real", AC_EPS.every(function(e){ return !e.act || /^acDo\('(weight|today|measure|journal|scan|log|barcode|label|progress|train|mealplan)'\)$/.test(e.act[1]); }));
-  ok("Home stays quiet until a video is up", acHomeCard()==='');
+  ok("every episode has its video, a summary and a mission", AC_EPS.every(function(e){ return /^\d{6,}$/.test(e.v) && e.d>60 && e.sum && e.mis; }) &&
+     new Set(AC_EPS.map(function(e){ return e.v; })).size===18);
+  ok("...and three questions, each with an answer that exists and a reason", AC_EPS.every(function(e){ return e.quiz.length===3 &&
+     e.quiz.every(function(q){ return q.q && q.o.length>=2 && q.a>=0 && q.a<q.o.length && q.why; }); }));
+  ok("the right answer is not always in the same place", new Set([].concat.apply([],AC_EPS.map(function(e){ return e.quiz.map(function(q){ return q.a; }); }))).size>=3);
+  var keepVs=AC_EPS.map(function(e){ return e.v; }); AC_EPS.forEach(function(e){ e.v=''; });
+  ok("Home stays quiet if no video is up", acHomeCard()==='');
+  AC_EPS.forEach(function(e,i){ e.v=keepVs[i]; });
   ok("an unlisted Vimeo video keeps its hash", acVimeo('123/abc').indexOf('/video/123?h=abc&')>0 && acVimeo('123').indexOf('/video/123?title')>0);
   var e1=AC_EPS[0], e5=AC_EPS[4], keepV=e1.v, keepQ=e1.quiz;
   MEMBERSHIP_LIVE=true; _guest();
   ok("the first two episodes are free, the rest are HITFAT+", !acLocked(AC_EPS[0]) && !acLocked(AC_EPS[1]) && acLocked(e5));
   _member('plus'); ok("...and open to a member", !acLocked(e5));
-  e1.v='111'; e1.quiz=[{q:'A?',o:['x','y'],a:0,why:'x'},{q:'B?',o:['x','y'],a:1,why:'y'},{q:'C?',o:['x','y'],a:1,why:'y'}];
+  e1.quiz=[{q:'A?',o:['x','y'],a:0,why:'x'},{q:'B?',o:['x','y'],a:1,why:'y'},{q:'C?',o:['x','y'],a:1,why:'y'}];
   ok("with a video up, Home invites you to start", acHomeCard().indexOf('Ep01 Baca Penimbang')>0);
   ok("pass mark is 2 of 3", acPassMark(e1)===2);
   acView='ep01'; acQuiz=null; acEpisode(e1);
