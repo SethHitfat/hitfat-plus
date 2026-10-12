@@ -1908,3 +1908,13 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .wl-hero-tx .t{font-size:30px;font-weight:800;letter-spacing:-.7px;line-height:1.08;}
 .wl-hero-tx .s{font-size:17px;color:var(--txt);margin-top:4px;}
 .wl-hero-tx .m{font-size:13px;color:var(--dim);margin-top:4px;}
+/* meal scan: the portion eaten, renaming a dish, how to take the photo */
+.scan-por{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 2px;font-size:14px;color:var(--dim);}
+.scan-por-b{display:flex;gap:4px;background:var(--surface2);border-radius:99px;padding:3px;}
+.scan-por-b button{border:none;background:none;color:var(--txt);font:inherit;font-size:13px;font-weight:600;padding:6px 11px;border-radius:99px;cursor:pointer;}
+.scan-por-b button.on{background:var(--txt);color:var(--bg);}
+.scan-fix{border:none;background:none;color:var(--lime);font:inherit;font-size:13px;font-weight:600;padding:4px 0;cursor:pointer;}
+.scan-rename{display:flex;gap:8px;}
+.scan-rename input{flex:1;min-width:0;font:inherit;font-size:17px;font-weight:700;padding:10px 12px;border-radius:12px;border:none;background:var(--surface2);color:var(--txt);}
+.scan-rename button{flex:none;border:none;border-radius:99px;padding:0 16px;font:inherit;font-weight:700;background:var(--txt);color:var(--bg);cursor:pointer;}
+.scan-tips{text-align:center;font-size:12px;color:var(--dim);margin-top:10px;}

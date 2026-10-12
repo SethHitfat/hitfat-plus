@@ -3382,5 +3382,22 @@ print("\n── 30-DAY WEIGHT LOSS ──");
   startWorkout=keepSW; _ent=keepEnt; HF.data.progress[WL30_ID]=keepProg||0; HF.data.wl30=keepWl||{}; HF.data.nutrition=keepNut; _wlPlan=null;
   wlTab='plan'; wlWeek=-1; wlMenuDay=-1; closeProduct();
 })();
+
+print("\n── MEAL SCAN: PORTION AND NAME ──");
+(function(){
+  var keep=_scanData;
+  _scanData={food_name:'Nasi lemak',food_name_bm:'',estimated_calories:600,protein_g:20,carbs_g:70,fat_g:25,confidence:'low',
+    breakdown:[{ingredient:'Rice',weight_g:200,calories:300}]};
+  _scanPortion=1; _scanName=''; _scanEditing=false;
+  renderScanResult(_scanData); var h=document.getElementById('scan-sheet').innerHTML;
+  ok("the scan says it is an estimate", h.indexOf('≈')>=0 && h.indexOf('20–30%')>0);
+  ok("a low-confidence scan asks for a check", h.indexOf('Not sure about this one')>0);
+  ok("the portion can be set", h.indexOf('setScanPortion(1.3)')>0 && h.indexOf('As shown')>0);
+  setScanPortion(1.3);
+  ok("a bigger portion scales what is logged", scanToMeal().kcal===780 && scanToMeal().p===26 && scanToMeal().comps[0].kcal===390);
+  _scanName='Nasi lemak ayam';
+  ok("a renamed dish is logged by its new name", scanToMeal().name==='Nasi lemak ayam');
+  _scanData=keep; _scanPortion=1; _scanName='';
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

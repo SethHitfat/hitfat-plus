@@ -21,11 +21,11 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
-/* Opus is the most capable option and what Seth asked for. Identifying
-   a plate of food is well within Haiku's range at a fraction of the
-   cost — if the bill matters more than the last few points of accuracy,
-   change this one line to 'claude-haiku-4-5-20251001' and redeploy. */
-const MODEL = 'claude-opus-5';
+/* Sonnet (12 Oct 2026): close to Opus at naming a plate and splitting it
+   into what is on it, at about half the cost. Opus was the first choice;
+   Haiku is cheaper again but slips on mixed rice plates and look-alike
+   local dishes. One line to change, then redeploy. */
+const MODEL = 'claude-sonnet-5-5';
 
 const FREE_SCANS_PER_MONTH = 3;
 const MAX_IMAGE_BYTES = 1_500_000;   // ~1.1MB of base64; the client sends ~60KB
