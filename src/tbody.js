@@ -3509,5 +3509,16 @@ print("\n── WORKOUTS RECORDED ON THE SERVER ──");
   sb=null; noThrow("offline, nothing is sent and nothing breaks", function(){ plSessionStart({meta:{}}); plSessionFinish({sid:'x'}); });
   sb=keepSb; HF.userId=keepUid; pl=null;
 })();
+
+print("\n── LEADERBOARD, EASY TO FIND ──");
+(function(){
+  var d={month:'2026-10',count:38,top:[{rank:1,name:'Siti',days:18},{rank:2,name:'Hafiz',days:16},{rank:3,name:'Aina',days:15},{rank:4,name:'Seth',days:12,me:true},{rank:5,name:'Member',days:11},{rank:6,name:'Ali',days:10}],me:{rank:4,days:12,hidden:false}};
+  ok("Home's card says your place", /#4 of 38 on the board/.test(monthRankLine(d)));
+  ok("...or invites you on", /train to join/.test(monthRankLine({count:5,top:[],me:null})) && /Be the first/.test(monthRankLine({count:0,top:[]})));
+  ok("...and stays quiet before the board answers", monthRankLine(null)==='');
+  var h=boardHTML('month',d,{limit:5});
+  ok("Progress shows the top five and a way to the full board", (h.match(/class="lb-row/g)||[]).length===5 && h.indexOf('openMonthly()')>0 && h.indexOf('setLbHide')<0);
+  ok("Progress has a leaderboard section", String(renderProgress).indexOf("lb-prog")>0);
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

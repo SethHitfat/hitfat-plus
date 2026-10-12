@@ -265,6 +265,10 @@ function renderProgress(){
        '<div style="font-size:26px;">'+glyph('trophy')+'</div><div class="l">'+k+'</div></div>').join('')+'</div>';
   }
 
+  /* where you stand this month, the top five and a way to the full board */
+  if(typeof thisChallenge==='function')
+    h+=fsec('Leaderboard',thisChallenge().n+' · days trained this month')+'<div id="lb-prog"></div>';
+
   /* programs in flight */
   const going=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>0&&progDone(p.id)<progDays(p));
   if(going.length) h+=fsec('Programs','In progress.')+going.map(frow).join('');
@@ -272,6 +276,7 @@ function renderProgress(){
   h+='<div class="pgacts"><button class="bigbtn" onclick="askMeasure()">Log Measurements</button>'+
      '<button class="bigbtn sec" onclick="openShare()">Share Progress Card</button></div>';
   $('prog-body').innerHTML=h;
+  if(typeof loadBoard==='function') loadBoard('month','lb-prog',{limit:5});
 }
 
 function fmtDelta(d,unit){ return (d>0?'+':'')+d+' '+unit; }

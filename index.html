@@ -4100,6 +4100,10 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .lb-foot button{border:none;background:none;color:var(--lime);font:inherit;font-weight:700;cursor:pointer;padding:4px 0;}
 .lb-note{font-size:12px;color:var(--dim);margin:6px 2px 0;}
 .lb-empty{background:var(--surface);border-radius:18px;padding:18px;text-align:center;color:var(--dim);font-size:14px;line-height:1.45;}
+/* the Home challenge card: your place on the board */
+.mrank{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;font-weight:700;color:var(--txt);}
+.mrank:empty{display:none;}
+.mrank .gly{width:15px;height:15px;color:#FFC21A;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -6879,14 +6883,28 @@ function earnedBadges(){
 /* ── the card that lives on Home ── */
 function monthlyCard(){
   const p=challengeProgress(), left=daysLeftInMonth();
-  return '<div class="mcard" onclick="openMonthly()">'+
+  const card='<div class="mcard" onclick="openMonthly()">'+
     '<div class="mtop"><span class="me">'+glyph(p.c.e)+'</span>'+
     '<span class="mtag">'+monthName()+' Challenge</span></div>'+
     '<div class="mn">'+p.c.n+'</div>'+
     '<div class="mbar"><i style="width:'+p.pct+'%"></i></div>'+
     '<div class="mrow"><span>'+p.done+' of '+p.target+' days</span>'+
     '<span>'+(p.complete?'Done ✓':(left+' day'+(left>1?'s':'')+' left'))+'</span></div>'+
+    '<div class="mrank" id="mcard-rank">'+monthRankLine(_lbCache.month&&_lbCache.month.v)+'</div>'+
     '</div>';
+  setTimeout(fillMonthRank,0);
+  return card;
+}
+/* your place on this month's board, in one line, once the board answers */
+function monthRankLine(d){
+  if(!d) return '';
+  if(d.me && !d.me.hidden) return glyph('trophy')+' #'+d.me.rank+' of '+d.count+' on the board';
+  if(d.count) return glyph('trophy')+' '+d.count+(d.count===1?' person':' people')+' on the board · train to join';
+  return glyph('trophy')+' Be the first on this month\'s board';
+}
+function fillMonthRank(){
+  if(!$('mcard-rank') || typeof fetchBoard!=='function') return;
+  fetchBoard('month').then(d=>{ const e=$('mcard-rank'); if(e) e.innerHTML=monthRankLine(d); }).catch(()=>{});
 }
 
 /* ── LEADERBOARDS ──
@@ -6910,28 +6928,32 @@ function lbRow(kind,row){
     '<span class="lb-n">'+hesc(row.name||'Member')+(row.me?' <em>You</em>':'')+'</span>'+
     '<span class="lb-v">'+lbValue(kind,row)+'</span></div>';
 }
-function boardHTML(kind,d){
+function boardHTML(kind,d,opt){
+  opt=opt||{};
   if(!d) return '<div class="lb-empty">Sign in to see where you stand.</div>';
   const hidden=!!(HF.data.prefs&&HF.data.prefs.lbHide);
   let h='';
   if(!d.top || !d.top.length)
     h+='<div class="lb-empty">'+(kind==='burn30'?'No one has started BURN30 yet. Day 1 puts you on the board.':'No one has trained this month yet. One session puts you on the board.')+'</div>';
   else {
-    h+='<div class="lb-list">'+d.top.map(r=>lbRow(kind,r)).join('');
-    if(d.me && !d.top.some(r=>r.me)) h+='<div class="lb-gap">···</div>'+lbRow(kind,{rank:d.me.rank,name:(HF.data.prefs&&HF.data.prefs.name||'').split(' ')[0]||'Member',days:d.me.days,day:d.me.day,me:true});
+    const top=opt.limit ? d.top.slice(0,opt.limit) : d.top;
+    h+='<div class="lb-list">'+top.map(r=>lbRow(kind,r)).join('');
+    if(d.me && !top.some(r=>r.me)) h+='<div class="lb-gap">···</div>'+lbRow(kind,{rank:d.me.rank,name:(HF.data.prefs&&HF.data.prefs.name||'').split(' ')[0]||'Member',days:d.me.days,day:d.me.day,me:true});
     h+='</div>';
   }
   h+='<div class="lb-foot"><span>'+(d.count||0)+(d.count===1?' person':' people')+' on the board'+
      (kind==='burn30'&&d.finished?' · '+d.finished+' finished':'')+'</span>'+
-     '<button onclick="setLbHide('+(!hidden)+')">'+(hidden?'Show me on the boards':'Hide me from the boards')+'</button></div>';
+     (opt.limit ? '<button onclick="openMonthly()">See the full board ›</button>'
+                : '<button onclick="setLbHide('+(!hidden)+')">'+(hidden?'Show me on the boards':'Hide me from the boards')+'</button>')+'</div>';
+  if(opt.limit) return h;
   if(!(HF.data.prefs&&HF.data.prefs.name)) h+='<div class="lb-note">You show up as "Member" until you add your first name in Me.</div>';
   if(hidden) h+='<div class="lb-note">You are hidden. Others do not see you; you still see your place.</div>';
   return h;
 }
-function loadBoard(kind,elId){
+function loadBoard(kind,elId,opt){
   const el=$(elId); if(!el) return;
   if(!_lbCache[kind]) el.innerHTML='<div class="lb-empty">Loading the board…</div>';
-  fetchBoard(kind).then(d=>{ const e=$(elId); if(e) e.innerHTML=boardHTML(kind,d); })
+  fetchBoard(kind).then(d=>{ const e=$(elId); if(e) e.innerHTML=boardHTML(kind,d,opt); })
     .catch(()=>{ const e=$(elId); if(e) e.innerHTML='<div class="lb-empty">The board could not load. Try again in a moment.</div>'; });
 }
 function setLbHide(v){
@@ -17356,6 +17378,10 @@ function renderProgress(){
        '<div style="font-size:26px;">'+glyph('trophy')+'</div><div class="l">'+k+'</div></div>').join('')+'</div>';
   }
 
+  /* where you stand this month, the top five and a way to the full board */
+  if(typeof thisChallenge==='function')
+    h+=fsec('Leaderboard',thisChallenge().n+' · days trained this month')+'<div id="lb-prog"></div>';
+
   /* programs in flight */
   const going=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>0&&progDone(p.id)<progDays(p));
   if(going.length) h+=fsec('Programs','In progress.')+going.map(frow).join('');
@@ -17363,6 +17389,7 @@ function renderProgress(){
   h+='<div class="pgacts"><button class="bigbtn" onclick="askMeasure()">Log Measurements</button>'+
      '<button class="bigbtn sec" onclick="openShare()">Share Progress Card</button></div>';
   $('prog-body').innerHTML=h;
+  if(typeof loadBoard==='function') loadBoard('month','lb-prog',{limit:5});
 }
 
 function fmtDelta(d,unit){ return (d>0?'+':'')+d+' '+unit; }
