@@ -3577,11 +3577,11 @@ print("\n── NUTRITION ACADEMY ──");
 (function(){
   var keepEnt=_ent, keepAc=HF.data.academy, keepSave=HF.save, keepLive=MEMBERSHIP_LIVE;
   HF.save=function(){}; HF.data.academy={};
-  ok("18 episodes in six modules, in order", AC_EPS.length===18 && AC_EPS.every(function(e,i){ return e.id==='ep'+String(i+1).padStart(2,'0') && e.m>=0 && e.m<AC_MODS.length; }) &&
+  ok("28 episodes in nine modules, in order", AC_EPS.length===28 && AC_EPS.every(function(e,i){ return e.id==='ep'+String(i+1).padStart(2,'0') && e.m>=0 && e.m<AC_MODS.length; }) &&
      AC_MODS.every(function(m,i){ return AC_EPS.some(function(e){ return e.m===i; }); }));
-  ok("every 'Buat sekarang' goes somewhere real", AC_EPS.every(function(e){ return !e.act || /^acDo\('(weight|today|measure|journal|scan|log|barcode|label|progress|train|mealplan)'\)$/.test(e.act[1]); }));
+  ok("every 'Buat sekarang' goes somewhere real", AC_EPS.every(function(e){ return !e.act || /^acDo\('(weight|today|measure|journal|scan|log|barcode|label|progress|train|mealplan|ep26)'\)$/.test(e.act[1]); }));
   ok("every episode has its video, a summary and a mission", AC_EPS.every(function(e){ return /^\d{6,}$/.test(e.v) && e.d>60 && e.sum && e.mis; }) &&
-     new Set(AC_EPS.map(function(e){ return e.v; })).size===18);
+     new Set(AC_EPS.map(function(e){ return e.v; })).size===28);
   ok("...and three questions, each with an answer that exists and a reason", AC_EPS.every(function(e){ return e.quiz.length===3 &&
      e.quiz.every(function(q){ return q.q && q.o.length>=2 && q.a>=0 && q.a<q.o.length && q.why; }); }));
   ok("the right answer is not always in the same place", new Set([].concat.apply([],AC_EPS.map(function(e){ return e.quiz.map(function(q){ return q.a; }); }))).size>=3);
@@ -3604,6 +3604,9 @@ print("\n── NUTRITION ACADEMY ──");
   acQuiz=null; acEpisode(e1); acAnswer(0,1); acAnswer(1,0); acAnswer(2,0);
   ok("...and a worse retry keeps the best score", acData().done.ep01.score===2);
   ok("the next episode is the first not done", acNext().id==='ep02' && acHomeCard().indexOf('Sambung')>0);
+  var gotW=null, keepSW2=startWorkout; startWorkout=function(e,m){ gotW=[e,m]; };
+  acDo('ep26'); startWorkout=keepSW2;
+  ok("Ep26's button plays its five filmed moves, three rounds", gotW && gotW[0].length===5 && gotW[0].every(function(e){ return e.v; }) && gotW[1].rounds===3);
   ok("Eat has a Learn segment", EAT_SEGS.some(function(s){ return s[0]==='learn'; }));
   e1.v=keepV; e1.quiz=keepQ; acView=null; acQuiz=null;
   _ent=keepEnt; HF.data.academy=keepAc||{}; HF.save=keepSave; MEMBERSHIP_LIVE=keepLive;

@@ -22,7 +22,10 @@ const AC_MODS=[
   ['Makan Di Luar','Mamak, kenduri, minum petang dan label'],
   ['Badan & Minda','Tidur, emosi, lapar dan plateau'],
   ['Lanjutan','Sekitar latihan, supplement, IF dan Ramadan'],
-  ['Pelan Kau','Semua sekali, dalam 7 hari']
+  ['Pelan Kau','Semua sekali, dalam 7 hari'],
+  ['Minda & Sistem','Bila tersasar, dan bila motivasi hilang'],
+  ['Nombor Kau','TDEE, audit makan, jam pintar dan air'],
+  ['Badan Yang Kekal','Crash diet, latihan, rehat, dan selepas 30 hari']
 ];
 /* m: module index. act: [label, onclick] or null. quiz: [{q, o:[...], a:index, why}] */
 function acMins(e){ return e.d?Math.max(1,Math.round(e.d/60))+' min':''; }
@@ -99,6 +102,46 @@ const AC_EPS=[
    sum:"Semua 17 episod dalam satu pelan 7 hari yang boleh dimulakan esok.",
    mis:"Mula pelan 7 hari esok. Tersasar? Teruskan pada hidangan seterusnya.",
    quiz:[{"q": "Hari 1 pelan 7 hari: apa yang dibuat?", "o": ["Susun pinggan: suku protein, suku nasi, separuh sayur dan buah", "Puasa sehari penuh", "Buang nasi sepenuhnya"], "a": 0, "why": "Setiap kali makan."}, {"q": "Minggu ini anda tersasar dua hari. Apa nak buat?", "o": ["Berhenti dan mula semula bulan depan", "Teruskan pada hidangan seterusnya"], "a": 1, "why": "Tak perlu sempurna. Konsisten mengalahkan sempurna."}, {"q": "Hari 7 pelan 7 hari: apa yang dibuat?", "o": ["Ukur pinggang, ambil gambar dan semak minggu anda", "Timbang tiga kali sehari", "Makan bebas sepanjang hari"], "a": 0, "why": "Berat bukan satu-satunya ukuran: tengok purata, pinggang, gambar dan kekuatan."}]},
+  {id:'ep19',m:6,t:"Peraturan 80/20",v:'1235268123',d:151,act:null,
+   sum:"Yang rosakkan diet bukan kek pertama, tapi apa yang kita buat selepasnya. Guna peraturan 80/20.",
+   mis:"Rancang empat waktu makan bebas minggu ini.",
+   quiz:[{"q": "Apa itu \"kesan alang-alang\"?", "o": ["Bila rasa dah langgar peraturan, terus lepas semua", "Makan perlahan supaya cepat kenyang", "Makan ikut jadual yang tetap"], "a": 0, "why": "Yang rosakkan diet bukan kek pertama, tapi apa yang dibuat selepas kek itu."}, {"q": "Siapa yang lebih stabil berat badannya?", "o": ["Diet ketat, langsung tak boleh makan manis", "Diet fleksibel, kurangkan tapi masih boleh"], "a": 1, "why": "Kajian Westerhof (1999): orang yang fleksibel lebih stabil beratnya dan kurang kerap makan berlebihan."}, {"q": "Makan 3 kali sehari ikut peraturan 80/20. Lebih kurang berapa kali seminggu boleh makan bebas?", "o": ["1 kali", "4 kali", "10 kali"], "a": 1, "why": "21 waktu makan seminggu, 20% lebih kurang empat. Bila dirancang awal, ia bukan gagal."}]},
+  {id:'ep20',m:6,t:"Sistem \"Kalau… Maka…\"",v:'1235268124',d:165,act:null,
+   sum:"Motivasi datang dan pergi. Sistem \"kalau… maka…\" dengan tindakan kecil jalan sendiri.",
+   mis:"Tulis tiga pelan \"kalau… maka…\": untuk kenduri, hari penat dan hari hujan.",
+   quiz:[{"q": "Menurut kajian di London (2010), purata masa untuk bina tabiat ialah?", "o": ["7 hari", "21 hari", "66 hari"], "a": 2, "why": "Ada yang 18 hari, ada yang lebih 200. Kalau minggu kedua masih susah, itu normal."}, {"q": "Mana yang lebih berkesan?", "o": ["Niat kuat: \"Saya akan makan sihat minggu ni\"", "\"Kalau ada kenduri, maka saya ambil lauk dan sayur dulu\""], "a": 1, "why": "Hampir 100 kajian (Gollwitzer dan Sheeran): pelan kalau-maka lebih berjaya daripada niat sahaja."}, {"q": "Tindakan dalam pelan kalau-maka sepatutnya bagaimana?", "o": ["Besar dan mencabar", "Kecil, supaya betul-betul berlaku"], "a": 1, "why": "Contoh: \"Kalau balik kerja penat, maka saya jalan 10 minit sahaja.\""}]},
+  {id:'ep21',m:7,t:"Kira TDEE Kau",v:'1235268126',d:185,act:['Tengok target kalori kau','acDo(\'today\')'],
+   sum:"BMR ialah tenaga asas, TDEE ialah jumlah tenaga sehari. Kira nombor kau sendiri, kemudian betulkan selepas 14 hari.",
+   mis:"Kira BMR dan TDEE kau, timbang setiap pagi, dan betulkan pada hari ke-14.",
+   quiz:[{"q": "Apa itu TDEE?", "o": ["Tenaga yang badan guna kalau baring sepanjang hari", "Jumlah tenaga sehari, termasuk bergerak", "Kalori dalam satu hidangan"], "a": 1, "why": "Tenaga ketika baring ialah BMR. TDEE ialah BMR darab tahap aktiviti."}, {"q": "Formula kata TDEE kau 2,400 kalori. Adakah ia tepat 100%?", "o": ["Ya, formula tepat", "Tak semestinya, ia anggaran"], "a": 1, "why": "Berat badan sebenar ialah \"penyata bank\". Selepas 14 hari timbang dan catat makan, TDEE sebenar boleh dikira."}, {"q": "Berat turun lebih laju daripada jangkaan. Apa maksudnya?", "o": ["TDEE kau lebih tinggi daripada anggaran", "TDEE kau lebih rendah daripada anggaran", "Formula itu rosak"], "a": 0, "why": "Kalau tak turun langsung pula, TDEE lebih rendah. Betulkan sikit dan teruskan."}]},
+  {id:'ep22',m:7,t:"Audit Makan 3 Hari",v:'1235268125',d:178,act:['Mula catat makan hari ini','acDo(\'log\')'],
+   sum:"Kita semua cenderung kira rendah apa yang kita makan. Audit 3 hari tunjuk bil yang sebenar.",
+   mis:"Catat semua makan dan minum selama 3 hari, tanpa ubah apa-apa.",
+   quiz:[{"q": "Kajian tahun 1992: orang yang yakin makan sikit tapi berat tak turun, sebenarnya?", "o": ["Makan tepat seperti yang dilaporkan", "Melaporkan makan hampir separuh kurang daripada sebenar", "Sengaja menipu"], "a": 1, "why": "Mereka tak menipu. Otak kita memang lemah mengira makanan."}, {"q": "Mana yang BUKAN \"kalori senyap\"?", "o": ["Air manis", "Kuah dan minyak", "Telur rebus"], "a": 2, "why": "Tiga kalori senyap: air manis, kuah dan minyak, dan makan sambil buat benda lain."}, {"q": "Semasa audit 3 hari, apa yang perlu dibuat?", "o": ["Terus kurangkan makan", "Jangan ubah apa-apa dulu, catat sahaja"], "a": 1, "why": "Kita nak tengok bil yang sebenar, kemudian bandingkan dengan TDEE."}]},
+  {id:'ep23',m:7,t:"Jam Pintar & NEAT",v:'1235268151',d:170,act:null,
+   sum:"Nombor kalori jam pintar boleh tersasar jauh. Langkah harian (NEAT) ialah pembakaran yang paling stabil.",
+   mis:"Purata langkah harian kau tambah 4,000, lima hari minggu ini.",
+   quiz:[{"q": "Kajian Stanford (2017): kalori pada jam pintar yang paling baik tersasar lebih kurang berapa?", "o": ["2%", "27%", "Tepat"], "a": 1, "why": "Degupan jantung agak tepat, tetapi kalori tidak. Yang paling teruk tersasar sampai 93%."}, {"q": "Untuk tambah pembakaran yang stabil setiap hari, mana lebih boleh dipercayai?", "o": ["Makan balik ikut kalori jam pintar", "Tambah langkah harian"], "a": 1, "why": "NEAT ialah pergerakan harian seperti jalan, naik tangga dan kerja rumah."}, {"q": "Purata langkah kau 5,000 sehari. Apa sasaran baru?", "o": ["6,000", "9,000", "20,000"], "a": 1, "why": "Tambah 4,000. Jalan 10 minit lepas setiap kali makan sudah lebih kurang 3,000 langkah."}]},
+  {id:'ep24',m:7,t:"Glikogen & Air",v:'1235268155',d:176,act:null,
+   sum:"Glikogen pegang air. Air turun cepat dan naik cepat; lemak turun perlahan tapi kekal lama.",
+   mis:"Cari satu iklan \"kurus cepat\" dan uji dengan tiga soalan.",
+   quiz:[{"q": "Satu gram glikogen pegang lebih kurang berapa gram air?", "o": ["1 gram", "3 gram", "10 gram"], "a": 1, "why": "Sebab itu minggu pertama diet rendah karbo, kebanyakan yang turun ialah air."}, {"q": "Iklan: turun 7 kg seminggu dengan teh kurus. Apa yang kebanyakannya turun?", "o": ["Lemak", "Air dan isi usus"], "a": 1, "why": "Teh kurus selalunya julap. Bila berhenti, berat naik balik."}, {"q": "Dakwaan turun berat dalam masa kurang dua minggu biasanya?", "o": ["Kebanyakannya air", "Kebanyakannya lemak"], "a": 0, "why": "Tanya juga: adakah ia potong karbo atau guna julap, dan apa jadi sebulan selepas berhenti?"}]},
+  {id:'ep25',m:8,t:"Bahaya Crash Diet",v:'1235268156',d:182,act:['Semak target kalori kau','acDo(\'today\')'],
+   sum:"Defisit terlalu besar membawa lapar melampau, hilang otot dan berat naik balik. Jangan makan di bawah BMR.",
+   mis:"Semak target kalori kau hari ini. Pastikan ia tak di bawah BMR.",
+   quiz:[{"q": "Kajian Minnesota (1944): selepas enam bulan makan separuh keperluan, apa jadi bila program tamat?", "o": ["Berat kekal rendah", "Ramai makan berlebihan, dan berat naik melebihi asal"], "a": 1, "why": "Mereka juga jadi obses dengan makanan, murung dan cepat marah."}, {"q": "Mana yang lebih banyak menghilangkan otot?", "o": ["Defisit sederhana, protein tinggi dan latihan bebanan", "Makan sangat sedikit, di bawah BMR"], "a": 1, "why": "Bila defisit terlalu besar, badan guna otot juga, bukan lemak sahaja."}, {"q": "Mana satu tanda pelan kau dah jadi crash diet?", "o": ["Makan di bawah BMR", "Ada protein dalam setiap hidangan", "Defisit 400 kalori sehari"], "a": 0, "why": "Tanda lain: makan kurang separuh TDEE, atau bawah 1,000 hingga 1,200 kalori tanpa pengawasan doktor."}]},
+  {id:'ep26',m:8,t:"Latihan Rumah 25 Minit",v:'1235268157',d:169,act:['Mula sesi 25 minit ini','acDo(\'ep26\')'],
+   sum:"Latihan bebanan semasa diet jaga otot. Lima gerakan, tanpa alat, tiga kali seminggu.",
+   mis:"Tiga sesi minggu ini, dan catat ulangan kau.",
+   quiz:[{"q": "Kenapa latihan bebanan penting semasa diet?", "o": ["Lebih banyak otot dapat dikekalkan", "Ia buang lebih banyak air", "Ia tak penting semasa diet"], "a": 0, "why": "Otot itu aset. Masa berjimat, jangan jual aset."}, {"q": "Minggu depan, macam mana nak pastikan badan terus kekalkan otot?", "o": ["Buat sesi yang sama tepat setiap minggu", "Tambah sikit setiap minggu"], "a": 1, "why": "Progressive overload: tambah satu ulangan, satu pusingan, atau kurangkan rehat 10 saat."}, {"q": "Bila perlu berhenti latihan?", "o": ["Sengal otot ringan pada esok hari", "Sakit tajam pada sendi, pening atau sesak dada"], "a": 1, "why": "Sengal otot ringan pada esok hari itu normal."}]},
+  {id:'ep27',m:8,t:"Rehat",v:'1235268181',d:172,act:null,
+   sum:"Otot jadi kuat masa pulih, bukan masa latihan. Seminggu: tiga latihan, dua hari aktif ringan, dua hari rehat.",
+   mis:"Tandakan dua hari rehat dalam kalendar sebelum minggu bermula.",
+   quiz:[{"q": "Bila otot jadi lebih kuat?", "o": ["Masa latihan", "Masa pulih selepas latihan"], "a": 1, "why": "Macam kereta: enjin yang tak pernah diservis lambat laun rosak."}, {"q": "Mana satu tanda badan perlukan rehat tambahan?", "o": ["Otot rasa sengal sikit esok selepas latihan", "Prestasi makin turun dan tidur terganggu walaupun penat"], "a": 1, "why": "Tanda lain: sakit sendi, lesu dan cepat marah. Dua tanda atau lebih, ambil sehari dua rehat."}, {"q": "Apa maksud hari rehat?", "o": ["Duduk sepanjang hari", "Langkah harian tetap jalan, dengan regangan ringan dan tidur awal"], "a": 1, "why": "Rehat bukan duduk sepanjang hari."}]},
+  {id:'ep28',m:8,t:"Kekal Selepas 30 Hari",v:'1235268191',d:166,act:['Tengok progress kau','acDo(\'progress\')'],
+   sum:"Yang kekal: timbang kerap, aktif hampir setiap hari, makan konsisten. Hari ke-30 bukan penamat.",
+   mis:"Pilih laluan 30 hari seterusnya, dan tulis matlamat kau.",
+   quiz:[{"q": "Apa tabiat orang yang berjaya kekalkan berat (National Weight Control Registry)?", "o": ["Cuba diet pelik yang berbeza setiap bulan", "Timbang kerap, aktif hampir setiap hari, makan konsisten termasuk hujung minggu"], "a": 1, "why": "Tiada diet pelik. Tabiat biasa, setiap hari."}, {"q": "Hari ke-30: berat turun 2 kg (bukan 4), tapi seluar longgar dan kau lebih kuat. Ini?", "o": ["Gagal", "Berjaya"], "a": 1, "why": "Nilai dengan purata 7 hari, lilitan pinggang dan prestasi, bukan satu nombor."}, {"q": "Laluan \"kekalkan\" bermaksud?", "o": ["Naikkan kalori ke paras maintenance, teruskan protein, latihan dan langkah", "Berhenti semua tabiat", "Potong kalori lagi"], "a": 0, "why": "Laluan lain: teruskan turun (kira semula TDEE) atau prestasi (contohnya masa HYROX)."}]},
 ];
 let acView=null, acQuiz=null;
 
@@ -246,9 +289,18 @@ function acDo(k){
   if(k==='mealplan') return openMealPlan();
   if(k==='progress') return switchTab('progress');
   if(k==='train')   return switchTab('train');
+  if(k==='ep26')    return acHomeWorkout();
   /* the Eat segments */
   switchTab('eat');
   if(HF.data.nutrition && HF.data.nutrition.cal) setEatSeg(k);
+}
+
+/* Ep26's session: five moves, three rounds, as the video sets it out
+   (the video's burpee broad jump is played as a burpee, the closest filmed) */
+const AC_EP26=[['Bodyweight Squat',45],['Alternating Lunges',50],['Push Up',40],['Burpee',30],['Wall Sit',30]];
+function acHomeWorkout(){
+  const exs=AC_EP26.map(x=>{ const e=DB.find(d=>d.n===x[0]&&d.v); return e?Object.assign({},e,{dur:x[1]}):null; }).filter(Boolean);
+  startWorkout(exs,{rounds:3, key:'ac-ep26', name:'Latihan Rumah 25 Minit'});
 }
 
 /* ── Eat's Learn segment: the same course page, in place ── */
