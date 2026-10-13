@@ -3623,7 +3623,7 @@ print("\n── LANGUAGE: BM / EN ──");
   var keep=LANG; LANG='en'; ok("English stays English", tr('Home')==='Home'); LANG='ms'; ok("...and BM when chosen", tr('Home')==='Utama'); LANG=keep;
   var bad=Object.keys(I18N_MS).filter(function(k){ return (k.match(/#/g)||[]).length!==((I18N_MS[k].match(/#/g)||[]).length) && !/\{\d\}/.test(I18N_MS[k]); });
   ok("every template keeps its numbers", bad.length===0, bad.slice(0,5).join(' | '));
-  ok("Settings has the language switch", String(renderMe).indexOf("setLang(")>0);
+  ok("the switch is hidden while BM waits", LANG_LIVE===false && String(renderMe).indexOf("LANG_LIVE?")>0);
 })();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

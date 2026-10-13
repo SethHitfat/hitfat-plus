@@ -401,8 +401,12 @@ const I18N_RX=[
   [/^Up first: (.+)$/, 'Mula dengan: $1']
 ];
 
+/* BM is hidden for now (14 Oct 2026, the owner: "English dulu"): no switch
+   in Settings and everyone in English, whatever they chose before. Every
+   word below is kept. Set this true to bring the switch back. */
+var LANG_LIVE=false;
 let LANG='en';
-try{ LANG=localStorage.getItem('hitfat_lang')==='ms'?'ms':'en'; }catch(e){}
+try{ LANG=(LANG_LIVE && localStorage.getItem('hitfat_lang')==='ms')?'ms':'en'; }catch(e){}
 
 const _i18nT=[];   /* templates, compiled once */
 (function(){
