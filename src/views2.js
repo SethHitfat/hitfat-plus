@@ -604,6 +604,10 @@ function renderMe(){
     '<div class="obseg meseg">'+
     '<button class="'+(currentTheme()==='light'?'on':'')+'" onclick="setThemeLight()">Light</button>'+
     '<button class="'+(currentTheme()==='dark'?'on':'')+'" onclick="setThemeDark()">Dark</button></div></div>'+
+    '<div class="grow grow-ctl">'+ic('doc')+'<div class="grow-l">Language</div>'+
+    '<div class="obseg meseg" data-noi18n>'+
+    '<button class="'+(LANG==='ms'?'on':'')+'" onclick="setLang(\'ms\')">BM</button>'+
+    '<button class="'+(LANG==='ms'?'':'on')+'" onclick="setLang(\'en\')">EN</button></div></div>'+
     '</div>';
 
   h+=fsec('About','')+'<div class="glist">'+
