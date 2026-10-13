@@ -4226,8 +4226,18 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .ac-tag{flex:none;font-size:11px;font-weight:700;padding:4px 8px;border-radius:99px;background:var(--surface2);color:var(--dim);}
 .ac-tag .gly{width:14px;height:14px;display:block;}
 .ac-tag.free{background:var(--accent-wash);color:var(--hitfat);}
-.ac-video{width:min(100%,calc(56vh * 9 / 16));aspect-ratio:9/16;margin:0 auto;border-radius:20px;overflow:hidden;background:#0B0B0D;position:relative;}
-.ac-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+/* The 9:16 episode cropped to its content: 5.5% off the top (empty space
+   above the heading) and 10% off the bottom (below the subtitles, where
+   Vimeo's control bar is). What shows is 84.5% of the height, so the
+   frame is 9:13.52 and the player inside it 1/0.845 = 118.34% tall,
+   lifted 5.5/84.5 = 6.51%. */
+.ac-video{width:min(100%,calc(50vh * 9 / 13.52));aspect-ratio:9/13.52;margin:0 auto;border-radius:20px;overflow:hidden;background:#F2F2F3;position:relative;}
+.ac-video iframe{position:absolute;left:0;top:-6.51%;width:100%;height:118.34%;border:0;}
+.ac-ctl{width:min(100%,calc(50vh * 9 / 13.52));margin:10px auto 0;display:flex;align-items:center;gap:10px;}
+.ac-bar{flex:1;height:22px;display:flex;align-items:center;cursor:pointer;position:relative;}
+.ac-bar::before{content:'';position:absolute;left:0;right:0;height:4px;border-radius:2px;background:var(--surface2);}
+.ac-bar i{position:relative;display:block;height:4px;border-radius:2px;background:var(--hitfat);width:0;transition:width .25s linear;}
+#ac-time{flex:none;font-size:12px;font-weight:600;color:var(--dim);font-variant-numeric:tabular-nums;}
 .ac-soon{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:rgba(255,255,255,.6);font-size:14px;font-weight:600;}
 .ac-soon .gly{width:34px;height:34px;fill:currentColor;stroke:none;}
 .ac-ep-h{padding:16px 0 12px;}
@@ -7724,8 +7734,44 @@ function acCount(){ return AC_EPS.filter(acDone).length; }
 function acNext(){ return AC_EPS.find(e=>!acDone(e))||null; }
 function acVimeo(v){
   const p=String(v).split('/');
-  return 'https://player.vimeo.com/video/'+p[0]+'?'+(p[1]?'h='+p[1]+'&':'')+'title=0&byline=0&portrait=0&dnt=1&playsinline=1';
+  /* texttrack=false: the subtitles are burned into the videos, so Vimeo's
+     own captions would show them twice */
+  return 'https://player.vimeo.com/video/'+p[0]+'?'+(p[1]?'h='+p[1]+'&':'')+'title=0&byline=0&portrait=0&dnt=1&playsinline=1&texttrack=false';
 }
+
+/* The episodes are filmed 9:16 with empty space above the "HITFAT
+   NUTRITION" heading and below the subtitles, where Vimeo's control bar
+   sits. The frame crops both (see .ac-video in design.css), so the bar is
+   replaced by a thin one of our own: progress read from the player's
+   timeupdate messages, a tap on it seeks. Play and pause stay a tap on the
+   video itself, inside Vimeo's frame, which is what iPhone allows. */
+let _acDur=0;
+function acPlayer(){ const f=document.querySelector('#ac-body .ac-video iframe'); return f&&f.contentWindow; }
+function acPost(method,value){
+  const w=acPlayer(); if(!w) return;
+  try{ w.postMessage(JSON.stringify(value===undefined?{method}:{method,value}),'https://player.vimeo.com'); }catch(e){}
+}
+function acFmt(s){ s=Math.max(0,Math.round(s||0)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function acOnMessage(ev){
+  if(ev.origin!=='https://player.vimeo.com') return;
+  let d; try{ d=typeof ev.data==='string'?JSON.parse(ev.data):ev.data; }catch(e){ return; }
+  if(!d) return;
+  if(d.event==='ready'){ ['timeupdate','play','pause','ended'].forEach(x=>acPost('addEventListener',x)); return; }
+  const bar=$('ac-bar'); if(!bar) return;
+  if(d.event==='timeupdate' && d.data){
+    _acDur=d.data.duration||_acDur;
+    const i=bar.querySelector('i'); if(i) i.style.width=(Math.min(1,d.data.percent||0)*100).toFixed(2)+'%';
+    const t=$('ac-time'); if(t) t.textContent=acFmt(d.data.seconds)+' / '+acFmt(_acDur);
+  }
+  if(d.event==='play') bar.classList.add('on');
+  if(d.event==='pause'||d.event==='ended') bar.classList.remove('on');
+}
+function acSeek(ev){
+  const bar=$('ac-bar'); if(!bar||!_acDur) return;
+  const r=bar.getBoundingClientRect(), x=((ev.touches&&ev.touches[0])||ev).clientX;
+  acPost('setCurrentTime', Math.max(0,Math.min(1,(x-r.left)/r.width))*_acDur);
+}
+if(typeof window!=='undefined' && window.addEventListener) window.addEventListener('message',acOnMessage);
 
 /* ── the course page ── */
 function openAcademy(id){
@@ -7783,9 +7829,12 @@ function acOpen(id){
 function acEpisode(e){
   const a=acData(); a.last=e.id; HF.save();
   const num=String(acNum(e)).padStart(2,'0'), done=acDone(e);
+  _acDur=e.d||0;
   let h='<div class="ac-video">'+(acReady(e)
     ?'<iframe src="'+acVimeo(e.v)+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="'+hesc(e.t)+'"></iframe>'
     :'<div class="ac-soon">'+glyph('play')+'<div>Video akan datang</div></div>')+'</div>';
+  if(acReady(e)) h+='<div class="ac-ctl"><div class="ac-bar" id="ac-bar" onclick="acSeek(event)"><i></i></div>'+
+    '<span id="ac-time">0:00 / '+acFmt(e.d)+'</span></div>';
   h+='<div class="ac-ep-h"><div class="k">Modul '+(e.m+1)+' · Episod '+num+(e.d?' · '+acMins(e):'')+'</div><div class="t">'+hesc(e.t)+'</div>'+
      (e.sum?'<div class="s">'+hesc(e.sum)+'</div>':'')+'</div>';
   if(e.mis) h+='<div class="ac-mis"><div class="k">'+glyph('target')+'Misi kau</div><div class="t">'+hesc(e.mis)+'</div></div>';

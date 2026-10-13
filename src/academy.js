@@ -160,8 +160,44 @@ function acCount(){ return AC_EPS.filter(acDone).length; }
 function acNext(){ return AC_EPS.find(e=>!acDone(e))||null; }
 function acVimeo(v){
   const p=String(v).split('/');
-  return 'https://player.vimeo.com/video/'+p[0]+'?'+(p[1]?'h='+p[1]+'&':'')+'title=0&byline=0&portrait=0&dnt=1&playsinline=1';
+  /* texttrack=false: the subtitles are burned into the videos, so Vimeo's
+     own captions would show them twice */
+  return 'https://player.vimeo.com/video/'+p[0]+'?'+(p[1]?'h='+p[1]+'&':'')+'title=0&byline=0&portrait=0&dnt=1&playsinline=1&texttrack=false';
 }
+
+/* The episodes are filmed 9:16 with empty space above the "HITFAT
+   NUTRITION" heading and below the subtitles, where Vimeo's control bar
+   sits. The frame crops both (see .ac-video in design.css), so the bar is
+   replaced by a thin one of our own: progress read from the player's
+   timeupdate messages, a tap on it seeks. Play and pause stay a tap on the
+   video itself, inside Vimeo's frame, which is what iPhone allows. */
+let _acDur=0;
+function acPlayer(){ const f=document.querySelector('#ac-body .ac-video iframe'); return f&&f.contentWindow; }
+function acPost(method,value){
+  const w=acPlayer(); if(!w) return;
+  try{ w.postMessage(JSON.stringify(value===undefined?{method}:{method,value}),'https://player.vimeo.com'); }catch(e){}
+}
+function acFmt(s){ s=Math.max(0,Math.round(s||0)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function acOnMessage(ev){
+  if(ev.origin!=='https://player.vimeo.com') return;
+  let d; try{ d=typeof ev.data==='string'?JSON.parse(ev.data):ev.data; }catch(e){ return; }
+  if(!d) return;
+  if(d.event==='ready'){ ['timeupdate','play','pause','ended'].forEach(x=>acPost('addEventListener',x)); return; }
+  const bar=$('ac-bar'); if(!bar) return;
+  if(d.event==='timeupdate' && d.data){
+    _acDur=d.data.duration||_acDur;
+    const i=bar.querySelector('i'); if(i) i.style.width=(Math.min(1,d.data.percent||0)*100).toFixed(2)+'%';
+    const t=$('ac-time'); if(t) t.textContent=acFmt(d.data.seconds)+' / '+acFmt(_acDur);
+  }
+  if(d.event==='play') bar.classList.add('on');
+  if(d.event==='pause'||d.event==='ended') bar.classList.remove('on');
+}
+function acSeek(ev){
+  const bar=$('ac-bar'); if(!bar||!_acDur) return;
+  const r=bar.getBoundingClientRect(), x=((ev.touches&&ev.touches[0])||ev).clientX;
+  acPost('setCurrentTime', Math.max(0,Math.min(1,(x-r.left)/r.width))*_acDur);
+}
+if(typeof window!=='undefined' && window.addEventListener) window.addEventListener('message',acOnMessage);
 
 /* ── the course page ── */
 function openAcademy(id){
@@ -219,9 +255,12 @@ function acOpen(id){
 function acEpisode(e){
   const a=acData(); a.last=e.id; HF.save();
   const num=String(acNum(e)).padStart(2,'0'), done=acDone(e);
+  _acDur=e.d||0;
   let h='<div class="ac-video">'+(acReady(e)
     ?'<iframe src="'+acVimeo(e.v)+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="'+hesc(e.t)+'"></iframe>'
     :'<div class="ac-soon">'+glyph('play')+'<div>Video akan datang</div></div>')+'</div>';
+  if(acReady(e)) h+='<div class="ac-ctl"><div class="ac-bar" id="ac-bar" onclick="acSeek(event)"><i></i></div>'+
+    '<span id="ac-time">0:00 / '+acFmt(e.d)+'</span></div>';
   h+='<div class="ac-ep-h"><div class="k">Modul '+(e.m+1)+' · Episod '+num+(e.d?' · '+acMins(e):'')+'</div><div class="t">'+hesc(e.t)+'</div>'+
      (e.sum?'<div class="s">'+hesc(e.sum)+'</div>':'')+'</div>';
   if(e.mis) h+='<div class="ac-mis"><div class="k">'+glyph('target')+'Misi kau</div><div class="t">'+hesc(e.mis)+'</div></div>';
