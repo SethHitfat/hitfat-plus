@@ -52,7 +52,7 @@ var D6=(function(){
     c1:'#3a1a12', c2:'#0b0b0d', ac:D6_ACCENT, icon:'🍚', weeks:weeks, hub:'d6', oneTime:true, price:D6_PRICE, wk:6,
     desc:D6_SUB+' 42 hari bersama '+D6_DATA.program.coach+': satu kad ilmu dan satu misi setiap hari, bajet kalori anda sendiri, '+
          'nasi ikut senduk, dan senaman tanpa lompat yang pilihan.'};
-  PROGRAMS.push(p);
+  /* not pushed into PROGRAMS: a course lives in Eat → Belajar, not in Train */
   return p;
 })();
 
@@ -105,86 +105,133 @@ function d6SaveProfile(){
   if(!p.wt||!p.ht||!p.age) return toast('Isi berat, tinggi dan umur');
   if(!(HF.data.weight||[]).length) logWeight(p.wt);
   d.bud=d6Calc(p,d6Weight()); d.bud.day=d6Next()+1;
-  HF.save(); toast('Bajet anda sudah dikira'); renderD6();
+  HF.save(); toast('Bajet anda sudah dikira'); d6Seg='lessons'; renderD6(); $('screen').scrollTop=0;
 }
-function d6Set(k,v){ var p=d6Data().p; p[k]=v; HF.save(); renderD6(); }
+function d6Set(k,v){ var p=d6Data().p; p[k]=v; HF.save(); d6Re(); }
 /* the recalculation days: the budget again, from the newest weight */
 function d6Recalc(gi){
   var d=d6Data(), wt=d6Weight();
   if(!d.p.sex) return toast('Lengkapkan profil di Mula Di Sini dahulu');
   d.bud=d6Calc(d.p,wt); d.bud.day=gi+1; d.rc[gi+1]=true; d.p.wt=wt;
-  HF.save(); toast('Bajet dikira semula: '+d.bud.cal.toLocaleString()+' kcal'); d6OpenDay(gi);
+  HF.save(); toast('Bajet dikira semula: '+d.bud.cal.toLocaleString()+' kcal'); d6Refresh();
 }
 
-/* ── the program's home ── */
-var d6Tab='plan', d6Week=-1;
-function d6SetTab(t){ d6Tab=t; renderD6(); try{ var s=$('screen'), a=$('d6-tabs'); if(s&&a&&a.offsetTop) s.scrollTop=Math.max(0,a.offsetTop-70); }catch(e){} }
-function d6Poster(cls){
-  return '<div class="'+cls+' d6-type"><img class="lb-mark" src="/img/brand/hf-mark.png" alt="HITFAT">'+
-    '<div class="lb-name">'+hesc(D6_NAME)+'</div><div class="lb-sub d6-sub">NASI KEKAL · LEMAK HILANG</div></div>';
+/* ── the course ── */
+var d6View=null, d6Seg='lessons', d6Sheet='';
+function openD6(gi){
+  hidePanels(); $('d6c').style.display='block';
+  d6View=(typeof gi==='number')?gi:null; renderD6(); $('screen').scrollTop=0;
 }
-function d6Hero(kicker,sub,meta,pill){
-  return pdxBar(kicker,pill)+d6Poster('wl-hero lb-type'+(kicker==='day'?' day':''))+
-    '<div class="wl-hero-tx"><div class="s">'+sub+'</div>'+(meta?'<div class="m">'+meta+'</div>':'')+'</div>';
-}
+function d6OpenDay(gi){ openD6(gi); }
+function d6Back(){ if(d6View!==null){ d6View=null; renderD6(); $('screen').scrollTop=0; } else switchTab(curTab||'home'); }
+function d6SetSeg(x){ d6Seg=x; renderD6(); }
+function d6Re(){ var y=$('screen').scrollTop; renderD6(); $('screen').scrollTop=y; }
 function renderD6(){
   lbLang(true);
-  var owned=d6Owned(), done=d6Done(), nx=d6Next(), pct=Math.round(done/D6_TOT*100);
-  if(d6Week<0) d6Week=d6Day(nx).week-1;
-  var pill=!owned ? {icon:'lock',label:'RM'+D6_PRICE,go:'d6Buy()'} : nx<D6_TOT ? {icon:'play',label:'Hari '+(nx+1),go:'d6OpenDay('+nx+')'} : null;
-  var status=!owned ? D6_SUB : nx<D6_TOT ? 'Hari '+(nx+1)+' daripada '+D6_TOT+' · Minggu '+d6Day(nx).week+': '+d6WeekName(d6Day(nx).week) : 'Program selesai';
-  var h=d6Hero('program',status, owned?'':'Bayar sekali · milik anda selamanya', pill);
-  if(owned) h+='<div class="lb-head"><div class="pbar d6-bar"><i style="width:'+pct+'%"></i></div><span>'+pct+'%</span></div>';
-  h+='<div class="pdx-btns">';
-  if(!owned) h+='<button class="bigbtn d6-btn" onclick="d6Buy()">Dapatkan Program · RM'+D6_PRICE+'</button>'+
-       '<button class="pdx-prev" onclick="openPaywall(\'\')">'+glyph('star')+'Termasuk dalam HITFAT+</button>';
-  else if(!d6Budget()) h+='<button class="bigbtn d6-btn" onclick="d6SetTab(\'guide\')">'+glyph('flag')+'Mula: kira bajet anda</button>';
-  else if(nx<D6_TOT) h+='<button class="bigbtn d6-btn" onclick="d6OpenDay('+nx+')">'+glyph('play')+(done?'Teruskan · Hari '+(nx+1):'Mula Hari 1')+'</button>';
-  else h+='<button class="bigbtn d6-btn" onclick="d6SetTab(\'progress\')">'+glyph('trophy')+'Lihat Keputusan Anda</button>';
-  h+='</div>';
-  h+='<div class="filters wl-tabs lb-tabs" id="d6-tabs">'+[['plan','Pelan'],['food','Pemakanan'],['progress','Progres'],['guide','Mula Di Sini']]
-    .map(function(t){ return '<button class="chip'+(d6Tab===t[0]?' y':'')+'" onclick="d6SetTab(\''+t[0]+'\')">'+t[1]+'</button>'; }).join('')+'</div>';
-  if(d6Tab==='food') h+=d6Food();
-  else if(d6Tab==='progress') h+=d6Progress();
-  else if(d6Tab==='guide') h+=d6Guide();
-  else h+=d6Plan();
-  $('pgd-body').innerHTML=h;
+  var el=$('d6c-body'); if(!el) return;
+  el.innerHTML = d6View!==null ? d6Lesson(d6View) : d6Course();
 }
-
-/* ── Plan: today's card, today's list, the six weeks ── */
-function d6Plan(){
-  var owned=d6Owned(), done=d6Done(), nx=d6Next(), h='';
-  if(nx<D6_TOT){
-    var day=d6Day(nx);
-    h+=fsec(owned?'Hari Ini':'Hari 1','');
-    h+='<div class="d6-card" onclick="d6OpenDay('+nx+')"><div class="k">Kad Ilmu · Hari '+day.day+'</div>'+
-      '<div class="t">'+hesc(day.card.title)+'</div><div class="s">'+hesc(day.card.body)+'</div>'+
-      '<div class="d6-tags">'+d6Tags(day).join('')+'</div><div class="go">Buka Hari '+day.day+' ›</div></div>';
-    if(owned) h+=d6Checklist(nx);
+/* the course page: progress, then the six modules, the tools, progress */
+function d6Course(){
+  var owned=d6Owned(), done=d6Done(), nx=d6Next(), bud=d6Budget();
+  var h='<div class="ac-hero d6-hero"><div class="k">HITFAT+ · Kursus '+D6_TOT+' Hari</div><div class="t">'+hesc(D6_NAME)+'</div>'+
+    '<div class="s">'+hesc(D6_SUB)+'</div>';
+  if(owned){
+    h+='<div class="ac-prog"><div class="pbar"><i style="width:'+Math.round(done/D6_TOT*100)+'%"></i></div><span>'+done+' / '+D6_TOT+' selesai</span></div>';
+    if(!bud) h+='<button class="bigbtn d6-btn" onclick="d6SetSeg(\'tools\')">'+glyph('flag')+'Mula: kira bajet anda</button>';
+    else if(nx<D6_TOT) h+='<button class="bigbtn d6-btn" onclick="openD6('+nx+')">'+glyph('play')+(done?'Sambung: Hari '+(nx+1):'Mula Hari 1')+'</button>';
+    else h+='<div class="ac-cert">'+glyph('medal')+'<div><b>Tahniah, 6 minggu selesai.</b><br>Ulang mana-mana pelajaran bila perlu.</div></div>';
+  } else {
+    h+='<button class="bigbtn d6-btn" onclick="d6Buy()">Dapatkan Kursus · RM'+D6_PRICE+'</button>'+
+       '<button class="authalt d6-alt" onclick="openPaywall(\'\')">Termasuk dalam HITFAT+</button>';
   }
-  var wk=d6Week+1;
-  h+=fsec('6 Minggu','');
-  h+='<div class="filters pdx-weeks">'+[1,2,3,4,5,6].map(function(w){
-    var last=D6_DAYS.filter(function(d){ return d.week===w; }).pop().day;
-    return '<button class="chip'+(w===wk?' y':'')+'" onclick="d6Week='+(w-1)+';renderD6()">'+(done>=last?'✓ ':'')+'M'+w+'</button>'; }).join('')+'</div>';
-  h+='<div class="lb-week"><div class="t">Minggu '+wk+' · '+hesc(d6WeekName(wk))+'</div></div>';
-  h+='<div class="lb-days">'+D6_DAYS.filter(function(d){ return d.week===wk; }).map(function(d){
-    var gi=d.day-1, isDone=gi<done, now=gi===nx&&owned;
-    return '<div class="lb-dayrow d6-row'+(isDone?' done':'')+(now?' now':'')+'" onclick="d6OpenDay('+gi+')">'+
-      '<span class="n">'+(isDone?glyph('check'):d.day)+'</span>'+
-      '<div class="tx"><div class="t">'+hesc(d.card.title)+'</div><div class="m">'+d6Tags(d,true).join(' · ')+'</div></div>'+
-      (now?'<span class="lb-now d6-now">Hari ini</span>':'<span class="pdx-chev">›</span>')+'</div>';
-  }).join('')+'</div>';
+  h+='</div>';
+  if(owned && bud) h+='<div class="d6-budrow" onclick="d6SetSeg(\'tools\')"><div><b>'+bud.cal.toLocaleString()+'</b><span>kcal sehari</span></div>'+
+    '<div><b>'+d6Senduk(bud.cal)+'</b><span>senduk nasi</span></div><div><b>'+bud.goal+' kg</b><span>sasaran 6 minggu</span></div></div>';
+  h+='<div class="obseg d6-segs">'+[['lessons','Pelajaran'],['tools','Alat'],['progress','Progres']].map(function(x){
+    return '<button class="'+(d6Seg===x[0]?'on':'')+'" onclick="d6SetSeg(\''+x[0]+'\')">'+x[1]+'</button>'; }).join('')+'</div>';
+  if(d6Seg==='tools') h+=d6Tools();
+  else if(d6Seg==='progress') h+=d6Progress();
+  else h+=d6Modules();
+  return h;
+}
+function d6Modules(){
+  var done=d6Done(), nx=d6Next(), owned=d6Owned(), h='';
+  [1,2,3,4,5,6].forEach(function(w){
+    var ls=D6_DAYS.filter(function(d){ return d.week===w; }), n=ls.filter(function(d){ return d.day-1<done; }).length;
+    h+='<div class="ac-mod"><div class="ac-mod-h"><div><div class="k">Modul '+w+'</div><div class="t">'+hesc(d6WeekName(w))+'</div></div>'+
+      '<span class="ac-mod-n">'+n+'/'+ls.length+'</span></div><div class="ac-eps">'+ls.map(function(d){
+        var gi=d.day-1, isDone=gi<done, now=owned&&gi===nx, tags=d6Tags(d,true);
+        return '<div class="ac-ep'+(isDone?' done':'')+(now?' d6-on':'')+'" onclick="'+(owned?'openD6('+gi+')':'d6Buy()')+'">'+
+          '<span class="n">'+(isDone?glyph('check'):d.day)+'</span><div class="tx"><div class="t">'+hesc(d.card.title)+'</div>'+
+          '<div class="m">Hari '+d.day+(tags.length?' · '+tags.join(' · '):'')+'</div></div>'+
+          (now?'<span class="ac-tag d6-today">Hari ini</span>':!owned&&gi>0?'<span class="ac-tag">'+glyph('lock')+'</span>':'')+
+          '<span class="pdx-chev">›</span></div>';
+      }).join('')+'</div></div>';
+  });
   return h;
 }
 /* what is special about a day, as short labels */
 function d6Tags(d,plain){
   var t=[];
-  if(d.body_checkin) t.push('Check-in badan');
+  if(d.body_checkin) t.push('Check-in');
   if(d.food_audit) t.push('Audit makan');
   if(d.recalculate_budget) t.push('Kira semula bajet');
-  if(d.workout) t.push(d.workout.name);
   return plain ? t : t.map(function(x){ return '<span>'+x+'</span>'; });
+}
+
+/* ── a lesson: read, the mission, one thing to do, done ── */
+function d6Lesson(gi){
+  var day=D6_DAYS[gi], d=d6Data(), done=d6Done(), owned=d6Owned();
+  if(!day || !owned){ d6View=null; return d6Course(); }
+  var h='<div class="ac-ep-h"><div class="k">Modul '+day.week+' · Hari '+day.day+' daripada '+D6_TOT+'</div>'+
+    '<div class="t">'+hesc(day.card.title)+'</div></div>';
+  h+='<div class="d6-read">'+hesc(day.card.body)+'</div>';
+  h+='<div class="ac-mis d6-mis'+(d.misi[day.day]?' on':'')+'" onclick="d6Misi('+day.day+')"><div class="k">'+glyph('target')+'Misi Hari Ini'+
+    '<span class="d6-mis-b">'+(d.misi[day.day]?glyph('check')+'Selesai':'Tandakan selesai')+'</span></div><div class="t">'+hesc(day.mission)+'</div></div>';
+  /* one thing to do now: each opens on its own sheet */
+  var acts=[];
+  if(day.body_checkin) acts.push(['flag','Check-in badan','Berat, pinggang dan gambar'+(d.body[day.day]&&d.body[day.day].kg?' · direkod':''),"d6Open('checkin',"+gi+")"]);
+  if(day.food_audit) acts.push(['clipboard','Audit makan',(d6AuditTotal(day.day)?d6AuditTotal(day.day).toLocaleString()+' kcal setakat ini':'Log semua yang anda makan hari ini'),"d6Open('audit',"+gi+")"]);
+  if(day.recalculate_budget) acts.push(['chart','Kira semula bajet',(d.rc[day.day]?'Sudah dikira semula':'Guna berat terkini anda'),"d6Open('recalc',"+gi+")"]);
+  if(day.day===20) acts.push(['bolt','Kalkulator bakar kalori','Bandingkan aktiviti dengan segelas teh tarik',"d6Open('met',"+gi+")"]);
+  if(day.workout) acts.push(['workout','Senaman (pilihan) · '+day.workout.name, day.workout.minutes+' min'+(day.workout.rounds?' × '+day.workout.rounds+' pusingan':'')+(d.wo[day.day]?' · siap':''),"d6Open('workout',"+gi+")"]);
+  if(acts.length) h+=fsec('Buat Sekarang','')+'<div class="d6-acts">'+acts.map(function(a){
+    return '<div class="ac-act d6-act" onclick="'+a[3]+'"><span class="ic">'+glyph(a[0])+'</span><div class="tx"><div class="t">'+a[1]+'</div><div class="k">'+a[2]+'</div></div><span class="pdx-chev">›</span></div>';
+  }).join('')+'</div>';
+  if(gi===d6Next()) h+=d6Checklist(gi);
+  if(day.offer) h+=d6Offer(day.offer);
+  if(day.share_card) h+='<button class="bigbtn sec" onclick="d6Share()">'+glyph('share')+'Kongsi Kad Hasil</button>';
+  h+=gi<done ? '<div class="d6-done">'+glyph('check')+'Pelajaran ini sudah selesai</div>'
+             : '<button class="bigbtn d6-btn" onclick="d6Complete('+gi+')">'+glyph('check')+'Selesai Hari '+day.day+'</button>';
+  var nxD=D6_DAYS[gi+1];
+  if(nxD) h+='<button class="authalt" onclick="openD6('+(gi+1)+')">Seterusnya: Hari '+nxD.day+' · '+hesc(nxD.card.title)+' ›</button>';
+  return h;
+}
+function d6Complete(gi){
+  if(progDone(D6_ID)===gi){ HF.data.progress[D6_ID]=gi+1; }
+  HF.markDone(D6_KEY+'-d'+gi,{name:D6_DAYS[gi].card.title, mins:0});
+  HF.save(); toast('Hari '+(gi+1)+' selesai 🔥');
+  if(D6_DAYS[gi+1]) openD6(gi+1); else { d6View=null; renderD6(); }
+}
+
+/* ── the sheets: the longer tasks open over the lesson ── */
+function d6Open(kind,gi){
+  d6Sheet=kind; var day=D6_DAYS[gi], h='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="d6Close()">✕</button></div>';
+  if(kind==='checkin') h+=d6CheckinForm(day.day)+'<button class="bigbtn d6-btn" onclick="d6Close()">Simpan</button>';
+  else if(kind==='audit') h+=d6Audit(day.day);
+  else if(kind==='recalc') h+=d6RecalcCard(gi);
+  else if(kind==='met') h+=d6MetCalc();
+  else if(kind==='workout') h+=d6Workout(gi);
+  $('pw-body').innerHTML=h; $('pwm').classList.add('on');
+  try{ $('pwm').scrollTop=0; }catch(e){}
+  d6Open._gi=gi; lbLang(true);
+}
+function d6Close(){ d6Sheet=''; if(_d6T){ clearInterval(_d6T); _d6T=null; } closeProduct(); renderD6(); }
+/* redraw whatever is open, keeping the scroll */
+function d6Refresh(){
+  if(d6Sheet && $('pwm').classList.contains('on')){ var y=$('pwm').scrollTop; d6Open(d6Sheet,d6Open._gi); $('pwm').scrollTop=y; }
+  else d6Refresh();
 }
 
 /* today's list: the day's own four lines, plus the mission */
@@ -206,58 +253,13 @@ function d6Checklist(gi){
   }).join('')+'</div>';
 }
 function d6Ctl(minus,val,plus){ return '<span class="lb-ctl d6-ctl" onclick="event.stopPropagation()"><button onclick="'+minus+'" aria-label="Kurang">−</button><b>'+val+'</b><button onclick="'+plus+'" aria-label="Tambah">+</button></span>'; }
-function d6Re(){ if($('daydetail') && $('daydetail').style.display==='block' && d6Cur>=0) d6OpenDay(d6Cur); else renderD6(); }
-function d6Tick(k){ var d=d6Data(), t=iso(0); d.chk[t]=d.chk[t]||{}; d.chk[t][k]=!d.chk[t][k]; HF.save(); d6Re(); }
-function d6Misi(n){ var d=d6Data(); d.misi[n]=!d.misi[n]; HF.save(); d6Re(); }
-function d6Water(n){ var d=d6Data(), t=iso(0); d.water[t]=Math.max(0,Math.round(((+d.water[t]||0)+n)*100)/100); HF.save(); d6Re(); }
+function d6Tick(k){ var d=d6Data(), t=iso(0); d.chk[t]=d.chk[t]||{}; d.chk[t][k]=!d.chk[t][k]; HF.save(); d6Refresh(); }
+function d6Misi(n){ var d=d6Data(); d.misi[n]=!d.misi[n]; HF.save(); d6Refresh(); }
+function d6Water(n){ var d=d6Data(), t=iso(0); d.water[t]=Math.max(0,Math.round(((+d.water[t]||0)+n)*100)/100); HF.save(); d6Refresh(); }
 function d6Steps(n){
   var d=d6Data(), t=iso(0), sT=d6StepsT(d6Day(d6Next()));
   d.steps[t]= n==='goal' ? ((+d.steps[t]||0)>=sT?0:sT) : Math.max(0,(+d.steps[t]||0)+n);
-  HF.save(); d6Re();
-}
-
-/* ── a day ── */
-var d6Cur=-1;
-function d6OpenDay(gi){
-  var day=D6_DAYS[gi]; if(!day) return;
-  var owned=d6Owned(), d=d6Data(), done=d6Done();
-  d6Cur=gi; curProg=D6;
-  var h=d6Hero('day','Hari '+day.day+' daripada '+D6_TOT+' · Minggu '+day.week+': '+hesc(d6WeekName(day.week)),'',
-    owned?(gi<done?null:{icon:'check',label:'Siap',go:'d6Complete('+gi+')'}):{icon:'lock',label:'RM'+D6_PRICE,go:'d6Buy()'});
-  if(!owned){
-    h+='<div class="d6-card"><div class="k">Kad Ilmu · Hari '+day.day+'</div><div class="t">'+hesc(day.card.title)+'</div><div class="s">'+hesc(day.card.body)+'</div></div>';
-    h+='<div class="pdx-btns"><button class="bigbtn d6-btn" onclick="d6Buy()">'+glyph('lock')+'Buka · RM'+D6_PRICE+'</button></div>';
-    $('dd-body').innerHTML=h; hidePanels(); $('daydetail').style.display='block'; $('screen').scrollTop=0; lbLang(true); return;
-  }
-  /* 1. the knowledge card */
-  h+='<div class="d6-card"><div class="k">Kad Ilmu · 2 minit</div><div class="t">'+hesc(day.card.title)+'</div><div class="s">'+hesc(day.card.body)+'</div></div>';
-  /* 2. the mission */
-  h+='<div class="lb-chks"><div class="lb-chk d6-chk'+(d.misi[day.day]?' on':'')+'" onclick="d6Misi('+day.day+')"><span class="b">'+(d.misi[day.day]?glyph('check'):'')+'</span>'+
-     '<div class="tx"><div class="t">Misi Hari Ini</div><div class="m">'+hesc(day.mission)+'</div></div></div></div>';
-  /* 3. what only some days have */
-  if(day.body_checkin) h+=d6CheckinForm(day.day);
-  if(day.food_audit) h+=d6Audit(day.day);
-  if(day.recalculate_budget) h+=d6RecalcCard(gi);
-  if(day.day===20) h+=d6MetCalc();
-  /* 4. the workout, optional */
-  if(day.workout) h+=d6Workout(gi);
-  /* 5. today's list, on today */
-  if(gi===d6Next()) h+=d6Checklist(gi);
-  /* 6. the offer, for those it is for */
-  if(day.offer) h+=d6Offer(day.offer);
-  if(day.share_card) h+='<button class="bigbtn sec" onclick="d6Share()">'+glyph('share')+'Kongsi Kad Hasil</button>';
-  h+='<div class="pdx-btns">'+(gi<done
-    ? '<div class="d6-done">'+glyph('check')+'Hari '+day.day+' sudah siap</div>'
-    : '<button class="bigbtn d6-btn" onclick="d6Complete('+gi+')">'+glyph('check')+'Tandakan Hari '+day.day+' Siap</button>')+'</div>';
-  $('dd-body').innerHTML=h;
-  hidePanels(); $('daydetail').style.display='block'; $('screen').scrollTop=0;
-  lbLang(true);
-}
-function d6Complete(gi){
-  if(progDone(D6_ID)===gi){ HF.data.progress[D6_ID]=gi+1; }
-  HF.markDone(D6_KEY+'-d'+gi,{name:D6_DAYS[gi].card.title, mins:0});
-  HF.save(); toast('Hari '+(gi+1)+' siap 🔥');
-  hidePanels(); $('progdetail').style.display='block'; d6Tab='plan'; d6Week=-1; renderD6(); $('screen').scrollTop=0;
+  HF.save(); d6Refresh();
 }
 
 /* the workout: strength in the player, walks and stretches on a timer */
@@ -290,12 +292,12 @@ function d6Play(gi){
 }
 function d6AfterSession(m){
   if(HF.data.sessions[D6_KEY+'-d'+m.gi+'-w']){ d6Data().wo[m.gi+1]=true; HF.save(); }
-  d6OpenDay(m.gi);
+  openD6(m.gi);
 }
 function d6WorkoutDone(gi){
   var w=D6_DAYS[gi].workout;
   d6Data().wo[gi+1]=true; HF.markDone(D6_KEY+'-d'+gi+'-w',{name:w.name, mins:w.minutes});
-  HF.save(); toast('Senaman siap'); d6OpenDay(gi);
+  HF.save(); toast('Senaman siap'); d6Refresh();
 }
 var _d6T=null;
 function d6StartTimer(gi){
@@ -310,7 +312,7 @@ function d6StartTimer(gi){
   };
   _d6T=setInterval(tick,1000); tick();
 }
-function d6StopTimer(){ if(_d6T){ clearInterval(_d6T); _d6T=null; } if(d6Cur>=0) d6OpenDay(d6Cur); }
+function d6StopTimer(){ if(_d6T){ clearInterval(_d6T); _d6T=null; } d6Refresh(); }
 
 /* body check-in: weight, waist, photo — days 1, 21, 42 */
 var D6_CHECKINS=[1,21,42];
@@ -340,7 +342,7 @@ function d6AddPhoto(n,input){
     c.getContext('2d').drawImage(im,0,0,c.width,c.height);
     try{ localStorage.setItem(d6PhotoKey(n), c.toDataURL('image/jpeg',0.72)); toast('Gambar disimpan'); }
     catch(e){ toast('Ruang telefon tidak cukup untuk gambar'); }
-    d6Re();
+    d6Refresh();
   }; im.src=r.result; };
   r.readAsDataURL(f);
 }
@@ -367,7 +369,7 @@ function d6AuditTotal(n){
 function d6AuditAdd(n,i,by){
   var d=d6Data(); d.audit[n]=d.audit[n]||{}; d.audit[n][i]=Math.max(0,(d.audit[n][i]||0)+by);
   if(!d.audit[n][i]) delete d.audit[n][i];
-  HF.save(); var y=$('screen').scrollTop; d6OpenDay(n-1); $('screen').scrollTop=y;
+  HF.save(); d6Refresh();
 }
 
 function d6RecalcCard(gi){
@@ -386,8 +388,8 @@ var _d6Met=0, _d6Min=30;
 function d6MetCalc(){
   var a=D6_DATA.activity_mets, wt=d6Weight()||60, k=Math.round(a[_d6Met].met*wt*_d6Min/60);
   return fsec('Kalkulator Bakar Kalori','kcal = MET × berat (kg) × jam')+'<div class="d6-met">'+
-    '<select class="inp" onchange="_d6Met=+this.value;d6Re()">'+a.map(function(x,i){ return '<option value="'+i+'"'+(i===_d6Met?' selected':'')+'>'+hesc(x.name)+' (MET '+x.met+')</option>'; }).join('')+'</select>'+
-    '<div class="d6-met-r"><span>Minit</span>'+d6Ctl('_d6Min=Math.max(5,_d6Min-5);d6Re()', _d6Min, '_d6Min=_d6Min+5;d6Re()')+'</div>'+
+    '<select class="inp" onchange="_d6Met=+this.value;d6Refresh()">'+a.map(function(x,i){ return '<option value="'+i+'"'+(i===_d6Met?' selected':'')+'>'+hesc(x.name)+' (MET '+x.met+')</option>'; }).join('')+'</select>'+
+    '<div class="d6-met-r"><span>Minit</span>'+d6Ctl('_d6Min=Math.max(5,_d6Min-5);d6Refresh()', _d6Min, '_d6Min=_d6Min+5;d6Refresh()')+'</div>'+
     '<div class="d6-met-out"><b>'+k+'</b> kcal <span>· berat '+wt+' kg</span></div>'+
     '<div class="lb-fine">Segelas teh tarik lebih kurang 150 kcal.</div></div>';
 }
@@ -406,17 +408,16 @@ function d6Share(){
   try{ navigator.clipboard.writeText(t+' https://app.hitfat.io'); toast('Disalin — tampal di mana-mana'); }catch(e){ toast(t); }
 }
 
+/* ── Alat: the profile and budget, the menu, the calorie list, the calculator ── */
+function d6Tools(){
+  if(!d6Owned()) return d6Locked('food','Bajet kalori & menu','Bajet ikut badan anda, nasi ikut senduk, dan lima pilihan setiap waktu makan.');
+  return d6Guide()+(d6Budget()?d6Food():'');
+}
 /* ── Pemakanan: the budget, the senduk, five choices a meal ── */
 function d6Food(){
-  if(!d6Owned()) return d6Locked('food','Bajet kalori & menu','Bajet ikut badan anda, nasi ikut senduk, dan lima pilihan setiap waktu makan.');
-  var bud=d6Budget(), N=D6_DATA.nutrition, h='';
-  if(!bud) return d6Locked('flag','Kira bajet anda dahulu','Lengkapkan profil di Mula Di Sini: jantina, umur, berat, tinggi dan tahap aktiviti.','d6SetTab(\'guide\')','Ke Mula Di Sini');
-  var sd=d6Senduk(bud.cal);
-  h+='<div class="nstage wl-stage"><div class="nstage-k">Bajet harian anda</div><div class="nstage-n">'+bud.cal.toLocaleString()+'<span> kcal</span></div>'+
-    '<div class="nstage-s">Lebih kurang '+bud.weekly+' kg seminggu · sasaran 6 minggu sehingga '+bud.goal+' kg</div>'+
-    '<div class="nstage-g"><div><b>'+sd+'</b><span>Senduk nasi</span></div><div><b>'+N.senduk_kcal+'</b><span>kcal / senduk</span></div><div><b>'+bud.tdee.toLocaleString()+'</b><span>Keperluan</span></div></div></div>';
+  var bud=d6Budget(), N=D6_DATA.nutrition, h='', sd=d6Senduk(bud.cal);
   if(bud.floorHit) h+='<div class="lb-fine d6-fine">Bajet anda ditetapkan pada lantai '+bud.floor.toLocaleString()+' kcal. App tidak akan pergi lebih rendah.</div>';
-  h+='<div class="lb-fine d6-fine">'+hesc(N.meals_note)+'</div>';
+  h+=fsec('Menu','Pilih 1 daripada 5 untuk setiap waktu makan.')+'<div class="lb-fine d6-fine">'+hesc(N.meals_note)+'</div>';
   Object.keys(N.meals).forEach(function(slot,si){
     var opts=N.meals[slot], sid='d6m-'+si;
     h+='<div class="mpslot" id="'+sid+'"><div class="mpslot-h"><div><div class="t">'+hesc(slot)+'</div><div class="m">Pilih 1 daripada '+opts.length+'</div></div>'+
@@ -457,7 +458,7 @@ function d6Progress(){
   h+=fsec('Check-in Badan','Hari 1, 21 dan 42.');
   h+='<div class="wl-fit wl-body"><div class="wl-fit-h"><span></span>'+D6_CHECKINS.map(function(n){ return '<b>Hari '+n+'</b>'; }).join('')+'</div>'+
     [['kg','Berat','kg'],['waist','Pinggang','cm']].map(function(m){ return '<div class="wl-fit-r"><span>'+m[1]+'<small>'+m[2]+'</small></span>'+
-      D6_CHECKINS.map(function(n){ return '<input inputmode="decimal" aria-label="'+m[1]+' hari '+n+'" value="'+((d.body[n]||{})[m[0]]||'')+'" onchange="d6SetBody('+n+',\''+m[0]+'\',this.value);renderD6()">'; }).join('')+'</div>'; }).join('')+'</div>';
+      D6_CHECKINS.map(function(n){ return '<input inputmode="decimal" aria-label="'+m[1]+' hari '+n+'" value="'+((d.body[n]||{})[m[0]]||'')+'" onchange="d6SetBody('+n+',\''+m[0]+'\',this.value);d6Re()">'; }).join('')+'</div>'; }).join('')+'</div>';
   var b1=d.body[1]||{}, bl=(d.body[42]&&d.body[42].kg)?d.body[42]:(d.body[21]||{});
   if(b1.kg&&bl.kg){ var dk=Math.round((bl.kg-b1.kg)*10)/10;
     h+='<div class="wl-delta">'+(dk<0?'Turun '+(-dk)+' kg':dk>0?'Naik '+dk+' kg':'Berat kekal')+
@@ -471,12 +472,12 @@ function d6Progress(){
   if(d6AuditTotal(3)||d6AuditTotal(14)) h+=fsec('Audit Makan','')+'<div class="d6-audit-sum"><div><b>'+d6AuditTotal(3).toLocaleString()+'</b><span>Hari 3</span></div><div><b>'+d6AuditTotal(14).toLocaleString()+'</b><span>Hari 14</span></div></div>';
   return h;
 }
-function d6Weigh(){ var v=parseFloat(($('d6-wt2')||{}).value); if(!v||v<20||v>300) return toast('Masukkan berat antara 20 dan 300'); logWeight(v); toast('Berat direkod'); renderD6(); }
+function d6Weigh(){ var v=parseFloat(($('d6-wt2')||{}).value); if(!v||v<20||v>300) return toast('Masukkan berat antara 20 dan 300'); logWeight(v); toast('Berat direkod'); d6Re(); }
 
 /* ── Mula Di Sini: the welcome, the profile that sets the budget, safety ── */
-function d6Guide(){
+function d6Guide(){ /* profile and budget first, then how the course works */
   var S=D6_DATA.start_here, d=d6Data(), p=d.p, h='';
-  h+='<div class="d6-card"><div class="t">'+hesc(D6_NAME)+'</div><div class="s">'+hesc(S.welcome)+'</div></div>';
+  h+='<div class="d6-read d6-welcome">'+hesc(S.welcome)+'</div>';
   h+='<div class="lb-safe">'+ic('warning')+'<div><div class="t">Keselamatan</div><div class="s">'+hesc(S.safety)+'</div></div></div>';
   if(d6Owned()){
     h+=fsec('Profil & Bajet','Lima jawapan, dan bajet anda dikira.');
@@ -488,10 +489,10 @@ function d6Guide(){
       return '<div class="lb-dayrow d6-row'+((p.act||'tidak aktif')===a?' now':'')+'" onclick="d6Set(\'act\',\''+a+'\')"><div class="tx"><div class="t">'+D6_ACT_LABEL[a]+'</div></div>'+((p.act||'tidak aktif')===a?glyph('check'):'')+'</div>'; }).join('')+'</div>';
     h+='<div class="d6-q">Kadar turun berat</div><div class="lb-days">'+D6_RATES.map(function(r){
       return '<div class="lb-dayrow d6-row'+((p.rate||0.005)===r[0]?' now':'')+'" onclick="d6Set(\'rate\','+r[0]+')"><div class="tx"><div class="t">'+r[1]+'</div><div class="m">'+r[2]+'</div></div>'+((p.rate||0.005)===r[0]?glyph('check'):'')+'</div>'; }).join('')+'</div>';
-    h+='<button class="bigbtn d6-btn esave" onclick="d6SaveProfile()">'+(d6Budget()?'Kira Semula Bajet Saya':'Kira Bajet Saya')+'</button>';
     var b=d6Budget();
     if(b) h+='<div class="d6-bud"><div class="k">Bajet harian</div><div class="n">'+b.cal.toLocaleString()+'<span> kcal</span></div>'+
-      '<div class="s">Keperluan '+b.tdee.toLocaleString()+' kcal · lebih kurang '+b.weekly+' kg seminggu · sasaran 6 minggu sehingga '+b.goal+' kg</div></div>';
+      '<div class="s">Keperluan '+b.tdee.toLocaleString()+' kcal · lebih kurang '+b.weekly+' kg seminggu · sasaran 6 minggu sehingga '+b.goal+' kg · '+d6Senduk(b.cal)+' senduk nasi setiap makan utama</div></div>';
+    h+='<button class="bigbtn d6-btn esave" onclick="d6SaveProfile()">'+(b?'Kira Semula Bajet Saya':'Kira Bajet Saya')+'</button>';
   }
   h+=fsec('Cara Guna','');
   h+='<div class="wl-steps">'+S.how_to_use.map(function(s,i){ return '<div class="wl-step"><span class="n">'+(i+1)+'</span><div><div class="m">'+hesc(s)+'</div></div></div>'; }).join('')+'</div>';
@@ -507,15 +508,18 @@ function d6Guide(){
 
 function d6Locked(icon,title,text,go,label){
   return '<div class="wl-lock">'+ic(icon)+'<div class="t">'+title+'</div><div class="s">'+text+'</div>'+
-    '<button class="bigbtn d6-btn" onclick="'+(go||'d6Buy()')+'">'+(label||'Dapatkan Program · RM'+D6_PRICE)+'</button></div>';
+    '<button class="bigbtn d6-btn" onclick="'+(go||'d6Buy()')+'">'+(label||'Dapatkan Kursus · RM'+D6_PRICE)+'</button></div>';
 }
-
 /* ── buying it ── */
+/* the course's cover, in type: no photograph needed */
+function d6Poster(cls){
+  return '<div class="'+cls+' d6-cover"><div class="k">KURSUS '+D6_TOT+' HARI</div><div class="t">'+hesc(D6_NAME)+'</div><div class="s">'+hesc(D6_SUB)+'</div></div>';
+}
 function d6Buy(){
-  if(d6Owned()) return openProgram(D6_ID);
+  if(d6Owned()) return openD6();
   $('pw-body').innerHTML=
     '<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>'+
-    d6Poster('wl-buy-poster lb-buy lb-type')+
+    d6Poster('lb-buy')+
     '<div class="pwlist">'+[
       ['food','Bajet kalori anda sendiri','Nasi kekal, ikut senduk. Tidak pernah bawah 1,200 kcal (wanita) / 1,500 kcal (lelaki)'],
       ['doc','42 kad ilmu & misi harian','Dua minit sehari, bersama '+D6_DATA.program.coach],
@@ -537,22 +541,19 @@ function d6Claim(){
   if(!o) return toast('Masukkan nombor pesanan dari resit anda');
   if(!sb||!HF.userId) return toast('Log masuk dahulu');
   sb.rpc('plus_claim_landing',{p_order:o}).then(function(r){ if(r.error) throw r.error; return loadEntitlement(); }).then(function(){
-    if(d6Owned()){ closeProduct(); toast('Dibuka — selamat datang'); openProgram(D6_ID); }
+    if(d6Owned()){ closeProduct(); toast('Dibuka — selamat datang'); openD6(); }
     else toast('Tiada pesanan berbayar dengan nombor itu. Semak resit, atau mesej kami.');
   })['catch'](function(){ toast('Pesanan itu tidak dapat disemak — cuba lagi sebentar.'); });
 }
 
-/* ── Home ──
-   A program she has started, or bought on its own, gets its full card;
-   the rest sit side by side in one small row, so Home stays tidy. */
-function d6Full(){ var o=d6Owned(); return o && d6Next()<D6_TOT && (owns('prog_'+D6_ID) || d6Done()>0); }
+/* ── Home: the course once started, else a tile beside Ladies Burn 30 ── */
+function d6Full(){ return d6Owned() && d6Next()<D6_TOT && d6Done()>0; }
 function d6HomeCard(){
   if(!d6Full()) return '';
   var nx=d6Next(), day=d6Day(nx), pct=Math.round(d6Done()/D6_TOT*100);
-  return '<div class="wl-poster lb-card" onclick="openProgram(\''+D6_ID+'\')">'+d6Poster('lb-card-poster lb-type')+
-    '<div class="wl-poster-b"><div class="tx"><div class="k">Hari '+(nx+1)+' · Minggu '+day.week+'</div>'+
-    '<div class="t">'+hesc(day.card.title)+'</div><div class="pbar d6-bar"><i style="width:'+pct+'%"></i></div></div>'+
-    '<button class="bigbtn d6-btn" onclick="event.stopPropagation();d6OpenDay('+nx+')">'+glyph('play')+'Hari '+(nx+1)+'</button></div></div>';
+  return '<div class="ac-card d6-home" onclick="openD6('+nx+')"><span class="ic">'+glyph('food')+'</span><div class="tx">'+
+    '<div class="k">'+hesc(D6_NAME)+' · '+d6Done()+'/'+D6_TOT+'</div><div class="t">Sambung: Hari '+(nx+1)+'</div>'+
+    '<div class="s">'+hesc(day.card.title)+'</div><div class="pbar d6-bar"><i style="width:'+pct+'%"></i></div></div><span class="pdx-chev">›</span></div>';
 }
 function hubRow(){
   var tiles=[];
@@ -560,8 +561,15 @@ function hubRow(){
     tiles.push('<div class="hub-tile" onclick="openProgram(\''+LB30_ID+'\')">'+lbPoster('hub-tile-p lb-type')+
       '<div class="hub-tile-t">'+hesc(LB30_NAME)+'</div><div class="hub-tile-s">30 hari · khas wanita</div></div>');
   if(!d6Full() && d6Next()<D6_TOT)
-    tiles.push('<div class="hub-tile" onclick="openProgram(\''+D6_ID+'\')">'+d6Poster('hub-tile-p lb-type')+
-      '<div class="hub-tile-t">'+hesc(D6_NAME)+'</div><div class="hub-tile-s">42 hari · nasi kekal</div></div>');
+    tiles.push('<div class="hub-tile" onclick="openD6()"><div class="hub-tile-p d6-tile">'+glyph('food')+'<b>Kursus 42 Hari</b></div>'+
+      '<div class="hub-tile-t">'+hesc(D6_NAME)+'</div><div class="hub-tile-s">Nasi kekal, lemak hilang</div></div>');
   if(!tiles.length) return '';
   return '<div class="hub-row">'+tiles.join('')+'</div>';
+}
+/* Eat → Belajar: the course above the Academy */
+function d6LearnCard(){
+  var owned=d6Owned(), done=d6Done();
+  return '<div class="ac-card d6-home" onclick="openD6()"><span class="ic">'+glyph('food')+'</span><div class="tx">'+
+    '<div class="k">Kursus · '+D6_TOT+' hari'+(owned&&done?' · '+done+'/'+D6_TOT:'')+'</div><div class="t">'+hesc(D6_NAME)+'</div>'+
+    '<div class="s">'+hesc(D6_SUB)+'</div></div><span class="pdx-chev">›</span></div>';
 }

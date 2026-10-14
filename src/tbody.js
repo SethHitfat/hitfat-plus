@@ -3699,7 +3699,8 @@ print("\n── DIET 6 MINGGU 6KG ──");
 (function(){
   var keepEnt=_ent, keepD=HF.data.d6, keepProg=HF.data.progress[D6_ID], keepSave=HF.save, keepSW=startWorkout, keepW=HF.data.weight, keepLang=LANG, keepLive=MEMBERSHIP_LIVE;
   HF.save=function(){}; HF.data.d6={}; HF.data.weight=[]; MEMBERSHIP_LIVE=true;
-  ok("the content is the JSON's, 42 days in 6 weeks", D6_TOT===42 && D6_DAYS[0].day===1 && D6_DAYS[41].day===42 && D6_DATA.weeks['6'] && findProg('d6')===D6 && D6.hub==='d6');
+  ok("the content is the JSON's, 42 days in 6 weeks", D6_TOT===42 && D6_DAYS[0].day===1 && D6_DAYS[41].day===42 && D6_DATA.weeks['6'] && D6.hub==='d6');
+  ok("a course, not a training plan: it is not in Train", !findProg('d6') && trainingPlans().every(function(p){ return p.id!=='d6'; }));
   ok("the name comes from the content", D6.name===D6_DATA.program.name && D6_NAME==='DIET 6 MINGGU 6KG');
   ok("check-ins, audits and recalculations fall on the right days",
      D6_DAYS.filter(function(d){ return d.body_checkin; }).map(function(d){ return d.day; }).join()==='1,21,42' &&
@@ -3730,16 +3731,19 @@ print("\n── DIET 6 MINGGU 6KG ──");
   ok("Sesi Kuat A plays, its moves named as written, with their reps", got && got.e.length===5 && got.e[0].n.indexOf('Squat ke kerusi · 10-12')===0 && got.m.rounds===2 && got.m.d6.gi===0);
   ok("...each strength move with a filmed clip but Superman", D6_DATA.workouts.kuat_a.moves.concat(D6_DATA.workouts.kuat_b.moves).every(function(m){ return m.name==='Superman' || !!d6Ex(m).v; }));
   ok("rounds grow by the week", D6_DAYS[0].workout.rounds===2 && D6_DAYS[35].workout.rounds===4);
-  /* the pages: Malay, and the content unedited */
+  /* the course: modules, lessons, tools, progress; Malay; the content unedited */
   HF.data.d6={p:{sex:'wanita',age:30,wt:70,ht:160,act:'tidak aktif',rate:0.005}}; HF.data.d6.bud=d6Calc(HF.data.d6.p);
-  var html=''; ['plan','food','progress','guide'].forEach(function(t){ d6Tab=t; renderD6(); html+=$('pgd-body').innerHTML; });
-  ok("the pages carry the content as written", html.indexOf(hesc(D6_DAYS[0].card.title))>0 && html.indexOf(hesc(D6_DATA.start_here.safety))>0 && html.indexOf(hesc(D6_DATA.nutrition.meals['Sarapan'][0].name))>0);
-  ok("...in Malay", ["Today's Checklist","Start Here","Nutrition<","Start Day"].every(function(x){ return html.indexOf(x)<0; }) && html.indexOf('Mula Di Sini')>0 && html.indexOf('Pemakanan')>0);
-  d6OpenDay(2); var d3=$('dd-body').innerHTML;
-  ok("day 3: card, mission, the audit", d3.indexOf(hesc(D6_DAYS[2].card.title))>0 && d3.indexOf(hesc(D6_DAYS[2].mission))>0 && d3.indexOf('Audit Makan')>0);
-  d6OpenDay(27); var d28=$('dd-body').innerHTML;
-  ok("day 28 shows its offer", d28.indexOf(hesc(D6_DAYS[27].offer.text))>0);
-  d6OpenDay(0); ok("day 1 has the check-in", $('dd-body').innerHTML.indexOf('Check-in Badan')>0);
+  var html=''; ['lessons','tools','progress'].forEach(function(t){ d6View=null; d6Seg=t; renderD6(); html+=$('d6c-body').innerHTML; });
+  ok("six modules of lessons, each lesson by its card's title", (html.match(/class="ac-mod"/g)||[]).length===6 && html.indexOf(hesc(D6_DAYS[41].card.title))>0);
+  ok("the tools carry the content as written", html.indexOf(hesc(D6_DATA.start_here.safety))>0 && html.indexOf(hesc(D6_DATA.nutrition.meals['Sarapan'][0].name))>0);
+  ok("...in Malay", ["Today's Checklist","Start Here","Nutrition<","Start Day","Lessons<"].every(function(x){ return html.indexOf(x)<0; }) && html.indexOf('Pelajaran')>0 && html.indexOf('Alat')>0);
+  d6View=2; renderD6(); var d3=$('d6c-body').innerHTML;
+  ok("a lesson: the card, the mission, one thing to do", d3.indexOf(hesc(D6_DAYS[2].card.body))>0 && d3.indexOf(hesc(D6_DAYS[2].mission))>0 && d3.indexOf("d6Open('audit',2)")>0);
+  ok("...short: the 44-line audit opens on its own sheet", d3.indexOf(hesc(D6_DATA.food_audit_list[40].name))<0);
+  d6Open('audit',2); ok("the audit sheet lists the foods", $('pw-body').innerHTML.indexOf(hesc(D6_DATA.food_audit_list[40].name))>0);
+  d6View=27; renderD6(); ok("day 28 shows its offer", $('d6c-body').innerHTML.indexOf(hesc(D6_DAYS[27].offer.text))>0);
+  d6View=0; renderD6(); ok("day 1 has the check-in", $('d6c-body').innerHTML.indexOf("d6Open('checkin',0)")>0);
+  ok("Eat → Belajar has the course", String(eatLearn).indexOf('d6LearnCard')>0 && d6LearnCard().indexOf('openD6()')>0);
   d6Complete(0); ok("finishing a day moves it on", d6Done()===1);
   lbLang(false);
   startWorkout=keepSW; _ent=keepEnt; HF.data.d6=keepD||{}; HF.data.progress[D6_ID]=keepProg||0; HF.save=keepSave; HF.data.weight=keepW; LANG=keepLang; MEMBERSHIP_LIVE=keepLive;

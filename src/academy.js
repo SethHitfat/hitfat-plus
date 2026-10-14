@@ -343,7 +343,7 @@ function acHomeWorkout(){
 }
 
 /* ── Eat's Learn segment: the same course page, in place ── */
-function eatLearn(){ $('eat-body').innerHTML='<div class="ac-in-eat">'+academyHTML()+'</div>'; }
+function eatLearn(){ $('eat-body').innerHTML='<div class="ac-in-eat">'+(typeof d6LearnCard==='function'?d6LearnCard():'')+academyHTML()+'</div>'; }
 
 /* ── Home: carry on where you left off ── */
 function acHomeCard(){

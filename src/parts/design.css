@@ -2394,3 +2394,35 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .hub-tile-p .lb-sub{display:none;}
 .hub-tile-t{font-size:14px;font-weight:700;padding:10px 12px 0;line-height:1.25;}
 .hub-tile-s{font-size:12px;opacity:.65;padding:2px 12px 12px;}
+
+/* DIET 6 MINGGU 6KG as a course */
+.d6-hero{background:radial-gradient(circle at 85% 0%,rgba(255,150,80,.40),transparent 55%),linear-gradient(160deg,#3a1a10,#0b0b0d 75%);}
+.d6-hero .k{color:#FFB38A;}
+.d6-alt{color:rgba(255,255,255,.75) !important;}
+.d6-budrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:-8px 0 16px;cursor:pointer;}
+.d6-budrow div{padding:12px 8px;border-radius:14px;background:rgba(127,127,127,.12);text-align:center;}
+.d6-budrow b{display:block;font-size:18px;font-variant-numeric:tabular-nums;}
+.d6-budrow span{font-size:11px;opacity:.7;}
+.d6-segs{margin:0 0 18px;}
+.ac-ep.d6-on{box-shadow:inset 3px 0 0 #F0392B;}
+.ac-tag.d6-today{background:#F0392B;color:#fff;}
+.d6-read{font-size:17px;line-height:1.6;margin:4px 2px 18px;}
+.d6-welcome{font-size:16px;margin-top:0;}
+.d6-mis{cursor:pointer;}
+.d6-mis .k{justify-content:flex-start;}
+.d6-mis-b{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:4px 9px;border-radius:99px;background:rgba(240,57,43,.15);color:#F0392B;text-transform:none;letter-spacing:0;}
+.d6-mis-b .gly{width:12px;height:12px;}
+.d6-mis.on .d6-mis-b{background:#22A55B;color:#fff;}
+.d6-acts{display:flex;flex-direction:column;gap:8px;margin-bottom:6px;}
+.d6-act{margin:0 !important;}
+.d6-act .k{text-transform:none;letter-spacing:0;font-weight:500;color:inherit;opacity:.7;margin-top:2px;}
+.d6-act .t{margin-top:0 !important;}
+.d6-tile{background:radial-gradient(circle at 30% 10%,rgba(255,138,76,.45),transparent 60%),linear-gradient(160deg,#3a1a12,#0b0b0d 78%);color:#FFB38A;}
+.d6-tile .gly{width:30px;height:30px;}
+.d6-tile b{font-size:13px;letter-spacing:.06em;text-transform:uppercase;}
+.d6-home .pbar{margin-top:8px;}
+.d6-cover{border-radius:18px;padding:22px 18px;margin-bottom:14px;color:#fff;
+  background:radial-gradient(circle at 85% 0%,rgba(255,150,80,.40),transparent 55%),linear-gradient(160deg,#3a1a10,#0b0b0d 75%);}
+.d6-cover .k{font-size:12px;font-weight:700;letter-spacing:.08em;color:#FFB38A;}
+.d6-cover .t{font-size:26px;font-weight:800;letter-spacing:-.5px;margin-top:4px;}
+.d6-cover .s{font-size:14px;opacity:.75;margin-top:6px;line-height:1.4;}
