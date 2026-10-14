@@ -40,6 +40,7 @@ export const CATALOGUE: Record<string, Sku> = {
   "prog_m2": { price: 39, kind: "program" },        // 8 Week Beginner Training
   "prog_m3": { price: 29, kind: "program" },        // 22 Minutes Hardcore
   "prog_wl30": { price: 39, kind: "program" },      // 30-Day Weight Loss · sold on its own, also on its landing page
+  "prog_d6": { price: 39, kind: "program" },        // DIET 6 MINGGU 6KG · sold on its own, also on its landing page
   /* Meal Scan add-ons (12 Oct 2026): 30 days of a daily allowance, enforced in
      scan-food. The credit packs and old passes below are no longer sold and
      stay so a late callback still grants. */

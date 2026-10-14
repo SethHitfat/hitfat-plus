@@ -398,7 +398,8 @@ const I18N_RX=[
   [/^Step (\d+) of (\d+)$/, 'Langkah $1 daripada $2'],
   [/^(\d+) wk$/, '$1 mgg'],
   [/^(\d+)min$/, '$1min'],
-  [/^Up first: (.+)$/, 'Mula dengan: $1']
+  [/^Up first: (.+)$/, 'Mula dengan: $1'],
+  [/^(.+) is being filmed\. Follow the sets and reps below — the clip appears here as soon as it is ready\.$/, '$1 — ikut kiraan di skrin. Video gerakan ini akan datang.']
 ];
 
 /* BM is hidden for now (14 Oct 2026, the owner: "English dulu"): no switch

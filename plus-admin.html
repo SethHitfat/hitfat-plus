@@ -110,7 +110,7 @@
       <h2>Record a payment</h2>
       <div class="card"><div class="sub" style="margin:0 0 10px">Paid another way (bank transfer, cash)? Record it under the email they will sign in with.</div><div class="row">
         <input id="l-email" type="email" placeholder="Buyer's email" style="flex:1;min-width:200px">
-        <select id="l-sku"><option value="prog_wl30">BURN30 · 30-Day Weight Loss</option></select>
+        <select id="l-sku"><option value="prog_wl30">BURN30 · 30-Day Weight Loss</option><option value="prog_d6">DIET 6 MINGGU 6KG</option></select>
         <input id="l-note" placeholder="Why (e.g. bank transfer 12 Oct)" style="flex:1;min-width:200px">
         <button class="btn" onclick="landingAdd()">Record</button></div></div>
       <h2>Purchases</h2>
@@ -118,7 +118,7 @@
       <h2>Webhook for the Bayarcash form</h2>
       <div class="card"><div class="sub" style="margin:0 0 10px">Paste this address into the landing-page form's webhook (callback) setting. It contains a secret — do not post it anywhere public.</div>
         <div class="row"><button class="btn sec sm" onclick="landingHook()">Show the address</button></div>
-        <div class="mono" id="l-hook" style="word-break:break-all;margin-top:10px"></div></div>
+        <div class="mono" id="l-hook" style="word-break:break-all;margin-top:10px;white-space:pre-line"></div></div>
     </section>
 
     <section id="s-log" class="hide">
@@ -137,7 +137,7 @@ let sb=null; try{ sb=window.supabase.createClient(SUPA_URL,SUPA_KEY); }catch(e){
 const $=id=>document.getElementById(id);
 const SKUS=[['sub_plus_6m','HITFAT+ · 6 months'],['sub_plus_12m','HITFAT+ · 12 months'],
             ['sub_coach_6m','HITFAT+ Coach · 6 months'],['sub_coach_12m','HITFAT+ Coach · 12 months'],
-            ['prog_wl30','BURN30 · 30-Day Weight Loss (for good)']];
+            ['prog_wl30','BURN30 · 30-Day Weight Loss (for good)'],['prog_d6','DIET 6 MINGGU 6KG (for good)']];
 const SKU_NAME=Object.assign(Object.fromEntries(SKUS),{scan_d3:'Meal Scan 3 · 30 days',scan_d6:'Meal Scan 6 · 30 days',scan_dx:'Meal Scan Unlimited · 30 days'});
 let cur=null;
 
@@ -299,7 +299,8 @@ async function landingAdd(){
 async function landingHook(){
   const r=await sb.rpc('plus_admin_landing_hook');
   if(r.error) return toast(msg(r.error));
-  $('l-hook').textContent=SUPA_URL+'/functions/v1/plus-landing?sku=prog_wl30&key='+r.data;
+  /* one address per program sold on its own: each landing form gets its own */
+  $('l-hook').textContent=['prog_wl30','prog_d6'].map(s=>SKU_NAME[s].replace(' (for good)','')+':\n'+SUPA_URL+'/functions/v1/plus-landing?sku='+s+'&key='+r.data).join('\n\n');
 }
 async function loadLog(){
   $('log').innerHTML='<div class="sub">Loading…</div>';

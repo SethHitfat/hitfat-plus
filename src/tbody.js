@@ -315,7 +315,7 @@ print("\n── GENERATED PLANS ──");
 var _multi=PROGRAMS.filter(function(p){return p.weeks;});
 ok("plan catalogue grew",  _multi.length>=17, _multi.length);
 var _bad=0,_empty=0,_days=0;
-_multi.forEach(function(p){ if(p.hub==='lb30') return; p.weeks.forEach(function(w){ w.days.forEach(function(d){
+_multi.forEach(function(p){ if(p.hub==='lb30'||p.hub==='d6') return; p.weeks.forEach(function(w){ w.days.forEach(function(d){
   _days++; if(d.rest) return;
   if(!d.ex||!d.ex.length){_empty++;return;}
   d.ex.forEach(function(n){ if(!DB.find(function(e){return e.n===n;})) _bad++; }); }); }); });
@@ -375,7 +375,7 @@ ok("no unverifiable 'Top 10 in Malaysia' claim", _ph.indexOf('Top 10 in Malaysia
 ok("Recovery stays in its own tab, not in Plans", _ph.indexOf('Knee Prehab')<0 && _ph.indexOf('Desk Reset')<0);
 ok("...and the billboard is a training plan", trainingPlans().every(function(p){ return !p.rehab; }));
 /* The minutes on a card are what the player runs. */
-ok("every plan's minutes match its content", trainingPlans().filter(function(p){ return p.id!=='custom' && p.hub!=='lb30'; })
+ok("every plan's minutes match its content", trainingPlans().filter(function(p){ return p.id!=='custom' && p.hub!=='lb30' && p.hub!=='d6'; })
    .every(function(p){ return p.dur===progMinutes(p); }));
 ok("Morning 10 is about ten minutes", Math.abs(PROGRAMS.filter(function(p){ return p.id==='am21'; })[0].dur-10)<=1);
 ok("names are written one way", PROGRAMS.every(function(p){ return !/^\d+ (Day|Week|Minutes?) /.test(p.name); }));
@@ -773,7 +773,7 @@ ok("filmed:true narrows the pool", (function(){
 })());
 ok("BAR plans still get BAR moves", BAR_PLANS.every(function(p){
     return p.weeks[0].days.some(function(d){ return !d.rest && d.ex.some(isBarExercise); }); }));
-ok("no generic day went empty",  PROGRAMS.filter(function(p){ return p.weeks && p.hub!=='lb30'; })
+ok("no generic day went empty",  PROGRAMS.filter(function(p){ return p.weeks && p.hub!=='lb30' && p.hub!=='d6'; })
     .every(function(p){ return p.weeks.every(function(w){ return w.days.every(function(d){
       return d.rest || d.ex.length>0; }); }); }));
 
@@ -3694,6 +3694,55 @@ print("\n── LADIES BURN 30 ──");
   wlBuy=keepWB; lbBuy=keepLB;
   lbLang(false);
   startWorkout=keepSW; _ent=keepEnt; HF.data.lb30=keepLb||{}; HF.data.progress[LB30_ID]=keepProg||0; HF.save=keepSave; LANG=keepLang; MEMBERSHIP_LIVE=keepLive;
+})();
+print("\n── DIET 6 MINGGU 6KG ──");
+(function(){
+  var keepEnt=_ent, keepD=HF.data.d6, keepProg=HF.data.progress[D6_ID], keepSave=HF.save, keepSW=startWorkout, keepW=HF.data.weight, keepLang=LANG, keepLive=MEMBERSHIP_LIVE;
+  HF.save=function(){}; HF.data.d6={}; HF.data.weight=[]; MEMBERSHIP_LIVE=true;
+  ok("the content is the JSON's, 42 days in 6 weeks", D6_TOT===42 && D6_DAYS[0].day===1 && D6_DAYS[41].day===42 && D6_DATA.weeks['6'] && findProg('d6')===D6 && D6.hub==='d6');
+  ok("the name comes from the content", D6.name===D6_DATA.program.name && D6_NAME==='DIET 6 MINGGU 6KG');
+  ok("check-ins, audits and recalculations fall on the right days",
+     D6_DAYS.filter(function(d){ return d.body_checkin; }).map(function(d){ return d.day; }).join()==='1,21,42' &&
+     D6_DAYS.filter(function(d){ return d.food_audit; }).map(function(d){ return d.day; }).join()==='3,14' &&
+     D6_DAYS.filter(function(d){ return d.recalculate_budget; }).map(function(d){ return d.day; }).join()==='8,15,22,29,36');
+  /* the budget */
+  var w=d6Calc({sex:'wanita', age:30, wt:70, ht:160, act:'tidak aktif', rate:0.01});
+  var bmr=10*70+6.25*160-5*30-161;
+  ok("Mifflin-St Jeor × activity", w.bmr===Math.round(bmr) && w.tdee===Math.round(bmr*1.2));
+  ok("a woman's budget never under 1,200 kcal", d6Calc({sex:'wanita', age:65, wt:45, ht:145, act:'tidak aktif', rate:0.01}).cal>=1200);
+  ok("a man's never under 1,500 kcal", d6Calc({sex:'lelaki', age:65, wt:55, ht:155, act:'tidak aktif', rate:0.01}).cal>=1500);
+  var big=d6Calc({sex:'lelaki', age:30, wt:140, ht:180, act:'aktif', rate:0.01});
+  ok("never faster than about 1 kg a week", big.weekly<=1.05 && big.goal<=6);
+  ok("the 6 kg is 'up to'", d6Calc({sex:'wanita', age:40, wt:60, ht:155, act:'ringan', rate:0.005}).goal<6);
+  ok("rice by the senduk, by budget", d6Senduk(1400)===1 && d6Senduk(1600)===1.5 && d6Senduk(2100)===2);
+  ok("targets read from the day's own checklist", d6WaterT(D6_DAYS[0])===2.0 && d6StepsT(D6_DAYS[0])===5000 && d6WaterT(D6_DAYS[41])===2.5 && d6StepsT(D6_DAYS[41])===8000);
+  /* the audit */
+  HF.data.d6={audit:{3:{0:2,24:1}}};
+  ok("the audit adds up the list", d6AuditTotal(3)===2*D6_DATA.food_audit_list[0].kcal+D6_DATA.food_audit_list[24].kcal);
+  /* access */
+  _guest(); ok("a guest sees it locked", !d6Owned());
+  _ent={skus:{'prog_d6':1}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, loaded:true};
+  ok("buying it opens it, and only it", d6Owned() && !ownsProgram(WL30) && !lbOwned());
+  _member('plus'); ok("a member has it", d6Owned());
+  /* the strength sessions play HITFAT clips, the JSON names on screen */
+  var got=null; startWorkout=function(e,m){ got={e:e,m:m}; };
+  d6Play(0);
+  ok("Sesi Kuat A plays, its moves named as written, with their reps", got && got.e.length===5 && got.e[0].n.indexOf('Squat ke kerusi · 10-12')===0 && got.m.rounds===2 && got.m.d6.gi===0);
+  ok("...each strength move with a filmed clip but Superman", D6_DATA.workouts.kuat_a.moves.concat(D6_DATA.workouts.kuat_b.moves).every(function(m){ return m.name==='Superman' || !!d6Ex(m).v; }));
+  ok("rounds grow by the week", D6_DAYS[0].workout.rounds===2 && D6_DAYS[35].workout.rounds===4);
+  /* the pages: Malay, and the content unedited */
+  HF.data.d6={p:{sex:'wanita',age:30,wt:70,ht:160,act:'tidak aktif',rate:0.005}}; HF.data.d6.bud=d6Calc(HF.data.d6.p);
+  var html=''; ['plan','food','progress','guide'].forEach(function(t){ d6Tab=t; renderD6(); html+=$('pgd-body').innerHTML; });
+  ok("the pages carry the content as written", html.indexOf(hesc(D6_DAYS[0].card.title))>0 && html.indexOf(hesc(D6_DATA.start_here.safety))>0 && html.indexOf(hesc(D6_DATA.nutrition.meals['Sarapan'][0].name))>0);
+  ok("...in Malay", ["Today's Checklist","Start Here","Nutrition<","Start Day"].every(function(x){ return html.indexOf(x)<0; }) && html.indexOf('Mula Di Sini')>0 && html.indexOf('Pemakanan')>0);
+  d6OpenDay(2); var d3=$('dd-body').innerHTML;
+  ok("day 3: card, mission, the audit", d3.indexOf(hesc(D6_DAYS[2].card.title))>0 && d3.indexOf(hesc(D6_DAYS[2].mission))>0 && d3.indexOf('Audit Makan')>0);
+  d6OpenDay(27); var d28=$('dd-body').innerHTML;
+  ok("day 28 shows its offer", d28.indexOf(hesc(D6_DAYS[27].offer.text))>0);
+  d6OpenDay(0); ok("day 1 has the check-in", $('dd-body').innerHTML.indexOf('Check-in Badan')>0);
+  d6Complete(0); ok("finishing a day moves it on", d6Done()===1);
+  lbLang(false);
+  startWorkout=keepSW; _ent=keepEnt; HF.data.d6=keepD||{}; HF.data.progress[D6_ID]=keepProg||0; HF.save=keepSave; HF.data.weight=keepW; LANG=keepLang; MEMBERSHIP_LIVE=keepLive;
 })();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

@@ -21,7 +21,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { CATALOGUE, CORS, json } from '../_shared/catalogue.ts';
 
 /* the programs sold on their own — the same list as plus_landing_sku() */
-const LANDING_SKUS = ['prog_wl30'];
+const LANDING_SKUS = ['prog_wl30', 'prog_d6'];
 
 /* First non-empty value among several possible field names, nested too. */
 function pick(o: Record<string, unknown>, keys: string[]): string {

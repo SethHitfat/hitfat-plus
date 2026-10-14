@@ -367,6 +367,7 @@ function openProduct(sku){
      Every old way into a product sheet lands on the paywall instead. */
   if(sku==='prog_'+WL30_ID) return wlBuy();
   if(typeof LB30_ID!=='undefined' && sku==='prog_'+LB30_ID) return lbBuy();
+  if(typeof D6_ID!=='undefined' && sku==='prog_'+D6_ID) return d6Buy();
   if(String(sku).indexOf('scan_')===0) return openScanPlans();
   if(sku===BUNDLE_SKU || String(sku).indexOf('prog_')===0){
     const p=String(sku).indexOf('prog_')===0 ? PROGRAMS.filter(x=>'prog_'+x.id===sku)[0] : null;
@@ -549,7 +550,7 @@ function coConfirm(state){
     wait:['co-wait','Confirming your payment','This usually takes a few seconds. You can keep this open.','',''],
     ok:['co-ok',(t==='coach'?'Welcome to HITFAT+ Coach':t?'Welcome to HITFAT+':'Payment confirmed'),
         (until?'Everything is open until '+fmtDate(until)+'.':'Your purchase is unlocked.'),
-        'Start training',(_paySku==='prog_'+WL30_ID?'closeProduct();openProgram(WL30_ID)':(typeof LB30_ID!=='undefined'&&_paySku==='prog_'+LB30_ID)?'closeProduct();openProgram(LB30_ID)':'closeProduct();switchTab(\'train\')')],
+        'Start training',(_paySku==='prog_'+WL30_ID?'closeProduct();openProgram(WL30_ID)':(typeof LB30_ID!=='undefined'&&_paySku==='prog_'+LB30_ID)?'closeProduct();openProgram(LB30_ID)':(typeof D6_ID!=='undefined'&&_paySku==='prog_'+D6_ID)?'closeProduct();openProgram(D6_ID)':'closeProduct();switchTab(\'train\')')],
     late:['co-late','Not confirmed yet','Your bank has not told us yet. It unlocks by itself once it does — nothing to do but wait.',
         'OK','closeProduct()']
   }[state];
@@ -706,6 +707,7 @@ function coachUpsell(){
    offer, everything else to the membership. */
 function lockedProgram(p){
   if(p && p.hub==='lb30' && typeof lbBuy==='function') return lbBuy();
+  if(p && p.hub==='d6' && typeof d6Buy==='function') return d6Buy();
   if(p && p.oneTime && typeof wlBuy==='function') return wlBuy();
   openPaywall(p.name+' is part of HITFAT+.');
 }

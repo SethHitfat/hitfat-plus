@@ -270,9 +270,11 @@ function plClose(){
      losing their place for them. */
   const t42=pl&&pl.meta&&pl.meta.t42day;
   const aic=pl&&pl.meta&&pl.meta.aic;
-  const lb=pl&&pl.meta&&pl.meta.lb;
+  const lb=pl&&pl.meta&&pl.meta.lb, pl0=pl&&pl.meta;
   exitPlayer();
   if(lb && typeof lbAfterSession==='function') return lbAfterSession(lb);
+  const d6=pl0&&pl0.d6;
+  if(d6 && typeof d6AfterSession==='function') return d6AfterSession(d6);
   if(aic && typeof aicAfterSession==='function') return aicAfterSession(aic);
   if(t42 && typeof openT42==='function') return openT42();
   if(back) backToProgram(); else switchTab('home');

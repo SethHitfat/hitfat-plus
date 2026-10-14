@@ -58,7 +58,7 @@ function progEq(p){
    that plays for 19. Recovery keeps its own (its clips are still being
    filmed) and so does the plan a member builds, which they set themselves. */
 function progMinutes(p){
-  if(!p || p.rehab || p.id==='custom' || p.hub==='lb30') return null;   /* Ladies Burn 30 counts its own */
+  if(!p || p.rehab || p.id==='custom' || p.hub==='lb30' || p.hub==='d6') return null;   /* Ladies Burn 30 counts its own */
   var rest=(typeof REST_SECS!=='undefined')?REST_SECS:20, rounds=p.rounds||3, eq=progEq(p), tot=0, n=0;
   var day=function(names){
     if(!names || !names.length) return;
@@ -89,7 +89,7 @@ const HF={
     weight:[],meals:{},burn:{},favs:[],custom:null,nutrition:{},scanQuota:{used:0,month:''},owned:{},purchases:[],
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
     body:[],goalKg:null,
-    challengeJoined:{},badges:{},wl30:{},lb30:{},coach:{},academy:{} }; },
+    challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{} }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
   apply(o){
@@ -109,6 +109,7 @@ const HF={
       d.challengeJoined=Object.assign({},o.challengeJoined||{}); d.badges=Object.assign({},o.badges||{});
       d.wl30=(o.wl30&&typeof o.wl30==='object')?JSON.parse(JSON.stringify(o.wl30)):{};
       d.lb30=(o.lb30&&typeof o.lb30==='object')?JSON.parse(JSON.stringify(o.lb30)):{};
+      d.d6=(o.d6&&typeof o.d6==='object')?JSON.parse(JSON.stringify(o.d6)):{};
       d.coach=(o.coach&&typeof o.coach==='object')?JSON.parse(JSON.stringify(o.coach)):{};
       d.academy=(o.academy&&typeof o.academy==='object')?JSON.parse(JSON.stringify(o.academy)):{};
     }

@@ -700,21 +700,14 @@ function lbClaim(){
   })['catch'](function(){ toast('Pesanan itu tidak dapat disemak — cuba lagi sebentar.'); });
 }
 
-/* ── Home: under BURN30, for everyone — the offer, then the day she is on ── */
+/* ── Home: the full card once she has started it or bought it on its own;
+   until then a tile in the programs row (hubRow, diet6.js) ── */
+function lbFull(){ return lbOwned() && lbNext()<LB30_DAYS.length && (owns('prog_'+LB30_ID) || lbDone()>0); }
 function lbHomeCard(){
-  var owned=lbOwned(), done=lbDone(), tot=LB30_DAYS.length, nx=lbNext();
-  if(owned && nx>=tot) return '';
-  var d=LB30_DAYS[Math.min(nx,tot-1)];
-  if(owned && done){
-    var pct=Math.round(done/tot*100);
-    return '<div class="wl-poster lb-card" onclick="openProgram(\''+LB30_ID+'\')">'+lbPoster('lb-card-poster')+
-      '<div class="wl-poster-b"><div class="tx"><div class="k">Hari '+(nx+1)+' · '+lbMinutes(d)+' min</div>'+
-      '<div class="t">'+d.n+'</div><div class="pbar lb-bar"><i style="width:'+pct+'%"></i></div></div>'+
-      '<button class="bigbtn lb-btn" onclick="event.stopPropagation();lbOpenDay('+nx+')">'+glyph('play')+'Mula Hari '+(nx+1)+'</button></div></div>';
-  }
+  if(!lbFull()) return '';
+  var done=lbDone(), tot=LB30_DAYS.length, nx=lbNext(), d=LB30_DAYS[nx], pct=Math.round(done/tot*100);
   return '<div class="wl-poster lb-card" onclick="openProgram(\''+LB30_ID+'\')">'+lbPoster('lb-card-poster')+
-    '<div class="wl-poster-b"><div class="tx"><div class="k">'+(owned?(contentOpen()?'Baru · Termasuk dalam HITFAT+':'Milik anda · Sedia bila anda sedia'):'Program Baru · Khas Wanita')+'</div>'+
-    '<div class="t">'+(owned?LB30_SUB:'RM'+LB30_PRICE+' · milik anda selamanya')+'</div></div>'+
-    '<button class="bigbtn lb-btn" onclick="event.stopPropagation();'+(owned?'lbOpenDay(0)':'openProgram(\''+LB30_ID+'\')')+'">'+
-    (owned?glyph('play')+'Mula Hari 1':'Lihat Program')+'</button></div></div>';
+    '<div class="wl-poster-b"><div class="tx"><div class="k">Hari '+(nx+1)+' · '+lbMinutes(d)+' min</div>'+
+    '<div class="t">'+d.n+'</div><div class="pbar lb-bar"><i style="width:'+pct+'%"></i></div></div>'+
+    '<button class="bigbtn lb-btn" onclick="event.stopPropagation();lbOpenDay('+nx+')">'+glyph('play')+'Mula Hari '+(nx+1)+'</button></div></div>';
 }
