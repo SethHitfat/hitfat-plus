@@ -257,7 +257,7 @@ function renderHome(){
   }).join('')+'</div>';
 
   // 3) membership, then T42
-  if($('home-t42')) $('home-t42').innerHTML=wlHomeCard()+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard()+hubRow():'')+(typeof aicHomeCard==='function'?aicHomeCard():'')+(typeof acHomeCard==='function'?acHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
+  if($('home-t42')) $('home-t42').innerHTML=wlHomeCard()+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard()+hubRow():'')+(typeof ifHomeCard==='function'?ifHomeCard():'')+(typeof aicHomeCard==='function'?aicHomeCard():'')+(typeof acHomeCard==='function'?acHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
   // 4) Up Next — the plan in progress, or the way to pick one
