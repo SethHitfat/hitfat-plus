@@ -11,9 +11,9 @@ const REST_SECS=20;
 let _lastWorkout=null;
 let pl=null, plTick=null;
 
-function vimeoSrc(id){
-  return 'https://player.vimeo.com/video/'+id+
-         '?background=1&autoplay=1&loop=1&muted=1&controls=0&autopause=0';
+function vimeoSrc(id,hash){
+  return 'https://player.vimeo.com/video/'+id+'?'+(hash?'h='+hash+'&':'')+
+         'background=1&autoplay=1&loop=1&muted=1&controls=0&autopause=0';
 }
 function setClip(ex){
   const f=$('pl-video'); if(!f||!ex) return;
@@ -32,7 +32,7 @@ function setClip(ex){
   if(nf) nf.style.display='none';
   if(pl && pl.clip===ex.v) return;        // already playing this one — do not restart it
   if(pl) pl.clip=ex.v;
-  f.src=vimeoSrc(ex.v);
+  f.src=vimeoSrc(ex.v,ex.h);
 }
 const PL_ICON_PLAY='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
 const PL_ICON_PAUSE='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="13.5" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg>';
@@ -270,7 +270,9 @@ function plClose(){
      losing their place for them. */
   const t42=pl&&pl.meta&&pl.meta.t42day;
   const aic=pl&&pl.meta&&pl.meta.aic;
+  const lb=pl&&pl.meta&&pl.meta.lb;
   exitPlayer();
+  if(lb && typeof lbAfterSession==='function') return lbAfterSession(lb);
   if(aic && typeof aicAfterSession==='function') return aicAfterSession(aic);
   if(t42 && typeof openT42==='function') return openT42();
   if(back) backToProgram(); else switchTab('home');

@@ -315,7 +315,7 @@ print("\n── GENERATED PLANS ──");
 var _multi=PROGRAMS.filter(function(p){return p.weeks;});
 ok("plan catalogue grew",  _multi.length>=17, _multi.length);
 var _bad=0,_empty=0,_days=0;
-_multi.forEach(function(p){ p.weeks.forEach(function(w){ w.days.forEach(function(d){
+_multi.forEach(function(p){ if(p.hub==='lb30') return; p.weeks.forEach(function(w){ w.days.forEach(function(d){
   _days++; if(d.rest) return;
   if(!d.ex||!d.ex.length){_empty++;return;}
   d.ex.forEach(function(n){ if(!DB.find(function(e){return e.n===n;})) _bad++; }); }); }); });
@@ -375,7 +375,7 @@ ok("no unverifiable 'Top 10 in Malaysia' claim", _ph.indexOf('Top 10 in Malaysia
 ok("Recovery stays in its own tab, not in Plans", _ph.indexOf('Knee Prehab')<0 && _ph.indexOf('Desk Reset')<0);
 ok("...and the billboard is a training plan", trainingPlans().every(function(p){ return !p.rehab; }));
 /* The minutes on a card are what the player runs. */
-ok("every plan's minutes match its content", trainingPlans().filter(function(p){ return p.id!=='custom'; })
+ok("every plan's minutes match its content", trainingPlans().filter(function(p){ return p.id!=='custom' && p.hub!=='lb30'; })
    .every(function(p){ return p.dur===progMinutes(p); }));
 ok("Morning 10 is about ten minutes", Math.abs(PROGRAMS.filter(function(p){ return p.id==='am21'; })[0].dur-10)<=1);
 ok("names are written one way", PROGRAMS.every(function(p){ return !/^\d+ (Day|Week|Minutes?) /.test(p.name); }));
@@ -773,7 +773,7 @@ ok("filmed:true narrows the pool", (function(){
 })());
 ok("BAR plans still get BAR moves", BAR_PLANS.every(function(p){
     return p.weeks[0].days.some(function(d){ return !d.rest && d.ex.some(isBarExercise); }); }));
-ok("no generic day went empty",  PROGRAMS.filter(function(p){ return p.weeks; })
+ok("no generic day went empty",  PROGRAMS.filter(function(p){ return p.weeks && p.hub!=='lb30'; })
     .every(function(p){ return p.weeks.every(function(w){ return w.days.every(function(d){
       return d.rest || d.ex.length>0; }); }); }));
 
@@ -3624,6 +3624,75 @@ print("\n── LANGUAGE: BM / EN ──");
   var bad=Object.keys(I18N_MS).filter(function(k){ return (k.match(/#/g)||[]).length!==((I18N_MS[k].match(/#/g)||[]).length) && !/\{\d\}/.test(I18N_MS[k]); });
   ok("every template keeps its numbers", bad.length===0, bad.slice(0,5).join(' | '));
   ok("the switch is hidden while BM waits", LANG_LIVE===false && String(renderMe).indexOf("LANG_LIVE?")>0);
+})();
+print("\n── LADIES BURN 30 ──");
+(function(){
+  var keepEnt=_ent, keepLb=HF.data.lb30, keepProg=HF.data.progress[LB30_ID], keepSave=HF.save, keepSW=startWorkout, keepLang=LANG, keepLive=MEMBERSHIP_LIVE;
+  HF.save=function(){}; HF.data.lb30={}; MEMBERSHIP_LIVE=true;
+  ok("the name lives in one place", LB30.name===LB30_NAME && findProg('lad4')===LB30 && LB30.hub==='lb30');
+  ok("30 days in 4 weeks, every day once", LB30_DAYS.length===30 && LB30_WEEKS[0].from===1 && LB30_WEEKS[3].to===30 &&
+     LB30_WEEKS.every(function(w,i){ return i===0 || w.from===LB30_WEEKS[i-1].to+1; }) &&
+     LB30.weeks.reduce(function(a,w){ return a+w.days.length; },0)===30);
+  var moves=[]; LB30_DAYS.forEach(function(d){ moves=moves.concat(d.ex); });
+  ok("nothing jumps", moves.every(function(n){ return !/jump|burpee|skip|tuck|skater|jack|hop|bound/i.test(n); }));
+  ok("every move has a video", moves.every(function(n){ var e=lbEx(n); return !!e.v; }));
+  ok("no equipment beyond a wall", moves.every(function(n){ return !/chair|bench|dumbbell|kettlebell|bottle|band|step up/i.test(n); }));
+  ok("every session is 20 minutes at most", LB30_DAYS.every(function(d){ return lbMinutes(d)<=20; }), LB30_DAYS.map(lbMinutes).join(','));
+  ok("...and each half of 2 × 10 is ten at most", LB30_DAYS.every(function(d){ var h=lbHalves(d); return lbSecs(h[0],d.r)<=600 && lbSecs(h[1],d.r)<=600; }));
+  var avg=function(w){ var ds=LB30_DAYS.slice(w.from-1,w.to).filter(function(d){ return d.k==='work'; }), t=0; ds.forEach(function(d){ t+=lbMinutes(d); }); return t/ds.length; };
+  ok("it builds from week 1 to week 4", avg(LB30_WEEKS[3])>avg(LB30_WEEKS[0]));
+  ok("day 1 and day 30 are the check-in and fit test", LB30_DAYS[0].k==='test' && LB30_DAYS[29].k==='test');
+  ok("30 missions, none twice", LB30_MISI.length===30 && new Set(LB30_MISI).size===30);
+  ok("walking climbs 4,000 to 10,000", LB30_STEPS.length===30 && LB30_STEPS[0]===4000 && LB30_STEPS[29]===10000 &&
+     LB30_STEPS.every(function(v,i){ return i===0||v>=LB30_STEPS[i-1]; }));
+  ok("water climbs 2.0 to 2.5 L", lbWater(0)===2.0 && lbWater(29)===2.5);
+  /* calories: BURN30's sum, never under 1,200 */
+  HF.data.lb30={profile:{wt:42,ht:148,age:60}};
+  ok("the target never goes under 1,200 kcal", lbTarget().cal>=1200);
+  HF.data.lb30={profile:{wt:95,ht:165,age:30}};
+  var t=lbTarget(), n=mpNut({goal:'loss',rate:0.5,gender:'female',age:30,wt:95,ht:165,activity:1.375,styles:['hiprotein']});
+  ok("...and is BURN30's own sum otherwise", t.cal===n.cal && t.cal>1200);
+  ok("three menu options a meal, different each day", LB30_SLOTS.every(function(s){ var a=lbMenuFor(s,0), b=lbMenuFor(s,1);
+     return a.length===3 && new Set(a.map(function(o){return o.n;})).size===3 && a[0].n!==b[0].n; }));
+  /* the old Ladies Beginner's days do not carry over */
+  HF.data.lb30={}; HF.data.progress[LB30_ID]=9;
+  ok("the new program starts at day 1", lbDone()===0);
+  /* check-ins: weight, waist, hip on days 1, 15, 30 */
+  lbSetBody(1,'kg',70); lbSetBody(1,'waist',88); lbSetBody(1,'hip',102); lbSetBody(15,'hip',99); lbSetBody(30,'kg',67.5);
+  var b=lbData().body;
+  ok("check-ins keep weight, waist and hip", b[1].kg===70 && b[1].waist===88 && b[1].hip===102 && b[15].hip===99 && b[30].kg===67.5);
+  ok("photos are kept on the phone, per day", lbPhotoKey(15).indexOf('hf_lb30_photo_')===0 && lbPhotoKey(1)!==lbPhotoKey(30));
+  /* access */
+  _guest();
+  ok("a guest sees it locked", !lbOwned());
+  _ent={skus:{'prog_lad4':1}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, loaded:true, owned:{'prog_lad4':true}};
+  var ownsIt=owns('prog_lad4');
+  ok("buying it opens it", ownsIt && lbOwned());
+  ok("...and only it", !ownsProgram(WL30) && !ownsProgram(findProg('sig1')||{id:'sig1'}));
+  _member('plus'); ok("a member has it", lbOwned());
+  /* playing: the whole day counts it; split, the second half does */
+  var got=null; startWorkout=function(e,m){ got={e:e,m:m}; };
+  lbPlay(3); ok("a day plays its moves and counts", got && got.e.length===LB30_DAYS[3].ex.length && got.m.pid==='lad4' && got.m.gi===3 && got.m.lb.gi===3);
+  ok("...with the female demo video, hash and all", got.e[0].v && typeof got.e[0].h==='string');
+  lbPlay(3,'a'); ok("the morning half alone does not count the day", !got.m.pid && got.m.key==='lb30-d3-a');
+  lbData().half[3]={a:true}; lbPlay(3,'b'); ok("...the evening half, after it, does", got.m.pid==='lad4' && got.m.gi===3);
+  /* Malay on its own pages */
+  var html=''; var keepBody=$('pgd-body');
+  ['plan','food','progress','guide'].forEach(function(tb){ lbTab=tb; renderLB30(); html+=$('pgd-body').innerHTML; });
+  lbOpenDay(0); var d1=$('dd-body').innerHTML;
+  ok("the pages are in Malay", ["Today's Checklist","Start Day","Nutrition<","Start Here","Your 30 Days","Day 1 of","Coach's note"].every(function(w){ return html.indexOf(w)<0 && d1.indexOf(w)<0; }) &&
+     html.indexOf('Senarai Semak Hari Ini')>0 && html.indexOf('Mula Di Sini')>0 && html.indexOf('Pemakanan')>0);
+  ok("Start Here carries the safety note", html.indexOf('baru bersalin (kurang 6 minggu)')>0 && html.indexOf('caesarean')>0 && html.indexOf('hamil')>0);
+  ok("day 1: the check-in first, then the fit test, which may be skipped", d1.indexOf('Body Check-in')>0 && d1.indexOf('Body Check-in')<d1.indexOf('Fit Test impak rendah') &&
+     d1.indexOf('Pinggul')>0 && d1.indexOf('lbSkipTest(0)')>0);
+  /* BURN30 is as it was */
+  ok("BURN30 is untouched", WL30.hub===true && findProg('wl30')===WL30 && WL30_DAYS.length===30 && WL30.price===39);
+  var wbuy=0, keepWB=wlBuy, keepLB=lbBuy; wlBuy=function(){ wbuy++; }; lbBuy=function(){ wbuy+=10; };
+  _guest(); lockedProgram(WL30); lockedProgram(LB30);
+  ok("each program sells itself", wbuy===11);
+  wlBuy=keepWB; lbBuy=keepLB;
+  lbLang(false);
+  startWorkout=keepSW; _ent=keepEnt; HF.data.lb30=keepLb||{}; HF.data.progress[LB30_ID]=keepProg||0; HF.save=keepSave; LANG=keepLang; MEMBERSHIP_LIVE=keepLive;
 })();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

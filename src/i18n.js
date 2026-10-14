@@ -468,7 +468,7 @@ function _i18nEl(el){
   }
 }
 function i18nApply(root){
-  if(LANG!=='ms' || !root) return;
+  if(LANG!=='ms' || !root || typeof NodeFilter==='undefined' || !document.createTreeWalker) return;
   if(root.nodeType===3){ const p=root.parentNode; if(p && !_I18N_SKIP[p.nodeName] && !(p.closest&&p.closest('[data-noi18n]'))) _i18nText(root); return; }
   if(root.nodeType!==1 || _I18N_SKIP[root.nodeName] || (root.closest&&root.closest('[data-noi18n]'))) return;
   _i18nEl(root);
@@ -478,6 +478,7 @@ function i18nApply(root){
 }
 /* back to English: every swapped string returns to what the app wrote */
 function i18nRestore(root){
+  if(typeof NodeFilter==='undefined' || !document.createTreeWalker) return;
   const w=document.createTreeWalker(root||document.body, NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);
   let n; while((n=w.nextNode())){
     if(n.nodeType===3){ if(n.__en!==undefined && n.nodeValue===n.__ms){ n.nodeValue=n.__en; } n.__en=n.__ms=undefined; continue; }

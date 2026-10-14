@@ -2245,3 +2245,58 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .ac-card .t{font-size:17px;font-weight:700;color:var(--txt);margin-top:2px;}
 .ac-card .s{font-size:13px;color:var(--dim);margin-top:2px;}
 .ac-in-eat{padding-top:6px;}
+
+/* ═══════════════════════════════════════════════════════════════
+   LADIES BURN 30
+   ═══════════════════════════════════════════════════════════════ */
+.lb-btn{background:#E8457A !important;color:#fff !important;}
+.lb-btn.sec{background:rgba(232,69,122,.18) !important;color:#E8457A !important;}
+.lb-bar i{background:#E8457A !important;}
+.lb-type{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;
+  background:radial-gradient(circle at 70% 15%,rgba(232,69,122,.45),transparent 60%),linear-gradient(160deg,#3a1f2d,#0d080b 78%);color:#fff;}
+.wl-hero.lb-type{aspect-ratio:1/1;}
+.wl-hero.day.lb-type{aspect-ratio:16/9;}
+.lb-type img.lb-mark,.wl-hero .lb-mark,.wl-poster .lb-mark{display:block;width:60px;height:60px;aspect-ratio:auto;object-fit:contain;margin:0 auto;}
+.lb-name{font-size:34px;font-weight:800;letter-spacing:-.8px;line-height:1.05;padding:0 20px;}
+.lb-sub{font-size:12px;font-weight:700;letter-spacing:.14em;color:#F7A8C2;}
+.lb-buy{border-radius:18px;overflow:hidden;aspect-ratio:16/10;margin-bottom:14px;}
+.lb-card-poster{aspect-ratio:16/9;}
+.lb-card-poster .lb-name{font-size:26px;}
+.lb-misi{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:16px;margin:10px 0 4px;
+  background:rgba(232,69,122,.12);box-shadow:inset 3px 0 0 #E8457A;}
+.lb-misi .uic{flex:none;}
+.lb-misi .k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#E8457A;}
+.lb-misi .t{font-size:15px;font-weight:600;margin-top:3px;line-height:1.4;}
+.lb-count{cursor:default;grid-column:1/-1;}
+.wl-chks>*{min-width:0;}
+.wl-chks>.authalt{grid-column:1/-1;}
+.lb-count .l{min-width:0;}
+.lb-ctl{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none;}
+.lb-ctl button{width:30px;height:30px;border-radius:50%;border:none;background:rgba(232,69,122,.18);color:#E8457A;font-size:18px;font-weight:700;cursor:pointer;}
+.lb-ctl b{min-width:54px;text-align:center;font-variant-numeric:tabular-nums;font-size:14px;}
+.lb-vid{margin:12px 0;}
+.lb-vid.soon{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;border:1px dashed rgba(232,69,122,.5);}
+.lb-vid.soon .gly{width:22px;height:22px;flex:none;color:#E8457A;}
+.lb-vid .k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#E8457A;}
+.lb-vid .t{font-size:15px;font-weight:700;margin-top:2px;}
+.lb-vid .s{font-size:13px;opacity:.7;margin-top:2px;}
+.lb-frame{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000;}
+.lb-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.lb-safe{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:16px;margin:12px 0;
+  background:rgba(245,158,11,.12);box-shadow:inset 3px 0 0 #F59E0B;}
+.lb-safe .t{font-size:15px;font-weight:700;}
+.lb-safe .s{font-size:14px;line-height:1.45;margin-top:3px;opacity:.85;}
+.lb-steps{margin:14px 0 6px;display:flex;flex-direction:column;gap:10px;}
+.lb-step{display:flex;gap:12px;align-items:flex-start;}
+.lb-step .n{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#E8457A;color:#fff;font-weight:800;font-size:13px;}
+.lb-step .n .gly{width:15px;height:15px;}
+.lb-step .t{font-size:16px;font-weight:700;}
+.lb-step .s{font-size:13px;opacity:.75;margin-top:2px;line-height:1.4;}
+.lb-body{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px;}
+.lb-ph{height:120px;width:100%;}
+.lb-fine{font-size:12px;opacity:.65;}
+.lb-split{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 4px;font-size:14px;font-weight:600;}
+.lb-sw{flex:none;width:48px;height:28px;border-radius:99px;border:none;background:rgba(127,127,127,.35);position:relative;cursor:pointer;}
+.lb-sw i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s;}
+.lb-sw.on{background:#E8457A;}
+.lb-sw.on i{left:23px;}

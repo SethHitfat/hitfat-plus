@@ -257,7 +257,7 @@ function renderHome(){
   }).join('')+'</div>';
 
   // 3) membership, then T42
-  if($('home-t42')) $('home-t42').innerHTML=wlHomeCard()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(typeof acHomeCard==='function'?acHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
+  if($('home-t42')) $('home-t42').innerHTML=wlHomeCard()+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof aicHomeCard==='function'?aicHomeCard():'')+(typeof acHomeCard==='function'?acHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
   // 4) Up Next — the plan in progress, or the way to pick one
@@ -390,7 +390,7 @@ function pdxSub(p){
 }
 function renderProgram(){
   const p=curProg; if(!p) return;
-  if(p.hub) return renderWL30();
+  if(p.hub) return p.hub==='lb30' ? renderLB30() : renderWL30();
   const tot=progDays(p), done=progDone(p.id), pct=tot?Math.round(done/tot*100):0;
   const owned=ownsProgram(p), multi=!!(p.weeks&&p.weeks.length);
   const meta=[p.level, multi?planPerWeek(p)+' days a week':'', p.dur+' min'+(multi?' a day':'')].filter(Boolean).join(' · ');
@@ -466,7 +466,7 @@ function markRest(pid,gi){
 let curDay=null;
 function openDay(pid,gi){
   const p=findProg(pid); if(!p) return;
-  if(p.hub) return wlOpenDay(gi);
+  if(p.hub) return p.hub==='lb30' ? lbOpenDay(gi) : wlOpenDay(gi);
   if(!ownsProgram(p)) return lockedProgram(p);
   curProg=p;
   let c=0, day=null, wk=1, dn=1;
