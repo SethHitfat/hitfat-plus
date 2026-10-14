@@ -3635,8 +3635,9 @@ print("\n── LADIES BURN 30 ──");
      LB30.weeks.reduce(function(a,w){ return a+w.days.length; },0)===30);
   var moves=[]; LB30_DAYS.forEach(function(d){ moves=moves.concat(d.ex); });
   ok("nothing jumps", moves.every(function(n){ return !/jump|burpee|skip|tuck|skater|jack|hop|bound/i.test(n); }));
-  ok("every move has a video", moves.every(function(n){ var e=lbEx(n); return !!e.v; }));
-  ok("no equipment beyond a wall", moves.every(function(n){ return !/chair|bench|dumbbell|kettlebell|bottle|band|step up/i.test(n); }));
+  ok("every move is a filmed HITFAT clip, not an animation", moves.every(function(n){ var e=lbEx(n); return !!e.v && DB.some(function(x){ return x.n===n && x.v===e.v && x.eq==='Bodyweight'; }); }));
+  ok("no equipment beyond a wall", moves.every(function(n){ return !/chair|bench|dumbbell|kettlebell|bottle|backpack|band|step up/i.test(n); }));
+  ok("no running on the spot either", moves.every(function(n){ var e=lbEx(n); return e.t!=='jump' && !/high knee|butt kick|fast feet|sprint/i.test(n); }));
   ok("every session is 20 minutes at most", LB30_DAYS.every(function(d){ return lbMinutes(d)<=20; }), LB30_DAYS.map(lbMinutes).join(','));
   ok("...and each half of 2 × 10 is ten at most", LB30_DAYS.every(function(d){ var h=lbHalves(d); return lbSecs(h[0],d.r)<=600 && lbSecs(h[1],d.r)<=600; }));
   var avg=function(w){ var ds=LB30_DAYS.slice(w.from-1,w.to).filter(function(d){ return d.k==='work'; }), t=0; ds.forEach(function(d){ t+=lbMinutes(d); }); return t/ds.length; };
@@ -3673,7 +3674,7 @@ print("\n── LADIES BURN 30 ──");
   /* playing: the whole day counts it; split, the second half does */
   var got=null; startWorkout=function(e,m){ got={e:e,m:m}; };
   lbPlay(3); ok("a day plays its moves and counts", got && got.e.length===LB30_DAYS[3].ex.length && got.m.pid==='lad4' && got.m.gi===3 && got.m.lb.gi===3);
-  ok("...with the female demo video, hash and all", got.e[0].v && typeof got.e[0].h==='string');
+  ok("...each with its HITFAT video", got.e.every(function(e){ return !!e.v; }));
   lbPlay(3,'a'); ok("the morning half alone does not count the day", !got.m.pid && got.m.key==='lb30-d3-a');
   lbData().half[3]={a:true}; lbPlay(3,'b'); ok("...the evening half, after it, does", got.m.pid==='lad4' && got.m.gi===3);
   /* Malay on its own pages */

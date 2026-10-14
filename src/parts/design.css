@@ -2254,7 +2254,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .lb-bar i{background:#E8457A !important;}
 .lb-type{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;
   background:radial-gradient(circle at 70% 15%,rgba(232,69,122,.45),transparent 60%),linear-gradient(160deg,#3a1f2d,#0d080b 78%);color:#fff;}
-.wl-hero.lb-type{aspect-ratio:1/1;}
+.wl-hero.lb-type{aspect-ratio:16/9;}
 .wl-hero.day.lb-type{aspect-ratio:16/9;}
 .lb-type img.lb-mark,.wl-hero .lb-mark,.wl-poster .lb-mark{display:block;width:60px;height:60px;aspect-ratio:auto;object-fit:contain;margin:0 auto;}
 .lb-name{font-size:34px;font-weight:800;letter-spacing:-.8px;line-height:1.05;padding:0 20px;}
@@ -2300,3 +2300,33 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .lb-sw i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s;}
 .lb-sw.on{background:#E8457A;}
 .lb-sw.on i{left:23px;}
+/* Ladies Burn 30: one header, one list per job */
+.lb-head{display:flex;align-items:center;gap:10px;margin:2px 0 4px;}
+.lb-head .pbar{flex:1;margin:0;}
+.lb-head span{flex:none;font-size:13px;font-weight:700;opacity:.75;font-variant-numeric:tabular-nums;}
+.lb-tabs{margin-top:14px;}
+.lb-chks{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:rgba(127,127,127,.12);}
+.lb-chk{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;}
+.lb-chk + .lb-chk{border-top:1px solid rgba(127,127,127,.18);}
+.lb-chk .b{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid rgba(127,127,127,.55);display:grid;place-items:center;}
+.lb-chk.on .b{background:#E8457A;border-color:#E8457A;color:#fff;}
+.lb-chk .b .gly{width:14px;height:14px;}
+.lb-chk .tx{flex:1;min-width:0;}
+.lb-chk .t{font-size:15px;font-weight:600;}
+.lb-chk .m{font-size:13px;opacity:.7;margin-top:2px;line-height:1.35;}
+.lb-chk.on .t{opacity:.6;}
+.lb-week{margin:2px 2px 10px;}
+.lb-week .t{font-size:17px;font-weight:700;}
+.lb-week .s{font-size:14px;opacity:.7;margin-top:3px;line-height:1.4;}
+.lb-days{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:rgba(127,127,127,.12);}
+.lb-dayrow{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;}
+.lb-dayrow + .lb-dayrow{border-top:1px solid rgba(127,127,127,.18);}
+.lb-dayrow .n{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;background:rgba(127,127,127,.2);font-variant-numeric:tabular-nums;}
+.lb-dayrow.done .n{background:#E8457A;color:#fff;}
+.lb-dayrow.now .n{background:#fff;color:#E8457A;box-shadow:0 0 0 2px #E8457A;}
+.lb-dayrow .n .gly{width:15px;height:15px;}
+.lb-dayrow .tx{flex:1;min-width:0;}
+.lb-dayrow .t{font-size:15px;font-weight:600;}
+.lb-dayrow .m{font-size:13px;opacity:.65;margin-top:2px;}
+.lb-dayrow.done .t{opacity:.6;}
+.lb-now{flex:none;font-size:11px;font-weight:700;padding:4px 9px;border-radius:99px;background:#E8457A;color:#fff;}
