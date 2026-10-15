@@ -3006,3 +3006,16 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 @-webkit-keyframes scUp{from{opacity:0;-webkit-transform:translateY(16px);}}
 @keyframes scUp{from{opacity:0;transform:translateY(16px);}}
 @media (prefers-reduced-motion: reduce){ #mascot-home.sc-enter *{-webkit-animation:none!important;animation:none!important;} }
+
+/* ── Top Programs, Fitness+ way (16 Oct: the title sat on the model's face) ──
+   The words go to the foot over a soft dark fade; the count is a small pill
+   at the top; the photo keeps its upper half clear. Rows snap to the gutter. */
+.fbig{width:300px;height:210px;border-radius:20px;}
+.fbig .ov{background:linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,.18) 48%,rgba(0,0,0,.72) 76%,rgba(0,0,0,.9) 100%);}
+.fbig .in{position:absolute;left:0;right:0;top:auto;bottom:0;padding:0 16px 15px;}
+.fbig .t{font-size:21px;font-weight:800;letter-spacing:-.4px;line-height:1.1;max-width:92%;color:#FFFFFF;}
+.fbig .s{font-size:13px;color:rgba(255,255,255,.78);margin-top:4px;max-width:92%;}
+.fbig .m{position:absolute;left:12px;top:12px;bottom:auto;padding:5px 9px;border-radius:99px;font-size:10px;font-weight:800;letter-spacing:.8px;
+  color:#FFFFFF;background:rgba(0,0,0,.42);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
+.hscroll{scroll-snap-type:x mandatory;scroll-padding:0 18px;}
+.hscroll>*{scroll-snap-align:start;}
