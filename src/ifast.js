@@ -171,7 +171,7 @@ function ifRing(){
   var big=on?ifDur(el):pr.f+' hours', small=on?(el>=tgt?'Goal reached 🎉':ifDur(tgt-el)+' to go'):'today’s fasting goal';
   return '<div class="if-ring" id="if-ring"><svg viewBox="0 0 '+sz+' '+sz+'" aria-hidden="true">'+
     '<circle cx="'+sz/2+'" cy="'+sz/2+'" r="'+r+'" class="if-ring-t"/>'+
-    (pct>0?'<path d="M'+sz/2+' '+(sz/2-r)+' a'+r+' '+r+' 0 1 1 0 '+(2*r)+' a'+r+' '+r+' 0 1 1 0 '+(-2*r)+'" class="if-ring-v" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+(c*(1-pct)).toFixed(1)+'"/>':'')+
+    (pct>0?'<path d="M'+sz/2+' '+(sz/2-r)+' a'+r+' '+r+' 0 1 1 0 '+(2*r)+' a'+r+' '+r+' 0 1 1 0 '+(-2*r)+'" class="if-ring-v'+(pct>=1?' done':'')+'" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+(c*(1-pct)).toFixed(1)+'"/>':'')+
     '</svg><div class="if-ring-c"><span>'+(on?'Fasting':'Not fasting')+'</span><b>'+big+'</b><small>'+small+'</small></div></div>';
 }
 function ifStageHTML(){
