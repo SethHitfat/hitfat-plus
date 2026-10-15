@@ -5530,6 +5530,29 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .ac-hero .bigbtn{background:#FFFFFF!important;color:#3A4232!important;box-shadow:none!important;}
 #eat-body .ac-hero .bigbtn,#academy .ac-hero .bigbtn,.ac-hero button.bigbtn.bigbtn{color:#3A4232!important;-webkit-text-fill-color:#3A4232!important;}
 
+/* ── Progress · Body (16 Oct): weight, its trend and the goal as one card ── */
+.pgw{background:var(--surface);border-radius:20px;padding:16px;cursor:pointer;}
+:root:not([data-theme="light"]) .pgw{background:#161618;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
+:root[data-theme="light"] .pgw{background:#FFFFFF;box-shadow:var(--lift-1);}
+.pgw-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.pgw-k{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E30613;}
+.pgw-v{font-size:40px;font-weight:900;letter-spacing:-1.5px;line-height:1.05;color:var(--txt);font-variant-numeric:tabular-nums;margin-top:2px;}
+.pgw-v span{font-size:16px;font-weight:700;letter-spacing:0;color:var(--dim);}
+.pgw-d{font-size:13px;font-weight:700;margin-top:2px;color:var(--dim);}
+.pgw-log{flex:none;border:0;border-radius:99px;padding:8px 14px;font:inherit;font-size:13px;font-weight:800;background:#E30613;color:#FFFFFF;cursor:pointer;}
+.pgw-sp{margin-top:8px;}
+.pgw-sp svg{height:52px!important;}
+.pgw-goal{margin-top:12px;padding-top:12px;border-top:.5px solid var(--sep);font-size:13px;color:var(--dim);}
+.pgw-gh{display:flex;justify-content:space-between;gap:10px;align-items:baseline;}
+.pgw-gh b{color:var(--txt);font-weight:700;margin-right:4px;}
+.pgw-goal a{color:#E30613;font-weight:800;cursor:pointer;}
+.pgw-goal .pgbar{margin-top:8px;}
+.pgw-pct{font-size:12px;color:var(--dim2);margin-top:5px;}
+.pggrid.pgb{margin-top:10px;}
+.acard.pgn{cursor:pointer;}
+.acard.pgn .ah .jchev{margin-left:auto;color:var(--dim2);font-size:20px;}
+.pggrid.pgb > .htile:only-child{grid-column:1 / -1;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -25487,37 +25510,41 @@ function renderProgress(){
      Progress Score's four parts, no second number out of 100). */
   h+=pgScoreCard(sc);
 
-  /* ── this month ── every tile is left out when its measurement has never
-     been entered, rather than printed as a dash. */
-  const tiles=[
-    pgTile('Weight', wl.length?wl[wl.length-1].kg:null, 'kg',
-           windowDelta(wSeries,30)!==null?fmtDelta(windowDelta(wSeries,30),'kg'):'', wSeries, goodDown, 'weight'),
+  /* ── body (16 Oct) ── weight as one card with its trend and the goal
+     inside it; body fat and waist as tiles only once entered. The streak,
+     workouts and days logged live in the score card and Training above and
+     below, so they are not repeated here. */
+  h+=fsec('Body',(pgDays()===7?'This week':'The last 30 days')+'. Tap for the full trend.');
+  if(wl.length){
+    const cur=wl[wl.length-1].kg, wd=windowDelta(wSeries,30);
+    const tone=wd===null||wd===0?'var(--dim)':((wd<0)===goodDown?'var(--pg-good)':'var(--pg-bad)');
+    h+='<div class="pgw" onclick="pgOpenMetric(\'weight\')"><div class="pgw-top"><div>'+
+       '<div class="pgw-k">Weight</div><div class="pgw-v">'+cur+'<span> kg</span></div>'+
+       (wd!==null?'<div class="pgw-d" style="color:'+tone+'">'+fmtDelta(wd,'kg')+' · 30 days</div>':'<div class="pgw-d">Weigh in again to see the trend</div>')+
+       '</div><button class="pgw-log" onclick="event.stopPropagation();askMeasure()">+ Log</button></div>'+
+       '<div class="pgw-sp">'+spark(wSeries, wd===null?false:(((wd<0)===goodDown)||wd===0))
+         .replace('<svg ','<svg preserveAspectRatio="none" ').replace('<polyline ','<polyline vector-effect="non-scaling-stroke" ')+'</div>';
+    if(HF.data.goalKg){
+      const start=wl[0].kg, target=HF.data.goalKg, span=Math.abs(start-target)||1;
+      const pct=Math.max(0,Math.min(100,Math.round(Math.abs(start-cur)/span*100)));
+      const left=Math.round(Math.abs(cur-target)*10)/10;
+      h+='<div class="pgw-goal"><div class="pgw-gh"><span><b>Weight goal</b> '+target+' kg · '+left+' kg to go</span>'+
+         '<a onclick="event.stopPropagation();askGoalWeight()">Edit</a></div>'+
+         '<div class="pgbar"><i style="width:'+pct+'%"></i></div><div class="pgw-pct">'+pct+'% of the way</div></div>';
+    } else h+='<div class="pgw-goal"><a onclick="event.stopPropagation();askGoalWeight()">+ Set a goal weight</a></div>';
+    h+='</div>';
+  } else {
+    h+='<div class="nempty pgw-empty">'+ic('scale')+'<div class="nempty-t">Log your first weigh-in</div>'+
+       '<div class="nempty-s">Once a week is enough. Weight, and body fat or waist if you have them.</div>'+
+       '<button class="bigbtn" onclick="askMeasure()">Log Measurements</button></div>';
+  }
+  const btiles=[
     pgTile('Body fat', fSeries.length?fSeries[fSeries.length-1].v:null, '%',
            windowDelta(fSeries,30)!==null?fmtDelta(windowDelta(fSeries,30),'%'):'', fSeries, true, 'bf'),
     pgTile('Waist', waistSeries.length?waistSeries[waistSeries.length-1].v:null, 'cm',
-           windowDelta(waistSeries,30)!==null?fmtDelta(windowDelta(waistSeries,30),'cm'):'', waistSeries, true, 'waist'),
-    pgTile('Workouts', tr.sessions||0, '', tr.mins+' min', null, false),
-    pgTile('Days logged', nu.logged||0, '', 'of '+pgDays()+' days', null, false),
-    pgTile('Streak', streak, streak===1?'day':'days', streak?'Keep it up':'Start today', null, false)
+           windowDelta(waistSeries,30)!==null?fmtDelta(windowDelta(waistSeries,30),'cm'):'', waistSeries, true, 'waist')
   ].filter(Boolean).join('');
-  h+=fsec('Highlights',(pgDays()===7?'This week':'The last 30 days')+'. Tap a measurement for its trend.')+
-     '<div class="pggrid">'+tiles+'</div>';
-
-  /* ── goal ── */
-  if(HF.data.goalKg && wl.length){
-    const cur=wl[wl.length-1].kg, start=wl[0].kg, target=HF.data.goalKg;
-    const span=Math.abs(start-target)||1, done=Math.abs(start-cur);
-    const pct=Math.max(0,Math.min(100,Math.round(done/span*100)));
-    const left=Math.round(Math.abs(cur-target)*10)/10;
-    h+=fsec('Goal','')+
-       '<div class="acard"><div class="ah"><div class="t">Weight goal</div>'+
-       '<div class="c" onclick="askGoalWeight()" style="cursor:pointer;color:var(--hitfat);font-weight:700;font-size:13px;">Edit</div></div>'+
-       '<div style="display:flex;align-items:baseline;gap:8px;margin-top:4px;">'+
-       '<div class="big">'+cur+'</div><div class="sub">/ '+target+' kg</div></div>'+
-       '<div class="sub">'+left+' kg to go</div>'+
-       '<div class="pgbar"><i style="width:'+pct+'%"></i></div>'+
-       '<div class="sub" style="text-align:right;">'+pct+'%</div></div>';
-  }
+  if(btiles) h+='<div class="pggrid pgb">'+btiles+'</div>';
 
   /* ── training ── */
   h+=fsec('Training','Filled days are days you trained.')+
@@ -25530,34 +25557,18 @@ function renderProgress(){
      '<div class="pglegend"><i class="pgd on"></i><span>Trained</span><i class="pgd"></i><span>Rest</span></div>'+
      '</div>';
 
-  /* ── nutrition ── only when there is something logged to describe. */
+  /* ── nutrition ── only when there is something logged to describe; the
+     bar is green on target, yellow under, red over */
   if(nu.logged){
     const n=HF.data.nutrition||{};
     const pct=n.cal?Math.min(100,Math.round(nu.avgKcal/n.cal*100)):0;
+    const bc=!n.cal?'#A1A1AA':nu.avgKcal>n.cal*1.1?'#E30613':nu.avgKcal<n.cal*0.85?'#FFC20E':'#2E9E5B';
     h+=fsec('Nutrition','What you logged, on average.')+
-       '<div class="acard"><div class="ah">'+ic('food')+'<div class="t">Average intake</div></div>'+
+       '<div class="acard pgn" onclick="switchTab(\'eat\');setEatSeg(\'journal\')"><div class="ah">'+ic('food')+'<div class="t">Average intake</div><span class="jchev">›</span></div>'+
        '<div style="display:flex;align-items:baseline;gap:8px;">'+
-       '<div class="big">'+nu.avgKcal+'</div><div class="sub">kcal / day'+(n.cal?' · target '+n.cal:'')+'</div></div>'+
-       (n.cal?'<div class="pgbar"><i style="width:'+pct+'%"></i></div>':'')+
-       '<div class="sub" style="margin-top:8px;">'+nu.logged+' of '+pgDays()+' days logged'+
-       (nu.avgScore?' · quality '+nu.avgScore+'/100':'')+'</div></div>';
-  }
-
-  /* ── insights ── each line is a rule over real numbers, so none of them
-     can say something the data does not support. */
-  const ins=[];
-  const wd=windowDelta(wSeries,30);
-  if(wd!==null) ins.push({ok:(wd<0)===goodDown||wd===0, t:'Weight '+(wd<0?'trending down':wd>0?'trending up':'holding'),
-                          s:fmtDelta(wd,'kg')+' over 30 days'});
-  if(tr.sessions) ins.push({ok:tr.sessions>=(HF.data.weekGoal||5)*2, t:'Training',
-                          s:tr.sessions+(tr.sessions===1?' session, ':' sessions, ')+tr.mins+' minutes '+(pgDays()===7?'this week':'in 30 days')});
-  if(nu.logged) ins.push({ok:nu.logged>=pgDays()*0.6, t:'Food logging',
-                          s:nu.logged+' of '+pgDays()+' days'});
-  if(streak) ins.push({ok:streak>=3, t:'Streak', s:streak+' day'+(streak===1?'':'s')+' running'});
-  if(ins.length){
-    h+=fsec('Insights','Read from your numbers, nothing more.')+'<div class="acard">'+
-       ins.map(x=>'<div class="pgins"><i class="'+(x.ok?'ok':'warn')+'"></i>'+
-       '<div><b>'+x.t+'</b><small>'+x.s+'</small></div></div>').join('')+'</div>';
+       '<div class="big">'+nu.avgKcal.toLocaleString()+'</div><div class="sub">kcal / day'+(n.cal?' · target '+n.cal.toLocaleString():'')+'</div></div>'+
+       (n.cal?'<div class="pgbar"><i style="width:'+pct+'%;background:'+bc+'"></i></div>':'')+
+       '<div class="sub" style="margin-top:8px;">'+nu.logged+' of '+pgDays()+' days logged</div></div>';
   }
 
   /* ── achievements ── */
@@ -25576,8 +25587,7 @@ function renderProgress(){
   const going=PROGRAMS.filter(p=>p.weeks&&progDone(p.id)>0&&progDone(p.id)<progDays(p));
   if(going.length) h+=fsec('Programs','In progress.')+going.map(frow).join('');
 
-  h+='<div class="pgacts"><button class="bigbtn" onclick="askMeasure()">Log Measurements</button>'+
-     '<button class="bigbtn sec" onclick="openShare()">Share Progress Card</button></div>';
+  h+='<div class="pgacts"><button class="bigbtn sec" onclick="openShare()">Share Progress Card</button></div>';
   $('prog-body').innerHTML=h;
   if(typeof loadBoard==='function') loadBoard('month','lb-prog',{limit:5});
 }
