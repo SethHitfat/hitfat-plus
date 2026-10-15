@@ -137,7 +137,7 @@ function scTint(c){ return 'rgba('+scRGB(c)+',.16)'; }
 /* Simple's two pills, top right of Home: the score (tap: Progress) and the streak */
 function scPills(){
   var s=scScore(), c=scColor(s);
-  return '<button class="sc-pill" onclick="switchTab(\'progress\')" aria-label="HITFAT Score '+s+' of 100">'+
+  return '<button class="sc-pill" onclick="scInsights()" aria-label="HITFAT Score '+s+' of 100">'+
     '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="3"/>'+
     (s>0?'<circle cx="10" cy="10" r="7.5" fill="none" stroke="'+c+'" stroke-width="3" stroke-linecap="round" pathLength="100" stroke-dasharray="'+s+' 100" transform="rotate(-90 10 10)"/>':'')+
     '</svg><b>'+s+'</b></button>'+scChip();
@@ -165,7 +165,7 @@ function scBellCard(st){
   return '<div class="scx-coach scx-bell"><div class="scx-k"><i></i>HITFAT SCORE</div>'+
     '<div class="scx-say" id="sc-say">'+(st.k?hesc(scInsight(st)):scInsight(st))+'</div>'+
     '<div class="scx-btns">'+(a?'<button class="scx-act" onclick="'+a[1]+'">'+a[0]+'</button>':'')+
-    '<button class="scx-got" onclick="scCarGo(1)">Got it</button></div></div>';
+    '<button class="scx-got" onclick="scInsights()">Score insights</button></div></div>';
 }
 /* Buddy's bubble, above Buddy: cheeky lines, a new one every few seconds
    (Simple's mascot does this), or what was just done */
@@ -248,9 +248,9 @@ function scRender(){
       /* each habit its own clip; its poster shows till the clip plays */
       var R={water:'water', meal:'meal', junk:'giggle', workout:'squat', steps:'walk', mood:scDaily().mood>=4?'cheer':scDaily().mood===3?'giggle':''};
       if(_scSay==='mood' && !R.mood){ /* a hard day: Buddy stays quiet and kind, no dancing */ }
-      else
-      bellReact(R[_scSay]||'cheer');
-    } else if(_scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
+      else if(!scRed()) scBounce();               /* cream Buddy: a happy bounce, no red clip */
+      else bellReact(R[_scSay]||'cheer');
+    } else if(scRed() && _scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
   }
   if(typeof scCheckMeet==='function' && scCheckMeet()) return;
   if(scCheckShine()) return;
@@ -281,9 +281,20 @@ function scPose(slot,src,ms){
 /* touch Buddy: a giggle, and a word */
 SC_LINES.poke=['Hehe, that tickles! 😆','Hey hey, Buddy is focusing here 😤','Hehe, again? 🙈','Buddy is fine, thanks for asking 💪'];
 var _scPokes=0;
+/* the reaction clips are drawn red; a cream Buddy (under 50) bounces in
+   its own colour instead of flashing red */
+function scRed(){ return scScore()>=SC_PADU && !scState().k; }
+function scBounce(){
+  var b=$('sc-bell'); if(!b) return;
+  b.className=b.className.replace(/ ?sc-boing/g,'');
+  try{ void b.offsetWidth; }catch(e){}
+  b.className+=' sc-boing';
+  setTimeout(function(){ b.className=b.className.replace(/ ?sc-boing/g,''); },700);
+}
 function scPoke(){
   if(scState().k==='rust'){ toast('Buddy is all messy 🥲 Log one thing to fluff Buddy up again'); return; }
-  if(typeof bellReact==='function') bellReact('giggle');
+  if(!scRed()) scBounce();
+  else if(typeof bellReact==='function') bellReact('giggle');
   scBubSet(SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]);
 }
 
@@ -305,7 +316,7 @@ function scSheet(k){
     h+='<div class="sc-sh"><div class="sc-sh-k">Steps today</div><div class="sc-sh-n">'+dy.steps.toLocaleString('en-MY')+'<span> / '+SC_STEPS.toLocaleString('en-MY')+'</span></div>'+
       '<div class="sc-sh-ctl"><button onclick="scSteps(1000)">+1,000</button><button onclick="scSteps(2000)">+2,000</button><button onclick="scSteps(5000)">+5,000</button></div>'+
       '<div class="sc-sh-in"><input class="inp" id="sc-steps" type="number" inputmode="numeric" placeholder="Total from your phone" min="0">'+
-      '<button class="bigbtn" onclick="scStepsSet()">Simpan</button></div>'+
+      '<button class="bigbtn" onclick="scStepsSet()">Save</button></div>'+
       '<div class="sc-sh-f">Check your steps in Apple Health or Google Fit, then enter the total here.</div></div>';
   }
   $('pw-body').innerHTML=h; $('pwm').classList.add('on');

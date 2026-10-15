@@ -5120,6 +5120,53 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .scx-got{flex:none;border:0;background:none;color:var(--txt);font:inherit;font-size:15px;font-weight:600;padding:12px 18px;cursor:pointer;}
 .scx-got:active{opacity:.6;}
 
+/* ── Score insights ── */
+.sci{padding:6px 2px 4px;}
+.sci-top{display:flex;align-items:center;gap:14px;margin-top:10px;}
+.sci-top img{width:92px;height:92px;flex:none;}
+.sci-n{font-size:52px;font-weight:800;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums;}
+.sci-n span{font-size:17px;font-weight:600;letter-spacing:0;color:var(--dim2);margin-left:3px;}
+.sci-s{font-size:15px;line-height:1.4;color:var(--txt);margin-top:6px;}
+.sci-h{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin:24px 2px 10px;}
+.sci-rows{background:var(--surface);border-radius:18px;overflow:hidden;}
+:root:not([data-theme="light"]) .sci-rows,:root:not([data-theme="light"]) .sci-wk,:root:not([data-theme="light"]) .sci-how{background:#2C2C2E;}
+.sci-row{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:0;border-top:.5px solid var(--sep);background:none;color:var(--txt);font:inherit;text-align:left;cursor:pointer;}
+.sci-row:first-child{border-top:0;}
+.sci-row .ic{flex:none;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:rgba(227,6,19,.12);color:#E30613;}
+.sci-row.full .ic{background:rgba(255,194,14,.18);color:#E0A100;}
+.sci-row .ic .gly{width:19px;height:19px;}
+.sci-row .tx{flex:1;min-width:0;}
+.sci-row .tx b{display:block;font-size:15px;}
+.sci-row .tx>span{display:block;font-size:12px;color:var(--dim2);margin-top:1px;}
+.sci-row .bar{display:block;height:5px;border-radius:9px;background:var(--surface2);margin-top:7px;overflow:hidden;}
+:root:not([data-theme="light"]) .sci-row .bar{background:rgba(255,255,255,.1);}
+.sci-row .bar i{display:block;height:100%;border-radius:9px;background:#E30613;}
+.sci-row.full .bar i{background:#FFC20E;}
+.sci-row .pt{flex:none;text-align:right;min-width:58px;}
+.sci-row .pt b{display:block;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;}
+.sci-row .pt span{display:block;font-size:11px;color:var(--dim2);}
+.sci-wk,.sci-how{background:var(--surface);border-radius:18px;padding:14px;}
+.sci-bars{position:relative;display:flex;align-items:flex-end;gap:6px;height:128px;}
+.sci-bars .line{position:absolute;left:0;right:0;bottom:calc(18px + (100% - 36px) / 2);border-top:1.5px dashed var(--dim2);opacity:.45;}
+.sci-d{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;}
+.sci-d b{font-size:11px;font-weight:700;color:var(--dim);font-variant-numeric:tabular-nums;}
+.sci-d .col{position:relative;width:100%;max-width:26px;height:calc(100% - 36px);border-radius:7px;background:var(--surface2);display:flex;align-items:flex-end;overflow:hidden;}
+:root:not([data-theme="light"]) .sci-d .col{background:rgba(255,255,255,.07);}
+.sci-d .col i{display:block;width:100%;border-radius:7px;}
+.sci-d span{font-size:12px;color:var(--dim2);}
+.sci-d.now span{color:var(--txt);font-weight:800;}
+.sci-ws{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px;text-align:center;}
+.sci-ws b{display:block;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;}
+.sci-ws span{display:block;font-size:11px;color:var(--dim2);margin-top:2px;}
+.sci-how{display:flex;flex-direction:column;gap:12px;font-size:14px;line-height:1.45;color:var(--dim);}
+.sci-how b{color:var(--txt);}
+.sci-go{width:100%;max-width:none;margin:20px 0 0;}
+/* a cream Buddy reacts in its own colour: a squash-and-stretch bounce */
+#mascot-home .sc-bell.sc-boing{-webkit-animation:scboing .62s cubic-bezier(.3,1.6,.5,1) both;animation:scboing .62s cubic-bezier(.3,1.6,.5,1) both;}
+@-webkit-keyframes scboing{0%{-webkit-transform:none;}25%{-webkit-transform:translateY(4%) scale(1.08,.9);}55%{-webkit-transform:translateY(-9%) scale(.95,1.06);}80%{-webkit-transform:translateY(0) scale(1.03,.97);}100%{-webkit-transform:none;}}
+@keyframes scboing{0%{transform:none;}25%{transform:translateY(4%) scale(1.08,.9);}55%{transform:translateY(-9%) scale(.95,1.06);}80%{transform:translateY(0) scale(1.03,.97);}100%{transform:none;}}
+@media (prefers-reduced-motion: reduce){ #mascot-home .sc-bell.sc-boing{-webkit-animation:none;animation:none;} }
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -6451,7 +6498,7 @@ function scTint(c){ return 'rgba('+scRGB(c)+',.16)'; }
 /* Simple's two pills, top right of Home: the score (tap: Progress) and the streak */
 function scPills(){
   var s=scScore(), c=scColor(s);
-  return '<button class="sc-pill" onclick="switchTab(\'progress\')" aria-label="HITFAT Score '+s+' of 100">'+
+  return '<button class="sc-pill" onclick="scInsights()" aria-label="HITFAT Score '+s+' of 100">'+
     '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="3"/>'+
     (s>0?'<circle cx="10" cy="10" r="7.5" fill="none" stroke="'+c+'" stroke-width="3" stroke-linecap="round" pathLength="100" stroke-dasharray="'+s+' 100" transform="rotate(-90 10 10)"/>':'')+
     '</svg><b>'+s+'</b></button>'+scChip();
@@ -6479,7 +6526,7 @@ function scBellCard(st){
   return '<div class="scx-coach scx-bell"><div class="scx-k"><i></i>HITFAT SCORE</div>'+
     '<div class="scx-say" id="sc-say">'+(st.k?hesc(scInsight(st)):scInsight(st))+'</div>'+
     '<div class="scx-btns">'+(a?'<button class="scx-act" onclick="'+a[1]+'">'+a[0]+'</button>':'')+
-    '<button class="scx-got" onclick="scCarGo(1)">Got it</button></div></div>';
+    '<button class="scx-got" onclick="scInsights()">Score insights</button></div></div>';
 }
 /* Buddy's bubble, above Buddy: cheeky lines, a new one every few seconds
    (Simple's mascot does this), or what was just done */
@@ -6562,9 +6609,9 @@ function scRender(){
       /* each habit its own clip; its poster shows till the clip plays */
       var R={water:'water', meal:'meal', junk:'giggle', workout:'squat', steps:'walk', mood:scDaily().mood>=4?'cheer':scDaily().mood===3?'giggle':''};
       if(_scSay==='mood' && !R.mood){ /* a hard day: Buddy stays quiet and kind, no dancing */ }
-      else
-      bellReact(R[_scSay]||'cheer');
-    } else if(_scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
+      else if(!scRed()) scBounce();               /* cream Buddy: a happy bounce, no red clip */
+      else bellReact(R[_scSay]||'cheer');
+    } else if(scRed() && _scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
   }
   if(typeof scCheckMeet==='function' && scCheckMeet()) return;
   if(scCheckShine()) return;
@@ -6595,9 +6642,20 @@ function scPose(slot,src,ms){
 /* touch Buddy: a giggle, and a word */
 SC_LINES.poke=['Hehe, that tickles! 😆','Hey hey, Buddy is focusing here 😤','Hehe, again? 🙈','Buddy is fine, thanks for asking 💪'];
 var _scPokes=0;
+/* the reaction clips are drawn red; a cream Buddy (under 50) bounces in
+   its own colour instead of flashing red */
+function scRed(){ return scScore()>=SC_PADU && !scState().k; }
+function scBounce(){
+  var b=$('sc-bell'); if(!b) return;
+  b.className=b.className.replace(/ ?sc-boing/g,'');
+  try{ void b.offsetWidth; }catch(e){}
+  b.className+=' sc-boing';
+  setTimeout(function(){ b.className=b.className.replace(/ ?sc-boing/g,''); },700);
+}
 function scPoke(){
   if(scState().k==='rust'){ toast('Buddy is all messy 🥲 Log one thing to fluff Buddy up again'); return; }
-  if(typeof bellReact==='function') bellReact('giggle');
+  if(!scRed()) scBounce();
+  else if(typeof bellReact==='function') bellReact('giggle');
   scBubSet(SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]);
 }
 
@@ -6619,7 +6677,7 @@ function scSheet(k){
     h+='<div class="sc-sh"><div class="sc-sh-k">Steps today</div><div class="sc-sh-n">'+dy.steps.toLocaleString('en-MY')+'<span> / '+SC_STEPS.toLocaleString('en-MY')+'</span></div>'+
       '<div class="sc-sh-ctl"><button onclick="scSteps(1000)">+1,000</button><button onclick="scSteps(2000)">+2,000</button><button onclick="scSteps(5000)">+5,000</button></div>'+
       '<div class="sc-sh-in"><input class="inp" id="sc-steps" type="number" inputmode="numeric" placeholder="Total from your phone" min="0">'+
-      '<button class="bigbtn" onclick="scStepsSet()">Simpan</button></div>'+
+      '<button class="bigbtn" onclick="scStepsSet()">Save</button></div>'+
       '<div class="sc-sh-f">Check your steps in Apple Health or Google Fit, then enter the total here.</div></div>';
   }
   $('pw-body').innerHTML=h; $('pwm').classList.add('on');
@@ -7071,6 +7129,47 @@ function scWeekly(off){
     '<div class="scx-wg"><div><b>'+w.padu+'</b><span>strong days</span></div><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+(w.best.v||'–')+'</b><span>'+bd+'</span></div></div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">New week, let\'s go!</button></div>';
   $('scc').style.display='flex'; scMomentPlay(w.avg>=SC_PADU?'gold':'calendar');
+}
+
+
+/* ── Score insights (Simple's "Score insights"): today's score habit by
+   habit, the week so far, and how the score works. From the card and from
+   the score pill. ── */
+function scInsights(){
+  var s=scScore(), hs=scHabits(), share=100/hs.length, c=scColor(s), st=scStreak(), lv=scLevel(s), i;
+  var poster=(typeof bellPoster==='function')?bellPoster(lv):'';
+  var status=s>=100?'Full score 🏆 Buddy couldn\'t be prouder.':s>=SC_PADU?'Strong day ✓ Buddy is red.':(SC_PADU-s)+' points to a strong day, when Buddy turns red.';
+  var h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="scClose()">✕</button></div>'+
+    '<div class="sci"><div class="sc-sh-k">Score insights</div>'+
+    '<div class="sci-top">'+(poster?'<img src="'+poster+'" alt="Buddy">':'')+
+      '<div><div class="sci-n" style="color:'+c+'">'+s+'<span>/100</span></div><div class="sci-s">'+status+'</div></div></div>';
+  /* habit by habit: what each is worth and what is left */
+  h+='<div class="sci-h">Today, habit by habit</div><div class="sci-rows">'+hs.map(function(x){
+      var got=Math.round(x.v*share), left=Math.round(share)-got;
+      return '<button class="sci-row'+(x.v>=1?' full':'')+'" onclick="scClose();scTap(\''+x.k+'\')">'+
+        '<span class="ic">'+glyph(x.ic)+'</span><span class="tx"><b>'+x.n+'</b><span>'+hesc(x.t||x.val)+'</span>'+
+        '<i class="bar"><i style="width:'+Math.round(x.v*100)+'%"></i></i></span>'+
+        '<span class="pt"><b>+'+got+'</b><span>'+(left>0?left+' to go':'done')+'</span></span></button>';
+    }).join('')+'</div>';
+  /* the week so far, Monday on */
+  var dow=(new Date().getDay()+6)%7, names=['M','T','W','T','F','S','S'], bars='', sum=0, n=0, strong=0, v;
+  for(i=0;i<7;i++){
+    if(i>dow){ bars+='<div class="sci-d"><i class="col"><i style="height:0"></i></i><span>'+names[i]+'</span></div>'; continue; }
+    v=scScore(iso(i-dow)); sum+=v; n++; if(v>=SC_PADU) strong++;
+    bars+='<div class="sci-d'+(i===dow?' now':'')+'"><b>'+v+'</b><i class="col"><i style="height:'+Math.max(3,v)+'%;background:'+scColor(v)+'"></i></i><span>'+names[i]+'</span></div>';
+  }
+  h+='<div class="sci-h">This week</div><div class="sci-wk"><div class="sci-bars"><i class="line"></i>'+bars+'</div>'+
+    '<div class="sci-ws"><div><b>'+(n?Math.round(sum/n):0)+'</b><span>average</span></div><div><b>'+strong+'</b><span>strong day'+(strong===1?'':'s')+'</span></div>'+
+    '<div><b>🔥 '+st.n+'</b><span>streak</span></div><div><b>❄️ '+scFreezeLeft()+'</b><span>freezes left</span></div></div></div>';
+  /* how it works */
+  h+='<div class="sci-h">How it works</div><div class="sci-how">'+
+    '<div><b>4 habits, 25 points each.</b> A workout, '+SC_MEALS+' meals, '+SC_WATER+' glasses of water, '+SC_STEPS.toLocaleString('en-MY')+' steps. Part of a habit counts too.</div>'+
+    '<div><b>50 or more is a strong day.</b> Buddy turns from cream to red.</div>'+
+    '<div><b>Strong days in a row make your streak.</b> Miss one? '+SC_FREEZES+' freezes a month keep it alive.</div>'+
+    '<div><b>Nothing logged for 2 days</b> and Buddy gets dusty; 3 days and Buddy\'s fur gets messy. One log fixes it.</div></div>'+
+    '<button class="bigbtn sci-go" onclick="scClose();switchTab(\'progress\')">See your history</button></div>';
+  $('pw-body').innerHTML=h; $('pwm').classList.add('on');
+  try{ $('pwm').scrollTop=0; }catch(e){}
 }
 /* ═══════════════ BELL'S REMINDERS · Web Push ═══════════════
    A member turns them on once (it must be a tap: the browser asks then);

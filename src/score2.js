@@ -230,3 +230,44 @@ function scWeekly(off){
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">New week, let\'s go!</button></div>';
   $('scc').style.display='flex'; scMomentPlay(w.avg>=SC_PADU?'gold':'calendar');
 }
+
+
+/* ── Score insights (Simple's "Score insights"): today's score habit by
+   habit, the week so far, and how the score works. From the card and from
+   the score pill. ── */
+function scInsights(){
+  var s=scScore(), hs=scHabits(), share=100/hs.length, c=scColor(s), st=scStreak(), lv=scLevel(s), i;
+  var poster=(typeof bellPoster==='function')?bellPoster(lv):'';
+  var status=s>=100?'Full score 🏆 Buddy couldn\'t be prouder.':s>=SC_PADU?'Strong day ✓ Buddy is red.':(SC_PADU-s)+' points to a strong day, when Buddy turns red.';
+  var h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="scClose()">✕</button></div>'+
+    '<div class="sci"><div class="sc-sh-k">Score insights</div>'+
+    '<div class="sci-top">'+(poster?'<img src="'+poster+'" alt="Buddy">':'')+
+      '<div><div class="sci-n" style="color:'+c+'">'+s+'<span>/100</span></div><div class="sci-s">'+status+'</div></div></div>';
+  /* habit by habit: what each is worth and what is left */
+  h+='<div class="sci-h">Today, habit by habit</div><div class="sci-rows">'+hs.map(function(x){
+      var got=Math.round(x.v*share), left=Math.round(share)-got;
+      return '<button class="sci-row'+(x.v>=1?' full':'')+'" onclick="scClose();scTap(\''+x.k+'\')">'+
+        '<span class="ic">'+glyph(x.ic)+'</span><span class="tx"><b>'+x.n+'</b><span>'+hesc(x.t||x.val)+'</span>'+
+        '<i class="bar"><i style="width:'+Math.round(x.v*100)+'%"></i></i></span>'+
+        '<span class="pt"><b>+'+got+'</b><span>'+(left>0?left+' to go':'done')+'</span></span></button>';
+    }).join('')+'</div>';
+  /* the week so far, Monday on */
+  var dow=(new Date().getDay()+6)%7, names=['M','T','W','T','F','S','S'], bars='', sum=0, n=0, strong=0, v;
+  for(i=0;i<7;i++){
+    if(i>dow){ bars+='<div class="sci-d"><i class="col"><i style="height:0"></i></i><span>'+names[i]+'</span></div>'; continue; }
+    v=scScore(iso(i-dow)); sum+=v; n++; if(v>=SC_PADU) strong++;
+    bars+='<div class="sci-d'+(i===dow?' now':'')+'"><b>'+v+'</b><i class="col"><i style="height:'+Math.max(3,v)+'%;background:'+scColor(v)+'"></i></i><span>'+names[i]+'</span></div>';
+  }
+  h+='<div class="sci-h">This week</div><div class="sci-wk"><div class="sci-bars"><i class="line"></i>'+bars+'</div>'+
+    '<div class="sci-ws"><div><b>'+(n?Math.round(sum/n):0)+'</b><span>average</span></div><div><b>'+strong+'</b><span>strong day'+(strong===1?'':'s')+'</span></div>'+
+    '<div><b>🔥 '+st.n+'</b><span>streak</span></div><div><b>❄️ '+scFreezeLeft()+'</b><span>freezes left</span></div></div></div>';
+  /* how it works */
+  h+='<div class="sci-h">How it works</div><div class="sci-how">'+
+    '<div><b>4 habits, 25 points each.</b> A workout, '+SC_MEALS+' meals, '+SC_WATER+' glasses of water, '+SC_STEPS.toLocaleString('en-MY')+' steps. Part of a habit counts too.</div>'+
+    '<div><b>50 or more is a strong day.</b> Buddy turns from cream to red.</div>'+
+    '<div><b>Strong days in a row make your streak.</b> Miss one? '+SC_FREEZES+' freezes a month keep it alive.</div>'+
+    '<div><b>Nothing logged for 2 days</b> and Buddy gets dusty; 3 days and Buddy\'s fur gets messy. One log fixes it.</div></div>'+
+    '<button class="bigbtn sci-go" onclick="scClose();switchTab(\'progress\')">See your history</button></div>';
+  $('pw-body').innerHTML=h; $('pwm').classList.add('on');
+  try{ $('pwm').scrollTop=0; }catch(e){}
+}

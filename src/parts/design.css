@@ -2945,3 +2945,50 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .scx-btns .scx-act{flex:1;margin-top:0;padding:12px;font-size:15px;}
 .scx-got{flex:none;border:0;background:none;color:var(--txt);font:inherit;font-size:15px;font-weight:600;padding:12px 18px;cursor:pointer;}
 .scx-got:active{opacity:.6;}
+
+/* ── Score insights ── */
+.sci{padding:6px 2px 4px;}
+.sci-top{display:flex;align-items:center;gap:14px;margin-top:10px;}
+.sci-top img{width:92px;height:92px;flex:none;}
+.sci-n{font-size:52px;font-weight:800;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums;}
+.sci-n span{font-size:17px;font-weight:600;letter-spacing:0;color:var(--dim2);margin-left:3px;}
+.sci-s{font-size:15px;line-height:1.4;color:var(--txt);margin-top:6px;}
+.sci-h{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin:24px 2px 10px;}
+.sci-rows{background:var(--surface);border-radius:18px;overflow:hidden;}
+:root:not([data-theme="light"]) .sci-rows,:root:not([data-theme="light"]) .sci-wk,:root:not([data-theme="light"]) .sci-how{background:#2C2C2E;}
+.sci-row{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:0;border-top:.5px solid var(--sep);background:none;color:var(--txt);font:inherit;text-align:left;cursor:pointer;}
+.sci-row:first-child{border-top:0;}
+.sci-row .ic{flex:none;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:rgba(227,6,19,.12);color:#E30613;}
+.sci-row.full .ic{background:rgba(255,194,14,.18);color:#E0A100;}
+.sci-row .ic .gly{width:19px;height:19px;}
+.sci-row .tx{flex:1;min-width:0;}
+.sci-row .tx b{display:block;font-size:15px;}
+.sci-row .tx>span{display:block;font-size:12px;color:var(--dim2);margin-top:1px;}
+.sci-row .bar{display:block;height:5px;border-radius:9px;background:var(--surface2);margin-top:7px;overflow:hidden;}
+:root:not([data-theme="light"]) .sci-row .bar{background:rgba(255,255,255,.1);}
+.sci-row .bar i{display:block;height:100%;border-radius:9px;background:#E30613;}
+.sci-row.full .bar i{background:#FFC20E;}
+.sci-row .pt{flex:none;text-align:right;min-width:58px;}
+.sci-row .pt b{display:block;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;}
+.sci-row .pt span{display:block;font-size:11px;color:var(--dim2);}
+.sci-wk,.sci-how{background:var(--surface);border-radius:18px;padding:14px;}
+.sci-bars{position:relative;display:flex;align-items:flex-end;gap:6px;height:128px;}
+.sci-bars .line{position:absolute;left:0;right:0;bottom:calc(18px + (100% - 36px) / 2);border-top:1.5px dashed var(--dim2);opacity:.45;}
+.sci-d{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;}
+.sci-d b{font-size:11px;font-weight:700;color:var(--dim);font-variant-numeric:tabular-nums;}
+.sci-d .col{position:relative;width:100%;max-width:26px;height:calc(100% - 36px);border-radius:7px;background:var(--surface2);display:flex;align-items:flex-end;overflow:hidden;}
+:root:not([data-theme="light"]) .sci-d .col{background:rgba(255,255,255,.07);}
+.sci-d .col i{display:block;width:100%;border-radius:7px;}
+.sci-d span{font-size:12px;color:var(--dim2);}
+.sci-d.now span{color:var(--txt);font-weight:800;}
+.sci-ws{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px;text-align:center;}
+.sci-ws b{display:block;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;}
+.sci-ws span{display:block;font-size:11px;color:var(--dim2);margin-top:2px;}
+.sci-how{display:flex;flex-direction:column;gap:12px;font-size:14px;line-height:1.45;color:var(--dim);}
+.sci-how b{color:var(--txt);}
+.sci-go{width:100%;max-width:none;margin:20px 0 0;}
+/* a cream Buddy reacts in its own colour: a squash-and-stretch bounce */
+#mascot-home .sc-bell.sc-boing{-webkit-animation:scboing .62s cubic-bezier(.3,1.6,.5,1) both;animation:scboing .62s cubic-bezier(.3,1.6,.5,1) both;}
+@-webkit-keyframes scboing{0%{-webkit-transform:none;}25%{-webkit-transform:translateY(4%) scale(1.08,.9);}55%{-webkit-transform:translateY(-9%) scale(.95,1.06);}80%{-webkit-transform:translateY(0) scale(1.03,.97);}100%{-webkit-transform:none;}}
+@keyframes scboing{0%{transform:none;}25%{transform:translateY(4%) scale(1.08,.9);}55%{transform:translateY(-9%) scale(.95,1.06);}80%{transform:translateY(0) scale(1.03,.97);}100%{transform:none;}}
+@media (prefers-reduced-motion: reduce){ #mascot-home .sc-bell.sc-boing{-webkit-animation:none;animation:none;} }
