@@ -300,7 +300,7 @@ function pgScoreCard(sc){
     '<div><b>'+(best.v?best.v:'–')+'</b><span>best day</span></div></div></div>'+
     '<div class="pgsk-chart'+(wk?'':' month')+'"><div class="pgsk-line" style="bottom:'+SC_PADU+'%"><span>'+SC_PADU+'</span></div>'+bars+'</div>'+
     '<div class="pgnotes">'+sc.parts.filter(p=>p.label!=='Streak').map(p=>'<div><b>'+p.label+'</b><span>'+p.note+'</span></div>').join('')+'</div>'+
-    '<div class="pgsk-f">A hari padu is a day of 50 or more. Workout, meals, water, steps and your fast make the score.</div></div>';
+    '<div class="pgsk-f">A hari padu is a day of 50 or more. Workout, meals, water and steps make the score.</div></div>';
 }
 
 function fmtDelta(d,unit){ return (d>0?'+':'')+d+' '+unit; }

@@ -16,6 +16,10 @@
    Phase 2 (streaks, share card) and 3 (rust and shine) come later. ES5. */
 
 var SC_WATER=8, SC_STEPS=8000, SC_MEALS=3;
+/* the fast is not part of the score for now (Seth, 15 Oct 2026): four rings for
+   everyone. IF HITFAT keeps its own timer; true brings the fifth ring back,
+   with Mod Ramadan (and SC_FAST_LIVE in plus-push to match) */
+var SC_FAST_LIVE=false;
 /* Bell's poses (img/mascot/anim/, each a clip with its first frame as poster): the moments and the habit reactions */
 var SC_POSE={aktif:'/img/mascot/anim/aktif.png', gold:'/img/mascot/anim/gold.png', frozen:'/img/mascot/anim/frozen.jpg', halo:'/img/mascot/anim/halo.png',
   water:'/img/mascot/anim/water.png', meal:'/img/mascot/anim/meal.png', calendar:'/img/mascot/anim/calendar.png'};
@@ -60,7 +64,8 @@ function scHabits(d,days){
   out.push({k:'meal',    n:'Makan',   ic:'food',    c:'#FF8A3D', v:Math.min(1,m/SC_MEALS), val:Math.min(m,SC_MEALS)+'/'+SC_MEALS});
   out.push({k:'water',   n:'Air',     ic:'water',   c:'#3B82F6', v:Math.min(1,dy.water/SC_WATER), val:Math.min(dy.water,SC_WATER)+'/'+SC_WATER});
   out.push({k:'steps',   n:'Langkah', ic:'steps',   c:'#22C55E', v:Math.min(1,dy.steps/SC_STEPS), val:k1(dy.steps)+'/'+k1(SC_STEPS)});
-  if(typeof scRamadan==='function' && scRamadan(d)) out.push({k:'fast', n:'Puasa', ic:'moon', c:'#E30613', v:dy.ram?1:0, val:dy.ram?'Ya':'Belum'});
+  if(!SC_FAST_LIVE){}
+  else if(typeof scRamadan==='function' && scRamadan(d)) out.push({k:'fast', n:'Puasa', ic:'moon', c:'#E30613', v:dy.ram?1:0, val:dy.ram?'Ya':'Belum'});
   else if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Puasa', ic:'clock', c:'#A855F7', v:Math.min(1,f.hrs/f.target), val:Math.min(Math.floor(f.hrs),f.target)+'/'+f.target+'j'}); }
   for(var i=0;i<out.length;i++) if(out[i].v>=1) out[i].val='✓ '+out[i].val;
   return out;

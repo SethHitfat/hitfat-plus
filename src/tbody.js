@@ -3845,7 +3845,10 @@ print("\n── SKOR HITFAT ──");
   HF.save=function(){}; HF.data.sessions={}; HF.data.meals={}; HF.data.daily={}; HF.data.ifs={};
   ok("an empty day scores 0, four habits when there is no IF plan", scScore()===0 && scHabits().length===4);
   HF.data.ifs={plan:{start:iso(0),endMin:1200}};
-  ok("an IF plan adds Puasa as a fifth habit", scHabits().length===5 && scHabits()[4].k==='fast');
+  ok("the fast is out of the score for now: four rings even with an IF plan", SC_FAST_LIVE===false && scHabits().length===4);
+  SC_FAST_LIVE=true;
+  ok("...and back as a fifth habit when switched on", scHabits().length===5 && scHabits()[4].k==='fast');
+  SC_FAST_LIVE=false;
   HF.data.ifs={};
   scSet('water',8);
   ok("8 glasses fill Air: a quarter of 100", scScore()===25 && HF.data.daily[iso(0)].water===8);
@@ -4004,6 +4007,7 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
   scTap('water');
   ok("one tap on water adds a glass, and Bell's banner offers an undo", HF.data.daily[iso(0)].water===1 && document.getElementById('scb').className.indexOf('on')>0 && document.getElementById('scb').innerHTML.indexOf('Batal')>0);
   HF.data.ifs={plan:{start:iso(0),endMin:1200},log:[]};
+  SC_FAST_LIVE=true;
   scTap('fast');
   ok("one tap on the fast starts it", HF.data.ifs.active && HF.data.ifs.active.target===12);
   scMealLogged({name:'Kek coklat',kcal:450});
@@ -4018,6 +4022,8 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
   HF.data.sc.ram='auto';
   ok("...on by date in Ramadan, off outside it", scRamadan('2027-02-20')===true && scRamadan('2027-05-01')===false);
   ok("...and a row in Settings", String(renderMe).indexOf('scRamRow()')>0);
+  SC_FAST_LIVE=false; HF.data.sc.ram='auto';
+  ok("with the fast out, no Ramadan row and no fast in the plan", scRamRow()==='' && scPlanHTML().indexOf('scFastTap')<0);
   scWeekly(0);
   ok("Laporan Ahad: the week's average, hari padu, streak, best day", document.getElementById('scc').innerHTML.indexOf('Laporan minggu ini')>0 && document.getElementById('scc').innerHTML.indexOf('hari padu')>0);
   scCelebrateClose();

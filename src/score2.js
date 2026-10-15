@@ -26,6 +26,7 @@ function scRamadan(d){
 }
 function scSetRam(m){ var sc=HF.data.sc||(HF.data.sc={}); sc.ram=m; HF.save(); toast(m==='on'?'Mod Ramadan dihidupkan 🌙':m==='off'?'Mod Ramadan dimatikan':'Mod Ramadan ikut tarikh'); if(typeof renderMe==='function' && $('me') && $('me').style.display!=='none') renderMe(); }
 function scRamRow(){
+  if(!SC_FAST_LIVE) return '';
   var m=scRamMode();
   return '<div class="grow grow-ctl">'+ic('moon')+'<div class="grow-l">Mod Ramadan<div class="pu-sub">'+(scRamadan()?'Aktif: bulatan Puasa ikut bulan Ramadan':'Bulatan Puasa ikut bulan Ramadan')+'</div></div>'+
     '<div class="obseg meseg"><button class="'+(m==='auto'?'on':'')+'" onclick="scSetRam(\'auto\')">Auto</button>'+
@@ -81,6 +82,7 @@ function scWaterTap(){
   scRender();
 }
 function scFastTap(){
+  if(!SC_FAST_LIVE) return openIF();
   if(scRamadan()) return scRamToggle();
   if(!scHasIF()) return openIF();
   var f=HF.data.ifs||{};
@@ -136,7 +138,8 @@ function scPlanHTML(){
   if(p && typeof nextSession==='function' && (gi=nextSession(p))>=0 && (at=sessionAt(p,gi)))
     rows.push({ic:'workout', t:(at.day.name||'Workout'), s:p.name+' · '+p.dur+' min', done:scWorkouts(iso(0))>0, go:"openDay('"+p.id+"',"+gi+")", b:'Mula'});
   else rows.push({ic:'workout', t:'Workout hari ini', s:'Pilih program atau sesi pendek', done:scWorkouts(iso(0))>0, go:"switchTab('train')", b:'Pilih'});
-  if(scRamadan()) rows.push({ic:'moon', t:dy.ram?'Berpuasa hari ini ✓':'Puasa Ramadan', s:'Sahur, berbuka, dan air antara keduanya', done:!!dy.ram, go:'scRamToggle()', b:dy.ram?'':'Tanda'});
+  if(!SC_FAST_LIVE){}
+  else if(scRamadan()) rows.push({ic:'moon', t:dy.ram?'Berpuasa hari ini ✓':'Puasa Ramadan', s:'Sahur, berbuka, dan air antara keduanya', done:!!dy.ram, go:'scRamToggle()', b:dy.ram?'':'Tanda'});
   else if(scHasIF() && typeof ifWindow==='function'){
     var w=ifWindow(), f=HF.data.ifs||{};
     rows.push({ic:'clock', t:'Makan '+ifHm12(w.start)+' – '+ifHm12(w.end), s:f.active?'Sedang puasa · tamatkan di IF HITFAT':'Puasa '+ifProto().f+' jam selepas itu', done:false, go:f.active?'openIF()':'scFastTap()', b:f.active?'Lihat':'Mula'});
@@ -151,7 +154,7 @@ function scPlanHTML(){
 /* ── Kenali Bell: once, the first time the card shows ── */
 var SC_MEET=[
   {pose:'aktif', t:'Hai! Saya Bell 👋', s:'Kettlebell peribadi anda. Saya hidup bila anda aktif, dan saya berkarat bila anda hilang 🥲'},
-  {pose:'water', t:'Isi 5 bulatan setiap hari', s:'Workout, makan, air, langkah dan puasa. Semuanya jadi Skor HITFAT anda, 0 hingga 100.'},
+  {pose:'water', t:'Isi 4 bulatan setiap hari', s:'Workout, makan, air dan langkah. Semuanya jadi Skor HITFAT anda, 0 hingga 100.'},
   {pose:'gold',  t:'50 ke atas = hari padu 🔥', s:'Hari padu berturut-turut jadi streak. 7 hari, saya jadi Bell Emas. Terlepas sehari? Ada 2 freeze sebulan ❄️'}];
 function scCheckMeet(){
   var sc=HF.data.sc||(HF.data.sc={});

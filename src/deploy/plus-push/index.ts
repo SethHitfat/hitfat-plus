@@ -38,6 +38,8 @@ const MYT = 8 * 3600000;
 function dayOf(t: number | string): string { return new Date(new Date(t).getTime() + MYT).toISOString().slice(0, 10); }
 function dayBack(n: number): string { return dayOf(Date.now() - n * 86400000); }
 
+const FAST_LIVE = false;
+
 /* Mod Ramadan, as score2.js: approximate dates for Malaysia, or the member's own choice */
 const RAMADAN = [['2027-02-08', '2027-03-09'], ['2028-01-28', '2028-02-26'], ['2029-01-16', '2029-02-14']];
 function ramadan(d: Data, day: string): boolean {
@@ -57,7 +59,8 @@ function scoreOf(d: Data, day: string, wdays: Record<string, number>): number {
     Math.min(1, (dy.steps || 0) / 8000),
   ];
   const f = d.ifs || {};
-  if (ramadan(d, day)) hs.push(dy.ram ? 1 : 0);
+  if (!FAST_LIVE) { /* the fast is not part of the score for now, as SC_FAST_LIVE in score.js */ }
+  else if (ramadan(d, day)) hs.push(dy.ram ? 1 : 0);
   else if (f.plan && !f.plan.blocked) {
     let best = 0, tgt = 16;
     for (const x of (f.log || [])) if (dayOf(x.end) === day && x.hrs > best) { best = x.hrs; tgt = x.target; }
