@@ -16,6 +16,9 @@
    Phase 2 (streaks, share card) and 3 (rust and shine) come later. ES5. */
 
 var SC_WATER=8, SC_STEPS=8000, SC_MEALS=3;
+/* Bell's poses (img/mascot/pose/): the moments and the habit reactions */
+var SC_POSE={gold:'/img/mascot/pose/gold.png', frozen:'/img/mascot/pose/frozen.jpg', halo:'/img/mascot/pose/halo.png',
+  water:'/img/mascot/pose/water.png', meal:'/img/mascot/pose/meal.png', calendar:'/img/mascot/pose/calendar.png'};
 var _scSay=null, _scSayAt=0;
 
 /* a saved date (ISO string) as the local day it fell on */
@@ -63,7 +66,9 @@ function scScore(d,days){
   for(i=0;i<hs.length;i++) t+=hs[i].v;
   return Math.round(t/hs.length*100);
 }
-function scColor(s){ return s>=70?'#22C55E':s>=40?'#FFC20E':'#FF8A3D'; }
+/* HITFAT's colours: a pale white when the day is thin, red as it fills, gold
+   when it is padu (black, white and red are the brand; gold is the prize) */
+function scColor(s){ return s>=70?'#FFC20E':s>=40?'#E30613':'#A1A1AA'; }
 function scLevel(s){ return s>=80?4:s>=50?3:s>=25?2:1; }
 
 /* what Bell says: about what was just done, or else the habit furthest behind */
@@ -102,7 +107,7 @@ function scArc(s){
     '<circle cx="'+k[0]+'" cy="'+k[1]+'" r="9" fill="var(--surface)" stroke="'+c+'" stroke-width="5"/></svg>';
 }
 function scRing(h){
-  var c=h.c||'#E30613';
+  var c=h.v>=1?'#FFC20E':'#E30613';
   return '<button class="sc-h'+(h.v>=1?' full':'')+'" onclick="scTap(\''+h.k+'\')" aria-label="'+h.n+'">'+
     '<span class="sc-ring" style="color:'+c+'"><svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" class="sc-ring-t"/>'+
     (h.v>0?'<circle cx="26" cy="26" r="22" class="sc-ring-v" pathLength="100" stroke="currentColor" stroke-dasharray="'+Math.round(h.v*100)+' 100"/>':'')+
@@ -134,9 +139,34 @@ function scRender(){
   var slot=$('sc-bell'), st=scState(), lv=scLevel(scScore());
   if(slot && st.k!=='rust' && typeof bellAttach==='function' && bellAttach(slot, st.k?1:lv)){
     slot.className+=' sc-live';
-    if(_scSay && _scSay!=='poke' && _scSayAt>_scCheered && Date.now()-_scSayAt<8000){ _scCheered=_scSayAt; bellReact('cheer'); }
+    if(_scSay && _scSay!=='poke' && _scSayAt>_scCheered && Date.now()-_scSayAt<8000){
+      _scCheered=_scSayAt;
+      if(SC_POSE[_scSay]) scPose(slot,SC_POSE[_scSay]); else bellReact('cheer');
+    } else if(_scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
   }
-  if(!scCheckShine()) scCheckStreak();
+  if(scCheckShine()) return;
+  if(scCheckFreeze()) return;
+  if(scCheckRust()) return;
+  scCheckStreak();
+}
+function scCheckFreeze(){
+  if($('scc').style.display==='flex') return false;
+  var f=scApplyFreeze(); if(!f.length) return false;
+  scFreezeScreen(f); return true;
+}
+function scCheckRust(){
+  var st=scState(), sc=HF.data.sc||(HF.data.sc={}), seen=sc.seen||(sc.seen={}), key='rust:'+iso(0);
+  if(st.k!=='rust' || seen[key] || $('scc').style.display==='flex') return false;
+  seen[key]=1; HF.save(); scRustScreen(st); return true;
+}
+/* a pose for a moment (Bell with the water bottle, with the plate), then back */
+var _scPose={src:'', until:0};
+function scPose(slot,src,ms){
+  ms=ms||2600; _scPose={src:src, until:Date.now()+ms};
+  var im=document.createElement('img'); im.className='sc-pose'; im.src=src; im.alt='';
+  if(ms<2600){ im.style.webkitAnimationDelay=im.style.animationDelay='-'+((2600-ms)/1000)+'s'; }
+  slot.appendChild(im); slot.className+=' posing';
+  setTimeout(function(){ if(im.parentNode) im.parentNode.removeChild(im); slot.className=slot.className.replace(/ ?posing/g,''); },ms);
 }
 /* touch Bell: a giggle, and a word */
 SC_LINES.poke=['Hihi, geli! 😆','Eh eh, Bell tengah fokus ni 😤','Hehe, sentuh lagi? 🙈','Bell sihat, terima kasih tanya 💪'];
@@ -191,11 +221,36 @@ var SC_MILE_LINES={3:'Permulaan yang padu! Bell dah nampak potensi anda 🔥',
   7:'Seminggu penuh! Bell bangga gila 💪',14:'Dua minggu! Ini dah jadi tabiat, bukan lagi usaha.',
   30:'30 hari! Anda juara sebenar 🏆',60:'60 hari! Badan anda dah lain, kan? 😎',100:'100 hari! Bell tabik spring 🫡'};
 
+var SC_FREEZES=2;
+function scFrozen(){ var sc=HF.data.sc||(HF.data.sc={}); return sc.frozen||(sc.frozen={}); }
 function scStreak(){
-  var days=scWorkoutDays(), n=0, i=0, d;
+  var days=scWorkoutDays(), fz=scFrozen(), n=0, i=0, d, start=null;
   if(scScore(iso(0),days)<SC_PADU) i=1;            /* today is still in progress */
-  for(;i<400;i++){ d=iso(-i); if(scScore(d,days)>=SC_PADU) n++; else break; }
-  return {n:n, start:n?iso(-(i-1)):null, today:scScore(iso(0),days)>=SC_PADU};
+  for(;i<400;i++){
+    d=iso(-i);
+    if(scScore(d,days)>=SC_PADU){ n++; start=d; }
+    else if(!fz[d]) break;                         /* a frozen day keeps the run, adds nothing */
+  }
+  return {n:n, start:start, today:scScore(iso(0),days)>=SC_PADU};
+}
+function scFreezeLeft(){
+  var m=iso(0).slice(0,7), f=scFrozen(), used=0, k;
+  for(k in f) if(f.hasOwnProperty(k) && k.slice(0,7)===m) used++;
+  return Math.max(0,SC_FREEZES-used);
+}
+/* the days missed since the last hari padu, frozen if there are freezes for
+   all of them; returns the days frozen now */
+function scApplyFreeze(){
+  var days=scWorkoutDays(), fz=scFrozen(), miss=[], i, d, found=false;
+  for(i=1;i<=SC_FREEZES+1;i++){
+    d=iso(-i);
+    if(scScore(d,days)>=SC_PADU){ var p=iso(-(i+1)); found=scScore(p,days)>=SC_PADU || !!fz[p]; break; }
+    if(!fz[d]) miss.push(d);
+  }
+  if(!found || !miss.length || miss.length>scFreezeLeft()) return [];
+  for(i=0;i<miss.length;i++) fz[miss[i]]=1;
+  HF.save();
+  return miss;
 }
 function scNextMile(n){ for(var i=0;i<SC_MILES.length;i++) if(SC_MILES[i]>n) return SC_MILES[i]; return null; }
 function scChip(){
@@ -217,22 +272,61 @@ function scCheckStreak(){
 function scStreakInfo(){
   toast('Capai skor '+SC_PADU+' sehari untuk mula streak 🔥');
 }
+/* this week, Monday first: padu, frozen, today, still to come */
+function scWeekPill(){
+  var days=scWorkoutDays(), fz=scFrozen(), t=new Date(), dow=(t.getDay()+6)%7, out='', i, d, off, cls, mark;
+  var L=['I','S','R','K','J','S','A'];
+  for(i=0;i<7;i++){
+    off=dow-i; d=iso(-off);
+    cls=off<0?'fut':scScore(d,days)>=SC_PADU?'on':fz[d]?'fz':'';
+    if(off===0) cls+=' now';
+    mark=cls.indexOf('on')>=0?'✓':cls.indexOf('fz')>=0?'❄':'';
+    out+='<div class="scc-d '+cls+'"><span>'+L[i]+'</span><b>'+mark+'</b></div>';
+  }
+  return '<div class="scc-week">'+out+'</div>';
+}
 function scCelebrate(n,mine){
-  var M=(typeof hfm==='function')?hfm():null, img=M?M.config.images[3]:'', next=scNextMile(n), conf='', i;
-  var cols=['#E30613','#FFC20E','#22C55E','#FFFFFF','#FF8A3D'];
-  for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%cols.length]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
-  var line=SC_MILE_LINES[n]||('Streak '+n+' hari! Teruskan 🔥');
+  var gold=n>=7, img=gold?SC_POSE.gold:SC_POSE.calendar, next=scNextMile(n), conf='', i;
+  var cols=['#E30613','#FFC20E','#FFFFFF','#111111'];
+  if(!mine) for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%cols.length]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
+  var line=SC_MILE_LINES[n]||(next?'Tinggal '+(next-n)+' hari padu lagi ke sasaran '+next+' hari. Jangan putus! 🔥':'Teruskan, juara 🔥');
+  $('scc').className='scc '+(gold?'scc-gold':'scc-red');
   $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
     '<div class="scc-bell">'+(img?'<img src="'+img+'" alt="Bell">':'')+'</div>'+
-    '<div class="scc-n">'+n+'</div><div class="scc-k">hari padu berturut-turut</div>'+
+    '<div class="scc-t">'+(gold?'Anda capai streak <b>'+n+' hari</b>! 🏆':'Anda dalam streak <b>'+n+' hari</b>')+'</div>'+
     '<div class="scc-s">'+hesc(line)+'</div>'+
-    (next?'<div class="scc-f">Sasaran seterusnya: '+next+' hari</div>':'')+
-    '<button class="bigbtn scc-share" onclick="scShare('+n+')">Kongsi ke IG Story</button>'+
-    '<button class="scc-x" onclick="scCelebrateClose()">Teruskan</button>'+
-    '<div class="scc-fine">Hari padu = Skor HITFAT '+SC_PADU+' ke atas.</div></div>';
+    scWeekPill()+
+    '<div class="scc-fz">❄️ '+scFreezeLeft()+'/'+SC_FREEZES+' freeze tinggal bulan ni'+(next?' · Sasaran seterusnya '+next+' hari':'')+'</div>'+
+    '<button class="bigbtn scc-share" onclick="scShare('+n+')">Kongsi pencapaian</button>'+
+    '<button class="scc-x" onclick="scCelebrateClose()">Seterusnya</button>'+
+    '<div class="scc-fine">Hari padu = Skor HITFAT '+SC_PADU+' ke atas. Freeze selamatkan streak bila anda terlepas sehari.</div></div>';
   $('scc').style.display='flex';
 }
-function scCelebrateClose(){ $('scc').style.display='none'; $('scc').innerHTML=''; }
+/* a freeze was used: Bell in ice, the run safe */
+function scFreezeScreen(frozen){
+  var st=scStreak();
+  $('scc').className='scc scc-ice';
+  $('scc').innerHTML='<div class="scc-in">'+
+    '<div class="scc-bell scc-still"><img src="'+SC_POSE.frozen+'" alt="Bell beku"></div>'+
+    '<div class="scc-t">Bell beku '+(frozen.length>1?frozen.length+' hari':'semalam')+' ❄️</div>'+
+    '<div class="scc-s">Streak <b>'+st.n+' hari</b> anda selamat. Bell guna '+frozen.length+' freeze. Tinggal '+scFreezeLeft()+'/'+SC_FREEZES+' bulan ni.</div>'+
+    '<div class="scc-s">Jom pastikan hari ni hari padu.</div>'+
+    '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Teruskan</button></div>';
+  $('scc').style.display='flex';
+}
+/* Bell has rusted: the black screen, once a day */
+function scRustScreen(st){
+  var p=(typeof bellPoster==='function')?bellPoster(1):'';
+  $('scc').className='scc scc-black';
+  $('scc').innerHTML='<div class="scc-in">'+
+    '<div class="scc-bell scc-still scc-rusty"><img src="'+p+'" alt="Bell berkarat"><span class="sc-rustfx" style="-webkit-mask-image:url('+p+');mask-image:url('+p+')"></span></div>'+
+    '<div class="scc-t">Alamak, Bell dah berkarat</div>'+
+    '<div class="scc-s">'+st.idle+' hari tanpa apa-apa rekod. Bell duduk sorang-sorang dalam gelap 🥲 Satu rekod pun cukup untuk gilap Bell semula.</div>'+
+    '<button class="bigbtn scc-share" onclick="scCelebrateClose();scSheet(\'water\')">Gilap Bell: rekod segelas air</button>'+
+    '<button class="scc-x" onclick="scCelebrateClose()">Nanti</button></div>';
+  $('scc').style.display='flex';
+}
+function scCelebrateClose(){ $('scc').style.display='none'; $('scc').innerHTML=''; $('scc').className='scc'; }
 
 /* the share card: 1080 × 1920, drawn on a canvas, shared as a file where the
    phone allows it, otherwise shown to keep with a long press */
@@ -311,12 +405,13 @@ function scCheckShine(){
   seen[key]=1; HF.save(); scShine(); return true;
 }
 function scShine(){
-  var M=(typeof hfm==='function')?hfm():null, img=SC_ART.shine||(M?M.config.images[3]:''), sp='', i;
+  var sp='', i;
   for(i=0;i<14;i++) sp+='<i style="left:'+((i*29+7)%92)+'%;top:'+(6+(i*41+11)%34)+'%;-webkit-animation-delay:'+(i%7)*0.2+'s;animation-delay:'+(i%7)*0.2+'s">✦</i>';
+  $('scc').className='scc scc-red';
   $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
-    '<div class="scc-bell scc-shine">'+(img?'<img src="'+img+'" alt="Bell berkilat">':'')+'</div>'+
-    '<div class="scc-k">Bell berkilat semula!</div>'+
-    '<div class="scc-s">Terima kasih sebab kembali ✨ Karat dah hilang. Satu hari padu lagi, streak baru bermula.</div>'+
+    '<div class="scc-bell scc-shine"><img src="'+(SC_ART.shine||SC_POSE.halo)+'" alt="Bell berkilat"></div>'+
+    '<div class="scc-t">Yay, anda selamatkan Bell!</div>'+
+    '<div class="scc-s">Karat dah hilang ✨ Okay okay, Bell maafkan anda. Jangan tinggal Bell lama-lama lagi ya 😇</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Jom!</button></div>';
   $('scc').style.display='flex';
 }

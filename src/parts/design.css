@@ -2695,3 +2695,59 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .pgsk .pgnotes div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:.5px solid var(--sep);font-size:14px;}
 .pgsk .pgnotes b{color:var(--txt);font-weight:600;}
 .pgsk .pgnotes span{text-align:right;color:var(--dim);}
+
+/* Full-screen moments in HITFAT's colours (Simple's way: the whole screen
+   is the mood). red = a run going, gold = a goal reached, black = Bell has
+   rusted, white = a freeze saved the run. */
+.scc.scc-red{background:radial-gradient(circle at 50% 30%,#FF2A35 0%,#E30613 28%,#5A0207 70%,#0B0B0D 100%);color:#FFFFFF;}
+.scc.scc-gold{background:radial-gradient(circle at 50% 30%,#FFF1B0 0%,#FFD43B 30%,#FFC20E 55%,#E0A100 100%);color:#111111;}
+.scc.scc-black{background:#000000;color:#FFFFFF;}
+.scc.scc-ice{background:#FFFFFF;color:#111111;}
+.scc-t{font-size:28px;font-weight:800;letter-spacing:-.6px;line-height:1.15;margin-top:10px;text-wrap:balance;}
+.scc-t b{color:#FFC20E;}
+.scc-gold .scc-t b{color:#E30613;}
+.scc-ice .scc-t b,.scc-ice .scc-s b{color:#E30613;}
+.scc-gold .scc-s,.scc-ice .scc-s{color:rgba(17,17,17,.78);}
+.scc-gold .scc-fine,.scc-ice .scc-fine{color:rgba(17,17,17,.5);}
+.scc-gold .scc-x{background:rgba(17,17,17,.1);color:#111111;}
+.scc-gold .scc-share{background:#111111 !important;color:#FFFFFF !important;}
+.scc-ice .scc-share{background:#E30613 !important;}
+.scc-black .scc-share{background:#FFFFFF !important;color:#111111 !important;}
+.scc-still{-webkit-animation:none !important;animation:none !important;}
+.scc-ice .scc-bell{width:230px;height:230px;}
+.scc-ice .scc-bell img{border-radius:18px;}
+.scc-rusty{position:relative;}
+.scc-rusty img{-webkit-filter:sepia(.75) saturate(1.5) hue-rotate(-12deg) brightness(.7) contrast(1.1);filter:sepia(.75) saturate(1.5) hue-rotate(-12deg) brightness(.7) contrast(1.1);}
+.scc-rusty .sc-rustfx{position:absolute;inset:0;}
+.scc-gold .scc-bell img{-webkit-filter:drop-shadow(0 10px 24px rgba(160,100,0,.45));filter:drop-shadow(0 10px 24px rgba(160,100,0,.45));}
+/* the week, Monday first */
+.scc-week{display:flex;justify-content:center;gap:6px;margin:18px auto 8px;padding:8px;border-radius:99px;background:rgba(255,255,255,.12);width:max-content;max-width:100%;}
+.scc-gold .scc-week{background:rgba(17,17,17,.08);}
+.scc-d{display:flex;flex-direction:column;align-items:center;gap:4px;width:34px;}
+.scc-d span{font-size:11px;font-weight:700;opacity:.7;}
+.scc-d b{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:14px;background:rgba(255,255,255,.14);}
+.scc-gold .scc-d b{background:rgba(17,17,17,.1);}
+.scc-d.on b{background:#FFFFFF;color:#E30613;}
+.scc-gold .scc-d.on b{background:#111111;color:#FFC20E;}
+.scc-d.fz b{background:#DCEEFF;color:#3B82F6;}
+.scc-d.now b{box-shadow:0 0 0 2px #FFC20E;}
+.scc-gold .scc-d.now b{box-shadow:0 0 0 2px #E30613;}
+.scc-d.fut{opacity:.45;}
+.scc-fz{font-size:13px;font-weight:600;opacity:.8;margin-top:6px;}
+/* a habit's pose for a moment over the live Bell */
+.sc-pose{position:absolute;inset:6%;width:88%;height:88%;object-fit:contain;
+  -webkit-animation:sc-pop 2.6s ease both;animation:sc-pop 2.6s ease both;}
+.sc-bell.posing .bell-live,.sc-bell.posing .sc-poster{opacity:0;transition:opacity .15s;}
+@-webkit-keyframes sc-pop{0%{opacity:0;-webkit-transform:scale(.6) translateY(10px);}12%{opacity:1;-webkit-transform:scale(1.08);}22%{-webkit-transform:scale(1);}85%{opacity:1;}100%{opacity:0;-webkit-transform:scale(.96);}}
+@keyframes sc-pop{0%{opacity:0;transform:scale(.6) translateY(10px);}12%{opacity:1;transform:scale(1.08);}22%{transform:scale(1);}85%{opacity:1;}100%{opacity:0;transform:scale(.96);}}
+/* the streak chip: gold, the prize colour */
+.sc-chip{background:rgba(255,194,14,.16);color:#E0A100;}
+:root:not([data-theme="light"]) .sc-chip{color:#FFC20E;}
+.scc-red .scc-share{background:#FFFFFF !important;color:#E30613 !important;}
+.scc-red .scc-x{background:rgba(0,0,0,.25);}
+/* the moments' buttons over the brand's .bigbtn rules (which win on specificity otherwise) */
+#scc .scc-share{background:#E30613 !important;color:#FFFFFF !important;}
+#scc.scc-red .scc-share{background:#FFFFFF !important;color:#E30613 !important;}
+#scc.scc-gold .scc-share{background:#111111 !important;color:#FFFFFF !important;}
+#scc.scc-black .scc-share{background:#FFFFFF !important;color:#111111 !important;}
+#scc.scc-ice .scc-share{background:#E30613 !important;color:#FFFFFF !important;}

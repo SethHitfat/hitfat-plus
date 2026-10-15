@@ -65,8 +65,9 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
   let gap = -1;                                            /* empty days before today */
   for (let i = 1; i < 60; i++) if (scoreOf(d, dayBack(i), wdays) > 0) { gap = i - 1; break; }
   if (gap < 0 && today === 0) return null;                 /* never active: a new member */
-  let streak = 0;                                          /* hari padu up to yesterday */
-  for (let i = 1; i < 400; i++) { if (scoreOf(d, dayBack(i), wdays) >= 50) streak++; else break; }
+  let streak = 0;                                          /* hari padu up to yesterday; a frozen day keeps the run */
+  const frozen = (d.sc && d.sc.frozen) || {};
+  for (let i = 1; i < 400; i++) { const day = dayBack(i); if (scoreOf(d, day, wdays) >= 50) streak++; else if (!frozen[day]) break; }
 
   if (today >= 50) return null;
   if (streak >= 2) return {

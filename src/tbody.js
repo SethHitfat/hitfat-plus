@@ -3853,7 +3853,7 @@ print("\n── SKOR HITFAT ──");
   ok("half the steps, three meals: 25+12.5+25", scScore()===63);
   HF.data.sessions={x:{date:new Date().toISOString()}, y:{date:new Date(Date.now()-864e5*2).toISOString()}};
   ok("a workout today counts, one from two days ago does not", scWorkouts(iso(0))===1 && scScore()===88);
-  ok("arc and look follow the score", scColor(88)==='#22C55E' && scLevel(88)===4 && scLevel(10)===1 && scColor(30)==='#FF8A3D');
+  ok("arc and look follow the score", scColor(88)==='#FFC20E' && scLevel(88)===4 && scLevel(10)===1 && scColor(30)==='#A1A1AA');
   var h=scHTML();
   ok("Home card: score, arc, Bell's picture, a line, a ring a habit", h.indexOf('>88<')>0 && h.indexOf('sc-arc')>0 && h.indexOf('/img/mascot/anim/juara.png')>0 && h.indexOf('sc-say')>0 && (h.match(/class="sc-h( full)?"/g)||[]).length===4);
   ok("each habit has its way in", h.indexOf("scTap('workout')")>0 && h.indexOf("scTap('water')")>0 && String(scTap).indexOf("switchTab('eat')")>0 && String(scTap).indexOf('openIF()')>0);
@@ -3884,9 +3884,9 @@ print("\n── SKOR HITFAT · STREAKS ──");
   ok("a day under 50 ends the run", scStreak().n===3);
   document.getElementById('scc').style.display='none';
   scCheckStreak();
-  ok("3 days: the celebration opens", document.getElementById('scc').style.display==='flex' && document.getElementById('scc').innerHTML.indexOf('scc-n">3<')>0 &&
+  ok("3 days: the celebration opens", document.getElementById('scc').style.display==='flex' && document.getElementById('scc').innerHTML.indexOf('streak <b>3 hari</b>')>0 &&
      document.getElementById('scc').innerHTML.indexOf("scShare(3)")>0);
-  ok("...naming the next milestone", document.getElementById('scc').innerHTML.indexOf('Sasaran seterusnya: 7 hari')>0);
+  ok("...naming the next milestone", document.getElementById('scc').innerHTML.indexOf('Sasaran seterusnya 7 hari')>0);
   scCelebrateClose(); scCheckStreak();
   ok("...once a run, not on every visit", document.getElementById('scc').style.display==='none');
   ok("the milestones", SC_MILES.join()==='3,7,14,30,60,100' && scNextMile(7)===14 && scNextMile(100)===null);
@@ -3913,7 +3913,7 @@ print("\n── SKOR HITFAT · RUST & SHINE ──");
   scSet('water',1);
   ok("log anything: Bell is back", scState().k==='' && scState().back);
   scRender();
-  ok("...and shines, once that day", document.getElementById('scc').style.display==='flex' && document.getElementById('scc').innerHTML.indexOf('Bell berkilat semula')>0);
+  ok("...and shines, once that day", document.getElementById('scc').style.display==='flex' && document.getElementById('scc').innerHTML.indexOf('selamatkan Bell')>0);
   scCelebrateClose(); scRender();
   ok("...not again on the next visit", document.getElementById('scc').style.display==='none');
   HF.data.daily={}; HF.data.daily[iso(-1)]={water:1,steps:0}; HF.data.daily[iso(0)]={water:1,steps:0}; HF.data.sc={};
@@ -3939,6 +3939,46 @@ print("\n── BELL'S REMINDERS ──");
   ok("an iPhone outside the Home Screen is told how", String(pushInstallHelp).indexOf('Add to Home Screen')>0 && String(pushState).indexOf("'install'")>0);
   ok("Settings carries the row", String(renderMe).indexOf('pushRow()')>0);
   ok("the server's key and functions, not a URL typed twice", pushFn().indexOf('/functions/v1/plus-push')>0);
+})();
+print("\n── SKOR HITFAT · FREEZE, SCREENS, POSES ──");
+(function(){
+  var keepS=HF.data.sessions, keepM=HF.data.meals, keepD=HF.data.daily, keepI=HF.data.ifs, keepSc=HF.data.sc, keepSave=HF.save;
+  HF.save=function(){}; HF.data.sessions={}; HF.data.meals={}; HF.data.ifs={}; HF.data.sc={}; HF.data.daily={};
+  document.getElementById('scc').style.display='none';
+  function padu(off){ HF.data.daily[iso(-off)]={water:8,steps:8000}; }
+  ok("HITFAT's colours: pale, red, gold", scColor(10)==='#A1A1AA' && scColor(55)==='#E30613' && scColor(90)==='#FFC20E');
+  padu(2); padu(3); padu(4);                       /* a 3-day run, then yesterday missed */
+  var f=scApplyFreeze();
+  ok("yesterday missed after a run: frozen, the run kept", f.length===1 && f[0]===iso(-1) && scStreak().n===3 && scFreezeLeft()===1);
+  ok("...and only once", scApplyFreeze().length===0);
+  HF.data.sc={}; HF.data.daily={}; padu(3); padu(4);
+  ok("two days missed, two freezes: both frozen", scApplyFreeze().length===2 && scFreezeLeft()===0 && scStreak().n===2);
+  HF.data.sc={}; HF.data.daily={}; padu(4); padu(5);
+  ok("three days missed: more than the freezes, the run ends", scApplyFreeze().length===0 && scStreak().n===0);
+  HF.data.sc={}; HF.data.daily={}; padu(2);
+  ok("a one-day run is not worth a freeze", scApplyFreeze().length===0);
+  HF.data.sc={}; HF.data.daily={}; padu(2); padu(3);
+  scRender();
+  ok("on a new day, the freeze screen: white, Bell in ice", document.getElementById('scc').style.display==='flex' && document.getElementById('scc').className.indexOf('scc-ice')>0 &&
+     document.getElementById('scc').innerHTML.indexOf('frozen.jpg')>0);
+  scCelebrateClose();
+  scCelebrate(5,true); var h=document.getElementById('scc').innerHTML;
+  ok("the streak screen: red, the week with ticks, freezes left, share and next", document.getElementById('scc').className.indexOf('scc-red')>0 &&
+     (h.match(/class="scc-d/g)||[]).length===7 && h.indexOf('freeze tinggal')>0 && h.indexOf('scShare(5)')>0 && h.indexOf('Seterusnya')>0);
+  scCelebrate(7,false);
+  ok("seven days and up: the gold screen and the gold Bell", document.getElementById('scc').className.indexOf('scc-gold')>0 && document.getElementById('scc').innerHTML.indexOf('pose/gold.png')>0);
+  scCelebrateClose();
+  HF.data.sc={}; HF.data.daily={}; HF.data.daily[iso(-4)]={water:1,steps:0};
+  scRender();
+  ok("Bell rusted: the black screen once that day, a way to polish him", document.getElementById('scc').className.indexOf('scc-black')>0 &&
+     document.getElementById('scc').innerHTML.indexOf("scSheet('water')")>0);
+  scCelebrateClose(); scRender();
+  ok("...not again that day", document.getElementById('scc').style.display==='none');
+  ok("water and meals have their own pose", SC_POSE.water.indexOf('water.png')>0 && SC_POSE.meal.indexOf('meal.png')>0 && String(scRender).indexOf('scPose(slot')>0);
+  ok("the freezes survive a reload", (function(){ HF.data.sc={frozen:{'2026-10-14':1}}; var o=JSON.parse(JSON.stringify(HF.data)), keep=HF.data; HF.apply(o);
+     var r=HF.data.sc.frozen['2026-10-14']===1; HF.data=keep; return r; })());
+  scCelebrateClose();
+  HF.data.sessions=keepS; HF.data.meals=keepM; HF.data.daily=keepD||{}; HF.data.ifs=keepI||{}; HF.data.sc=keepSc||{}; HF.save=keepSave;
 })();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");
