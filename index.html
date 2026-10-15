@@ -4601,6 +4601,49 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .hfm-compact .hfm-fig{width:76px;height:76px;flex:0 0 76px;}
 .hfm-compact.hfm-lv4 .hfm-fig{font-size:76px;}
 
+/* SKOR HITFAT (score.js): Bell in the arc, the habits under it */
+.sc{background:var(--surface);border-radius:22px;padding:16px 14px 14px;}
+.sc-head{display:flex;justify-content:space-between;align-items:flex-start;padding:0 4px;}
+.sc-k{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);}
+.sc-n{font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1.05;font-variant-numeric:tabular-nums;}
+.sc-n span{font-size:15px;font-weight:600;color:var(--dim2);letter-spacing:0;margin-left:2px;}
+.sc-stage{position:relative;width:240px;max-width:100%;margin:-6px auto 0;cursor:pointer;}
+.sc-arc{display:block;width:100%;height:auto;}
+.sc-arc-t{fill:none;stroke:var(--surface2);stroke-width:10;stroke-linecap:round;}
+.sc-arc-v{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dasharray .6s;}
+.sc-bell{position:absolute;left:50%;top:14px;width:172px;height:172px;margin-left:-86px;}
+.sc-bell img{display:block;width:100%;height:100%;}
+.sc-lv1{-webkit-animation:hfm-breathe 3.5s ease-in-out infinite;animation:hfm-breathe 3.5s ease-in-out infinite;}
+.sc-lv2,.sc-lv3{-webkit-animation:hfm-bob 1.8s ease-in-out infinite;animation:hfm-bob 1.8s ease-in-out infinite;}
+.sc-lv4{-webkit-animation:hfm-hop 1.2s ease-in-out infinite;animation:hfm-hop 1.2s ease-in-out infinite;}
+@media (prefers-reduced-motion: reduce){ .sc-bell{-webkit-animation:none !important;animation:none !important;} }
+.sc-say{position:relative;margin:4px 6px 14px;padding:11px 14px;border-radius:16px;background:var(--surface2);font-size:14px;line-height:1.4;text-align:center;color:var(--txt);}
+.sc-say::before{content:'';position:absolute;top:-6px;left:50%;margin-left:-7px;border:7px solid transparent;border-top:0;border-bottom-color:var(--surface2);}
+.sc-hs{display:flex;gap:4px;}
+.sc-h{flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;color:var(--txt);padding:2px 0;cursor:pointer;min-width:0;font:inherit;}
+.sc-h:active{opacity:.6;}
+.sc-ring{position:relative;width:52px;height:52px;}
+.sc-ring svg{width:100%;height:100%;-webkit-transform:rotate(-90deg);transform:rotate(-90deg);}
+.sc-ring-t{fill:none;stroke:var(--surface2);stroke-width:4;}
+.sc-ring-v{fill:none;stroke-width:4;stroke-linecap:round;}
+.sc-ic{position:absolute;inset:0;display:grid;place-items:center;color:var(--txt);}
+.sc-ic .gly{width:20px;height:20px;}
+.sc-h.full .sc-ic{color:#22C55E;}
+.sc-plus{position:absolute;right:-2px;bottom:-2px;width:18px;height:18px;border-radius:50%;background:#E30613;color:#fff;font-size:14px;font-weight:800;line-height:18px;text-align:center;}
+.sc-h b{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
+.sc-l{font-size:11px;color:var(--dim2);}
+.sc-sh{padding:4px 2px 8px;text-align:center;}
+.sc-sh-k{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);}
+.sc-sh-n{font-size:44px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums;margin:6px 0 14px;}
+.sc-sh-n span{font-size:16px;font-weight:600;color:var(--dim2);letter-spacing:0;}
+.sc-sh-ctl{display:flex;gap:8px;}
+.sc-sh-ctl button{flex:1;border:0;border-radius:14px;padding:14px 8px;font-size:16px;font-weight:700;background:var(--surface2);color:var(--txt);cursor:pointer;}
+.sc-sh-ctl button.on{background:#E30613;color:#fff;flex:2;}
+.sc-sh-in{display:flex;gap:8px;margin-top:12px;}
+.sc-sh-in .inp{flex:1;min-width:0;margin:0;}
+.sc-sh-in .bigbtn{flex:none;width:auto;padding:0 18px;margin:0;}
+.sc-sh-f{font-size:13px;color:var(--dim2);margin-top:12px;line-height:1.45;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -5613,13 +5656,161 @@ function mascotDates(){
 function mascotRender(){
   var M=hfm(); if(!M) return;
   var d=mascotDates();
-  M.render($('mascot-home'), { mode:'compact', dates:d, onClick:function(){ switchTab('progress'); } });
+  /* Home carries the HITFAT Score (score.js), Bell in its arc; the compact card is the fallback */
+  if(typeof scRender==='function') scRender();
+  else M.render($('mascot-home'), { mode:'compact', dates:d, onClick:function(){ switchTab('progress'); } });
   M.render($('mascot-progress'), { mode:'full', dates:d });
 }
 /* a workout finished, in any program */
 function mascotDone(){
   var M=hfm(); if(!M) return;
-  M.logActivity(); mascotRender();
+  M.logActivity(); if(typeof scEvent==='function'){ _scSay='workout'; _scSayAt=Date.now(); } mascotRender();
+}
+/* ═══════════════ SKOR HITFAT · phase 1 ═══════════════
+   Simple's Success Score, the HITFAT+ way. Bell, the kettlebell mascot, sits
+   in an arc that fills 0–100 with today's habits; under it, one ring a habit
+   with its own way in; over it, Bell says something about the day.
+
+     Workout   a session finished today (HF.data.sessions)        → Train
+     Makan     meals logged today, 3 fill it (HF.data.meals)      → Eat
+     Air       glasses today, 8 fill it (HF.data.daily)           → sheet
+     Langkah   steps today, 8,000 fill it (HF.data.daily)         → sheet
+     Puasa     today's fast against the IF plan (HF.data.ifs)     → IF HITFAT
+               counted only for a member with an IF plan, so no one is
+               marked down for a habit they never took up
+
+   Each habit counted is an equal share of 100. Bell's look follows the score
+   (the four stages of the artwork); the Progress page keeps the weekly one.
+   Phase 2 (streaks, share card) and 3 (rust and shine) come later. ES5. */
+
+var SC_WATER=8, SC_STEPS=8000, SC_MEALS=3;
+var _scSay=null, _scSayAt=0;
+
+/* a saved date (ISO string) as the local day it fell on */
+function scDayOf(v){ var x=new Date(v); return x.getFullYear()+'-'+('0'+(x.getMonth()+1)).slice(-2)+'-'+('0'+x.getDate()).slice(-2); }
+function scDaily(d){ var all=HF.data.daily||{}; var o=all[d||iso(0)]||{}; return {water:o.water||0, steps:o.steps||0}; }
+function scSet(k,v){
+  var all=HF.data.daily||(HF.data.daily={}), d=iso(0), o=all[d]||(all[d]={water:0,steps:0});
+  o[k]=Math.max(0,Math.round(v)); HF.save();
+}
+function scWorkouts(d){
+  var s=HF.data.sessions||{}, n=0, k;
+  for(k in s){ if(s.hasOwnProperty(k) && s[k] && s[k].date && scDayOf(s[k].date)===d) n++; }
+  return n;
+}
+function scHasIF(){ var f=HF.data.ifs||{}; return !!(f.plan && !f.plan.blocked); }
+/* hours fasted toward today: a fast that ended today, or the one running now */
+function scFast(d){
+  var f=HF.data.ifs||{}, best=0, tgt=16, i, x;
+  for(i=0;i<(f.log||[]).length;i++){ x=f.log[i]; if(scDayOf(x.end)===d && x.hrs>best){ best=x.hrs; tgt=x.target; } }
+  if(f.active && d===iso(0)){ var h=(Date.now()-f.active.at)/36e5; if(h>best){ best=h; tgt=f.active.target; } }
+  return {hrs:best, target:tgt};
+}
+
+/* today's habits, each with how full it is (0–1) */
+function scHabits(d){
+  d=d||iso(0);
+  var dy=scDaily(d), w=scWorkouts(d), m=(HF.data.meals&&HF.data.meals[d]||[]).length, out=[];
+  out.push({k:'workout', n:'Workout', ic:'workout', v:Math.min(1,w), val:w?'Siap':'0/1'});
+  out.push({k:'meal',    n:'Makan',   ic:'food',    v:Math.min(1,m/SC_MEALS), val:m+'/'+SC_MEALS});
+  out.push({k:'water',   n:'Air',     ic:'water',   v:Math.min(1,dy.water/SC_WATER), val:dy.water+'/'+SC_WATER});
+  out.push({k:'steps',   n:'Langkah', ic:'steps',   v:Math.min(1,dy.steps/SC_STEPS), val:dy.steps>=1000?(Math.round(dy.steps/100)/10)+'k':String(dy.steps)});
+  if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Puasa', ic:'clock', v:Math.min(1,f.hrs/f.target), val:Math.floor(f.hrs)+'/'+f.target+'j'}); }
+  return out;
+}
+function scScore(d){
+  var hs=scHabits(d), t=0, i;
+  for(i=0;i<hs.length;i++) t+=hs[i].v;
+  return Math.round(t/hs.length*100);
+}
+function scColor(s){ return s>=70?'#22C55E':s>=40?'#FFC20E':'#FF8A3D'; }
+function scLevel(s){ return s>=80?4:s>=50?3:s>=25?2:1; }
+
+/* what Bell says: about what was just done, or else the habit furthest behind */
+var SC_LINES={
+  workout:['Workout siap! Bell nak squat sekali, tapi Bell takde lutut 😅','Padu! Peluh tu tanda lemak tengah menangis 💪'],
+  meal:['Makanan direkod! Bell suka orang yang jujur 🍽️','Dah makan? Bagus. Protein dulu, nasi ikut porsi 👍'],
+  water:['Glup glup! 💧 Bell pun rasa segar.','Air masuk! Badan anda berterima kasih 💧'],
+  steps:['Langkah demi langkah 👟 Bell kagum!','Kaki anda hari ni lagi rajin dari Bell 👟']
+};
+function scLine(){
+  var s=scScore(), hs=scHabits(), i, low=null;
+  if(_scSay && SC_LINES[_scSay] && Date.now()-_scSayAt<120000){ var a=SC_LINES[_scSay]; return a[new Date().getMinutes()%a.length]; }
+  if(s>=100) return 'Skor penuh! Bell rasa macam juara dunia 🏆';
+  for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
+  var hint=!low?'':low.k==='water'?'Tinggal '+(SC_WATER-scDaily().water)+' gelas air lagi.':
+           low.k==='steps'?'Tinggal '+Math.max(0,SC_STEPS-scDaily().steps).toLocaleString('en-MY')+' langkah lagi.':
+           low.k==='meal'?'Jangan lupa rekod makanan anda.':
+           low.k==='workout'?'Satu workout pendek pun cukup hari ni.':
+           'Puasa anda belum capai sasaran.';
+  if(s===0) return 'Bell masih mamai 😴 '+hint;
+  if(s<40) return 'Bell baru bangun. '+hint;
+  if(s<70) return 'Separuh jalan! '+hint;
+  return 'Hari yang padu! 🔥 '+hint;
+}
+/* something was just done: Bell talks about it */
+function scEvent(k){ _scSay=k; _scSayAt=Date.now(); scRender(); }
+
+/* the arc: 240°, open at the bottom, a knob where the score reaches */
+function scArc(s){
+  var cx=120, cy=118, r=100, a0=150, sweep=240;
+  function pt(a){ var t=a*Math.PI/180; return (cx+r*Math.cos(t)).toFixed(1)+' '+(cy+r*Math.sin(t)).toFixed(1); }
+  var d='M'+pt(a0)+' A'+r+' '+r+' 0 1 1 '+pt(a0+sweep), c=scColor(s), k=pt(a0+sweep*Math.max(0,Math.min(1,s/100))).split(' ');
+  return '<svg class="sc-arc" viewBox="0 0 240 184" aria-hidden="true">'+
+    '<path d="'+d+'" class="sc-arc-t" pathLength="100"/>'+
+    (s>0?'<path d="'+d+'" class="sc-arc-v" pathLength="100" stroke="'+c+'" stroke-dasharray="'+s+' 100"/>':'')+
+    '<circle cx="'+k[0]+'" cy="'+k[1]+'" r="9" fill="var(--surface)" stroke="'+c+'" stroke-width="5"/></svg>';
+}
+function scRing(h){
+  var c=h.v>=1?'#22C55E':'#E30613';
+  return '<button class="sc-h'+(h.v>=1?' full':'')+'" onclick="scTap(\''+h.k+'\')" aria-label="'+h.n+'">'+
+    '<span class="sc-ring"><svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" class="sc-ring-t"/>'+
+    (h.v>0?'<circle cx="26" cy="26" r="22" class="sc-ring-v" pathLength="100" stroke="'+c+'" stroke-dasharray="'+Math.round(h.v*100)+' 100"/>':'')+
+    '</svg><span class="sc-ic">'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'')+'</span>'+
+    '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span></button>';
+}
+function scHTML(){
+  var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null;
+  var img=M&&M.config.images[lv-1]?'<img src="'+M.config.images[lv-1]+'" alt="Bell, tahap '+lv+'">':'';
+  return '<div class="sc">'+
+    '<div class="sc-head"><div><div class="sc-k">Skor HITFAT · Hari ini</div><div class="sc-n" style="color:'+scColor(s)+'">'+s+'<span>/100</span></div></div></div>'+
+    '<div class="sc-stage" onclick="switchTab(\'progress\')">'+scArc(s)+'<div class="sc-bell sc-lv'+lv+'">'+img+'</div></div>'+
+    '<div class="sc-say">'+hesc(scLine())+'</div>'+
+    '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>';
+}
+function scRender(){ var el=$('mascot-home'); if(el) el.innerHTML=scHTML(); }
+
+/* each habit's way in */
+function scTap(k){
+  if(k==='workout') return switchTab('train');
+  if(k==='meal') return switchTab('eat');
+  if(k==='fast') return openIF();
+  scSheet(k);
+}
+function scSheet(k){
+  var dy=scDaily(), h='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="scClose()">✕</button></div>';
+  if(k==='water'){
+    h+='<div class="sc-sh"><div class="sc-sh-k">Air hari ini</div><div class="sc-sh-n">'+dy.water+'<span> / '+SC_WATER+' gelas</span></div>'+
+      '<div class="sc-sh-ctl"><button onclick="scWater(-1)" aria-label="Tolak satu gelas">−</button><button class="on" onclick="scWater(1)" aria-label="Tambah satu gelas">+ 1 gelas</button></div>'+
+      '<div class="sc-sh-f">Satu gelas lebih kurang 250 ml.</div></div>';
+  } else {
+    h+='<div class="sc-sh"><div class="sc-sh-k">Langkah hari ini</div><div class="sc-sh-n">'+dy.steps.toLocaleString('en-MY')+'<span> / '+SC_STEPS.toLocaleString('en-MY')+'</span></div>'+
+      '<div class="sc-sh-ctl"><button onclick="scSteps(1000)">+1,000</button><button onclick="scSteps(2000)">+2,000</button><button onclick="scSteps(5000)">+5,000</button></div>'+
+      '<div class="sc-sh-in"><input class="inp" id="sc-steps" type="number" inputmode="numeric" placeholder="Jumlah dari telefon anda" min="0">'+
+      '<button class="bigbtn" onclick="scStepsSet()">Simpan</button></div>'+
+      '<div class="sc-sh-f">Lihat jumlah langkah dalam app Health atau Google Fit, kemudian masukkan di sini.</div></div>';
+  }
+  $('pw-body').innerHTML=h; $('pwm').classList.add('on');
+  try{ $('pwm').scrollTop=0; }catch(e){}
+  scSheet._k=k;
+}
+function scClose(){ closeProduct(); scRender(); }
+function scWater(n){ scSet('water',scDaily().water+n); if(n>0){ _scSay='water'; _scSayAt=Date.now(); } scSheet('water'); scRender(); }
+function scSteps(n){ scSet('steps',scDaily().steps+n); _scSay='steps'; _scSayAt=Date.now(); scSheet('steps'); scRender(); }
+function scStepsSet(){
+  var v=parseInt(($('sc-steps')||{}).value,10);
+  if(!(v>=0) || v>100000){ toast('Masukkan jumlah langkah'); return; }
+  scSet('steps',v); _scSay='steps'; _scSayAt=Date.now(); scClose();
 }
 /* ═══════════════ LANGUAGE: BM / EN ═══════════════
    The app is written in English. Bahasa Melayu is laid over it on screen:
@@ -15239,7 +15430,7 @@ const HF={
     weight:[],meals:{},burn:{},favs:[],custom:null,nutrition:{},scanQuota:{used:0,month:''},owned:{},purchases:[],
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
     body:[],goalKg:null,
-    challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{} }; },
+    challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{},ifs:{},daily:{} }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
   apply(o){
@@ -15262,6 +15453,9 @@ const HF={
       d.d6=(o.d6&&typeof o.d6==='object')?JSON.parse(JSON.stringify(o.d6)):{};
       d.coach=(o.coach&&typeof o.coach==='object')?JSON.parse(JSON.stringify(o.coach)):{};
       d.academy=(o.academy&&typeof o.academy==='object')?JSON.parse(JSON.stringify(o.academy)):{};
+      /* IF HITFAT and the daily habits of the HITFAT Score — kept like the rest, or a reload loses them */
+      d.ifs=(o.ifs&&typeof o.ifs==='object')?JSON.parse(JSON.stringify(o.ifs)):{};
+      d.daily=(o.daily&&typeof o.daily==='object')?JSON.parse(JSON.stringify(o.daily)):{};
     }
     this.data=d;
   },
@@ -22665,6 +22859,7 @@ function logMeal(m){
     slot:slotNow(), p:0,c:0,f:0, comps:[]
   },m,{id})]);
   HF.save();
+  if(typeof _scSayAt!=='undefined'){ _scSay='meal'; _scSayAt=Date.now(); }
   return id;
 }
 function delMeal(i){ const d=iso(0); (HF.data.meals[d]||[]).splice(i,1); HF.save(); renderEat(); }

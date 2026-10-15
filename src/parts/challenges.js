@@ -89,7 +89,7 @@ const HF={
     weight:[],meals:{},burn:{},favs:[],custom:null,nutrition:{},scanQuota:{used:0,month:''},owned:{},purchases:[],
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
     body:[],goalKg:null,
-    challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{} }; },
+    challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{},ifs:{},daily:{} }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
   apply(o){
@@ -112,6 +112,9 @@ const HF={
       d.d6=(o.d6&&typeof o.d6==='object')?JSON.parse(JSON.stringify(o.d6)):{};
       d.coach=(o.coach&&typeof o.coach==='object')?JSON.parse(JSON.stringify(o.coach)):{};
       d.academy=(o.academy&&typeof o.academy==='object')?JSON.parse(JSON.stringify(o.academy)):{};
+      /* IF HITFAT and the daily habits of the HITFAT Score — kept like the rest, or a reload loses them */
+      d.ifs=(o.ifs&&typeof o.ifs==='object')?JSON.parse(JSON.stringify(o.ifs)):{};
+      d.daily=(o.daily&&typeof o.daily==='object')?JSON.parse(JSON.stringify(o.daily)):{};
     }
     this.data=d;
   },

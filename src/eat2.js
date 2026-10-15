@@ -441,6 +441,7 @@ function logMeal(m){
     slot:slotNow(), p:0,c:0,f:0, comps:[]
   },m,{id})]);
   HF.save();
+  if(typeof _scSayAt!=='undefined'){ _scSay='meal'; _scSayAt=Date.now(); }
   return id;
 }
 function delMeal(i){ const d=iso(0); (HF.data.meals[d]||[]).splice(i,1); HF.save(); renderEat(); }

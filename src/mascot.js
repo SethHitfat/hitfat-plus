@@ -15,11 +15,13 @@ function mascotDates(){
 function mascotRender(){
   var M=hfm(); if(!M) return;
   var d=mascotDates();
-  M.render($('mascot-home'), { mode:'compact', dates:d, onClick:function(){ switchTab('progress'); } });
+  /* Home carries the HITFAT Score (score.js), Bell in its arc; the compact card is the fallback */
+  if(typeof scRender==='function') scRender();
+  else M.render($('mascot-home'), { mode:'compact', dates:d, onClick:function(){ switchTab('progress'); } });
   M.render($('mascot-progress'), { mode:'full', dates:d });
 }
 /* a workout finished, in any program */
 function mascotDone(){
   var M=hfm(); if(!M) return;
-  M.logActivity(); mascotRender();
+  M.logActivity(); if(typeof scEvent==='function'){ _scSay='workout'; _scSayAt=Date.now(); } mascotRender();
 }
