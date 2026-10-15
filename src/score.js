@@ -104,21 +104,22 @@ function scArc(s){
 function scRing(h){
   var c=h.c||'#E30613';
   return '<button class="sc-h'+(h.v>=1?' full':'')+'" onclick="scTap(\''+h.k+'\')" aria-label="'+h.n+'">'+
-    '<span class="sc-ring"><svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" class="sc-ring-t"/>'+
-    (h.v>0?'<circle cx="26" cy="26" r="22" class="sc-ring-v" pathLength="100" stroke="'+c+'" stroke-dasharray="'+Math.round(h.v*100)+' 100"/>':'')+
+    '<span class="sc-ring" style="color:'+c+'"><svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" class="sc-ring-t"/>'+
+    (h.v>0?'<circle cx="26" cy="26" r="22" class="sc-ring-v" pathLength="100" stroke="currentColor" stroke-dasharray="'+Math.round(h.v*100)+' 100"/>':'')+
     '</svg><span class="sc-ic"'+(h.v>0?' style="color:'+c+'"':'')+'>'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'')+'</span>'+
     '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span></button>';
 }
 /* the card takes the score's colour, as Simple's screens do (A); Bell's
    look and liveliness follow the stage (B, and bell.js) */
-function scTint(c){ var n=parseInt(c.slice(1),16); return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+',.16)'; }
+function scRGB(c){ var n=parseInt(c.slice(1),16); return (n>>16&255)+','+(n>>8&255)+','+(n&255); }
+function scTint(c){ return 'rgba('+scRGB(c)+',.16)'; }
 function scHTML(){
   var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState(), c=st.k==='rust'?'#A6541E':scColor(s);
   var poster=(typeof bellPoster==='function')?bellPoster(st.k?1:lv):(M&&M.config.images[lv-1]), fx='';
   if(st.k==='rust'){ poster=SC_ART.rust||poster; if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+poster+');mask-image:url('+poster+')"></span>'; }
   var img=poster?'<img class="sc-poster" src="'+poster+'" alt="Bell'+(st.k==='rust'?' berkarat':', tahap '+lv)+'">'+fx:'';
-  return '<div class="sc" style="background:radial-gradient(120% 70% at 50% 28%,'+scTint(c)+',transparent 72%),var(--surface)">'+
-    '<div class="sc-head"><div><div class="sc-k">Skor HITFAT · Hari ini</div><div class="sc-n" style="color:'+scColor(s)+'">'+s+'<span>/100</span></div></div>'+
+  return '<div class="sc" style="--scc:'+scRGB(c)+'">'+
+    '<div class="sc-head"><div><div class="sc-k">Skor HITFAT · Hari ini</div><div class="sc-n" style="color:'+scColor(s)+'"><i>'+s+'</i><span>/100</span></div></div>'+
       scChip()+'</div>'+
     '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Sentuh Bell">'+img+'</div></div>'+
     '<div class="sc-say'+(st.k?' sc-say-'+st.k:'')+'" id="sc-say">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+

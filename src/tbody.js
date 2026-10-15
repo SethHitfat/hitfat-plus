@@ -3920,7 +3920,7 @@ print("\n── BELL, ALIVE ──");
   ok("Bell is touched: a giggle; something logged: a cheer", String(scPoke).indexOf("bellReact('giggle')")>0 && String(scRender).indexOf("bellReact('cheer')")>0);
   ok("a rusty Bell does not move", String(scRender).indexOf("st.k!=='rust'")>0);
   ok("no canvas, no motion: the poster stays", bellAttach(null,2)===false);
-  ok("the card takes the score's colour", scHTML().indexOf('radial-gradient(120% 70%')>0 && scTint('#22C55E')==='rgba(34,197,94,.16)');
+  ok("the card takes the score's colour", scHTML().indexOf('--scc:')>0 && scTint('#22C55E')==='rgba(34,197,94,.16)' && scRGB('#E30613')==='227,6,19');
   ok("the clip is drawn with its mask as alpha", String(bellDraw).indexOf('t[i+3]=b[i]')>0);
 })();
 print("\n── BELL'S REMINDERS ──");

@@ -2640,3 +2640,31 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .pu-steps{display:flex;flex-direction:column;gap:10px;margin:14px 0 4px;text-align:left;}
 .pu-steps div{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.4;}
 .pu-steps b{flex:none;width:24px;height:24px;border-radius:50%;background:#E30613;color:#fff;font-size:13px;display:grid;place-items:center;}
+
+/* HITFAT Score in both themes. The score's colour comes in as --scc (r,g,b).
+   Light: a soft wash, as before. Dark: a near-black stage, the colour as a
+   spotlight behind Bell, the arc and rings lit, Bell standing on a shadow. */
+.sc{position:relative;overflow:hidden;background:radial-gradient(120% 70% at 50% 28%,rgba(var(--scc),.16),transparent 72%),var(--surface);}
+.sc-n i{font-style:normal;}
+.sc-arc{position:relative;}
+.sc-stage::before{content:'';position:absolute;left:50%;top:50%;width:230px;height:230px;margin:-125px 0 0 -115px;border-radius:50%;
+  background:radial-gradient(circle,rgba(var(--scc),.20) 0%,rgba(var(--scc),.06) 45%,transparent 70%);pointer-events:none;}
+.sc-bell::before{content:'';position:absolute;left:30%;right:30%;bottom:5%;height:12px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(0,0,0,.20),transparent);}
+:root:not([data-theme="light"]) .sc{
+  background:radial-gradient(70% 50% at 50% 40%,rgba(var(--scc),.26),transparent 75%),linear-gradient(180deg,#1B1B1F 0%,#0F0F12 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 10px 30px rgba(0,0,0,.35);}
+:root:not([data-theme="light"]) .sc-stage::before{background:radial-gradient(circle,rgba(var(--scc),.38) 0%,rgba(var(--scc),.12) 42%,transparent 70%);}
+:root:not([data-theme="light"]) .sc-bell::before{background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent);}
+:root:not([data-theme="light"]) .sc-arc-t{stroke:rgba(255,255,255,.09);}
+:root:not([data-theme="light"]) .sc-arc-v{-webkit-filter:drop-shadow(0 0 6px rgba(var(--scc),.85));filter:drop-shadow(0 0 6px rgba(var(--scc),.85));}
+:root:not([data-theme="light"]) .sc-n i{text-shadow:0 0 18px rgba(var(--scc),.55);}
+:root:not([data-theme="light"]) .sc-ring-t{stroke:rgba(255,255,255,.10);}
+:root:not([data-theme="light"]) .sc-ring-v{-webkit-filter:drop-shadow(0 0 3px currentColor);filter:drop-shadow(0 0 3px currentColor);}
+:root:not([data-theme="light"]) .sc-ic{color:rgba(255,255,255,.85);}
+:root:not([data-theme="light"]) .sc-plus{background:#1B1B1F;box-shadow:0 0 0 1.5px rgba(255,255,255,.16);color:rgba(255,255,255,.75);}
+:root:not([data-theme="light"]) .sc-say{background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+:root:not([data-theme="light"]) .sc-say::before{border-bottom-color:rgba(255,255,255,.07);}
+:root:not([data-theme="light"]) .sc-chip.off{background:rgba(255,255,255,.07);}
+:root:not([data-theme="light"]) .pu-inv-b{background:rgba(227,6,19,.16);box-shadow:inset 0 0 0 1px rgba(227,6,19,.28);color:#FF4D57;}
+:root:not([data-theme="light"]) .pu-inv-x{background:rgba(255,255,255,.07);}
