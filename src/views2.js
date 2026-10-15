@@ -610,6 +610,7 @@ function renderMe(){
     '<button class="'+(LANG==='ms'?'on':'')+'" onclick="setLang(\'ms\')">BM</button>'+
     '<button class="'+(LANG==='ms'?'':'on')+'" onclick="setLang(\'en\')">EN</button></div></div>':'')+
     (typeof pushRow==='function'?pushRow():'')+
+    (typeof scRamRow==='function'?scRamRow():'')+
     '</div>';
 
   h+=fsec('About','')+'<div class="glist">'+

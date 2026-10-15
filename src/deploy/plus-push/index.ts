@@ -38,6 +38,15 @@ const MYT = 8 * 3600000;
 function dayOf(t: number | string): string { return new Date(new Date(t).getTime() + MYT).toISOString().slice(0, 10); }
 function dayBack(n: number): string { return dayOf(Date.now() - n * 86400000); }
 
+/* Mod Ramadan, as score2.js: approximate dates for Malaysia, or the member's own choice */
+const RAMADAN = [['2027-02-08', '2027-03-09'], ['2028-01-28', '2028-02-26'], ['2029-01-16', '2029-02-14']];
+function ramadan(d: Data, day: string): boolean {
+  const m = (d.sc && d.sc.ram) || 'auto';
+  if (m === 'on') return true;
+  if (m === 'off') return false;
+  return RAMADAN.some(([a, b]) => day >= a && day <= b);
+}
+
 function scoreOf(d: Data, day: string, wdays: Record<string, number>): number {
   const dy = (d.daily && d.daily[day]) || {};
   const meals = ((d.meals && d.meals[day]) || []).length;
@@ -48,7 +57,8 @@ function scoreOf(d: Data, day: string, wdays: Record<string, number>): number {
     Math.min(1, (dy.steps || 0) / 8000),
   ];
   const f = d.ifs || {};
-  if (f.plan && !f.plan.blocked) {
+  if (ramadan(d, day)) hs.push(dy.ram ? 1 : 0);
+  else if (f.plan && !f.plan.blocked) {
     let best = 0, tgt = 16;
     for (const x of (f.log || [])) if (dayOf(x.end) === day && x.hrs > best) { best = x.hrs; tgt = x.target; }
     if (f.active && day === dayBack(0)) { const h = (Date.now() - f.active.at) / 3600000; if (h > best) { best = h; tgt = f.active.target; } }
@@ -69,13 +79,22 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
   const frozen = (d.sc && d.sc.frozen) || {};
   for (let i = 1; i < 400; i++) { const day = dayBack(i); if (scoreOf(d, day, wdays) >= 50) streak++; else if (!frozen[day]) break; }
 
-  if (today >= 50) return null;
-  if (streak >= 2) return {
+  if (streak >= 2 && today < 50) return {
     kind: 'streak', title: '🔥 Streak ' + streak + ' hari dalam bahaya!',
     body: today ? 'Skor hari ni baru ' + today + '. Capai 50 sebelum tidur untuk selamatkan streak anda.'
                 : 'Belum ada apa-apa hari ni. Satu workout pendek dan segelas air pun dah banyak membantu.',
   };
-  if (today > 0) return null;
+  /* Sunday: the week's report, Monday to today, against the week before */
+  if (new Date(Date.now() + MYT).getUTCDay() === 0) {
+    const wk = (o: number) => { const v: number[] = []; for (let i = o; i < o + 7; i++) v.push(scoreOf(d, dayBack(i), wdays)); return v; };
+    const now = wk(0), last = wk(7), avg = Math.round(now.reduce((a, b) => a + b, 0) / 7), prev = Math.round(last.reduce((a, b) => a + b, 0) / 7);
+    if (now.some(x => x > 0)) {
+      const padu = now.filter(x => x >= 50).length, diff = avg - prev;
+      return { kind: 'weekly', title: '📊 Laporan Bell minggu ini',
+        body: 'Purata Skor HITFAT ' + avg + '/100' + (diff ? (diff > 0 ? ', naik ' + diff : ', turun ' + (-diff)) : '') + ' · ' + padu + ' hari padu. Buka app untuk tengok laporan penuh.' };
+    }
+  }
+  if (today >= 50 || today > 0) return null;
   const idle = gap + 1;
   if (idle === 2) return { kind: 'dust', title: 'Bell mula berhabuk 😟', body: 'Dua hari Bell tak nampak anda. Rekod sesuatu hari ni sebelum Bell berkarat esok.' };
   if (idle === 3) return { kind: 'rust', title: 'Alamak, Bell dah berkarat 🥲', body: 'Segelas air pun cukup untuk gilap Bell semula. Jom!' };

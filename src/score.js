@@ -17,7 +17,7 @@
 
 var SC_WATER=8, SC_STEPS=8000, SC_MEALS=3;
 /* Bell's poses (img/mascot/anim/, each a clip with its first frame as poster): the moments and the habit reactions */
-var SC_POSE={gold:'/img/mascot/anim/gold.png', frozen:'/img/mascot/anim/frozen.jpg', halo:'/img/mascot/anim/halo.png',
+var SC_POSE={aktif:'/img/mascot/anim/aktif.png', gold:'/img/mascot/anim/gold.png', frozen:'/img/mascot/anim/frozen.jpg', halo:'/img/mascot/anim/halo.png',
   water:'/img/mascot/anim/water.png', meal:'/img/mascot/anim/meal.png', calendar:'/img/mascot/anim/calendar.png'};
 /* the moment's slot: the pose's poster now, its clip once it plays */
 function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+SC_POSE[name]+'" alt="Bell"></div>'; }
@@ -26,7 +26,7 @@ var _scSay=null, _scSayAt=0;
 
 /* a saved date (ISO string) as the local day it fell on */
 function scDayOf(v){ var x=new Date(v); return x.getFullYear()+'-'+('0'+(x.getMonth()+1)).slice(-2)+'-'+('0'+x.getDate()).slice(-2); }
-function scDaily(d){ var all=HF.data.daily||{}; var o=all[d||iso(0)]||{}; return {water:o.water||0, steps:o.steps||0}; }
+function scDaily(d){ var all=HF.data.daily||{}; var o=all[d||iso(0)]||{}; return {water:o.water||0, steps:o.steps||0, ram:o.ram||0}; }
 function scSet(k,v){
   var all=HF.data.daily||(HF.data.daily={}), d=iso(0), o=all[d]||(all[d]={water:0,steps:0});
   o[k]=Math.max(0,Math.round(v)); HF.save();
@@ -60,7 +60,8 @@ function scHabits(d,days){
   out.push({k:'meal',    n:'Makan',   ic:'food',    c:'#FF8A3D', v:Math.min(1,m/SC_MEALS), val:Math.min(m,SC_MEALS)+'/'+SC_MEALS});
   out.push({k:'water',   n:'Air',     ic:'water',   c:'#3B82F6', v:Math.min(1,dy.water/SC_WATER), val:Math.min(dy.water,SC_WATER)+'/'+SC_WATER});
   out.push({k:'steps',   n:'Langkah', ic:'steps',   c:'#22C55E', v:Math.min(1,dy.steps/SC_STEPS), val:k1(dy.steps)+'/'+k1(SC_STEPS)});
-  if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Puasa', ic:'clock', c:'#A855F7', v:Math.min(1,f.hrs/f.target), val:Math.min(Math.floor(f.hrs),f.target)+'/'+f.target+'j'}); }
+  if(typeof scRamadan==='function' && scRamadan(d)) out.push({k:'fast', n:'Puasa', ic:'moon', c:'#E30613', v:dy.ram?1:0, val:dy.ram?'Ya':'Belum'});
+  else if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Puasa', ic:'clock', c:'#A855F7', v:Math.min(1,f.hrs/f.target), val:Math.min(Math.floor(f.hrs),f.target)+'/'+f.target+'j'}); }
   for(var i=0;i<out.length;i++) if(out[i].v>=1) out[i].val='✓ '+out[i].val;
   return out;
 }
@@ -83,6 +84,7 @@ var SC_LINES={
 };
 function scLine(){
   var s=scScore(), hs=scHabits(), i, low=null;
+  if(_scSay==='junk' && Date.now()-_scSayAt<120000 && typeof scJunkLine==='function') return scJunkLine(_scJunkName);
   if(_scSay && SC_LINES[_scSay] && Date.now()-_scSayAt<120000){ var a=SC_LINES[_scSay]; return a[new Date().getMinutes()%a.length]; }
   if(s>=100) return 'Skor penuh! Bell rasa macam juara dunia 🏆';
   for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
@@ -132,7 +134,9 @@ function scHTML(){
     '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Sentuh Bell">'+img+'</div></div>'+
     '<div class="sc-say'+(st.k?' sc-say-'+st.k:'')+'" id="sc-say">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div>'+
-    (typeof pushInvite==='function'?pushInvite():'')+'</div>';
+    (typeof scCoachHTML==='function'?scCoachHTML():'')+
+    (typeof pushInvite==='function'?pushInvite():'')+'</div>'+
+    (typeof scPlanHTML==='function'?scPlanHTML():'');
 }
 var _scCheered=0;
 function scRender(){
@@ -144,13 +148,16 @@ function scRender(){
     slot.className+=' sc-live';
     if(_scSay && _scSay!=='poke' && _scSayAt>_scCheered && Date.now()-_scSayAt<8000){
       _scCheered=_scSayAt;
-      if(_scSay==='water'||_scSay==='meal') bellReact(_scSay);   /* its poster shows till the clip plays */
-      else bellReact('cheer');
+      /* each habit its own clip; its poster shows till the clip plays */
+      var R={water:'water', meal:'meal', junk:'giggle', workout:'squat', steps:'walk'};
+      bellReact(R[_scSay]||'cheer');
     } else if(_scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
   }
+  if(typeof scCheckMeet==='function' && scCheckMeet()) return;
   if(scCheckShine()) return;
   if(scCheckFreeze()) return;
   if(scCheckRust()) return;
+  if(typeof scCheckWeekly==='function' && scCheckWeekly()) return;
   scCheckStreak();
 }
 function scCheckFreeze(){
@@ -185,7 +192,8 @@ function scPoke(){
 function scTap(k){
   if(k==='workout') return switchTab('train');
   if(k==='meal') return switchTab('eat');
-  if(k==='fast') return openIF();
+  if(k==='fast') return typeof scFastTap==='function'?scFastTap():openIF();
+  if(k==='water' && typeof scWaterTap==='function') return scWaterTap();
   scSheet(k);
 }
 function scSheet(k){
@@ -207,7 +215,8 @@ function scSheet(k){
 }
 function scClose(){ closeProduct(); scRender(); }
 function scWater(n){ scSet('water',scDaily().water+n); if(n>0){ _scSay='water'; _scSayAt=Date.now(); } scSheet('water'); scRender(); }
-function scSteps(n){ scSet('steps',scDaily().steps+n); _scSay='steps'; _scSayAt=Date.now(); scSheet('steps'); scRender(); }
+function scSteps(n){ scSet('steps',scDaily().steps+n); _scSay='steps'; _scSayAt=Date.now(); scSheet('steps'); scRender();
+  if(typeof scBanner==='function') scBanner('+'+n.toLocaleString('en-MY')+' langkah 👟',scDaily().steps.toLocaleString('en-MY')+'/'+SC_STEPS.toLocaleString('en-MY')+' hari ini. Kaki anda rajin!'); }
 function scStepsSet(){
   var v=parseInt(($('sc-steps')||{}).value,10);
   if(!(v>=0) || v>100000){ toast('Masukkan jumlah langkah'); return; }

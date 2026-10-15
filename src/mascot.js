@@ -27,5 +27,7 @@ function mascotRender(){
 /* a workout finished, in any program */
 function mascotDone(){
   var M=hfm(); if(!M) return;
-  M.logActivity(); if(typeof scEvent==='function'){ _scSay='workout'; _scSayAt=Date.now(); } mascotRender();
+  M.logActivity(); if(typeof scEvent==='function'){ _scSay='workout'; _scSayAt=Date.now(); }
+  if(typeof scBanner==='function') scBanner('Workout siap! 💪','Bell nak squat sekali, tapi Bell takde lutut 😅');
+  mascotRender();
 }
