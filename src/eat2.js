@@ -167,25 +167,19 @@ function eatToday(){
   else if(t.kcal>=budget*.8) st={c:'ok',  t:'On track — '+left.toLocaleString()+' kcal to go'};
   else                     st={c:'info', t:left.toLocaleString()+' kcal still to eat today'};
 
-  /* The Activity card's shape: three rings — calories, protein, carbs —
-     and the numbers beside them, then the tiles. */
-  let h=fsec('Summary','Eaten against your target, exercise added back.')+
-    '<div class="hact">'+ringsSVG([pct, t.p/(n.pt||1)*100, t.c/(n.ct||1)*100],112)+
-    '<div class="hact-r">'+
-      '<div class="hact-s"><div class="l">Calories</div><div class="v hc-days">'+t.kcal.toLocaleString()+'/'+budget.toLocaleString()+'<span> KCAL</span></div></div>'+
-      '<div class="hact-s"><div class="l">Protein</div><div class="v hc-mins">'+t.p+'/'+n.pt+'<span> G</span></div></div>'+
-      '<div class="hact-s"><div class="l">Carbs</div><div class="v hc-cons">'+t.c+'/'+n.ct+'<span> G</span></div></div>'+
-    '</div></div>'+
-    '<div class="nstat '+st.c+'"><i></i>'+st.t+'</div>'+
-    '<div class="htiles">'+
-      '<div class="htile"><div class="l hc-streak">'+(t.kcal>budget?'Over':'Left')+'</div><div class="v">'+
-        (t.kcal>budget?(t.kcal-budget):left).toLocaleString()+'<span> KCAL</span></div><div class="s">target '+n.cal.toLocaleString()+'</div></div>'+
-      '<div class="htile" onclick="openBurn()"><div class="l hc-sess">Exercise</div><div class="v">+'+burned.toLocaleString()+
-        '<span> KCAL</span></div><div class="s">'+(burnFor().length?burnFor().length+' logged today':'tap to log')+'</div></div>'+
-      '<div class="htile"><div class="l hc-fat">Fat</div><div class="v">'+t.f+'<span> / '+n.ft+' G</span></div><div class="s">'+
-        Math.min(100,Math.round(t.f/(n.ft||1)*100))+'% of target</div></div>'+
-      '<div class="htile"><div class="l hc-score">Day Score</div><div class="v">'+(logged?score:'—')+
-        '</div><div class="s">balance of the day</div></div>'+
+  /* One card (16 Oct): the calorie ring with what is left in the middle, and
+     the three macros as bars beside it; then Exercise and the Day Score. */
+  const over=t.kcal>budget;
+  const bar=(l,v,tg,c)=>{ const p=Math.min(100,Math.round(v/(tg||1)*100));
+    return '<div class="emb"><div class="emb-h"><span>'+l+'</span><b>'+v+'<i> / '+(tg||0)+' g</i></b></div><div class="emb-t"><i style="width:'+p+'%;background:'+c+'"></i></div></div>'; };
+  let h='<div class="ehero">'+
+      '<div class="ehero-top">'+nRing(pct,(over?'+':'')+(over?t.kcal-budget:left).toLocaleString(),over?'kcal over':'kcal left',132)+
+      '<div class="ehero-m">'+bar('Protein',t.p,n.pt,'#E30613')+bar('Carbs',t.c,n.ct,'#FFC20E')+bar('Fat',t.f,n.ft,'#A1A1AA')+'</div></div>'+
+      '<div class="ehero-f"><span>'+t.kcal.toLocaleString()+' eaten · '+budget.toLocaleString()+' target</span><span class="nstat2 '+st.c+'"><i></i>'+st.t+'</span></div>'+
+    '</div>'+
+    '<div class="etiles">'+
+      '<div class="etile" onclick="openBurn()"><span class="ic" style="--c:#E30613">'+glyph('flame')+'</span><div><b>+'+burned.toLocaleString()+'<i> kcal</i></b><span>'+(burnFor().length?'Exercise · '+burnFor().length+' logged':'Exercise · tap to log')+'</span></div></div>'+
+      '<div class="etile"><span class="ic" style="--c:#C9962E">'+glyph('target')+'</span><div><b>'+(logged?score:'—')+'</b><span>Day Score · balance</span></div></div>'+
     '</div>';
 
   // meals: one grouped list, the slot to fill next marked, + to add
@@ -198,12 +192,13 @@ function eatToday(){
       return nRow(s.e, s.n, sub, '<span class="nadd" aria-label="Add">+</span>', "openManualAt('"+s.k+"')");
     }).join('')+'</div>';
 
-  // tools, as the bright tiles Browse Programs uses
+  // tools, as colour tiles (the Library's look)
   h+=fsec('Tools','Log faster, plan ahead.');
-  h+='<div class="hscroll">'+
-     eatTile('Scan a Meal', canScan()?'AI reads the plate':'Get more scans','linear-gradient(135deg,#5A0A0E 0%,#C21A14 55%,#FF6A5C 100%)','photo','openScan()')+
-     eatTile('Meal Plan', contentOpen()?'Malaysian menus':'With HITFAT+','linear-gradient(135deg,#3A2600 0%,#A87400 55%,#FFC21A 100%)','clipboard',"setEatSeg('plan')")+
-     eatTile('Log Exercise','Earn calories back','linear-gradient(135deg,#1C1C1E 0%,#4A0C10 55%,#B81A1F 100%)','flame','openBurn()')+
+  const tl=(t,sub,bg,fg,ic,go)=>'<div class="lib-t etool" onclick="'+go+'" style="--wk:'+bg+';--wkt:'+fg+'"><span class="fw-ic">'+glyph(ic)+'</span><div class="lt">'+t+'</div><div class="ls">'+sub+'</div></div>';
+  h+='<div class="etools">'+
+     tl('Scan a Meal',canScan()?'AI reads the plate':'Get more scans','#B3121B','#FFFFFF','photo','openScan()')+
+     tl('Meal Plan',contentOpen()?'Malaysian menus':'With HITFAT+','#C9962E','#1A1A1A','clipboard',"setEatSeg('plan')")+
+     tl('Log Exercise','Earn calories back','#3A3A3E','#FFFFFF','flame','openBurn()')+
      '</div>';
 
   h+='<button class="authalt" onclick="HF.data.nutrition={};HF.save();renderEat()">Change my daily target</button>';
