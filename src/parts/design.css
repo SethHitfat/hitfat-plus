@@ -3056,3 +3056,14 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fcoll.fc2 .m{margin-top:4px;}
 .fc-bar{height:4px;border-radius:9px;background:rgba(255,255,255,.28);margin-top:8px;overflow:hidden;max-width:180px;}
 .fc-bar i{display:block;height:100%;border-radius:9px;background:#FFFFFF;}
+
+/* ── Browse, studio photo tiles (train2.js fbrowse) ── */
+.fbrs:has(.fbp){grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.fbr.fbp{position:relative;height:118px;padding:12px 12px 11px;justify-content:flex-end;overflow:hidden;border-radius:16px;}
+.fbr.fbp::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.38) 0%,rgba(0,0,0,.08) 55%,rgba(0,0,0,0) 70%);}
+.fbr.fbp.dk::before{background:linear-gradient(90deg,rgba(255,255,255,.35) 0%,rgba(255,255,255,0) 60%);}
+.fbr.fbp .tx{position:relative;max-width:62%;}
+.fbr.fbp .t{font-size:17px;font-weight:800;letter-spacing:-.3px;color:#FFFFFF;white-space:normal;line-height:1.1;}
+.fbr.fbp .s{font-size:11px;color:rgba(255,255,255,.82);margin-top:2px;line-height:1.25;}
+.fbr.fbp .m{font-size:11px;font-weight:700;color:rgba(255,255,255,.7);margin-top:6px;}
+.fbr.fbp.dk .t{color:#1A1A1A;} .fbr.fbp.dk .s{color:rgba(26,26,26,.75);} .fbr.fbp.dk .m{color:rgba(26,26,26,.6);}

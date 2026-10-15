@@ -398,7 +398,7 @@ HF.data.prefs={name:'Seth',goal:'Lose fat',level:'Beginner',days:3,equip:'Bodywe
 setTrSeg('explore');
 var ex=document.getElementById('tr-body').innerHTML;
 ok("sampler strip",        ex.indexOf('This Week')>0 && ex.indexOf('Free This Week')<0);
-ok("one Browse grid, dark tiles, no white cards", ex.indexOf('>Browse<')>0 && ex.indexOf('class="fbr"')>0 && ex.indexOf('class="fact"')<0 && ex.indexOf('Activity Types')<0);
+ok("one Browse grid of studio photo tiles, no white cards", ex.indexOf('>Browse<')>0 && ex.indexOf('class="fbr fbp')>0 && ex.indexOf('/img/p/br-fatloss.jpg')>0 && / programs<\/div>/.test(ex) && ex.indexOf('class="fact"')<0 && ex.indexOf('Activity Types')<0);
 ok("top programs",         ex.indexOf('Top Programs')>0 && ex.indexOf('fbig')>0);
 ok("no second category row, no third strip of workouts", ex.indexOf('ftile')<0 && ex.indexOf('fwcol')<0 && ex.split('class="fsec"').length-1===4);
 ok("browse is by category",  ex.indexOf("openActivity('Fat Loss')")>0);

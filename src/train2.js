@@ -162,18 +162,21 @@ function ftile(p){
 }
 
 const ACTIVITIES=[
-  {k:'Fat Loss',  n:'Fat Loss',  img:'/img/p/act-fatloss.jpg',   ic:'flame'},
-  {k:'Strength',  n:'Strength',  img:'/img/p/act-strength.jpg',  ic:'workout'},
-  {k:'Core',      n:'Core',      img:'/img/p/act-core.jpg',      ic:'target'},
-  {k:'Beginner',  n:'Beginner',  img:'/img/p/act-beginner.jpg',  ic:'sunrise'},
-  {k:'Equipment', n:'Equipment', img:'/img/p/act-equipment.jpg', ic:'bag'},
-  {k:'Quick',     n:'Quick',     img:'/img/p/act-fatloss.jpg',   ic:'clock'},
-  {k:'Recovery',  n:'Recovery',  img:'/img/p/act-recovery.jpg',  ic:'leaf'}
+  {k:'Fat Loss',  n:'Fat Loss',  img:'/img/p/act-fatloss.jpg',   ic:'flame',   br:'/img/p/br-fatloss.jpg',   bg:'#B3121B', s:'Burn more'},
+  {k:'Strength',  n:'Strength',  img:'/img/p/act-strength.jpg',  ic:'workout', br:'/img/p/br-strength.jpg',  bg:'#3A3A3E', s:'Build muscle'},
+  {k:'Core',      n:'Core',      img:'/img/p/act-core.jpg',      ic:'target',  br:'/img/p/br-core.jpg',      bg:'#D8C3A0', s:'Abs & stability', dk:1},
+  {k:'Beginner',  n:'Beginner',  img:'/img/p/act-beginner.jpg',  ic:'sunrise', br:'/img/p/br-beginner.jpg',  bg:'#2F4A68', s:'Start here'},
+  {k:'Equipment', n:'Equipment', img:'/img/p/act-equipment.jpg', ic:'bag',     br:'/img/p/br-equipment.jpg', bg:'#4A5240', s:'Bells, bands, chairs'},
+  {k:'Quick',     n:'Quick',     img:'/img/p/act-fatloss.jpg',   ic:'clock',   br:'/img/p/br-quick.jpg',     bg:'#C4561E', s:'20 min or less'},
+  {k:'Recovery',  n:'Recovery',  img:'/img/p/act-recovery.jpg',  ic:'leaf',    br:'/img/p/br-recovery.jpg',  bg:'#8FA38A', s:'Stretch & reset', dk:1}
 ];
 /* Browse, in Explore: one grid of dark tiles in place of the white photo
    cards and the gradient category row, which said the same thing twice. */
 function fbrowse(a){
   const n=PROGRAMS.filter(p=>activityMatch(a.k,p)).length;
+  /* a studio photo per category, the athlete on the right, the words on the left (16 Oct) */
+  if(a.br) return '<div class="fbr fbp'+(a.dk?' dk':'')+'" onclick="openActivity(\''+a.k+'\')" style="background:'+a.bg+' url(\''+a.br+'\') right center/cover no-repeat">'+
+    '<div class="tx"><div class="t">'+a.n+'</div><div class="s">'+a.s+'</div><div class="m">'+n+' programs</div></div></div>';
   return '<div class="fbr" onclick="openActivity(\''+a.k+'\')"><span class="ic">'+glyph(a.ic)+'</span>'+
     '<div class="tx"><div class="t">'+a.n+'</div><div class="m">'+n+'</div></div></div>';
 }
