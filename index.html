@@ -5243,6 +5243,30 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fp-bar i{display:block;height:100%;border-radius:9px;background:#FFFFFF;}
 .fbig.fbp2 .m{display:none;}
 
+/* ── Plans (16 Oct): Made For You on its studio photo, Custom Plan a clean dark card ── */
+.fmade.fmp{min-height:220px;}
+.fmade.fmp{background:#161618;overflow:hidden;}
+:root[data-theme="light"] .fmade.fmp{background:#1C1C1E;}
+.fm-ph{position:absolute!important;top:0;right:0;bottom:0;width:62%;background:center 18%/cover no-repeat;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 38%);mask-image:linear-gradient(90deg,transparent 0%,#000 38%);}
+.fmade.fmp>*:not(.fm-ph){position:relative;}
+.fmade.fmp .fp-tag{position:relative;left:auto;top:auto;align-self:flex-start;margin-bottom:10px;}
+.fmade.fmp .t{max-width:62%;}
+.fmade.fmp .s{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.fmade.fmp .s .fw-lv{margin-left:0;}
+.fmade.fmp .mt{max-width:60%;}
+.fmade.fmp .fglass{align-self:flex-start;}
+.fcustom.fcx{background:#1C1C1E;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);}
+:root[data-theme="light"] .fcustom.fcx{background:#FFFFFF;box-shadow:0 6px 22px rgba(0,0,0,.06);}
+.fcustom.fcx::before,.fcustom.fcx::after{display:none;}
+.fcx-ic{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:rgba(227,6,19,.14);color:#E30613;margin-bottom:12px;}
+.fcx-ic .gly{width:22px;height:22px;}
+.fcustom.fcx .t{color:var(--txt);}
+.fcustom.fcx .s{color:var(--dim);}
+.fcustom.fcx .fglass{background:#E30613;color:#FFFFFF;border:0;-webkit-backdrop-filter:none;backdrop-filter:none;}
+.fcustom.fcx .fglass-q{background:transparent;color:var(--dim);}
+.ncard .ic{display:none;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -25780,9 +25804,14 @@ const PLAN_GRADS={
 };
 function fplanCard(p){
   const done=progDone(p.id), tot=progDays(p), going=done>0&&done<tot;
-  return '<div class="fmade" style="background:'+(PLAN_GRADS[p.goal]||PLAN_GRADS.Strength)+'">'+lockTag(p)+
+  /* its studio photo when it has one (16 Oct), the words on the left over a soft fade */
+  const ph=FBIG_IMG[p.id]||(hasPhoto(p)?progImg(p):'');
+  const lv=String(p.level||'');
+  return '<div class="fmade'+(ph?' fmp':'')+'"'+(ph?'':' style="background:'+(PLAN_GRADS[p.goal]||PLAN_GRADS.Strength)+'"')+'>'+
+    (ph?'<div class="fm-ph" style="background-image:url(\''+ph+'\')"></div>':'')+lockTag(p)+
+    (/^sig\d/.test(p.id)?'<span class="fp-tag">HITFAT ORIGINAL</span>':'')+
     '<div class="t">'+p.name+'</div>'+
-    '<div class="s">'+(p.goal||'')+' · '+p.level+'</div>'+
+    '<div class="s">'+(p.goal||'')+(lv?' <span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span>':'')+'</div>'+
     '<div class="mt">'+planPerWeek(p)+' DAYS A WEEK · '+p.dur+'MIN/DAY</div>'+
     (going?'<div class="pb"><i style="width:'+Math.round(done/tot*100)+'%"></i></div>':'')+
     '<button class="fglass" onclick="openProgram(\''+p.id+'\')">'+glyph('calendar')+
@@ -25996,9 +26025,8 @@ function ncard(p,rank){
   const done=progDone(p.id), tot=progDays(p), pct=tot?Math.round(done/tot*100):0;
   return '<div class="ncard'+(rank?' ranked':'')+'" onclick="openProgram(\''+p.id+'\')">'+
     (rank?'<div class="rk">'+rank+'</div>':'')+
-    '<div class="im" style="background-image:url(\''+progImg(p)+'\');'+imgPos(p,FA.tall)+'">'+
+    '<div class="im" style="background-image:url(\''+(FBIG_IMG[p.id]||progImg(p))+'\');'+(FBIG_IMG[p.id]?'background-position:55% 20%':imgPos(p,FA.tall))+'">'+
       '<div class="ov"></div>'+lockTag(p)+
-      '<div class="ic">'+glyph((p.icon||''))+'</div>'+
       (done>0?'<div class="pb"><i style="width:'+pct+'%"></i></div>':'')+
       '<div class="in"><div class="t">'+p.name+'</div>'+
       '<div class="m">'+planLenShort(p)+' · '+p.dur+' min</div></div>'+
@@ -26040,7 +26068,7 @@ function trPlans(){
 
   /* Build Your Own: the custom plan, on the gold card */
   h+=fsec('Build Your Own','Choose the activities and set your schedule.');
-  h+='<div class="fcustom">'+
+  h+='<div class="fcustom fcx"><span class="fcx-ic">'+glyph('target')+'</span>'+
      '<div class="t">'+(hasCustom()?'Your Custom Plan':'Custom Plan')+'</div>'+
      '<div class="s">'+(hasCustom()
         ? 'Change the activities, days, length or equipment any time — your progress carries over.'

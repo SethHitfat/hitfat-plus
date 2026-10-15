@@ -148,9 +148,14 @@ const PLAN_GRADS={
 };
 function fplanCard(p){
   const done=progDone(p.id), tot=progDays(p), going=done>0&&done<tot;
-  return '<div class="fmade" style="background:'+(PLAN_GRADS[p.goal]||PLAN_GRADS.Strength)+'">'+lockTag(p)+
+  /* its studio photo when it has one (16 Oct), the words on the left over a soft fade */
+  const ph=FBIG_IMG[p.id]||(hasPhoto(p)?progImg(p):'');
+  const lv=String(p.level||'');
+  return '<div class="fmade'+(ph?' fmp':'')+'"'+(ph?'':' style="background:'+(PLAN_GRADS[p.goal]||PLAN_GRADS.Strength)+'"')+'>'+
+    (ph?'<div class="fm-ph" style="background-image:url(\''+ph+'\')"></div>':'')+lockTag(p)+
+    (/^sig\d/.test(p.id)?'<span class="fp-tag">HITFAT ORIGINAL</span>':'')+
     '<div class="t">'+p.name+'</div>'+
-    '<div class="s">'+(p.goal||'')+' · '+p.level+'</div>'+
+    '<div class="s">'+(p.goal||'')+(lv?' <span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span>':'')+'</div>'+
     '<div class="mt">'+planPerWeek(p)+' DAYS A WEEK · '+p.dur+'MIN/DAY</div>'+
     (going?'<div class="pb"><i style="width:'+Math.round(done/tot*100)+'%"></i></div>':'')+
     '<button class="fglass" onclick="openProgram(\''+p.id+'\')">'+glyph('calendar')+
@@ -364,9 +369,8 @@ function ncard(p,rank){
   const done=progDone(p.id), tot=progDays(p), pct=tot?Math.round(done/tot*100):0;
   return '<div class="ncard'+(rank?' ranked':'')+'" onclick="openProgram(\''+p.id+'\')">'+
     (rank?'<div class="rk">'+rank+'</div>':'')+
-    '<div class="im" style="background-image:url(\''+progImg(p)+'\');'+imgPos(p,FA.tall)+'">'+
+    '<div class="im" style="background-image:url(\''+(FBIG_IMG[p.id]||progImg(p))+'\');'+(FBIG_IMG[p.id]?'background-position:55% 20%':imgPos(p,FA.tall))+'">'+
       '<div class="ov"></div>'+lockTag(p)+
-      '<div class="ic">'+glyph((p.icon||''))+'</div>'+
       (done>0?'<div class="pb"><i style="width:'+pct+'%"></i></div>':'')+
       '<div class="in"><div class="t">'+p.name+'</div>'+
       '<div class="m">'+planLenShort(p)+' · '+p.dur+' min</div></div>'+
@@ -408,7 +412,7 @@ function trPlans(){
 
   /* Build Your Own: the custom plan, on the gold card */
   h+=fsec('Build Your Own','Choose the activities and set your schedule.');
-  h+='<div class="fcustom">'+
+  h+='<div class="fcustom fcx"><span class="fcx-ic">'+glyph('target')+'</span>'+
      '<div class="t">'+(hasCustom()?'Your Custom Plan':'Custom Plan')+'</div>'+
      '<div class="s">'+(hasCustom()
         ? 'Change the activities, days, length or equipment any time — your progress carries over.'
