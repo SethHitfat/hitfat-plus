@@ -163,18 +163,17 @@ function scMood(m){
 function scClock(min){ min=((Math.round(min)%1440)+1440)%1440; var h=Math.floor(min/60), m=min%60; return (h%12||12)+':'+('0'+m).slice(-2)+(h<12?' am':' pm'); }
 function scPlanHTML(){
   var rows=[], dy=scDaily(), nx=(typeof nextUp==='function')?nextUp():null, p=nx&&nx.p&&nx.p.weeks?nx.p:null, gi, at, n=function(x){ return x.toLocaleString('en-MY'); };
+  /* (16 Oct) one way into today's workout: the plan's next day, or finding a
+     plan; water and steps live in the rings above, not here again */
   if(p && typeof nextSession==='function' && (gi=nextSession(p))>=0 && (at=sessionAt(p,gi)))
-    rows.push({ic:'workout', t:(at.day.name||'Workout'), s:p.name+' · '+p.dur+' min', done:scWorkouts(iso(0))>0, go:"openDay('"+p.id+"',"+gi+")", b:'Start'});
-  else rows.push({ic:'workout', t:"Today's workout", s:'Pick a program or a short session', done:scWorkouts(iso(0))>0, go:"switchTab('train')", b:'Pick'});
+    rows.push({ic:'workout', t:(at.day.name||'Workout'), s:'Day '+(gi+1)+' of '+progDays(p)+' · '+p.name+' · '+p.dur+' min', done:scWorkouts(iso(0))>0, go:"openDay('"+p.id+"',"+gi+")", b:'Start'});
+  else rows.push({ic:'target', t:'Find your first plan', s:'Four questions, matched to your goal and level', done:scWorkouts(iso(0))>0, go:(typeof openFinder==='function'?'openFinder()':"switchTab('train')"), b:'Find'});
   if(!SC_FAST_LIVE){}
   else if(scRamadan()) rows.push({ic:'moon', t:dy.ram?'Fasting today ✓':'Ramadan fast', s:'Sahur, iftar, and water in between', done:!!dy.ram, go:'scRamToggle()', b:dy.ram?'':'Mark'});
   else if(scHasIF() && typeof ifWindow==='function'){
     var w=ifWindow(), f=HF.data.ifs||{};
     rows.push({ic:'clock', t:'Eat '+scClock(w.start)+' – '+scClock(w.end), s:f.active?'Fasting now · end it in IF HITFAT':'Then fast for '+ifProto().f+' hours', done:false, go:f.active?'openIF()':'scFastTap()', b:f.active?'View':'Start'});
   }
-  var wl=SC_WATER-dy.water, sl=Math.max(0,SC_STEPS-dy.steps);
-  rows.push({ic:'water', t:wl<=0?'Water done for today':wl+(wl===1?' glass':' glasses')+' of water to go', s:dy.water+'/'+SC_WATER+' glasses', done:wl<=0, go:'scWaterTap()', b:'+1'});
-  rows.push({ic:'steps', t:sl<=0?'Steps done for today':n(sl)+' steps to go', s:n(dy.steps)+'/'+n(SC_STEPS)+' steps', done:sl<=0, go:"scSheet('steps')", b:'Add'});
   return '<div class="scx-plan">'+fsec("Today's Plan",'')+'<div class="scx-rows">'+rows.map(function(r){
     return '<div class="scx-row'+(r.done?' done':'')+'" onclick="'+r.go+'"><span class="ic">'+glyph(r.ic)+'</span><div class="tx"><b>'+hesc(r.t)+'</b><span>'+hesc(r.s)+'</span></div>'+
       (r.done?'<span class="ok">✓</span>':(r.b?'<button onclick="event.stopPropagation();'+r.go+'">'+r.b+'</button>':''))+'</div>'; }).join('')+'</div></div>';

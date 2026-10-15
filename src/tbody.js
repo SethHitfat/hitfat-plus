@@ -100,7 +100,7 @@ ok("home keeps the month's challenge, not a second set of rings", (function(){ s
 ok("home leads with the date and a large greeting", (function(){ var h=document.getElementById('home-hdr').innerHTML;
   return h.indexOf('hsum')>0 && /MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY/.test(h); })());
 ok("rings are paths from twelve o'clock", ringArc(50,50,40,25).indexOf('M50 10')===0);
-ok("today hero switches to Continue", document.getElementById('home-today').innerHTML.indexOf('Day 2')>0);
+ok("today's plan switches to the plan's next day", scPlanHTML().indexOf('Day 2 of')>0 && document.getElementById('home-today').innerHTML==='');
 ok("Home leaves the catalogue to Train", document.getElementById('home-plans').innerHTML==='' && document.getElementById('home-quick').innerHTML.indexOf('Quick Workouts')<0);
 ok("courses on Home as colour tiles", homeCourses().indexOf('class="lcourses')>0 && homeCourses().indexOf('openIF()')>0);
 
@@ -4051,7 +4051,7 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
   ok("...and only once", HF.data.sc.met===1 && document.getElementById('scc').style.display==='none');
   var h=document.getElementById('mascot-home').innerHTML;
   ok("Misi hari ini under the rings: points to hari padu, the quickest way, a line from the coach", h.indexOf("TODAY'S MISSION")>0 && h.indexOf('points</b> to a strong day')>0 && h.indexOf('hari padu')<0 && h.indexOf('Coach:')>0 && h.indexOf('Coach Seth')<0 && h.indexOf('COACH BELL')<0 && h.indexOf('scx-bar')>0);
-  ok("today's plan under the card", h.indexOf("Today's Plan")>0 && h.indexOf('glasses of water to go')>0 && h.indexOf('scWaterTap()')>0);
+  ok("today's plan under the card, one workout row (water and steps stay in the rings)", h.indexOf("Today's Plan")>0 && h.indexOf('glasses of water to go')<0 && h.indexOf("scTap('water')")>0 && (h.match(/class="scx-row[ "]/g)||[]).length===1);
   scTap('water');
   ok("one tap on water adds a glass, and Bell's banner offers an undo", HF.data.daily[iso(0)].water===1 && document.getElementById('scb').className.indexOf('on')>0 && document.getElementById('scb').innerHTML.indexOf('Undo')>0);
   HF.data.ifs={plan:{start:iso(0),endMin:1200},log:[]};

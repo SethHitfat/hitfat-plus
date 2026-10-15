@@ -5608,6 +5608,11 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
     radial-gradient(closest-side,rgba(var(--sgb),.12),rgba(var(--sgb),0)) 50% 220px/120% 420px no-repeat local,
     var(--bg);}
 
+/* Home · This Month as a light card in the light theme (16 Oct: dark blocks stacked on a light page) */
+:root[data-theme="light"] #home .mcard{--txt:#111113;--dim:rgba(60,60,67,.68);--dim2:rgba(60,60,67,.6);--tint:rgba(0,0,0,.07);
+  color:#111113;background:#FFFFFF !important;box-shadow:var(--lift-1);}
+:root[data-theme="light"] #home .mcard .mtag,:root[data-theme="light"] #home .mcard .me{color:#E30613;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -7518,18 +7523,17 @@ function scMood(m){
 function scClock(min){ min=((Math.round(min)%1440)+1440)%1440; var h=Math.floor(min/60), m=min%60; return (h%12||12)+':'+('0'+m).slice(-2)+(h<12?' am':' pm'); }
 function scPlanHTML(){
   var rows=[], dy=scDaily(), nx=(typeof nextUp==='function')?nextUp():null, p=nx&&nx.p&&nx.p.weeks?nx.p:null, gi, at, n=function(x){ return x.toLocaleString('en-MY'); };
+  /* (16 Oct) one way into today's workout: the plan's next day, or finding a
+     plan; water and steps live in the rings above, not here again */
   if(p && typeof nextSession==='function' && (gi=nextSession(p))>=0 && (at=sessionAt(p,gi)))
-    rows.push({ic:'workout', t:(at.day.name||'Workout'), s:p.name+' · '+p.dur+' min', done:scWorkouts(iso(0))>0, go:"openDay('"+p.id+"',"+gi+")", b:'Start'});
-  else rows.push({ic:'workout', t:"Today's workout", s:'Pick a program or a short session', done:scWorkouts(iso(0))>0, go:"switchTab('train')", b:'Pick'});
+    rows.push({ic:'workout', t:(at.day.name||'Workout'), s:'Day '+(gi+1)+' of '+progDays(p)+' · '+p.name+' · '+p.dur+' min', done:scWorkouts(iso(0))>0, go:"openDay('"+p.id+"',"+gi+")", b:'Start'});
+  else rows.push({ic:'target', t:'Find your first plan', s:'Four questions, matched to your goal and level', done:scWorkouts(iso(0))>0, go:(typeof openFinder==='function'?'openFinder()':"switchTab('train')"), b:'Find'});
   if(!SC_FAST_LIVE){}
   else if(scRamadan()) rows.push({ic:'moon', t:dy.ram?'Fasting today ✓':'Ramadan fast', s:'Sahur, iftar, and water in between', done:!!dy.ram, go:'scRamToggle()', b:dy.ram?'':'Mark'});
   else if(scHasIF() && typeof ifWindow==='function'){
     var w=ifWindow(), f=HF.data.ifs||{};
     rows.push({ic:'clock', t:'Eat '+scClock(w.start)+' – '+scClock(w.end), s:f.active?'Fasting now · end it in IF HITFAT':'Then fast for '+ifProto().f+' hours', done:false, go:f.active?'openIF()':'scFastTap()', b:f.active?'View':'Start'});
   }
-  var wl=SC_WATER-dy.water, sl=Math.max(0,SC_STEPS-dy.steps);
-  rows.push({ic:'water', t:wl<=0?'Water done for today':wl+(wl===1?' glass':' glasses')+' of water to go', s:dy.water+'/'+SC_WATER+' glasses', done:wl<=0, go:'scWaterTap()', b:'+1'});
-  rows.push({ic:'steps', t:sl<=0?'Steps done for today':n(sl)+' steps to go', s:n(dy.steps)+'/'+n(SC_STEPS)+' steps', done:sl<=0, go:"scSheet('steps')", b:'Add'});
   return '<div class="scx-plan">'+fsec("Today's Plan",'')+'<div class="scx-rows">'+rows.map(function(r){
     return '<div class="scx-row'+(r.done?' done':'')+'" onclick="'+r.go+'"><span class="ic">'+glyph(r.ic)+'</span><div class="tx"><b>'+hesc(r.t)+'</b><span>'+hesc(r.s)+'</span></div>'+
       (r.done?'<span class="ok">✓</span>':(r.b?'<button onclick="event.stopPropagation();'+r.go+'">'+r.b+'</button>':''))+'</div>'; }).join('')+'</div></div>';
@@ -23836,33 +23840,15 @@ function renderHome(){
   /* The avatar already sits in the bar above, on every tab; a second one
      beside the greeting showed the same initial twice. */
 
-  // 2) the week — today a white pill, trained days marked
-  const off=(now.getDay()+6)%7, mon=new Date(now); mon.setDate(now.getDate()-off);
-  const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const doneSet=new Set();
-  Object.values(HF.data.sessions).forEach(x=>{ if(x&&x.date){ const d=new Date(x.date);
-    if(d>=new Date(weekStartISO()+'T00:00:00')) doneSet.add((d.getDay()+6)%7); } });
-  $('home-week').innerHTML='<div class="wk2">'+names.map((n,i)=>{
-    const dt=new Date(mon); dt.setDate(mon.getDate()+i);
-    return '<div class="d '+(i===off?'on':'')+' '+(doneSet.has(i)?'done':'')+'"><small>'+n+'</small><b>'+dt.getDate()+'</b></div>';
-  }).join('')+'</div>';
+  // 2) (16 Oct) the week strip went: Progress has the month's calendar
+  $('home-week').innerHTML='';
 
   // 3) membership, then T42
   if($('home-t42')) $('home-t42').innerHTML=wlHomeCard()+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard():'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
-  // 4) Up Next — the plan in progress, or the way to pick one
-  const nx=nextUp();
-  if(nx && nx.p.weeks){
-    $('home-today').innerHTML=fsec('Up Next','Today, from your plan.')+fyPlanCard(nx.p);
-  } else {
-    $('home-today').innerHTML=fsec('Up Next','Pick a plan and your next session waits here.')+
-      '<div class="fmade hfind"><span class="fw-ic">'+glyph('target')+'</span>'+
-      '<div class="t">Find your first plan</div>'+
-      '<div class="s">Bodyweight, chair or with equipment — matched to your goal and level.</div>'+
-      '<button class="bigbtn" style="margin-top:18px;" onclick="switchTab(\'train\');setTrSeg(\'plans\')">Browse Plans</button>'+
-      '<button class="fglass" onclick="openFinder()">'+glyph('target')+'Find my program</button></div>';
-  }
+  // 4) Up Next went into Today's Plan (one row: the plan's next day, or find a plan)
+  $('home-today').innerHTML='';
 
   // 5) the month's challenge (16 Oct: the rings, streak and session tiles
   //    went, the HITFAT Score and Progress already say all of it)

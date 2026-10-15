@@ -246,33 +246,15 @@ function renderHome(){
   /* The avatar already sits in the bar above, on every tab; a second one
      beside the greeting showed the same initial twice. */
 
-  // 2) the week — today a white pill, trained days marked
-  const off=(now.getDay()+6)%7, mon=new Date(now); mon.setDate(now.getDate()-off);
-  const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const doneSet=new Set();
-  Object.values(HF.data.sessions).forEach(x=>{ if(x&&x.date){ const d=new Date(x.date);
-    if(d>=new Date(weekStartISO()+'T00:00:00')) doneSet.add((d.getDay()+6)%7); } });
-  $('home-week').innerHTML='<div class="wk2">'+names.map((n,i)=>{
-    const dt=new Date(mon); dt.setDate(mon.getDate()+i);
-    return '<div class="d '+(i===off?'on':'')+' '+(doneSet.has(i)?'done':'')+'"><small>'+n+'</small><b>'+dt.getDate()+'</b></div>';
-  }).join('')+'</div>';
+  // 2) (16 Oct) the week strip went: Progress has the month's calendar
+  $('home-week').innerHTML='';
 
   // 3) membership, then T42
   if($('home-t42')) $('home-t42').innerHTML=wlHomeCard()+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard():'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
-  // 4) Up Next — the plan in progress, or the way to pick one
-  const nx=nextUp();
-  if(nx && nx.p.weeks){
-    $('home-today').innerHTML=fsec('Up Next','Today, from your plan.')+fyPlanCard(nx.p);
-  } else {
-    $('home-today').innerHTML=fsec('Up Next','Pick a plan and your next session waits here.')+
-      '<div class="fmade hfind"><span class="fw-ic">'+glyph('target')+'</span>'+
-      '<div class="t">Find your first plan</div>'+
-      '<div class="s">Bodyweight, chair or with equipment — matched to your goal and level.</div>'+
-      '<button class="bigbtn" style="margin-top:18px;" onclick="switchTab(\'train\');setTrSeg(\'plans\')">Browse Plans</button>'+
-      '<button class="fglass" onclick="openFinder()">'+glyph('target')+'Find my program</button></div>';
-  }
+  // 4) Up Next went into Today's Plan (one row: the plan's next day, or find a plan)
+  $('home-today').innerHTML='';
 
   // 5) the month's challenge (16 Oct: the rings, streak and session tiles
   //    went, the HITFAT Score and Progress already say all of it)
