@@ -134,15 +134,24 @@ function ftile(p){
 }
 
 const ACTIVITIES=[
-  {k:'Fat Loss',  n:'Fat Loss',  img:'/img/p/act-fatloss.jpg'},
-  {k:'Strength',  n:'Strength',  img:'/img/p/act-strength.jpg'},
-  {k:'Core',      n:'Core',      img:'/img/p/act-core.jpg'},
-  {k:'Beginner',  n:'Beginner',  img:'/img/p/act-beginner.jpg'},
-  {k:'Equipment', n:'Equipment', img:'/img/p/act-equipment.jpg'},
-  {k:'Recovery',  n:'Recovery',  img:'/img/p/act-recovery.jpg'}
+  {k:'Fat Loss',  n:'Fat Loss',  img:'/img/p/act-fatloss.jpg',   ic:'flame'},
+  {k:'Strength',  n:'Strength',  img:'/img/p/act-strength.jpg',  ic:'workout'},
+  {k:'Core',      n:'Core',      img:'/img/p/act-core.jpg',      ic:'target'},
+  {k:'Beginner',  n:'Beginner',  img:'/img/p/act-beginner.jpg',  ic:'sunrise'},
+  {k:'Equipment', n:'Equipment', img:'/img/p/act-equipment.jpg', ic:'bag'},
+  {k:'Quick',     n:'Quick',     img:'/img/p/act-fatloss.jpg',   ic:'clock'},
+  {k:'Recovery',  n:'Recovery',  img:'/img/p/act-recovery.jpg',  ic:'leaf'}
 ];
+/* Browse, in Explore: one grid of dark tiles in place of the white photo
+   cards and the gradient category row, which said the same thing twice. */
+function fbrowse(a){
+  const n=PROGRAMS.filter(p=>activityMatch(a.k,p)).length;
+  return '<div class="fbr" onclick="openActivity(\''+a.k+'\')"><span class="ic">'+glyph(a.ic)+'</span>'+
+    '<div class="tx"><div class="t">'+a.n+'</div><div class="m">'+n+'</div></div></div>';
+}
 function activityMatch(k,p){
   if(k==='Beginner')  return p.level==='Beginner';
+  if(k==='Quick')     return !p.weeks && p.dur<=20;
   if(k==='Equipment') return /Kettlebell|KB |Dumbbell|Chair|Towel|Bottle/i.test(p.name);
   /* was a name regex, which swept up chair workouts, "Beginner Foundations"
      and even "BAR Foundations" — none of them recovery work. Now the tile
@@ -159,7 +168,7 @@ function t42InTrain(){
 }
 function renderTrain(){
   if(trSeg==='t42'){ trSeg='foryou'; if(typeof openT42==='function') openT42(); return; }
-  const segs=(t42InTrain()?[['t42','T42']]:[]).concat(TR_SEGS);
+  const segs=(t42InTrain()?[['t42','T42']]:[]).concat(TR_SEGS.filter(s=>RECOVERY_LIVE||s[0]!=='recovery'));
   /* The large title over the pills, as Fitness+ puts its name over For You,
      Explore, Plans and Library — the date small above it, as every tab has. */
   const dl=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
@@ -292,17 +301,11 @@ function trExplore(){
   h+=fsec('This Week','A new set of sessions every week.');
   h+='<div class="hscroll">'+take(rotated,6).map((p,i)=>flandCard(p,i<2?'NEW':'')).join('')+'</div>';
 
-  h+=fsec('Activity Types');
-  h+='<div class="hscroll">'+ACTIVITIES.map(factCard).join('')+'</div>';
-
   h+=fsec('Top Programs','HITFAT signature programs first',true);
   h+='<div class="hscroll">'+take(multi,5).map(fbigCard).join('')+'</div>';
 
-  h+=fsec('Browse Programs','',true);
-  h+='<div class="hscroll">'+BROWSE.filter(b=>planGroup(b.k).length).map(fcat).join('')+'</div>';
-
-  h+=fsec('Workouts','New and picked for you');
-  h+=fwCols(take(rotated,9));
+  h+=fsec('Browse');
+  h+='<div class="fbrs">'+ACTIVITIES.filter(a=>PROGRAMS.some(p=>activityMatch(a.k,p))).map(fbrowse).join('')+'</div>';
 
   h+=fsec('Collections','Challenges with a finish line',true);
   h+='<div class="hscroll">'+CHALLENGES.map(fcoll).join('')+'</div>';
@@ -456,15 +459,20 @@ function openActivity(k){
   /* Started and Finished are reached from the Library and are named there
      In Progress and Finished; the activity tiles keep their own names. */
   const fromLib=(k==='Started'||k==='Finished');
-  let h='<div class="hgroup"><div class="k">'+(fromLib?'Library':'Activity')+'</div><h2>'+(k==='Started'?'In Progress':k)+'</h2><p>'+list.length+' '+
-        (list.length===1?'program':'programs')+'</p></div>';
+  const plans=list.filter(p=>p.weeks), singles=list.filter(p=>!p.weeks), split=!fromLib && plans.length && singles.length;
+  const nm=(n,a,b)=>n+' '+(n===1?a:b);
+  let h='<div class="hgroup"><div class="k">'+(fromLib?'Library':'Activity')+'</div><h2>'+(k==='Started'?'In Progress':k)+'</h2><p>'+
+        (split?nm(plans.length,'program','programs')+' · '+nm(singles.length,'workout','workouts'):nm(list.length,'program','programs'))+'</p></div>';
   if(k==='Recovery'){
     h+='<div class="today"><div class="tk"><span style="color:var(--hyrox);font-weight:800;">● IN BUILD</span></div>'+
        '<div class="tt">Knee Strength &amp; Mobility</div>'+
        '<div class="tm">Mobility &amp; activation → basic strength → progressive strength → return to movement.</div>'+
        '<div style="font-size:13px;color:#8a8a8a;margin-top:6px;line-height:1.6;">Ships with a short screening step first, because some knees should see a physio before any program.</div></div>';
   }
-  h+= list.length ? list.map(p=>frow(p)).join('') : '<div class="empty">Nothing here yet.</div>';
+  if(!list.length) h+='<div class="empty">Nothing here yet.</div>';
+  else if(!split) h+=list.map(p=>frow(p)).join('');
+  else h+=fsec('Programs','Multi-week plans')+plans.map(p=>frow(p)).join('')+
+          fsec('Workouts','Single sessions')+singles.map(p=>frow(p)).join('');
   if(k==='Recovery'){
     const mob=libDB().filter(e=>e.m==='Mobility'||e.t==='hold');
     h+=fsec('Mobility &amp; holds')+'<div style="display:flex;flex-direction:column;gap:9px;">'+

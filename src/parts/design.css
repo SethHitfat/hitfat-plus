@@ -2480,3 +2480,18 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 #ifp .ac-mis{box-shadow:inset 3px 0 0 #0F9F8F;}
 #ifp .ac-mis .k,#ifp .ac-ep-h .k{color:#0F9F8F;}
 #ifp .d6-row .gly{color:#0F9F8F;}
+
+/* Train tidy-up (15 Oct 2026): Browse as one grid of dark tiles */
+.fbrs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 6px;}
+.fbr{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:12px;border-radius:16px;background:var(--surface);cursor:pointer;min-width:0;}
+.fbr:active{opacity:.7;}
+.fbr .ic{flex:none;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:rgba(240,57,43,.14);color:#F0392B;}
+.fbr .ic .gly{width:20px;height:20px;}
+.fbr .tx{min-width:0;width:100%;}
+.fbr .t{font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fbr .m{font-size:12px;color:var(--dim2);margin-top:1px;font-variant-numeric:tabular-nums;}
+/* collections: room for the face above the words */
+.fcoll{min-height:230px;}
+.fcoll .ph::after{background:linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.88) 100%);}
+/* one look for photos shot on many backdrops: a little less colour, a little darker */
+.fland .im,.fwr .th,.frow .th,.fcoll .ph{filter:saturate(.82) brightness(.92);}
