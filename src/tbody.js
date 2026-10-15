@@ -413,7 +413,7 @@ ok("plans lead with Made For You", _plansHtml.indexOf('fmade')>0);
 ok("build your own still offered", _plansHtml.toLowerCase().indexOf('build your own')>0);
 setTrSeg('library');
 var lb=document.getElementById('tr-body').innerHTML;
-ok("library rows",         lb.indexOf('flib')>0);
+ok("library: four catalogue tiles and your own things", (lb.match(/class="lib-t"/g)||[]).length===4 && lb.indexOf('lib-mine')>0);
 ok("the Fitness+ list: what HITFAT+ holds, with counts",
    ['Workouts','Programs','Exercises','Collections','In Progress','Saved Meals'].every(function(k){ return lb.indexOf('>'+k+'<')>0; }));
 ok("nothing trained yet: the empty state", HF.count()>0 || lb.indexOf('Your Recently Trained')>0);
@@ -424,6 +424,9 @@ setTrSeg('library'); lb=document.getElementById('tr-body').innerHTML;
 ok("a finished session shows under Recently Trained", lb.indexOf('Recently Trained')>0 && lb.indexOf('Full Body Power')>0 &&
    lb.indexOf("openProgram('sig1')")>0);
 delete HF.data.sessions['sig1-d0'];
+HF.data.progress=HF.data.progress||{}; HF.data.progress.sig1=3; setTrSeg('library'); lb=document.getElementById('tr-body').innerHTML;
+ok("a plan on the go is offered to continue", lb.indexOf('>Continue<')>0 && lb.indexOf('class="plr"')>0);
+delete HF.data.progress.sig1;
 noThrow("equipment still filters the exercise library", function(){ openLibrary('Bodyweight'); });
 ok("segment pills render", document.getElementById('tr-segs').innerHTML.indexOf('seg on')>0 ||
                            document.getElementById('tr-segs').innerHTML.indexOf('seg')>0);

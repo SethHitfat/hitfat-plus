@@ -471,17 +471,24 @@ function trLibrary(){
   const plans=trainingPlans().filter(p=>p.id!=='custom');
   const going=trainingPlans().filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
   const done=trainingPlans().filter(p=>progDone(p.id)>=progDays(p)&&progDays(p)>0);
-  const rows=[
-    ['workout',  'Workouts',     singles.length,              "openLibList('workouts')"],
-    ['clipboard','Programs',     plans.length,                "openLibList('programs')"],
-    ['play',     'Exercises',    libDB().filter(hasClip).length, "openLibrary()"],
-    ['trophy',   'Collections',  CHALLENGES.length,           "openLibList('collections')"],
-    ['repeat',   'In Progress',  going.length,                "openActivity('Started')"],
-    ['medal',    'Finished',     done.length,                 "openActivity('Finished')"],
-    ['star',     'Saved Meals',  (HF.data.favs||[]).length,   "switchTab('eat')"]
-  ];
-  let h='<div class="flib2">'+rows.map(r=>
-    '<div class="row" onclick="'+r[3]+'"><span class="ic">'+glyph(r[0])+'</span>'+
+  /* the catalogue as four colour tiles, the count as the hero (16 Oct) */
+  const cat=[
+    ['workout','Workouts',singles.length,'single sessions',"openLibList('workouts')",'#B3121B','#FFFFFF'],
+    ['clipboard','Programs',plans.length,'week-by-week plans',"openLibList('programs')",'#3A3A3E','#FFFFFF'],
+    ['play','Exercises',libDB().filter(hasClip).length,'moves with video',"openLibrary()",'#2F4A68','#FFFFFF'],
+    ['trophy','Collections',CHALLENGES.length,'challenges',"openLibList('collections')",'#C9962E','#1A1A1A']];
+  let h='<div class="lib-cat">'+cat.map(c=>
+    '<div class="lib-t" onclick="'+c[4]+'" style="--wk:'+c[5]+';--wkt:'+c[6]+'"><span class="fw-ic">'+glyph(c[0])+'</span>'+
+    '<b>'+c[2]+'</b><div class="lt">'+c[1]+'</div><div class="ls">'+c[3]+'</div></div>').join('')+'</div>';
+  /* plans on the go, ready to pick up */
+  if(going.length) h+=fsec('Continue','Pick up where you left off.')+'<div class="pl-list">'+going.map(plRow).join('')+'</div>';
+  /* the member's own things */
+  const mine=[
+    ['repeat','In Progress',going.length,"openActivity('Started')",'#E30613'],
+    ['medal','Finished',done.length,"openActivity('Finished')",'#C9962E'],
+    ['star','Saved Meals',(HF.data.favs||[]).length,"switchTab('eat')",'#2E9E5B']];
+  h+=fsec('Yours','')+'<div class="lib-mine">'+mine.map(r=>
+    '<div class="row" onclick="'+r[3]+'"><span class="ic" style="--c:'+r[4]+'">'+glyph(r[0])+'</span>'+
     '<span class="lb">'+r[1]+'</span><span class="ct">'+r[2]+'</span><span class="cv">›</span></div>').join('')+'</div>';
 
   /* what you trained last */

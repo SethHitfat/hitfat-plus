@@ -5289,6 +5289,26 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .plr .ch{flex:none;color:var(--dim2);font-size:22px;line-height:1;}
 .pl-none{padding:18px;color:var(--dim);font-size:14px;text-align:center;}
 
+/* ── Library (16 Oct): four catalogue tiles, the count as the hero; your own things in one card ── */
+.lib-cat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:6px;}
+.lib-t{position:relative;overflow:hidden;border-radius:18px;padding:14px;min-height:124px;cursor:pointer;color:var(--wkt);
+  background:radial-gradient(120% 80% at 100% 0%,rgba(255,255,255,.14),rgba(255,255,255,0) 55%),linear-gradient(165deg,var(--wk) 0%,color-mix(in srgb,var(--wk) 80%,#000) 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;}
+.lib-t:active{transform:scale(.98);}
+.lib-t .fw-ic{right:-14px;bottom:auto;top:-10px;width:92px;height:92px;opacity:.14;}
+.lib-t b{position:relative;font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums;}
+.lib-t .lt{position:relative;font-size:16px;font-weight:800;margin-top:4px;}
+.lib-t .ls{position:relative;font-size:11px;opacity:.72;margin-top:1px;}
+.lib-mine{background:var(--surface);border-radius:18px;overflow:hidden;}
+.lib-mine .row{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;border-top:.5px solid var(--sep);}
+.lib-mine .row:first-child{border-top:0;}
+.lib-mine .row:active{opacity:.6;}
+.lib-mine .ic{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--c);background:color-mix(in srgb,var(--c) 16%,transparent);}
+.lib-mine .ic .gly{width:19px;height:19px;}
+.lib-mine .lb{flex:1;font-size:16px;font-weight:600;color:var(--txt);}
+.lib-mine .ct{font-size:15px;color:var(--dim2);font-variant-numeric:tabular-nums;}
+.lib-mine .cv{color:var(--dim2);font-size:20px;line-height:1;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -26149,17 +26169,24 @@ function trLibrary(){
   const plans=trainingPlans().filter(p=>p.id!=='custom');
   const going=trainingPlans().filter(p=>progDone(p.id)>0&&progDone(p.id)<progDays(p));
   const done=trainingPlans().filter(p=>progDone(p.id)>=progDays(p)&&progDays(p)>0);
-  const rows=[
-    ['workout',  'Workouts',     singles.length,              "openLibList('workouts')"],
-    ['clipboard','Programs',     plans.length,                "openLibList('programs')"],
-    ['play',     'Exercises',    libDB().filter(hasClip).length, "openLibrary()"],
-    ['trophy',   'Collections',  CHALLENGES.length,           "openLibList('collections')"],
-    ['repeat',   'In Progress',  going.length,                "openActivity('Started')"],
-    ['medal',    'Finished',     done.length,                 "openActivity('Finished')"],
-    ['star',     'Saved Meals',  (HF.data.favs||[]).length,   "switchTab('eat')"]
-  ];
-  let h='<div class="flib2">'+rows.map(r=>
-    '<div class="row" onclick="'+r[3]+'"><span class="ic">'+glyph(r[0])+'</span>'+
+  /* the catalogue as four colour tiles, the count as the hero (16 Oct) */
+  const cat=[
+    ['workout','Workouts',singles.length,'single sessions',"openLibList('workouts')",'#B3121B','#FFFFFF'],
+    ['clipboard','Programs',plans.length,'week-by-week plans',"openLibList('programs')",'#3A3A3E','#FFFFFF'],
+    ['play','Exercises',libDB().filter(hasClip).length,'moves with video',"openLibrary()",'#2F4A68','#FFFFFF'],
+    ['trophy','Collections',CHALLENGES.length,'challenges',"openLibList('collections')",'#C9962E','#1A1A1A']];
+  let h='<div class="lib-cat">'+cat.map(c=>
+    '<div class="lib-t" onclick="'+c[4]+'" style="--wk:'+c[5]+';--wkt:'+c[6]+'"><span class="fw-ic">'+glyph(c[0])+'</span>'+
+    '<b>'+c[2]+'</b><div class="lt">'+c[1]+'</div><div class="ls">'+c[3]+'</div></div>').join('')+'</div>';
+  /* plans on the go, ready to pick up */
+  if(going.length) h+=fsec('Continue','Pick up where you left off.')+'<div class="pl-list">'+going.map(plRow).join('')+'</div>';
+  /* the member's own things */
+  const mine=[
+    ['repeat','In Progress',going.length,"openActivity('Started')",'#E30613'],
+    ['medal','Finished',done.length,"openActivity('Finished')",'#C9962E'],
+    ['star','Saved Meals',(HF.data.favs||[]).length,"switchTab('eat')",'#2E9E5B']];
+  h+=fsec('Yours','')+'<div class="lib-mine">'+mine.map(r=>
+    '<div class="row" onclick="'+r[3]+'"><span class="ic" style="--c:'+r[4]+'">'+glyph(r[0])+'</span>'+
     '<span class="lb">'+r[1]+'</span><span class="ct">'+r[2]+'</span><span class="cv">›</span></div>').join('')+'</div>';
 
   /* what you trained last */
