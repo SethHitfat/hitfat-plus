@@ -1,11 +1,11 @@
 /* ═══════════════ SKOR HITFAT · the rest of Simple, and ours ═══════════════
    What Simple has that the score card did not, and what we said we would add:
 
-     Kenali Bell     the first time: three screens, Bell says who he is
-     Coach Bell      a mission card under the rings: points to hari padu,
+     Kenali Buddy     the first time: three screens, Buddy says who he is
+     Coach Buddy      a mission card under the rings: points to hari padu,
                      the quickest way there, and a line from Coach Seth
-     Banner          Bell's face at the top when something is logged
-     Junk food       Bell "confiscates" the cake (and says so)
+     Banner          Buddy's face at the top when something is logged
+     Junk food       Buddy "confiscates" the cake (and says so)
      One tap         the water ring adds a glass; the fast ring starts the
                      fast (or, in Ramadan, marks the day fasted)
      Today's plan    the day's session, eating window and what is left
@@ -36,11 +36,11 @@ function scRamRow(){
 function scRamToggle(){
   var all=HF.data.daily||(HF.data.daily={}), d=iso(0), o=all[d]||(all[d]={water:0,steps:0});
   o.ram=o.ram?0:1; HF.save();
-  if(o.ram){ _scSay='ram'; _scSayAt=Date.now(); scBanner('Fasting today 🌙','Bell is fasting too… from oil 😅 See you at iftar.'); }
+  if(o.ram){ _scSay='ram'; _scSayAt=Date.now(); scBanner('Fasting today 🌙','Buddy is fasting too… from oil 😅 See you at iftar.'); }
   scRender();
 }
 
-/* ── the banner: Bell's face, a word, sometimes an undo ── */
+/* ── the banner: Buddy's face, a word, sometimes an undo ── */
 var _scbT=0;
 function scBanner(title,body,act,actFn){
   var el=$('scb'); if(!el) return;
@@ -53,17 +53,17 @@ function scBanner(title,body,act,actFn){
 }
 function scBannerHide(){ var el=$('scb'); if(el) el.className='scb'; }
 
-/* ── junk food: Bell confiscates it ── */
+/* ── junk food: Buddy confiscates it ── */
 var SC_JUNK=/\b(kek|cake|donut|doughnut|kuih|biskut|cookies?|coklat|chocolate|aiskrim|ais krim|ice ?cream|teh tarik|milo|kopi ais|bubble tea|boba|coke|cola|soda|pepsi|sirap|bandung|cendol|ais kacang|keropok|chips|kerepek|pisang goreng|goreng pisang|burger|pizza|fries|kentang goreng|nugget|roti canai|maggi|mee segera|candy|gula-gula|waffle|pancake|brownies?|cheesecake)\b/i;
 function scJunk(m){
   var n=String((m&&m.name)||'');
   return SC_JUNK.test(n) || (m && m.kcal>=900);
 }
-SC_LINES.junk=['Bell is confiscating that {x} 😇 Tomorrow we swap it for fruit.',
-  'Bell isn\'t mad… Bell is just keeping this {x} "safe" 😏 Have some plain water too.',
-  'Once in a while is fine. But Bell saw that {x} 👀'];
-SC_LINES.ram=['Happy fasting! 🌙 Bell is fasting too… from oil 😅'];
-SC_LINES.fast=['Fast started ⏱️ Bell will keep you company till mealtime.'];
+SC_LINES.junk=['Buddy is confiscating that {x} 😇 Tomorrow we swap it for fruit.',
+  'Buddy isn\'t mad… Buddy is just keeping this {x} "safe" 😏 Have some plain water too.',
+  'Once in a while is fine. But Buddy saw that {x} 👀'];
+SC_LINES.ram=['Happy fasting! 🌙 Buddy is fasting too… from oil 😅'];
+SC_LINES.fast=['Fast started ⏱️ Buddy will keep you company till mealtime.'];
 function scJunkLine(name){
   var x=String(name||'that snack').split(/[,(]/)[0].trim(); if(x.length>22) x=x.slice(0,22)+'…';
   var a=SC_LINES.junk; return a[new Date().getMinutes()%a.length].replace('{x}',x.charAt(0).toUpperCase()+x.slice(1));
@@ -71,7 +71,7 @@ function scJunkLine(name){
 /* a meal was logged (eat2.js logMeal) */
 function scMealLogged(m){
   if(scJunk(m)){ _scSay='junk'; _scSayAt=Date.now(); _scJunkName=m&&m.name; scBanner('Confiscated 😇',scJunkLine(m&&m.name)); }
-  else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Meal logged 🍽️','Bell likes honest people. Protein first, rice by the portion.'); }
+  else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Meal logged 🍽️','Buddy likes honest people. Protein first, rice by the portion.'); }
 }
 var _scJunkName='';
 
@@ -93,7 +93,7 @@ function scFastTap(){
   scRender();
 }
 
-/* ── Coach Bell: the mission to hari padu, and Coach Seth ── */
+/* ── Coach Buddy: the mission to hari padu, and Coach Seth ── */
 var SC_SETH=['Consistency beats perfect. One strong day is worth more than a week of "later".',
   'Protein at every meal: chicken, fish, eggs, tofu. You stay full longer.',
   'Rice by the portion: one fist. No need to cut it out, just keep it in check.',
@@ -134,7 +134,7 @@ function scCoachHTML(){
 
 /* ── Check-in: how are you feeling? (Simple asks every day) ──
    One tap, kept in daily[day].mood (1 to 5). It does not change the score;
-   Bell answers it, and a low day gets kindness, not a push. */
+   Buddy answers it, and a low day gets kindness, not a push. */
 var SC_MOODS=[[1,'😫','Awful'],[2,'😕','Bad'],[3,'😐','Okay'],[4,'🙂','Good'],[5,'😄','Great']];
 var SC_MOOD_LINES={
   1:'Rough day. Be kind to yourself 🤍 A short walk and some water still count.',
@@ -159,7 +159,7 @@ function scMood(m){
 }
 
 /* ── Today's plan ── */
-/* Today's Plan is in English, as the app around it (Bell himself speaks Malay) */
+/* Today's Plan is in English, as the app around it (Buddy himself speaks Malay) */
 function scClock(min){ min=((Math.round(min)%1440)+1440)%1440; var h=Math.floor(min/60), m=min%60; return (h%12||12)+':'+('0'+m).slice(-2)+(h<12?' am':' pm'); }
 function scPlanHTML(){
   var rows=[], dy=scDaily(), nx=(typeof nextUp==='function')?nextUp():null, p=nx&&nx.p&&nx.p.weeks?nx.p:null, gi, at, n=function(x){ return x.toLocaleString('en-MY'); };
@@ -180,11 +180,11 @@ function scPlanHTML(){
       (r.done?'<span class="ok">✓</span>':(r.b?'<button onclick="event.stopPropagation();'+r.go+'">'+r.b+'</button>':''))+'</div>'; }).join('')+'</div></div>';
 }
 
-/* ── Kenali Bell: once, the first time the card shows ── */
+/* ── Kenali Buddy: once, the first time the card shows ── */
 var SC_MEET=[
-  {pose:'aktif', t:'Hi! I\'m Bell 👋', s:'Your personal kettlebell. I come alive when you\'re active, and I rust when you disappear 🥲'},
+  {pose:'aktif', t:'Hi! I\'m Buddy 👋', s:'Your HITFAT buddy. I turn red when you\'re active, and my fur gets all messy when you disappear 🥲'},
   {pose:'water', t:'Fill 4 rings every day', s:'Workout, meals, water and steps. Together they make your HITFAT Score, 0 to 100.'},
-  {pose:'gold',  t:'Score 50+ = a strong day 🔥', s:'Strong days in a row make a streak. At 7 days I turn into Gold Bell. Miss a day? You get 2 freezes a month ❄️'}];
+  {pose:'gold',  t:'Score 50+ = a strong day 🔥', s:'Strong days in a row make a streak. At 7 days I turn gold. Miss a day? You get 2 freezes a month ❄️'}];
 function scCheckMeet(){
   var sc=HF.data.sc||(HF.data.sc={});
   if(sc.met || $('scc').style.display==='flex') return false;
@@ -219,7 +219,7 @@ function scCheckWeekly(){
 }
 function scWeekly(off){
   var w=scWeekStats(off), p=scWeekStats(off+1), diff=w.avg-p.avg, st=scStreak().n;
-  var line=diff>0?'Up '+diff+' points on last week 👏 Bell is proud!':diff<0?'Down '+(-diff)+' points. That\'s okay, we\'ll win it back next week 💪':'Same as last week. Staying consistent is a win too.';
+  var line=diff>0?'Up '+diff+' points on last week 👏 Buddy is proud!':diff<0?'Down '+(-diff)+' points. That\'s okay, we\'ll win it back next week 💪':'Same as last week. Staying consistent is a win too.';
   var bd=w.best.iso?new Date(w.best.iso+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long'}):'–';
   $('scc').className='scc scc-black';
   $('scc').innerHTML='<div class="scc-in">'+scMomentBell(w.avg>=SC_PADU?'gold':'calendar')+

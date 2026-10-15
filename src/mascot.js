@@ -15,7 +15,7 @@ function mascotDates(){
 function mascotRender(){
   var M=hfm(); if(!M) return;
   var d=mascotDates();
-  /* Home carries the HITFAT Score (score.js), Bell in its arc; the compact card is the fallback */
+  /* Home carries the HITFAT Score (score.js), Buddy in its arc; the compact card is the fallback */
   if(typeof scRender==='function') scRender();
   else M.render($('mascot-home'), { mode:'compact', dates:d, onClick:function(){ switchTab('progress'); } });
   var st=M.render($('mascot-progress'), { mode:'full', dates:d });
@@ -28,6 +28,6 @@ function mascotRender(){
 function mascotDone(){
   var M=hfm(); if(!M) return;
   M.logActivity(); if(typeof scEvent==='function'){ _scSay='workout'; _scSayAt=Date.now(); }
-  if(typeof scBanner==='function') scBanner('Workout done 💪','Bell would squat with you, but Bell has no knees 😅');
+  if(typeof scBanner==='function') scBanner('Workout done 💪','Buddy did every rep with you (in spirit) 😅');
   mascotRender();
 }

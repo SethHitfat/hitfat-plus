@@ -1,7 +1,7 @@
 /* ═══════════════ SKOR HITFAT · phase 1 ═══════════════
-   Simple's Success Score, the HITFAT+ way. Bell, the kettlebell mascot, sits
+   Simple's Success Score, the HITFAT+ way. Buddy, the HITFAT mascot, sits
    in an arc that fills 0–100 with today's habits; under it, one ring a habit
-   with its own way in; over it, Bell says something about the day.
+   with its own way in; over it, Buddy says something about the day.
 
      Workout   a session finished today (HF.data.sessions)        → Train
      Makan     meals logged today, 3 fill it (HF.data.meals)      → Eat
@@ -11,7 +11,7 @@
                counted only for a member with an IF plan, so no one is
                marked down for a habit they never took up
 
-   Each habit counted is an equal share of 100. Bell's look follows the score
+   Each habit counted is an equal share of 100. Buddy's look follows the score
    (the four stages of the artwork); the Progress page keeps the weekly one.
    Phase 2 (streaks, share card) and 3 (rust and shine) come later. ES5. */
 
@@ -20,11 +20,11 @@ var SC_WATER=8, SC_STEPS=8000, SC_MEALS=3;
    everyone. IF HITFAT keeps its own timer; true brings the fifth ring back,
    with Mod Ramadan (and SC_FAST_LIVE in plus-push to match) */
 var SC_FAST_LIVE=false;
-/* Bell's poses (img/mascot/anim/, each a clip with its first frame as poster): the moments and the habit reactions */
+/* Buddy's poses (img/mascot/anim/, each a clip with its first frame as poster): the moments and the habit reactions */
 var SC_POSE={aktif:'/img/mascot/anim/aktif.png', gold:'/img/mascot/anim/gold.png', frozen:'/img/mascot/anim/frozen.jpg', halo:'/img/mascot/anim/halo.png',
-  water:'/img/mascot/anim/water.png', meal:'/img/mascot/anim/meal.png', calendar:'/img/mascot/anim/calendar.png'};
+  water:'/img/mascot/anim/water.png', meal:'/img/mascot/anim/meal.png', calendar:'/img/mascot/anim/calendar.png', kusut:'/img/mascot/anim/kusut.png'};
 /* the moment's slot: the pose's poster now, its clip once it plays */
-function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+SC_POSE[name]+'" alt="Bell"></div>'; }
+function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+SC_POSE[name]+'" alt="Buddy"></div>'; }
 function scMomentPlay(name){ if(typeof bellMini==='function') bellMini($('scc-bell'),name); }
 var _scSay=null, _scSayAt=0;
 
@@ -81,31 +81,31 @@ function scScore(d,days){
 function scColor(s){ return s>=70?'#FFC20E':s>=40?'#E30613':'#A1A1AA'; }
 function scLevel(s){ return s>=80?4:s>=50?3:s>=25?2:1; }
 
-/* what Bell says: about what was just done, or else the habit furthest behind */
+/* what Buddy says: about what was just done, or else the habit furthest behind */
 var SC_LINES={
-  workout:['Workout done! Bell would squat with you, but Bell has no knees 😅','Strong! That sweat is fat crying 💪'],
-  meal:['Meal logged! Bell likes honest people 🍽️','Eaten? Nice. Protein first, rice by the portion 👍'],
-  water:['Glug glug! 💧 Bell feels fresh too.','Water in! Your body says thank you 💧'],
-  steps:['Step by step 👟 Bell is impressed!','Your feet are busier than Bell today 👟']
+  workout:['Workout done! Buddy did every rep with you (in spirit) 😅','Strong! That sweat is fat crying 💪'],
+  meal:['Meal logged! Buddy likes honest people 🍽️','Eaten? Nice. Protein first, rice by the portion 👍'],
+  water:['Glug glug! 💧 Buddy feels fresh too.','Water in! Your body says thank you 💧'],
+  steps:['Step by step 👟 Buddy is impressed!','Your feet are busier than Buddy today 👟']
 };
 function scLine(){
   var s=scScore(), hs=scHabits(), i, low=null;
   if(_scSay==='junk' && Date.now()-_scSayAt<120000 && typeof scJunkLine==='function') return scJunkLine(_scJunkName);
   if(_scSay==='mood' && Date.now()-_scSayAt<120000 && typeof scMoodLine==='function') return scMoodLine(scDaily().mood);
   if(_scSay && SC_LINES[_scSay] && Date.now()-_scSayAt<120000){ var a=SC_LINES[_scSay]; return a[new Date().getMinutes()%a.length]; }
-  if(s>=100) return 'Full score! Bell feels like a world champion 🏆';
+  if(s>=100) return 'Full score! Buddy feels like a world champion 🏆';
   for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
   var hint=!low?'':low.k==='water'?(SC_WATER-scDaily().water)+' more glasses of water to go.':
            low.k==='steps'?Math.max(0,SC_STEPS-scDaily().steps).toLocaleString('en-MY')+' more steps to go.':
            low.k==='meal'?'Don\'t forget to log your meals.':
            low.k==='workout'?'One short workout is enough today.':
            'Your fast hasn\'t reached its goal yet.';
-  if(s===0) return 'Bell is still sleepy 😴 '+hint;
-  if(s<40) return 'Bell just woke up. '+hint;
+  if(s===0) return 'Buddy is still sleepy 😴 '+hint;
+  if(s<40) return 'Buddy just woke up. '+hint;
   if(s<70) return 'Halfway there! '+hint;
   return 'Strong day! 🔥 '+hint;
 }
-/* something was just done: Bell talks about it */
+/* something was just done: Buddy talks about it */
 function scEvent(k){ _scSay=k; _scSayAt=Date.now(); scRender(); }
 
 /* the arc: 240°, open at the bottom, a knob where the score reaches */
@@ -126,7 +126,7 @@ function scRing(h){
     '</svg><span class="sc-ic"'+(h.v>0?' style="color:'+c+'"':'')+'>'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'<span class="sc-plus sc-okb">✓</span>')+'</span>'+
     '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span><span class="sc-t">'+hesc(h.t||h.val)+'</span></button>';
 }
-/* the card takes the score's colour, as Simple's screens do (A); Bell's
+/* the card takes the score's colour, as Simple's screens do (A); Buddy's
    look and liveliness follow the stage (B, and bell.js) */
 function scRGB(c){ var n=parseInt(c.slice(1),16); return (n>>16&255)+','+(n>>8&255)+','+(n&255); }
 function scTint(c){ return 'rgba('+scRGB(c)+',.16)'; }
@@ -138,7 +138,7 @@ function scPills(){
     (s>0?'<circle cx="10" cy="10" r="7.5" fill="none" stroke="'+c+'" stroke-width="3" stroke-linecap="round" pathLength="100" stroke-dasharray="'+s+' 100" transform="rotate(-90 10 10)"/>':'')+
     '</svg><b>'+s+'</b></button>'+scChip();
 }
-/* Bell's card, first of the swipe cards: what Bell says, and the one thing to do now */
+/* Buddy's card, first of the swipe cards: what Buddy says, and the one thing to do now */
 function scAct(){
   var hs=scHabits(), i, low=null;
   for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
@@ -147,25 +147,25 @@ function scAct(){
           steps:['Add steps',"scSheet('steps')"], fast:['Start your fast',"scTap('fast')"]}[low.k]||null;
 }
 function scBellCard(st){
-  var a=st.k?['Polish Bell: +1 glass of water','scWaterTap()']:scAct();
-  return '<div class="scx-coach scx-bell"><div class="scx-k"><i></i>BELL</div>'+
+  var a=st.k?['Fluff Buddy up: +1 glass of water','scWaterTap()']:scAct();
+  return '<div class="scx-coach scx-bell"><div class="scx-k"><i></i>BUDDY</div>'+
     '<div class="scx-say" id="sc-say">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
     (a?'<button class="scx-act" onclick="'+a[1]+'">'+a[0]+'</button>':'')+'</div>';
 }
 function scHTML(){
-  var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState(), c=st.k==='rust'?'#A6541E':scColor(s);
+  var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState(), c=st.k==='rust'?'#8E8E93':scColor(s);
   var poster=(typeof bellPoster==='function')?bellPoster(st.k?1:lv):(M&&M.config.images[lv-1]), fx='';
   if(st.k==='rust'){ poster=SC_ART.rust||poster; if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+poster+');mask-image:url('+poster+')"></span>'; }
-  var img=poster?'<img class="sc-poster" src="'+poster+'" alt="Bell'+(st.k==='rust'?' berkarat':', tahap '+lv)+'">'+fx:'';
+  var img=poster?'<img class="sc-poster" src="'+poster+'" alt="Buddy'+(st.k==='rust'?', messy':', level '+lv)+'">'+fx:'';
   var slides=[];
   if(typeof scCoachHTML==='function') slides.push(scCoachHTML());
   if(typeof scMoodHTML==='function') slides.push(scMoodHTML());
   var inv=(typeof pushInvite==='function')?pushInvite():'';
-  if(inv) slides.push('<div class="scx-coach scx-push"><div class="scx-k"><i></i>REMINDERS</div><div class="scx-t"><b>Let Bell nudge you</b></div>'+
-    '<div class="scx-seth">At 8 pm, only when a streak is at risk or Bell misses you. One a day at most.</div>'+inv+'</div>');
+  if(inv) slides.push('<div class="scx-coach scx-push"><div class="scx-k"><i></i>REMINDERS</div><div class="scx-t"><b>Let Buddy nudge you</b></div>'+
+    '<div class="scx-seth">At 8 pm, only when a streak is at risk or Buddy misses you. One a day at most.</div>'+inv+'</div>');
   slides.unshift(scBellCard(st));
   return '<div class="sc sc-page" style="--scc:'+scRGB(c)+'">'+
-    '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Bell">'+img+'</div></div>'+
+    '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Buddy">'+img+'</div></div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>'+
     '<div class="sc-tail"></div>'+scCarHTML(slides)+
     (typeof scPlanHTML==='function'?scPlanHTML():'');
@@ -187,22 +187,22 @@ function scCarScroll(el){
 }
 function scCarGo(i){ var el=$('sc-car'); if(!el) return; _scCar=i; try{ el.scrollTo({left:i*el.clientWidth,behavior:'smooth'}); }catch(e){ el.scrollLeft=i*el.clientWidth; } scCarScroll(el); }
 /* the colour behind the top of Home: red, gold on a strong-enough day, rust when rusty */
-function scBand(){ var s=scScore(), st=scState(); return st.k==='rust'?'#A6541E':s>=70?'#FFC20E':'#E30613'; }
+function scBand(){ var s=scScore(), st=scState(); return st.k==='rust'?'#8E8E93':s>=70?'#FFC20E':'#E30613'; }
 function scRender(){
   var el=$('mascot-home'); if(!el) return;
   el.innerHTML=scHTML();
   if($('sc-pills')) $('sc-pills').innerHTML=scPills();
   try{ var sr=$('screen'); if(sr && sr.style && sr.style.setProperty) sr.style.setProperty('--scb',scRGB(scBand())); }catch(e){}
   var car=$('sc-car'); if(car && _scCar){ try{ car.scrollLeft=_scCar*(car.clientWidth||0); }catch(e){} }
-  /* Bell alive, except rusty: a rusty kettlebell does not move */
+  /* Buddy alive; messy (the rust state) has its own sad loop */
   var slot=$('sc-bell'), st=scState(), lv=scLevel(scScore());
-  if(slot && st.k!=='rust' && typeof bellAttach==='function' && bellAttach(slot, st.k?1:lv)){
+  if(slot && typeof bellAttach==='function' && bellAttach(slot, st.k==='rust'?'kusut':st.k?1:lv)){
     slot.className+=' sc-live';
     if(_scSay && _scSay!=='poke' && _scSayAt>_scCheered && Date.now()-_scSayAt<8000){
       _scCheered=_scSayAt;
       /* each habit its own clip; its poster shows till the clip plays */
       var R={water:'water', meal:'meal', junk:'giggle', workout:'squat', steps:'walk', mood:scDaily().mood>=4?'cheer':scDaily().mood===3?'giggle':''};
-      if(_scSay==='mood' && !R.mood){ /* a hard day: Bell stays quiet and kind, no dancing */ }
+      if(_scSay==='mood' && !R.mood){ /* a hard day: Buddy stays quiet and kind, no dancing */ }
       else
       bellReact(R[_scSay]||'cheer');
     } else if(_scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
@@ -224,7 +224,7 @@ function scCheckRust(){
   if(st.k!=='rust' || seen[key] || $('scc').style.display==='flex') return false;
   seen[key]=1; HF.save(); scRustScreen(st); return true;
 }
-/* a pose for a moment (Bell with the water bottle, with the plate), then back */
+/* a pose for a moment (Buddy with the water bottle, with the plate), then back */
 var _scPose={src:'', until:0};
 function scPose(slot,src,ms){
   ms=ms||2600; _scPose={src:src, until:Date.now()+ms};
@@ -233,11 +233,11 @@ function scPose(slot,src,ms){
   slot.appendChild(im); slot.className+=' posing';
   setTimeout(function(){ if(im.parentNode) im.parentNode.removeChild(im); slot.className=slot.className.replace(/ ?posing/g,''); },ms);
 }
-/* touch Bell: a giggle, and a word */
-SC_LINES.poke=['Hehe, that tickles! 😆','Hey hey, Bell is focusing here 😤','Hehe, again? 🙈','Bell is fine, thanks for asking 💪'];
+/* touch Buddy: a giggle, and a word */
+SC_LINES.poke=['Hehe, that tickles! 😆','Hey hey, Buddy is focusing here 😤','Hehe, again? 🙈','Buddy is fine, thanks for asking 💪'];
 var _scPokes=0;
 function scPoke(){
-  if(scState().k==='rust'){ toast('Bell has rusted 🥲 Log one thing to polish him'); return; }
+  if(scState().k==='rust'){ toast('Buddy is all messy 🥲 Log one thing to fluff Buddy up again'); return; }
   if(typeof bellReact==='function') bellReact('giggle');
   var el=$('sc-say'); if(el){ el.textContent=SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]; }
 }
@@ -284,9 +284,9 @@ function scStepsSet(){
    being earned. Reaching 3, 7, 14, 30, 60 or 100 days opens a celebration
    once per run, with a card the member can share to an IG Story. */
 var SC_PADU=50, SC_MILES=[3,7,14,30,60,100];
-var SC_MILE_LINES={3:'A strong start! Bell can see your potential 🔥',
-  7:'A full week! Bell is so proud 💪',14:'Two weeks! This is a habit now, not an effort.',
-  30:'30 days! You are a real champion 🏆',60:'60 days! Your body feels different, right? 😎',100:'100 days! Bell salutes you 🫡'};
+var SC_MILE_LINES={3:'A strong start! Buddy can see your potential 🔥',
+  7:'A full week! Buddy is so proud 💪',14:'Two weeks! This is a habit now, not an effort.',
+  30:'30 days! You are a real champion 🏆',60:'60 days! Your body feels different, right? 😎',100:'100 days! Buddy salutes you 🫡'};
 
 var SC_FREEZES=2;
 function scFrozen(){ var sc=HF.data.sc||(HF.data.sc={}); return sc.frozen||(sc.frozen={}); }
@@ -369,7 +369,7 @@ function scCelebrate(n,mine){
     '<div class="scc-fine">A strong day is a HITFAT Score of '+SC_PADU+' or more. A freeze saves your streak when you miss a day.</div></div>';
   $('scc').style.display='flex'; scMomentPlay(pose);
 }
-/* a freeze was used: Bell in ice, the run safe */
+/* a freeze was used: Buddy in ice, the run safe */
 function scFreezeScreen(frozen){
   var st=scStreak();
   $('scc').className='scc scc-ice';
@@ -377,21 +377,20 @@ function scFreezeScreen(frozen){
     scMomentBell('frozen','scc-still')+
     '<div class="scc-t">Streak saved ❄️</div>'+
     '<div class="scc-s">Your <b>'+st.n+'-day</b> streak is safe: '+frozen.length+(frozen.length>1?' freezes':' freeze')+' used for '+(frozen.length>1?'the days':'the day')+' you missed, '+scFreezeLeft()+'/'+SC_FREEZES+' left this month.</div>'+
-    '<div class="scc-s scc-bellsays">Bell froze for a moment to save you 🥶 Let\'s make today 50 or more.</div>'+
+    '<div class="scc-s scc-bellsays">Buddy froze for a moment to save you 🥶 Let\'s make today 50 or more.</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Continue</button></div>';
   $('scc').style.display='flex'; scMomentPlay('frozen');
 }
-/* Bell has rusted: the black screen, once a day */
+/* Buddy has rusted: the black screen, once a day */
 function scRustScreen(st){
-  var p=(typeof bellPoster==='function')?bellPoster(1):'';
   $('scc').className='scc scc-black';
   $('scc').innerHTML='<div class="scc-in">'+
-    '<div class="scc-bell scc-still scc-rusty"><img src="'+p+'" alt="Rusty Bell"><span class="sc-rustfx" style="-webkit-mask-image:url('+p+');mask-image:url('+p+')"></span></div>'+
-    '<div class="scc-t">Bell has rusted</div>'+
-    '<div class="scc-s">'+st.idle+' days with nothing logged.</div><div class="scc-s scc-bellsays">Bell is sitting alone in the dark 🥲 One log is enough to polish Bell again.</div>'+
-    '<button class="bigbtn scc-share" onclick="scCelebrateClose();scSheet(\'water\')">Polish Bell: log a glass of water</button>'+
+    scMomentBell('kusut')+
+    '<div class="scc-t">Buddy is all messy</div>'+
+    '<div class="scc-s">'+st.idle+' days with nothing logged.</div><div class="scc-s scc-bellsays">Buddy is sitting alone, fur all tangled 🥲 One log is enough to fluff Buddy up again.</div>'+
+    '<button class="bigbtn scc-share" onclick="scCelebrateClose();scSheet(\'water\')">Fluff Buddy up: log a glass of water</button>'+
     '<button class="scc-x" onclick="scCelebrateClose()">Later</button></div>';
-  $('scc').style.display='flex';
+  $('scc').style.display='flex'; scMomentPlay('kusut');
 }
 function scCelebrateClose(){ $('scc').style.display='none'; $('scc').innerHTML=''; $('scc').className='scc'; }
 
@@ -441,12 +440,12 @@ function scShare(n){
 
 
 /* ═══════════════ phase 3 · rust and shine ═══════════════
-   A kettlebell left alone rusts. A day "kosong" is a day with nothing at all
-   logged (score 0). Two kosong days in a row and Bell gathers dust; three,
-   and Bell rusts. Log anything after a rusty spell and Bell shines again,
+   Buddy left alone gets messy (the "rust" state, named from the kettlebell days). A day "kosong" is a day with nothing at all
+   logged (score 0). Two kosong days in a row and Buddy gathers dust; three,
+   and Buddy rusts. Log anything after a rusty spell and Buddy shines again,
    with a moment of its own. Until the drawn rusty and shiny Bells come, the
    looks are effects on the artwork: SC_ART can name them later. */
-var SC_ART={rust:null, shine:null};
+var SC_ART={rust:'/img/mascot/anim/kusut.png', shine:null};
 
 /* empty days from `from` days ago backwards to the last day with anything
    logged; -1 when nothing was ever logged (a new member never rusts) */
@@ -462,8 +461,8 @@ function scState(){
   return {k: idle>=3?'rust':idle===2?'dust':'', idle:idle, back:false};
 }
 function scRustLine(st){
-  if(st.k==='rust') return 'Bell has rusted 🥲 '+st.idle+' days with nothing logged. Polish Bell: log one thing today, even a glass of water.';
-  return 'Bell is getting dusty... 😟 Log something today so Bell doesn\'t rust tomorrow.';
+  if(st.k==='rust') return 'Buddy is all messy 🥲 '+st.idle+' days with nothing logged. Log one thing today, even a glass of water, to fluff Buddy up.';
+  return 'Buddy is getting dusty... 😟 Log something today so Buddy\'s fur doesn\'t get messy tomorrow.';
 }
 /* back after a rusty spell: once a day */
 function scCheckShine(){
@@ -477,8 +476,8 @@ function scShine(){
   $('scc').className='scc scc-red';
   $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
     scMomentBell('halo','scc-shine')+
-    '<div class="scc-t">You saved Bell!</div>'+
-    '<div class="scc-s scc-bellsays">Yay! The rust is gone ✨ Okay okay, Bell forgives you. Don\'t leave Bell alone that long again 😇</div>'+
+    '<div class="scc-t">You saved Buddy!</div>'+
+    '<div class="scc-s scc-bellsays">Yay! Fluffy again ✨ Okay okay, Buddy forgives you. Don\'t leave Buddy alone that long again 😇</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Let\'s go!</button></div>';
   $('scc').style.display='flex'; scMomentPlay('halo');
 }

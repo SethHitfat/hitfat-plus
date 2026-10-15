@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · plus-push
-   Bell's reminders, by Web Push. See 38-plus-push.sql.
+   Buddy's reminders, by Web Push. See 38-plus-push.sql.
 
    GET  ?action=key              the VAPID public key the app subscribes
                                  with; made here (with the private key)
@@ -10,7 +10,7 @@
                                  read from plus_data, at most one message
    POST ?action=test             a signed-in member's own test message
 
-   What Bell says follows the HITFAT Score in the app (score.js): a day's
+   What Buddy says follows the HITFAT Score in the app (score.js): a day's
    score is the share of its habits done (workout, meals /3, water /8,
    steps /8,000, and the fast for a member with an IF plan); a "hari padu"
    is 50 or more; a "kosong" day is 0.
@@ -70,7 +70,7 @@ function scoreOf(d: Data, day: string, wdays: Record<string, number>): number {
   return Math.round(hs.reduce((a, b) => a + b, 0) / hs.length * 100);
 }
 
-/* what, if anything, Bell says to this member this evening */
+/* what, if anything, Buddy says to this member this evening */
 export function messageFor(d: Data): { kind: string; title: string; body: string } | null {
   const wdays: Record<string, number> = {};
   for (const k in (d.sessions || {})) { const s = d.sessions[k]; if (s && s.date) { const dd = dayOf(s.date); wdays[dd] = (wdays[dd] || 0) + 1; } }
@@ -93,16 +93,16 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
     const now = wk(0), last = wk(7), avg = Math.round(now.reduce((a, b) => a + b, 0) / 7), prev = Math.round(last.reduce((a, b) => a + b, 0) / 7);
     if (now.some(x => x > 0)) {
       const padu = now.filter(x => x >= 50).length, diff = avg - prev;
-      return { kind: 'weekly', title: "📊 Bell's weekly report",
+      return { kind: 'weekly', title: "📊 Buddy's weekly report",
         body: 'Average HITFAT Score ' + avg + '/100' + (diff ? (diff > 0 ? ', up ' + diff : ', down ' + (-diff)) : '') + ' · ' + padu + ' strong day' + (padu === 1 ? '' : 's') + '. Open the app for the full report.' };
     }
   }
   if (today >= 50 || today > 0) return null;
   const idle = gap + 1;
-  if (idle === 2) return { kind: 'dust', title: 'Bell is getting dusty 😟', body: "Bell hasn't seen you for two days. Log something today before Bell rusts tomorrow." };
-  if (idle === 3) return { kind: 'rust', title: 'Oh no, Bell has rusted 🥲', body: "A glass of water is enough to polish Bell again. Let's go!" };
-  if (idle === 7) return { kind: 'rust7', title: 'A week of rusty Bell...', body: 'Bell is still waiting for you 🧽 Start again with one small thing today.' };
-  if (idle === 14) return { kind: 'rust14', title: 'Bell misses you 🥺', body: "It's been two weeks. It doesn't have to be perfect, just start again." };
+  if (idle === 2) return { kind: 'dust', title: 'Buddy is getting dusty 😟', body: "Buddy hasn't seen you for two days. Log something today before Buddy's fur gets all messy tomorrow." };
+  if (idle === 3) return { kind: 'rust', title: 'Oh no, Buddy is all messy 🥲', body: "A glass of water is enough to fluff Buddy up again. Let's go!" };
+  if (idle === 7) return { kind: 'rust7', title: 'A week of messy Buddy...', body: 'Buddy is still waiting for you 🪮 Start again with one small thing today.' };
+  if (idle === 14) return { kind: 'rust14', title: 'Buddy misses you 🥺', body: "It's been two weeks. It doesn't have to be perfect, just start again." };
   return null;
 }
 
@@ -152,7 +152,7 @@ Deno.serve(async (req: Request) => {
     const user = ud && ud.user;
     if (!user || !user.id || user.role === 'anon') return json({ error: 'Sign in' }, 401);
     const { data: subs } = await admin.from('plus_push_subs').select('*').eq('user_id', user.id);
-    const n = await sendTo(admin, subs || [], { kind: 'test', title: "Hi, it's Bell! 👋", body: 'Reminders are on. Bell will nudge you at 8 pm when there is something to say.' });
+    const n = await sendTo(admin, subs || [], { kind: 'test', title: "Hi, it's Buddy! 👋", body: 'Reminders are on. Buddy will nudge you at 8 pm when there is something to say.' });
     return json({ ok: true, sent: n });
   }
 

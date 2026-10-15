@@ -1,4 +1,4 @@
-/* HITFAT+ service worker: Bell's reminders, and nothing else.
+/* HITFAT+ service worker: Buddy's reminders, and nothing else.
    No fetch handler and no cache, on purpose: the app always loads fresh
    from the network. It only shows a push from plus-push and, when one is
    tapped, brings HITFAT+ to the front. */

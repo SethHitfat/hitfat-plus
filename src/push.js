@@ -1,7 +1,7 @@
 /* ═══════════════ BELL'S REMINDERS · Web Push ═══════════════
    A member turns them on once (it must be a tap: the browser asks then);
    the phone's subscription goes to plus_push_subs through plus_push_save,
-   and at 8 pm the plus-push function decides whether Bell has something to
+   and at 8 pm the plus-push function decides whether Buddy has something to
    say: dusty, rusty, a streak at risk. At most one a day. See
    deploy/38-plus-push.sql and deploy/plus-push/index.ts.
 
@@ -48,7 +48,7 @@ function pushEnable(){
     }).then(function(r){
       if(r && r.error) throw r.error;
       try{ localStorage.setItem('hf_push_on','1'); }catch(e){}
-      toast('Bell\'s reminders are on 🔔'); pushRefresh(); pushTest();
+      toast('Buddy\'s reminders are on 🔔'); pushRefresh(); pushTest();
     });
   }).catch(function(e){ console.warn('push enable failed',e); toast('Couldn\'t turn reminders on. Try again.'); pushRefresh(); });
 }
@@ -61,7 +61,7 @@ function pushDisable(){
     if(!sub) return;
     if(sb) sb.rpc('plus_push_remove',{p_endpoint:sub.endpoint});
     return sub.unsubscribe();
-  }).catch(function(){}).then(function(){ toast('Bell\'s reminders are off'); pushRefresh(); });
+  }).catch(function(){}).then(function(){ toast('Buddy\'s reminders are off'); pushRefresh(); });
 }
 /* the member's own test: proves the whole path, phone to server and back */
 function pushTest(){
@@ -73,7 +73,7 @@ function pushTest(){
 }
 function pushInstallHelp(){
   $('pw-body').innerHTML='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>'+
-    '<div class="sc-sh"><div class="sc-sh-k">Bell\'s reminders on iPhone</div>'+
+    '<div class="sc-sh"><div class="sc-sh-k">Buddy\'s reminders on iPhone</div>'+
     '<div class="pu-steps"><div><b>1</b>Open app.hitfat.io in Safari</div><div><b>2</b>Tap Share (the square with the arrow up)</div>'+
     '<div><b>3</b>Choose <i>Add to Home Screen</i>, then <i>Add</i></div><div><b>4</b>Open HITFAT+ from its Home Screen icon and turn reminders on here</div></div>'+
     '<div class="sc-sh-f">Apple allows web notifications only for apps added to the Home Screen (iOS 16.4 or later).</div></div>';
@@ -81,18 +81,18 @@ function pushInstallHelp(){
 }
 /* the Settings row */
 function pushRow(){
-  var st=pushState(), sub={on:'At 8 pm, when Bell has something to say',off:'Bell nudges you when a streak is at risk',denied:'Blocked in your phone settings',install:'Add HITFAT+ to your Home Screen first',none:'Not supported in this browser'}[st];
+  var st=pushState(), sub={on:'At 8 pm, when Buddy has something to say',off:'Buddy nudges you when a streak is at risk',denied:'Blocked in your phone settings',install:'Add HITFAT+ to your Home Screen first',none:'Not supported in this browser'}[st];
   var ctl=(st==='on'||st==='off')?
     '<div class="obseg meseg"><button class="'+(st==='on'?'on':'')+'" onclick="pushEnable()">On</button><button class="'+(st==='off'?'on':'')+'" onclick="pushDisable()">Off</button></div>':
     st==='install'?'<button class="pu-how" onclick="pushInstallHelp()">How</button>':'';
-  return '<div class="grow grow-ctl" id="push-row">'+ic('bell')+'<div class="grow-l">Bell\'s reminders<div class="pu-sub">'+sub+'</div></div>'+ctl+'</div>';
+  return '<div class="grow grow-ctl" id="push-row">'+ic('bell')+'<div class="grow-l">Buddy\'s reminders<div class="pu-sub">'+sub+'</div></div>'+ctl+'</div>';
 }
 /* the invitation under the score, once, until it is answered */
 function pushInvite(){
   var st=pushState(), no=false;
   try{ no=localStorage.getItem('hf_push_no')==='1'; }catch(e){}
   if(no || (st!=='off' && st!=='install')) return '';
-  return '<div class="pu-inv"><button class="pu-inv-b" onclick="pushEnable()">🔔 Turn on Bell\'s reminders</button>'+
+  return '<div class="pu-inv"><button class="pu-inv-b" onclick="pushEnable()">🔔 Turn on Buddy\'s reminders</button>'+
     '<button class="pu-inv-x" aria-label="Tutup" onclick="pushNo()">✕</button></div>';
 }
 function pushNo(){ try{ localStorage.setItem('hf_push_no','1'); }catch(e){} if(typeof scRender==='function') scRender(); }
