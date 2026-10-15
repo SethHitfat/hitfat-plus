@@ -115,13 +115,18 @@ function fwCols(list){
 
 /* ── Collections: the challenges, as big cards ── */
 function fcoll(c){
-  /* its studio photo under the words, where it has one */
-  return '<div class="fcoll" onclick="openProgram(\''+c.id+'\')" style="background:'+grad(c)+'">'+
+  /* a challenge, Nike-style (16 Oct): its clean studio photo, the length as one
+     big number, the name and the daily minutes at the foot; once started, the
+     day it is on and a bar */
+  const days=c.days||progDays(c), done=progDone(c.id), on=done>0 && done<days;
+  return '<div class="fcoll fc2" onclick="openProgram(\''+c.id+'\')" style="background:'+grad(c)+'">'+
     (hasPhoto(c)?'<div class="ph" style="background-image:url(\''+progImg(c)+'\');'+imgPos(c,FA.poster)+'"></div>':'')+
-    '<div class="ic">'+glyph((c.icon||''))+'</div>'+
-    '<div class="t">'+c.name+'</div>'+
-    '<div class="m">'+(c.days||progDays(c))+' DAYS · '+(c.dur||'')+' MIN/DAY</div>'+
-    (c.desc?'<div class="d">'+c.desc+'</div>':'')+'</div>';
+    '<div class="fc-num"><b>'+days+'</b><span>DAY<br>CHALLENGE</span></div>'+
+    '<div class="fc-foot"><div class="t">'+c.name+'</div>'+
+    (on?'<div class="fc-bar"><i style="width:'+Math.round(done/days*100)+'%"></i></div><div class="m">DAY '+(done+1)+' OF '+days+'</div>'
+       :done>=days?'<div class="m">✓ COMPLETED</div>'
+       :'<div class="m">'+(c.dur||'')+' MIN A DAY · '+(c.period==='WEEKLY'?'THIS WEEK':'THIS MONTH')+'</div>')+
+    '</div></div>';
 }
 
 /* ── Plans: Made For You, the way Fitness+ lays a plan out ── */

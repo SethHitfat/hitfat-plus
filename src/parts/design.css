@@ -3042,3 +3042,17 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fw-beginner{background:#2E9E5B;color:#FFFFFF;}
 .fw-intermediate{background:#FFC20E;color:#1A1A1A;}
 .fw-advanced{background:#FFFFFF;color:#E30613;}
+
+/* ── Collections, Nike-style (train2.js fcoll) ── */
+.fcoll.fc2{width:300px;height:200px;min-height:0;padding:0;display:block;}
+.fcoll.fc2 .ph{filter:none;}
+.fcoll.fc2 .ph::after{background:linear-gradient(90deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,.12) 45%,rgba(0,0,0,0) 65%),
+  linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.62) 100%);}
+.fc-num{position:absolute;left:16px;top:12px;display:flex;align-items:flex-start;gap:6px;color:#FFFFFF;}
+.fc-num b{font-size:64px;font-weight:900;letter-spacing:-3px;line-height:.9;text-shadow:0 2px 16px rgba(0,0,0,.25);}
+.fc-num span{font-size:10px;font-weight:800;letter-spacing:1.4px;line-height:1.25;margin-top:8px;opacity:.92;}
+.fc-foot{position:absolute;left:16px;right:16px;bottom:14px;}
+.fcoll.fc2 .t{font-size:20px;}
+.fcoll.fc2 .m{margin-top:4px;}
+.fc-bar{height:4px;border-radius:9px;background:rgba(255,255,255,.28);margin-top:8px;overflow:hidden;max-width:180px;}
+.fc-bar i{display:block;height:100%;border-radius:9px;background:#FFFFFF;}
