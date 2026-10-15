@@ -3530,3 +3530,11 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
 @-webkit-keyframes scTurnPop{0%{-webkit-transform:scale(1)}30%{-webkit-transform:scale(1.08,.84)}62%{-webkit-transform:scale(.94,1.14) translateY(-10px)}100%{-webkit-transform:scale(1)}}
 @keyframes scTurnPop{0%{transform:scale(1)}30%{transform:scale(1.08,.84)}62%{transform:scale(.94,1.14) translateY(-10px)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion: reduce){ .sc-burst{display:none;} .sc-turnred .sc-bell{-webkit-animation:none !important;animation:none !important;} }
+
+/* Home, dark theme (16 Oct: "kene byk hitam sikit"): mostly black — a short
+   red light at the very top and a low glow behind Buddy, no red wash */
+:root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"])){
+  background:
+    linear-gradient(180deg,rgba(227,6,19,.34) 0,rgba(227,6,19,.12) 110px,rgba(227,6,19,0) 260px) 0 0/100% 280px no-repeat local,
+    radial-gradient(closest-side,rgba(var(--sgb),.16),rgba(var(--sgb),0)) 50% 170px/80% 340px no-repeat local,
+    var(--bg);}
