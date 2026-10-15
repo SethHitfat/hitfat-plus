@@ -313,11 +313,14 @@ function eatPlan(){
   const mpl=(HF.data.mealPlans||[]), n=HF.data.nutrition||{};
   let h='';
   h+=fsec('Made For You','A full Malaysian menu, worked out for you.');
-  h+='<div class="fmade emade" style="background:linear-gradient(118deg,#3A2006 0%,#9A4A0E 42%,#E8902A 72%,#FFD08A 100%)">'+
+  /* the studio food shot on the right, the words on the left (16 Oct) */
+  h+='<div class="fmade fmp emade2"><div class="fm-ph" style="background-image:url(\'/img/p/mealplan.jpg\')"></div>'+
+     '<span class="fp-tag">MALAYSIAN MENUS</span>'+
      '<div class="t">Build Your Meal Plan</div>'+
-     '<div class="s">Five questions, then 1 to 14 days of meals — calories, macros and hand portions already worked out.</div>'+
-     '<div class="mt">MDG 2020 · CPG MOH 2023</div>'+
-     '<button class="fglass" onclick="openMealPlan()">'+glyph('calendar')+(contentOpen()?'Build My Plan':'Unlock with HITFAT+')+'</button></div>';
+     '<div class="s">Five questions, then your meals, worked out.</div>'+
+     '<div class="emp-chips"><span>1–14 days</span><span>51 menus</span><span>Hand portions</span></div>'+
+     '<button class="fglass emp-go" onclick="openMealPlan()">'+glyph('calendar')+(contentOpen()?'Build My Plan':'Unlock with HITFAT+')+'</button>'+
+     '<div class="emp-src">MDG 2020 · CPG MOH 2023</div></div>';
 
   if(mpl.length){
     h+=fsec('Your Plans','Saved — reopens identical every time.');

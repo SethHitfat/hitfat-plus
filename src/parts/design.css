@@ -3223,3 +3223,17 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .lib-t.etool{min-height:104px;padding:12px;}
 .lib-t.etool .lt{font-size:14px;line-height:1.15;}
 .lib-t.etool .fw-ic{width:70px;height:70px;right:-10px;top:-8px;}
+/* Eat · Plan: the meal plan card on its food shot */
+.fmade.emade2{min-height:250px;}
+.emade2 .fm-ph{width:64%;background-position:70% 50%;}
+.emade2 .t{max-width:60%;}
+.emade2 .s{max-width:56%;font-size:14px;}
+.emp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;max-width:62%;}
+.emp-chips span{font-size:11px;font-weight:700;padding:4px 9px;border-radius:99px;background:rgba(255,255,255,.12);color:#FFFFFF;}
+.fmade.emade2 .emp-go{background:#E30613;color:#FFFFFF;border:0;margin-top:14px;-webkit-backdrop-filter:none;backdrop-filter:none;}
+.emp-src{font-size:10px;font-weight:700;letter-spacing:.8px;color:rgba(255,255,255,.5);margin-top:8px;}
+.fmade.emade2{background:linear-gradient(90deg,#4A3510 0%,#7E5C1A 42%,#B98A2A 78%,#C9962E 100%);}
+.fmade.emade2::before,.fmade.emade2::after{display:none;}
+.emade2 .fm-ph{-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 55%);mask-image:linear-gradient(90deg,transparent 0%,#000 55%);}
+.emp-chips span{background:rgba(0,0,0,.22);}
+.fm-ph{-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 30%,#000 60%);mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 30%,#000 60%);}
