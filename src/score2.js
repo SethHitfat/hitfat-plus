@@ -94,7 +94,7 @@ function scFastTap(){
 }
 
 /* ── Coach Bell: the mission to hari padu, and Coach Seth ── */
-var SC_SETH=['Konsisten mengalahkan sempurna. Satu hari padu lebih bernilai dari seminggu yang "nanti".',
+var SC_SETH=['Konsisten mengalahkan sempurna. Satu hari yang padu lebih bernilai dari seminggu yang "nanti".',
   'Protein setiap kali makan. Ayam, ikan, telur, tauhu. Kenyang lebih lama.',
   'Nasi ikut porsi: satu genggam. Tak perlu buang nasi, cuma kawal.',
   'Air kosong dulu bila rasa lapar. Kadang-kadang badan cuma dahaga.',
@@ -121,8 +121,8 @@ function scMission(){
   opts.sort(function(a,b){ return b.p-a.p; });
   var top=opts.slice(0,2).map(function(o){ return o.t+' <em>+'+Math.round(o.p)+'</em>'; }).join(' · ');
   if(s>=100) return 'Full score today 🏆 Rest well and get a good night\'s sleep.';
-  if(s>=SC_PADU) return 'Hari padu secured ✓ Go for 100: '+top;
-  return '<b>'+(SC_PADU-s)+' points</b> to a hari padu. Quickest: '+top;
+  if(s>=SC_PADU) return 'Strong day secured ✓ Go for 100: '+top;
+  return '<b>'+(SC_PADU-s)+' points</b> to a strong day. Quickest: '+top;
 }
 function scCoachHTML(){
   var s=scScore();
@@ -158,7 +158,7 @@ function scPlanHTML(){
 var SC_MEET=[
   {pose:'aktif', t:'Hai! Saya Bell 👋', s:'Kettlebell peribadi anda. Saya hidup bila anda aktif, dan saya berkarat bila anda hilang 🥲'},
   {pose:'water', t:'Isi 4 bulatan setiap hari', s:'Workout, makan, air dan langkah. Semuanya jadi Skor HITFAT anda, 0 hingga 100.'},
-  {pose:'gold',  t:'50 ke atas = hari padu 🔥', s:'Hari padu berturut-turut jadi streak. 7 hari, saya jadi Bell Emas. Terlepas sehari? Ada 2 freeze sebulan ❄️'}];
+  {pose:'gold',  t:'Skor 50 ke atas = strong day 🔥', s:'Strong day berturut-turut jadi streak. 7 hari, saya jadi Bell Emas. Terlepas sehari? Ada 2 freeze sebulan ❄️'}];
 function scCheckMeet(){
   var sc=HF.data.sc||(HF.data.sc={});
   if(sc.met || $('scc').style.display==='flex') return false;
@@ -200,7 +200,7 @@ function scWeekly(off){
     '<div class="scx-wk">This week\'s report</div>'+
     '<div class="scx-wn" style="color:'+scColor(w.avg)+'">'+w.avg+'<span>/100 average</span></div>'+
     '<div class="scc-s scc-bellsays">'+line+'</div>'+
-    '<div class="scx-wg"><div><b>'+w.padu+'</b><span>hari padu</span></div><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+(w.best.v||'–')+'</b><span>'+bd+'</span></div></div>'+
+    '<div class="scx-wg"><div><b>'+w.padu+'</b><span>strong days</span></div><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+(w.best.v||'–')+'</b><span>'+bd+'</span></div></div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">New week, let\'s go!</button></div>';
   $('scc').style.display='flex'; scMomentPlay(w.avg>=SC_PADU?'gold':'calendar');
 }

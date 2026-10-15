@@ -78,7 +78,7 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
   let gap = -1;                                            /* empty days before today */
   for (let i = 1; i < 60; i++) if (scoreOf(d, dayBack(i), wdays) > 0) { gap = i - 1; break; }
   if (gap < 0 && today === 0) return null;                 /* never active: a new member */
-  let streak = 0;                                          /* hari padu up to yesterday; a frozen day keeps the run */
+  let streak = 0;                                          /* strong days up to yesterday; a frozen day keeps the run */
   const frozen = (d.sc && d.sc.frozen) || {};
   for (let i = 1; i < 400; i++) { const day = dayBack(i); if (scoreOf(d, day, wdays) >= 50) streak++; else if (!frozen[day]) break; }
 
@@ -94,7 +94,7 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
     if (now.some(x => x > 0)) {
       const padu = now.filter(x => x >= 50).length, diff = avg - prev;
       return { kind: 'weekly', title: '📊 Laporan Bell minggu ini',
-        body: 'Purata Skor HITFAT ' + avg + '/100' + (diff ? (diff > 0 ? ', naik ' + diff : ', turun ' + (-diff)) : '') + ' · ' + padu + ' hari padu. Buka app untuk tengok laporan penuh.' };
+        body: 'Purata Skor HITFAT ' + avg + '/100' + (diff ? (diff > 0 ? ', naik ' + diff : ', turun ' + (-diff)) : '') + ' · ' + padu + ' strong day' + (padu === 1 ? '' : 's') + '. Buka app untuk tengok laporan penuh.' };
     }
   }
   if (today >= 50 || today > 0) return null;

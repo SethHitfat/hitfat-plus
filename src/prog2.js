@@ -296,11 +296,11 @@ function pgScoreCard(sc){
      (wk?'<span>'+dn(x.iso)+'</span>':'')+'</div>').join('');
   return fsec('HITFAT Score',(wk?'Each day this week':'Each day, the last 30 days')+', out of 100.')+
     '<div class="pgsk"><div class="pgsk-top"><div class="pgsk-avg"><b style="color:'+scColor(avg)+'">'+avg+'</b><span>average</span></div>'+
-    '<div class="pgsk-st"><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+padu+'</b><span>hari padu</span></div>'+
+    '<div class="pgsk-st"><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+padu+'</b><span>strong days</span></div>'+
     '<div><b>'+(best.v?best.v:'–')+'</b><span>best day</span></div></div></div>'+
     '<div class="pgsk-chart'+(wk?'':' month')+'"><div class="pgsk-line" style="bottom:'+SC_PADU+'%"><span>'+SC_PADU+'</span></div>'+bars+'</div>'+
     '<div class="pgnotes">'+sc.parts.filter(p=>p.label!=='Streak').map(p=>'<div><b>'+p.label+'</b><span>'+p.note+'</span></div>').join('')+'</div>'+
-    '<div class="pgsk-f">A hari padu is a day of 50 or more. Workout, meals, water and steps make the score.</div></div>';
+    '<div class="pgsk-f">A strong day is a day of 50 or more. Workout, meals, water and steps make the score.</div></div>';
 }
 
 function fmtDelta(d,unit){ return (d>0?'+':'')+d+' '+unit; }

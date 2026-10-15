@@ -4002,7 +4002,7 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
   scMeetDone(); scRender();
   ok("...and only once", HF.data.sc.met===1 && document.getElementById('scc').style.display==='none');
   var h=document.getElementById('mascot-home').innerHTML;
-  ok("Misi hari ini under the rings: points to hari padu, the quickest way, a line from the coach", h.indexOf("TODAY'S MISSION")>0 && h.indexOf('points</b> to a hari padu')>0 && h.indexOf('Coach:')>0 && h.indexOf('Coach Seth')<0 && h.indexOf('COACH BELL')<0 && h.indexOf('scx-bar')>0);
+  ok("Misi hari ini under the rings: points to hari padu, the quickest way, a line from the coach", h.indexOf("TODAY'S MISSION")>0 && h.indexOf('points</b> to a strong day')>0 && h.indexOf('hari padu')<0 && h.indexOf('Coach:')>0 && h.indexOf('Coach Seth')<0 && h.indexOf('COACH BELL')<0 && h.indexOf('scx-bar')>0);
   ok("today's plan under the card", h.indexOf("Today's Plan")>0 && h.indexOf('glasses of water to go')>0 && h.indexOf('scWaterTap()')>0);
   scTap('water');
   ok("one tap on water adds a glass, and Bell's banner offers an undo", HF.data.daily[iso(0)].water===1 && document.getElementById('scb').className.indexOf('on')>0 && document.getElementById('scb').innerHTML.indexOf('Undo')>0);
@@ -4025,7 +4025,7 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
   SC_FAST_LIVE=false; HF.data.sc.ram='auto';
   ok("with the fast out, no Ramadan row and no fast in the plan", scRamRow()==='' && scPlanHTML().indexOf('scFastTap')<0);
   scWeekly(0);
-  ok("Laporan Ahad: the week's average, hari padu, streak, best day", document.getElementById('scc').innerHTML.indexOf('report')>0 && document.getElementById('scc').innerHTML.indexOf('hari padu')>0);
+  ok("Laporan Ahad: the week's average, hari padu, streak, best day", document.getElementById('scc').innerHTML.indexOf('report')>0 && document.getElementById('scc').innerHTML.indexOf('strong days')>0);
   scCelebrateClose();
   ok("each habit its own clip", String(scRender).indexOf("workout:'squat', steps:'walk'")>0);
   HF.data.sessions=keepS; HF.data.meals=keepM; HF.data.daily=keepD||{}; HF.data.ifs=keepI||{}; HF.data.sc=keepSc||{}; HF.save=keepSave;

@@ -307,7 +307,7 @@ function scCelebrate(n,mine){
   var gold=n>=7, pose=gold?'gold':'calendar', next=scNextMile(n), conf='', i;
   var cols=['#E30613','#FFC20E','#FFFFFF','#111111'];
   if(!mine) for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%cols.length]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
-  var line=SC_MILE_LINES[n]||(next?'Tinggal '+(next-n)+' hari padu lagi ke sasaran '+next+' hari. Jangan putus! 🔥':'Teruskan, juara 🔥');
+  var line=SC_MILE_LINES[n]||(next?'Tinggal '+(next-n)+' hari lagi ke sasaran '+next+' hari. Jangan putus! 🔥':'Teruskan, juara 🔥');
   $('scc').className='scc '+(gold?'scc-gold':'scc-red');
   $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
     scMomentBell(pose)+
@@ -317,7 +317,7 @@ function scCelebrate(n,mine){
     '<div class="scc-fz">❄️ '+scFreezeLeft()+'/'+SC_FREEZES+' freezes left this month'+(next?' · Next goal: '+next+' days':'')+'</div>'+
     '<button class="bigbtn scc-share" onclick="scShare('+n+')">Share milestone</button>'+
     '<button class="scc-x" onclick="scCelebrateClose()">Next</button>'+
-    '<div class="scc-fine">A hari padu is a HITFAT Score of '+SC_PADU+' or more. A freeze saves your streak when you miss a day.</div></div>';
+    '<div class="scc-fine">A strong day is a HITFAT Score of '+SC_PADU+' or more. A freeze saves your streak when you miss a day.</div></div>';
   $('scc').style.display='flex'; scMomentPlay(pose);
 }
 /* a freeze was used: Bell in ice, the run safe */
@@ -328,7 +328,7 @@ function scFreezeScreen(frozen){
     scMomentBell('frozen','scc-still')+
     '<div class="scc-t">Streak saved ❄️</div>'+
     '<div class="scc-s">Your <b>'+st.n+'-day</b> streak is safe: '+frozen.length+(frozen.length>1?' freezes':' freeze')+' used for '+(frozen.length>1?'the days':'the day')+' you missed, '+scFreezeLeft()+'/'+SC_FREEZES+' left this month.</div>'+
-    '<div class="scc-s scc-bellsays">Bell beku sekejap untuk anda 🥶 Jom pastikan hari ni hari padu.</div>'+
+    '<div class="scc-s scc-bellsays">Bell beku sekejap untuk anda 🥶 Jom pastikan skor hari ni 50 ke atas.</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Continue</button></div>';
   $('scc').style.display='flex'; scMomentPlay('frozen');
 }
@@ -362,7 +362,7 @@ function scCard(n,done){
     var w1=g.measureText('HITFAT').width, w2=g.measureText('+').width, x0=540-(w1+w2)/2;
     g.fillStyle='#FFFFFF'; g.fillText('HITFAT',x0,190); g.fillStyle='#E30613'; g.fillText('+',x0+w1,190);
     text(String(n),540,1390,300,'#FFFFFF');
-    text('HARI PADU IN A ROW',540,1480,52,'#FFC20E',800);
+    text('STRONG DAYS IN A ROW',540,1480,52,'#FFC20E',800);
     text('HITFAT Score '+SC_PADU+'+ every day',540,1560,42,'rgba(255,255,255,.75)',600);
     text('app.hitfat.io',540,1800,40,'rgba(255,255,255,.55)',600);
     g.fillStyle='#FFC20E'; g.font='90px sans-serif'; g.fillText('✦',200,420); g.fillText('✦',880,360); g.font='60px sans-serif'; g.fillText('✦',930,760);
@@ -374,7 +374,7 @@ function scCard(n,done){
 function scShare(n){
   scCard(n,function(cv){
     if(!cv){ toast('Couldn\'t make the card on this device'); return; }
-    var text='🔥 '+n+' hari padu berturut-turut dengan HITFAT+! app.hitfat.io';
+    var text='🔥 '+n+' strong days in a row with HITFAT+! app.hitfat.io';
     var fallback=function(){
       $('scc').innerHTML='<div class="scc-in"><img class="scc-card" src="'+cv.toDataURL('image/png')+'" alt="Kad streak">'+
         '<div class="scc-s">Press and hold the picture to save it, then share it to your IG Story.</div>'+

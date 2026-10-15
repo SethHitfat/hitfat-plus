@@ -6379,7 +6379,7 @@ function scCelebrate(n,mine){
   var gold=n>=7, pose=gold?'gold':'calendar', next=scNextMile(n), conf='', i;
   var cols=['#E30613','#FFC20E','#FFFFFF','#111111'];
   if(!mine) for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%cols.length]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
-  var line=SC_MILE_LINES[n]||(next?'Tinggal '+(next-n)+' hari padu lagi ke sasaran '+next+' hari. Jangan putus! 🔥':'Teruskan, juara 🔥');
+  var line=SC_MILE_LINES[n]||(next?'Tinggal '+(next-n)+' hari lagi ke sasaran '+next+' hari. Jangan putus! 🔥':'Teruskan, juara 🔥');
   $('scc').className='scc '+(gold?'scc-gold':'scc-red');
   $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
     scMomentBell(pose)+
@@ -6389,7 +6389,7 @@ function scCelebrate(n,mine){
     '<div class="scc-fz">❄️ '+scFreezeLeft()+'/'+SC_FREEZES+' freezes left this month'+(next?' · Next goal: '+next+' days':'')+'</div>'+
     '<button class="bigbtn scc-share" onclick="scShare('+n+')">Share milestone</button>'+
     '<button class="scc-x" onclick="scCelebrateClose()">Next</button>'+
-    '<div class="scc-fine">A hari padu is a HITFAT Score of '+SC_PADU+' or more. A freeze saves your streak when you miss a day.</div></div>';
+    '<div class="scc-fine">A strong day is a HITFAT Score of '+SC_PADU+' or more. A freeze saves your streak when you miss a day.</div></div>';
   $('scc').style.display='flex'; scMomentPlay(pose);
 }
 /* a freeze was used: Bell in ice, the run safe */
@@ -6400,7 +6400,7 @@ function scFreezeScreen(frozen){
     scMomentBell('frozen','scc-still')+
     '<div class="scc-t">Streak saved ❄️</div>'+
     '<div class="scc-s">Your <b>'+st.n+'-day</b> streak is safe: '+frozen.length+(frozen.length>1?' freezes':' freeze')+' used for '+(frozen.length>1?'the days':'the day')+' you missed, '+scFreezeLeft()+'/'+SC_FREEZES+' left this month.</div>'+
-    '<div class="scc-s scc-bellsays">Bell beku sekejap untuk anda 🥶 Jom pastikan hari ni hari padu.</div>'+
+    '<div class="scc-s scc-bellsays">Bell beku sekejap untuk anda 🥶 Jom pastikan skor hari ni 50 ke atas.</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Continue</button></div>';
   $('scc').style.display='flex'; scMomentPlay('frozen');
 }
@@ -6434,7 +6434,7 @@ function scCard(n,done){
     var w1=g.measureText('HITFAT').width, w2=g.measureText('+').width, x0=540-(w1+w2)/2;
     g.fillStyle='#FFFFFF'; g.fillText('HITFAT',x0,190); g.fillStyle='#E30613'; g.fillText('+',x0+w1,190);
     text(String(n),540,1390,300,'#FFFFFF');
-    text('HARI PADU IN A ROW',540,1480,52,'#FFC20E',800);
+    text('STRONG DAYS IN A ROW',540,1480,52,'#FFC20E',800);
     text('HITFAT Score '+SC_PADU+'+ every day',540,1560,42,'rgba(255,255,255,.75)',600);
     text('app.hitfat.io',540,1800,40,'rgba(255,255,255,.55)',600);
     g.fillStyle='#FFC20E'; g.font='90px sans-serif'; g.fillText('✦',200,420); g.fillText('✦',880,360); g.font='60px sans-serif'; g.fillText('✦',930,760);
@@ -6446,7 +6446,7 @@ function scCard(n,done){
 function scShare(n){
   scCard(n,function(cv){
     if(!cv){ toast('Couldn\'t make the card on this device'); return; }
-    var text='🔥 '+n+' hari padu berturut-turut dengan HITFAT+! app.hitfat.io';
+    var text='🔥 '+n+' strong days in a row with HITFAT+! app.hitfat.io';
     var fallback=function(){
       $('scc').innerHTML='<div class="scc-in"><img class="scc-card" src="'+cv.toDataURL('image/png')+'" alt="Kad streak">'+
         '<div class="scc-s">Press and hold the picture to save it, then share it to your IG Story.</div>'+
@@ -6601,7 +6601,7 @@ function scFastTap(){
 }
 
 /* ── Coach Bell: the mission to hari padu, and Coach Seth ── */
-var SC_SETH=['Konsisten mengalahkan sempurna. Satu hari padu lebih bernilai dari seminggu yang "nanti".',
+var SC_SETH=['Konsisten mengalahkan sempurna. Satu hari yang padu lebih bernilai dari seminggu yang "nanti".',
   'Protein setiap kali makan. Ayam, ikan, telur, tauhu. Kenyang lebih lama.',
   'Nasi ikut porsi: satu genggam. Tak perlu buang nasi, cuma kawal.',
   'Air kosong dulu bila rasa lapar. Kadang-kadang badan cuma dahaga.',
@@ -6628,8 +6628,8 @@ function scMission(){
   opts.sort(function(a,b){ return b.p-a.p; });
   var top=opts.slice(0,2).map(function(o){ return o.t+' <em>+'+Math.round(o.p)+'</em>'; }).join(' · ');
   if(s>=100) return 'Full score today 🏆 Rest well and get a good night\'s sleep.';
-  if(s>=SC_PADU) return 'Hari padu secured ✓ Go for 100: '+top;
-  return '<b>'+(SC_PADU-s)+' points</b> to a hari padu. Quickest: '+top;
+  if(s>=SC_PADU) return 'Strong day secured ✓ Go for 100: '+top;
+  return '<b>'+(SC_PADU-s)+' points</b> to a strong day. Quickest: '+top;
 }
 function scCoachHTML(){
   var s=scScore();
@@ -6665,7 +6665,7 @@ function scPlanHTML(){
 var SC_MEET=[
   {pose:'aktif', t:'Hai! Saya Bell 👋', s:'Kettlebell peribadi anda. Saya hidup bila anda aktif, dan saya berkarat bila anda hilang 🥲'},
   {pose:'water', t:'Isi 4 bulatan setiap hari', s:'Workout, makan, air dan langkah. Semuanya jadi Skor HITFAT anda, 0 hingga 100.'},
-  {pose:'gold',  t:'50 ke atas = hari padu 🔥', s:'Hari padu berturut-turut jadi streak. 7 hari, saya jadi Bell Emas. Terlepas sehari? Ada 2 freeze sebulan ❄️'}];
+  {pose:'gold',  t:'Skor 50 ke atas = strong day 🔥', s:'Strong day berturut-turut jadi streak. 7 hari, saya jadi Bell Emas. Terlepas sehari? Ada 2 freeze sebulan ❄️'}];
 function scCheckMeet(){
   var sc=HF.data.sc||(HF.data.sc={});
   if(sc.met || $('scc').style.display==='flex') return false;
@@ -6707,7 +6707,7 @@ function scWeekly(off){
     '<div class="scx-wk">This week\'s report</div>'+
     '<div class="scx-wn" style="color:'+scColor(w.avg)+'">'+w.avg+'<span>/100 average</span></div>'+
     '<div class="scc-s scc-bellsays">'+line+'</div>'+
-    '<div class="scx-wg"><div><b>'+w.padu+'</b><span>hari padu</span></div><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+(w.best.v||'–')+'</b><span>'+bd+'</span></div></div>'+
+    '<div class="scx-wg"><div><b>'+w.padu+'</b><span>strong days</span></div><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+(w.best.v||'–')+'</b><span>'+bd+'</span></div></div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">New week, let\'s go!</button></div>';
   $('scc').style.display='flex'; scMomentPlay(w.avg>=SC_PADU?'gold':'calendar');
 }
@@ -24640,11 +24640,11 @@ function pgScoreCard(sc){
      (wk?'<span>'+dn(x.iso)+'</span>':'')+'</div>').join('');
   return fsec('HITFAT Score',(wk?'Each day this week':'Each day, the last 30 days')+', out of 100.')+
     '<div class="pgsk"><div class="pgsk-top"><div class="pgsk-avg"><b style="color:'+scColor(avg)+'">'+avg+'</b><span>average</span></div>'+
-    '<div class="pgsk-st"><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+padu+'</b><span>hari padu</span></div>'+
+    '<div class="pgsk-st"><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+padu+'</b><span>strong days</span></div>'+
     '<div><b>'+(best.v?best.v:'–')+'</b><span>best day</span></div></div></div>'+
     '<div class="pgsk-chart'+(wk?'':' month')+'"><div class="pgsk-line" style="bottom:'+SC_PADU+'%"><span>'+SC_PADU+'</span></div>'+bars+'</div>'+
     '<div class="pgnotes">'+sc.parts.filter(p=>p.label!=='Streak').map(p=>'<div><b>'+p.label+'</b><span>'+p.note+'</span></div>').join('')+'</div>'+
-    '<div class="pgsk-f">A hari padu is a day of 50 or more. Workout, meals, water and steps make the score.</div></div>';
+    '<div class="pgsk-f">A strong day is a day of 50 or more. Workout, meals, water and steps make the score.</div></div>';
 }
 
 function fmtDelta(d,unit){ return (d>0?'+':'')+d+' '+unit; }
