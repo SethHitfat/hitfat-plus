@@ -160,7 +160,8 @@ function renderProgress(){
   /* One measurement open takes the whole panel — same idea as the class
      detail: the overview answers where you are, this answers which way. */
   if(pgMetric) return renderMetric();
-  const tr=pgTraining(), nu=pgNutrition(), wl=weightLog(), streak=liveStreak();
+  /* one streak on this page: the HITFAT Score's run of hari padu */
+  const tr=pgTraining(), nu=pgNutrition(), wl=weightLog(), streak=(typeof scStreak==='function')?scStreak().n:liveStreak();
   const sc=progressScore();
   const wSeries=wl.map(x=>({iso:x.iso,v:x.kg}));
   const fSeries=bodySeries('bf'), waistSeries=bodySeries('waist');
@@ -169,21 +170,16 @@ function renderProgress(){
   /* The date small, the title large — the Home header's shape. */
   const dl=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
   let h='<div class="hsum"><div class="hsum-l"><div class="k">'+dl+'</div><div class="t">Progress</div></div></div>';
-  h+='<div id="mascot-progress"></div>';
   /* The window for the whole page, as a Fitness+ segmented control at the
      top rather than a pair of chips halfway down. */
   h+='<div class="obseg pgper">'+
      '<button class="'+(pgDays()===7?'on':'')+'" onclick="setPgP(\'week\')">Week</button>'+
      '<button class="'+(pgDays()===7?'':'on')+'" onclick="setPgP(\'month\')">Month</button></div>';
 
-  /* ── score ── one ring and the four parts it is made of, the way the
-     Activity card shows its rings and their numbers. */
-  h+=fsec('Progress Score','Four parts of 25, each from what you did.')+
-     '<div class="pgscard"><div class="hact">'+pgRing(sc.score,'#FF453A',112,sc.score,'/100')+
-     '<div class="hact-r"><div class="hact-s"><div class="l">This month</div><div class="v hc-mins">'+sc.band+'</div></div>'+
-     sc.parts.map(p=>'<div class="pgpart"><span>'+p.label+'</span><b>'+p.got+'<small>/25</small></b></div>').join('')+
-     '</div></div>'+
-     '<div class="pgnotes">'+sc.parts.map(p=>'<div><b>'+p.label+'</b><span>'+p.note+'</span></div>').join('')+'</div></div>';
+  /* ── score ── one score in the app: the HITFAT Score from Home, day by
+     day over the window, with what lies under it as plain lines (the old
+     Progress Score's four parts, no second number out of 100). */
+  h+=pgScoreCard(sc);
 
   /* ── this month ── every tile is left out when its measurement has never
      been entered, rather than printed as a dash. */
@@ -276,8 +272,35 @@ function renderProgress(){
 
   h+='<div class="pgacts"><button class="bigbtn" onclick="askMeasure()">Log Measurements</button>'+
      '<button class="bigbtn sec" onclick="openShare()">Share Progress Card</button></div>';
-  $('prog-body').innerHTML=h; if(typeof mascotRender==='function') mascotRender();
+  $('prog-body').innerHTML=h;
   if(typeof loadBoard==='function') loadBoard('month','lb-prog',{limit:5});
+}
+
+/* the HITFAT Score over the week or the month: average, streak, hari padu,
+   the best day, and a bar for each day against the line at 50 */
+function pgScoreDays(){
+  if(typeof scScore!=='function') return [];
+  const days=scWorkoutDays(), n=pgDays(), out=[];
+  for(let i=n-1;i>=0;i--){ const d=iso(-i); out.push({iso:d, v:scScore(d,days)}); }
+  return out;
+}
+function pgScoreCard(sc){
+  const ds=pgScoreDays(); if(!ds.length) return '';
+  /* the average counts from the first day anything was logged, so the days
+     before someone started do not pull it down */
+  let s0=0; while(s0<ds.length-1 && !ds[s0].v) s0++;
+  const used=ds.slice(s0), wk=pgDays()===7, avg=Math.round(used.reduce((a,x)=>a+x.v,0)/used.length);
+  const padu=ds.filter(x=>x.v>=SC_PADU).length, best=ds.reduce((a,x)=>x.v>a.v?x:a,ds[0]), st=scStreak().n;
+  const dn=d=>new Date(d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short'}).slice(0,2);
+  const bars=ds.map(x=>'<div class="pgsk-b'+(x.iso===iso(0)?' now':'')+'"><i style="height:'+Math.max(3,x.v)+'%;background:'+(x.v?scColor(x.v):'transparent')+'"></i>'+
+     (wk?'<span>'+dn(x.iso)+'</span>':'')+'</div>').join('');
+  return fsec('Skor HITFAT',(wk?'Each day this week':'Each day, the last 30 days')+', out of 100.')+
+    '<div class="pgsk"><div class="pgsk-top"><div class="pgsk-avg"><b style="color:'+scColor(avg)+'">'+avg+'</b><span>average</span></div>'+
+    '<div class="pgsk-st"><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+padu+'</b><span>hari padu</span></div>'+
+    '<div><b>'+(best.v?best.v:'–')+'</b><span>best day</span></div></div></div>'+
+    '<div class="pgsk-chart'+(wk?'':' month')+'"><div class="pgsk-line" style="bottom:'+SC_PADU+'%"><span>'+SC_PADU+'</span></div>'+bars+'</div>'+
+    '<div class="pgnotes">'+sc.parts.filter(p=>p.label!=='Streak').map(p=>'<div><b>'+p.label+'</b><span>'+p.note+'</span></div>').join('')+'</div>'+
+    '<div class="pgsk-f">A hari padu is a day of 50 or more. Workout, meals, water, steps and your fast make the score.</div></div>';
 }
 
 function fmtDelta(d,unit){ return (d>0?'+':'')+d+' '+unit; }

@@ -209,8 +209,8 @@ HF.apply(null); HF.data.onboarded=true;
 noThrow("empty progress renders", function(){ switchTab('progress'); });
 ok("empty state offers measurement logging", document.getElementById('prog-body').innerHTML.indexOf('Log Measurements')>0);
 ok("progress leads with the date and a large title", document.getElementById('prog-body').innerHTML.indexOf('hsum')>0);
-ok("the score is a ring with its four parts", document.getElementById('prog-body').innerHTML.indexOf('pgring')>0 &&
-   document.getElementById('prog-body').innerHTML.split('class="pgpart"').length-1===4);
+ok("the score is the HITFAT Score, with what lies under it in plain lines", document.getElementById('prog-body').innerHTML.indexOf('class="pgsk"')>0 &&
+   document.getElementById('prog-body').innerHTML.indexOf('Training')>0 && document.getElementById('prog-body').innerHTML.indexOf('class="pgpart"')<0);
 ok("a trend is never drawn in the accent colour", document.getElementById('prog-body').innerHTML.indexOf("var(--hitfat)')")<0);
 logWeight(82); 
 ok("weight stored",  weightLog().length===1 && weightLog()[0].kg===82, JSON.stringify(weightLog()));
@@ -297,9 +297,10 @@ ok("weight chart needs 2 points", weightChart([{iso:iso(0),kg:80}])==='');
 HF.markDone('a',{name:'X',mins:30});
 noThrow("period switch", function(){ setPgP('month'); setPgP('week'); });
 ok("the window is a segmented control at the top", document.getElementById('prog-body').innerHTML.indexOf('pgper')>0 &&
-   document.getElementById('prog-body').innerHTML.indexOf('pgper')<document.getElementById('prog-body').innerHTML.indexOf('Progress Score'));
-ok("the score explains itself inside its card", document.getElementById('prog-body').innerHTML.indexOf('pgscard')>0 &&
-   document.getElementById('prog-body').innerHTML.indexOf('pgnotes')>document.getElementById('prog-body').innerHTML.indexOf('pgscard'));
+   document.getElementById('prog-body').innerHTML.indexOf('pgper')<document.getElementById('prog-body').innerHTML.indexOf('Skor HITFAT'));
+ok("one score in the app: Progress shows the HITFAT Score, not a second number out of 100",
+   document.getElementById('prog-body').innerHTML.indexOf('class="pgsk"')>0 && document.getElementById('prog-body').innerHTML.indexOf('Progress Score')<0 &&
+   document.getElementById('prog-body').innerHTML.indexOf('/25')<0 && document.getElementById('prog-body').innerHTML.indexOf('pgnotes')>document.getElementById('prog-body').innerHTML.indexOf('pgsk'));
 ok("training counted", pgTraining().sessions===1, pgTraining().sessions);
 _canvas={fills:0,texts:0,strokes:0,nan:0,rects:0};
 noThrow("share card draws",      function(){ drawShareCard(); });
@@ -3827,7 +3828,13 @@ print("\n── PROGRESS MASCOT ──");
   ok("Home has the mascot at the top, tapping it opens Progress", String(mascotRender).indexOf("switchTab('progress')")>0 &&
      document.getElementById('mascot-home')!==null);
   renderProgress();
-  ok("Progress has the full mascot", document.getElementById('prog-body').innerHTML.indexOf('id="mascot-progress"')>0 && String(renderProgress).indexOf('mascotRender()')>0);
+  renderProgress();
+  ok("Bell lives on Home only: no second mascot on Progress", document.getElementById('prog-body').innerHTML.indexOf('mascot-progress')<0);
+  setPgP('week'); var _pb=document.getElementById('prog-body').innerHTML;
+  ok("a bar for each day of the week, the line at 50", (_pb.match(/class="pgsk-b/g)||[]).length===7 && _pb.indexOf('pgsk-line')>0);
+  setPgP('month'); _pb=document.getElementById('prog-body').innerHTML;
+  ok("...and of the month", (_pb.match(/class="pgsk-b/g)||[]).length===30); setPgP('week');
+  ok("one streak on the page: the HITFAT Score's", String(renderProgress).indexOf('scStreak().n')>0);
   ok("the four stages use the artwork, not the placeholder", window.HFMascot.config.images.join()==='/img/mascot/m1.png,/img/mascot/m2.png,/img/mascot/m3.png,/img/mascot/m4.png');
   ok("markDone re-renders both", String(HF.markDone).indexOf('mascotDone')>0 && String(mascotDone).indexOf('logActivity')>0);
   HF.data.sessions=keepS; HF.save=keepSave; window.HFMascot._writeLog(keepLog);

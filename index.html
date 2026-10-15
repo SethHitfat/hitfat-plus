@@ -4749,6 +4749,33 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 :root:not([data-theme="light"]) .pu-inv-b{background:rgba(227,6,19,.16);box-shadow:inset 0 0 0 1px rgba(227,6,19,.28);color:#FF4D57;}
 :root:not([data-theme="light"]) .pu-inv-x{background:rgba(255,255,255,.07);}
 
+/* Progress: the HITFAT Score over the week or month (prog2.js pgScoreCard) */
+.pgsk{background:var(--surface);border-radius:var(--r-card,18px);padding:16px;}
+.pgsk-top{display:flex;align-items:center;gap:16px;}
+.pgsk-avg{flex:none;text-align:center;min-width:78px;}
+.pgsk-avg b{display:block;font-size:44px;font-weight:800;letter-spacing:-1.5px;line-height:1;font-variant-numeric:tabular-nums;}
+.pgsk-avg span{font-size:12px;color:var(--dim2);}
+.pgsk-st{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}
+.pgsk-st div{background:var(--surface2);border-radius:12px;padding:9px 4px;text-align:center;}
+.pgsk-st b{display:block;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt);}
+.pgsk-st span{font-size:11px;color:var(--dim2);}
+.pgsk-chart{position:relative;display:flex;align-items:flex-end;gap:6px;height:140px;margin:18px 0 6px;padding-bottom:18px;}
+.pgsk-chart.month{gap:2px;padding-bottom:0;height:110px;}
+.pgsk-b{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;}
+.pgsk-b i{display:block;width:100%;max-width:28px;border-radius:6px 6px 3px 3px;background:var(--surface2);}
+.pgsk-chart.month .pgsk-b i{border-radius:2px;}
+.pgsk-b span{position:absolute;bottom:-18px;font-size:11px;color:var(--dim2);}
+.pgsk-b.now span{color:var(--txt);font-weight:700;}
+.pgsk-line{position:absolute;left:0;right:0;border-top:1px dashed var(--dim2);opacity:.6;pointer-events:none;margin-bottom:18px;}
+.pgsk-chart.month .pgsk-line{margin-bottom:0;}
+.pgsk-line span{position:absolute;left:0;top:-15px;font-size:10px;color:var(--dim2);}
+.pgsk .pgnotes{margin-top:14px;}
+.pgsk-f{font-size:12px;color:var(--dim2);margin-top:10px;line-height:1.45;}
+.pgsk .pgnotes{gap:0;margin:14px 0 0;}
+.pgsk .pgnotes div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:.5px solid var(--sep);font-size:14px;}
+.pgsk .pgnotes b{color:var(--txt);font-weight:600;}
+.pgsk .pgnotes span{text-align:right;color:var(--dim);}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -23993,7 +24020,8 @@ function renderProgress(){
   /* One measurement open takes the whole panel — same idea as the class
      detail: the overview answers where you are, this answers which way. */
   if(pgMetric) return renderMetric();
-  const tr=pgTraining(), nu=pgNutrition(), wl=weightLog(), streak=liveStreak();
+  /* one streak on this page: the HITFAT Score's run of hari padu */
+  const tr=pgTraining(), nu=pgNutrition(), wl=weightLog(), streak=(typeof scStreak==='function')?scStreak().n:liveStreak();
   const sc=progressScore();
   const wSeries=wl.map(x=>({iso:x.iso,v:x.kg}));
   const fSeries=bodySeries('bf'), waistSeries=bodySeries('waist');
@@ -24002,21 +24030,16 @@ function renderProgress(){
   /* The date small, the title large — the Home header's shape. */
   const dl=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
   let h='<div class="hsum"><div class="hsum-l"><div class="k">'+dl+'</div><div class="t">Progress</div></div></div>';
-  h+='<div id="mascot-progress"></div>';
   /* The window for the whole page, as a Fitness+ segmented control at the
      top rather than a pair of chips halfway down. */
   h+='<div class="obseg pgper">'+
      '<button class="'+(pgDays()===7?'on':'')+'" onclick="setPgP(\'week\')">Week</button>'+
      '<button class="'+(pgDays()===7?'':'on')+'" onclick="setPgP(\'month\')">Month</button></div>';
 
-  /* ── score ── one ring and the four parts it is made of, the way the
-     Activity card shows its rings and their numbers. */
-  h+=fsec('Progress Score','Four parts of 25, each from what you did.')+
-     '<div class="pgscard"><div class="hact">'+pgRing(sc.score,'#FF453A',112,sc.score,'/100')+
-     '<div class="hact-r"><div class="hact-s"><div class="l">This month</div><div class="v hc-mins">'+sc.band+'</div></div>'+
-     sc.parts.map(p=>'<div class="pgpart"><span>'+p.label+'</span><b>'+p.got+'<small>/25</small></b></div>').join('')+
-     '</div></div>'+
-     '<div class="pgnotes">'+sc.parts.map(p=>'<div><b>'+p.label+'</b><span>'+p.note+'</span></div>').join('')+'</div></div>';
+  /* ── score ── one score in the app: the HITFAT Score from Home, day by
+     day over the window, with what lies under it as plain lines (the old
+     Progress Score's four parts, no second number out of 100). */
+  h+=pgScoreCard(sc);
 
   /* ── this month ── every tile is left out when its measurement has never
      been entered, rather than printed as a dash. */
@@ -24109,8 +24132,35 @@ function renderProgress(){
 
   h+='<div class="pgacts"><button class="bigbtn" onclick="askMeasure()">Log Measurements</button>'+
      '<button class="bigbtn sec" onclick="openShare()">Share Progress Card</button></div>';
-  $('prog-body').innerHTML=h; if(typeof mascotRender==='function') mascotRender();
+  $('prog-body').innerHTML=h;
   if(typeof loadBoard==='function') loadBoard('month','lb-prog',{limit:5});
+}
+
+/* the HITFAT Score over the week or the month: average, streak, hari padu,
+   the best day, and a bar for each day against the line at 50 */
+function pgScoreDays(){
+  if(typeof scScore!=='function') return [];
+  const days=scWorkoutDays(), n=pgDays(), out=[];
+  for(let i=n-1;i>=0;i--){ const d=iso(-i); out.push({iso:d, v:scScore(d,days)}); }
+  return out;
+}
+function pgScoreCard(sc){
+  const ds=pgScoreDays(); if(!ds.length) return '';
+  /* the average counts from the first day anything was logged, so the days
+     before someone started do not pull it down */
+  let s0=0; while(s0<ds.length-1 && !ds[s0].v) s0++;
+  const used=ds.slice(s0), wk=pgDays()===7, avg=Math.round(used.reduce((a,x)=>a+x.v,0)/used.length);
+  const padu=ds.filter(x=>x.v>=SC_PADU).length, best=ds.reduce((a,x)=>x.v>a.v?x:a,ds[0]), st=scStreak().n;
+  const dn=d=>new Date(d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short'}).slice(0,2);
+  const bars=ds.map(x=>'<div class="pgsk-b'+(x.iso===iso(0)?' now':'')+'"><i style="height:'+Math.max(3,x.v)+'%;background:'+(x.v?scColor(x.v):'transparent')+'"></i>'+
+     (wk?'<span>'+dn(x.iso)+'</span>':'')+'</div>').join('');
+  return fsec('Skor HITFAT',(wk?'Each day this week':'Each day, the last 30 days')+', out of 100.')+
+    '<div class="pgsk"><div class="pgsk-top"><div class="pgsk-avg"><b style="color:'+scColor(avg)+'">'+avg+'</b><span>average</span></div>'+
+    '<div class="pgsk-st"><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+padu+'</b><span>hari padu</span></div>'+
+    '<div><b>'+(best.v?best.v:'–')+'</b><span>best day</span></div></div></div>'+
+    '<div class="pgsk-chart'+(wk?'':' month')+'"><div class="pgsk-line" style="bottom:'+SC_PADU+'%"><span>'+SC_PADU+'</span></div>'+bars+'</div>'+
+    '<div class="pgnotes">'+sc.parts.filter(p=>p.label!=='Streak').map(p=>'<div><b>'+p.label+'</b><span>'+p.note+'</span></div>').join('')+'</div>'+
+    '<div class="pgsk-f">A hari padu is a day of 50 or more. Workout, meals, water, steps and your fast make the score.</div></div>';
 }
 
 function fmtDelta(d,unit){ return (d>0?'+':'')+d+' '+unit; }
