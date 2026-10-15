@@ -3828,6 +3828,7 @@ print("\n── PROGRESS MASCOT ──");
      document.getElementById('mascot-home')!==null);
   renderProgress();
   ok("Progress has the full mascot", document.getElementById('prog-body').innerHTML.indexOf('id="mascot-progress"')>0 && String(renderProgress).indexOf('mascotRender()')>0);
+  ok("the four stages use the artwork, not the placeholder", window.HFMascot.config.images.join()==='/img/mascot/m1.png,/img/mascot/m2.png,/img/mascot/m3.png,/img/mascot/m4.png');
   ok("markDone re-renders both", String(HF.markDone).indexOf('mascotDone')>0 && String(mascotDone).indexOf('logActivity')>0);
   HF.data.sessions=keepS; HF.save=keepSave; window.HFMascot._writeLog(keepLog);
 })();

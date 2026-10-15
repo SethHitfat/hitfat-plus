@@ -2511,3 +2511,12 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .hfm-dl{color:var(--dim2);}
 /* the mascot's ".today" day is not the app's ".today" card */
 .hfm-day.today{position:static;border:0;border-radius:0;background:none;padding:0;margin:0;overflow:visible;}
+/* Juara keeps the sparkles of the artwork */
+.hfm-lv4 .hfm-fig{position:relative;}
+.hfm-lv4 .hfm-fig::before,.hfm-lv4 .hfm-fig::after{content:'\2726';position:absolute;color:#FFC20E;line-height:1;pointer-events:none;}
+.hfm-lv4 .hfm-fig::before{left:4%;top:18%;font-size:.16em;}
+.hfm-lv4 .hfm-fig::after{right:3%;top:8%;font-size:.2em;}
+.hfm-full.hfm-lv4 .hfm-fig{font-size:180px;}
+.hfm-compact.hfm-lv4 .hfm-fig{font-size:64px;}
+.hfm-compact .hfm-fig{width:76px;height:76px;flex:0 0 76px;}
+.hfm-compact.hfm-lv4 .hfm-fig{font-size:76px;}

@@ -5,6 +5,8 @@
    joined with the mascot's own log on this phone, so a workout done on
    another device still counts. */
 function hfm(){ return (typeof window!=='undefined' && window.HFMascot) || null; }
+/* the four stages, cut from Seth's artwork on a clear ground: Comel, Aktif, Tegap, Juara */
+if(hfm()) hfm().config.images=['/img/mascot/m1.png','/img/mascot/m2.png','/img/mascot/m3.png','/img/mascot/m4.png'];
 function mascotDates(){
   var out=[], s=(HF.data&&HF.data.sessions)||{}, k;
   for(k in s){ if(s.hasOwnProperty(k) && s[k] && s[k].date) out.push(s[k].date); }
