@@ -391,6 +391,39 @@ function nrow(title,list,ranked,sub){
   return '<div class="nrow">'+fsec(title,sub||'')+
     '<div class="hscroll">'+list.map((p,i)=>ncard(p,ranked?i+1:0)).join('')+'</div></div>';
 }
+/* ── All Plans: filter chips and one tidy list ── */
+const PL_FILTERS=[['all','All'],['Fat Loss','Fat Loss'],['Strength','Strength'],['Core','Core'],['beg','Beginner'],['short','4 weeks or less'],['long','6+ weeks']];
+let _plF='all';
+function plMatch(p,f){
+  if(f==='all') return true;
+  if(f==='beg') return p.level==='Beginner';
+  if(f==='short') return (p.weeks||[]).length<=4;
+  if(f==='long') return (p.weeks||[]).length>=6;
+  return p.goal===f;
+}
+function plChipsHTML(){
+  return PL_FILTERS.map(f=>'<button class="'+(_plF===f[0]?'on':'')+'" onclick="plFilter(\''+f[0]+'\')">'+f[1]+'</button>').join('');
+}
+function plRow(p){
+  const img=FBIG_IMG[p.id]||progImg(p), lv=String(p.level||''), done=progDone(p.id), tot=progDays(p), on=done>0&&done<tot;
+  const len=p.oneTime?(tot+' days'):(p.weeks||[]).length+' weeks';
+  return '<div class="plr" onclick="openProgram(\''+p.id+'\')">'+
+    '<div class="th" style="background-image:url(\''+img+'\')"></div>'+
+    '<div class="tx"><div class="t">'+(/^sig\d/.test(p.id)?'<i class="o">HF</i>':'')+p.name+'</div>'+
+    '<div class="m">'+len+' · '+p.dur+' min'+(lv?' <span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span>':'')+'</div>'+
+    (on?'<div class="pb"><i style="width:'+Math.round(done/tot*100)+'%"></i></div>':'')+'</div>'+
+    lockTag(p)+'<span class="ch">›</span></div>';
+}
+function plListHTML(multi){
+  const list=(multi||trainingPlans().filter(p=>p.id!=='custom')).filter(p=>plMatch(p,_plF));
+  return list.length?list.map(plRow).join(''):'<div class="pl-none">No plans here yet.</div>';
+}
+function plFilter(f){
+  _plF=f;
+  const c=$('pl-chips'), l=$('pl-list');
+  if(c) c.innerHTML=plChipsHTML();
+  if(l) l.innerHTML=plListHTML(trainingPlans().filter(p=>p.id!=='custom'));
+}
 /* a plan counts as "use what you have" only if its sessions really call for kit */
 function usesEquipment(p){
   const names=[];
@@ -421,21 +454,10 @@ function trPlans(){
      (hasCustom()?'<button class="fglass fglass-q" onclick="cpDelete()">Delete it</button>':'')+
      '</div>';
 
-  /* Everything else, by what it is for */
-  const by=k=>multi.filter(p=>p.goal===k);
-  h+='<div class="nrows">';
-  const ROWS={'Fat Loss':['Burn Fat','Plans built around the deficit.'],
-              'Strength':['Build Strength','Stronger, week on week.'],
-              'Core':['Core & Abs','A stronger middle, and a back that thanks you.']};
-  if(goalKey) h+=nrow(ROWS[goalKey][0], by(goalKey), false, 'For your goal.');
-  ['Fat Loss','Strength','Core'].forEach(k=>{
-    if(k===goalKey) return;
-    h+=nrow(ROWS[k][0], by(k), false, ROWS[k][1]);
-  });
-  h+=nrow('Easy to Start',      multi.filter(p=>p.level===lvl&&p.level==='Beginner'), false, 'Beginner plans, at your level.');
-  h+=nrow('Four Weeks or Less', multi.filter(p=>p.weeks.length<=4).sort((a,b)=>a.weeks.length-b.weeks.length), false, 'Short plans, quick to finish.');
-  h+=nrow('The Long Game',      multi.filter(p=>p.weeks.length>=6), false, 'Six weeks and more, for the real change.');
-  h+='</div>';
+  /* Everything else (16 Oct): one list with filter chips, in place of six rows
+     of posters that showed the same plans again and again */
+  h+='<div class="pl-all">'+fsec('All Plans',multi.length+' plans · pick a filter')+
+     '<div class="plf-chips" id="pl-chips">'+plChipsHTML()+'</div><div class="pl-list" id="pl-list">'+plListHTML(multi)+'</div></div>';
   $('tr-body').innerHTML=h;
 }
 

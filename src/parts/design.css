@@ -3106,3 +3106,25 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fcustom.fcx .fglass{background:#E30613;color:#FFFFFF;border:0;-webkit-backdrop-filter:none;backdrop-filter:none;}
 .fcustom.fcx .fglass-q{background:transparent;color:var(--dim);}
 .ncard .ic{display:none;}
+
+/* ── Plans · All Plans: chips and one list (train2.js plRow) ── */
+.plf-chips{display:flex;gap:8px;overflow-x:auto;margin:0 -18px 12px;padding:0 18px;scrollbar-width:none;}
+.plf-chips::-webkit-scrollbar{display:none;}
+.plf-chips button{flex:none;border:0;border-radius:99px;padding:8px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;
+  background:var(--surface);color:var(--txt);}
+.plf-chips button.on{background:var(--txt);color:var(--bg);}
+.pl-list{background:var(--surface);border-radius:18px;overflow:hidden;}
+.plr{display:flex;align-items:center;gap:12px;padding:10px 12px;border-top:.5px solid var(--sep);cursor:pointer;position:relative;}
+.plr:first-child{border-top:0;}
+.plr:active{opacity:.7;}
+.plr .th{flex:none;width:58px;height:58px;border-radius:12px;background:#222 center 20%/cover no-repeat;}
+.plr .tx{flex:1;min-width:0;}
+.plr .t{font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.plr .t .o{font-style:normal;font-size:9px;font-weight:900;letter-spacing:.5px;color:#FFFFFF;background:#E30613;border-radius:5px;padding:2px 4px;margin-right:6px;vertical-align:2px;}
+.plr .m{font-size:12px;color:var(--dim2);margin-top:3px;display:flex;align-items:center;gap:6px;}
+.plr .m .fw-lv{margin-left:0;font-size:10px;padding:1px 7px;}
+.plr .pb{height:3px;border-radius:9px;background:var(--surface2);margin-top:6px;overflow:hidden;}
+.plr .pb i{display:block;height:100%;background:#E30613;border-radius:9px;}
+.plr .lockt{position:static;}
+.plr .ch{flex:none;color:var(--dim2);font-size:22px;line-height:1;}
+.pl-none{padding:18px;color:var(--dim);font-size:14px;text-align:center;}

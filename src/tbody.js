@@ -367,11 +367,11 @@ HF.data.prefs={name:'Seth',goal:'Lose fat',level:'Beginner',days:3,equip:'Bodywe
 noThrow("plans renders", function(){ setTrSeg('plans'); });
 var _ph=document.getElementById('tr-body').innerHTML;
 ok("Made For You leads the page", _ph.indexOf('Made For You')>0 && _ph.indexOf('fmade')>0 &&
-   _ph.indexOf('fmade')<_ph.indexOf('nrow'));
+   _ph.indexOf('fmade')<_ph.indexOf('pl-all'));
 ok("...each card previews its plan", _ph.indexOf('Plan Preview')>0);
 ok("...the goal's plans first",  madeForYou()[0].goal==='Fat Loss');
 ok("Build Your Own on its own card", _ph.indexOf('fcustom')>0 && _ph.indexOf('Build Your Own')>0);
-ok("poster cards",     _ph.indexOf('ncard')>0);
+ok("one list of every plan, not rows of posters", _ph.indexOf('All Plans')>0 && (_ph.match(/class="plr"/g)||[]).length===trainingPlans().filter(function(p){return p.id!=='custom';}).length && _ph.indexOf('class="nrow"')<0);
 ok("no unverifiable 'Top 10 in Malaysia' claim", _ph.indexOf('Top 10 in Malaysia')<0);
 ok("Recovery stays in its own tab, not in Plans", _ph.indexOf('Knee Prehab')<0 && _ph.indexOf('Desk Reset')<0);
 ok("...and the billboard is a training plan", trainingPlans().every(function(p){ return !p.rehab; }));
@@ -380,14 +380,14 @@ ok("every plan's minutes match its content", trainingPlans().filter(function(p){
    .every(function(p){ return p.dur===progMinutes(p); }));
 ok("Morning 10 is about ten minutes", Math.abs(PROGRAMS.filter(function(p){ return p.id==='am21'; })[0].dur-10)<=1);
 ok("names are written one way", PROGRAMS.every(function(p){ return !/^\d+ (Day|Week|Minutes?) /.test(p.name); }));
-ok("the goal's row comes first", _ph.indexOf('Burn Fat')>0 && _ph.indexOf('Burn Fat')<_ph.indexOf('Build Strength'));
-ok("other category rows", _ph.indexOf('Build Strength')>0 && _ph.indexOf('Core & Abs')>0);
-ok("no row twice", _ph.split('>Burn Fat<').length===2);
-ok("length rows",      _ph.indexOf('The Long Game')>0 && _ph.indexOf('Four Weeks or Less')>0);
+ok("filter chips for goal, level and length", ['Fat Loss','Strength','Core','Beginner','4 weeks or less','6+ weeks'].every(function(k){ return _ph.indexOf('>'+k+'</button>')>0; }));
+plFilter('Strength');
+ok("a chip narrows the list", (document.getElementById('pl-list').innerHTML.match(/class="plr"/g)||[]).length===trainingPlans().filter(function(p){return p.id!=='custom' && p.goal==='Strength';}).length);
+plFilter('all');
 HF.data.progress={}; HF.data.progress[trainingPlans()[0].id]=3;
 noThrow("continue row renders", function(){ setTrSeg('plans'); });
 ok("started plan promoted", document.getElementById('tr-body').innerHTML.indexOf('Continue')>0);
-ok("progress bar on poster", document.getElementById('tr-body').innerHTML.indexOf('class="pb"')>0);
+ok("progress bar on the plan", document.getElementById('tr-body').innerHTML.indexOf('class="pb"')>0);
 HF.data.progress={};
 
 print("\n── TRAIN · FITNESS+ SEGMENTS ──");
@@ -443,15 +443,7 @@ var _pl=_ids(document.getElementById('tr-body').innerHTML);
 var _pc={}; _pl.forEach(function(i){_pc[i]=(_pc[i]||0)+1;});
 // Netflix shows a title in several rows on purpose; what it must not do is
 // repeat the same LIST, or bury one plan in every row.
-ok("no plan appears in more than 4 rows",
-   Object.keys(_pc).filter(function(k){return _pc[k]>4;}).length===0, JSON.stringify(_pc));
-ok("no two rows are identical", (function(){
-   var rows=document.getElementById('tr-body').innerHTML.split('class="nrow"').slice(1);
-   var sigs={},dupe=0;
-   rows.forEach(function(r){ var s=_ids(r).join(','); if(!s) return;
-     if(sigs[s]) dupe++; sigs[s]=1; });
-   return dupe===0; })());
-ok("plans browse is deep",  _pl.length>=30, _pl.length);
+ok("every plan listed once", _pl.length>=trainingPlans().length-1, _pl.length);
 
 print("\n── RECOVERY · COMING SOON ──");
 ok("Recovery is off until filmed",       RECOVERY_LIVE===false);
