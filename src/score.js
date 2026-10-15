@@ -231,6 +231,9 @@ function scCarScroll(el){
 function scCarGo(i){ var el=$('sc-car'); if(!el) return; _scCar=i; try{ el.scrollTo({left:i*el.clientWidth,behavior:'smooth'}); }catch(e){ el.scrollLeft=i*el.clientWidth; } scCarScroll(el); }
 /* the colour behind the top of Home: red, gold on a strong-enough day, rust when rusty */
 function scBand(){ var s=scScore(), st=scState(); return st.k==='rust'?'#8E8E93':s>=SC_PADU?'#E30613':'#D9C2A3'; }
+/* the two soft lights behind Buddy, Simple's way (16 Oct): a cream Buddy on
+   coral and peach so the white fur stands out, a red one on orange and red */
+function scGlow(){ var s=scScore(), st=scState(); return st.k==='rust'?['#B8B8BE','#8E8E93']:s>=SC_PADU?['#FF8A5B','#E30613']:['#F4A3A0','#F8C08F']; }
 function scRender(){
   var el=$('mascot-home'); if(!el) return;
   el.innerHTML=scHTML();
@@ -241,7 +244,7 @@ function scRender(){
   if(_scBubT) clearInterval(_scBubT);
   _scBubT=setInterval(scBubNext,5000);
   if($('sc-pills')) $('sc-pills').innerHTML=scPills();
-  try{ var sr=$('screen'); if(sr && sr.style && sr.style.setProperty) sr.style.setProperty('--scb',scRGB(scBand())); }catch(e){}
+  try{ var sr=$('screen'); if(sr && sr.style && sr.style.setProperty) sr.style.setProperty('--scb',scRGB(scBand())); var gl=scGlow(); sr.style.setProperty('--sga',scRGB(gl[0])); sr.style.setProperty('--sgb',scRGB(gl[1])); }catch(e){}
   var car=$('sc-car'); if(car && _scCar){ try{ car.scrollLeft=_scCar*(car.clientWidth||0); }catch(e){} }
   /* Buddy alive; messy (the rust state) has its own sad loop */
   var slot=$('sc-bell'), st=scState(), lv=scLevel(scScore());
