@@ -3538,3 +3538,9 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
     linear-gradient(180deg,rgba(227,6,19,.34) 0,rgba(227,6,19,.12) 110px,rgba(227,6,19,0) 260px) 0 0/100% 280px no-repeat local,
     radial-gradient(closest-side,rgba(var(--sgb),.16),rgba(var(--sgb),0)) 50% 170px/80% 340px no-repeat local,
     var(--bg);}
+/* (16 Oct, "kalau start hitam atas tu") dark Home starts black at the top, like
+   the status bar; the red is a glow behind Buddy only, fading back to black */
+:root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"])){
+  background:
+    radial-gradient(closest-side,rgba(227,6,19,.30),rgba(227,6,19,.10) 55%,rgba(227,6,19,0)) 50% 150px/120% 400px no-repeat local,
+    var(--bg);}
