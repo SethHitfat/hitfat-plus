@@ -234,6 +234,10 @@ function scBand(){ var s=scScore(), st=scState(); return st.k==='rust'?'#8E8E93'
 function scRender(){
   var el=$('mascot-home'); if(!el) return;
   el.innerHTML=scHTML();
+  /* the first Home of a visit comes in the way Simple's does: the arc draws,
+     Buddy appears, the bubble pops, the cards rise. Once. */
+  if(!scRender._in){ scRender._in=true; el.className=(el.className||'')+' sc-enter';
+    setTimeout(function(){ el.className=String(el.className||'').replace(/ ?sc-enter/g,''); },1800); }
   if(_scBubT) clearInterval(_scBubT);
   _scBubT=setInterval(scBubNext,5000);
   if($('sc-pills')) $('sc-pills').innerHTML=scPills();

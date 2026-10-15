@@ -2992,3 +2992,17 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 @-webkit-keyframes scboing{0%{-webkit-transform:none;}25%{-webkit-transform:translateY(4%) scale(1.08,.9);}55%{-webkit-transform:translateY(-9%) scale(.95,1.06);}80%{-webkit-transform:translateY(0) scale(1.03,.97);}100%{-webkit-transform:none;}}
 @keyframes scboing{0%{transform:none;}25%{transform:translateY(4%) scale(1.08,.9);}55%{transform:translateY(-9%) scale(.95,1.06);}80%{transform:translateY(0) scale(1.03,.97);}100%{transform:none;}}
 @media (prefers-reduced-motion: reduce){ #mascot-home .sc-bell.sc-boing{-webkit-animation:none;animation:none;} }
+/* the first Home of a visit (scRender, once) */
+#mascot-home.sc-enter .sc-arc-v{-webkit-animation:scArcIn 1s cubic-bezier(.3,.7,.2,1) .15s backwards;animation:scArcIn 1s cubic-bezier(.3,.7,.2,1) .15s backwards;}
+#mascot-home.sc-enter .sc-bell{-webkit-animation:scPopIn .7s cubic-bezier(.2,1.3,.4,1) .25s backwards;animation:scPopIn .7s cubic-bezier(.2,1.3,.4,1) .25s backwards;}
+#mascot-home.sc-enter .sc-bub{-webkit-animation:scbub .4s cubic-bezier(.2,1.4,.4,1) .85s backwards;animation:scbub .4s cubic-bezier(.2,1.4,.4,1) .85s backwards;}
+#mascot-home.sc-enter .sc-hs{-webkit-animation:scUp .5s ease .35s backwards;animation:scUp .5s ease .35s backwards;}
+#mascot-home.sc-enter .sc-tail,#mascot-home.sc-enter .sc-car,#mascot-home.sc-enter .sc-cdots{-webkit-animation:scUp .55s cubic-bezier(.2,.8,.2,1) .5s backwards;animation:scUp .55s cubic-bezier(.2,.8,.2,1) .5s backwards;}
+#mascot-home.sc-enter .scx-plan{-webkit-animation:scUp .55s ease .6s backwards;animation:scUp .55s ease .6s backwards;}
+@-webkit-keyframes scArcIn{from{stroke-dasharray:0 100;}}
+@keyframes scArcIn{from{stroke-dasharray:0 100;}}
+@-webkit-keyframes scPopIn{from{opacity:0;-webkit-transform:scale(.86) translateY(6%);}}
+@keyframes scPopIn{from{opacity:0;transform:scale(.86) translateY(6%);}}
+@-webkit-keyframes scUp{from{opacity:0;-webkit-transform:translateY(16px);}}
+@keyframes scUp{from{opacity:0;transform:translateY(16px);}}
+@media (prefers-reduced-motion: reduce){ #mascot-home.sc-enter *{-webkit-animation:none!important;animation:none!important;} }

@@ -38,54 +38,40 @@
 #localbar{position:fixed;left:0;right:0;top:0;z-index:70;background:#2a1206;color:#ffb37a;
   font:11px/1.4 'Inter',system-ui,sans-serif;font-weight:700;letter-spacing:.6px;text-align:center;
   padding:calc(5px + env(safe-area-inset-top,0px)) 10px 5px;border-bottom:1px solid rgba(255,179,122,.25);}
-/* The splash: a short title sequence in the HITFAT red. A glow opens on
-   black, two neon streaks cross it, the HF shield is drawn up from its
-   base behind a line of light, the + spins in and keeps glowing, then the
-   name. It stays at least as long as the sequence takes (hideSplash). */
-#splash{position:fixed;inset:0;background:#000;z-index:99999;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;overflow:hidden;transition:opacity .5s ease;}
+/* The splash, Simple's way (16 Oct): dark, the HITFAT+ mark up top, "Starring
+   Buddy", and Buddy's face rising from the foot of the screen. Buddy's picture
+   sits on #0B0B0D, so the page ends in that colour. It stays at least as long
+   as the sequence takes (hideSplash). */
+#splash{position:fixed;inset:0;z-index:99999;overflow:hidden;transition:opacity .5s ease;
+  background:linear-gradient(180deg,#1B1B1F 0%,#111114 38%,#0B0B0D 62%,#0B0B0D 100%);}
 #splash.gone{opacity:0;pointer-events:none;}
-#splash.gone .sp-logo{transform:scale(1.06);transition:transform .5s ease;}
-#splash .sp-glow{position:absolute;left:50%;top:50%;width:560px;height:560px;margin:-330px 0 0 -280px;border-radius:50%;
-  background:radial-gradient(circle,rgba(220,26,34,.55) 0%,rgba(220,26,34,.2) 36%,rgba(220,26,34,0) 70%);
-  opacity:0;transform:scale(.25);animation:spGlow 1.3s cubic-bezier(.2,.7,.2,1) .05s forwards,spBreathe 2.6s ease-in-out 1.4s infinite;}
-#splash .sp-streak{position:absolute;left:50%;top:50%;width:150vmax;height:2px;margin-left:-75vmax;border-radius:2px;
-  background:linear-gradient(90deg,rgba(255,59,48,0),#FF3B30 45%,#FFFFFF 50%,#FF3B30 55%,rgba(255,59,48,0));
-  box-shadow:0 0 12px rgba(255,59,48,.9),0 0 30px rgba(220,26,34,.6);opacity:0;}
-#splash .sp-streak.a{transform:translateY(-140px) rotate(-28deg) translateX(-110%);animation:spStreakA 1.05s cubic-bezier(.5,0,.3,1) .2s both;}
-#splash .sp-streak.b{transform:translateY(90px) rotate(-28deg) translateX(110%);animation:spStreakB 1.05s cubic-bezier(.5,0,.3,1) .38s both;}
-#splash .sp-logo{position:relative;height:132px;width:99.6px;opacity:0;
-  animation:spRise .9s cubic-bezier(.2,.8,.2,1) .15s forwards;}
-#splash .sp-mark{display:block;width:100%;height:100%;clip-path:inset(100% 0 0 0);
-  animation:spWipe .75s cubic-bezier(.6,0,.2,1) .2s forwards;filter:drop-shadow(0 0 18px rgba(255,255,255,.25));}
-#splash .sp-scan{position:absolute;left:-12%;right:-12%;bottom:0;height:3px;border-radius:3px;background:#FFFFFF;
-  box-shadow:0 0 10px #FF3B30,0 0 26px rgba(220,26,34,.9);opacity:0;animation:spScan .75s cubic-bezier(.6,0,.2,1) .2s both;}
+#splash .sp-glow{position:absolute;left:50%;top:-120px;width:520px;height:520px;margin-left:-260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(227,6,19,.30) 0%,rgba(227,6,19,.08) 45%,rgba(227,6,19,0) 70%);
+  opacity:0;animation:spIn 1s ease .05s forwards;}
+#splash .sp-top{position:absolute;left:0;right:0;top:calc(13vh + env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:center;}
+#splash .sp-logo{position:relative;height:66px;width:49.8px;opacity:0;animation:spRise .8s cubic-bezier(.2,.8,.2,1) .1s forwards;}
+#splash .sp-mark{display:block;width:100%;height:100%;}
 #splash .sp-plus{position:absolute;left:101.9%;top:2.1%;width:21.8%;transform:scale(0) rotate(-180deg);
-  animation:spPlus .6s cubic-bezier(.3,1.6,.5,1) .9s forwards,spPlusGlow 1.8s ease-in-out 1.5s infinite;}
-#splash .sp-word{margin-top:30px;font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:30px;letter-spacing:-.6px;
-  color:#FFFFFF;opacity:0;animation:spIn .6s ease 1.1s forwards;}
+  animation:spPlus .6s cubic-bezier(.3,1.6,.5,1) .55s forwards;}
+#splash .sp-word{margin-top:16px;font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:28px;letter-spacing:1px;
+  color:#FFFFFF;opacity:0;animation:spIn .6s ease .35s forwards;}
 #splash .sp-word b{color:#FF3B30;font-weight:800;}
-#splash .tg{font-family:'Oswald',sans-serif;font-size:11px;font-weight:600;letter-spacing:6px;color:#8E8E93;margin-top:10px;
-  text-transform:uppercase;opacity:0;animation:spIn .6s ease 1.25s forwards;}
-#splash .bar{width:120px;height:2px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden;margin-top:26px;
-  opacity:0;animation:spIn .5s ease 1.35s forwards;}
-#splash .bar i{display:block;height:100%;width:40%;border-radius:2px;background:linear-gradient(90deg,#DC1A22,#FFC21A);
-  animation:sBar 1.1s ease-in-out infinite;}
-@keyframes spGlow{to{opacity:1;transform:scale(1)}}
-@keyframes spBreathe{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.75;transform:scale(1.06)}}
-@keyframes spStreakA{0%{opacity:0;transform:translateY(-140px) rotate(-28deg) translateX(-110%)}20%{opacity:1}100%{opacity:0;transform:translateY(-140px) rotate(-28deg) translateX(110%)}}
-@keyframes spStreakB{0%{opacity:0;transform:translateY(90px) rotate(-28deg) translateX(110%)}20%{opacity:1}100%{opacity:0;transform:translateY(90px) rotate(-28deg) translateX(-110%)}}
-@keyframes spRise{from{opacity:0;transform:translateY(18px) scale(.92)}to{opacity:1;transform:none}}
-@keyframes spWipe{to{clip-path:inset(0 0 0 0)}}
-@keyframes spScan{0%{opacity:1;bottom:0}85%{opacity:1;bottom:100%}100%{opacity:0;bottom:100%}}
+#splash .sp-star{position:absolute;left:0;right:0;top:44vh;text-align:center;opacity:0;animation:spIn .6s ease .7s forwards;}
+#splash .sp-star span{display:block;font-family:'Inter',system-ui,sans-serif;font-size:14px;color:#8E8E93;}
+#splash .sp-star b{display:block;font-family:'Inter',system-ui,sans-serif;font-size:24px;font-weight:800;color:#FFFFFF;margin-top:4px;letter-spacing:-.2px;}
+#splash .sp-buddy{position:absolute;left:50%;bottom:0;width:min(118vw,560px);margin-left:calc(min(118vw,560px) / -2);
+  transform:translateY(55%);animation:spPeek 1s cubic-bezier(.2,.9,.25,1.05) .25s forwards;}
+#splash .sp-buddy img{display:block;width:100%;height:auto;}
+#splash .sp-url{position:absolute;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));text-align:center;
+  font-family:'Inter',system-ui,sans-serif;font-size:12px;color:rgba(255,255,255,.55);opacity:0;animation:spIn .6s ease 1s forwards;}
+@keyframes spPeek{to{transform:translateY(0)}}
+@keyframes spRise{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
 @keyframes spPlus{to{transform:scale(1) rotate(0)}}
-@keyframes spPlusGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(255,59,48,.6))}50%{filter:drop-shadow(0 0 14px rgba(255,59,48,1))}}
 @keyframes spIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@keyframes sBar{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
 @media(prefers-reduced-motion:reduce){
   #splash *{animation:none!important;}
-  #splash .sp-glow,#splash .sp-logo,#splash .sp-word,#splash .tg,#splash .bar{opacity:1;transform:none;}
-  #splash .sp-mark{clip-path:none;} #splash .sp-plus{transform:none;} #splash .sp-streak,#splash .sp-scan{display:none;}
+  #splash .sp-glow,#splash .sp-logo,#splash .sp-word,#splash .sp-star,#splash .sp-url{opacity:1;transform:none;}
+  #splash .sp-plus{transform:none;} #splash .sp-buddy{transform:none;}
 }
 #toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(16px);
   background:var(--hyrox-solid);color:var(--hyrox-ink);padding:12px 20px;border-radius:99px;font-size:15px;font-weight:800;
@@ -805,15 +791,17 @@
 
 <div id="splash">
   <div class="sp-glow"></div>
-  <div class="sp-streak a"></div><div class="sp-streak b"></div>
-  <div class="sp-logo" role="img" aria-label="Hitfat+">
-    <img class="sp-mark" src="/img/brand/hf-mark.png" alt="">
-    <span class="sp-scan"></span>
-    <img class="sp-plus" src="/img/brand/hf-plus.png" alt="">
+  <div class="sp-top">
+    <div class="sp-logo" role="img" aria-label="Hitfat+">
+      <img class="sp-mark" src="/img/brand/hf-mark.png" alt="">
+      <img class="sp-plus" src="/img/brand/hf-plus.png" alt="">
+    </div>
+    <div class="sp-word">HITFAT<b>+</b></div>
   </div>
-  <div class="sp-word">Hitfat<b>+</b></div>
-  <div class="tg">Train · Eat · Recover</div>
-  <div class="bar"><i></i></div>
+  <div class="sp-star"><span>Starring</span><b>Buddy</b></div>
+  <div class="sp-buddy"><img src="/img/mascot/peek.jpg" alt="Buddy"></div>
+  <div class="sp-url">app.hitfat.io</div>
+</div>
 </div>
 
 <!--__AUTH__-->
