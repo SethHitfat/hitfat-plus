@@ -3150,16 +3150,17 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .lib-mine .cv{color:var(--dim2);font-size:20px;line-height:1;}
 
 /* ── For You: Today's Pick (train2.js fyHero) ── */
-.fyh{position:relative;height:360px;border-radius:22px;overflow:hidden;cursor:pointer;background:#1C1C1E center/cover no-repeat;}
+.fyh{position:relative;height:250px;border-radius:22px;overflow:hidden;cursor:pointer;background:#1C1C1E center/cover no-repeat;}
 .fyh .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2) 0%,rgba(0,0,0,0) 25%,rgba(0,0,0,0) 45%,rgba(0,0,0,.6) 68%,rgba(0,0,0,.9) 100%);}
 .fyh .fp-tag{z-index:1;}
 .fyh .lockt{z-index:1;}
 .fyh .in{position:absolute;left:0;right:0;bottom:0;padding:0 16px 16px;}
-.fyh .t{font-size:28px;font-weight:900;letter-spacing:-.7px;line-height:1.05;color:#FFFFFF;}
+.fyh .t{font-size:24px;font-weight:900;letter-spacing:-.7px;line-height:1.05;color:#FFFFFF;}
 .fyh .m{font-size:13px;color:rgba(255,255,255,.85);margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .fyh .m b{font-size:16px;font-weight:800;color:#FFFFFF;}
 .fyh .m .fw-lv{margin-left:0;}
-.fyh .bt{display:flex;gap:8px;margin-top:14px;}
+.fyh .bt{display:flex;gap:8px;margin-top:12px;}
+.fyh .bt button{padding:10px 18px;}
 .fyh .bt button{border:0;border-radius:99px;padding:12px 20px;font:inherit;font-size:15px;font-weight:800;cursor:pointer;}
 .fyh .go{flex:1;background:#E30613;color:#FFFFFF;}
 .fyh .dt{background:rgba(255,255,255,.16);color:#FFFFFF;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}

@@ -5310,16 +5310,17 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .lib-mine .cv{color:var(--dim2);font-size:20px;line-height:1;}
 
 /* ── For You: Today's Pick (train2.js fyHero) ── */
-.fyh{position:relative;height:360px;border-radius:22px;overflow:hidden;cursor:pointer;background:#1C1C1E center/cover no-repeat;}
+.fyh{position:relative;height:250px;border-radius:22px;overflow:hidden;cursor:pointer;background:#1C1C1E center/cover no-repeat;}
 .fyh .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2) 0%,rgba(0,0,0,0) 25%,rgba(0,0,0,0) 45%,rgba(0,0,0,.6) 68%,rgba(0,0,0,.9) 100%);}
 .fyh .fp-tag{z-index:1;}
 .fyh .lockt{z-index:1;}
 .fyh .in{position:absolute;left:0;right:0;bottom:0;padding:0 16px 16px;}
-.fyh .t{font-size:28px;font-weight:900;letter-spacing:-.7px;line-height:1.05;color:#FFFFFF;}
+.fyh .t{font-size:24px;font-weight:900;letter-spacing:-.7px;line-height:1.05;color:#FFFFFF;}
 .fyh .m{font-size:13px;color:rgba(255,255,255,.85);margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .fyh .m b{font-size:16px;font-weight:800;color:#FFFFFF;}
 .fyh .m .fw-lv{margin-left:0;}
-.fyh .bt{display:flex;gap:8px;margin-top:14px;}
+.fyh .bt{display:flex;gap:8px;margin-top:12px;}
+.fyh .bt button{padding:10px 18px;}
 .fyh .bt button{border:0;border-radius:99px;padding:12px 20px;font:inherit;font-size:15px;font-weight:800;cursor:pointer;}
 .fyh .go{flex:1;background:#E30613;color:#FFFFFF;}
 .fyh .dt{background:rgba(255,255,255,.16);color:#FFFFFF;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
@@ -23348,13 +23349,13 @@ function hasPhoto(p){ return !!(p && PHOTO.has(p.id)); }
    frame already, and zooming in on it only cuts off a head or the feet. */
 const FOCAL={
   am21:[55,17,1], bws8:[55,48,1], c1:[80,25,1.344], c2:[72,57,1.38,1], c3:[78,50,1.344,1],
-  ch1:[45,20,1.806,1], ch2:[57,16,0.667], core14:[55,32,1], db1:[45,30,0.593], db2:[47,16,0.593],
+  ch1:[45,20,1.806,1], ch2:[57,16,0.667], core14:[55,32,1], db1:[45,30,0.593], db2:[50,18,0.593],
   db3:[47,12,0.593], f40:[45,12,1], fl30:[50,12,1], hiit4:[50,22,1], kb1:[50,15,0.593],
   kb2:[45,10,0.593], kb3:[50,7,0.593], lad4:[52,15,1], m1:[52,12,1], m2:[40,14,1],
   m3:[55,25,1], m4:[17,55,1.806,1], mch:[57,15,1], mdb:[50,28,1], men6:[50,13,1],
-  min3:[48,15,1], mkb:[50,10,1], p1:[72,31,1.881,1], p10:[45,20,0.593], p11:[50,10,0.593],
+  min3:[48,15,1], mkb:[50,10,1], p1:[72,31,1.881,1], p10:[50,10,0.593], p11:[50,10,0.593],
   p12:[50,18,0.593], p13:[45,24,0.593], p14:[70,28,1.806], p15:[78,40,1.806,1], p16:[55,18,0.593],
-  p17:[22,57,1.38,1], p18:[47,12,0.593], p19:[50,18,0.593], p2:[65,37,1.898,1], p20:[76,30,1.798,1],
+  p17:[22,57,1.38,1], p18:[47,12,0.593], p19:[50,12,0.593], p2:[65,37,1.898,1], p20:[76,30,1.798,1],
   p21:[80,52,1.38,1], p22:[45,12,0.593], p23:[55,22,0.593], p24:[50,22,0.593], p25:[50,8,0.593],
   p26:[40,22,0.593], p27:[75,15,1.806], p28:[60,12,1.798], p29:[50,10,0.593], p30:[70,15,1.798],
   p31:[45,12,0.593], p32:[65,16,1.881], p33:[65,15,1.806], p4:[75,20,1.344], p5:[75,10,1.344],
@@ -26005,7 +26006,7 @@ function fyPlanCard(p){
 /* For You's hero: the studio photo, a TODAY'S PICK tag, the name, minutes, level and kit, Start and Details */
 function fyHero(p){
   const lv=String(p.level||'');
-  return '<div class="fyh" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.poster):'')+'">'+
+  return '<div class="fyh" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.card):'')+'">'+
     '<div class="ov"></div><span class="fp-tag">TODAY\'S PICK</span>'+lockTag(p)+
     '<div class="in"><div class="t">'+p.name+'</div>'+
     '<div class="m"><b>'+p.dur+'</b> min'+(lv?' <span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span>':'')+' · '+fweekKit(p)+'</div>'+

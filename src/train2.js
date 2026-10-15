@@ -292,7 +292,7 @@ function fyPlanCard(p){
 /* For You's hero: the studio photo, a TODAY'S PICK tag, the name, minutes, level and kit, Start and Details */
 function fyHero(p){
   const lv=String(p.level||'');
-  return '<div class="fyh" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.poster):'')+'">'+
+  return '<div class="fyh" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.card):'')+'">'+
     '<div class="ov"></div><span class="fp-tag">TODAY\'S PICK</span>'+lockTag(p)+
     '<div class="in"><div class="t">'+p.name+'</div>'+
     '<div class="m"><b>'+p.dur+'</b> min'+(lv?' <span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span>':'')+' · '+fweekKit(p)+'</div>'+
