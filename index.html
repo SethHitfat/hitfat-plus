@@ -4611,7 +4611,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .sc-arc{display:block;width:100%;height:auto;}
 .sc-arc-t{fill:none;stroke:var(--surface2);stroke-width:10;stroke-linecap:round;}
 .sc-arc-v{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dasharray .6s;}
-.sc-bell{position:absolute;left:50%;top:14px;width:172px;height:172px;margin-left:-86px;}
+.sc-bell{position:absolute;left:50%;top:-4px;width:210px;height:210px;margin-left:-105px;}
 .sc-bell img{display:block;width:100%;height:100%;}
 .sc-lv1{-webkit-animation:hfm-breathe 3.5s ease-in-out infinite;animation:hfm-breathe 3.5s ease-in-out infinite;}
 .sc-lv2,.sc-lv3{-webkit-animation:hfm-bob 1.8s ease-in-out infinite;animation:hfm-bob 1.8s ease-in-out infinite;}
@@ -4692,6 +4692,34 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 @-webkit-keyframes scc-twinkle{0%,100%{opacity:0;-webkit-transform:scale(.5);}50%{opacity:1;-webkit-transform:scale(1.2);}}
 @keyframes scc-twinkle{0%,100%{opacity:0;transform:scale(.5);}50%{opacity:1;transform:scale(1.2);}}
 @media (prefers-reduced-motion: reduce){ .scc-spark i{-webkit-animation:none;animation:none;opacity:.8;} .scc-shine img{-webkit-animation:none;animation:none;} }
+
+/* Bell, alive (bell.js): the clip over its poster, a size for each stage */
+.sc-bell{cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.sc-bell.sc-live{-webkit-animation:none;animation:none;}
+.sc-bell .sc-poster,.sc-bell .bell-live{position:absolute;inset:0;width:100%;height:100%;-webkit-transform-origin:50% 100%;transform-origin:50% 100%;}
+.sc-bell.is-live .sc-poster{visibility:hidden;}
+.bell-live{pointer-events:none;}
+.bell-cv{display:block;width:100%;height:100%;}
+.bell-v{position:absolute;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none;}
+.sc-lv1 .sc-poster,.sc-lv1 .bell-live,.sc-dust .sc-poster,.sc-dust .bell-live{-webkit-transform:scale(.84);transform:scale(.84);}
+.sc-lv2 .sc-poster,.sc-lv2 .bell-live{-webkit-transform:scale(.92);transform:scale(.92);}
+.sc-lv3 .sc-poster,.sc-lv3 .bell-live{-webkit-transform:scale(.97);transform:scale(.97);}
+/* B: a little dimmer when low, a warm glow at the top */
+.sc-lv1 .bell-cv,.sc-lv1 .sc-poster{-webkit-filter:saturate(.85) brightness(.96);filter:saturate(.85) brightness(.96);}
+.sc-lv4 .bell-cv,.sc-lv4 .sc-poster{-webkit-filter:drop-shadow(0 0 14px rgba(255,194,14,.45));filter:drop-shadow(0 0 14px rgba(255,194,14,.45));}
+.sc-dust .bell-cv{-webkit-filter:grayscale(.55) sepia(.35) brightness(.85);filter:grayscale(.55) sepia(.35) brightness(.85);}
+.sc-rust .sc-poster{-webkit-transform:scale(.84);transform:scale(.84);}
+.sc-rust .sc-rustfx{-webkit-transform:scale(.84);transform:scale(.84);-webkit-transform-origin:50% 100%;transform-origin:50% 100%;}
+
+/* Bell's reminders (push.js) */
+.pu-sub{font-size:12px;color:var(--dim2);font-weight:400;margin-top:2px;}
+.pu-how{border:0;border-radius:99px;padding:7px 14px;font-weight:700;font-size:13px;background:var(--surface2);color:var(--txt);cursor:pointer;}
+.pu-inv{display:flex;align-items:center;gap:6px;margin-top:12px;}
+.pu-inv-b{flex:1;border:0;border-radius:14px;padding:12px 14px;font-size:14px;font-weight:700;background:rgba(227,6,19,.12);color:#E30613;cursor:pointer;text-align:left;}
+.pu-inv-x{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:var(--surface2);color:var(--dim);font-size:14px;cursor:pointer;}
+.pu-steps{display:flex;flex-direction:column;gap:10px;margin:14px 0 4px;text-align:left;}
+.pu-steps div{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.4;}
+.pu-steps b{flex:none;width:24px;height:24px;border-radius:50%;background:#E30613;color:#fff;font-size:13px;display:grid;place-items:center;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -5408,10 +5436,11 @@ function localBadge(){
    worker. That worker still sits in the browser of everyone who visited back
    then, intercepting every request for this origin and serving its own dead
    shell — a half-drawn white page that fetches /_/index.json and gets a 404.
-   HITFAT+ registers no worker of its own, so unregistering every worker on
-   this origin removes exactly the leftover and nothing else. */
+   HITFAT+'s own worker is /sw.js (Bell's reminders, no caching); every
+   other worker on this origin is that leftover, and goes. */
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(function(rs){
+    rs=rs.filter(function(r){ var w=r.active||r.waiting||r.installing; return !(w && /\/sw\.js(\?|$)/.test(w.scriptURL)); });
     if(!rs.length) return;
     Promise.all(rs.map(function(r){ return r.unregister(); })).then(function(){
       if(window.caches) return caches.keys().then(function(ks){
@@ -5717,6 +5746,107 @@ function mascotDone(){
   var M=hfm(); if(!M) return;
   M.logActivity(); if(typeof scEvent==='function'){ _scSay='workout'; _scSayAt=Date.now(); } mascotRender();
 }
+/* ═══════════════ BELL, ALIVE ═══════════════
+   Bell breathes, blinks and looks about, the way Simple's Blinky does: short
+   clips made from Seth's artwork (Kling, start frame = end frame, so each
+   loops without a seam), one for each stage, and two reactions — a giggle
+   when Bell is touched, a cheer when something is logged.
+
+   The clips are "stacked alpha": an ordinary H.264 file, colour in the top
+   half and Bell's mask in the bottom half. Each frame is drawn to a canvas
+   with the mask as its alpha, so Bell stands on any card, dark or light, on
+   any phone. Every clip has a poster (its first frame, transparent PNG)
+   that shows until the clip plays, and stays when it cannot: Low Power
+   Mode, reduced motion, a browser without canvas.
+
+   One player for the page. The HITFAT Score re-draws its card often; the
+   player is moved into the new card, not rebuilt, so the clip never
+   restarts. ES5. */
+
+var BELL_DIR='/img/mascot/anim/';
+var BELL_LOOPS={1:'comel',2:'aktif',3:'tegap',4:'juara'};
+var _bell={node:null, v:null, cv:null, g:null, buf:null, bg:null, loop:'', react:'', raf:0, live:false};
+
+function bellPoster(lv){ return BELL_DIR+BELL_LOOPS[lv]+'.png'; }
+/* the slot shows the poster until the clip draws, then the clip only */
+function bellMark(on){
+  var p=_bell.node && _bell.node.parentNode; if(!p || !p.className) return;
+  p.className=p.className.replace(/ ?is-live/g,'')+(on?' is-live':'');
+}
+function bellCanAnimate(){
+  try{
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+    var c=document.createElement('canvas');
+    return !!(c && c.getContext && c.getContext('2d') && document.createElement('video').play);
+  }catch(e){ return false; }
+}
+function bellBuild(){
+  var n=document.createElement('div'); n.className='bell-live';
+  var cv=document.createElement('canvas'); cv.width=360; cv.height=360; cv.className='bell-cv';
+  var v=document.createElement('video');
+  v.muted=true; v.defaultMuted=true; v.playsInline=true; v.preload='auto';
+  v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline','');
+  v.className='bell-v';
+  n.appendChild(cv); n.appendChild(v);
+  var buf=document.createElement('canvas'); buf.width=360; buf.height=720;
+  _bell.node=n; _bell.v=v; _bell.cv=cv; _bell.g=cv.getContext('2d'); _bell.buf=buf; _bell.bg=buf.getContext('2d');
+  v.addEventListener('ended',function(){ if(_bell.react){ _bell.react=''; bellSrc(_bell.loop,true); } });
+  v.addEventListener('playing',function(){ bellTick(); });
+  document.addEventListener('visibilitychange',function(){ if(document.hidden) v.pause(); else bellResume(); });
+  return n;
+}
+function bellSrc(name,loop){
+  var v=_bell.v, src=BELL_DIR+name+'.mp4';
+  if(v.getAttribute('src')!==src){ v.setAttribute('src',src); try{ v.load(); }catch(e){} }
+  v.loop=!!loop;
+  try{ v.currentTime=0; }catch(e){}
+  bellResume();
+}
+function bellResume(){
+  var v=_bell.v; if(!v || document.hidden) return;
+  var p=v.play();
+  if(p && p.catch) p.catch(function(){ _bell.live=false; if(_bell.node) _bell.node.className='bell-live'; bellMark(false); });
+}
+/* one frame: the top half's colour, the bottom half's grey as alpha */
+function bellDraw(){
+  var v=_bell.v; if(!v || v.readyState<2) return;
+  try{
+    _bell.bg.drawImage(v,0,0,360,720);
+    var top=_bell.bg.getImageData(0,0,360,360), bot=_bell.bg.getImageData(0,360,360,360), t=top.data, b=bot.data, i;
+    for(i=0;i<t.length;i+=4) t[i+3]=b[i];
+    _bell.g.putImageData(top,0,0);
+    if(!_bell.live){ _bell.live=true; _bell.node.className='bell-live on'; bellMark(true); }
+  }catch(e){}
+}
+function bellTick(){
+  if(_bell.raf) return;
+  var step=function(){
+    _bell.raf=0;
+    var v=_bell.v;
+    if(!v || v.paused || v.ended) return;
+    /* off the page (another tab, Home hidden): stop drawing, pause */
+    if(!_bell.node || !_bell.node.parentNode || _bell.node.offsetParent===null){ v.pause(); return; }
+    bellDraw();
+    _bell.raf=(window.requestAnimationFrame||function(f){ return setTimeout(f,40); })(step);
+  };
+  step();
+}
+
+/* put Bell, alive, into a slot (the score card's), at a stage */
+function bellAttach(slot,lv){
+  if(!slot || !bellCanAnimate()) return false;
+  if(!_bell.node) bellBuild();
+  slot.appendChild(_bell.node);
+  var want=BELL_LOOPS[lv]||'aktif';
+  if(_bell.loop!==want){ _bell.loop=want; if(!_bell.react){ _bell.live=false; _bell.node.className='bell-live'; bellSrc(want,true); } }
+  else { if(_bell.live) bellMark(true); bellResume(); }
+  return true;
+}
+/* a reaction, then back to the loop */
+function bellReact(name){
+  if(!_bell.v || !_bell.node || !_bell.node.parentNode) return;
+  _bell.react=name; bellSrc(name,false);
+}
 /* ═══════════════ SKOR HITFAT · phase 1 ═══════════════
    Simple's Success Score, the HITFAT+ way. Bell, the kettlebell mascot, sits
    in an arc that fills 0–100 with today's habits; under it, one ring a habit
@@ -5826,19 +5956,42 @@ function scRing(h){
     '</svg><span class="sc-ic">'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'')+'</span>'+
     '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span></button>';
 }
+/* the card takes the score's colour, as Simple's screens do (A); Bell's
+   look and liveliness follow the stage (B, and bell.js) */
+function scTint(c){ var n=parseInt(c.slice(1),16); return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+',.16)'; }
 function scHTML(){
-  var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState();
-  var src=M&&M.config.images[lv-1], fx='';
-  if(st.k==='rust'){ src=SC_ART.rust||(M&&M.config.images[0]); if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+src+');mask-image:url('+src+')"></span>'; }
-  var img=src?'<img src="'+src+'" alt="Bell'+(st.k==='rust'?' berkarat':', tahap '+lv)+'">'+fx:'';
-  return '<div class="sc">'+
+  var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState(), c=st.k==='rust'?'#A6541E':scColor(s);
+  var poster=(typeof bellPoster==='function')?bellPoster(st.k?1:lv):(M&&M.config.images[lv-1]), fx='';
+  if(st.k==='rust'){ poster=SC_ART.rust||poster; if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+poster+');mask-image:url('+poster+')"></span>'; }
+  var img=poster?'<img class="sc-poster" src="'+poster+'" alt="Bell'+(st.k==='rust'?' berkarat':', tahap '+lv)+'">'+fx:'';
+  return '<div class="sc" style="background:radial-gradient(120% 70% at 50% 28%,'+scTint(c)+',transparent 72%),var(--surface)">'+
     '<div class="sc-head"><div><div class="sc-k">Skor HITFAT · Hari ini</div><div class="sc-n" style="color:'+scColor(s)+'">'+s+'<span>/100</span></div></div>'+
       scChip()+'</div>'+
-    '<div class="sc-stage" onclick="switchTab(\'progress\')">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'">'+img+'</div></div>'+
-    '<div class="sc-say'+(st.k?' sc-say-'+st.k:'')+'">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
-    '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>';
+    '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Sentuh Bell">'+img+'</div></div>'+
+    '<div class="sc-say'+(st.k?' sc-say-'+st.k:'')+'" id="sc-say">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
+    '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div>'+
+    (typeof pushInvite==='function'?pushInvite():'')+'</div>';
 }
-function scRender(){ var el=$('mascot-home'); if(el){ el.innerHTML=scHTML(); if(!scCheckShine()) scCheckStreak(); } }
+var _scCheered=0;
+function scRender(){
+  var el=$('mascot-home'); if(!el) return;
+  el.innerHTML=scHTML();
+  /* Bell alive, except rusty: a rusty kettlebell does not move */
+  var slot=$('sc-bell'), st=scState(), lv=scLevel(scScore());
+  if(slot && st.k!=='rust' && typeof bellAttach==='function' && bellAttach(slot, st.k?1:lv)){
+    slot.className+=' sc-live';
+    if(_scSay && _scSay!=='poke' && _scSayAt>_scCheered && Date.now()-_scSayAt<8000){ _scCheered=_scSayAt; bellReact('cheer'); }
+  }
+  if(!scCheckShine()) scCheckStreak();
+}
+/* touch Bell: a giggle, and a word */
+SC_LINES.poke=['Hihi, geli! 😆','Eh eh, Bell tengah fokus ni 😤','Hehe, sentuh lagi? 🙈','Bell sihat, terima kasih tanya 💪'];
+var _scPokes=0;
+function scPoke(){
+  if(scState().k==='rust'){ toast('Bell berkarat 🥲 Rekod satu perkara untuk gilap Bell'); return; }
+  if(typeof bellReact==='function') bellReact('giggle');
+  var el=$('sc-say'); if(el){ el.className='sc-say'; el.textContent=SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]; }
+}
 
 /* each habit's way in */
 function scTap(k){
@@ -6012,6 +6165,108 @@ function scShine(){
     '<div class="scc-s">Terima kasih sebab kembali ✨ Karat dah hilang. Satu hari padu lagi, streak baru bermula.</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Jom!</button></div>';
   $('scc').style.display='flex';
+}
+/* ═══════════════ BELL'S REMINDERS · Web Push ═══════════════
+   A member turns them on once (it must be a tap: the browser asks then);
+   the phone's subscription goes to plus_push_subs through plus_push_save,
+   and at 8 pm the plus-push function decides whether Bell has something to
+   say: dusty, rusty, a streak at risk. At most one a day. See
+   deploy/38-plus-push.sql and deploy/plus-push/index.ts.
+
+   /sw.js does nothing but show these and open the app when one is tapped.
+   On an iPhone, web push works only once HITFAT+ is on the Home Screen
+   (iOS 16.4+); until then the row says how. ES5. */
+
+function pushFn(){ return (typeof SUPA_URL!=='undefined'?SUPA_URL:'')+'/functions/v1/plus-push'; }
+
+function pushIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent||'') || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1); }
+function pushStandalone(){ return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone===true; }
+function pushSupported(){ return ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window); }
+/* what the row can offer: 'on' | 'off' | 'denied' | 'install' (iPhone, not on the Home Screen) | 'none' */
+function pushState(){
+  if(!pushSupported()) return (pushIOS() && !pushStandalone()) ? 'install' : 'none';
+  if(Notification.permission==='denied') return 'denied';
+  var on=false; try{ on=localStorage.getItem('hf_push_on')==='1'; }catch(e){}
+  return (on && Notification.permission==='granted') ? 'on' : 'off';
+}
+function pushKeyBytes(b64){
+  var s=(b64+'==='.slice(0,(4-b64.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/'), raw=atob(s), out=new Uint8Array(raw.length), i;
+  for(i=0;i<raw.length;i++) out[i]=raw.charCodeAt(i);
+  return out;
+}
+function pushB64(buf){ var b=new Uint8Array(buf), s='', i; for(i=0;i<b.length;i++) s+=String.fromCharCode(b[i]); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function pushReg(){ return navigator.serviceWorker.register('/sw.js',{scope:'/'}).then(function(){ return navigator.serviceWorker.ready; }); }
+
+function pushEnable(){
+  var st=pushState();
+  if(st==='install') return pushInstallHelp();
+  if(st==='denied'){ toast('Notifikasi disekat. Benarkan dalam tetapan telefon untuk HITFAT+'); return; }
+  if(st==='none'){ toast('Telefon ini tidak menyokong notifikasi web'); return; }
+  if(!sb || !HF.userId){ toast('Log masuk dahulu'); return; }
+  Notification.requestPermission().then(function(p){
+    if(p!=='granted'){ toast('Peringatan tidak dihidupkan'); pushRefresh(); return null; }
+    return Promise.all([pushReg(), fetch(pushFn()+'?action=key').then(function(r){ return r.json(); })]).then(function(a){
+      var reg=a[0], key=a[1] && a[1].key;
+      if(!key) throw new Error('no key');
+      return reg.pushManager.getSubscription().then(function(old){
+        return old || reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:pushKeyBytes(key)});
+      });
+    }).then(function(sub){
+      return sb.rpc('plus_push_save',{p_endpoint:sub.endpoint, p_p256dh:pushB64(sub.getKey('p256dh')), p_auth:pushB64(sub.getKey('auth'))});
+    }).then(function(r){
+      if(r && r.error) throw r.error;
+      try{ localStorage.setItem('hf_push_on','1'); }catch(e){}
+      toast('Peringatan Bell dihidupkan 🔔'); pushRefresh(); pushTest();
+    });
+  }).catch(function(e){ console.warn('push enable failed',e); toast('Tidak dapat hidupkan peringatan. Cuba lagi.'); pushRefresh(); });
+}
+function pushDisable(){
+  try{ localStorage.removeItem('hf_push_on'); }catch(e){}
+  if(!pushSupported()){ pushRefresh(); return; }
+  navigator.serviceWorker.getRegistration('/').then(function(reg){
+    return reg && reg.pushManager.getSubscription();
+  }).then(function(sub){
+    if(!sub) return;
+    if(sb) sb.rpc('plus_push_remove',{p_endpoint:sub.endpoint});
+    return sub.unsubscribe();
+  }).catch(function(){}).then(function(){ toast('Peringatan Bell dimatikan'); pushRefresh(); });
+}
+/* the member's own test: proves the whole path, phone to server and back */
+function pushTest(){
+  if(!sb) return;
+  sb.auth.getSession().then(function(r){
+    var t=r && r.data && r.data.session && r.data.session.access_token; if(!t) return;
+    return fetch(pushFn()+'?action=test',{method:'POST', headers:{Authorization:'Bearer '+t}});
+  }).catch(function(){});
+}
+function pushInstallHelp(){
+  $('pw-body').innerHTML='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>'+
+    '<div class="sc-sh"><div class="sc-sh-k">Peringatan Bell di iPhone</div>'+
+    '<div class="pu-steps"><div><b>1</b>Buka app.hitfat.io dalam Safari</div><div><b>2</b>Tekan butang Kongsi (petak dengan anak panah ke atas)</div>'+
+    '<div><b>3</b>Pilih <i>Add to Home Screen</i>, kemudian <i>Add</i></div><div><b>4</b>Buka HITFAT+ dari ikon di Home Screen, kemudian hidupkan peringatan di sini</div></div>'+
+    '<div class="sc-sh-f">Apple hanya membenarkan notifikasi web untuk app yang dipasang di Home Screen (iOS 16.4 ke atas).</div></div>';
+  $('pwm').classList.add('on');
+}
+/* the Settings row */
+function pushRow(){
+  var st=pushState(), sub={on:'Pukul 8 malam, bila Bell perlu tegur',off:'Bell tegur anda bila streak dalam bahaya',denied:'Disekat dalam tetapan telefon',install:'Pasang ke Home Screen dahulu',none:'Tidak disokong pada pelayar ini'}[st];
+  var ctl=(st==='on'||st==='off')?
+    '<div class="obseg meseg"><button class="'+(st==='on'?'on':'')+'" onclick="pushEnable()">On</button><button class="'+(st==='off'?'on':'')+'" onclick="pushDisable()">Off</button></div>':
+    st==='install'?'<button class="pu-how" onclick="pushInstallHelp()">Cara</button>':'';
+  return '<div class="grow grow-ctl" id="push-row">'+ic('bell')+'<div class="grow-l">Peringatan Bell<div class="pu-sub">'+sub+'</div></div>'+ctl+'</div>';
+}
+/* the invitation under the score, once, until it is answered */
+function pushInvite(){
+  var st=pushState(), no=false;
+  try{ no=localStorage.getItem('hf_push_no')==='1'; }catch(e){}
+  if(no || (st!=='off' && st!=='install')) return '';
+  return '<div class="pu-inv"><button class="pu-inv-b" onclick="pushEnable()">🔔 Biar Bell ingatkan anda pukul 8 malam</button>'+
+    '<button class="pu-inv-x" aria-label="Tutup" onclick="pushNo()">✕</button></div>';
+}
+function pushNo(){ try{ localStorage.setItem('hf_push_no','1'); }catch(e){} if(typeof scRender==='function') scRender(); }
+function pushRefresh(){
+  var r=$('push-row'); if(r && r.parentNode) r.outerHTML=pushRow();
+  if(typeof scRender==='function' && $('mascot-home') && $('mascot-home').innerHTML) scRender();
 }
 /* ═══════════════ LANGUAGE: BM / EN ═══════════════
    The app is written in English. Bahasa Melayu is laid over it on screen:
@@ -22390,6 +22645,7 @@ function renderMe(){
     '<div class="obseg meseg" data-noi18n>'+
     '<button class="'+(LANG==='ms'?'on':'')+'" onclick="setLang(\'ms\')">BM</button>'+
     '<button class="'+(LANG==='ms'?'':'on')+'" onclick="setLang(\'en\')">EN</button></div></div>':'')+
+    (typeof pushRow==='function'?pushRow():'')+
     '</div>';
 
   h+=fsec('About','')+'<div class="glist">'+

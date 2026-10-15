@@ -107,19 +107,42 @@ function scRing(h){
     '</svg><span class="sc-ic">'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'')+'</span>'+
     '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span></button>';
 }
+/* the card takes the score's colour, as Simple's screens do (A); Bell's
+   look and liveliness follow the stage (B, and bell.js) */
+function scTint(c){ var n=parseInt(c.slice(1),16); return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+',.16)'; }
 function scHTML(){
-  var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState();
-  var src=M&&M.config.images[lv-1], fx='';
-  if(st.k==='rust'){ src=SC_ART.rust||(M&&M.config.images[0]); if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+src+');mask-image:url('+src+')"></span>'; }
-  var img=src?'<img src="'+src+'" alt="Bell'+(st.k==='rust'?' berkarat':', tahap '+lv)+'">'+fx:'';
-  return '<div class="sc">'+
+  var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState(), c=st.k==='rust'?'#A6541E':scColor(s);
+  var poster=(typeof bellPoster==='function')?bellPoster(st.k?1:lv):(M&&M.config.images[lv-1]), fx='';
+  if(st.k==='rust'){ poster=SC_ART.rust||poster; if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+poster+');mask-image:url('+poster+')"></span>'; }
+  var img=poster?'<img class="sc-poster" src="'+poster+'" alt="Bell'+(st.k==='rust'?' berkarat':', tahap '+lv)+'">'+fx:'';
+  return '<div class="sc" style="background:radial-gradient(120% 70% at 50% 28%,'+scTint(c)+',transparent 72%),var(--surface)">'+
     '<div class="sc-head"><div><div class="sc-k">Skor HITFAT · Hari ini</div><div class="sc-n" style="color:'+scColor(s)+'">'+s+'<span>/100</span></div></div>'+
       scChip()+'</div>'+
-    '<div class="sc-stage" onclick="switchTab(\'progress\')">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'">'+img+'</div></div>'+
-    '<div class="sc-say'+(st.k?' sc-say-'+st.k:'')+'">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
-    '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>';
+    '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Sentuh Bell">'+img+'</div></div>'+
+    '<div class="sc-say'+(st.k?' sc-say-'+st.k:'')+'" id="sc-say">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
+    '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div>'+
+    (typeof pushInvite==='function'?pushInvite():'')+'</div>';
 }
-function scRender(){ var el=$('mascot-home'); if(el){ el.innerHTML=scHTML(); if(!scCheckShine()) scCheckStreak(); } }
+var _scCheered=0;
+function scRender(){
+  var el=$('mascot-home'); if(!el) return;
+  el.innerHTML=scHTML();
+  /* Bell alive, except rusty: a rusty kettlebell does not move */
+  var slot=$('sc-bell'), st=scState(), lv=scLevel(scScore());
+  if(slot && st.k!=='rust' && typeof bellAttach==='function' && bellAttach(slot, st.k?1:lv)){
+    slot.className+=' sc-live';
+    if(_scSay && _scSay!=='poke' && _scSayAt>_scCheered && Date.now()-_scSayAt<8000){ _scCheered=_scSayAt; bellReact('cheer'); }
+  }
+  if(!scCheckShine()) scCheckStreak();
+}
+/* touch Bell: a giggle, and a word */
+SC_LINES.poke=['Hihi, geli! 😆','Eh eh, Bell tengah fokus ni 😤','Hehe, sentuh lagi? 🙈','Bell sihat, terima kasih tanya 💪'];
+var _scPokes=0;
+function scPoke(){
+  if(scState().k==='rust'){ toast('Bell berkarat 🥲 Rekod satu perkara untuk gilap Bell'); return; }
+  if(typeof bellReact==='function') bellReact('giggle');
+  var el=$('sc-say'); if(el){ el.className='sc-say'; el.textContent=SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]; }
+}
 
 /* each habit's way in */
 function scTap(k){

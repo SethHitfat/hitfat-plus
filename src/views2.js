@@ -609,6 +609,7 @@ function renderMe(){
     '<div class="obseg meseg" data-noi18n>'+
     '<button class="'+(LANG==='ms'?'on':'')+'" onclick="setLang(\'ms\')">BM</button>'+
     '<button class="'+(LANG==='ms'?'':'on')+'" onclick="setLang(\'en\')">EN</button></div></div>':'')+
+    (typeof pushRow==='function'?pushRow():'')+
     '</div>';
 
   h+=fsec('About','')+'<div class="glist">'+

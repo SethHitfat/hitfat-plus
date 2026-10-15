@@ -1,3 +1,8 @@
 # Netlify serves .webmanifest as octet-stream by default; browsers want this.
 /manifest.webmanifest
   Content-Type: application/manifest+json
+
+# Bell's reminders worker: always the newest, never a cached copy.
+/sw.js
+  Cache-Control: no-cache
+  Service-Worker-Allowed: /

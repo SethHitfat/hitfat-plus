@@ -2531,7 +2531,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .sc-arc{display:block;width:100%;height:auto;}
 .sc-arc-t{fill:none;stroke:var(--surface2);stroke-width:10;stroke-linecap:round;}
 .sc-arc-v{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dasharray .6s;}
-.sc-bell{position:absolute;left:50%;top:14px;width:172px;height:172px;margin-left:-86px;}
+.sc-bell{position:absolute;left:50%;top:-4px;width:210px;height:210px;margin-left:-105px;}
 .sc-bell img{display:block;width:100%;height:100%;}
 .sc-lv1{-webkit-animation:hfm-breathe 3.5s ease-in-out infinite;animation:hfm-breathe 3.5s ease-in-out infinite;}
 .sc-lv2,.sc-lv3{-webkit-animation:hfm-bob 1.8s ease-in-out infinite;animation:hfm-bob 1.8s ease-in-out infinite;}
@@ -2612,3 +2612,31 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 @-webkit-keyframes scc-twinkle{0%,100%{opacity:0;-webkit-transform:scale(.5);}50%{opacity:1;-webkit-transform:scale(1.2);}}
 @keyframes scc-twinkle{0%,100%{opacity:0;transform:scale(.5);}50%{opacity:1;transform:scale(1.2);}}
 @media (prefers-reduced-motion: reduce){ .scc-spark i{-webkit-animation:none;animation:none;opacity:.8;} .scc-shine img{-webkit-animation:none;animation:none;} }
+
+/* Bell, alive (bell.js): the clip over its poster, a size for each stage */
+.sc-bell{cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.sc-bell.sc-live{-webkit-animation:none;animation:none;}
+.sc-bell .sc-poster,.sc-bell .bell-live{position:absolute;inset:0;width:100%;height:100%;-webkit-transform-origin:50% 100%;transform-origin:50% 100%;}
+.sc-bell.is-live .sc-poster{visibility:hidden;}
+.bell-live{pointer-events:none;}
+.bell-cv{display:block;width:100%;height:100%;}
+.bell-v{position:absolute;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none;}
+.sc-lv1 .sc-poster,.sc-lv1 .bell-live,.sc-dust .sc-poster,.sc-dust .bell-live{-webkit-transform:scale(.84);transform:scale(.84);}
+.sc-lv2 .sc-poster,.sc-lv2 .bell-live{-webkit-transform:scale(.92);transform:scale(.92);}
+.sc-lv3 .sc-poster,.sc-lv3 .bell-live{-webkit-transform:scale(.97);transform:scale(.97);}
+/* B: a little dimmer when low, a warm glow at the top */
+.sc-lv1 .bell-cv,.sc-lv1 .sc-poster{-webkit-filter:saturate(.85) brightness(.96);filter:saturate(.85) brightness(.96);}
+.sc-lv4 .bell-cv,.sc-lv4 .sc-poster{-webkit-filter:drop-shadow(0 0 14px rgba(255,194,14,.45));filter:drop-shadow(0 0 14px rgba(255,194,14,.45));}
+.sc-dust .bell-cv{-webkit-filter:grayscale(.55) sepia(.35) brightness(.85);filter:grayscale(.55) sepia(.35) brightness(.85);}
+.sc-rust .sc-poster{-webkit-transform:scale(.84);transform:scale(.84);}
+.sc-rust .sc-rustfx{-webkit-transform:scale(.84);transform:scale(.84);-webkit-transform-origin:50% 100%;transform-origin:50% 100%;}
+
+/* Bell's reminders (push.js) */
+.pu-sub{font-size:12px;color:var(--dim2);font-weight:400;margin-top:2px;}
+.pu-how{border:0;border-radius:99px;padding:7px 14px;font-weight:700;font-size:13px;background:var(--surface2);color:var(--txt);cursor:pointer;}
+.pu-inv{display:flex;align-items:center;gap:6px;margin-top:12px;}
+.pu-inv-b{flex:1;border:0;border-radius:14px;padding:12px 14px;font-size:14px;font-weight:700;background:rgba(227,6,19,.12);color:#E30613;cursor:pointer;text-align:left;}
+.pu-inv-x{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:var(--surface2);color:var(--dim);font-size:14px;cursor:pointer;}
+.pu-steps{display:flex;flex-direction:column;gap:10px;margin:14px 0 4px;text-align:left;}
+.pu-steps div{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.4;}
+.pu-steps b{flex:none;width:24px;height:24px;border-radius:50%;background:#E30613;color:#fff;font-size:13px;display:grid;place-items:center;}

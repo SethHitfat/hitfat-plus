@@ -1075,10 +1075,11 @@ function localBadge(){
    worker. That worker still sits in the browser of everyone who visited back
    then, intercepting every request for this origin and serving its own dead
    shell — a half-drawn white page that fetches /_/index.json and gets a 404.
-   HITFAT+ registers no worker of its own, so unregistering every worker on
-   this origin removes exactly the leftover and nothing else. */
+   HITFAT+'s own worker is /sw.js (Bell's reminders, no caching); every
+   other worker on this origin is that leftover, and goes. */
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(function(rs){
+    rs=rs.filter(function(r){ var w=r.active||r.waiting||r.installing; return !(w && /\/sw\.js(\?|$)/.test(w.scriptURL)); });
     if(!rs.length) return;
     Promise.all(rs.map(function(r){ return r.unregister(); })).then(function(){
       if(window.caches) return caches.keys().then(function(ks){
@@ -1099,7 +1100,7 @@ async function scanToken(){
 function toast(m){ const t=$('toast'); if(!t) return; t.textContent=m; t.classList.add('on');
   clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('on'),1900); }
 
-/*__MASCOT__*//*__MASCOTGLUE__*//*__SCORE__*//*__I18N__*//*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__WL30__*//*__LB30__*//*__D6DATA__*//*__D6__*//*__IFAST__*//*__MONTHLY__*//*__AICOACH__*//*__ACADEMY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
+/*__MASCOT__*//*__MASCOTGLUE__*//*__BELL__*//*__SCORE__*//*__PUSH__*//*__I18N__*//*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__WL30__*//*__LB30__*//*__D6DATA__*//*__D6__*//*__IFAST__*//*__MONTHLY__*//*__AICOACH__*//*__ACADEMY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
 /*__ICONS__*//*__CLUB__*//*__T42__*//*__T42DEMO__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
 
 /* The splash plays its whole sequence once (about 1.9 s from the page
