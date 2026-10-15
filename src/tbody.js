@@ -1393,8 +1393,11 @@ logMeal({name:'Roti canai',bm:'Roti canai',kcal:300,p:6,c:40,f:12,slot:'breakfas
 logMeal({name:'Nasi ayam',bm:'Nasi ayam',kcal:600,p:30,c:70,f:20,slot:'lunch'});
 setEatSeg('log');
 var _el=document.getElementById('eat-body').innerHTML;
-ok("the log is grouped by meal",          _el.indexOf('<span>Breakfast</span><span>300 kcal</span>')>0 &&
-                                          _el.indexOf('<span>Lunch</span><span>600 kcal</span>')>0);
+ok("the log is grouped by meal",          /<span>Breakfast<\/span><\/div><div class="nli-s"><b>300 kcal<\/b>/.test(_el) &&
+                                          /<span>Lunch<\/span><\/div><div class="nli-s"><b>600 kcal<\/b>/.test(_el));
+ok("...every meal shows, with its + to add",  (_el.match(/class="nlist elslot"/g)||[]).length===4 && _el.indexOf("openManualAt('dinner')")>0);
+ok("...the day against the target",       _el.indexOf('class="elsum"')>0 && _el.indexOf('900</b><span> / ')>0);
+ok("...scan is the hero, barcode and by hand beside", _el.indexOf('fmade fmp elscan')>0 && _el.indexOf("openScan('barcode')")>0 && _el.indexOf('By Hand')>0);
 ok("...and removing keeps the day's index", _el.indexOf('delMeal(1)')>0);
 HF.data.meals={}; setEatSeg('today');
 

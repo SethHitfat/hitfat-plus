@@ -349,13 +349,20 @@ function eatPlan(){
 
 /* ── LOG ── */
 function eatLog(){
-  const list=mealsFor(), favs=(HF.data.favs||[]).slice(0,10);
+  const list=mealsFor(), favs=(HF.data.favs||[]).slice(0,10), n=HF.data.nutrition||{}, sa=scanAccess();
   let h='';
-  h+=fsec('Add Food','Scan the plate, or type it in.');
-  h+='<div class="hscroll">'+
-     eatTile('Scan with AI', hesc(scanAccess().label),'linear-gradient(135deg,#5A0A0E 0%,#C21A14 55%,#FF6A5C 100%)','photo','openScan()')+
-     eatTile('Scan Barcode','Packaged food · free','linear-gradient(135deg,#0B2A4A 0%,#1E5BA8 55%,#5AA0FF 100%)','qr',"openScan('barcode')")+
-     eatTile('Add Manually','Always open, unlimited','linear-gradient(135deg,#1C1C1E 0%,#3A3A3C 55%,#6E6E73 100%)','pencil','openManual()')+
+  /* Add Food: the scan is the hero (a studio plate, as Plan's card), barcode
+     and by-hand as two small tiles, the way Today lays out its extras (16 Oct) */
+  h+=fsec('Add Food','Snap the plate — or type it in.');
+  h+='<div class="fmade fmp elscan" onclick="openScan()"><div class="fm-ph" style="background-image:url(\'/img/p/scanmeal.jpg\')"></div>'+
+     '<span class="fp-tag">AI SCAN</span>'+
+     '<div class="t">Snap Your Plate</div>'+
+     '<div class="s">AI reads the food and the portions.</div>'+
+     '<div class="emp-chips"><span>'+hesc(sa.label)+'</span></div>'+
+     '<button class="fglass els-go" onclick="event.stopPropagation();openScan()">'+glyph('photo')+'Scan a Meal</button></div>';
+  h+='<div class="etiles eladd">'+
+     '<div class="etile" onclick="openScan(\'barcode\')"><span class="ic" style="--c:#2F6FB3">'+glyph('qr')+'</span><div><b>Barcode</b><span>Packaged food</span></div></div>'+
+     '<div class="etile" onclick="openManual()"><span class="ic" style="--c:#8E8E93">'+glyph('pencil')+'</span><div><b>By Hand</b><span>Type it in</span></div></div>'+
      '</div>';
 
   if(favs.length){
@@ -365,26 +372,32 @@ function eatLog(){
       '<span class="nfav-k">'+f.kcal+' kcal · P '+(f.p||0)+'g</span><span class="nadd">+</span></button>').join('')+'</div>';
   }
 
+  /* Today's Log: the day against the target, then every meal as its own card
+     with a + to add to it — an empty meal still shows, so the next step is
+     one tap. The delete keeps the meal's index in the day (delMeal). */
   const tot=mealTotals().kcal;
   h+=fsec("Today's Log", list.length ? list.length+(list.length>1?' meals':' meal')+' · '+tot.toLocaleString()+' kcal' : '');
-  if(!list.length){
-    h+='<div class="nempty">'+ic('food')+'<div class="nempty-t">Nothing logged yet today</div>'+
-       '<div class="nempty-s">Scan a plate or add it by hand — it lands in the right meal.</div></div>';
-  } else {
-    /* Grouped by meal, the way a food diary is read. The delete keeps the
-       meal's index in the day, which is what delMeal expects. */
-    SLOTS.forEach(s=>{
-      const rows=list.map((m,i)=>({m,i})).filter(x=>(x.m.slot||'snack')===s.k);
-      if(!rows.length) return;
-      const kc=rows.reduce((a,x)=>a+(x.m.kcal||0),0);
-      h+='<div class="nsub"><span>'+s.n+'</span><span>'+kc.toLocaleString()+' kcal</span></div><div class="nlist">'+
-        rows.map(x=>'<div class="nli"><div class="nli-b"><div class="nli-t">'+hesc(x.m.bm||x.m.name)+'</div>'+
+  if(n.cal){
+    const left=n.cal-tot, pct=Math.min(100,Math.round(tot/n.cal*100));
+    h+='<div class="elsum"><div class="elsum-h"><b>'+tot.toLocaleString()+'</b><span> / '+n.cal.toLocaleString()+' kcal</span>'+
+       '<em class="'+(left<0?'over':'')+'">'+(left<0?(-left).toLocaleString()+' over':left.toLocaleString()+' left')+'</em></div>'+
+       '<div class="emb-t"><i style="width:'+pct+'%;background:'+(left<0?'#E30613':'#2E9E5B')+'"></i></div></div>';
+  }
+  if(!list.length) h+='<div class="elnone">Nothing logged yet today — tap + on a meal, or scan a plate.</div>';
+  SLOTS.forEach(s=>{
+    const rows=list.map((m,i)=>({m,i})).filter(x=>(x.m.slot||'snack')===s.k);
+    const kc=rows.reduce((a,x)=>a+(x.m.kcal||0),0);
+    const aim=n.cal?Math.round(n.cal*SLOT_SHARE[s.k]/10)*10:0;
+    const sub=rows.length?'<b>'+kc.toLocaleString()+' kcal</b>'+(aim?' · aim '+aim.toLocaleString():'')
+                         :(aim?'Aim for about '+aim.toLocaleString()+' kcal':'Nothing yet');
+    h+='<div class="nlist elslot">'+
+       nRow(s.e,'<span>'+s.n+'</span>',sub,'<span class="nadd" aria-label="Add to '+s.n+'">+</span>',"openManualAt('"+s.k+"')")+
+       rows.map(x=>'<div class="nli elit"><div class="nli-b"><div class="nli-t">'+hesc(x.m.bm||x.m.name)+'</div>'+
           '<div class="nli-s">'+(x.m.time?x.m.time+' · ':'')+'P '+x.m.p+'g · C '+x.m.c+'g · F '+x.m.f+'g</div></div>'+
           '<span class="nval">'+x.m.kcal+'</span>'+
           '<button class="ndel" aria-label="Remove" onclick="event.stopPropagation();delMeal('+x.i+')">✕</button></div>').join('')+
-        '</div>';
-    });
-  }
+       '</div>';
+  });
   $('eat-body').innerHTML=h;
 }
 function logFav(i){

@@ -3254,3 +3254,36 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 :root[data-theme="light"] .ehero{--txt:#111113;--dim:rgba(60,60,67,.68);--dim2:rgba(60,60,67,.60);--ink-90:rgba(17,17,19,.90);--ink-72:rgba(17,17,19,.72);--ink-55:rgba(17,17,19,.55);--ink-42:rgba(17,17,19,.42);--hairline:rgba(60,60,67,.16);--hitfat:#E30613;color:#111113;background:#FFFFFF;}
 :root[data-theme="light"] .ehero .nring-t{stroke:#EDEDF0;}
 :root[data-theme="light"] .emb-t{background:#EDEDF0;}
+
+/* ── Eat · Log (16 Oct): the scan on a studio plate, two small tiles, the day's meals as cards ── */
+.fmade.elscan{width:auto;max-width:none;min-height:230px;cursor:pointer;background:#AC0F16;}
+.fmade.elscan::before,.fmade.elscan::after{display:none;}
+.elscan .fm-ph{width:66%;background-position:75% 50%;-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 50%);mask-image:linear-gradient(90deg,transparent 0%,#000 50%);}
+.elscan .t{max-width:58%;}
+.elscan .s{max-width:52%;font-size:14px;}
+.elscan .emp-chips{max-width:60%;}
+.fmade.elscan .els-go{align-self:flex-start;width:auto;height:46px;padding:0 22px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:99px;font-weight:700;background:#FFFFFF;color:#B3121B;border:0;margin-top:auto;-webkit-backdrop-filter:none;backdrop-filter:none;}
+.fmade.elscan .els-go .gly{stroke:#B3121B;}
+.elscan .fp-tag{background:rgba(0,0,0,.28);}
+:root[data-theme="light"] .fmade.elscan{background:#AC0F16;box-shadow:0 10px 28px rgba(179,18,27,.22);}
+:root[data-theme="light"] .fmade.elscan .t{color:#FFFFFF;}
+:root[data-theme="light"] .fmade.elscan .s{color:rgba(255,255,255,.82);}
+:root[data-theme="light"] .fmade.elscan .fp-tag{background:rgba(0,0,0,.25);color:#FFFFFF;}
+:root[data-theme="light"] .elscan .emp-chips span{background:rgba(0,0,0,.22);color:#FFFFFF;}
+:root[data-theme="light"] .fmade.elscan .els-go{background:#FFFFFF;color:#B3121B;}
+:root[data-theme="light"] .fmade.elscan .els-go .gly{stroke:#B3121B;}
+.eladd .etile b{font-size:15px;}
+.elsum{background:var(--n-card);border-radius:16px;padding:12px 14px;margin-bottom:10px;}
+:root:not([data-theme="light"]) .elsum{background:#1C1C1E;}
+:root[data-theme="light"] .elsum{box-shadow:var(--lift-1);}
+.elsum-h{display:flex;align-items:baseline;gap:5px;}
+.elsum-h b{font-size:20px;font-weight:800;color:var(--txt);font-variant-numeric:tabular-nums;}
+.elsum-h span{font-size:13px;color:var(--dim);}
+.elsum-h em{margin-left:auto;font-style:normal;font-size:13px;font-weight:700;color:#2E9E5B;}
+.elsum-h em.over{color:#E30613;}
+.elsum .emb-t{margin-top:8px;}
+.elnone{font-size:13.5px;color:var(--dim);margin:0 2px 10px;}
+.elslot + .elslot{margin-top:10px;}
+.elslot .nli-s b{font-weight:700;color:var(--txt);}
+.elit{padding-left:58px;min-height:54px;}
+.elit .nli-t{font-size:15px;}
