@@ -67,7 +67,7 @@ function scHabits(d,days){
   if(!SC_FAST_LIVE){}
   else if(typeof scRamadan==='function' && scRamadan(d)) out.push({k:'fast', n:'Fast', ic:'moon', c:'#E30613', v:dy.ram?1:0, val:dy.ram?'Done':'Not yet'});
   else if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Fast', ic:'clock', c:'#A855F7', v:Math.min(1,f.hrs/f.target), val:Math.min(Math.floor(f.hrs),f.target)+'/'+f.target+'h'}); }
-  var T={workout:out[0].v>=1?'Workout done':'Time to train', meal:out[1].val+' meals', water:out[2].val+' glasses', steps:(dy.steps>=SC_STEPS?k1(dy.steps):out[3].val)+' steps'};
+  var T={workout:out[0].v>=1?'Workout done':'0/1 workout', meal:out[1].val+' meals', water:out[2].val+' glasses', steps:(dy.steps>=SC_STEPS?k1(dy.steps):out[3].val)+' steps'};
   for(var i=0;i<out.length;i++){ out[i].t=T[out[i].k]||out[i].val; if(out[i].v>=1) out[i].val='✓ '+out[i].val; }
   return out;
 }
@@ -137,9 +137,9 @@ function scRGB(c){ var n=parseInt(c.slice(1),16); return (n>>16&255)+','+(n>>8&2
 function scTint(c){ return 'rgba('+scRGB(c)+',.16)'; }
 /* Simple's two pills, top right of Home: the score (tap: Progress) and the streak */
 function scPills(){
-  var s=scScore(), c=scColor(s);
+  var s=scScore(), c=s>=70?'#FFC20E':'#E30613';
   return '<button class="sc-pill" onclick="scInsights()" aria-label="HITFAT Score '+s+' of 100">'+
-    '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="3"/>'+
+    '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="#E30613" stroke-opacity=".22" stroke-width="3"/>'+
     (s>0?'<circle cx="10" cy="10" r="7.5" fill="none" stroke="'+c+'" stroke-width="3" stroke-linecap="round" pathLength="100" stroke-dasharray="'+s+' 100" transform="rotate(-90 10 10)"/>':'')+
     '</svg><b>'+s+'</b></button>'+scChip();
 }

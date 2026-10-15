@@ -4088,7 +4088,7 @@ print("\n── HOME · SIMPLE STYLE + CHECK-IN ──");
   ok("...with a dot for each", (h.match(/<i class="(on)?" onclick="scCarGo\(/g)||[]).length===(h.match(/class="sc-sl"/g)||[]).length);
   ok("Today's Plan follows the cards", h.indexOf("Today's Plan")>h.indexOf('sc-car'));
   ok("Bell's card leads, with one thing to do now", h.indexOf('scx-bell')>0 && h.indexOf('scx-bell')<h.indexOf('TODAY\'S MISSION') && /class="scx-act" onclick="(scTap|scWaterTap|scSheet)/.test(h));
-  ok("each ring says what it is in words", h.indexOf('Time to train')>0 && h.indexOf('0/8 glasses')>0 && h.indexOf('0/8k steps')>0);
+  ok("each ring says what it is in words", h.indexOf('0/1 workout')>0 && h.indexOf('0/8 glasses')>0 && h.indexOf('0/8k steps')>0);
   ok("the score and the streak are pills up top", /<b>\d+<\/b><\/button>/.test(scPills()) && scPills().indexOf('sc-chip')>0);
   ok("five faces to pick from", (h.match(/onclick="scMood\(/g)||[]).length===5 && h.indexOf('How are you feeling today?')>0);
   var s0=scScore(); _scCar=1;
