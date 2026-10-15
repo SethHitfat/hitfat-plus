@@ -6609,8 +6609,7 @@ function scRender(){
       /* each habit its own clip; its poster shows till the clip plays */
       var R={water:'water', meal:'meal', junk:'giggle', workout:'squat', steps:'walk', mood:scDaily().mood>=4?'cheer':scDaily().mood===3?'giggle':''};
       if(_scSay==='mood' && !R.mood){ /* a hard day: Buddy stays quiet and kind, no dancing */ }
-      else if(!scRed()) scBounce();               /* cream Buddy: a happy bounce, no red clip */
-      else bellReact(R[_scSay]||'cheer');
+      else scReact(R[_scSay]||'cheer');
     } else if(scRed() && _scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
   }
   if(typeof scCheckMeet==='function' && scCheckMeet()) return;
@@ -6642,9 +6641,17 @@ function scPose(slot,src,ms){
 /* touch Buddy: a giggle, and a word */
 SC_LINES.poke=['Hehe, that tickles! 😆','Hey hey, Buddy is focusing here 😤','Hehe, again? 🙈','Buddy is fine, thanks for asking 💪'];
 var _scPokes=0;
-/* the reaction clips are drawn red; a cream Buddy (under 50) bounces in
-   its own colour instead of flashing red */
+/* the reactions come in both colours: w_water, w_giggle... for a cream
+   Buddy (under 50), the plain names for a red one. A cream Buddy whose
+   reaction has no cream clip bounces instead. */
+var SC_WREACT={giggle:1, water:1, meal:1, squat:1, walk:1, cheer:1};
 function scRed(){ return scScore()>=SC_PADU && !scState().k; }
+function scReact(name){
+  if(typeof bellReact!=='function') return;
+  if(scRed()) return bellReact(name);
+  if(SC_WREACT[name]) return bellReact('w_'+name);
+  scBounce();
+}
 function scBounce(){
   var b=$('sc-bell'); if(!b) return;
   b.className=b.className.replace(/ ?sc-boing/g,'');
@@ -6654,8 +6661,7 @@ function scBounce(){
 }
 function scPoke(){
   if(scState().k==='rust'){ toast('Buddy is all messy 🥲 Log one thing to fluff Buddy up again'); return; }
-  if(!scRed()) scBounce();
-  else if(typeof bellReact==='function') bellReact('giggle');
+  scReact('giggle');
   scBubSet(SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]);
 }
 
