@@ -2587,3 +2587,28 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 @-webkit-keyframes scc-fall{0%{-webkit-transform:translateY(0) rotate(0);}100%{-webkit-transform:translateY(110vh) rotate(540deg);}}
 @keyframes scc-fall{0%{transform:translateY(0) rotate(0);}100%{transform:translateY(110vh) rotate(540deg);}}
 @media (prefers-reduced-motion: reduce){ .scc-conf{display:none;} .scc-bell{-webkit-animation:none;animation:none;} }
+
+/* HITFAT Score · phase 3: dust, rust and shine */
+.sc-dust{-webkit-animation:none;animation:none;}
+.sc-dust img{-webkit-filter:grayscale(.55) sepia(.35) brightness(.85);filter:grayscale(.55) sepia(.35) brightness(.85);}
+.sc-rust{-webkit-animation:none;animation:none;-webkit-transform:rotate(-5deg);transform:rotate(-5deg);}
+.sc-rust img{-webkit-filter:sepia(.75) saturate(1.5) hue-rotate(-12deg) brightness(.78) contrast(1.1);filter:sepia(.75) saturate(1.5) hue-rotate(-12deg) brightness(.78) contrast(1.1);}
+.sc-rustfx{position:absolute;inset:0;pointer-events:none;opacity:.7;mix-blend-mode:multiply;
+  -webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;
+  background:radial-gradient(circle at 30% 42%,#5A2A0C 0 7%,transparent 8%),radial-gradient(circle at 64% 55%,#6B3410 0 9%,transparent 10%),
+    radial-gradient(circle at 46% 70%,#4A2008 0 6%,transparent 7%),radial-gradient(circle at 58% 30%,#7A3A12 0 5%,transparent 6%),
+    radial-gradient(circle at 38% 60%,#8A4A1A 0 4%,transparent 5%),radial-gradient(circle at 70% 40%,#5A2A0C 0 4%,transparent 5%);}
+.sc-say-dust{background:rgba(255,194,14,.14);}
+.sc-say-rust{background:rgba(166,84,30,.22);}
+.sc-say-rust::before{border-bottom-color:rgba(166,84,30,.22);}
+.sc-say-dust::before{border-bottom-color:rgba(255,194,14,.14);}
+.scc-shine img{-webkit-filter:drop-shadow(0 0 18px rgba(255,194,14,.75));filter:drop-shadow(0 0 18px rgba(255,194,14,.75));
+  -webkit-animation:scc-glow 1.6s ease-in-out infinite;animation:scc-glow 1.6s ease-in-out infinite;}
+@-webkit-keyframes scc-glow{0%,100%{-webkit-filter:drop-shadow(0 0 10px rgba(255,194,14,.5));}50%{-webkit-filter:drop-shadow(0 0 28px rgba(255,194,14,.95));}}
+@keyframes scc-glow{0%,100%{filter:drop-shadow(0 0 10px rgba(255,194,14,.5));}50%{filter:drop-shadow(0 0 28px rgba(255,194,14,.95));}}
+.scc-spark{position:absolute;inset:0;pointer-events:none;}
+.scc-spark i{position:absolute;font-style:normal;color:#FFC20E;font-size:22px;opacity:0;
+  -webkit-animation:scc-twinkle 1.4s ease-in-out infinite;animation:scc-twinkle 1.4s ease-in-out infinite;}
+@-webkit-keyframes scc-twinkle{0%,100%{opacity:0;-webkit-transform:scale(.5);}50%{opacity:1;-webkit-transform:scale(1.2);}}
+@keyframes scc-twinkle{0%,100%{opacity:0;transform:scale(.5);}50%{opacity:1;transform:scale(1.2);}}
+@media (prefers-reduced-motion: reduce){ .scc-spark i{-webkit-animation:none;animation:none;opacity:.8;} .scc-shine img{-webkit-animation:none;animation:none;} }

@@ -108,16 +108,18 @@ function scRing(h){
     '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span></button>';
 }
 function scHTML(){
-  var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null;
-  var img=M&&M.config.images[lv-1]?'<img src="'+M.config.images[lv-1]+'" alt="Bell, tahap '+lv+'">':'';
+  var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState();
+  var src=M&&M.config.images[lv-1], fx='';
+  if(st.k==='rust'){ src=SC_ART.rust||(M&&M.config.images[0]); if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+src+');mask-image:url('+src+')"></span>'; }
+  var img=src?'<img src="'+src+'" alt="Bell'+(st.k==='rust'?' berkarat':', tahap '+lv)+'">'+fx:'';
   return '<div class="sc">'+
     '<div class="sc-head"><div><div class="sc-k">Skor HITFAT · Hari ini</div><div class="sc-n" style="color:'+scColor(s)+'">'+s+'<span>/100</span></div></div>'+
       scChip()+'</div>'+
-    '<div class="sc-stage" onclick="switchTab(\'progress\')">'+scArc(s)+'<div class="sc-bell sc-lv'+lv+'">'+img+'</div></div>'+
-    '<div class="sc-say">'+hesc(scLine())+'</div>'+
+    '<div class="sc-stage" onclick="switchTab(\'progress\')">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'">'+img+'</div></div>'+
+    '<div class="sc-say'+(st.k?' sc-say-'+st.k:'')+'">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>';
 }
-function scRender(){ var el=$('mascot-home'); if(el){ el.innerHTML=scHTML(); scCheckStreak(); } }
+function scRender(){ var el=$('mascot-home'); if(el){ el.innerHTML=scHTML(); if(!scCheckShine()) scCheckStreak(); } }
 
 /* each habit's way in */
 function scTap(k){
@@ -248,4 +250,47 @@ function scShare(n){
       } else fallback();
     },'image/png');
   });
+}
+
+
+/* ═══════════════ phase 3 · rust and shine ═══════════════
+   A kettlebell left alone rusts. A day "kosong" is a day with nothing at all
+   logged (score 0). Two kosong days in a row and Bell gathers dust; three,
+   and Bell rusts. Log anything after a rusty spell and Bell shines again,
+   with a moment of its own. Until the drawn rusty and shiny Bells come, the
+   looks are effects on the artwork: SC_ART can name them later. */
+var SC_ART={rust:null, shine:null};
+
+/* empty days from `from` days ago backwards to the last day with anything
+   logged; -1 when nothing was ever logged (a new member never rusts) */
+function scGap(from,days){
+  for(var i=from;i<120;i++) if(scScore(iso(-i),days)>0) return i-from;
+  return -1;
+}
+function scState(){
+  var days=scWorkoutDays(), today=scScore(iso(0),days)>0, g=scGap(1,days);
+  if(g<0) return {k:'', idle:0, back:false};
+  if(today) return {k:'', idle:0, back:g>=2};
+  var idle=g+1;
+  return {k: idle>=3?'rust':idle===2?'dust':'', idle:idle, back:false};
+}
+function scRustLine(st){
+  if(st.k==='rust') return 'Bell dah berkarat 🥲 '+st.idle+' hari tanpa apa-apa. Gilap Bell: rekod satu perkara hari ni, segelas air pun boleh.';
+  return 'Bell mula berhabuk... 😟 Rekod sesuatu hari ni supaya Bell tak berkarat esok.';
+}
+/* back after a rusty spell: once a day */
+function scCheckShine(){
+  var st=scState(), sc=HF.data.sc||(HF.data.sc={}), seen=sc.seen||(sc.seen={}), key='shine:'+iso(0);
+  if(!st.back || seen[key] || $('scc').style.display==='flex') return false;
+  seen[key]=1; HF.save(); scShine(); return true;
+}
+function scShine(){
+  var M=(typeof hfm==='function')?hfm():null, img=SC_ART.shine||(M?M.config.images[3]:''), sp='', i;
+  for(i=0;i<14;i++) sp+='<i style="left:'+((i*29+7)%92)+'%;top:'+(6+(i*41+11)%34)+'%;-webkit-animation-delay:'+(i%7)*0.2+'s;animation-delay:'+(i%7)*0.2+'s">✦</i>';
+  $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
+    '<div class="scc-bell scc-shine">'+(img?'<img src="'+img+'" alt="Bell berkilat">':'')+'</div>'+
+    '<div class="scc-k">Bell berkilat semula!</div>'+
+    '<div class="scc-s">Terima kasih sebab kembali ✨ Karat dah hilang. Satu hari padu lagi, streak baru bermula.</div>'+
+    '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Jom!</button></div>';
+  $('scc').style.display='flex';
 }
