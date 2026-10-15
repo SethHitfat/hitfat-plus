@@ -5228,6 +5228,21 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fbr.fbp .m{font-size:11px;font-weight:700;color:rgba(255,255,255,.7);margin-top:6px;}
 .fbr.fbp.dk .t{color:#1A1A1A;} .fbr.fbp.dk .s{color:rgba(26,26,26,.75);} .fbr.fbp.dk .m{color:rgba(26,26,26,.6);}
 
+/* ── Top Programs as tall posters (train2.js fbigCard) ── */
+.fbig.fbp2{width:232px;height:322px;border-radius:20px;background-size:cover;}
+.fbig.fbp2 .ov{background:linear-gradient(180deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 46%,rgba(0,0,0,.55) 70%,rgba(0,0,0,.88) 100%);}
+.fp-tag{position:absolute;left:12px;top:12px;z-index:1;padding:5px 9px;border-radius:99px;font-size:9.5px;font-weight:900;letter-spacing:1.1px;color:#FFFFFF;
+  background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
+.fbig.fbp2 .lockt{z-index:1;}
+.fbig.fbp2 .in{padding:0 14px 14px;}
+.fbig.fbp2 .t{font-size:22px;}
+.fbig.fbp2 .s{font-size:13px;margin-top:3px;}
+.fp-m{margin-top:8px;font-size:11px;font-weight:700;letter-spacing:.4px;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px;}
+.fp-m .fw-lv{margin-left:0;}
+.fp-bar{height:4px;border-radius:9px;background:rgba(255,255,255,.25);margin-top:9px;overflow:hidden;}
+.fp-bar i{display:block;height:100%;border-radius:9px;background:#FFFFFF;}
+.fbig.fbp2 .m{display:none;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -25676,12 +25691,23 @@ function factCard(a){
     '<div class="lb">'+a.n+'</div></div>';
 }
 /* big program card — title over the image */
+/* Top Programs as tall posters (16 Oct): the studio photo, a HITFAT ORIGINAL
+   tag on the signature plans, the name, how long and how often, the level
+   pill, and once started the week it is on with a bar. A program whose own
+   picture is a poster with words on it shows its clean card picture here. */
+const FBIG_IMG={wl30:'/img/p/wl30-card.jpg'};
 function fbigCard(p){
-  const sub = p.oneTime ? p.sub : p.weeks ? wks(p.weeks.length).replace(/^\w/,c=>c.toUpperCase())+' of '+(p.goal||'training').toLowerCase() : p.level;
-  return '<div class="fbig" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.poster):'')+'">'+
-    '<div class="ov"></div>'+lockTag(p)+'<div class="in"><div class="t">'+p.name+'</div>'+
-    '<div class="s">'+sub+'</div></div>'+
-    '<div class="m">'+(p.weeks?planSessions(p)+' WORKOUTS':p.dur+' MIN')+'</div></div>';
+  const img=FBIG_IMG[p.id]||progImg(p), sig=/^sig\d/.test(p.id);
+  const tot=progDays(p), done=progDone(p.id), on=done>0 && done<tot;
+  const len=p.oneTime ? (p.sub||(tot+' days')) : p.weeks ? p.weeks.length+' weeks · '+planPerWeek(p)+'x a week' : p.dur+' min';
+  const lv=String(p.level||'');
+  let foot;
+  if(on){ const wk=p.weeks?Math.min(p.weeks.length,Math.floor(done/Math.max(1,(p.weeks[0].days||[]).length))+1):0;
+    foot='<div class="fp-bar"><i style="width:'+Math.round(done/tot*100)+'%"></i></div><div class="fp-m">'+(wk?'WEEK '+wk+' OF '+p.weeks.length:'DAY '+(done+1)+' OF '+tot)+'</div>'; }
+  else foot='<div class="fp-m">'+(lv?'<span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span> ':'')+(p.weeks?planSessions(p)+' workouts':'')+'</div>';
+  return '<div class="fbig fbp2" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+img+'\')'+(FBIG_IMG[p.id]?';background-position:50% 20%':hasPhoto(p)?';'+imgPos(p,FA.poster):'')+'">'+
+    '<div class="ov"></div>'+(sig?'<span class="fp-tag">HITFAT ORIGINAL</span>':p.oneTime?'<span class="fp-tag">PROGRAM</span>':'')+lockTag(p)+
+    '<div class="in"><div class="t">'+p.name+'</div><div class="s">'+len+'</div>'+foot+'</div></div>';
 }
 /* Training days, not calendar days: what "18 EPISODES" counts on Fitness+. */
 function planSessions(p){ let n=0; (p.weeks||[]).forEach(w=>(w.days||[]).forEach(d=>{ if(!d.rest) n++; })); return n; }

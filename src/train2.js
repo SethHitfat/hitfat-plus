@@ -59,12 +59,23 @@ function factCard(a){
     '<div class="lb">'+a.n+'</div></div>';
 }
 /* big program card — title over the image */
+/* Top Programs as tall posters (16 Oct): the studio photo, a HITFAT ORIGINAL
+   tag on the signature plans, the name, how long and how often, the level
+   pill, and once started the week it is on with a bar. A program whose own
+   picture is a poster with words on it shows its clean card picture here. */
+const FBIG_IMG={wl30:'/img/p/wl30-card.jpg'};
 function fbigCard(p){
-  const sub = p.oneTime ? p.sub : p.weeks ? wks(p.weeks.length).replace(/^\w/,c=>c.toUpperCase())+' of '+(p.goal||'training').toLowerCase() : p.level;
-  return '<div class="fbig" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.poster):'')+'">'+
-    '<div class="ov"></div>'+lockTag(p)+'<div class="in"><div class="t">'+p.name+'</div>'+
-    '<div class="s">'+sub+'</div></div>'+
-    '<div class="m">'+(p.weeks?planSessions(p)+' WORKOUTS':p.dur+' MIN')+'</div></div>';
+  const img=FBIG_IMG[p.id]||progImg(p), sig=/^sig\d/.test(p.id);
+  const tot=progDays(p), done=progDone(p.id), on=done>0 && done<tot;
+  const len=p.oneTime ? (p.sub||(tot+' days')) : p.weeks ? p.weeks.length+' weeks · '+planPerWeek(p)+'x a week' : p.dur+' min';
+  const lv=String(p.level||'');
+  let foot;
+  if(on){ const wk=p.weeks?Math.min(p.weeks.length,Math.floor(done/Math.max(1,(p.weeks[0].days||[]).length))+1):0;
+    foot='<div class="fp-bar"><i style="width:'+Math.round(done/tot*100)+'%"></i></div><div class="fp-m">'+(wk?'WEEK '+wk+' OF '+p.weeks.length:'DAY '+(done+1)+' OF '+tot)+'</div>'; }
+  else foot='<div class="fp-m">'+(lv?'<span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span> ':'')+(p.weeks?planSessions(p)+' workouts':'')+'</div>';
+  return '<div class="fbig fbp2" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+img+'\')'+(FBIG_IMG[p.id]?';background-position:50% 20%':hasPhoto(p)?';'+imgPos(p,FA.poster):'')+'">'+
+    '<div class="ov"></div>'+(sig?'<span class="fp-tag">HITFAT ORIGINAL</span>':p.oneTime?'<span class="fp-tag">PROGRAM</span>':'')+lockTag(p)+
+    '<div class="in"><div class="t">'+p.name+'</div><div class="s">'+len+'</div>'+foot+'</div></div>';
 }
 /* Training days, not calendar days: what "18 EPISODES" counts on Fitness+. */
 function planSessions(p){ let n=0; (p.weeks||[]).forEach(w=>(w.days||[]).forEach(d=>{ if(!d.rest) n++; })); return n; }

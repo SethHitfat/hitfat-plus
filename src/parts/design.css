@@ -3067,3 +3067,18 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fbr.fbp .s{font-size:11px;color:rgba(255,255,255,.82);margin-top:2px;line-height:1.25;}
 .fbr.fbp .m{font-size:11px;font-weight:700;color:rgba(255,255,255,.7);margin-top:6px;}
 .fbr.fbp.dk .t{color:#1A1A1A;} .fbr.fbp.dk .s{color:rgba(26,26,26,.75);} .fbr.fbp.dk .m{color:rgba(26,26,26,.6);}
+
+/* ── Top Programs as tall posters (train2.js fbigCard) ── */
+.fbig.fbp2{width:232px;height:322px;border-radius:20px;background-size:cover;}
+.fbig.fbp2 .ov{background:linear-gradient(180deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 46%,rgba(0,0,0,.55) 70%,rgba(0,0,0,.88) 100%);}
+.fp-tag{position:absolute;left:12px;top:12px;z-index:1;padding:5px 9px;border-radius:99px;font-size:9.5px;font-weight:900;letter-spacing:1.1px;color:#FFFFFF;
+  background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
+.fbig.fbp2 .lockt{z-index:1;}
+.fbig.fbp2 .in{padding:0 14px 14px;}
+.fbig.fbp2 .t{font-size:22px;}
+.fbig.fbp2 .s{font-size:13px;margin-top:3px;}
+.fp-m{margin-top:8px;font-size:11px;font-weight:700;letter-spacing:.4px;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px;}
+.fp-m .fw-lv{margin-left:0;}
+.fp-bar{height:4px;border-radius:9px;background:rgba(255,255,255,.25);margin-top:9px;overflow:hidden;}
+.fp-bar i{display:block;height:100%;border-radius:9px;background:#FFFFFF;}
+.fbig.fbp2 .m{display:none;}
