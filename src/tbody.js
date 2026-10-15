@@ -4158,5 +4158,11 @@ print("\n── THIS WEEK · BEGINNER FRIENDLY ──");
   ok("after a few workouts the week is the usual mix", document.getElementById('tr-body').innerHTML.indexOf('A new set of sessions every week.')>0);
   HF.data.sessions=keepS;
 })();
+(function(){
+  var kd=HF.data.daily, km=HF.data.meals, ks=HF.data.sessions;
+  HF.data.daily={}; HF.data.meals={}; HF.data.sessions={};
+  ok("an empty day's button is a glass of water, as its line says", scScore()===0 && scAct() && scAct()[0]==='+1 glass of water');
+  HF.data.daily=kd; HF.data.meals=km; HF.data.sessions=ks;
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

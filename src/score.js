@@ -147,6 +147,8 @@ function scAct(){
   var hs=scHabits(), i, low=null;
   for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
   if(!low) return null;
+  /* (16 Oct) a day with nothing logged starts with the easiest thing, as the line says: a glass of water */
+  if(scScore()===0 && hs.some(function(h){ return h.k==='water'; })) low={k:'water'};
   return {workout:['Start a workout',"scTap('workout')"], meal:['What did you eat?',"scTap('meal')"], water:['+1 glass of water','scWaterTap()'],
           steps:['Add steps',"scSheet('steps')"], fast:['Start your fast',"scTap('fast')"]}[low.k]||null;
 }
@@ -233,7 +235,7 @@ function scCarGo(i){ var el=$('sc-car'); if(!el) return; _scCar=i; try{ el.scrol
 function scBand(){ var s=scScore(), st=scState(); return st.k==='rust'?'#8E8E93':s>=SC_PADU?'#E30613':'#D9C2A3'; }
 /* the two soft lights behind Buddy, Simple's way (16 Oct): a cream Buddy on
    coral and peach so the white fur stands out, a red one on orange and red */
-function scGlow(){ var s=scScore(), st=scState(); return st.k==='rust'?['#B8B8BE','#8E8E93']:s>=SC_PADU?['#FF8A5B','#E30613']:['#F4A3A0','#F8C08F']; }
+function scGlow(){ var s=scScore(), st=scState(); return st.k==='rust'?['#B8B8BE','#8E8E93']:s>=SC_PADU?['#FF8A5B','#E30613']:['#E8424A','#F47C6E']; }
 function scRender(){
   var el=$('mascot-home'); if(!el) return;
   el.innerHTML=scHTML();
