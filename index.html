@@ -5712,6 +5712,9 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
   background:
     radial-gradient(closest-side,rgba(200,10,20,.62),rgba(150,8,16,.36) 45%,rgba(120,6,12,.12) 75%,rgba(120,6,12,0)) 50% 120px/150% 440px no-repeat local,
     var(--bg);}
+/* (16 Oct) the wordmark on Home's red, light theme: HITFAT white, + a deeper red so it still reads on the red band */
+:root[data-theme="light"] .screen:has(> #home:not([style*="none"])) > .topbar > div:first-child{color:#FFFFFF;}
+:root[data-theme="light"] .screen:has(> #home:not([style*="none"])) > .topbar span{color:#A50C14 !important;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
