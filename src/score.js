@@ -112,15 +112,16 @@ function scHint(){
 /* something was just done: Buddy talks about it */
 function scEvent(k){ _scSay=k; _scSayAt=Date.now(); scRender(); }
 
-/* the arc: 240°, open at the bottom, a knob where the score reaches */
+/* the arc, after Simple's (16 Oct): a half ring over Buddy, its track a soft
+   tint of HITFAT red, the score in full red, a white knob ringed in red */
 function scArc(s){
-  var cx=120, cy=118, r=100, a0=150, sweep=240;
+  var cx=120, cy=120, r=100, a0=170, sweep=200;
   function pt(a){ var t=a*Math.PI/180; return (cx+r*Math.cos(t)).toFixed(1)+' '+(cy+r*Math.sin(t)).toFixed(1); }
-  var d='M'+pt(a0)+' A'+r+' '+r+' 0 1 1 '+pt(a0+sweep), c=scColor(s), k=pt(a0+sweep*Math.max(0,Math.min(1,s/100))).split(' ');
+  var d='M'+pt(a0)+' A'+r+' '+r+' 0 1 1 '+pt(a0+sweep), c='#E30613', k=pt(a0+sweep*Math.max(0,Math.min(1,s/100))).split(' ');
   return '<svg class="sc-arc" viewBox="0 0 240 184" aria-hidden="true">'+
     '<path d="'+d+'" class="sc-arc-t" pathLength="100"/>'+
     (s>0?'<path d="'+d+'" class="sc-arc-v" pathLength="100" stroke="'+c+'" stroke-dasharray="'+s+' 100"/>':'')+
-    '<circle cx="'+k[0]+'" cy="'+k[1]+'" r="7" fill="#FFFFFF" stroke="'+c+'" stroke-width="4"/></svg>';
+    '<circle class="sc-knob" cx="'+k[0]+'" cy="'+k[1]+'" r="8" fill="#FFFFFF" stroke="'+c+'" stroke-width="4.5"/></svg>';
 }
 function scRing(h){
   var c=h.v>=1?'#FFC20E':'#E30613';
