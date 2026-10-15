@@ -30,7 +30,7 @@ var _scSay=null, _scSayAt=0;
 
 /* a saved date (ISO string) as the local day it fell on */
 function scDayOf(v){ var x=new Date(v); return x.getFullYear()+'-'+('0'+(x.getMonth()+1)).slice(-2)+'-'+('0'+x.getDate()).slice(-2); }
-function scDaily(d){ var all=HF.data.daily||{}; var o=all[d||iso(0)]||{}; return {water:o.water||0, steps:o.steps||0, ram:o.ram||0}; }
+function scDaily(d){ var all=HF.data.daily||{}; var o=all[d||iso(0)]||{}; return {water:o.water||0, steps:o.steps||0, ram:o.ram||0, mood:o.mood||0}; }
 function scSet(k,v){
   var all=HF.data.daily||(HF.data.daily={}), d=iso(0), o=all[d]||(all[d]={water:0,steps:0});
   o[k]=Math.max(0,Math.round(v)); HF.save();
@@ -90,6 +90,7 @@ var SC_LINES={
 function scLine(){
   var s=scScore(), hs=scHabits(), i, low=null;
   if(_scSay==='junk' && Date.now()-_scSayAt<120000 && typeof scJunkLine==='function') return scJunkLine(_scJunkName);
+  if(_scSay==='mood' && Date.now()-_scSayAt<120000 && typeof scMoodLine==='function') return scMoodLine(scDaily().mood);
   if(_scSay && SC_LINES[_scSay] && Date.now()-_scSayAt<120000){ var a=SC_LINES[_scSay]; return a[new Date().getMinutes()%a.length]; }
   if(s>=100) return 'Full score! Bell feels like a world champion 🏆';
   for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
@@ -133,20 +134,44 @@ function scHTML(){
   var poster=(typeof bellPoster==='function')?bellPoster(st.k?1:lv):(M&&M.config.images[lv-1]), fx='';
   if(st.k==='rust'){ poster=SC_ART.rust||poster; if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+poster+');mask-image:url('+poster+')"></span>'; }
   var img=poster?'<img class="sc-poster" src="'+poster+'" alt="Bell'+(st.k==='rust'?' berkarat':', tahap '+lv)+'">'+fx:'';
-  return '<div class="sc" style="--scc:'+scRGB(c)+'">'+
+  var slides=[];
+  if(typeof scCoachHTML==='function') slides.push(scCoachHTML());
+  if(typeof scMoodHTML==='function') slides.push(scMoodHTML());
+  var inv=(typeof pushInvite==='function')?pushInvite():'';
+  if(inv) slides.push('<div class="scx-coach scx-push"><div class="scx-k"><i></i>REMINDERS</div><div class="scx-t"><b>Let Bell nudge you</b></div>'+
+    '<div class="scx-seth">At 8 pm, only when a streak is at risk or Bell misses you. One a day at most.</div>'+inv+'</div>');
+  return '<div class="sc sc-page" style="--scc:'+scRGB(c)+'">'+
     '<div class="sc-head"><div><div class="sc-k">HITFAT Score · Today</div><div class="sc-n" style="color:'+scColor(s)+'"><i>'+s+'</i><span>/100</span></div></div>'+
       scChip()+'</div>'+
     '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Bell">'+img+'</div></div>'+
     '<div class="sc-say'+(st.k?' sc-say-'+st.k:'')+'" id="sc-say">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
-    '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div>'+
-    (typeof scCoachHTML==='function'?scCoachHTML():'')+
-    (typeof pushInvite==='function'?pushInvite():'')+'</div>'+
+    '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>'+
+    scCarHTML(slides)+
     (typeof scPlanHTML==='function'?scPlanHTML():'');
 }
 var _scCheered=0;
+/* the swipe cards: their place is kept across a re-render (a tap on a mood
+   face re-renders Home; it must not jump back to the first card) */
+var _scCar=0;
+function scCarHTML(slides){
+  if(!slides.length) return '';
+  if(_scCar>=slides.length) _scCar=0;
+  return '<div class="sc-car" id="sc-car" onscroll="scCarScroll(this)">'+slides.map(function(x){ return '<div class="sc-sl">'+x+'</div>'; }).join('')+'</div>'+
+    (slides.length>1?'<div class="sc-cdots" id="sc-cdots">'+slides.map(function(x,i){ return '<i class="'+(i===_scCar?'on':'')+'" onclick="scCarGo('+i+')"></i>'; }).join('')+'</div>':'');
+}
+function scCarScroll(el){
+  var w=el.clientWidth||1, i=Math.round(el.scrollLeft/w), d=$('sc-cdots');
+  if(i===_scCar) return; _scCar=i;
+  if(d) for(var j=0;j<d.children.length;j++) d.children[j].className=j===i?'on':'';
+}
+function scCarGo(i){ var el=$('sc-car'); if(!el) return; _scCar=i; try{ el.scrollTo({left:i*el.clientWidth,behavior:'smooth'}); }catch(e){ el.scrollLeft=i*el.clientWidth; } scCarScroll(el); }
+/* the colour behind the top of Home: red, gold on a strong-enough day, rust when rusty */
+function scBand(){ var s=scScore(), st=scState(); return st.k==='rust'?'#A6541E':s>=70?'#FFC20E':'#E30613'; }
 function scRender(){
   var el=$('mascot-home'); if(!el) return;
   el.innerHTML=scHTML();
+  try{ var sr=$('screen'); if(sr && sr.style && sr.style.setProperty) sr.style.setProperty('--scb',scRGB(scBand())); }catch(e){}
+  var car=$('sc-car'); if(car && _scCar){ try{ car.scrollLeft=_scCar*(car.clientWidth||0); }catch(e){} }
   /* Bell alive, except rusty: a rusty kettlebell does not move */
   var slot=$('sc-bell'), st=scState(), lv=scLevel(scScore());
   if(slot && st.k!=='rust' && typeof bellAttach==='function' && bellAttach(slot, st.k?1:lv)){
@@ -154,7 +179,9 @@ function scRender(){
     if(_scSay && _scSay!=='poke' && _scSayAt>_scCheered && Date.now()-_scSayAt<8000){
       _scCheered=_scSayAt;
       /* each habit its own clip; its poster shows till the clip plays */
-      var R={water:'water', meal:'meal', junk:'giggle', workout:'squat', steps:'walk'};
+      var R={water:'water', meal:'meal', junk:'giggle', workout:'squat', steps:'walk', mood:scDaily().mood>=4?'cheer':scDaily().mood===3?'giggle':''};
+      if(_scSay==='mood' && !R.mood){ /* a hard day: Bell stays quiet and kind, no dancing */ }
+      else
       bellReact(R[_scSay]||'cheer');
     } else if(_scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
   }

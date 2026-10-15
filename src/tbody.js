@@ -596,6 +596,42 @@ ok("the count-in starts at three, with a third of the ring", document.getElement
 ok("...and names the first movement", document.getElementById('pl-cdx').innerHTML.indexOf(pl.exs[0].n)>0);
 document.getElementById('pl-cd').classList.remove('on');
 ok("the player's chrome waits behind Ready", document.getElementById('play').className.indexOf('rdy')>=0);
+ok("...and names the next movement under Get ready", document.getElementById('pl-cdx').innerHTML.indexOf('Up next')>0);
+if(!PL_MIRROR){
+  print("\n── PLAYER · SIMPLE STYLE (no mirror) ──");
+  ok("no view choice on Ready", document.getElementById('pl-modes').style.display==='none');
+  ok("Ready lists minutes, exercises and rounds as chips", /pl-chips/.test(document.getElementById('pl-rds').innerHTML) &&
+     /min/.test(document.getElementById('pl-rds').innerHTML) && /rounds?/.test(document.getElementById('pl-rds').innerHTML));
+  ok("one button: Start workout", document.getElementById('pl-rdgo').textContent==='Start workout');
+  ok("the camera controls are hidden", document.getElementById('play').className.indexOf('nomirror')>=0);
+  _cam.stopped=0; var _gum=0, _md0=navigator.mediaDevices;
+  navigator.mediaDevices={getUserMedia:function(){ _gum++; return _md0.getUserMedia.apply(_md0,arguments); }};
+  plBegin(); flush();
+  ok("Start never asks for the camera", _gum===0 && !plCam.stream, _gum);
+  navigator.mediaDevices=_md0;
+  ok("...and goes straight to the count-in", document.getElementById('pl-ready').className.indexOf('on')<0 &&
+     document.getElementById('pl-cd').className.indexOf('on')>=0 && pl.started===true);
+  document.getElementById('pl-cd').classList.remove('on'); plResume();
+  ok("the top names what comes next", /^Next: <b>/.test(document.getElementById('pl-next').innerHTML) || document.getElementById('pl-next').textContent==='Last one!');
+  pl.left-=1; pl.work=120; plStats();
+  ok("kcal follows the work done", document.getElementById('pl-kcal').textContent===String(Math.round(2*PL_KCAL_MIN)), document.getElementById('pl-kcal').textContent);
+  var _q0=(HF.data.quits||[]).length;
+  plClose();
+  ok("closing early asks why first", pl!==null && document.getElementById('pl-why').className.indexOf('on')>=0 && !pl.running);
+  ok("...with Simple's five reasons", (document.getElementById('pl-whyopts').innerHTML.match(/<button/g)||[]).length===5 &&
+     document.getElementById('pl-whyopts').innerHTML.indexOf('Too difficult')>0);
+  plWhyKeep();
+  ok("Keep going carries on", pl!==null && pl.running && document.getElementById('pl-why').className.indexOf('on')<0);
+  plClose(); plWhyPick('hard');
+  ok("a reason closes the player and is kept", pl===null && HF.data.quits.length===_q0+1 && HF.data.quits[_q0].r==='hard' && HF.data.quits[_q0].s===120,
+     JSON.stringify(HF.data.quits[_q0]));
+  ok("the reasons survive a reload", HF.apply(JSON.parse(JSON.stringify(HF.data))) || HF.data.quits.length===_q0+1);
+  openProgram(_pp.id); openDay(_pp.id,0); playDay();
+  plClose();
+  ok("closing from Ready (nothing started) does not ask", pl===null);
+  noThrow("landscape button is safe without the API", function(){ playDay(); plRotate(); plClose(); });
+}
+if(PL_MIRROR){
 ok("both view modes offered", document.getElementById('pl-modes').innerHTML.indexOf('Mirror')>0 &&
    document.getElementById('pl-modes').innerHTML.indexOf('Coach')>0);
 ok("coach is the default", plCam.mode==='coach');
@@ -636,6 +672,7 @@ playDay(); plBegin(); flush();
 ok("no camera hardware handled", document.getElementById('pl-rdbusy').style.display==='flex');
 navigator.mediaDevices=_md; plClose();
 _cam.mode='ok';
+}
 
 print("\n── CUSTOM PLAN BUILDER ──");
 HF.apply(null); HF.data.onboarded=true;
@@ -4029,6 +4066,29 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
   scCelebrateClose();
   ok("each habit its own clip", String(scRender).indexOf("workout:'squat', steps:'walk'")>0);
   HF.data.sessions=keepS; HF.data.meals=keepM; HF.data.daily=keepD||{}; HF.data.ifs=keepI||{}; HF.data.sc=keepSc||{}; HF.save=keepSave;
+})();
+print("\n── HOME · SIMPLE STYLE + CHECK-IN ──");
+(function(){
+  HF.apply(null); HF.data.onboarded=true; HF.data.sc={met:1};
+  _scCar=0; scRender();
+  var h=document.getElementById('mascot-home').innerHTML;
+  ok("Bell stands on the page, not in a card", h.indexOf('sc sc-page')>0);
+  ok("the mission and the check-in are swipe cards", (h.match(/class="sc-sl"/g)||[]).length>=2 && h.indexOf('TODAY\'S MISSION')>0 && h.indexOf('CHECK-IN')>0);
+  ok("...with a dot for each", (h.match(/scCarGo\(/g)||[]).length===(h.match(/class="sc-sl"/g)||[]).length);
+  ok("Today's Plan follows the cards", h.indexOf("Today's Plan")>h.indexOf('sc-car'));
+  ok("five faces to pick from", (h.match(/onclick="scMood\(/g)||[]).length===5 && h.indexOf('How are you feeling today?')>0);
+  var s0=scScore(); _scCar=1;
+  scMood(4);
+  ok("a face is kept for the day", HF.data.daily[iso(0)].mood===4 && scDaily().mood===4);
+  ok("...and does not change the score", scScore()===s0);
+  ok("Bell answers it", scLine()===SC_MOOD_LINES[4]);
+  h=document.getElementById('mascot-home').innerHTML;
+  ok("the card shows the choice", h.indexOf('Feeling good today')>0 && /class="on"[^>]*scMood\(4\)/.test(h));
+  ok("the card stays where it was", /<i class="on" onclick="scCarGo\(1\)"/.test(h));
+  scMood(9); ok("an unknown face is ignored", scDaily().mood===4);
+  ok("the mood survives a reload", (HF.apply(JSON.parse(JSON.stringify(HF.data))), scDaily().mood===4));
+  ok("a strong day turns the band gold", (function(){ var d=HF.data.daily[iso(0)]; d.water=8; d.steps=8000; return scBand()==='#E30613' || scScore()>=70 && scBand()==='#FFC20E'; })());
+  _scCar=0;
 })();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

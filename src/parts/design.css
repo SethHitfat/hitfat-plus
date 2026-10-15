@@ -2816,3 +2816,38 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .scx-wg b{display:block;font-size:18px;font-weight:800;}
 .scx-wg span{font-size:11px;color:rgba(255,255,255,.6);text-transform:capitalize;}
 .if-ring-v.done{stroke:#FFC20E;}
+
+/* ── Home, Simple's way ──
+   The score's colour (--scb: red, gold on a strong day, rust) runs full
+   width behind the top of the page and scrolls with it. Bell stands on the
+   page, not in a card. The mission, the check-in and the reminders are cards
+   you swipe, with dots under them; Today's Plan follows. */
+.screen{--scb:227,6,19;}
+.screen:has(> #home:not([style*="none"])){
+  background:linear-gradient(180deg,rgba(var(--scb),.34) 0,rgba(var(--scb),.16) 300px,rgba(var(--scb),0) 600px) 0 0/100% 600px no-repeat local,var(--bg);}
+:root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"])){
+  background:linear-gradient(180deg,rgba(var(--scb),.55) 0,rgba(var(--scb),.20) 300px,rgba(var(--scb),0) 600px) 0 0/100% 600px no-repeat local,var(--bg);}
+#mascot-home .sc.sc-page{background:none;box-shadow:none;padding:0;border-radius:0;overflow:visible;}
+#mascot-home .sc-page .sc-stage::before{opacity:.7;}
+#mascot-home .sc-page .sc-say{background:var(--surface);box-shadow:0 4px 18px rgba(0,0,0,.08);}
+#mascot-home .sc-page .sc-say::before{border-bottom-color:var(--surface);}
+#mascot-home .sc-page .sc-plus{background:var(--bg);}
+.sc-car{display:flex;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;
+  margin:16px -18px 0;scrollbar-width:none;}
+.sc-car::-webkit-scrollbar{display:none;}
+.sc-sl{flex:0 0 100%;min-width:0;box-sizing:border-box;padding:0 18px;scroll-snap-align:center;scroll-snap-stop:always;display:flex;}
+.sc-sl > .scx-coach{flex:1;min-width:0;margin-top:0;background:var(--surface);}
+:root:not([data-theme="light"]) .sc-sl > .scx-coach{background:#161618;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);}
+.sc-cdots{display:flex;justify-content:center;gap:6px;margin:10px 0 0;}
+.sc-cdots i{width:7px;height:7px;border-radius:99px;background:var(--dim2);opacity:.35;cursor:pointer;transition:width .2s,opacity .2s;}
+.sc-cdots i.on{width:20px;opacity:1;background:#E30613;}
+.scx-push .pu-inv{margin-top:12px;}
+.scx-faces{display:flex;gap:4px;margin-top:10px;}
+.scx-faces button{flex:1 1 0;min-width:0;border:0;background:none;color:var(--txt);cursor:pointer;padding:7px 0 6px;border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;font:inherit;transition:opacity .2s,background .2s;}
+.scx-faces button span{font-size:30px;line-height:1;}
+.scx-faces button i{font-style:normal;font-size:11px;color:var(--dim2);}
+.scx-faces.has button:not(.on){opacity:.4;}
+.scx-faces button.on{background:rgba(227,6,19,.12);}
+.scx-faces button.on i{color:#E30613;font-weight:800;}
+.scx-faces button:active{-webkit-transform:scale(.92);transform:scale(.92);}

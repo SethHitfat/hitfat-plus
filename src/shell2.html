@@ -342,6 +342,100 @@
 .pl-mo.on .e{background:#DC1A22;}
 .pl-busy{display:none;flex-direction:column;gap:9px;width:100%;}
 
+/* ── the player, Simple's way (PL_MIRROR off) ──
+   Coach full screen. On top: one segment per movement, the movement's name
+   big, and what comes next. At the foot: time and kcal, then the transport.
+   Get ready and the rest let the coach show through instead of blacking out. */
+#play.nomirror #pl-mode, #play.nomirror #pl-camhide, #play.nomirror .pl-dot, #play.nomirror #pl-cam{display:none!important;}
+.pl-scrim{background:linear-gradient(180deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.30) 22%,
+  rgba(0,0,0,0) 40%,rgba(0,0,0,0) 62%,rgba(0,0,0,.62) 82%,rgba(0,0,0,.9) 100%);}
+.pl-head{position:absolute;left:0;right:0;top:calc(58px + env(safe-area-inset-top,0px));z-index:5;padding:0 20px;pointer-events:none;}
+.pl-head .pl-segs{margin:0 0 12px;gap:4px;}
+.pl-head .pl-segs i{height:4px;background:rgba(255,255,255,.26);}
+.pl-head .pl-segs i.done{background:#FFFFFF;}
+.pl-head .pl-segs i.now{background:#E30613;}
+.pl-head .pl-name{font-size:28px;font-weight:800;letter-spacing:-.6px;line-height:1.08;color:#FFFFFF;
+  text-shadow:0 1px 14px rgba(0,0,0,.35);}
+.pl-head .pl-next{font-size:14px;font-weight:500;letter-spacing:0;text-transform:none;color:rgba(255,255,255,.72);margin:5px 0 0;min-height:0;}
+.pl-head .pl-next b{color:#FFFFFF;font-weight:700;}
+.pl-head .pl-sub{font-size:12px;color:rgba(255,255,255,.55);margin-top:3px;}
+.pl-stats{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px;}
+.pl-stat span{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;letter-spacing:.4px;
+  text-transform:uppercase;color:rgba(255,255,255,.62);}
+.pl-stat span .gly{width:14px;height:14px;}
+.pl-stat b{display:block;font-family:'Inter',system-ui,sans-serif;font-size:44px;font-weight:300;letter-spacing:-1.5px;
+  line-height:1;color:#FFFFFF;font-variant-numeric:tabular-nums;margin-top:4px;text-align:left;}
+.pl-stat.r span{justify-content:flex-end;}
+.pl-stat.r b{text-align:right;}
+.pl-stat .pl-clock{font-size:44px;}
+.pl-mid{top:150px;bottom:210px;}
+
+/* Get ready / rest: the coach shows through */
+.pl-ov.pl-gr{background:rgba(0,0,0,.46);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  justify-content:center;gap:0;}
+.pl-gr .cdring,.pl-gr .rring{position:relative;width:184px;height:184px;margin:0 0 16px;}
+.pl-gr .cdring svg,.pl-gr .rring svg{width:100%;height:100%;}
+.pl-gr .cdring circle,.pl-gr .rring circle{stroke:rgba(255,255,255,.18);}
+.pl-gr .cdring path,.pl-gr .rring path{stroke:#E30613;}
+#pl-cd .cdn,#pl-rest .rn{font-size:92px;font-weight:300;letter-spacing:-3px;color:#FFFFFF;}
+#pl-cd .cdn.go{font-size:56px;font-weight:800;color:#FFFFFF;}
+#pl-cd .cdk,#pl-rest .rk{font-size:30px;font-weight:800;letter-spacing:-.5px;color:#FFFFFF;}
+#pl-cd .cdx{position:absolute;left:20px;right:20px;bottom:calc(34px + env(safe-area-inset-bottom,0px));text-align:left;
+  font-size:24px;font-weight:800;letter-spacing:-.4px;color:#FFFFFF;}
+#pl-cd .cdx span,#pl-rest .rnk{display:block;font-size:12px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;
+  color:rgba(255,255,255,.7);margin-bottom:4px;}
+#pl-rest .rnext{position:absolute;left:20px;right:20px;bottom:calc(96px + env(safe-area-inset-bottom,0px));width:auto;max-width:none;
+  background:none;border:0;padding:0;}
+#pl-rest .rnn{font-size:24px;font-weight:800;letter-spacing:-.4px;margin:0;}
+#pl-rest .rnm{font-size:13px;}
+#pl-rest .rbtns{position:absolute;left:20px;right:20px;bottom:calc(28px + env(safe-area-inset-bottom,0px));width:auto;max-width:none;margin:0;}
+#pl-rest .rs{background:#E30613;color:#FFFFFF;}
+
+/* Ready: what is in it, as chips, and one button */
+.pl-chips{display:flex;gap:8px;flex-wrap:wrap;}
+.pl-chips span{padding:8px 13px;border-radius:99px;background:rgba(255,255,255,.12);font-size:14px;color:rgba(255,255,255,.8);}
+.pl-chips b{color:#FFFFFF;font-weight:800;}
+#play.nomirror #pl-ready .rds{margin:16px 0 4px;}
+#play.nomirror #pl-ready .rdm{display:none;}
+#play.rdy .pl-head{visibility:hidden;}
+/* Get ready and the rest own the screen: the running chrome steps back, the close button stays */
+#play.counting .pl-head,#play.counting .pl-bot,#play.counting .pl-mid,#play.counting .pl-hd,
+#play.resting .pl-head,#play.resting .pl-bot,#play.resting .pl-mid,#play.resting .pl-hd{visibility:hidden;}
+#play.resting .pl-top{z-index:9;}
+#play.nomirror #pl-ready .rdk{color:#FF4D55;}
+
+/* Ending early? */
+#pl-why{z-index:9;background:rgba(0,0,0,.72);justify-content:flex-end;padding:0;}
+#pl-why .wwrap{width:100%;max-width:480px;background:#141416;border-radius:24px 24px 0 0;text-align:left;
+  padding:24px 20px calc(22px + env(safe-area-inset-bottom,0px));}
+#pl-why .wt{font-size:26px;font-weight:800;letter-spacing:-.5px;color:#FFFFFF;}
+#pl-why .ws{font-size:15px;color:rgba(255,255,255,.66);margin-top:4px;}
+#pl-why .wopts{display:flex;flex-direction:column;gap:8px;margin-top:18px;}
+#pl-why .wopts button{border:1px solid rgba(255,255,255,.12);background:#1F1F22;color:#FFFFFF;border-radius:14px;
+  padding:15px 16px;text-align:left;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;}
+#pl-why .wopts button:active{background:#E30613;border-color:#E30613;}
+#pl-why .wkeep{width:100%;margin-top:14px;border:0;border-radius:99px;padding:15px 0;background:#FFFFFF;color:#141416;
+  font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;}
+
+/* Landscape: the coach fills the width; the words sit left, the numbers right */
+@media (orientation:landscape) and (max-height:520px){
+  .pl-top{padding-top:calc(10px + env(safe-area-inset-top,0px));padding-left:calc(16px + env(safe-area-inset-left,0px));padding-right:calc(16px + env(safe-area-inset-right,0px));}
+  .pl-head{top:calc(52px + env(safe-area-inset-top,0px));right:45%;padding-left:calc(20px + env(safe-area-inset-left,0px));}
+  .pl-head .pl-name{font-size:22px;}
+  .pl-bot{left:auto;width:min(360px,46%);padding-right:calc(20px + env(safe-area-inset-right,0px));padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));}
+  .pl-stat b,.pl-stat .pl-clock{font-size:34px;}
+  .pl-stats{margin-bottom:10px;}
+  .pl-mid{top:60px;bottom:60px;right:40%;}
+  .pl-gr .cdring,.pl-gr .rring{width:130px;height:130px;margin-bottom:8px;}
+  #pl-cd .cdn,#pl-rest .rn{font-size:64px;}
+  #pl-cd .cdk,#pl-rest .rk{font-size:24px;}
+  #pl-cd .cdx{bottom:20px;}
+  #pl-rest .rnext{bottom:20px;right:50%;}
+  #pl-rest .rbtns{left:auto;width:300px;bottom:20px;}
+  #pl-why .wwrap{border-radius:24px;margin-bottom:auto;margin-top:auto;max-height:100%;overflow-y:auto;}
+  #pl-ready .rdwrap{max-width:560px;}
+}
+
 /* ── CUSTOM PLAN builder ── */
 #cpm{position:fixed;inset:0;background:var(--bg);z-index:9600;display:none;overflow-y:auto;}
 #cpm.on{display:block;}
@@ -883,6 +977,7 @@
   <div class="pl-top">
     <button class="pl-x" onclick="plClose()">✕</button>
     <div class="pl-hd"><div class="pl-pill" id="pl-pill"></div></div>
+    <button class="pl-ic pl-rot" id="pl-rot" onclick="plRotate()" title="Landscape" aria-label="Landscape"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M7 4.5h3M14 19.5h3"/></svg></button>
     <button class="pl-ic" id="pl-mode" onclick="plToggleMode()" title="Switch view"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h10v17H7z"/><path d="M10 7l4-2M10 11l5-3"/></svg></button>
     <button class="pl-ic" id="pl-camhide" onclick="plToggleCam()" title="Hide camera"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.5H15L17 8h3v11h-1.5M6.5 19H4V8h2.5"/><path d="M14.3 14.8a3.4 3.4 0 0 1-4.9-4.6"/></svg></button>
   </div>
@@ -896,13 +991,18 @@
     <button class="pl-skip" onclick="plAdjust(-10)" aria-label="Forward 10 seconds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 12.4a7.5 7.5 0 1 1-2.3-5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M17.4 3.2v3.9h-3.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><text x="11.8" y="15.4" text-anchor="middle" font-size="7" font-weight="700" fill="currentColor" font-family="system-ui,sans-serif">10</text></svg></button>
   </div>
 
-  <div class="pl-bot">
-    <div class="pl-next" id="pl-next"></div>
-    <div class="pl-row">
-      <div class="pl-nm"><div class="pl-name" id="pl-name"></div><div class="pl-sub" id="pl-sub"></div></div>
-      <div class="pl-clock" id="pl-clock">0:45</div>
-    </div>
+  <div class="pl-head">
     <div class="pl-segs" id="pl-segs"></div>
+    <div class="pl-name" id="pl-name"></div>
+    <div class="pl-next" id="pl-next"></div>
+    <div class="pl-sub" id="pl-sub"></div>
+  </div>
+
+  <div class="pl-bot">
+    <div class="pl-stats">
+      <div class="pl-stat"><span><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg>time</span><b class="pl-clock" id="pl-clock">0:45</b></div>
+      <div class="pl-stat r"><span><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 6 6.5 6 10.5A6 6 0 0 1 6 13.5C6 10 8 8 9 6c.5 2 1.5 3 3 3-1-2-.8-4 0-6z"/></svg>kcal</span><b id="pl-kcal">0</b></div>
+    </div>
     <div class="pl-tl">
       <button class="pl-sm" onclick="plPrev()" aria-label="Previous exercise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M19 5.5l-9 6.5 9 6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
       <div class="pl-bar"><span id="pl-el">0:00</span><div class="pl-track"><i id="pl-fill"></i></div><span id="pl-rem">−0:45</span></div>
@@ -932,21 +1032,31 @@
 
   <!-- 3, 2, 1, GO: a red ring fills a third a second around the count, the
        way a watch counts a workout in, with the first movement named below. -->
-  <div class="pl-ov" id="pl-cd">
-    <div class="cdk">Get Ready</div>
+  <div class="pl-ov pl-gr" id="pl-cd">
     <div class="cdring"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="88" fill="none" stroke-width="12"/><g id="pl-cdarc"></g></svg>
-      <div class="cdn" id="pl-cdn">3</div></div>
+      <div class="cdn" id="pl-cdn">5</div></div>
+    <div class="cdk">Get ready!</div>
     <div class="cdx" id="pl-cdx"></div>
   </div>
 
   <!-- Rest: the next clip loads behind this. A ring empties with the seconds,
        and the movement coming up waits on a card below it. -->
-  <div class="pl-ov" id="pl-rest">
-    <div class="rk">Rest</div>
+  <div class="pl-ov pl-gr" id="pl-rest">
     <div class="rring"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="88" fill="none" stroke-width="12"/><g id="pl-restarc"></g></svg>
-      <div class="rin"><div class="rn" id="pl-restn">20</div><div class="ru">seconds</div></div></div>
-    <div class="rnext"><div class="rnk">Up Next</div><div class="rnn" id="pl-restnext"></div><div class="rnm" id="pl-restmeta"></div></div>
-    <div class="rbtns"><button class="rplus" onclick="plRestAdd(20)">+20s</button><button class="rs" onclick="plSkipRest()">Skip Rest</button></div>
+      <div class="rin"><div class="rn" id="pl-restn">20</div></div></div>
+    <div class="rk">Get ready!</div>
+    <div class="rnext"><div class="rnk">→ Up next</div><div class="rnn" id="pl-restnext"></div><div class="rnm" id="pl-restmeta"></div></div>
+    <div class="rbtns"><button class="rplus" onclick="plRestAdd(20)">+20s</button><button class="rs" onclick="plSkipRest()">Skip</button></div>
+  </div>
+
+  <!-- Ending early: why? (Simple asks; the answers tell us what to fix) -->
+  <div class="pl-ov" id="pl-why">
+    <div class="wwrap">
+      <div class="wt">Ending early?</div>
+      <div class="ws">Nice work so far! Why are you stopping?</div>
+      <div class="wopts" id="pl-whyopts"></div>
+      <button class="wkeep" onclick="plWhyKeep()">Keep going</button>
+    </div>
   </div>
 
   <!-- Done: the Fitness+ summary. What you did, then the week it went into. -->

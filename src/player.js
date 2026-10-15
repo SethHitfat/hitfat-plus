@@ -8,6 +8,12 @@
    not restart with a black frame.                                             */
 
 const REST_SECS=20;
+/* The mirror (your camera beside the coach) is parked: Simple's player shows
+   the coach full screen and nothing else, and that reads better on a phone.
+   Its code stays below, behind this switch. */
+const PL_MIRROR=false;
+/* a rough burn for bodyweight HIIT: about 7 kcal a minute of work, rests not counted */
+const PL_KCAL_MIN=7;
 let _lastWorkout=null;
 let pl=null, plTick=null;
 
@@ -68,6 +74,11 @@ function plTime(){
   if($('pl-rem')) $('pl-rem').textContent='−'+fmtT(pl.left);
   if($('pl-fill')) $('pl-fill').style.width=(len?Math.round(el/len*100):0)+'%';
 }
+function plKcal(){
+  if(!pl) return 0;
+  return Math.round((pl.work||0)/60*PL_KCAL_MIN);
+}
+function plStats(){ const k=$('pl-kcal'); if(k) k.textContent=String(plKcal()); }
 function fmtT(s){ s=Math.max(0,Math.round(s)); return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
 
 /* start a workout from a list of exercise objects */
@@ -75,9 +86,11 @@ function startWorkout(exs,meta){
   if(!exs || !exs.length){ toast('Nothing to play'); return; }
   pl={exs, i:0, round:1, rounds:(meta&&meta.rounds)||1, meta:meta||{},
       left:exs[0].dur||45, len:exs[0].dur||45, running:false, resting:false, clip:null,
-      t0:Date.now(), done:0};
+      t0:Date.now(), done:0, work:0, started:false, finished:false};
   $('play').classList.add('on');
   $('pl-done').classList.remove('on');
+  $('pl-why').classList.remove('on');
+  $('play').classList.toggle('nomirror', !PL_MIRROR);
   plCam.off=false; $('play').classList.remove('camoff');
   plSetMode(plCam.mode);
   renderPl(); setClip(exs[0]);
@@ -109,11 +122,13 @@ function exitPlayer(){
   const f=$('pl-video'); if(f) f.src='';
   if(pl) pl.clip=null;
   pl=null;
-  $('play').classList.remove('on','idle','rdy');
+  $('play').classList.remove('on','idle','rdy','resting','counting');
   if(plIdleT){ clearTimeout(plIdleT); plIdleT=null; }
   $('pl-rest').classList.remove('on');
   $('pl-cd').classList.remove('on');
   $('pl-ready').classList.remove('on','busy');
+  $('pl-why').classList.remove('on');
+  plUnrotate();
 }
 function stopTick(){ if(plTick){ clearInterval(plTick); plTick=null; } if(pl) pl.running=false; }
 
@@ -128,12 +143,12 @@ function plCountdown(done){
     if(a && typeof ringArc==='function')
       a.innerHTML='<path d="'+ringArc(100,100,88,pct)+'" fill="none" stroke-width="12" stroke-linecap="round"/>';
   };
-  if($('pl-cdx') && pl) $('pl-cdx').innerHTML='Up first · <b>'+pl.exs[pl.i].n+'</b>';
-  el.classList.add('on'); let c=3; paint(c);
+  if($('pl-cdx') && pl) $('pl-cdx').innerHTML='<span>→ Up next</span><b>'+pl.exs[pl.i].n+'</b>';
+  el.classList.add('on'); $('play').classList.add('counting'); let c=3; paint(c);
   const t=setInterval(()=>{
     c--;
     if(c>=0){ paint(c); }
-    else { clearInterval(t); el.classList.remove('on'); done&&done(); }
+    else { clearInterval(t); el.classList.remove('on'); $('play').classList.remove('counting'); done&&done(); }
   },800);
 }
 function plResume(){
@@ -141,8 +156,8 @@ function plResume(){
   pl.running=true; plSetPlayIcon(true); plWake();
   plTick=setInterval(()=>{
     if(!pl) return;
-    pl.left--;
-    plTime();
+    pl.left--; pl.work=(pl.work||0)+1;
+    plTime(); plStats();
     if(pl.left<=0) plNext(true);
   },1000);
 }
@@ -174,7 +189,7 @@ function plPrev(){
 function plGo(n){
   pl.i=n.i; pl.round=n.round;
   pl.left=pl.len=pl.exs[pl.i].dur||45;
-  $('pl-rest').classList.remove('on');
+  $('pl-rest').classList.remove('on'); $('play').classList.remove('resting');
   renderPl(); setClip(pl.exs[pl.i]);
   plResume();
 }
@@ -194,6 +209,7 @@ function plRest(n){
   const nx=pl.exs[n.i];
   setClip(nx);                                   // buffers behind the rest overlay
   $('pl-restnext').textContent=nx.n;
+  $('play').classList.add('resting');
   if($('pl-restmeta')) $('pl-restmeta').textContent=[nx.m,nx.eq].filter(Boolean).join(' · ')+
     ' · '+(n.i+1)+' of '+pl.exs.length+(pl.rounds>1?', round '+n.round:'');
   $('pl-rest').classList.add('on');
@@ -230,10 +246,12 @@ function renderPl(){
     '<i class="'+(i<pl.i?'done':(i===pl.i?'now':''))+'"></i>').join('');
   // a quiet line instead of the loud stack that used to sit over the movement
   const n=plNextIndex();
-  $('pl-next').innerHTML = n ? ('Up next · <b>'+pl.exs[n.i].n+'</b>') : 'Last one';
+  $('pl-next').innerHTML = n ? ('Next: <b>'+pl.exs[n.i].n+'</b>') : 'Last one!';
+  plStats();
 }
 function plFinish(){
   stopTick();
+  pl.finished=true; $('play').classList.remove('resting');
   const mins=Math.max(1,Math.round((Date.now()-pl.t0)/60000));
   const m=pl.meta||{};
   if(m.key) HF.markDone(m.key,{name:m.name||'Workout', mins});
@@ -263,7 +281,38 @@ function plFinish(){
   }catch(e){ $('pl-dn-week').innerHTML=''; }
   $('pl-done').classList.add('on');
 }
+const PL_WHY=[['came','Something came up'],['break','I need a break'],['dislike','Didn\'t like the exercises'],
+  ['hard','Too difficult'],['easy','Too easy']];
 function plClose(){
+  if(pl && pl.started && !pl.finished && !pl.asked) return plWhy();
+  plCloseNow();
+}
+function plWhy(){
+  pl.asked=true; pl.wasRunning=pl.running||pl.resting;
+  if(pl.running) plPause();
+  if(pl.resting && plTick){ clearInterval(plTick); plTick=null; }
+  $('pl-whyopts').innerHTML=PL_WHY.map(w=>'<button onclick="plWhyPick(\''+w[0]+'\')">'+w[1]+'</button>').join('');
+  $('pl-why').classList.add('on');
+}
+function plWhyKeep(){
+  if(!pl) return;
+  pl.asked=false; $('pl-why').classList.remove('on');
+  if(pl.resting && pl.rest){ const n=pl.rest.n; pl.rest.left=Math.max(3,pl.rest.left);
+    plTick=setInterval(()=>{ if(!pl || !pl.rest) return; pl.rest.left--; plRestPaint();
+      if(pl.rest.left<=0){ clearInterval(plTick); plTick=null; pl.resting=false; pl.rest=null; plGo(n); } },1000); }
+  else if(pl.wasRunning) plResume();
+}
+function plWhyPick(r){
+  if(!pl) return;
+  const m=pl.meta||{}, q=HF.data.quits||(HF.data.quits=[]);
+  q.push({d:iso(0), r, n:m.name||pl.exs[0].n, k:m.key||'', at:pl.done, of:pl.exs.length*(pl.rounds||1), s:pl.work||0});
+  if(q.length>60) q.splice(0,q.length-60);
+  HF.save();
+  toast({came:'No worries. Pick it up when you can 👊',break:'Rest well. Bell will be here 🔔',dislike:'Thanks, we\'ll use that to pick better moves',
+         hard:'Noted. Try an easier one next time, you\'ll get there 💪',easy:'Noted. Time for something harder 🔥'}[r]||'Saved');
+  plCloseNow();
+}
+function plCloseNow(){
   const back=pl&&pl.meta&&pl.meta.pid;
   /* Closing a T42 workout returns to T42, not to Home. Dropping someone on
      the home tab after the session their challenge asked for is the app
@@ -393,13 +442,15 @@ function plReadyText(){
   const secs=pl.exs.reduce((t,e)=>t+(e.dur||45),0)*rd + REST_SECS*Math.max(0,n*rd-1);
   $('pl-rdt').textContent=(pl.meta&&pl.meta.name)||pl.exs[0].n;
   if($('pl-rdm')) $('pl-rdm').textContent=n+(n===1?' exercise':' exercises')+(rd>1?' · '+rd+' rounds':'')+' · about '+Math.max(1,Math.round(secs/60))+' min';
-  $('pl-rds').textContent='Choose Your View';
+  $('pl-rds').textContent=PL_MIRROR?'Choose Your View':'';
+  if(!PL_MIRROR && $('pl-rds')) $('pl-rds').innerHTML='<div class="pl-chips"><span><b>'+Math.max(1,Math.round(secs/60))+'</b> min</span><span><b>'+n+'</b> '+(n===1?'exercise':'exercises')+'</span><span><b>'+rd+'</b> '+(rd===1?'round':'rounds')+'</span></div>';
   if($('pl-rdf')) $('pl-rdf').textContent='Up first: '+pl.exs[0].n;
 }
 function plReady(){
   plReadyText();
-  $('pl-modes').style.display='flex';
+  $('pl-modes').style.display=PL_MIRROR?'flex':'none';
   $('pl-rdgo').style.display='block';
+  $('pl-rdgo').textContent=PL_MIRROR?'Let\'s Go':'Start workout';
   $('pl-rdbusy').style.display='none';
   plRenderModes();
   $('pl-ready').classList.add('on');
@@ -413,13 +464,34 @@ function plRenderModes(){
       '<span class="e">'+glyph(m[1])+'</span><span class="n">'+m[2]+'</span><span class="s">'+m[3]+'</span></button>').join('');
 }
 function plBegin(){
+  if(!PL_MIRROR) return plStart();
   plAskCam(()=>plStart());
 }
 function plStart(){
+  if(pl) pl.started=true;
   $('pl-ready').classList.remove('on','busy');
   $('play').classList.remove('rdy');
   plCountdown(()=>plResume());
 }
+/* Landscape, as Simple offers it: full screen and locked sideways where the
+   browser allows (Android); an iPhone turns the page itself when the phone
+   is turned, and the CSS lays the player out for it. */
+function plRotate(){
+  const so=(typeof screen!=='undefined')&&screen.orientation, el=$('play');
+  const land=so && /landscape/.test(so.type||'');
+  if(land){ plUnrotate(); return; }
+  const lock=()=>so.lock('landscape').catch(()=>toast('Turn your phone sideways for landscape'));
+  if(so && so.lock){
+    const fs=el && (el.requestFullscreen||el.webkitRequestFullscreen);
+    if(fs && !document.fullscreenElement){ Promise.resolve(fs.call(el)).then(lock,()=>lock()); }
+    else lock();
+  } else toast('Turn your phone sideways for landscape');
+}
+function plUnrotate(){
+  try{ const so=(typeof screen!=='undefined')&&screen.orientation; if(so && so.unlock) so.unlock(); }catch(e){}
+  try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); }catch(e){}
+}
+
 /* release the camera whenever the page is hidden — iOS will not do it for us */
 if(typeof document!=='undefined' && document.addEventListener){
   document.addEventListener('visibilitychange',function(){ if(document.hidden){ plPause(); plStopCam(); } });

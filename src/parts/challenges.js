@@ -89,7 +89,7 @@ const HF={
     weight:[],meals:{},burn:{},favs:[],custom:null,nutrition:{},scanQuota:{used:0,month:''},owned:{},purchases:[],
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
     body:[],goalKg:null,
-    challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{},ifs:{},daily:{},sc:{} }; },
+    challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{},ifs:{},daily:{},sc:{},quits:[] }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
   apply(o){
@@ -116,6 +116,8 @@ const HF={
       d.ifs=(o.ifs&&typeof o.ifs==='object')?JSON.parse(JSON.stringify(o.ifs)):{};
       d.daily=(o.daily&&typeof o.daily==='object')?JSON.parse(JSON.stringify(o.daily)):{};
       d.sc=(o.sc&&typeof o.sc==='object')?JSON.parse(JSON.stringify(o.sc)):{};
+      /* why a workout was ended early (the player asks) */
+      d.quits=Array.isArray(o.quits)?o.quits.slice(-60):[];
     }
     this.data=d;
   },

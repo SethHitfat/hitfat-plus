@@ -132,6 +132,32 @@ function scCoachHTML(){
     '<div class="scx-seth"><b>💬 Coach:</b> '+hesc(scSethTip())+'</div></div>';
 }
 
+/* ── Check-in: how are you feeling? (Simple asks every day) ──
+   One tap, kept in daily[day].mood (1 to 5). It does not change the score;
+   Bell answers it, and a low day gets kindness, not a push. */
+var SC_MOODS=[[1,'😫','Awful'],[2,'😕','Bad'],[3,'😐','Okay'],[4,'🙂','Good'],[5,'😄','Great']];
+var SC_MOOD_LINES={
+  1:'Rough day. Be kind to yourself 🤍 A short walk and some water still count.',
+  2:'Take it easy today. Small wins still count 🙏',
+  3:'Okay is a fine place to start. One small win?',
+  4:'Nice! Let\'s make it a strong day 💪',
+  5:'Love that energy! Go get that strong day 🔥'};
+function scMoodLine(m){ return SC_MOOD_LINES[m]||'How are you feeling today?'; }
+function scMoodHTML(){
+  var m=scDaily().mood, cur=null, i;
+  for(i=0;i<SC_MOODS.length;i++) if(SC_MOODS[i][0]===m) cur=SC_MOODS[i];
+  return '<div class="scx-coach scx-mood"><div class="scx-k"><i></i>CHECK-IN</div>'+
+    '<div class="scx-t"><b>'+(cur?'Feeling '+cur[2].toLowerCase()+' today':'How are you feeling today?')+'</b></div>'+
+    '<div class="scx-faces'+(m?' has':'')+'">'+SC_MOODS.map(function(x){
+      return '<button class="'+(x[0]===m?'on':'')+'" onclick="scMood('+x[0]+')" aria-label="'+x[2]+'"><span>'+x[1]+'</span><i>'+x[2]+'</i></button>'; }).join('')+'</div>'+
+    '<div class="scx-seth">'+(cur?'Saved for today. Tap another face to change it.':'One tap. It doesn\'t change your score.')+'</div></div>';
+}
+function scMood(m){
+  if(m<1 || m>5) return;
+  scSet('mood',m); _scSay='mood'; _scSayAt=Date.now();
+  scRender();
+}
+
 /* ── Today's plan ── */
 /* Today's Plan is in English, as the app around it (Bell himself speaks Malay) */
 function scClock(min){ min=((Math.round(min)%1440)+1440)%1440; var h=Math.floor(min/60), m=min%60; return (h%12||12)+':'+('0'+m).slice(-2)+(h<12?' am':' pm'); }
