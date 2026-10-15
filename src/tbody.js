@@ -95,14 +95,14 @@ openProgram(mprog.id); openDay(mprog.id,0); completeDay();
 ok("day marked complete",  progDone(mprog.id)===1, progDone(mprog.id));
 ok("session logged",       HF.count()===1, HF.count());
 ok("streak moved",         HF.data.streak===1, HF.data.streak);
-ok("home activity reflects it", (function(){ switchTab('home');
-  var h=document.getElementById('home-activity').innerHTML; return h.indexOf('1<span> DAY</span>')>0 && h.indexOf('in a row')>0 &&
-    h.indexOf('hrings')>0 && h.indexOf('1/'+(HF.data.weekGoal||5))>0; })());
+ok("home keeps the month's challenge, not a second set of rings", (function(){ switchTab('home');
+  var h=document.getElementById('home-activity').innerHTML; return h.indexOf('mcard')>0 && h.indexOf('hrings')<0 && h.indexOf('htiles')<0; })());
 ok("home leads with the date and a large greeting", (function(){ var h=document.getElementById('home-hdr').innerHTML;
   return h.indexOf('hsum')>0 && /MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY/.test(h); })());
 ok("rings are paths from twelve o'clock", ringArc(50,50,40,25).indexOf('M50 10')===0);
 ok("today hero switches to Continue", document.getElementById('home-today').innerHTML.indexOf('Day 2')>0);
-ok("photos are used, not gradients", document.getElementById('home-plans').innerHTML.indexOf('background-image')>0);
+ok("Home leaves the catalogue to Train", document.getElementById('home-plans').innerHTML==='' && document.getElementById('home-quick').innerHTML.indexOf('Quick Workouts')<0);
+ok("courses on Home as colour tiles", homeCourses().indexOf('class="lcourses')>0 && homeCourses().indexOf('openIF()')>0);
 
 
 /* the early-morning bug: a session stamped in UTC read as yesterday for
