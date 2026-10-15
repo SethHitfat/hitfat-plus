@@ -3287,3 +3287,43 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .elslot .nli-s b{font-weight:700;color:var(--txt);}
 .elit{padding-left:58px;min-height:54px;}
 .elit .nli-t{font-size:15px;}
+
+/* ── Eat · Journal (16 Oct): the app's macro colours, a tip from the week, a card per day ── */
+.mrep{background:var(--surface);}
+:root:not([data-theme="light"]) .mrep{background:#161618;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
+:root[data-theme="light"] .mrep{background:#FFFFFF;box-shadow:var(--lift-1);}
+.mrep-top b{color:var(--txt);}
+.mrep-top b i{font-style:normal;font-size:12px;font-weight:600;color:var(--dim2);}
+.mchart .mc-p{fill:#E30613;} .mchart .mc-c{fill:#FFC20E;} .mchart .mc-f{fill:#A1A1AA;}
+.mrep-key i.p{background:#E30613;} .mrep-key i.c{background:#FFC20E;} .mrep-key i.f{background:#A1A1AA;}
+.mchart .mc-goal{stroke:var(--txt);opacity:.45;}
+.mchart .mc-gl{fill:var(--dim);}
+.mrep-key i.g{background:var(--dim);}
+.jtip{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding-top:12px;border-top:.5px solid var(--sep);}
+.jtip>i{flex:none;width:8px;height:8px;border-radius:50%;margin-top:6px;background:#FFC20E;}
+.jtip.ok>i{background:#2E9E5B;} .jtip.risk>i{background:#E30613;}
+.jtip b{display:block;font-size:14px;font-weight:700;color:var(--txt);}
+.jtip span{display:block;font-size:13px;color:var(--dim);line-height:1.45;margin-top:2px;}
+.jdc + .jdc{margin-top:10px;}
+.jdh{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;}
+.jdh-t{flex:1;min-width:0;}
+.jdh-t b{display:block;font-size:16px;font-weight:700;color:var(--txt);}
+.jdh-t span{display:block;font-size:12.5px;color:var(--dim);margin-top:1px;font-variant-numeric:tabular-nums;}
+.jv{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--dim);}
+.jv i{width:7px;height:7px;border-radius:50%;background:var(--dim2);}
+.jv.ok{color:#2E9E5B;} .jv.ok i{background:#2E9E5B;}
+.jv.over{color:#E30613;} .jv.over i{background:#E30613;}
+.jv.under i{background:#FFC20E;}
+.jchev{color:var(--dim2);font-size:20px;line-height:1;transition:transform .2s;}
+.jdc.open .jchev{transform:rotate(90deg);}
+.jdc .jcard{background:none;border-radius:0;padding:10px 14px;gap:12px;position:relative;}
+.jdc .jcard::before{content:'';position:absolute;top:0;left:66px;right:0;height:.5px;background:var(--sep);}
+.jdc .jph{width:40px;height:40px;border-radius:10px;}
+.jdc .jph.none{background:none;}
+.jdc .jph .uic{width:40px;height:40px;border-radius:10px;}
+.jdc .jt{font-size:15px;font-weight:600;color:var(--txt);}
+.jdc .js{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.jk{font-size:15px;font-weight:700;color:var(--txt);font-variant-numeric:tabular-nums;}
+.jchev{display:inline-block;}
+.jdc .jmac{margin-top:1px;color:var(--dim2);}
+.nlist.jdc.open .jdh .jchev{transform:rotate(90deg)!important;}

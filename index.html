@@ -5448,6 +5448,46 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .elit{padding-left:58px;min-height:54px;}
 .elit .nli-t{font-size:15px;}
 
+/* ── Eat · Journal (16 Oct): the app's macro colours, a tip from the week, a card per day ── */
+.mrep{background:var(--surface);}
+:root:not([data-theme="light"]) .mrep{background:#161618;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
+:root[data-theme="light"] .mrep{background:#FFFFFF;box-shadow:var(--lift-1);}
+.mrep-top b{color:var(--txt);}
+.mrep-top b i{font-style:normal;font-size:12px;font-weight:600;color:var(--dim2);}
+.mchart .mc-p{fill:#E30613;} .mchart .mc-c{fill:#FFC20E;} .mchart .mc-f{fill:#A1A1AA;}
+.mrep-key i.p{background:#E30613;} .mrep-key i.c{background:#FFC20E;} .mrep-key i.f{background:#A1A1AA;}
+.mchart .mc-goal{stroke:var(--txt);opacity:.45;}
+.mchart .mc-gl{fill:var(--dim);}
+.mrep-key i.g{background:var(--dim);}
+.jtip{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding-top:12px;border-top:.5px solid var(--sep);}
+.jtip>i{flex:none;width:8px;height:8px;border-radius:50%;margin-top:6px;background:#FFC20E;}
+.jtip.ok>i{background:#2E9E5B;} .jtip.risk>i{background:#E30613;}
+.jtip b{display:block;font-size:14px;font-weight:700;color:var(--txt);}
+.jtip span{display:block;font-size:13px;color:var(--dim);line-height:1.45;margin-top:2px;}
+.jdc + .jdc{margin-top:10px;}
+.jdh{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;}
+.jdh-t{flex:1;min-width:0;}
+.jdh-t b{display:block;font-size:16px;font-weight:700;color:var(--txt);}
+.jdh-t span{display:block;font-size:12.5px;color:var(--dim);margin-top:1px;font-variant-numeric:tabular-nums;}
+.jv{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--dim);}
+.jv i{width:7px;height:7px;border-radius:50%;background:var(--dim2);}
+.jv.ok{color:#2E9E5B;} .jv.ok i{background:#2E9E5B;}
+.jv.over{color:#E30613;} .jv.over i{background:#E30613;}
+.jv.under i{background:#FFC20E;}
+.jchev{color:var(--dim2);font-size:20px;line-height:1;transition:transform .2s;}
+.jdc.open .jchev{transform:rotate(90deg);}
+.jdc .jcard{background:none;border-radius:0;padding:10px 14px;gap:12px;position:relative;}
+.jdc .jcard::before{content:'';position:absolute;top:0;left:66px;right:0;height:.5px;background:var(--sep);}
+.jdc .jph{width:40px;height:40px;border-radius:10px;}
+.jdc .jph.none{background:none;}
+.jdc .jph .uic{width:40px;height:40px;border-radius:10px;}
+.jdc .jt{font-size:15px;font-weight:600;color:var(--txt);}
+.jdc .js{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.jk{font-size:15px;font-weight:700;color:var(--txt);font-variant-numeric:tabular-nums;}
+.jchev{display:inline-block;}
+.jdc .jmac{margin-top:1px;color:var(--dim2);}
+.nlist.jdc.open .jdh .jchev{transform:rotate(90deg)!important;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -24517,33 +24557,55 @@ function macroChart(r){
   });
   return s+'</svg>';
 }
+/* a meal as a compact row inside its day's card: the photo (or the meal's
+   icon), the name, when, the macros in one grey line, the kcal on the right */
 function journalCard(m,d,i){
-  const ph=mealPhoto(m), slot=(SLOTS.filter(s=>s.k===(m.slot||'snack'))[0]||SLOTS[3]).n;
+  const ph=mealPhoto(m), sl=SLOTS.filter(s=>s.k===(m.slot||'snack'))[0]||SLOTS[3];
   return '<div class="jcard">'+
     (ph?'<div class="jph" style="background-image:url(\''+ph.replace(/'/g,"%27")+'\')"></div>'
-       :'<div class="jph none">'+ic(m.src==='barcode'?'qr':'food')+'</div>')+
+       :'<div class="jph none">'+ic(m.src==='barcode'?'qr':sl.e)+'</div>')+
     '<div class="jtx"><div class="jt">'+hesc(m.bm||m.name)+'</div>'+
-    '<div class="js">'+slot+(m.time?' · '+hesc(m.time):'')+'</div>'+
-    '<div class="jm"><b>'+(m.kcal||0).toLocaleString()+'</b> kcal<span class="p">P '+(m.p||0)+'g</span><span class="c">C '+(m.c||0)+'g</span><span class="f">F '+(m.f||0)+'g</span></div></div>'+
+    '<div class="js">'+sl.n+(m.time?' · '+hesc(m.time):'')+'</div>'+
+    '<div class="js jmac">P '+(m.p||0)+'g · C '+(m.c||0)+'g · F '+(m.f||0)+'g</div></div>'+
+    '<b class="jk">'+(m.kcal||0).toLocaleString()+'</b>'+
     (d===iso(0)?'<button class="ndel" aria-label="Remove" onclick="delMeal('+i+')">✕</button>':'')+'</div>';
 }
+/* one line from the week, the thing most worth changing (16 Oct) */
+function journalTip(r){
+  const n=HF.data.nutrition||{};
+  if(r.logged<2) return ['info','Log a few more days','Two or three days of meals and the week starts to tell you something.'];
+  if(n.pt && r.avgP<n.pt*0.8) return ['risk','Protein is low','About '+r.avgP+' g a day against '+n.pt+' g. A palm of chicken, fish, eggs or tofu at each meal closes the gap.'];
+  if(r.target && r.avgKcal>r.target*1.1) return ['risk','A little over, on average',r.avgKcal.toLocaleString()+' kcal a day against '+r.target.toLocaleString()+'. Half the rice at dinner is an easy start.'];
+  if(r.target && r.avgKcal<r.target*0.8) return ['info','Eating quite light',r.avgKcal.toLocaleString()+' kcal a day against '+r.target.toLocaleString()+'. Too little slows you down — make sure every meal is logged, and eat enough.'];
+  return ['ok','On track','Calories and protein are where they should be. Keep it going.'];
+}
+let _jOpen={};
+function jToggle(d){ _jOpen[d]=!jIsOpen(d); renderEat(); }
+function jIsOpen(d){ return d in _jOpen ? _jOpen[d] : (d===iso(0)||d===iso(-1)); }
 function eatJournal(){
-  const r=weekReport();
-  let h=fsec('Macros Report','Calories from protein, carbs and fat, this week.');
+  const r=weekReport(), n=HF.data.nutrition||{};
+  let h=fsec('Macros Report','Your last 7 days — calories from protein, carbs and fat.');
+  const tip=journalTip(r);
   h+='<div class="mrep"><div class="mrep-top">'+
      '<div><b>'+(r.logged?r.avgKcal.toLocaleString():'—')+'</b><span>avg kcal a day</span></div>'+
-     '<div><b>'+(r.logged?r.avgP+' g':'—')+'</b><span>avg protein</span></div>'+
-     '<div><b>'+r.onTarget+'/'+r.logged+'</b><span>days on target</span></div></div>'+
+     '<div><b>'+(r.logged?r.avgP+'<i>'+(n.pt?' / '+n.pt:'')+' g</i>':'—')+'</b><span>avg protein</span></div>'+
+     '<div><b>'+r.onTarget+'<i> of '+r.logged+'</i></b><span>days on target</span></div></div>'+
      macroChart(r)+
-     '<div class="mrep-key"><span><i class="p"></i>Protein</span><span><i class="c"></i>Carbs</span><span><i class="f"></i>Fat</span><span><i class="g"></i>Target</span></div></div>';
+     '<div class="mrep-key"><span><i class="p"></i>Protein</span><span><i class="c"></i>Carbs</span><span><i class="f"></i>Fat</span><span><i class="g"></i>Target</span></div>'+
+     '<div class="jtip '+tip[0]+'"><i></i><div><b>'+tip[1]+'</b><span>'+tip[2]+'</span></div></div></div>';
   h+=fsec('Food Journal','The last two weeks, newest first.');
   let any=false;
   for(let i=0;i<14;i++){
     const d=iso(-i), list=mealsFor(d);
     if(!list.length) continue; any=true;
-    const t=mealTotals(d);
-    h+='<div class="jday"><span>'+journalDayName(d)+'</span><span>'+list.length+(list.length>1?' meals':' meal')+' · '+t.kcal.toLocaleString()+' kcal</span></div>'+
-       '<div class="jlist">'+list.map((m,j)=>({m,j})).reverse().map(x=>journalCard(x.m,d,x.j)).join('')+'</div>';
+    const t=mealTotals(d), open=jIsOpen(d);
+    let v=['','']; 
+    if(d===iso(0)) v=['now','So far'];
+    else if(n.cal) v=t.kcal>n.cal*1.1?['over','Over']:t.kcal<n.cal*0.85?['under','Under']:['ok','On target'];
+    h+='<div class="nlist jdc'+(open?' open':'')+'"><div class="jdh" onclick="jToggle(\''+d+'\')">'+
+       '<div class="jdh-t"><b>'+journalDayName(d)+'</b><span>'+list.length+(list.length>1?' meals':' meal')+' · '+t.kcal.toLocaleString()+' kcal</span></div>'+
+       (v[1]?'<span class="jv '+v[0]+'"><i></i>'+v[1]+'</span>':'')+'<span class="jchev">›</span></div>'+
+       (open?list.map((m,j)=>({m,j})).reverse().map(x=>journalCard(x.m,d,x.j)).join(''):'')+'</div>';
   }
   if(!any) h+='<div class="nempty">'+ic('food')+'<div class="nempty-t">Your journal starts with your first meal</div>'+
     '<div class="nempty-s">Scan a plate, a barcode or a label, or add a meal by hand.</div>'+

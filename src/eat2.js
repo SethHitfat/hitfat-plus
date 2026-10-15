@@ -269,33 +269,55 @@ function macroChart(r){
   });
   return s+'</svg>';
 }
+/* a meal as a compact row inside its day's card: the photo (or the meal's
+   icon), the name, when, the macros in one grey line, the kcal on the right */
 function journalCard(m,d,i){
-  const ph=mealPhoto(m), slot=(SLOTS.filter(s=>s.k===(m.slot||'snack'))[0]||SLOTS[3]).n;
+  const ph=mealPhoto(m), sl=SLOTS.filter(s=>s.k===(m.slot||'snack'))[0]||SLOTS[3];
   return '<div class="jcard">'+
     (ph?'<div class="jph" style="background-image:url(\''+ph.replace(/'/g,"%27")+'\')"></div>'
-       :'<div class="jph none">'+ic(m.src==='barcode'?'qr':'food')+'</div>')+
+       :'<div class="jph none">'+ic(m.src==='barcode'?'qr':sl.e)+'</div>')+
     '<div class="jtx"><div class="jt">'+hesc(m.bm||m.name)+'</div>'+
-    '<div class="js">'+slot+(m.time?' · '+hesc(m.time):'')+'</div>'+
-    '<div class="jm"><b>'+(m.kcal||0).toLocaleString()+'</b> kcal<span class="p">P '+(m.p||0)+'g</span><span class="c">C '+(m.c||0)+'g</span><span class="f">F '+(m.f||0)+'g</span></div></div>'+
+    '<div class="js">'+sl.n+(m.time?' · '+hesc(m.time):'')+'</div>'+
+    '<div class="js jmac">P '+(m.p||0)+'g · C '+(m.c||0)+'g · F '+(m.f||0)+'g</div></div>'+
+    '<b class="jk">'+(m.kcal||0).toLocaleString()+'</b>'+
     (d===iso(0)?'<button class="ndel" aria-label="Remove" onclick="delMeal('+i+')">✕</button>':'')+'</div>';
 }
+/* one line from the week, the thing most worth changing (16 Oct) */
+function journalTip(r){
+  const n=HF.data.nutrition||{};
+  if(r.logged<2) return ['info','Log a few more days','Two or three days of meals and the week starts to tell you something.'];
+  if(n.pt && r.avgP<n.pt*0.8) return ['risk','Protein is low','About '+r.avgP+' g a day against '+n.pt+' g. A palm of chicken, fish, eggs or tofu at each meal closes the gap.'];
+  if(r.target && r.avgKcal>r.target*1.1) return ['risk','A little over, on average',r.avgKcal.toLocaleString()+' kcal a day against '+r.target.toLocaleString()+'. Half the rice at dinner is an easy start.'];
+  if(r.target && r.avgKcal<r.target*0.8) return ['info','Eating quite light',r.avgKcal.toLocaleString()+' kcal a day against '+r.target.toLocaleString()+'. Too little slows you down — make sure every meal is logged, and eat enough.'];
+  return ['ok','On track','Calories and protein are where they should be. Keep it going.'];
+}
+let _jOpen={};
+function jToggle(d){ _jOpen[d]=!jIsOpen(d); renderEat(); }
+function jIsOpen(d){ return d in _jOpen ? _jOpen[d] : (d===iso(0)||d===iso(-1)); }
 function eatJournal(){
-  const r=weekReport();
-  let h=fsec('Macros Report','Calories from protein, carbs and fat, this week.');
+  const r=weekReport(), n=HF.data.nutrition||{};
+  let h=fsec('Macros Report','Your last 7 days — calories from protein, carbs and fat.');
+  const tip=journalTip(r);
   h+='<div class="mrep"><div class="mrep-top">'+
      '<div><b>'+(r.logged?r.avgKcal.toLocaleString():'—')+'</b><span>avg kcal a day</span></div>'+
-     '<div><b>'+(r.logged?r.avgP+' g':'—')+'</b><span>avg protein</span></div>'+
-     '<div><b>'+r.onTarget+'/'+r.logged+'</b><span>days on target</span></div></div>'+
+     '<div><b>'+(r.logged?r.avgP+'<i>'+(n.pt?' / '+n.pt:'')+' g</i>':'—')+'</b><span>avg protein</span></div>'+
+     '<div><b>'+r.onTarget+'<i> of '+r.logged+'</i></b><span>days on target</span></div></div>'+
      macroChart(r)+
-     '<div class="mrep-key"><span><i class="p"></i>Protein</span><span><i class="c"></i>Carbs</span><span><i class="f"></i>Fat</span><span><i class="g"></i>Target</span></div></div>';
+     '<div class="mrep-key"><span><i class="p"></i>Protein</span><span><i class="c"></i>Carbs</span><span><i class="f"></i>Fat</span><span><i class="g"></i>Target</span></div>'+
+     '<div class="jtip '+tip[0]+'"><i></i><div><b>'+tip[1]+'</b><span>'+tip[2]+'</span></div></div></div>';
   h+=fsec('Food Journal','The last two weeks, newest first.');
   let any=false;
   for(let i=0;i<14;i++){
     const d=iso(-i), list=mealsFor(d);
     if(!list.length) continue; any=true;
-    const t=mealTotals(d);
-    h+='<div class="jday"><span>'+journalDayName(d)+'</span><span>'+list.length+(list.length>1?' meals':' meal')+' · '+t.kcal.toLocaleString()+' kcal</span></div>'+
-       '<div class="jlist">'+list.map((m,j)=>({m,j})).reverse().map(x=>journalCard(x.m,d,x.j)).join('')+'</div>';
+    const t=mealTotals(d), open=jIsOpen(d);
+    let v=['','']; 
+    if(d===iso(0)) v=['now','So far'];
+    else if(n.cal) v=t.kcal>n.cal*1.1?['over','Over']:t.kcal<n.cal*0.85?['under','Under']:['ok','On target'];
+    h+='<div class="nlist jdc'+(open?' open':'')+'"><div class="jdh" onclick="jToggle(\''+d+'\')">'+
+       '<div class="jdh-t"><b>'+journalDayName(d)+'</b><span>'+list.length+(list.length>1?' meals':' meal')+' · '+t.kcal.toLocaleString()+' kcal</span></div>'+
+       (v[1]?'<span class="jv '+v[0]+'"><i></i>'+v[1]+'</span>':'')+'<span class="jchev">›</span></div>'+
+       (open?list.map((m,j)=>({m,j})).reverse().map(x=>journalCard(x.m,d,x.j)).join(''):'')+'</div>';
   }
   if(!any) h+='<div class="nempty">'+ic('food')+'<div class="nempty-t">Your journal starts with your first meal</div>'+
     '<div class="nempty-s">Scan a plate, a barcode or a label, or add a meal by hand.</div>'+
