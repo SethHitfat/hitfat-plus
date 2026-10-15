@@ -406,7 +406,7 @@ ok("challenges as collections", ex.indexOf('Collections')>0 && ex.indexOf('fcoll
 noThrow("a category opens", function(){ openPlanGroup('Strength'); });
 ok("...listing its plans", document.getElementById('lib-body').innerHTML.indexOf('HITFAT Strong')>0);
 ok("NEW badge used",       ex.indexOf('fw-new')>0);
-ok("This Week is type, not photos", ex.indexOf('class="fweek"')>0 && (ex.match(/class="fweek"/g)||[]).length>=3 && ex.indexOf(' min · ')>0);
+ok("This Week is type, not photos", ex.indexOf('class="fweek"')>0 && (ex.match(/class="fweek"/g)||[]).length>=3 && /fw-lv fw-(beginner|intermediate|advanced)/.test(ex));
 setTrSeg('plans');
 var _plansHtml=document.getElementById('tr-body').innerHTML;
 ok("plans lead with Made For You", _plansHtml.indexOf('fmade')>0);
@@ -4134,6 +4134,19 @@ print("\n── CREAM BUDDY STAYS CREAM ──");
   scSet('water',8); scSet('steps',8000); scRender(); scPoke();
   ok("a red Buddy giggles", called==='giggle' && scRed());
   bellReact=r0;
+})();
+print("\n── THIS WEEK · BEGINNER FRIENDLY ──");
+(function(){
+  var keepS=HF.data.sessions; HF.data.sessions={};
+  renderTrain && renderTrain();
+  var h=document.getElementById('tr-body').innerHTML, first=h.indexOf('class="fweek"'), firstLv=(h.slice(first).match(/fw-lv fw-(\w+)/)||[])[1];
+  var hasBeg=PROGRAMS.some(function(p){ return !p.weeks && !p.rehab && p.level==='Beginner'; });
+  ok("new members see the easy ones first", !hasBeg || firstLv==='beginner', firstLv);
+  ok("...and are told so", h.indexOf('easy ones come first')>0);
+  HF.data.sessions={a:{date:new Date().toISOString()},b:{date:new Date().toISOString()},c:{date:new Date().toISOString()}};
+  renderTrain && renderTrain();
+  ok("after a few workouts the week is the usual mix", document.getElementById('tr-body').innerHTML.indexOf('A new set of sessions every week.')>0);
+  HF.data.sessions=keepS;
 })();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

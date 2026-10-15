@@ -49,7 +49,7 @@ function fweekCard(p,badge,i){
     '<div class="fw-top">'+(badge?'<span class="fw-new">'+badge+'</span>':'<span></span>')+lockTag(p)+'</div>'+
     '<div class="fw-b"><div class="fw-g">'+(p.goal||'Workout').toUpperCase()+'</div>'+
     '<div class="fw-t">'+p.name+'</div>'+
-    '<div class="fw-m"><b>'+p.dur+'</b> min · '+p.level+'</div>'+
+    '<div class="fw-m"><b>'+p.dur+'</b> min <span class="fw-lv fw-'+String(p.level||'').toLowerCase()+'">'+p.level+'</span></div>'+
     '<div class="fw-k">'+(n?n+' moves · ':'')+fweekKit(p)+'</div></div></div>';
 }
 /* tall activity tile — photo with a light label bar across the bottom */
@@ -318,10 +318,13 @@ function trExplore(){
 
   // deterministic weekly rotation so the sampler changes but never mid-session
   const wk=Math.floor(new Date().getTime()/6048e5);
-  const rotated=singles.map((_,i)=>singles[(wk+i)%singles.length]);
+  let rotated=singles.map((_,i)=>singles[(wk+i)%singles.length]);
+  /* new to HITFAT+ (under 3 workouts done): the easy ones first */
+  const fresh=Object.keys(HF.data.sessions||{}).length<3;
+  if(fresh){ const lv={Beginner:0,Intermediate:1,Advanced:2}; rotated=rotated.map((p,i)=>[p,i]).sort((a,b)=>((lv[a[0].level]??1)-(lv[b[0].level]??1))||(a[1]-b[1])).map(x=>x[0]); }
 
   let h=(contentOpen()?'':fyJoinCard())+(t42InTrain()?t42HomeCard():'');
-  h+=fsec('This Week','A new set of sessions every week.');
+  h+=fsec('This Week',fresh?'New here? The easy ones come first.':'A new set of sessions every week.');
   h+='<div class="hscroll">'+take(rotated,6).map((p,i)=>fweekCard(p,i<2?'NEW':'',i)).join('')+'</div>';
 
   h+=fsec('Top Programs','HITFAT signature programs first',true);

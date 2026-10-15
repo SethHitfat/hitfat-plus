@@ -3037,3 +3037,8 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fw-m{font-size:13px;margin-top:8px;opacity:.9;}
 .fw-m b{font-size:15px;font-weight:800;}
 .fw-k{font-size:11px;margin-top:2px;opacity:.68;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* the level, at a glance: green easy, gold middle, white-and-red hard */
+.fw-lv{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.2px;vertical-align:1px;}
+.fw-beginner{background:#2E9E5B;color:#FFFFFF;}
+.fw-intermediate{background:#FFC20E;color:#1A1A1A;}
+.fw-advanced{background:#FFFFFF;color:#E30613;}
