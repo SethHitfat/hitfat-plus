@@ -49,11 +49,13 @@ function scFast(d){
 function scHabits(d,days){
   d=d||iso(0);
   var dy=scDaily(d), w=scWorkouts(d,days), m=(HF.data.meals&&HF.data.meals[d]||[]).length, out=[];
-  out.push({k:'workout', n:'Workout', ic:'workout', v:Math.min(1,w), val:w?'Siap':'0/1'});
-  out.push({k:'meal',    n:'Makan',   ic:'food',    v:Math.min(1,m/SC_MEALS), val:m+'/'+SC_MEALS});
-  out.push({k:'water',   n:'Air',     ic:'water',   v:Math.min(1,dy.water/SC_WATER), val:dy.water+'/'+SC_WATER});
-  out.push({k:'steps',   n:'Langkah', ic:'steps',   v:Math.min(1,dy.steps/SC_STEPS), val:dy.steps>=1000?(Math.round(dy.steps/100)/10)+'k':String(dy.steps)});
-  if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Puasa', ic:'clock', v:Math.min(1,f.hrs/f.target), val:Math.floor(f.hrs)+'/'+f.target+'j'}); }
+  var k1=function(n){ return n>=1000?(Math.round(n/100)/10)+'k':String(n); };
+  out.push({k:'workout', n:'Workout', ic:'workout', c:'#E30613', v:Math.min(1,w), val:Math.min(w,1)+'/1'});
+  out.push({k:'meal',    n:'Makan',   ic:'food',    c:'#FF8A3D', v:Math.min(1,m/SC_MEALS), val:Math.min(m,SC_MEALS)+'/'+SC_MEALS});
+  out.push({k:'water',   n:'Air',     ic:'water',   c:'#3B82F6', v:Math.min(1,dy.water/SC_WATER), val:Math.min(dy.water,SC_WATER)+'/'+SC_WATER});
+  out.push({k:'steps',   n:'Langkah', ic:'steps',   c:'#22C55E', v:Math.min(1,dy.steps/SC_STEPS), val:k1(dy.steps)+'/'+k1(SC_STEPS)});
+  if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Puasa', ic:'clock', c:'#A855F7', v:Math.min(1,f.hrs/f.target), val:Math.min(Math.floor(f.hrs),f.target)+'/'+f.target+'j'}); }
+  for(var i=0;i<out.length;i++) if(out[i].v>=1) out[i].val='✓ '+out[i].val;
   return out;
 }
 function scScore(d,days){
@@ -100,11 +102,11 @@ function scArc(s){
     '<circle cx="'+k[0]+'" cy="'+k[1]+'" r="9" fill="var(--surface)" stroke="'+c+'" stroke-width="5"/></svg>';
 }
 function scRing(h){
-  var c=h.v>=1?'#22C55E':'#E30613';
+  var c=h.c||'#E30613';
   return '<button class="sc-h'+(h.v>=1?' full':'')+'" onclick="scTap(\''+h.k+'\')" aria-label="'+h.n+'">'+
     '<span class="sc-ring"><svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" class="sc-ring-t"/>'+
     (h.v>0?'<circle cx="26" cy="26" r="22" class="sc-ring-v" pathLength="100" stroke="'+c+'" stroke-dasharray="'+Math.round(h.v*100)+' 100"/>':'')+
-    '</svg><span class="sc-ic">'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'')+'</span>'+
+    '</svg><span class="sc-ic"'+(h.v>0?' style="color:'+c+'"':'')+'>'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'')+'</span>'+
     '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span></button>';
 }
 /* the card takes the score's colour, as Simple's screens do (A); Bell's

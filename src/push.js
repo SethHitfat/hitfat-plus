@@ -92,7 +92,7 @@ function pushInvite(){
   var st=pushState(), no=false;
   try{ no=localStorage.getItem('hf_push_no')==='1'; }catch(e){}
   if(no || (st!=='off' && st!=='install')) return '';
-  return '<div class="pu-inv"><button class="pu-inv-b" onclick="pushEnable()">🔔 Biar Bell ingatkan anda pukul 8 malam</button>'+
+  return '<div class="pu-inv"><button class="pu-inv-b" onclick="pushEnable()">🔔 Hidupkan peringatan Bell</button>'+
     '<button class="pu-inv-x" aria-label="Tutup" onclick="pushNo()">✕</button></div>';
 }
 function pushNo(){ try{ localStorage.setItem('hf_push_no','1'); }catch(e){} if(typeof scRender==='function') scRender(); }

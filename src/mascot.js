@@ -18,7 +18,11 @@ function mascotRender(){
   /* Home carries the HITFAT Score (score.js), Bell in its arc; the compact card is the fallback */
   if(typeof scRender==='function') scRender();
   else M.render($('mascot-home'), { mode:'compact', dates:d, onClick:function(){ switchTab('progress'); } });
-  M.render($('mascot-progress'), { mode:'full', dates:d });
+  var st=M.render($('mascot-progress'), { mode:'full', dates:d });
+  /* the file's hint reads "Aktif 2 hari lagi ... naik ke Aktif" when the next
+     stage is itself called Aktif: say it without the clash */
+  var el=$('mascot-progress'), hint=el && el.querySelector && el.querySelector('.hfm-hint');
+  if(hint && st && st.nextName) hint.innerHTML='Workout <b>'+st.daysToNext+' hari lagi</b> minggu ni untuk naik ke <b>'+st.nextName+'</b>.';
 }
 /* a workout finished, in any program */
 function mascotDone(){
