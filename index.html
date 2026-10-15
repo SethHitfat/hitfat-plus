@@ -14941,7 +14941,7 @@ function acBack(){
 function academyHTML(){
   const n=acCount(), all=AC_EPS.length, nx=acNext();
   let h='<div class="ac-hero"><span class="fw-ic">'+glyph('food')+'</span><div class="k">HITFAT+ · '+all+' episod video</div>'+
-    '<div class="t">Kursus Pemakanan</div>'+
+    '<div class="t">Nutrition Academy</div>'+
     '<div class="s">'+all+' episod pendek tentang makan untuk turun lemak, cara Malaysia: nasi, mamak, kenduri, Ramadan. '+
     'Setiap episod ada kuiz ringkas dan satu benda untuk terus buat dalam app.</div>'+
     '<div class="ac-prog"><div class="pbar"><i style="width:'+Math.round(n/all*100)+'%"></i></div>'+
@@ -14977,7 +14977,7 @@ function acRow(e){
 }
 function acOpen(id){
   const e=acEp(id); if(!e) return;
-  if(acLocked(e) && needPlus('Kursus Pemakanan penuh ada dalam HITFAT+.')) return;
+  if(acLocked(e) && needPlus('Nutrition Academy penuh ada dalam HITFAT+.')) return;
   if($('academy').style.display!=='block'){ return openAcademy(id); }
   acView=id; acQuiz=null; renderAcademy(); $('screen').scrollTop=0;
 }
@@ -15087,7 +15087,7 @@ function acHomeCard(){
   const nx=acNext(); if(!nx || !AC_EPS.some(acReady)) return '';
   const n=acCount(), num=String(acNum(nx)).padStart(2,'0');
   return '<div class="ac-card" onclick="acOpen(\''+nx.id+'\')"><span class="ic">'+glyph('food')+'</span><div class="tx">'+
-    '<div class="k">Kursus Pemakanan'+(n?' · '+n+'/'+AC_EPS.length:'')+'</div>'+
+    '<div class="k">Nutrition Academy'+(n?' · '+n+'/'+AC_EPS.length:'')+'</div>'+
     '<div class="t">'+(n?'Sambung: ':'')+'Ep'+num+' '+hesc(nx.t)+'</div>'+
     '<div class="s">'+(n?'Satu episod pendek dan kuiz 3 soalan.':AC_EPS.length+' episod tentang makan untuk turun lemak, cara Malaysia.')+'</div></div><span class="pdx-chev">›</span></div>';
 }
