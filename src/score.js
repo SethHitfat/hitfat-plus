@@ -134,7 +134,7 @@ function scHTML(){
   if(st.k==='rust'){ poster=SC_ART.rust||poster; if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+poster+');mask-image:url('+poster+')"></span>'; }
   var img=poster?'<img class="sc-poster" src="'+poster+'" alt="Bell'+(st.k==='rust'?' berkarat':', tahap '+lv)+'">'+fx:'';
   return '<div class="sc" style="--scc:'+scRGB(c)+'">'+
-    '<div class="sc-head"><div><div class="sc-k">Skor HITFAT · Hari ini</div><div class="sc-n" style="color:'+scColor(s)+'"><i>'+s+'</i><span>/100</span></div></div>'+
+    '<div class="sc-head"><div><div class="sc-k">HITFAT Score · Today</div><div class="sc-n" style="color:'+scColor(s)+'"><i>'+s+'</i><span>/100</span></div></div>'+
       scChip()+'</div>'+
     '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Sentuh Bell">'+img+'</div></div>'+
     '<div class="sc-say'+(st.k?' sc-say-'+st.k:'')+'" id="sc-say">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+

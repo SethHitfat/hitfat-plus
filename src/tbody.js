@@ -297,7 +297,7 @@ ok("weight chart needs 2 points", weightChart([{iso:iso(0),kg:80}])==='');
 HF.markDone('a',{name:'X',mins:30});
 noThrow("period switch", function(){ setPgP('month'); setPgP('week'); });
 ok("the window is a segmented control at the top", document.getElementById('prog-body').innerHTML.indexOf('pgper')>0 &&
-   document.getElementById('prog-body').innerHTML.indexOf('pgper')<document.getElementById('prog-body').innerHTML.indexOf('Skor HITFAT'));
+   document.getElementById('prog-body').innerHTML.indexOf('pgper')<document.getElementById('prog-body').innerHTML.indexOf('HITFAT Score'));
 ok("one score in the app: Progress shows the HITFAT Score, not a second number out of 100",
    document.getElementById('prog-body').innerHTML.indexOf('class="pgsk"')>0 && document.getElementById('prog-body').innerHTML.indexOf('Progress Score')<0 &&
    document.getElementById('prog-body').innerHTML.indexOf('/25')<0 && document.getElementById('prog-body').innerHTML.indexOf('pgnotes')>document.getElementById('prog-body').innerHTML.indexOf('pgsk'));
@@ -4003,7 +4003,7 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
   ok("...and only once", HF.data.sc.met===1 && document.getElementById('scc').style.display==='none');
   var h=document.getElementById('mascot-home').innerHTML;
   ok("Misi hari ini under the rings: points to hari padu, the quickest way, a line from the coach", h.indexOf('MISI HARI INI')>0 && h.indexOf('mata</b> ke hari padu')>0 && h.indexOf('Coach:')>0 && h.indexOf('Coach Seth')<0 && h.indexOf('COACH BELL')<0 && h.indexOf('scx-bar')>0);
-  ok("today's plan under the card", h.indexOf('Rancangan hari ini')>0 && h.indexOf('scWaterTap()')>0);
+  ok("today's plan under the card", h.indexOf("Today's Plan")>0 && h.indexOf('glasses of water to go')>0 && h.indexOf('scWaterTap()')>0);
   scTap('water');
   ok("one tap on water adds a glass, and Bell's banner offers an undo", HF.data.daily[iso(0)].water===1 && document.getElementById('scb').className.indexOf('on')>0 && document.getElementById('scb').innerHTML.indexOf('Batal')>0);
   HF.data.ifs={plan:{start:iso(0),endMin:1200},log:[]};

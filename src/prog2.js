@@ -294,7 +294,7 @@ function pgScoreCard(sc){
   const dn=d=>new Date(d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short'}).slice(0,2);
   const bars=ds.map(x=>'<div class="pgsk-b'+(x.iso===iso(0)?' now':'')+'"><i style="height:'+Math.max(3,x.v)+'%;background:'+(x.v?scColor(x.v):'transparent')+'"></i>'+
      (wk?'<span>'+dn(x.iso)+'</span>':'')+'</div>').join('');
-  return fsec('Skor HITFAT',(wk?'Each day this week':'Each day, the last 30 days')+', out of 100.')+
+  return fsec('HITFAT Score',(wk?'Each day this week':'Each day, the last 30 days')+', out of 100.')+
     '<div class="pgsk"><div class="pgsk-top"><div class="pgsk-avg"><b style="color:'+scColor(avg)+'">'+avg+'</b><span>average</span></div>'+
     '<div class="pgsk-st"><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+padu+'</b><span>hari padu</span></div>'+
     '<div><b>'+(best.v?best.v:'–')+'</b><span>best day</span></div></div></div>'+
