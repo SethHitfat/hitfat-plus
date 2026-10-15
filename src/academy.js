@@ -225,16 +225,23 @@ function academyHTML(){
     (nx?'<button class="bigbtn" onclick="acOpen(\''+nx.id+'\')">'+glyph('play')+(n?'Sambung: Ep'+String(acNum(nx)).padStart(2,'0'):'Mula Episod 1')+'</button>'
        :'<div class="ac-cert">'+glyph('medal')+'<div><b>Tahniah, anda dah habis semua episod.</b><br>Ulang mana-mana episod bila perlu.</div></div>')+
     '</div>';
+  /* each module a card that folds; the one with the next episode starts open (16 Oct) */
   AC_MODS.forEach((m,mi)=>{
-    const eps=AC_EPS.filter(e=>e.m===mi), d=eps.filter(acDone).length;
-    h+='<div class="ac-mod"><div class="ac-mod-h"><div><div class="k">Modul '+(mi+1)+'</div><div class="t">'+m[0]+'</div>'+
-      '<div class="s">'+m[1]+'</div></div><span class="ac-mod-n">'+d+'/'+eps.length+'</span></div><div class="ac-eps">'+
-      eps.map(acRow).join('')+'</div></div>';
+    const eps=AC_EPS.filter(e=>e.m===mi), d=eps.filter(acDone).length, open=acModOpen(mi), full=d===eps.length;
+    h+='<div class="ac-mod acg'+(open?' open':'')+'"><div class="ac-mod-h" onclick="acModToggle('+mi+')">'+
+      '<span class="acg-n'+(full?' full':'')+'">'+(full?glyph('check'):(mi+1))+'</span>'+
+      '<div class="acg-tx"><div class="t">'+m[0]+'</div><div class="s">'+m[1]+'</div>'+
+      '<div class="acg-bar"><i style="width:'+Math.round(d/eps.length*100)+'%"></i></div></div>'+
+      '<span class="ac-mod-n">'+d+'/'+eps.length+'</span><span class="jchev">›</span></div>'+
+      (open?'<div class="ac-eps">'+eps.map(acRow).join('')+'</div>':'')+'</div>';
   });
   h+='<div class="aic-fine">Kandungan ini untuk pendidikan umum, bukan nasihat perubatan. Jika ada penyakit seperti diabetes, '+
      'darah tinggi atau buah pinggang, atau sedang hamil, rujuk doktor atau pakar dietetik dulu.</div>';
   return h;
 }
+let _acMod={};
+function acModOpen(mi){ if(mi in _acMod) return _acMod[mi]; const nx=acNext(); return nx?nx.m===mi:false; }
+function acModToggle(mi){ _acMod[mi]=!acModOpen(mi); if($('academy')&&$('academy').style.display==='block') renderAcademy(); else renderEat(); }
 function acRow(e){
   const done=acDone(e), lock=acLocked(e), ready=acReady(e), num=String(acNum(e)).padStart(2,'0');
   const tag=done?'':lock?'<span class="ac-tag">'+glyph('lock')+'</span>':!ready?'<span class="ac-tag soon">Akan datang</span>':
@@ -343,7 +350,12 @@ function acHomeWorkout(){
 }
 
 /* ── Eat's Learn segment: the same course page, in place ── */
-function eatLearn(){ $('eat-body').innerHTML='<div class="ac-in-eat">'+(typeof d6LearnCard==='function'?d6LearnCard():'')+(typeof ifHomeCard==='function'?ifHomeCard():'')+academyHTML()+'</div>'; }
+function eatLearn(){
+  const tiles=(typeof d6LearnCard==='function'?d6LearnCard():'')+(typeof ifLearnTile==='function'?ifLearnTile():'');
+  $('eat-body').innerHTML='<div class="ac-in-eat">'+
+    (tiles?fsec('Courses','Follow along, day by day.')+'<div class="lcourses">'+tiles+'</div>':'')+
+    '<div class="lc-gap"></div>'+academyHTML()+'</div>';
+}
 
 /* ── Home: carry on where you left off ── */
 function acHomeCard(){

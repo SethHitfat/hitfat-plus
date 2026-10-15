@@ -313,6 +313,14 @@ function ifLocked(title,text){
 }
 
 /* ── Home: the IF card, live while fasting ── */
+/* Eat → Learn: IF as a colour tile beside Diet 6 (16 Oct); Home keeps ifHomeCard */
+function ifLearnTile(){
+  var d=ifData(), p=ifPlan(), sub='4-week plan + timer';
+  if(ifOwned() && d.active) sub='Fasting · '+ifDur(Date.now()-d.active.at);
+  else if(ifOwned() && p && !p.blocked) sub='Week '+(ifWeek()+1)+' · tap to start';
+  return '<div class="lib-t lct if-card" onclick="openIF()" style="--wk:#2F4A68;--wkt:#FFFFFF"><span class="fw-ic">'+glyph('clock')+'</span>'+
+    '<b>16:8</b><div class="lt">IF HITFAT</div><div class="ls">'+sub+'</div></div>';
+}
 function ifHomeCard(){
   var d=ifData(), p=ifPlan(), sub, t, k='IF HITFAT · Intermittent Fasting';
   if(ifOwned() && d.active){

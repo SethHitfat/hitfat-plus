@@ -568,8 +568,9 @@ function hubRow(){
 }
 /* Eat → Belajar: the course above the Academy */
 function d6LearnCard(){
+  /* Eat → Learn: a colour tile beside IF's, the Library's look (16 Oct) */
   var owned=d6Owned(), done=d6Done();
-  return '<div class="ac-card d6-home" onclick="openD6()"><span class="ic">'+glyph('food')+'</span><div class="tx">'+
-    '<div class="k">Kursus · '+D6_TOT+' hari'+(owned&&done?' · '+done+'/'+D6_TOT:'')+'</div><div class="t">'+hesc(D6_NAME)+'</div>'+
-    '<div class="s">'+hesc(D6_SUB)+'</div></div><span class="pdx-chev">›</span></div>';
+  return '<div class="lib-t lct d6-home" onclick="openD6()" style="--wk:#C4561E;--wkt:#FFFFFF"><span class="fw-ic">'+glyph('food')+'</span>'+
+    '<b>'+(owned&&done?done+'<i>/'+D6_TOT+'</i>':D6_TOT+'<i> hari</i>')+'</b>'+
+    '<div class="lt">'+hesc(D6_NAME)+'</div><div class="ls">'+(owned&&done?'Hari '+done+' daripada '+D6_TOT:'Program makan 6 minggu')+'</div></div>';
 }

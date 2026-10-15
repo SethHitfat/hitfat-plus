@@ -3327,3 +3327,32 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .jchev{display:inline-block;}
 .jdc .jmac{margin-top:1px;color:var(--dim2);}
 .nlist.jdc.open .jdh .jchev{transform:rotate(90deg)!important;}
+
+/* ── Eat · Learn (16 Oct): courses as colour tiles, Academy modules as folding cards ── */
+.lcourses{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.lib-t.lct{margin:0;min-height:128px;}
+.lib-t.lct b i{font-style:normal;font-size:14px;font-weight:700;letter-spacing:0;opacity:.8;}
+.lib-t.lct .lt{font-size:14px;line-height:1.15;}
+.ac-in-eat .ac-hero{margin-top:0;}
+.ac-mod.acg{margin:0;border-radius:18px;background:var(--surface);overflow:hidden;}
+.ac-mod.acg + .ac-mod.acg{margin-top:10px;}
+:root:not([data-theme="light"]) .ac-mod.acg{background:#1C1C1E;}
+:root[data-theme="light"] .ac-mod.acg{background:#FFFFFF;box-shadow:var(--lift-1);}
+.acg .ac-mod-h{align-items:center;margin:0;padding:13px 14px;cursor:pointer;gap:12px;}
+.acg-n{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:14px;font-weight:800;color:var(--hitfat);background:var(--accent-wash);}
+.acg-n.full{background:var(--hitfat);color:#FFFFFF;}
+.acg-n .gly{width:16px;height:16px;}
+.acg-tx{flex:1;min-width:0;}
+.acg .ac-mod-h .t{font-size:16px;font-weight:700;margin:0;}
+.acg .ac-mod-h .s{font-size:12px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.acg-bar{height:3px;border-radius:9px;background:var(--surface2);margin-top:7px;overflow:hidden;}
+:root:not([data-theme="light"]) .acg-bar{background:rgba(255,255,255,.08);}
+.acg-bar i{display:block;height:100%;background:var(--hitfat);border-radius:9px;}
+.acg .jchev{display:inline-block;color:var(--dim2);font-size:20px;line-height:1;transition:transform .2s;}
+.ac-mod.acg.open .ac-mod-h .jchev{transform:rotate(90deg)!important;}
+.acg .ac-eps{gap:0;}
+.acg .ac-ep{background:none;border-radius:0;position:relative;padding:11px 14px;}
+.acg .ac-ep::before{content:'';position:absolute;top:0;left:14px;right:0;height:.5px;background:var(--sep);}
+.acg .ac-ep .n{width:30px;height:30px;font-size:12px;}
+.acg .ac-ep .t{font-size:15px;}
+.lc-gap{height:22px;}
