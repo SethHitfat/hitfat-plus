@@ -261,12 +261,23 @@ function scRender(){
       else scReact(R[_scSay]||'cheer');
     } else if(scRed() && _scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
   }
+  /* (16 Oct) the moment Buddy turns red, live: a squash, a red burst, the cheer */
+  var red=scRed();
+  if(scRender._red===false && red) scTurnRed();
+  scRender._red=red;
   if(typeof scCheckMeet==='function' && scCheckMeet()) return;
   if(scCheckShine()) return;
   if(scCheckFreeze()) return;
   if(scCheckRust()) return;
   if(typeof scCheckWeekly==='function' && scCheckWeekly()) return;
   scCheckStreak();
+}
+function scTurnRed(){
+  var stg=document.querySelector('#mascot-home .sc-stage'); if(!stg) return;
+  var b=document.createElement('div'); b.className='sc-burst'; b.innerHTML='<i></i><i></i><b></b>';
+  stg.appendChild(b); stg.className=stg.className.replace(/ ?sc-turnred/g,'')+' sc-turnred';
+  setTimeout(function(){ if(b.parentNode) b.parentNode.removeChild(b); stg.className=stg.className.replace(/ ?sc-turnred/g,''); },1800);
+  setTimeout(function(){ scReact('cheer'); scBubSet("I'm RED! 🔥 Strong day!"); },420);
 }
 function scCheckFreeze(){
   if($('scc').style.display==='flex') return false;

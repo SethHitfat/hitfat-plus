@@ -5670,6 +5670,29 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
 :root[data-theme="light"] .screen:has(> #home:not([style*="none"])){
   background:linear-gradient(180deg,#F23B3B 0,#FF6F66 100px,#FFA39B 200px,#FFD5D0 290px,#FFF1EF 360px,var(--bg) 410px) 0 0/100% 430px no-repeat local,var(--bg);}
 
+/* the arc's track in the dark theme: white, faint, so the half ring reads on dark red (16 Oct) */
+:root:not([data-theme="light"]) #mascot-home .sc-page .sc-arc-t{stroke:rgba(255,255,255,.16);}
+
+/* ── the moment Buddy turns red (16 Oct) ──
+   Buddy squashes and springs, a red glow floods out from behind, two rings
+   ripple out, then the red cheer plays */
+.sc-burst{position:absolute;inset:0;pointer-events:none;z-index:0;}
+.sc-burst b{position:absolute;left:-30%;right:-30%;top:-20%;bottom:-10%;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,40,40,.55),rgba(227,6,19,.25) 50%,rgba(227,6,19,0));
+  -webkit-animation:scFlood 1.4s ease-out .2s both;animation:scFlood 1.4s ease-out .2s both;}
+.sc-burst i{position:absolute;left:50%;top:58%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;
+  border:6px solid rgba(227,6,19,.85);box-shadow:0 0 24px rgba(255,40,40,.6);
+  -webkit-animation:scRipple 1s cubic-bezier(.2,.7,.3,1) .3s both;animation:scRipple 1s cubic-bezier(.2,.7,.3,1) .3s both;}
+.sc-burst i + i{-webkit-animation-delay:.5s;animation-delay:.5s;border-width:3px;}
+@-webkit-keyframes scFlood{0%{opacity:0;-webkit-transform:scale(.4)}30%{opacity:1}100%{opacity:0;-webkit-transform:scale(1.15)}}
+@keyframes scFlood{0%{opacity:0;transform:scale(.4)}30%{opacity:1}100%{opacity:0;transform:scale(1.15)}}
+@-webkit-keyframes scRipple{0%{opacity:0;-webkit-transform:scale(.35)}20%{opacity:1}100%{opacity:0;-webkit-transform:scale(2.8)}}
+@keyframes scRipple{0%{opacity:0;transform:scale(.35)}20%{opacity:1}100%{opacity:0;transform:scale(2.8)}}
+.sc-turnred .sc-bell{z-index:2;-webkit-animation:scTurnPop .75s cubic-bezier(.3,1.5,.5,1) both !important;animation:scTurnPop .75s cubic-bezier(.3,1.5,.5,1) both !important;}
+@-webkit-keyframes scTurnPop{0%{-webkit-transform:scale(1)}30%{-webkit-transform:scale(1.08,.84)}62%{-webkit-transform:scale(.94,1.14) translateY(-10px)}100%{-webkit-transform:scale(1)}}
+@keyframes scTurnPop{0%{transform:scale(1)}30%{transform:scale(1.08,.84)}62%{transform:scale(.94,1.14) translateY(-10px)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion: reduce){ .sc-burst{display:none;} .sc-turnred .sc-bell{-webkit-animation:none !important;animation:none !important;} }
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -7126,12 +7149,23 @@ function scRender(){
       else scReact(R[_scSay]||'cheer');
     } else if(scRed() && _scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
   }
+  /* (16 Oct) the moment Buddy turns red, live: a squash, a red burst, the cheer */
+  var red=scRed();
+  if(scRender._red===false && red) scTurnRed();
+  scRender._red=red;
   if(typeof scCheckMeet==='function' && scCheckMeet()) return;
   if(scCheckShine()) return;
   if(scCheckFreeze()) return;
   if(scCheckRust()) return;
   if(typeof scCheckWeekly==='function' && scCheckWeekly()) return;
   scCheckStreak();
+}
+function scTurnRed(){
+  var stg=document.querySelector('#mascot-home .sc-stage'); if(!stg) return;
+  var b=document.createElement('div'); b.className='sc-burst'; b.innerHTML='<i></i><i></i><b></b>';
+  stg.appendChild(b); stg.className=stg.className.replace(/ ?sc-turnred/g,'')+' sc-turnred';
+  setTimeout(function(){ if(b.parentNode) b.parentNode.removeChild(b); stg.className=stg.className.replace(/ ?sc-turnred/g,''); },1800);
+  setTimeout(function(){ scReact('cheer'); scBubSet("I'm RED! 🔥 Strong day!"); },420);
 }
 function scCheckFreeze(){
   if($('scc').style.display==='flex') return false;

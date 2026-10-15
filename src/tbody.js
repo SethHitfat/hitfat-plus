@@ -4164,5 +4164,15 @@ print("\n── THIS WEEK · BEGINNER FRIENDLY ──");
   ok("an empty day's button is a glass of water, as its line says", scScore()===0 && scAct() && scAct()[0]==='+1 glass of water');
   HF.data.daily=kd; HF.data.meals=km; HF.data.sessions=ks;
 })();
+(function(){
+  var kd=HF.data.daily, km=HF.data.meals, ks=HF.data.sessions, fired=0, keep=scTurnRed;
+  HF.data.daily={}; HF.data.meals={}; HF.data.sessions={}; scTurnRed=function(){ fired++; };
+  scRender._red=undefined; scRender(); var d=HF.data.daily[iso(0)]=(HF.data.daily[iso(0)]||{water:0,steps:0});
+  scRender(); ok("no burst on a plain re-render", fired===0);
+  d.water=8; d.steps=8000; scRender();
+  ok("crossing 50 turns Buddy red with one burst", scRed() && fired===1);
+  scRender(); ok("...and only once", fired===1);
+  scTurnRed=keep; HF.data.daily=kd; HF.data.meals=km; HF.data.sessions=ks; scRender._red=undefined;
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");
