@@ -299,6 +299,25 @@ function fyHero(p){
     '<div class="bt"><button class="go" onclick="event.stopPropagation();playSingle(\''+p.id+'\')">▶ Start</button>'+
     '<button class="dt" onclick="event.stopPropagation();openProgram(\''+p.id+'\')">Details</button></div></div></div>';
 }
+/* More for You (16 Oct): a tall photo card that says why it was picked, the
+   minutes big, the level pill, and a round Start button right on the card */
+function fyWhy(p,goalKey,lvl){
+  const kit=fweekKit(p);
+  if(goalKey && p.goal===goalKey) return ['flame','For your goal'];
+  if(kit==='No equipment') return ['home','No equipment'];
+  if(p.dur<=15) return ['clock','Only '+p.dur+' min'];
+  if(p.level===lvl) return ['target','Your level'];
+  return ['star','Something new'];
+}
+function fyMoreCard(p,goalKey,lvl){
+  const w=fyWhy(p,goalKey,lvl), lv=String(p.level||'');
+  return '<div class="fmc" onclick="openProgram(\''+p.id+'\')">'+
+    '<div class="im" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.tall):'')+'"></div><div class="ov"></div>'+
+    '<span class="why">'+glyph(w[0])+w[1]+'</span>'+lockTag(p)+
+    '<div class="in"><div class="t">'+p.name+'</div>'+
+    '<div class="m"><b>'+p.dur+'</b> min'+(lv?' <span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span>':'')+'</div></div>'+
+    '<button class="go" aria-label="Start '+p.name+'" onclick="event.stopPropagation();playSingle(\''+p.id+'\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button></div>';
+}
 /* a quick workout as one tidy row, like All Plans */
 function fyQuickRow(p){
   const lv=String(p.level||'');
@@ -341,7 +360,7 @@ function trForYou(){
   const day=Math.floor(Date.now()/864e5), hero=pick.length?pick[day%pick.length]:null;
   if(hero){ h+=fsec("Today's Pick",pickSub); h+=fyHero(hero); }
   const rest=pick.filter(p=>p!==hero);
-  if(rest.length){ h+=fsec('More for You',''); h+='<div class="hscroll">'+rest.map((p,i)=>flandCard(p,i<1?'NEW':'')).join('')+'</div>'; }
+  if(rest.length){ h+=fsec('More for You','Picked for your goal and level.'); h+='<div class="hscroll fmore">'+rest.map(p=>fyMoreCard(p,goalKey,lvl)).join('')+'</div>'; }
   if(quick.length){
     h+=fsec('Quick Workouts','Twenty minutes or less.');
     h+='<div class="pl-list">'+quick.slice(0,5).map(fyQuickRow).join('')+'</div>';
