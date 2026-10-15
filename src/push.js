@@ -32,11 +32,11 @@ function pushReg(){ return navigator.serviceWorker.register('/sw.js',{scope:'/'}
 function pushEnable(){
   var st=pushState();
   if(st==='install') return pushInstallHelp();
-  if(st==='denied'){ toast('Notifikasi disekat. Benarkan dalam tetapan telefon untuk HITFAT+'); return; }
-  if(st==='none'){ toast('Telefon ini tidak menyokong notifikasi web'); return; }
-  if(!sb || !HF.userId){ toast('Log masuk dahulu'); return; }
+  if(st==='denied'){ toast('Notifications are blocked. Allow them for HITFAT+ in your phone settings'); return; }
+  if(st==='none'){ toast('This phone doesn\'t support web notifications'); return; }
+  if(!sb || !HF.userId){ toast('Sign in first'); return; }
   Notification.requestPermission().then(function(p){
-    if(p!=='granted'){ toast('Peringatan tidak dihidupkan'); pushRefresh(); return null; }
+    if(p!=='granted'){ toast('Reminders not turned on'); pushRefresh(); return null; }
     return Promise.all([pushReg(), fetch(pushFn()+'?action=key').then(function(r){ return r.json(); })]).then(function(a){
       var reg=a[0], key=a[1] && a[1].key;
       if(!key) throw new Error('no key');
@@ -48,9 +48,9 @@ function pushEnable(){
     }).then(function(r){
       if(r && r.error) throw r.error;
       try{ localStorage.setItem('hf_push_on','1'); }catch(e){}
-      toast('Peringatan Bell dihidupkan 🔔'); pushRefresh(); pushTest();
+      toast('Bell\'s reminders are on 🔔'); pushRefresh(); pushTest();
     });
-  }).catch(function(e){ console.warn('push enable failed',e); toast('Tidak dapat hidupkan peringatan. Cuba lagi.'); pushRefresh(); });
+  }).catch(function(e){ console.warn('push enable failed',e); toast('Couldn\'t turn reminders on. Try again.'); pushRefresh(); });
 }
 function pushDisable(){
   try{ localStorage.removeItem('hf_push_on'); }catch(e){}
@@ -61,7 +61,7 @@ function pushDisable(){
     if(!sub) return;
     if(sb) sb.rpc('plus_push_remove',{p_endpoint:sub.endpoint});
     return sub.unsubscribe();
-  }).catch(function(){}).then(function(){ toast('Peringatan Bell dimatikan'); pushRefresh(); });
+  }).catch(function(){}).then(function(){ toast('Bell\'s reminders are off'); pushRefresh(); });
 }
 /* the member's own test: proves the whole path, phone to server and back */
 function pushTest(){
@@ -73,26 +73,26 @@ function pushTest(){
 }
 function pushInstallHelp(){
   $('pw-body').innerHTML='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>'+
-    '<div class="sc-sh"><div class="sc-sh-k">Peringatan Bell di iPhone</div>'+
-    '<div class="pu-steps"><div><b>1</b>Buka app.hitfat.io dalam Safari</div><div><b>2</b>Tekan butang Kongsi (petak dengan anak panah ke atas)</div>'+
-    '<div><b>3</b>Pilih <i>Add to Home Screen</i>, kemudian <i>Add</i></div><div><b>4</b>Buka HITFAT+ dari ikon di Home Screen, kemudian hidupkan peringatan di sini</div></div>'+
-    '<div class="sc-sh-f">Apple hanya membenarkan notifikasi web untuk app yang dipasang di Home Screen (iOS 16.4 ke atas).</div></div>';
+    '<div class="sc-sh"><div class="sc-sh-k">Bell\'s reminders on iPhone</div>'+
+    '<div class="pu-steps"><div><b>1</b>Open app.hitfat.io in Safari</div><div><b>2</b>Tap Share (the square with the arrow up)</div>'+
+    '<div><b>3</b>Choose <i>Add to Home Screen</i>, then <i>Add</i></div><div><b>4</b>Open HITFAT+ from its Home Screen icon and turn reminders on here</div></div>'+
+    '<div class="sc-sh-f">Apple allows web notifications only for apps added to the Home Screen (iOS 16.4 or later).</div></div>';
   $('pwm').classList.add('on');
 }
 /* the Settings row */
 function pushRow(){
-  var st=pushState(), sub={on:'Pukul 8 malam, bila Bell perlu tegur',off:'Bell tegur anda bila streak dalam bahaya',denied:'Disekat dalam tetapan telefon',install:'Pasang ke Home Screen dahulu',none:'Tidak disokong pada pelayar ini'}[st];
+  var st=pushState(), sub={on:'At 8 pm, when Bell has something to say',off:'Bell nudges you when a streak is at risk',denied:'Blocked in your phone settings',install:'Add HITFAT+ to your Home Screen first',none:'Not supported in this browser'}[st];
   var ctl=(st==='on'||st==='off')?
     '<div class="obseg meseg"><button class="'+(st==='on'?'on':'')+'" onclick="pushEnable()">On</button><button class="'+(st==='off'?'on':'')+'" onclick="pushDisable()">Off</button></div>':
-    st==='install'?'<button class="pu-how" onclick="pushInstallHelp()">Cara</button>':'';
-  return '<div class="grow grow-ctl" id="push-row">'+ic('bell')+'<div class="grow-l">Peringatan Bell<div class="pu-sub">'+sub+'</div></div>'+ctl+'</div>';
+    st==='install'?'<button class="pu-how" onclick="pushInstallHelp()">How</button>':'';
+  return '<div class="grow grow-ctl" id="push-row">'+ic('bell')+'<div class="grow-l">Bell\'s reminders<div class="pu-sub">'+sub+'</div></div>'+ctl+'</div>';
 }
 /* the invitation under the score, once, until it is answered */
 function pushInvite(){
   var st=pushState(), no=false;
   try{ no=localStorage.getItem('hf_push_no')==='1'; }catch(e){}
   if(no || (st!=='off' && st!=='install')) return '';
-  return '<div class="pu-inv"><button class="pu-inv-b" onclick="pushEnable()">🔔 Hidupkan peringatan Bell</button>'+
+  return '<div class="pu-inv"><button class="pu-inv-b" onclick="pushEnable()">🔔 Turn on Bell\'s reminders</button>'+
     '<button class="pu-inv-x" aria-label="Tutup" onclick="pushNo()">✕</button></div>';
 }
 function pushNo(){ try{ localStorage.setItem('hf_push_no','1'); }catch(e){} if(typeof scRender==='function') scRender(); }

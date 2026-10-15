@@ -24,11 +24,11 @@ function scRamadan(d){
   for(var i=0;i<SC_RAMADAN.length;i++) if(d>=SC_RAMADAN[i][0] && d<=SC_RAMADAN[i][1]) return true;
   return false;
 }
-function scSetRam(m){ var sc=HF.data.sc||(HF.data.sc={}); sc.ram=m; HF.save(); toast(m==='on'?'Mod Ramadan dihidupkan 🌙':m==='off'?'Mod Ramadan dimatikan':'Mod Ramadan ikut tarikh'); if(typeof renderMe==='function' && $('me') && $('me').style.display!=='none') renderMe(); }
+function scSetRam(m){ var sc=HF.data.sc||(HF.data.sc={}); sc.ram=m; HF.save(); toast(m==='on'?'Ramadan mode on 🌙':m==='off'?'Ramadan mode off':'Ramadan mode follows the dates'); if(typeof renderMe==='function' && $('me') && $('me').style.display!=='none') renderMe(); }
 function scRamRow(){
   if(!SC_FAST_LIVE) return '';
   var m=scRamMode();
-  return '<div class="grow grow-ctl">'+ic('moon')+'<div class="grow-l">Mod Ramadan<div class="pu-sub">'+(scRamadan()?'Aktif: bulatan Puasa ikut bulan Ramadan':'Bulatan Puasa ikut bulan Ramadan')+'</div></div>'+
+  return '<div class="grow grow-ctl">'+ic('moon')+'<div class="grow-l">Ramadan mode<div class="pu-sub">'+(scRamadan()?'On: the Fast ring follows Ramadan':'The Fast ring follows Ramadan')+'</div></div>'+
     '<div class="obseg meseg"><button class="'+(m==='auto'?'on':'')+'" onclick="scSetRam(\'auto\')">Auto</button>'+
     '<button class="'+(m==='on'?'on':'')+'" onclick="scSetRam(\'on\')">On</button>'+
     '<button class="'+(m==='off'?'on':'')+'" onclick="scSetRam(\'off\')">Off</button></div></div>';
@@ -36,7 +36,7 @@ function scRamRow(){
 function scRamToggle(){
   var all=HF.data.daily||(HF.data.daily={}), d=iso(0), o=all[d]||(all[d]={water:0,steps:0});
   o.ram=o.ram?0:1; HF.save();
-  if(o.ram){ _scSay='ram'; _scSayAt=Date.now(); scBanner('Selamat berpuasa! 🌙','Bell pun puasa juga… dari minyak 😅 Jumpa waktu berbuka.'); }
+  if(o.ram){ _scSay='ram'; _scSayAt=Date.now(); scBanner('Fasting today 🌙','Bell pun puasa juga… dari minyak 😅 Jumpa waktu berbuka.'); }
   scRender();
 }
 
@@ -70,15 +70,15 @@ function scJunkLine(name){
 }
 /* a meal was logged (eat2.js logMeal) */
 function scMealLogged(m){
-  if(scJunk(m)){ _scSay='junk'; _scSayAt=Date.now(); _scJunkName=m&&m.name; scBanner('Bell rampas! 😇',scJunkLine(m&&m.name)); }
-  else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Makanan direkod 🍽️','Bell suka orang yang jujur. Protein dulu, nasi ikut porsi.'); }
+  if(scJunk(m)){ _scSay='junk'; _scSayAt=Date.now(); _scJunkName=m&&m.name; scBanner('Confiscated 😇',scJunkLine(m&&m.name)); }
+  else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Meal logged 🍽️','Bell suka orang yang jujur. Protein dulu, nasi ikut porsi.'); }
 }
 var _scJunkName='';
 
 /* ── one tap: water and the fast ── */
 function scWaterTap(){
   var dy=scDaily(); scSet('water',dy.water+1); _scSay='water'; _scSayAt=Date.now();
-  scBanner('+1 gelas air 💧',(dy.water+1)+'/'+SC_WATER+' hari ini. Glup glup!','Batal','scSet(\'water\',scDaily().water-1);scRender()');
+  scBanner('+1 glass of water 💧',(dy.water+1)+'/'+SC_WATER+' today · Glup glup!','Undo','scSet(\'water\',scDaily().water-1);scRender()');
   scRender();
 }
 function scFastTap(){
@@ -89,7 +89,7 @@ function scFastTap(){
   if(f.active) return openIF();
   f.active={at:Date.now(), target:(typeof ifProto==='function'?ifProto().f:16)}; HF.save();
   _scSay='fast'; _scSayAt=Date.now();
-  scBanner('Puasa bermula ⏱️','Sasaran '+f.active.target+' jam. Tekan bulatan Puasa untuk tamatkan.');
+  scBanner('Fast started ⏱️',f.active.target+'-hour goal. Tap the Fast ring to end it.');
   scRender();
 }
 
@@ -112,21 +112,21 @@ function scSethTip(){ var d=new Date(), n=Math.floor((d-new Date(d.getFullYear()
 function scMission(){
   var hs=scHabits(), share=100/hs.length, s=scScore(), opts=[], i, h, dy=scDaily();
   for(i=0;i<hs.length;i++){ h=hs[i]; if(h.v>=1) continue;
-    if(h.k==='workout') opts.push({t:'1 workout pendek',p:share});
-    else if(h.k==='water') opts.push({t:Math.min(3,SC_WATER-dy.water)+' gelas air',p:share*Math.min(3,SC_WATER-dy.water)/SC_WATER});
-    else if(h.k==='meal') opts.push({t:'rekod 1 hidangan',p:share/SC_MEALS});
-    else if(h.k==='steps') opts.push({t:'jalan 2,000 langkah',p:share*Math.min(2000,SC_STEPS-dy.steps)/SC_STEPS});
-    else if(h.k==='fast') opts.push({t:scRamadan()?'tanda puasa hari ini':'mula puasa',p:share*(1-h.v)});
+    if(h.k==='workout') opts.push({t:'1 short workout',p:share});
+    else if(h.k==='water') opts.push({t:Math.min(3,SC_WATER-dy.water)+(Math.min(3,SC_WATER-dy.water)===1?' glass':' glasses')+' of water',p:share*Math.min(3,SC_WATER-dy.water)/SC_WATER});
+    else if(h.k==='meal') opts.push({t:'log 1 meal',p:share/SC_MEALS});
+    else if(h.k==='steps') opts.push({t:'walk 2,000 steps',p:share*Math.min(2000,SC_STEPS-dy.steps)/SC_STEPS});
+    else if(h.k==='fast') opts.push({t:scRamadan()?'mark today fasted':'start your fast',p:share*(1-h.v)});
   }
   opts.sort(function(a,b){ return b.p-a.p; });
   var top=opts.slice(0,2).map(function(o){ return o.t+' <em>+'+Math.round(o.p)+'</em>'; }).join(' · ');
-  if(s>=100) return 'Skor penuh hari ni 🏆 Rehat, dan tidur cukup malam ni.';
-  if(s>=SC_PADU) return 'Hari padu dah selamat ✓ Kejar 100: '+top;
-  return 'Tinggal <b>'+(SC_PADU-s)+' mata</b> ke hari padu. Paling cepat: '+top;
+  if(s>=100) return 'Full score today 🏆 Rest well and get a good night\'s sleep.';
+  if(s>=SC_PADU) return 'Hari padu secured ✓ Go for 100: '+top;
+  return '<b>'+(SC_PADU-s)+' points</b> to a hari padu. Quickest: '+top;
 }
 function scCoachHTML(){
   var s=scScore();
-  return '<div class="scx-coach"><div class="scx-k"><i></i>MISI HARI INI</div>'+
+  return '<div class="scx-coach"><div class="scx-k"><i></i>TODAY\'S MISSION</div>'+
     '<div class="scx-t">'+scMission()+'</div>'+
     '<div class="scx-bar"><i style="width:'+Math.min(100,s)+'%"></i><span class="m50'+(s>=SC_PADU?' on':'')+'">✓</span><span class="m100'+(s>=100?' on':'')+'">⚡</span></div>'+
     '<div class="scx-seth"><b>💬 Coach:</b> '+hesc(scSethTip())+'</div></div>';
@@ -170,8 +170,8 @@ function scMeet(i){
   $('scc').innerHTML='<div class="scc-in">'+scMomentBell(m.pose)+
     '<div class="scc-t">'+m.t+'</div><div class="scc-s">'+hesc(m.s)+'</div>'+
     '<div class="scx-dots">'+SC_MEET.map(function(x,j){ return '<i class="'+(j===i?'on':'')+'"></i>'; }).join('')+'</div>'+
-    '<button class="bigbtn scc-share" onclick="'+(last?'scMeetDone()':'scMeet('+(i+1)+')')+'">'+(last?'Jom mula!':'Seterusnya')+'</button>'+
-    (last?'':'<button class="scc-x" onclick="scMeetDone()">Langkau</button>')+'</div>';
+    '<button class="bigbtn scc-share" onclick="'+(last?'scMeetDone()':'scMeet('+(i+1)+')')+'">'+(last?'Let\'s start!':'Next')+'</button>'+
+    (last?'':'<button class="scc-x" onclick="scMeetDone()">Skip</button>')+'</div>';
   $('scc').style.display='flex'; scMomentPlay(m.pose);
 }
 function scMeetDone(){ var sc=HF.data.sc||(HF.data.sc={}); sc.met=1; HF.save(); scCelebrateClose(); }
@@ -194,13 +194,13 @@ function scCheckWeekly(){
 function scWeekly(off){
   var w=scWeekStats(off), p=scWeekStats(off+1), diff=w.avg-p.avg, st=scStreak().n;
   var line=diff>0?'Naik '+diff+' mata dari minggu lepas 👏 Bell bangga!':diff<0?'Turun '+(-diff)+' mata. Tak apa, minggu depan kita kejar balik 💪':'Sama macam minggu lepas. Konsisten tu pun menang.';
-  var bd=w.best.iso?new Date(w.best.iso+'T00:00:00').toLocaleDateString('ms-MY',{weekday:'long'}):'–';
+  var bd=w.best.iso?new Date(w.best.iso+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long'}):'–';
   $('scc').className='scc scc-black';
   $('scc').innerHTML='<div class="scc-in">'+scMomentBell(w.avg>=SC_PADU?'gold':'calendar')+
-    '<div class="scx-wk">Laporan minggu ini</div>'+
-    '<div class="scx-wn" style="color:'+scColor(w.avg)+'">'+w.avg+'<span>/100 purata</span></div>'+
-    '<div class="scc-s">'+line+'</div>'+
+    '<div class="scx-wk">This week\'s report</div>'+
+    '<div class="scx-wn" style="color:'+scColor(w.avg)+'">'+w.avg+'<span>/100 average</span></div>'+
+    '<div class="scc-s scc-bellsays">'+line+'</div>'+
     '<div class="scx-wg"><div><b>'+w.padu+'</b><span>hari padu</span></div><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+(w.best.v||'–')+'</b><span>'+bd+'</span></div></div>'+
-    '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Minggu baru, jom!</button></div>';
+    '<button class="bigbtn scc-share" onclick="scCelebrateClose()">New week, let\'s go!</button></div>';
   $('scc').style.display='flex'; scMomentPlay(w.avg>=SC_PADU?'gold':'calendar');
 }

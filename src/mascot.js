@@ -28,6 +28,6 @@ function mascotRender(){
 function mascotDone(){
   var M=hfm(); if(!M) return;
   M.logActivity(); if(typeof scEvent==='function'){ _scSay='workout'; _scSayAt=Date.now(); }
-  if(typeof scBanner==='function') scBanner('Workout siap! 💪','Bell nak squat sekali, tapi Bell takde lutut 😅');
+  if(typeof scBanner==='function') scBanner('Workout done 💪','Bell nak squat sekali, tapi Bell takde lutut 😅');
   mascotRender();
 }

@@ -61,12 +61,12 @@ function scHabits(d,days){
   var dy=scDaily(d), w=scWorkouts(d,days), m=(HF.data.meals&&HF.data.meals[d]||[]).length, out=[];
   var k1=function(n){ return n>=1000?(Math.round(n/100)/10)+'k':String(n); };
   out.push({k:'workout', n:'Workout', ic:'workout', c:'#E30613', v:Math.min(1,w), val:Math.min(w,1)+'/1'});
-  out.push({k:'meal',    n:'Makan',   ic:'food',    c:'#FF8A3D', v:Math.min(1,m/SC_MEALS), val:Math.min(m,SC_MEALS)+'/'+SC_MEALS});
-  out.push({k:'water',   n:'Air',     ic:'water',   c:'#3B82F6', v:Math.min(1,dy.water/SC_WATER), val:Math.min(dy.water,SC_WATER)+'/'+SC_WATER});
-  out.push({k:'steps',   n:'Langkah', ic:'steps',   c:'#22C55E', v:Math.min(1,dy.steps/SC_STEPS), val:k1(dy.steps)+'/'+k1(SC_STEPS)});
+  out.push({k:'meal',    n:'Meals',   ic:'food',    c:'#FF8A3D', v:Math.min(1,m/SC_MEALS), val:Math.min(m,SC_MEALS)+'/'+SC_MEALS});
+  out.push({k:'water',   n:'Water',     ic:'water',   c:'#3B82F6', v:Math.min(1,dy.water/SC_WATER), val:Math.min(dy.water,SC_WATER)+'/'+SC_WATER});
+  out.push({k:'steps',   n:'Steps', ic:'steps',   c:'#22C55E', v:Math.min(1,dy.steps/SC_STEPS), val:k1(dy.steps)+'/'+k1(SC_STEPS)});
   if(!SC_FAST_LIVE){}
-  else if(typeof scRamadan==='function' && scRamadan(d)) out.push({k:'fast', n:'Puasa', ic:'moon', c:'#E30613', v:dy.ram?1:0, val:dy.ram?'Ya':'Belum'});
-  else if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Puasa', ic:'clock', c:'#A855F7', v:Math.min(1,f.hrs/f.target), val:Math.min(Math.floor(f.hrs),f.target)+'/'+f.target+'j'}); }
+  else if(typeof scRamadan==='function' && scRamadan(d)) out.push({k:'fast', n:'Fast', ic:'moon', c:'#E30613', v:dy.ram?1:0, val:dy.ram?'Done':'Not yet'});
+  else if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Fast', ic:'clock', c:'#A855F7', v:Math.min(1,f.hrs/f.target), val:Math.min(Math.floor(f.hrs),f.target)+'/'+f.target+'h'}); }
   for(var i=0;i<out.length;i++) if(out[i].v>=1) out[i].val='✓ '+out[i].val;
   return out;
 }
@@ -136,7 +136,7 @@ function scHTML(){
   return '<div class="sc" style="--scc:'+scRGB(c)+'">'+
     '<div class="sc-head"><div><div class="sc-k">HITFAT Score · Today</div><div class="sc-n" style="color:'+scColor(s)+'"><i>'+s+'</i><span>/100</span></div></div>'+
       scChip()+'</div>'+
-    '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Sentuh Bell">'+img+'</div></div>'+
+    '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Bell">'+img+'</div></div>'+
     '<div class="sc-say'+(st.k?' sc-say-'+st.k:'')+'" id="sc-say">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div>'+
     (typeof scCoachHTML==='function'?scCoachHTML():'')+
@@ -188,7 +188,7 @@ function scPose(slot,src,ms){
 SC_LINES.poke=['Hihi, geli! 😆','Eh eh, Bell tengah fokus ni 😤','Hehe, sentuh lagi? 🙈','Bell sihat, terima kasih tanya 💪'];
 var _scPokes=0;
 function scPoke(){
-  if(scState().k==='rust'){ toast('Bell berkarat 🥲 Rekod satu perkara untuk gilap Bell'); return; }
+  if(scState().k==='rust'){ toast('Bell has rusted 🥲 Log one thing to polish him'); return; }
   if(typeof bellReact==='function') bellReact('giggle');
   var el=$('sc-say'); if(el){ el.className='sc-say'; el.textContent=SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]; }
 }
@@ -202,17 +202,17 @@ function scTap(k){
   scSheet(k);
 }
 function scSheet(k){
-  var dy=scDaily(), h='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="scClose()">✕</button></div>';
+  var dy=scDaily(), h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="scClose()">✕</button></div>';
   if(k==='water'){
-    h+='<div class="sc-sh"><div class="sc-sh-k">Air hari ini</div><div class="sc-sh-n">'+dy.water+'<span> / '+SC_WATER+' gelas</span></div>'+
-      '<div class="sc-sh-ctl"><button onclick="scWater(-1)" aria-label="Tolak satu gelas">−</button><button class="on" onclick="scWater(1)" aria-label="Tambah satu gelas">+ 1 gelas</button></div>'+
-      '<div class="sc-sh-f">Satu gelas lebih kurang 250 ml.</div></div>';
+    h+='<div class="sc-sh"><div class="sc-sh-k">Water today</div><div class="sc-sh-n">'+dy.water+'<span> / '+SC_WATER+' glasses</span></div>'+
+      '<div class="sc-sh-ctl"><button onclick="scWater(-1)" aria-label="One glass less">−</button><button class="on" onclick="scWater(1)" aria-label="One glass more">+ 1 glass</button></div>'+
+      '<div class="sc-sh-f">A glass is about 250 ml.</div></div>';
   } else {
-    h+='<div class="sc-sh"><div class="sc-sh-k">Langkah hari ini</div><div class="sc-sh-n">'+dy.steps.toLocaleString('en-MY')+'<span> / '+SC_STEPS.toLocaleString('en-MY')+'</span></div>'+
+    h+='<div class="sc-sh"><div class="sc-sh-k">Steps today</div><div class="sc-sh-n">'+dy.steps.toLocaleString('en-MY')+'<span> / '+SC_STEPS.toLocaleString('en-MY')+'</span></div>'+
       '<div class="sc-sh-ctl"><button onclick="scSteps(1000)">+1,000</button><button onclick="scSteps(2000)">+2,000</button><button onclick="scSteps(5000)">+5,000</button></div>'+
-      '<div class="sc-sh-in"><input class="inp" id="sc-steps" type="number" inputmode="numeric" placeholder="Jumlah dari telefon anda" min="0">'+
+      '<div class="sc-sh-in"><input class="inp" id="sc-steps" type="number" inputmode="numeric" placeholder="Total from your phone" min="0">'+
       '<button class="bigbtn" onclick="scStepsSet()">Simpan</button></div>'+
-      '<div class="sc-sh-f">Lihat jumlah langkah dalam app Health atau Google Fit, kemudian masukkan di sini.</div></div>';
+      '<div class="sc-sh-f">Check your steps in Apple Health or Google Fit, then enter the total here.</div></div>';
   }
   $('pw-body').innerHTML=h; $('pwm').classList.add('on');
   try{ $('pwm').scrollTop=0; }catch(e){}
@@ -221,10 +221,10 @@ function scSheet(k){
 function scClose(){ closeProduct(); scRender(); }
 function scWater(n){ scSet('water',scDaily().water+n); if(n>0){ _scSay='water'; _scSayAt=Date.now(); } scSheet('water'); scRender(); }
 function scSteps(n){ scSet('steps',scDaily().steps+n); _scSay='steps'; _scSayAt=Date.now(); scSheet('steps'); scRender();
-  if(typeof scBanner==='function') scBanner('+'+n.toLocaleString('en-MY')+' langkah 👟',scDaily().steps.toLocaleString('en-MY')+'/'+SC_STEPS.toLocaleString('en-MY')+' hari ini. Kaki anda rajin!'); }
+  if(typeof scBanner==='function') scBanner('+'+n.toLocaleString('en-MY')+' steps 👟',scDaily().steps.toLocaleString('en-MY')+'/'+SC_STEPS.toLocaleString('en-MY')+' today · Kaki anda rajin!'); }
 function scStepsSet(){
   var v=parseInt(($('sc-steps')||{}).value,10);
-  if(!(v>=0) || v>100000){ toast('Masukkan jumlah langkah'); return; }
+  if(!(v>=0) || v>100000){ toast('Enter your steps'); return; }
   scSet('steps',v); _scSay='steps'; _scSayAt=Date.now(); scClose();
 }
 
@@ -288,12 +288,12 @@ function scCheckStreak(){
   scCelebrate(m,false);
 }
 function scStreakInfo(){
-  toast('Capai skor '+SC_PADU+' sehari untuk mula streak 🔥');
+  toast('Score '+SC_PADU+' in a day to start a streak 🔥');
 }
 /* this week, Monday first: padu, frozen, today, still to come */
 function scWeekPill(){
   var days=scWorkoutDays(), fz=scFrozen(), t=new Date(), dow=(t.getDay()+6)%7, out='', i, d, off, cls, mark;
-  var L=['I','S','R','K','J','S','A'];
+  var L=['M','T','W','T','F','S','S'];
   for(i=0;i<7;i++){
     off=dow-i; d=iso(-off);
     cls=off<0?'fut':scScore(d,days)>=SC_PADU?'on':fz[d]?'fz':'';
@@ -311,13 +311,13 @@ function scCelebrate(n,mine){
   $('scc').className='scc '+(gold?'scc-gold':'scc-red');
   $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
     scMomentBell(pose)+
-    '<div class="scc-t">'+(gold?'Anda capai streak <b>'+n+' hari</b>! 🏆':'Anda dalam streak <b>'+n+' hari</b>')+'</div>'+
+    '<div class="scc-t">'+(gold?'<b>'+n+'-day</b> streak! 🏆':'You\'re on a <b>'+n+'-day</b> streak')+'</div>'+
     '<div class="scc-s">'+hesc(line)+'</div>'+
     scWeekPill()+
-    '<div class="scc-fz">❄️ '+scFreezeLeft()+'/'+SC_FREEZES+' freeze tinggal bulan ni'+(next?' · Sasaran seterusnya '+next+' hari':'')+'</div>'+
-    '<button class="bigbtn scc-share" onclick="scShare('+n+')">Kongsi pencapaian</button>'+
-    '<button class="scc-x" onclick="scCelebrateClose()">Seterusnya</button>'+
-    '<div class="scc-fine">Hari padu = Skor HITFAT '+SC_PADU+' ke atas. Freeze selamatkan streak bila anda terlepas sehari.</div></div>';
+    '<div class="scc-fz">❄️ '+scFreezeLeft()+'/'+SC_FREEZES+' freezes left this month'+(next?' · Next goal: '+next+' days':'')+'</div>'+
+    '<button class="bigbtn scc-share" onclick="scShare('+n+')">Share milestone</button>'+
+    '<button class="scc-x" onclick="scCelebrateClose()">Next</button>'+
+    '<div class="scc-fine">A hari padu is a HITFAT Score of '+SC_PADU+' or more. A freeze saves your streak when you miss a day.</div></div>';
   $('scc').style.display='flex'; scMomentPlay(pose);
 }
 /* a freeze was used: Bell in ice, the run safe */
@@ -326,10 +326,10 @@ function scFreezeScreen(frozen){
   $('scc').className='scc scc-ice';
   $('scc').innerHTML='<div class="scc-in">'+
     scMomentBell('frozen','scc-still')+
-    '<div class="scc-t">Bell beku '+(frozen.length>1?frozen.length+' hari':'semalam')+' ❄️</div>'+
-    '<div class="scc-s">Streak <b>'+st.n+' hari</b> anda selamat. Bell guna '+frozen.length+' freeze. Tinggal '+scFreezeLeft()+'/'+SC_FREEZES+' bulan ni.</div>'+
-    '<div class="scc-s">Jom pastikan hari ni hari padu.</div>'+
-    '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Teruskan</button></div>';
+    '<div class="scc-t">Streak saved ❄️</div>'+
+    '<div class="scc-s">Your <b>'+st.n+'-day</b> streak is safe: '+frozen.length+(frozen.length>1?' freezes':' freeze')+' used for '+(frozen.length>1?'the days':'the day')+' you missed, '+scFreezeLeft()+'/'+SC_FREEZES+' left this month.</div>'+
+    '<div class="scc-s scc-bellsays">Bell beku sekejap untuk anda 🥶 Jom pastikan hari ni hari padu.</div>'+
+    '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Continue</button></div>';
   $('scc').style.display='flex'; scMomentPlay('frozen');
 }
 /* Bell has rusted: the black screen, once a day */
@@ -337,11 +337,11 @@ function scRustScreen(st){
   var p=(typeof bellPoster==='function')?bellPoster(1):'';
   $('scc').className='scc scc-black';
   $('scc').innerHTML='<div class="scc-in">'+
-    '<div class="scc-bell scc-still scc-rusty"><img src="'+p+'" alt="Bell berkarat"><span class="sc-rustfx" style="-webkit-mask-image:url('+p+');mask-image:url('+p+')"></span></div>'+
-    '<div class="scc-t">Alamak, Bell dah berkarat</div>'+
-    '<div class="scc-s">'+st.idle+' hari tanpa apa-apa rekod. Bell duduk sorang-sorang dalam gelap 🥲 Satu rekod pun cukup untuk gilap Bell semula.</div>'+
-    '<button class="bigbtn scc-share" onclick="scCelebrateClose();scSheet(\'water\')">Gilap Bell: rekod segelas air</button>'+
-    '<button class="scc-x" onclick="scCelebrateClose()">Nanti</button></div>';
+    '<div class="scc-bell scc-still scc-rusty"><img src="'+p+'" alt="Rusty Bell"><span class="sc-rustfx" style="-webkit-mask-image:url('+p+');mask-image:url('+p+')"></span></div>'+
+    '<div class="scc-t">Bell has rusted</div>'+
+    '<div class="scc-s">'+st.idle+' days with nothing logged.</div><div class="scc-s scc-bellsays">Bell duduk sorang-sorang dalam gelap 🥲 Satu rekod pun cukup untuk gilap Bell semula.</div>'+
+    '<button class="bigbtn scc-share" onclick="scCelebrateClose();scSheet(\'water\')">Polish Bell: log a glass of water</button>'+
+    '<button class="scc-x" onclick="scCelebrateClose()">Later</button></div>';
   $('scc').style.display='flex';
 }
 function scCelebrateClose(){ $('scc').style.display='none'; $('scc').innerHTML=''; $('scc').className='scc'; }
@@ -362,8 +362,8 @@ function scCard(n,done){
     var w1=g.measureText('HITFAT').width, w2=g.measureText('+').width, x0=540-(w1+w2)/2;
     g.fillStyle='#FFFFFF'; g.fillText('HITFAT',x0,190); g.fillStyle='#E30613'; g.fillText('+',x0+w1,190);
     text(String(n),540,1390,300,'#FFFFFF');
-    text('HARI PADU BERTURUT-TURUT',540,1480,52,'#FFC20E',800);
-    text('Skor HITFAT '+SC_PADU+'+ setiap hari',540,1560,42,'rgba(255,255,255,.75)',600);
+    text('HARI PADU IN A ROW',540,1480,52,'#FFC20E',800);
+    text('HITFAT Score '+SC_PADU+'+ every day',540,1560,42,'rgba(255,255,255,.75)',600);
     text('app.hitfat.io',540,1800,40,'rgba(255,255,255,.55)',600);
     g.fillStyle='#FFC20E'; g.font='90px sans-serif'; g.fillText('✦',200,420); g.fillText('✦',880,360); g.font='60px sans-serif'; g.fillText('✦',930,760);
     done(cv);
@@ -373,12 +373,12 @@ function scCard(n,done){
 }
 function scShare(n){
   scCard(n,function(cv){
-    if(!cv){ toast('Kad tidak dapat dibuat pada peranti ini'); return; }
+    if(!cv){ toast('Couldn\'t make the card on this device'); return; }
     var text='🔥 '+n+' hari padu berturut-turut dengan HITFAT+! app.hitfat.io';
     var fallback=function(){
       $('scc').innerHTML='<div class="scc-in"><img class="scc-card" src="'+cv.toDataURL('image/png')+'" alt="Kad streak">'+
-        '<div class="scc-s">Tekan lama pada gambar untuk simpan, kemudian kongsi ke IG Story.</div>'+
-        '<button class="scc-x" onclick="scCelebrateClose()">Tutup</button></div>';
+        '<div class="scc-s">Press and hold the picture to save it, then share it to your IG Story.</div>'+
+        '<button class="scc-x" onclick="scCelebrateClose()">Close</button></div>';
     };
     if(!cv.toBlob){ fallback(); return; }
     cv.toBlob(function(b){
@@ -428,8 +428,8 @@ function scShine(){
   $('scc').className='scc scc-red';
   $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
     scMomentBell('halo','scc-shine')+
-    '<div class="scc-t">Yay, anda selamatkan Bell!</div>'+
-    '<div class="scc-s">Karat dah hilang ✨ Okay okay, Bell maafkan anda. Jangan tinggal Bell lama-lama lagi ya 😇</div>'+
-    '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Jom!</button></div>';
+    '<div class="scc-t">You saved Bell!</div>'+
+    '<div class="scc-s scc-bellsays">Yay! Karat dah hilang ✨ Okay okay, Bell maafkan anda. Jangan tinggal Bell lama-lama lagi ya 😇</div>'+
+    '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Let\'s go!</button></div>';
   $('scc').style.display='flex'; scMomentPlay('halo');
 }
