@@ -43,27 +43,27 @@
    sits on #0B0B0D, so the page ends in that colour. It stays at least as long
    as the sequence takes (hideSplash). */
 #splash{position:fixed;inset:0;z-index:99999;overflow:hidden;transition:opacity .5s ease;
-  background:linear-gradient(180deg,#1B1B1F 0%,#111114 38%,#0B0B0D 62%,#0B0B0D 100%);}
+  background:linear-gradient(180deg,#1B1B1F 0%,#141417 34%,#0B0B0D 54%,#0B0B0D 100%);}
 #splash.gone{opacity:0;pointer-events:none;}
-#splash .sp-glow{position:absolute;left:50%;top:-120px;width:520px;height:520px;margin-left:-260px;border-radius:50%;
-  background:radial-gradient(circle,rgba(227,6,19,.30) 0%,rgba(227,6,19,.08) 45%,rgba(227,6,19,0) 70%);
+#splash .sp-glow{position:absolute;left:50%;top:calc(22vh + env(safe-area-inset-top,0px) - 200px);width:400px;height:400px;margin-left:-200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(227,6,19,.28) 0%,rgba(227,6,19,.08) 35%,rgba(227,6,19,0) 58%);
   opacity:0;animation:spIn 1s ease .05s forwards;}
-#splash .sp-top{position:absolute;left:0;right:0;top:calc(13vh + env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:center;}
-#splash .sp-logo{position:relative;height:66px;width:49.8px;opacity:0;animation:spRise .8s cubic-bezier(.2,.8,.2,1) .1s forwards;}
+#splash .sp-top{position:absolute;left:0;right:0;top:calc(16vh + env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:center;}
+#splash .sp-logo{position:relative;height:84px;width:63.4px;opacity:0;animation:spRise .8s cubic-bezier(.2,.8,.2,1) .1s forwards;}
 #splash .sp-mark{display:block;width:100%;height:100%;}
 #splash .sp-plus{position:absolute;left:101.9%;top:2.1%;width:21.8%;transform:scale(0) rotate(-180deg);
   animation:spPlus .6s cubic-bezier(.3,1.6,.5,1) .55s forwards;}
-#splash .sp-word{margin-top:16px;font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:28px;letter-spacing:1px;
+#splash .sp-word{margin-top:16px;font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:32px;letter-spacing:1px;
   color:#FFFFFF;opacity:0;animation:spIn .6s ease .35s forwards;}
 #splash .sp-word b{color:#FF3B30;font-weight:800;}
-#splash .sp-star{position:absolute;left:0;right:0;top:44vh;text-align:center;opacity:0;animation:spIn .6s ease .7s forwards;}
+#splash .sp-star{position:absolute;left:0;right:0;top:54vh;text-align:center;opacity:0;animation:spIn .6s ease .7s forwards;}
 #splash .sp-star span{display:block;font-family:'Inter',system-ui,sans-serif;font-size:14px;color:#8E8E93;}
-#splash .sp-star b{display:block;font-family:'Inter',system-ui,sans-serif;font-size:24px;font-weight:800;color:#FFFFFF;margin-top:4px;letter-spacing:-.2px;}
-#splash .sp-buddy{position:absolute;left:50%;bottom:0;width:min(118vw,560px);margin-left:calc(min(118vw,560px) / -2);
+#splash .sp-star b{display:block;font-family:'Inter',system-ui,sans-serif;font-size:26px;font-weight:800;color:#FF6B6B;margin-top:6px;letter-spacing:-.2px;}
+#splash .sp-buddy{position:absolute;left:50%;bottom:0;width:min(86vw,460px);margin-left:calc(min(86vw,460px) / -2);
   transform:translateY(55%);animation:spPeek 1s cubic-bezier(.2,.9,.25,1.05) .25s forwards;}
 #splash .sp-buddy img{display:block;width:100%;height:auto;}
 #splash .sp-url{position:absolute;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));text-align:center;
-  font-family:'Inter',system-ui,sans-serif;font-size:12px;color:rgba(255,255,255,.55);opacity:0;animation:spIn .6s ease 1s forwards;}
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:rgba(255,255,255,.45);opacity:0;animation:spIn .6s ease .9s forwards;}
 @keyframes spPeek{to{transform:translateY(0)}}
 @keyframes spRise{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
 @keyframes spPlus{to{transform:scale(1) rotate(0)}}
