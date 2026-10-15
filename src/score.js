@@ -94,16 +94,20 @@ function scLine(){
   if(_scSay==='mood' && Date.now()-_scSayAt<120000 && typeof scMoodLine==='function') return scMoodLine(scDaily().mood);
   if(_scSay && SC_LINES[_scSay] && Date.now()-_scSayAt<120000){ var a=SC_LINES[_scSay]; return a[new Date().getMinutes()%a.length]; }
   if(s>=100) return 'Full score! Buddy feels like a world champion 🏆';
-  for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
-  var hint=!low?'':low.k==='water'?(SC_WATER-scDaily().water)+' more glasses of water to go.':
-           low.k==='steps'?Math.max(0,SC_STEPS-scDaily().steps).toLocaleString('en-MY')+' more steps to go.':
-           low.k==='meal'?'Don\'t forget to log your meals.':
-           low.k==='workout'?'One short workout is enough today.':
-           'Your fast hasn\'t reached its goal yet.';
+  var hint=scHint();
   if(s===0) return 'Buddy is still sleepy 😴 '+hint;
   if(s<40) return 'Buddy just woke up. '+hint;
   if(s<70) return 'Halfway there! '+hint;
   return 'Strong day! 🔥 '+hint;
+}
+function scHint(){
+  var hs=scHabits(), i, low=null;
+  for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
+  return !low?'':low.k==='water'?(SC_WATER-scDaily().water)+' more glasses of water to go.':
+           low.k==='steps'?Math.max(0,SC_STEPS-scDaily().steps).toLocaleString('en-MY')+' more steps to go.':
+           low.k==='meal'?'Don\'t forget to log your meals.':
+           low.k==='workout'?'One short workout is enough today.':
+           'Your fast hasn\'t reached its goal yet.';
 }
 /* something was just done: Buddy talks about it */
 function scEvent(k){ _scSay=k; _scSayAt=Date.now(); scRender(); }
@@ -116,7 +120,7 @@ function scArc(s){
   return '<svg class="sc-arc" viewBox="0 0 240 184" aria-hidden="true">'+
     '<path d="'+d+'" class="sc-arc-t" pathLength="100"/>'+
     (s>0?'<path d="'+d+'" class="sc-arc-v" pathLength="100" stroke="'+c+'" stroke-dasharray="'+s+' 100"/>':'')+
-    '<circle cx="'+k[0]+'" cy="'+k[1]+'" r="9" fill="var(--surface)" stroke="'+c+'" stroke-width="5"/></svg>';
+    '<circle cx="'+k[0]+'" cy="'+k[1]+'" r="7" fill="#FFFFFF" stroke="'+c+'" stroke-width="4"/></svg>';
 }
 function scRing(h){
   var c=h.v>=1?'#FFC20E':'#E30613';
@@ -146,11 +150,50 @@ function scAct(){
   return {workout:['Start a workout',"scTap('workout')"], meal:['What did you eat?',"scTap('meal')"], water:['+1 glass of water','scWaterTap()'],
           steps:['Add steps',"scSheet('steps')"], fast:['Start your fast',"scTap('fast')"]}[low.k]||null;
 }
+/* the card says where the day stands, Simple's "Success Score" card: the
+   playful lines are Buddy's, in the bubble above; this one is the plain truth */
+function scInsight(st){
+  var s=scScore(), h=scHint();
+  if(st.k) return scRustLine(st);
+  if(s>=100) return 'Full score today 🏆 Rest well. Buddy will be here tomorrow.';
+  if(s>=SC_PADU) return 'Strong day! Buddy is red 🔥 Go for 100: '+h.charAt(0).toLowerCase()+h.slice(1);
+  if(s===0) return 'Log one thing to wake Buddy up. Even a glass of water counts.';
+  return '<b>'+(SC_PADU-s)+' points</b> to a strong day, when Buddy turns red. '+hesc(h);
+}
 function scBellCard(st){
-  var a=st.k?['Fluff Buddy up: +1 glass of water','scWaterTap()']:scAct();
-  return '<div class="scx-coach scx-bell"><div class="scx-k"><i></i>BUDDY</div>'+
-    '<div class="scx-say" id="sc-say">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
-    (a?'<button class="scx-act" onclick="'+a[1]+'">'+a[0]+'</button>':'')+'</div>';
+  var a=st.k?['Fluff Buddy up','scWaterTap()']:scAct();
+  return '<div class="scx-coach scx-bell"><div class="scx-k"><i></i>HITFAT SCORE</div>'+
+    '<div class="scx-say" id="sc-say">'+(st.k?hesc(scInsight(st)):scInsight(st))+'</div>'+
+    '<div class="scx-btns">'+(a?'<button class="scx-act" onclick="'+a[1]+'">'+a[0]+'</button>':'')+
+    '<button class="scx-got" onclick="scCarGo(1)">Got it</button></div></div>';
+}
+/* Buddy's bubble, above Buddy: cheeky lines, a new one every few seconds
+   (Simple's mascot does this), or what was just done */
+var SC_BUB={
+  zero:['Just one quick log… for me? Do it for the fluff. Pls? 🥺','Imagine how proud I\'ll look if you log.','You logging? Cool. No big deal. (IT IS)','Still here. Still cute. Still waiting for your log.'],
+  low:['Ooh, we\'ve started! Don\'t stop now 👀','A little more and I turn red. I can feel it in my fur.','I\'m waking up… keep it coming!'],
+  red:['Look at me. I\'m RED. Thanks to you 😎','Strong day unlocked. Fur: fabulous.','Can we go for 100? Asking for a friend.'],
+  full:['100! I\'m the fluffiest I\'ve ever been 🏆','Perfect day. I\'m framing this.'],
+  dust:['Psst… I\'m getting a bit dusty here 😟','One log and I\'m fluffy again. Just saying.'],
+  rust:['My fur is a mess… 🥲','A glass of water would fix me right up.','I missed you. Like, a lot.']};
+var _scBubI=0, _scBubT=null;
+function scBubLines(){
+  var st=scState(), s=scScore();
+  if(st.k) return SC_BUB[st.k==='rust'?'rust':'dust'];
+  if(_scSay && _scSay!=='poke' && Date.now()-_scSayAt<60000) return [scLine()];
+  return SC_BUB[s>=100?'full':s>=SC_PADU?'red':s>0?'low':'zero'];
+}
+function scBubText(){ var l=scBubLines(); return l[_scBubI%l.length]; }
+function scBubSet(t){
+  var b=$('sc-bub'); if(!b) return;
+  b.textContent=t; b.className='sc-bub';
+  try{ void b.offsetWidth; }catch(e){}
+  b.className='sc-bub pop';
+}
+function scBubNext(){
+  var b=$('sc-bub');
+  if(!b || b.offsetParent===null) return;
+  _scBubI++; scBubSet(scBubText());
 }
 function scHTML(){
   var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState(), c=st.k==='rust'?'#8E8E93':scColor(s);
@@ -165,7 +208,7 @@ function scHTML(){
     '<div class="scx-seth">At 8 pm, only when a streak is at risk or Buddy misses you. One a day at most.</div>'+inv+'</div>');
   slides.unshift(scBellCard(st));
   return '<div class="sc sc-page" style="--scc:'+scRGB(c)+'">'+
-    '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Buddy">'+img+'</div></div>'+
+    '<div class="sc-stage"><div class="sc-bub pop" id="sc-bub">'+hesc(scBubText())+'</div>'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Buddy">'+img+'</div></div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>'+
     '<div class="sc-tail"></div>'+scCarHTML(slides)+
     (typeof scPlanHTML==='function'?scPlanHTML():'');
@@ -187,10 +230,12 @@ function scCarScroll(el){
 }
 function scCarGo(i){ var el=$('sc-car'); if(!el) return; _scCar=i; try{ el.scrollTo({left:i*el.clientWidth,behavior:'smooth'}); }catch(e){ el.scrollLeft=i*el.clientWidth; } scCarScroll(el); }
 /* the colour behind the top of Home: red, gold on a strong-enough day, rust when rusty */
-function scBand(){ var s=scScore(), st=scState(); return st.k==='rust'?'#8E8E93':s>=70?'#FFC20E':'#E30613'; }
+function scBand(){ var s=scScore(), st=scState(); return st.k==='rust'?'#8E8E93':s>=SC_PADU?'#E30613':'#D9C2A3'; }
 function scRender(){
   var el=$('mascot-home'); if(!el) return;
   el.innerHTML=scHTML();
+  if(_scBubT) clearInterval(_scBubT);
+  _scBubT=setInterval(scBubNext,5000);
   if($('sc-pills')) $('sc-pills').innerHTML=scPills();
   try{ var sr=$('screen'); if(sr && sr.style && sr.style.setProperty) sr.style.setProperty('--scb',scRGB(scBand())); }catch(e){}
   var car=$('sc-car'); if(car && _scCar){ try{ car.scrollLeft=_scCar*(car.clientWidth||0); }catch(e){} }
@@ -239,7 +284,7 @@ var _scPokes=0;
 function scPoke(){
   if(scState().k==='rust'){ toast('Buddy is all messy 🥲 Log one thing to fluff Buddy up again'); return; }
   if(typeof bellReact==='function') bellReact('giggle');
-  var el=$('sc-say'); if(el){ el.textContent=SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]; }
+  scBubSet(SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]);
 }
 
 /* each habit's way in */

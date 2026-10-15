@@ -2913,3 +2913,35 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 :root:not([data-theme="light"]) .sc-sl > .scx-coach{background:#161618;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
 :root:not([data-theme="light"]) .sc-tail{border-bottom-color:#161618;}
 :root:not([data-theme="light"]) #home-hdr .sc-pill,:root:not([data-theme="light"]) #home-hdr .sc-pills .sc-chip{background:#161618;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+
+/* ── Home, tidier (16 Oct, after the user's own screenshots and Simple's video) ──
+   Buddy's bubble on top, a smaller stage so Today's Plan shows sooner, the
+   glow in Buddy's own colour (cream under 50, red at 50+) behind Buddy, not
+   behind the rings; the shadow at the feet. */
+.screen:has(> #home:not([style*="none"])){
+  background:radial-gradient(closest-side,rgba(var(--scb),.30),rgba(var(--scb),.10) 55%,rgba(var(--scb),0)) 50% 40px/150% 560px no-repeat local,var(--bg);}
+:root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"])){
+  background:radial-gradient(closest-side,rgba(var(--scb),.24),rgba(var(--scb),.07) 55%,rgba(var(--scb),0)) 50% 40px/150% 560px no-repeat local,var(--bg);}
+#mascot-home .sc-page .sc-stage{max-width:290px;margin:4px auto 12px;}
+#mascot-home .sc-page .sc-bell{width:66%;left:17%;top:20%;}
+#mascot-home .sc-page .sc-bell::before{left:33%;right:33%;bottom:7%;height:10px;}
+.sc-bub{position:absolute;left:0;right:0;top:-6px;z-index:4;margin:0 auto;
+  width:-webkit-max-content;width:max-content;max-width:94%;padding:9px 14px;border-radius:16px;background:var(--surface);color:var(--txt);
+  font-size:14px;font-weight:600;line-height:1.3;text-align:center;box-shadow:0 6px 22px rgba(0,0,0,.10);pointer-events:none;}
+.sc-bub::after{content:'';position:absolute;left:50%;bottom:-6px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:var(--surface);}
+:root:not([data-theme="light"]) .sc-bub{background:#232326;box-shadow:0 6px 22px rgba(0,0,0,.45);}
+:root:not([data-theme="light"]) .sc-bub::after{border-top-color:#232326;}
+.sc-bub.pop{-webkit-animation:scbub .38s cubic-bezier(.2,1.4,.4,1) both;animation:scbub .38s cubic-bezier(.2,1.4,.4,1) both;}
+@-webkit-keyframes scbub{from{opacity:0;-webkit-transform:translateY(6px) scale(.86);}to{opacity:1;-webkit-transform:none;}}
+@keyframes scbub{from{opacity:0;transform:translateY(6px) scale(.86);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion: reduce){ .sc-bub.pop{-webkit-animation:none;animation:none;} }
+#mascot-home .sc-page .sc-ring{width:60px;height:60px;}
+#mascot-home .sc-page .sc-t{margin-top:13px;}
+:root[data-theme="light"] #mascot-home .sc-page .sc-ring-t{stroke:#E4E1DE;}
+.sc-sl > .scx-coach{padding:16px 16px 14px;}
+.scx-say{font-size:16px;font-weight:500;line-height:1.42;margin-top:6px;}
+.scx-say b{color:#E30613;font-weight:800;}
+.scx-btns{display:flex;align-items:center;gap:8px;margin-top:14px;}
+.scx-btns .scx-act{flex:1;margin-top:0;padding:12px;font-size:15px;}
+.scx-got{flex:none;border:0;background:none;color:var(--txt);font:inherit;font-size:15px;font-weight:600;padding:12px 18px;cursor:pointer;}
+.scx-got:active{opacity:.6;}
