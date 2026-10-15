@@ -29,6 +29,29 @@ function flandCard(p,badge){
     '<div class="im" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.card):'')+'">'+(badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="t">'+p.name+'</div><div class="m">'+metaOf(p)+'</div></div>';
 }
+/* This Week, without people (16 Oct): a typographic tile in one of the
+   studio backdrop colours, so the row reads as "this week's sessions" and
+   the photo rows below stay the premium ones. Name big, then minutes,
+   level, moves and kit; the goal's glyph large and faint in the corner. */
+const FWEEK={'Fat Loss':[['#B3121B','#FFFFFF'],['#C4561E','#FFFFFF']],
+             'Strength':[['#3A3A3E','#FFFFFF'],['#2F4A68','#FFFFFF'],['#4A5240','#FFFFFF']],
+             'Core':[['#D8C3A0','#1A1A1A'],['#C9962E','#1A1A1A']]};
+function fweekKit(p){
+  const kit={}; (p.ex||[]).forEach(n=>{ const e=(typeof DB!=='undefined')&&DB.find(x=>x.n===n); const q=e&&e.eq; if(q && !/body ?weight|none/i.test(q)) kit[q]=1; });
+  const k=Object.keys(kit); return k.length?k.slice(0,2).join(' & '):'No equipment';
+}
+function fweekCard(p,badge,i){
+  const set=FWEEK[p.goal]||[['#2F4A68','#FFFFFF']], c=set[i%set.length];
+  const ic={'Fat Loss':'flame','Strength':'workout','Core':'target'}[p.goal]||'sunrise';
+  const n=(p.ex||[]).length;
+  return '<div class="fweek" onclick="openProgram(\''+p.id+'\')" style="--wk:'+c[0]+';--wkt:'+c[1]+'">'+
+    '<span class="fw-ic">'+glyph(ic)+'</span>'+
+    '<div class="fw-top">'+(badge?'<span class="fw-new">'+badge+'</span>':'<span></span>')+lockTag(p)+'</div>'+
+    '<div class="fw-b"><div class="fw-g">'+(p.goal||'Workout').toUpperCase()+'</div>'+
+    '<div class="fw-t">'+p.name+'</div>'+
+    '<div class="fw-m"><b>'+p.dur+'</b> min · '+p.level+'</div>'+
+    '<div class="fw-k">'+(n?n+' moves · ':'')+fweekKit(p)+'</div></div></div>';
+}
 /* tall activity tile — photo with a light label bar across the bottom */
 function factCard(a){
   return '<div class="fact" onclick="openActivity(\''+a.k+'\')">'+
@@ -299,7 +322,7 @@ function trExplore(){
 
   let h=(contentOpen()?'':fyJoinCard())+(t42InTrain()?t42HomeCard():'');
   h+=fsec('This Week','A new set of sessions every week.');
-  h+='<div class="hscroll">'+take(rotated,6).map((p,i)=>flandCard(p,i<2?'NEW':'')).join('')+'</div>';
+  h+='<div class="hscroll">'+take(rotated,6).map((p,i)=>fweekCard(p,i<2?'NEW':'',i)).join('')+'</div>';
 
   h+=fsec('Top Programs','HITFAT signature programs first',true);
   h+='<div class="hscroll">'+take(multi,5).map(fbigCard).join('')+'</div>';

@@ -5180,6 +5180,24 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .hscroll{scroll-snap-type:x mandatory;scroll-padding:0 18px;}
 .hscroll>*{scroll-snap-align:start;}
 
+/* ── This Week as type, not photos (train2.js fweekCard) ── */
+.fweek{flex:none;position:relative;width:168px;height:224px;border-radius:18px;overflow:hidden;cursor:pointer;color:var(--wkt);
+  background:radial-gradient(120% 80% at 100% 0%,rgba(255,255,255,.16),rgba(255,255,255,0) 55%),
+             linear-gradient(165deg,var(--wk) 0%,color-mix(in srgb,var(--wk) 78%,#000) 100%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);display:flex;flex-direction:column;justify-content:space-between;padding:14px;}
+.fweek:active{transform:scale(.98);}
+.fw-ic{position:absolute;right:-18px;bottom:46px;width:118px;height:118px;opacity:.13;pointer-events:none;}
+.fw-ic .gly{width:100%;height:100%;stroke-width:1.4;}
+.fw-top{position:relative;display:flex;justify-content:space-between;align-items:center;}
+.fw-new{font-size:10px;font-weight:800;letter-spacing:1px;padding:4px 8px;border-radius:99px;background:color-mix(in srgb,var(--wkt) 18%,transparent);}
+.fweek .lockt{position:static;}
+.fw-b{position:relative;}
+.fw-g{font-size:10px;font-weight:800;letter-spacing:1.4px;opacity:.7;}
+.fw-t{font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1.05;margin-top:4px;text-wrap:balance;}
+.fw-m{font-size:13px;margin-top:8px;opacity:.9;}
+.fw-m b{font-size:15px;font-weight:800;}
+.fw-k{font-size:11px;margin-top:2px;opacity:.68;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -25598,6 +25616,29 @@ function flandCard(p,badge){
     '<div class="im" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.card):'')+'">'+(badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="t">'+p.name+'</div><div class="m">'+metaOf(p)+'</div></div>';
 }
+/* This Week, without people (16 Oct): a typographic tile in one of the
+   studio backdrop colours, so the row reads as "this week's sessions" and
+   the photo rows below stay the premium ones. Name big, then minutes,
+   level, moves and kit; the goal's glyph large and faint in the corner. */
+const FWEEK={'Fat Loss':[['#B3121B','#FFFFFF'],['#C4561E','#FFFFFF']],
+             'Strength':[['#3A3A3E','#FFFFFF'],['#2F4A68','#FFFFFF'],['#4A5240','#FFFFFF']],
+             'Core':[['#D8C3A0','#1A1A1A'],['#C9962E','#1A1A1A']]};
+function fweekKit(p){
+  const kit={}; (p.ex||[]).forEach(n=>{ const e=(typeof DB!=='undefined')&&DB.find(x=>x.n===n); const q=e&&e.eq; if(q && !/body ?weight|none/i.test(q)) kit[q]=1; });
+  const k=Object.keys(kit); return k.length?k.slice(0,2).join(' & '):'No equipment';
+}
+function fweekCard(p,badge,i){
+  const set=FWEEK[p.goal]||[['#2F4A68','#FFFFFF']], c=set[i%set.length];
+  const ic={'Fat Loss':'flame','Strength':'workout','Core':'target'}[p.goal]||'sunrise';
+  const n=(p.ex||[]).length;
+  return '<div class="fweek" onclick="openProgram(\''+p.id+'\')" style="--wk:'+c[0]+';--wkt:'+c[1]+'">'+
+    '<span class="fw-ic">'+glyph(ic)+'</span>'+
+    '<div class="fw-top">'+(badge?'<span class="fw-new">'+badge+'</span>':'<span></span>')+lockTag(p)+'</div>'+
+    '<div class="fw-b"><div class="fw-g">'+(p.goal||'Workout').toUpperCase()+'</div>'+
+    '<div class="fw-t">'+p.name+'</div>'+
+    '<div class="fw-m"><b>'+p.dur+'</b> min · '+p.level+'</div>'+
+    '<div class="fw-k">'+(n?n+' moves · ':'')+fweekKit(p)+'</div></div></div>';
+}
 /* tall activity tile — photo with a light label bar across the bottom */
 function factCard(a){
   return '<div class="fact" onclick="openActivity(\''+a.k+'\')">'+
@@ -25868,7 +25909,7 @@ function trExplore(){
 
   let h=(contentOpen()?'':fyJoinCard())+(t42InTrain()?t42HomeCard():'');
   h+=fsec('This Week','A new set of sessions every week.');
-  h+='<div class="hscroll">'+take(rotated,6).map((p,i)=>flandCard(p,i<2?'NEW':'')).join('')+'</div>';
+  h+='<div class="hscroll">'+take(rotated,6).map((p,i)=>fweekCard(p,i<2?'NEW':'',i)).join('')+'</div>';
 
   h+=fsec('Top Programs','HITFAT signature programs first',true);
   h+='<div class="hscroll">'+take(multi,5).map(fbigCard).join('')+'</div>';
