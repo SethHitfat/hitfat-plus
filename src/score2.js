@@ -126,10 +126,10 @@ function scMission(){
 }
 function scCoachHTML(){
   var s=scScore();
-  return '<div class="scx-coach"><div class="scx-k"><i></i>COACH BELL</div>'+
+  return '<div class="scx-coach"><div class="scx-k"><i></i>MISI HARI INI</div>'+
     '<div class="scx-t">'+scMission()+'</div>'+
     '<div class="scx-bar"><i style="width:'+Math.min(100,s)+'%"></i><span class="m50'+(s>=SC_PADU?' on':'')+'">✓</span><span class="m100'+(s>=100?' on':'')+'">⚡</span></div>'+
-    '<div class="scx-seth"><b>💬 Coach Seth:</b> '+hesc(scSethTip())+'</div></div>';
+    '<div class="scx-seth"><b>💬 Coach:</b> '+hesc(scSethTip())+'</div></div>';
 }
 
 /* ── Today's plan ── */

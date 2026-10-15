@@ -4002,7 +4002,7 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
   scMeetDone(); scRender();
   ok("...and only once", HF.data.sc.met===1 && document.getElementById('scc').style.display==='none');
   var h=document.getElementById('mascot-home').innerHTML;
-  ok("Coach Bell under the rings: points to hari padu, the quickest way, Coach Seth", h.indexOf('COACH BELL')>0 && h.indexOf('mata</b> ke hari padu')>0 && h.indexOf('Coach Seth')>0 && h.indexOf('scx-bar')>0);
+  ok("Misi hari ini under the rings: points to hari padu, the quickest way, a line from the coach", h.indexOf('MISI HARI INI')>0 && h.indexOf('mata</b> ke hari padu')>0 && h.indexOf('Coach:')>0 && h.indexOf('Coach Seth')<0 && h.indexOf('COACH BELL')<0 && h.indexOf('scx-bar')>0);
   ok("today's plan under the card", h.indexOf('Rancangan hari ini')>0 && h.indexOf('scWaterTap()')>0);
   scTap('water');
   ok("one tap on water adds a glass, and Bell's banner offers an undo", HF.data.daily[iso(0)].water===1 && document.getElementById('scb').className.indexOf('on')>0 && document.getElementById('scb').innerHTML.indexOf('Batal')>0);
