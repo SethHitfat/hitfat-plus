@@ -99,3 +99,43 @@ function bellReact(name){
   if(!_bell.v || !_bell.node || !_bell.node.parentNode) return;
   _bell.react=name; bellSrc(name,false);
 }
+
+/* A clip for the full-screen moments (the streak, the freeze, the halo): its
+   own small player in the moment's slot, playing while the slot is on the
+   page and letting go of the video when it is not. Bell in ice is a plain
+   clip (the ice cannot be cut from its white ground), shown on the white
+   screen as it is. */
+var BELL_PLAIN={frozen:true};
+function bellMini(slot,name){
+  if(!slot || !bellCanAnimate()) return false;
+  var v=document.createElement('video'), live=false;
+  v.muted=true; v.defaultMuted=true; v.playsInline=true; v.loop=true; v.preload='auto';
+  v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline','');
+  v.src=BELL_DIR+name+'.mp4';
+  var on=function(){ if(!live){ live=true; slot.className+=' is-live'; } };
+  if(BELL_PLAIN[name]){
+    v.className='bell-plain'; slot.appendChild(v);
+    v.addEventListener('playing',on);
+  } else {
+    var cv=document.createElement('canvas'), buf=document.createElement('canvas');
+    cv.width=360; cv.height=360; cv.className='bell-mini'; buf.width=360; buf.height=720;
+    var g=cv.getContext('2d'), bg=buf.getContext('2d');
+    v.className='bell-v'; slot.appendChild(cv); slot.appendChild(v);
+    var raf=window.requestAnimationFrame||function(f){ return setTimeout(f,40); };
+    var step=function(){
+      if(!cv.parentNode || !cv.parentNode.parentNode || !document.body.contains(cv)){ v.pause(); v.removeAttribute('src'); try{ v.load(); }catch(e){} return; }
+      if(v.readyState>=2){
+        try{
+          bg.drawImage(v,0,0,360,720);
+          var t=bg.getImageData(0,0,360,360), b=bg.getImageData(0,360,360,360).data, d=t.data, i;
+          for(i=0;i<d.length;i+=4) d[i+3]=b[i];
+          g.putImageData(t,0,0); on();
+        }catch(e){}
+      }
+      raf(step);
+    };
+    v.addEventListener('playing',function(){ step(); });
+  }
+  var p=v.play(); if(p && p.catch) p.catch(function(){});
+  return true;
+}

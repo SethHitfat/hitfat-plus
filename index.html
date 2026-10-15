@@ -4831,6 +4831,17 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 #scc.scc-gold .scc-share{background:#111111 !important;color:#FFFFFF !important;}
 #scc.scc-black .scc-share{background:#FFFFFF !important;color:#111111 !important;}
 #scc.scc-ice .scc-share{background:#E30613 !important;color:#FFFFFF !important;}
+/* the moments' clips (bell.js bellMini) over their posters */
+.scc-bell{position:relative;}
+.scc-bell .bell-mini,.scc-bell .bell-plain{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;}
+.scc-bell .bell-plain{border-radius:18px;}
+.scc-bell.is-live img{visibility:hidden;}
+.scc-live{-webkit-animation:none !important;animation:none !important;}
+.scc-shine .bell-mini{-webkit-filter:drop-shadow(0 0 18px rgba(255,194,14,.75));filter:drop-shadow(0 0 18px rgba(255,194,14,.75));}
+.scc-gold .bell-mini{-webkit-filter:drop-shadow(0 10px 24px rgba(160,100,0,.45));filter:drop-shadow(0 10px 24px rgba(160,100,0,.45));}
+#scc.scc-gold .scc-x{background:#FFE07A;}
+#scc.scc-red .scc-x{background:#4A0206;}
+#scc.scc-black .scc-x{background:#1C1C1E;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -5962,6 +5973,46 @@ function bellReact(name){
   if(!_bell.v || !_bell.node || !_bell.node.parentNode) return;
   _bell.react=name; bellSrc(name,false);
 }
+
+/* A clip for the full-screen moments (the streak, the freeze, the halo): its
+   own small player in the moment's slot, playing while the slot is on the
+   page and letting go of the video when it is not. Bell in ice is a plain
+   clip (the ice cannot be cut from its white ground), shown on the white
+   screen as it is. */
+var BELL_PLAIN={frozen:true};
+function bellMini(slot,name){
+  if(!slot || !bellCanAnimate()) return false;
+  var v=document.createElement('video'), live=false;
+  v.muted=true; v.defaultMuted=true; v.playsInline=true; v.loop=true; v.preload='auto';
+  v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline','');
+  v.src=BELL_DIR+name+'.mp4';
+  var on=function(){ if(!live){ live=true; slot.className+=' is-live'; } };
+  if(BELL_PLAIN[name]){
+    v.className='bell-plain'; slot.appendChild(v);
+    v.addEventListener('playing',on);
+  } else {
+    var cv=document.createElement('canvas'), buf=document.createElement('canvas');
+    cv.width=360; cv.height=360; cv.className='bell-mini'; buf.width=360; buf.height=720;
+    var g=cv.getContext('2d'), bg=buf.getContext('2d');
+    v.className='bell-v'; slot.appendChild(cv); slot.appendChild(v);
+    var raf=window.requestAnimationFrame||function(f){ return setTimeout(f,40); };
+    var step=function(){
+      if(!cv.parentNode || !cv.parentNode.parentNode || !document.body.contains(cv)){ v.pause(); v.removeAttribute('src'); try{ v.load(); }catch(e){} return; }
+      if(v.readyState>=2){
+        try{
+          bg.drawImage(v,0,0,360,720);
+          var t=bg.getImageData(0,0,360,360), b=bg.getImageData(0,360,360,360).data, d=t.data, i;
+          for(i=0;i<d.length;i+=4) d[i+3]=b[i];
+          g.putImageData(t,0,0); on();
+        }catch(e){}
+      }
+      raf(step);
+    };
+    v.addEventListener('playing',function(){ step(); });
+  }
+  var p=v.play(); if(p && p.catch) p.catch(function(){});
+  return true;
+}
 /* ═══════════════ SKOR HITFAT · phase 1 ═══════════════
    Simple's Success Score, the HITFAT+ way. Bell, the kettlebell mascot, sits
    in an arc that fills 0–100 with today's habits; under it, one ring a habit
@@ -5980,9 +6031,12 @@ function bellReact(name){
    Phase 2 (streaks, share card) and 3 (rust and shine) come later. ES5. */
 
 var SC_WATER=8, SC_STEPS=8000, SC_MEALS=3;
-/* Bell's poses (img/mascot/pose/): the moments and the habit reactions */
-var SC_POSE={gold:'/img/mascot/pose/gold.png', frozen:'/img/mascot/pose/frozen.jpg', halo:'/img/mascot/pose/halo.png',
-  water:'/img/mascot/pose/water.png', meal:'/img/mascot/pose/meal.png', calendar:'/img/mascot/pose/calendar.png'};
+/* Bell's poses (img/mascot/anim/, each a clip with its first frame as poster): the moments and the habit reactions */
+var SC_POSE={gold:'/img/mascot/anim/gold.png', frozen:'/img/mascot/anim/frozen.jpg', halo:'/img/mascot/anim/halo.png',
+  water:'/img/mascot/anim/water.png', meal:'/img/mascot/anim/meal.png', calendar:'/img/mascot/anim/calendar.png'};
+/* the moment's slot: the pose's poster now, its clip once it plays */
+function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+SC_POSE[name]+'" alt="Bell"></div>'; }
+function scMomentPlay(name){ if(typeof bellMini==='function') bellMini($('scc-bell'),name); }
 var _scSay=null, _scSayAt=0;
 
 /* a saved date (ISO string) as the local day it fell on */
@@ -6105,7 +6159,8 @@ function scRender(){
     slot.className+=' sc-live';
     if(_scSay && _scSay!=='poke' && _scSayAt>_scCheered && Date.now()-_scSayAt<8000){
       _scCheered=_scSayAt;
-      if(SC_POSE[_scSay]) scPose(slot,SC_POSE[_scSay]); else bellReact('cheer');
+      if(_scSay==='water'||_scSay==='meal') bellReact(_scSay);   /* its poster shows till the clip plays */
+      else bellReact('cheer');
     } else if(_scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
   }
   if(scCheckShine()) return;
@@ -6250,13 +6305,13 @@ function scWeekPill(){
   return '<div class="scc-week">'+out+'</div>';
 }
 function scCelebrate(n,mine){
-  var gold=n>=7, img=gold?SC_POSE.gold:SC_POSE.calendar, next=scNextMile(n), conf='', i;
+  var gold=n>=7, pose=gold?'gold':'calendar', next=scNextMile(n), conf='', i;
   var cols=['#E30613','#FFC20E','#FFFFFF','#111111'];
   if(!mine) for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%cols.length]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
   var line=SC_MILE_LINES[n]||(next?'Tinggal '+(next-n)+' hari padu lagi ke sasaran '+next+' hari. Jangan putus! 🔥':'Teruskan, juara 🔥');
   $('scc').className='scc '+(gold?'scc-gold':'scc-red');
   $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
-    '<div class="scc-bell">'+(img?'<img src="'+img+'" alt="Bell">':'')+'</div>'+
+    scMomentBell(pose)+
     '<div class="scc-t">'+(gold?'Anda capai streak <b>'+n+' hari</b>! 🏆':'Anda dalam streak <b>'+n+' hari</b>')+'</div>'+
     '<div class="scc-s">'+hesc(line)+'</div>'+
     scWeekPill()+
@@ -6264,19 +6319,19 @@ function scCelebrate(n,mine){
     '<button class="bigbtn scc-share" onclick="scShare('+n+')">Kongsi pencapaian</button>'+
     '<button class="scc-x" onclick="scCelebrateClose()">Seterusnya</button>'+
     '<div class="scc-fine">Hari padu = Skor HITFAT '+SC_PADU+' ke atas. Freeze selamatkan streak bila anda terlepas sehari.</div></div>';
-  $('scc').style.display='flex';
+  $('scc').style.display='flex'; scMomentPlay(pose);
 }
 /* a freeze was used: Bell in ice, the run safe */
 function scFreezeScreen(frozen){
   var st=scStreak();
   $('scc').className='scc scc-ice';
   $('scc').innerHTML='<div class="scc-in">'+
-    '<div class="scc-bell scc-still"><img src="'+SC_POSE.frozen+'" alt="Bell beku"></div>'+
+    scMomentBell('frozen','scc-still')+
     '<div class="scc-t">Bell beku '+(frozen.length>1?frozen.length+' hari':'semalam')+' ❄️</div>'+
     '<div class="scc-s">Streak <b>'+st.n+' hari</b> anda selamat. Bell guna '+frozen.length+' freeze. Tinggal '+scFreezeLeft()+'/'+SC_FREEZES+' bulan ni.</div>'+
     '<div class="scc-s">Jom pastikan hari ni hari padu.</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Teruskan</button></div>';
-  $('scc').style.display='flex';
+  $('scc').style.display='flex'; scMomentPlay('frozen');
 }
 /* Bell has rusted: the black screen, once a day */
 function scRustScreen(st){
@@ -6373,11 +6428,11 @@ function scShine(){
   for(i=0;i<14;i++) sp+='<i style="left:'+((i*29+7)%92)+'%;top:'+(6+(i*41+11)%34)+'%;-webkit-animation-delay:'+(i%7)*0.2+'s;animation-delay:'+(i%7)*0.2+'s">✦</i>';
   $('scc').className='scc scc-red';
   $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
-    '<div class="scc-bell scc-shine"><img src="'+(SC_ART.shine||SC_POSE.halo)+'" alt="Bell berkilat"></div>'+
+    scMomentBell('halo','scc-shine')+
     '<div class="scc-t">Yay, anda selamatkan Bell!</div>'+
     '<div class="scc-s">Karat dah hilang ✨ Okay okay, Bell maafkan anda. Jangan tinggal Bell lama-lama lagi ya 😇</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Jom!</button></div>';
-  $('scc').style.display='flex';
+  $('scc').style.display='flex'; scMomentPlay('halo');
 }
 /* ═══════════════ BELL'S REMINDERS · Web Push ═══════════════
    A member turns them on once (it must be a tap: the browser asks then);

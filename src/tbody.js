@@ -3966,7 +3966,7 @@ print("\n── SKOR HITFAT · FREEZE, SCREENS, POSES ──");
   ok("the streak screen: red, the week with ticks, freezes left, share and next", document.getElementById('scc').className.indexOf('scc-red')>0 &&
      (h.match(/class="scc-d/g)||[]).length===7 && h.indexOf('freeze tinggal')>0 && h.indexOf('scShare(5)')>0 && h.indexOf('Seterusnya')>0);
   scCelebrate(7,false);
-  ok("seven days and up: the gold screen and the gold Bell", document.getElementById('scc').className.indexOf('scc-gold')>0 && document.getElementById('scc').innerHTML.indexOf('pose/gold.png')>0);
+  ok("seven days and up: the gold screen and the gold Bell", document.getElementById('scc').className.indexOf('scc-gold')>0 && document.getElementById('scc').innerHTML.indexOf('anim/gold.png')>0);
   scCelebrateClose();
   HF.data.sc={}; HF.data.daily={}; HF.data.daily[iso(-4)]={water:1,steps:0};
   scRender();
@@ -3979,6 +3979,14 @@ print("\n── SKOR HITFAT · FREEZE, SCREENS, POSES ──");
      var r=HF.data.sc.frozen['2026-10-14']===1; HF.data=keep; return r; })());
   scCelebrateClose();
   HF.data.sessions=keepS; HF.data.meals=keepM; HF.data.daily=keepD||{}; HF.data.ifs=keepI||{}; HF.data.sc=keepSc||{}; HF.save=keepSave;
+})();
+print("\n── BELL'S POSES, MOVING ──");
+(function(){
+  ok("every moment has its clip and a poster from its first frame", ['gold','frozen','halo','water','meal','calendar'].every(function(k){ return SC_POSE[k].indexOf('/img/mascot/anim/'+k)===0; }));
+  ok("the streak, freeze and halo screens play their clip", String(scCelebrate).indexOf('scMomentPlay(pose)')>0 && String(scFreezeScreen).indexOf("scMomentPlay('frozen')")>0 && String(scShine).indexOf("scMomentPlay('halo')")>0);
+  ok("Bell in ice plays as it is, on the white screen", BELL_PLAIN.frozen===true);
+  ok("water and meals play Bell's own clip", String(scRender).indexOf('bellReact(_scSay)')>0);
+  ok("no canvas, no clip: the poster stays", bellMini(null,'gold')===false);
 })();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

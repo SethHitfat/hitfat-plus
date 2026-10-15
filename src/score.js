@@ -16,9 +16,12 @@
    Phase 2 (streaks, share card) and 3 (rust and shine) come later. ES5. */
 
 var SC_WATER=8, SC_STEPS=8000, SC_MEALS=3;
-/* Bell's poses (img/mascot/pose/): the moments and the habit reactions */
-var SC_POSE={gold:'/img/mascot/pose/gold.png', frozen:'/img/mascot/pose/frozen.jpg', halo:'/img/mascot/pose/halo.png',
-  water:'/img/mascot/pose/water.png', meal:'/img/mascot/pose/meal.png', calendar:'/img/mascot/pose/calendar.png'};
+/* Bell's poses (img/mascot/anim/, each a clip with its first frame as poster): the moments and the habit reactions */
+var SC_POSE={gold:'/img/mascot/anim/gold.png', frozen:'/img/mascot/anim/frozen.jpg', halo:'/img/mascot/anim/halo.png',
+  water:'/img/mascot/anim/water.png', meal:'/img/mascot/anim/meal.png', calendar:'/img/mascot/anim/calendar.png'};
+/* the moment's slot: the pose's poster now, its clip once it plays */
+function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+SC_POSE[name]+'" alt="Bell"></div>'; }
+function scMomentPlay(name){ if(typeof bellMini==='function') bellMini($('scc-bell'),name); }
 var _scSay=null, _scSayAt=0;
 
 /* a saved date (ISO string) as the local day it fell on */
@@ -141,7 +144,8 @@ function scRender(){
     slot.className+=' sc-live';
     if(_scSay && _scSay!=='poke' && _scSayAt>_scCheered && Date.now()-_scSayAt<8000){
       _scCheered=_scSayAt;
-      if(SC_POSE[_scSay]) scPose(slot,SC_POSE[_scSay]); else bellReact('cheer');
+      if(_scSay==='water'||_scSay==='meal') bellReact(_scSay);   /* its poster shows till the clip plays */
+      else bellReact('cheer');
     } else if(_scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
   }
   if(scCheckShine()) return;
@@ -286,13 +290,13 @@ function scWeekPill(){
   return '<div class="scc-week">'+out+'</div>';
 }
 function scCelebrate(n,mine){
-  var gold=n>=7, img=gold?SC_POSE.gold:SC_POSE.calendar, next=scNextMile(n), conf='', i;
+  var gold=n>=7, pose=gold?'gold':'calendar', next=scNextMile(n), conf='', i;
   var cols=['#E30613','#FFC20E','#FFFFFF','#111111'];
   if(!mine) for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%cols.length]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
   var line=SC_MILE_LINES[n]||(next?'Tinggal '+(next-n)+' hari padu lagi ke sasaran '+next+' hari. Jangan putus! 🔥':'Teruskan, juara 🔥');
   $('scc').className='scc '+(gold?'scc-gold':'scc-red');
   $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
-    '<div class="scc-bell">'+(img?'<img src="'+img+'" alt="Bell">':'')+'</div>'+
+    scMomentBell(pose)+
     '<div class="scc-t">'+(gold?'Anda capai streak <b>'+n+' hari</b>! 🏆':'Anda dalam streak <b>'+n+' hari</b>')+'</div>'+
     '<div class="scc-s">'+hesc(line)+'</div>'+
     scWeekPill()+
@@ -300,19 +304,19 @@ function scCelebrate(n,mine){
     '<button class="bigbtn scc-share" onclick="scShare('+n+')">Kongsi pencapaian</button>'+
     '<button class="scc-x" onclick="scCelebrateClose()">Seterusnya</button>'+
     '<div class="scc-fine">Hari padu = Skor HITFAT '+SC_PADU+' ke atas. Freeze selamatkan streak bila anda terlepas sehari.</div></div>';
-  $('scc').style.display='flex';
+  $('scc').style.display='flex'; scMomentPlay(pose);
 }
 /* a freeze was used: Bell in ice, the run safe */
 function scFreezeScreen(frozen){
   var st=scStreak();
   $('scc').className='scc scc-ice';
   $('scc').innerHTML='<div class="scc-in">'+
-    '<div class="scc-bell scc-still"><img src="'+SC_POSE.frozen+'" alt="Bell beku"></div>'+
+    scMomentBell('frozen','scc-still')+
     '<div class="scc-t">Bell beku '+(frozen.length>1?frozen.length+' hari':'semalam')+' ❄️</div>'+
     '<div class="scc-s">Streak <b>'+st.n+' hari</b> anda selamat. Bell guna '+frozen.length+' freeze. Tinggal '+scFreezeLeft()+'/'+SC_FREEZES+' bulan ni.</div>'+
     '<div class="scc-s">Jom pastikan hari ni hari padu.</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Teruskan</button></div>';
-  $('scc').style.display='flex';
+  $('scc').style.display='flex'; scMomentPlay('frozen');
 }
 /* Bell has rusted: the black screen, once a day */
 function scRustScreen(st){
@@ -409,9 +413,9 @@ function scShine(){
   for(i=0;i<14;i++) sp+='<i style="left:'+((i*29+7)%92)+'%;top:'+(6+(i*41+11)%34)+'%;-webkit-animation-delay:'+(i%7)*0.2+'s;animation-delay:'+(i%7)*0.2+'s">✦</i>';
   $('scc').className='scc scc-red';
   $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
-    '<div class="scc-bell scc-shine"><img src="'+(SC_ART.shine||SC_POSE.halo)+'" alt="Bell berkilat"></div>'+
+    scMomentBell('halo','scc-shine')+
     '<div class="scc-t">Yay, anda selamatkan Bell!</div>'+
     '<div class="scc-s">Karat dah hilang ✨ Okay okay, Bell maafkan anda. Jangan tinggal Bell lama-lama lagi ya 😇</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Jom!</button></div>';
-  $('scc').style.display='flex';
+  $('scc').style.display='flex'; scMomentPlay('halo');
 }
