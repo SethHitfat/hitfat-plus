@@ -18,7 +18,9 @@
 })();
 </script>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<!-- (16 Oct) translucent: Home's red top runs up behind the clock; every
+     other screen keeps a black strip there (body::before), as it had -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <!-- the name under the icon on a home screen: written the way it is said -->
 <meta name="apple-mobile-web-app-title" content="Hitfat+">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -5643,6 +5645,12 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
   background:linear-gradient(180deg,#F23B3B 0,#FF7A72 110px,#FFC4BD 260px,#FFF1EF 440px,var(--bg) 600px) 0 0/100% 620px no-repeat local,var(--bg);}
 /* the red + of the wordmark would vanish on red: white on Home only */
 :root[data-theme="light"] .screen:has(> #home:not([style*="none"])) > .topbar span{color:#FFFFFF !important;}
+
+/* the status bar (16 Oct): the app draws under it now. A black strip the
+   height of the bar keeps the clock readable everywhere, as before, except on
+   Home, where the red top shows through behind white status text. */
+body::before{content:'';position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:#000;z-index:2147483000;pointer-events:none;}
+body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#player[style*="block"]))::before{display:none;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
