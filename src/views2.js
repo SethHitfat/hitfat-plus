@@ -551,20 +551,21 @@ function renderMe(){
 
   /* The Fitness+ account sheet: the person in the middle, large, with the
      one thing they are most likely to change right under their name. */
+  /* one profile card (16 Oct): the avatar, the name, the email and the
+     membership as a chip, Edit Plan beside it, and the three numbers as a
+     strip along the bottom; the streak is the HITFAT Score's, as Progress */
+  const tier=memberTier(), until=memberUntil();
+  const st=(typeof scStreak==='function')?scStreak().n:streak;
   let h='<div class="hsum"><div class="hsum-l"><div class="k">ACCOUNT</div><div class="t">Me</div></div></div>'+
-    '<div class="meprof">'+avatarHTML(84)+
-    '<div class="n">'+hesc((p.name||'').trim()||'Set your name')+'</div>'+
+    '<div class="meprof mecard"><div class="mec-top">'+avatarHTML(60)+
+    '<div class="mec-tx"><div class="n">'+hesc((p.name||'').trim()||'Set your name')+'</div>'+
     '<div class="s">'+hesc(HF.email||'Not signed in')+'</div>'+
-    '<button class="meedit" onclick="startOnboarding()">Edit Plan</button></div>';
-
-  /* Three numbers, each one that means something on its own. */
-  h+='<div class="htiles me3">'+
-    '<div class="htile" onclick="switchTab(\'progress\')"><div class="l hc-streak">Streak</div><div class="v">'+streak+'</div>'+
-      '<div class="s">'+(streak===1?'day in a row':'days in a row')+'</div></div>'+
-    '<div class="htile" onclick="switchTab(\'progress\')"><div class="l hc-sess">Sessions</div><div class="v">'+HF.count()+'</div>'+
-      '<div class="s">all time</div></div>'+
-    '<div class="htile" onclick="switchTab(\'progress\')"><div class="l hc-cons">Weight</div><div class="v">'+(w?w.kg:'—')+'</div>'+
-      '<div class="s">'+(w?'kg':'not logged')+'</div></div></div>';
+    '<span class="mec-chip'+(tier?' on':'')+'">'+(tier==='coach'?'HITFAT+ Coach':tier?'HITFAT+ Member':'Free')+'</span></div>'+
+    '<button class="meedit" onclick="startOnboarding()">Edit Plan</button></div>'+
+    '<div class="mec-stats">'+
+    '<div onclick="switchTab(\'progress\')"><b>🔥 '+st+'</b><span>'+(st===1?'day streak':'day streak')+'</span></div>'+
+    '<div onclick="switchTab(\'progress\')"><b>'+HF.count()+'</b><span>sessions</span></div>'+
+    '<div onclick="switchTab(\'progress\')"><b>'+(w?w.kg+'<i> kg</i>':'—')+'</b><span>'+(w?'weight':'no weigh-in')+'</span></div></div></div>';
 
   h+=fsec('Your Plan','')+'<div class="glist">'+
     grow('target','Goal', p.goal||'Not set', 'startOnboarding()')+
@@ -575,11 +576,13 @@ function renderMe(){
 
   /* Everything else this account can open, in one place. */
   /* The membership first — what this account can open, and until when. */
-  const tier=memberTier(), until=memberUntil();
   if(tier){
-    h+=fsec('Membership','')+'<div class="glist">'+
-      grow('star', tier==='coach'?'HITFAT+ Coach':'HITFAT+', until?'Until '+fmtDate(until):'All Access', "openStore()")+
-      (AICOACH_LIVE?grow('spark','AI Coach',(typeof aicPlan==='function'&&aicPlan())?'Your plan':'Get your plan','openAICoach()'):'')+'</div>';
+    /* the membership as a brand card, not a row (16 Oct) */
+    h+=fsec('Membership','')+'<div class="memem" onclick="openStore()"><div class="pw-mark">HITFAT<span>+</span></div>'+
+      '<div class="t">'+(tier==='coach'?'Coach member':'Member')+'</div>'+
+      '<div class="s">'+(until?'Until '+fmtDate(until):'All Access')+' · every program, scans and meal plans</div>'+
+      '<span class="memem-b">Manage ›</span></div>'+
+      (AICOACH_LIVE?'<div class="glist">'+grow('spark','AI Coach',(typeof aicPlan==='function'&&aicPlan())?'Your plan':'Get your plan','openAICoach()')+'</div>':'');
   } else {
     /* Not a member: the offer, as a poster, not a grey row that says no. */
     h+='<div class="mepromo" onclick="openStore()"><div class="pw-mark">HITFAT<span>+</span></div>'+
