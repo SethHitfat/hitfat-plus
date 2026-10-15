@@ -25,10 +25,16 @@ function scSet(k,v){
   var all=HF.data.daily||(HF.data.daily={}), d=iso(0), o=all[d]||(all[d]={water:0,steps:0});
   o[k]=Math.max(0,Math.round(v)); HF.save();
 }
-function scWorkouts(d){
+function scWorkouts(d,days){
+  if(days) return days[d]||0;
   var s=HF.data.sessions||{}, n=0, k;
   for(k in s){ if(s.hasOwnProperty(k) && s[k] && s[k].date && scDayOf(s[k].date)===d) n++; }
   return n;
+}
+function scWorkoutDays(){
+  var s=HF.data.sessions||{}, out={}, k, d;
+  for(k in s){ if(s.hasOwnProperty(k) && s[k] && s[k].date){ d=scDayOf(s[k].date); out[d]=(out[d]||0)+1; } }
+  return out;
 }
 function scHasIF(){ var f=HF.data.ifs||{}; return !!(f.plan && !f.plan.blocked); }
 /* hours fasted toward today: a fast that ended today, or the one running now */
@@ -40,9 +46,9 @@ function scFast(d){
 }
 
 /* today's habits, each with how full it is (0–1) */
-function scHabits(d){
+function scHabits(d,days){
   d=d||iso(0);
-  var dy=scDaily(d), w=scWorkouts(d), m=(HF.data.meals&&HF.data.meals[d]||[]).length, out=[];
+  var dy=scDaily(d), w=scWorkouts(d,days), m=(HF.data.meals&&HF.data.meals[d]||[]).length, out=[];
   out.push({k:'workout', n:'Workout', ic:'workout', v:Math.min(1,w), val:w?'Siap':'0/1'});
   out.push({k:'meal',    n:'Makan',   ic:'food',    v:Math.min(1,m/SC_MEALS), val:m+'/'+SC_MEALS});
   out.push({k:'water',   n:'Air',     ic:'water',   v:Math.min(1,dy.water/SC_WATER), val:dy.water+'/'+SC_WATER});
@@ -50,8 +56,8 @@ function scHabits(d){
   if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Puasa', ic:'clock', v:Math.min(1,f.hrs/f.target), val:Math.floor(f.hrs)+'/'+f.target+'j'}); }
   return out;
 }
-function scScore(d){
-  var hs=scHabits(d), t=0, i;
+function scScore(d,days){
+  var hs=scHabits(d,days), t=0, i;
   for(i=0;i<hs.length;i++) t+=hs[i].v;
   return Math.round(t/hs.length*100);
 }
@@ -105,12 +111,13 @@ function scHTML(){
   var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null;
   var img=M&&M.config.images[lv-1]?'<img src="'+M.config.images[lv-1]+'" alt="Bell, tahap '+lv+'">':'';
   return '<div class="sc">'+
-    '<div class="sc-head"><div><div class="sc-k">Skor HITFAT · Hari ini</div><div class="sc-n" style="color:'+scColor(s)+'">'+s+'<span>/100</span></div></div></div>'+
+    '<div class="sc-head"><div><div class="sc-k">Skor HITFAT · Hari ini</div><div class="sc-n" style="color:'+scColor(s)+'">'+s+'<span>/100</span></div></div>'+
+      scChip()+'</div>'+
     '<div class="sc-stage" onclick="switchTab(\'progress\')">'+scArc(s)+'<div class="sc-bell sc-lv'+lv+'">'+img+'</div></div>'+
     '<div class="sc-say">'+hesc(scLine())+'</div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>';
 }
-function scRender(){ var el=$('mascot-home'); if(el) el.innerHTML=scHTML(); }
+function scRender(){ var el=$('mascot-home'); if(el){ el.innerHTML=scHTML(); scCheckStreak(); } }
 
 /* each habit's way in */
 function scTap(k){
@@ -143,4 +150,102 @@ function scStepsSet(){
   var v=parseInt(($('sc-steps')||{}).value,10);
   if(!(v>=0) || v>100000){ toast('Masukkan jumlah langkah'); return; }
   scSet('steps',v); _scSay='steps'; _scSayAt=Date.now(); scClose();
+}
+
+
+/* ═══════════════ phase 2 · streaks ═══════════════
+   A day counts when its score reached SC_PADU ("hari padu"). The streak is
+   the run of such days up to today, or up to yesterday while today is still
+   being earned. Reaching 3, 7, 14, 30, 60 or 100 days opens a celebration
+   once per run, with a card the member can share to an IG Story. */
+var SC_PADU=50, SC_MILES=[3,7,14,30,60,100];
+var SC_MILE_LINES={3:'Permulaan yang padu! Bell dah nampak potensi anda 🔥',
+  7:'Seminggu penuh! Bell bangga gila 💪',14:'Dua minggu! Ini dah jadi tabiat, bukan lagi usaha.',
+  30:'30 hari! Anda juara sebenar 🏆',60:'60 hari! Badan anda dah lain, kan? 😎',100:'100 hari! Bell tabik spring 🫡'};
+
+function scStreak(){
+  var days=scWorkoutDays(), n=0, i=0, d;
+  if(scScore(iso(0),days)<SC_PADU) i=1;            /* today is still in progress */
+  for(;i<400;i++){ d=iso(-i); if(scScore(d,days)>=SC_PADU) n++; else break; }
+  return {n:n, start:n?iso(-(i-1)):null, today:scScore(iso(0),days)>=SC_PADU};
+}
+function scNextMile(n){ for(var i=0;i<SC_MILES.length;i++) if(SC_MILES[i]>n) return SC_MILES[i]; return null; }
+function scChip(){
+  var st=scStreak();
+  if(!st.n) return '<button class="sc-chip off" onclick="scStreakInfo()">🔥 0</button>';
+  return '<button class="sc-chip" onclick="scCelebrate('+st.n+',true)">🔥 '+st.n+' hari</button>';
+}
+/* a milestone reached on this run and not yet celebrated */
+function scCheckStreak(){
+  var st=scStreak(), sc=HF.data.sc||(HF.data.sc={}), seen=sc.seen||(sc.seen={}), m=0, i, key;
+  if(!st.n || $('scc').style.display==='flex') return;
+  for(i=0;i<SC_MILES.length;i++) if(st.n>=SC_MILES[i]) m=SC_MILES[i];
+  if(!m) return;
+  key=st.start+':'+m;
+  if(seen[key]) return;
+  seen[key]=1; HF.save();
+  scCelebrate(m,false);
+}
+function scStreakInfo(){
+  toast('Capai skor '+SC_PADU+' sehari untuk mula streak 🔥');
+}
+function scCelebrate(n,mine){
+  var M=(typeof hfm==='function')?hfm():null, img=M?M.config.images[3]:'', next=scNextMile(n), conf='', i;
+  var cols=['#E30613','#FFC20E','#22C55E','#FFFFFF','#FF8A3D'];
+  for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%cols.length]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
+  var line=SC_MILE_LINES[n]||('Streak '+n+' hari! Teruskan 🔥');
+  $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
+    '<div class="scc-bell">'+(img?'<img src="'+img+'" alt="Bell">':'')+'</div>'+
+    '<div class="scc-n">'+n+'</div><div class="scc-k">hari padu berturut-turut</div>'+
+    '<div class="scc-s">'+hesc(line)+'</div>'+
+    (next?'<div class="scc-f">Sasaran seterusnya: '+next+' hari</div>':'')+
+    '<button class="bigbtn scc-share" onclick="scShare('+n+')">Kongsi ke IG Story</button>'+
+    '<button class="scc-x" onclick="scCelebrateClose()">Teruskan</button>'+
+    '<div class="scc-fine">Hari padu = Skor HITFAT '+SC_PADU+' ke atas.</div></div>';
+  $('scc').style.display='flex';
+}
+function scCelebrateClose(){ $('scc').style.display='none'; $('scc').innerHTML=''; }
+
+/* the share card: 1080 × 1920, drawn on a canvas, shared as a file where the
+   phone allows it, otherwise shown to keep with a long press */
+function scCard(n,done){
+  var M=(typeof hfm==='function')?hfm():null, cv=document.createElement('canvas');
+  if(!cv.getContext){ done(null); return; }
+  cv.width=1080; cv.height=1920;
+  var g=cv.getContext('2d'), img=new Image();
+  var bg=g.createRadialGradient(540,700,80,540,800,1200);
+  bg.addColorStop(0,'#5A0A0E'); bg.addColorStop(.55,'#1A0607'); bg.addColorStop(1,'#0B0B0D');
+  g.fillStyle=bg; g.fillRect(0,0,1080,1920);
+  function text(t,x,y,size,col,w){ g.font=(w||800)+' '+size+'px -apple-system, "Helvetica Neue", Arial, sans-serif'; g.fillStyle=col; g.textAlign='center'; g.fillText(t,x,y); }
+  function finish(){
+    g.font='800 64px -apple-system, "Helvetica Neue", Arial, sans-serif'; g.textAlign='left';
+    var w1=g.measureText('HITFAT').width, w2=g.measureText('+').width, x0=540-(w1+w2)/2;
+    g.fillStyle='#FFFFFF'; g.fillText('HITFAT',x0,190); g.fillStyle='#E30613'; g.fillText('+',x0+w1,190);
+    text(String(n),540,1390,300,'#FFFFFF');
+    text('HARI PADU BERTURUT-TURUT',540,1480,52,'#FFC20E',800);
+    text('Skor HITFAT '+SC_PADU+'+ setiap hari',540,1560,42,'rgba(255,255,255,.75)',600);
+    text('app.hitfat.io',540,1800,40,'rgba(255,255,255,.55)',600);
+    g.fillStyle='#FFC20E'; g.font='90px sans-serif'; g.fillText('✦',200,420); g.fillText('✦',880,360); g.font='60px sans-serif'; g.fillText('✦',930,760);
+    done(cv);
+  }
+  if(M && M.config.images[3]){ img.onload=function(){ g.drawImage(img,190,280,700,700); finish(); }; img.onerror=finish; img.src=M.config.images[3]; }
+  else finish();
+}
+function scShare(n){
+  scCard(n,function(cv){
+    if(!cv){ toast('Kad tidak dapat dibuat pada peranti ini'); return; }
+    var text='🔥 '+n+' hari padu berturut-turut dengan HITFAT+! app.hitfat.io';
+    var fallback=function(){
+      $('scc').innerHTML='<div class="scc-in"><img class="scc-card" src="'+cv.toDataURL('image/png')+'" alt="Kad streak">'+
+        '<div class="scc-s">Tekan lama pada gambar untuk simpan, kemudian kongsi ke IG Story.</div>'+
+        '<button class="scc-x" onclick="scCelebrateClose()">Tutup</button></div>';
+    };
+    if(!cv.toBlob){ fallback(); return; }
+    cv.toBlob(function(b){
+      var f=null; try{ f=new File([b],'hitfat-streak-'+n+'.png',{type:'image/png'}); }catch(e){}
+      if(f && navigator.canShare && navigator.canShare({files:[f]})){
+        navigator.share({files:[f], text:text}).catch(function(){});
+      } else fallback();
+    },'image/png');
+  });
 }

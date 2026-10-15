@@ -3863,5 +3863,32 @@ print("\n── SKOR HITFAT ──");
      var r=HF.data.daily[iso(0)].steps===5000 && HF.data.ifs.plan.start==='2026-10-01'; HF.data=keep; return r; })());
   HF.data.sessions=keepS; HF.data.meals=keepM; HF.data.daily=keepD||{}; HF.data.ifs=keepI||{}; HF.save=keepSave; _scSay=null;
 })();
+print("\n── SKOR HITFAT · STREAKS ──");
+(function(){
+  var keepS=HF.data.sessions, keepM=HF.data.meals, keepD=HF.data.daily, keepI=HF.data.ifs, keepSc=HF.data.sc, keepSave=HF.save;
+  HF.save=function(){}; HF.data.sessions={}; HF.data.meals={}; HF.data.daily={}; HF.data.ifs={}; HF.data.sc={};
+  function padu(off){ HF.data.daily[iso(-off)]={water:8,steps:8000}; }      /* 50: a hari padu */
+  ok("no padu days: no streak, the chip says 0", scStreak().n===0 && scChip().indexOf('🔥 0')>0);
+  padu(1); padu(2);
+  ok("today still in progress: yesterday's run counts", scStreak().n===2 && !scStreak().today);
+  padu(0);
+  ok("today reaches 50: it joins the run", scStreak().n===3 && scStreak().today && scChip().indexOf('3 hari')>0);
+  HF.data.daily[iso(-3)]={water:2,steps:0}; padu(4);
+  ok("a day under 50 ends the run", scStreak().n===3);
+  document.getElementById('scc').style.display='none';
+  scCheckStreak();
+  ok("3 days: the celebration opens", document.getElementById('scc').style.display==='flex' && document.getElementById('scc').innerHTML.indexOf('scc-n">3<')>0 &&
+     document.getElementById('scc').innerHTML.indexOf("scShare(3)")>0);
+  ok("...naming the next milestone", document.getElementById('scc').innerHTML.indexOf('Sasaran seterusnya: 7 hari')>0);
+  scCelebrateClose(); scCheckStreak();
+  ok("...once a run, not on every visit", document.getElementById('scc').style.display==='none');
+  ok("the milestones", SC_MILES.join()==='3,7,14,30,60,100' && scNextMile(7)===14 && scNextMile(100)===null);
+  ok("the chip reopens the card to share any time", scChip().indexOf('scCelebrate(3,true)')>0);
+  ok("the celebrations survive a reload", (function(){ var o=JSON.parse(JSON.stringify(HF.data)); var keep=HF.data; HF.apply(o);
+     var r=Object.keys(HF.data.sc.seen||{}).length===1; HF.data=keep; return r; })());
+  ok("a workout on a day is found from a set, not a walk per day", scWorkouts(iso(0),{})===0 && String(scStreak).indexOf('scWorkoutDays()')>0);
+  scCelebrateClose();
+  HF.data.sessions=keepS; HF.data.meals=keepM; HF.data.daily=keepD||{}; HF.data.ifs=keepI||{}; HF.data.sc=keepSc||{}; HF.save=keepSave;
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

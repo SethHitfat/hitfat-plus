@@ -2563,3 +2563,27 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .sc-sh-in .inp{flex:1;min-width:0;margin:0;}
 .sc-sh-in .bigbtn{flex:none;width:auto;padding:0 18px;margin:0;}
 .sc-sh-f{font-size:13px;color:var(--dim2);margin-top:12px;line-height:1.45;}
+
+/* HITFAT Score · phase 2: the streak chip and the celebration */
+.sc-chip{border:0;border-radius:99px;padding:7px 12px;font-size:14px;font-weight:800;background:rgba(255,138,61,.16);color:#FF8A3D;cursor:pointer;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.sc-chip.off{background:var(--surface2);color:var(--dim2);}
+.scc{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px));
+  background:radial-gradient(circle at 50% 35%,#5A0A0E 0%,#1A0607 55%,#0B0B0D 100%);color:#FFFFFF;}
+.scc-in{position:relative;z-index:1;width:100%;max-width:360px;text-align:center;}
+.scc-bell{width:200px;height:200px;margin:0 auto;-webkit-animation:hfm-hop 1.2s ease-in-out infinite;animation:hfm-hop 1.2s ease-in-out infinite;}
+.scc-bell img{display:block;width:100%;height:100%;}
+.scc-n{font-size:96px;font-weight:900;letter-spacing:-3px;line-height:1;margin-top:6px;font-variant-numeric:tabular-nums;}
+.scc-k{font-size:14px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#FFC20E;margin-top:4px;}
+.scc-s{font-size:17px;line-height:1.45;margin:14px 0 4px;color:rgba(255,255,255,.9);}
+.scc-f{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;}
+.scc-share{margin-top:22px;background:#E30613 !important;color:#FFFFFF !important;}
+.scc-x{display:block;width:100%;margin-top:8px;padding:14px;border:0;border-radius:14px;background:rgba(255,255,255,.1);color:#FFFFFF;font-size:16px;font-weight:700;cursor:pointer;}
+.scc-fine{font-size:11px;color:rgba(255,255,255,.45);margin-top:14px;}
+.scc-card{display:block;width:100%;max-width:260px;margin:0 auto;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.5);}
+.scc-conf{position:absolute;inset:0;pointer-events:none;}
+.scc-conf i{position:absolute;top:-20px;width:8px;height:14px;border-radius:2px;opacity:.9;
+  -webkit-animation:scc-fall 2.6s linear infinite;animation:scc-fall 2.6s linear infinite;}
+@-webkit-keyframes scc-fall{0%{-webkit-transform:translateY(0) rotate(0);}100%{-webkit-transform:translateY(110vh) rotate(540deg);}}
+@keyframes scc-fall{0%{transform:translateY(0) rotate(0);}100%{transform:translateY(110vh) rotate(540deg);}}
+@media (prefers-reduced-motion: reduce){ .scc-conf{display:none;} .scc-bell{-webkit-animation:none;animation:none;} }
