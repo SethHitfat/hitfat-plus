@@ -320,9 +320,8 @@ function fyMoreCard(p,goalKey,lvl){
 }
 /* a quick workout as one tidy row, like All Plans */
 function fyQuickRow(p){
-  const lv=String(p.level||'');
-  return '<div class="plr" onclick="openProgram(\''+p.id+'\')"><div class="th" style="background-image:url(\''+progImg(p)+'\')"></div>'+
-    '<div class="tx"><div class="t">'+p.name+'</div><div class="m">'+p.dur+' min · '+(p.goal||'')+(lv?' <span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span>':'')+'</div></div>'+
+  return '<div class="plr" onclick="openProgram(\''+p.id+'\')"><div class="th" style="'+plThumb(p)+'"></div>'+
+    '<div class="tx"><div class="eb">'+(p.goal||'Workout')+'</div><div class="t">'+p.name+'</div><div class="m">'+plMeta(p,fweekKit(p))+'</div></div>'+
     lockTag(p)+'<span class="ch">›</span></div>';
 }
 function trForYou(){
@@ -444,13 +443,27 @@ function plMatch(p,f){
 function plChipsHTML(){
   return PL_FILTERS.map(f=>'<button class="'+(_plF===f[0]?'on':'')+'" onclick="plFilter(\''+f[0]+'\')">'+f[1]+'</button>').join('');
 }
+/* a square thumb zoomed to the upper body, from the photo's focal point */
+function plThumb(p){
+  const img=FBIG_IMG[p.id]||progImg(p), f=(typeof FOCAL!=='undefined')&&hasPhoto(p)&&!FBIG_IMG[p.id]&&FOCAL[p.id];
+  if(!f) return 'background-image:url(\''+img+'\');background-size:cover;background-position:50% 25%';
+  const ar=f[2], z=1.9;
+  return 'background-image:url(\''+img+'\');background-size:'+(ar>=1?'auto '+Math.round(z*100)+'%':Math.round(z*100)+'% auto')+
+    ';background-position:'+f[0]+'% '+Math.max(0,f[1]-4)+'%';
+}
+const LV_DOT={Beginner:'#2E9E5B',Intermediate:'#E0A100',Advanced:'#E30613'};
+function plMeta(p,len){
+  const lv=String(p.level||'');
+  return len+' · '+p.dur+' min'+(lv?' · <span class="lvd" style="--d:'+(LV_DOT[lv]||'#999')+'">'+lv+'</span>':'');
+}
 function plRow(p){
-  const img=FBIG_IMG[p.id]||progImg(p), lv=String(p.level||''), done=progDone(p.id), tot=progDays(p), on=done>0&&done<tot;
+  const done=progDone(p.id), tot=progDays(p), on=done>0&&done<tot;
   const len=p.oneTime?(tot+' days'):(p.weeks||[]).length+' weeks';
+  const eb=/^sig\d/.test(p.id)?'<b>HITFAT ORIGINAL</b> · '+(p.goal||''):(p.goal||'Program');
   return '<div class="plr" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="th" style="background-image:url(\''+img+'\')"></div>'+
-    '<div class="tx"><div class="t">'+(/^sig\d/.test(p.id)?'<i class="o">HF</i>':'')+p.name+'</div>'+
-    '<div class="m">'+len+' · '+p.dur+' min'+(lv?' <span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span>':'')+'</div>'+
+    '<div class="th" style="'+plThumb(p)+'"></div>'+
+    '<div class="tx"><div class="eb">'+eb+'</div><div class="t">'+p.name+'</div>'+
+    '<div class="m">'+plMeta(p,len)+'</div>'+
     (on?'<div class="pb"><i style="width:'+Math.round(done/tot*100)+'%"></i></div>':'')+'</div>'+
     lockTag(p)+'<span class="ch">›</span></div>';
 }

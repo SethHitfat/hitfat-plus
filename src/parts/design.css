@@ -3184,3 +3184,12 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
   display:grid;place-items:center;background:#E30613;color:#FFFFFF;box-shadow:0 6px 16px rgba(227,6,19,.45);}
 .fmc .go svg{width:18px;height:18px;margin-left:2px;}
 .fmc .go:active{transform:scale(.92);}
+/* All Plans rows, calmer (16 Oct): an eyebrow, the name, one grey line with a level dot */
+.plr{padding:11px 12px;gap:13px;}
+.plr .th{width:62px;height:62px;border-radius:14px;background-repeat:no-repeat;background-color:#222;}
+.plr .eb{font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--dim2);margin-bottom:2px;}
+.plr .eb b{color:#E30613;font-weight:900;}
+.plr .t{font-size:16px;}
+.plr .m{font-size:12.5px;gap:0;display:block;}
+.lvd{white-space:nowrap;}
+.lvd::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--d);margin-right:5px;vertical-align:1px;}
