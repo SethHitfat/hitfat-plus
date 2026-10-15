@@ -241,7 +241,8 @@ function renderHome(){
   // 1) header — the date small, the greeting large, the avatar
   $('home-hdr').innerHTML='<div class="hsum">'+
     '<div class="hsum-l"><div class="k">'+dateLine+'</div>'+
-    '<div class="t">'+(nm?'Hi, '+hesc(nm.split(/\s+/)[0]):'Summary')+'</div></div></div>';
+    '<div class="t">'+(nm?'Hi, '+hesc(nm.split(/\s+/)[0]):'Summary')+'</div></div>'+
+    '<div class="sc-pills" id="sc-pills"></div></div>';
   /* The avatar already sits in the bar above, on every tab; a second one
      beside the greeting showed the same initial twice. */
 

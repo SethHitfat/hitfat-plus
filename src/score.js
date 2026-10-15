@@ -67,7 +67,8 @@ function scHabits(d,days){
   if(!SC_FAST_LIVE){}
   else if(typeof scRamadan==='function' && scRamadan(d)) out.push({k:'fast', n:'Fast', ic:'moon', c:'#E30613', v:dy.ram?1:0, val:dy.ram?'Done':'Not yet'});
   else if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Fast', ic:'clock', c:'#A855F7', v:Math.min(1,f.hrs/f.target), val:Math.min(Math.floor(f.hrs),f.target)+'/'+f.target+'h'}); }
-  for(var i=0;i<out.length;i++) if(out[i].v>=1) out[i].val='✓ '+out[i].val;
+  var T={workout:out[0].v>=1?'Workout done':'Time to train', meal:out[1].val+' meals', water:out[2].val+' glasses', steps:out[3].val+' steps'};
+  for(var i=0;i<out.length;i++){ out[i].t=T[out[i].k]||out[i].val; if(out[i].v>=1) out[i].val='✓ '+out[i].val; }
   return out;
 }
 function scScore(d,days){
@@ -123,12 +124,34 @@ function scRing(h){
     '<span class="sc-ring" style="color:'+c+'"><svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" class="sc-ring-t"/>'+
     (h.v>0?'<circle cx="26" cy="26" r="22" class="sc-ring-v" pathLength="100" stroke="currentColor" stroke-dasharray="'+Math.round(h.v*100)+' 100"/>':'')+
     '</svg><span class="sc-ic"'+(h.v>0?' style="color:'+c+'"':'')+'>'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'')+'</span>'+
-    '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span></button>';
+    '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span><span class="sc-t">'+hesc(h.t||h.val)+'</span></button>';
 }
 /* the card takes the score's colour, as Simple's screens do (A); Bell's
    look and liveliness follow the stage (B, and bell.js) */
 function scRGB(c){ var n=parseInt(c.slice(1),16); return (n>>16&255)+','+(n>>8&255)+','+(n&255); }
 function scTint(c){ return 'rgba('+scRGB(c)+',.16)'; }
+/* Simple's two pills, top right of Home: the score (tap: Progress) and the streak */
+function scPills(){
+  var s=scScore(), c=scColor(s);
+  return '<button class="sc-pill" onclick="switchTab(\'progress\')" aria-label="HITFAT Score '+s+' of 100">'+
+    '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="3"/>'+
+    (s>0?'<circle cx="10" cy="10" r="7.5" fill="none" stroke="'+c+'" stroke-width="3" stroke-linecap="round" pathLength="100" stroke-dasharray="'+s+' 100" transform="rotate(-90 10 10)"/>':'')+
+    '</svg><b>'+s+'</b></button>'+scChip();
+}
+/* Bell's card, first of the swipe cards: what Bell says, and the one thing to do now */
+function scAct(){
+  var hs=scHabits(), i, low=null;
+  for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
+  if(!low) return null;
+  return {workout:['Start a workout',"scTap('workout')"], meal:['What did you eat?',"scTap('meal')"], water:['+1 glass of water','scWaterTap()'],
+          steps:['Add steps',"scSheet('steps')"], fast:['Start your fast',"scTap('fast')"]}[low.k]||null;
+}
+function scBellCard(st){
+  var a=st.k?['Polish Bell: +1 glass of water','scWaterTap()']:scAct();
+  return '<div class="scx-coach scx-bell"><div class="scx-k"><i></i>BELL</div>'+
+    '<div class="scx-say" id="sc-say">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
+    (a?'<button class="scx-act" onclick="'+a[1]+'">'+a[0]+'</button>':'')+'</div>';
+}
 function scHTML(){
   var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState(), c=st.k==='rust'?'#A6541E':scColor(s);
   var poster=(typeof bellPoster==='function')?bellPoster(st.k?1:lv):(M&&M.config.images[lv-1]), fx='';
@@ -140,13 +163,11 @@ function scHTML(){
   var inv=(typeof pushInvite==='function')?pushInvite():'';
   if(inv) slides.push('<div class="scx-coach scx-push"><div class="scx-k"><i></i>REMINDERS</div><div class="scx-t"><b>Let Bell nudge you</b></div>'+
     '<div class="scx-seth">At 8 pm, only when a streak is at risk or Bell misses you. One a day at most.</div>'+inv+'</div>');
+  slides.unshift(scBellCard(st));
   return '<div class="sc sc-page" style="--scc:'+scRGB(c)+'">'+
-    '<div class="sc-head"><div><div class="sc-k">HITFAT Score · Today</div><div class="sc-n" style="color:'+scColor(s)+'"><i>'+s+'</i><span>/100</span></div></div>'+
-      scChip()+'</div>'+
     '<div class="sc-stage">'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Bell">'+img+'</div></div>'+
-    '<div class="sc-say'+(st.k?' sc-say-'+st.k:'')+'" id="sc-say">'+hesc(st.k?scRustLine(st):scLine())+'</div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>'+
-    scCarHTML(slides)+
+    '<div class="sc-tail"></div>'+scCarHTML(slides)+
     (typeof scPlanHTML==='function'?scPlanHTML():'');
 }
 var _scCheered=0;
@@ -170,6 +191,7 @@ function scBand(){ var s=scScore(), st=scState(); return st.k==='rust'?'#A6541E'
 function scRender(){
   var el=$('mascot-home'); if(!el) return;
   el.innerHTML=scHTML();
+  if($('sc-pills')) $('sc-pills').innerHTML=scPills();
   try{ var sr=$('screen'); if(sr && sr.style && sr.style.setProperty) sr.style.setProperty('--scb',scRGB(scBand())); }catch(e){}
   var car=$('sc-car'); if(car && _scCar){ try{ car.scrollLeft=_scCar*(car.clientWidth||0); }catch(e){} }
   /* Bell alive, except rusty: a rusty kettlebell does not move */
@@ -217,7 +239,7 @@ var _scPokes=0;
 function scPoke(){
   if(scState().k==='rust'){ toast('Bell has rusted 🥲 Log one thing to polish him'); return; }
   if(typeof bellReact==='function') bellReact('giggle');
-  var el=$('sc-say'); if(el){ el.className='sc-say'; el.textContent=SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]; }
+  var el=$('sc-say'); if(el){ el.textContent=SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]; }
 }
 
 /* each habit's way in */
@@ -301,7 +323,7 @@ function scNextMile(n){ for(var i=0;i<SC_MILES.length;i++) if(SC_MILES[i]>n) ret
 function scChip(){
   var st=scStreak();
   if(!st.n) return '<button class="sc-chip off" onclick="scStreakInfo()">🔥 0</button>';
-  return '<button class="sc-chip" onclick="scCelebrate('+st.n+',true)">🔥 '+st.n+' hari</button>';
+  return '<button class="sc-chip" onclick="scCelebrate('+st.n+',true)">🔥 '+st.n+'</button>';
 }
 /* a milestone reached on this run and not yet celebrated */
 function scCheckStreak(){
