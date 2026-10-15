@@ -5516,6 +5516,19 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .acg .ac-ep .n{width:30px;height:30px;font-size:12px;}
 .acg .ac-ep .t{font-size:15px;}
 .lc-gap{height:22px;}
+/* Kursus Pemakanan hero on a studio olive, the same in both themes (16 Oct: the brown-red glow looked muddy) */
+.ac-hero{position:relative;overflow:hidden;background:#4A5240;}
+.ac-hero>*{position:relative;}
+.ac-hero>.fw-ic{position:absolute;right:-18px;top:-14px;width:130px;height:130px;opacity:.12;color:#FFFFFF;}
+.ac-hero>.fw-ic .gly{width:100%;height:100%;}
+.ac-hero .k{color:#D9E2C6;}
+.ac-hero .s{color:rgba(255,255,255,.82);}
+.ac-prog .pbar{background:rgba(255,255,255,.2);}
+.ac-prog .pbar i{background:#FFFFFF;}
+:root[data-theme="light"] .ac-hero{background:#4A5240;box-shadow:0 10px 28px rgba(74,82,64,.25);}
+.ac-hero .ac-prog .pbar i{background:#FFFFFF!important;}
+.ac-hero .bigbtn{background:#FFFFFF!important;color:#3A4232!important;box-shadow:none!important;}
+#eat-body .ac-hero .bigbtn,#academy .ac-hero .bigbtn,.ac-hero button.bigbtn.bigbtn{color:#3A4232!important;-webkit-text-fill-color:#3A4232!important;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -14927,8 +14940,8 @@ function acBack(){
 
 function academyHTML(){
   const n=acCount(), all=AC_EPS.length, nx=acNext();
-  let h='<div class="ac-hero"><div class="k">HITFAT+ · Kursus Pemakanan</div>'+
-    '<div class="t">Nutrition Academy</div>'+
+  let h='<div class="ac-hero"><span class="fw-ic">'+glyph('food')+'</span><div class="k">HITFAT+ · '+all+' episod video</div>'+
+    '<div class="t">Kursus Pemakanan</div>'+
     '<div class="s">'+all+' episod pendek tentang makan untuk turun lemak, cara Malaysia: nasi, mamak, kenduri, Ramadan. '+
     'Setiap episod ada kuiz ringkas dan satu benda untuk terus buat dalam app.</div>'+
     '<div class="ac-prog"><div class="pbar"><i style="width:'+Math.round(n/all*100)+'%"></i></div>'+
@@ -14964,7 +14977,7 @@ function acRow(e){
 }
 function acOpen(id){
   const e=acEp(id); if(!e) return;
-  if(acLocked(e) && needPlus('Nutrition Academy penuh ada dalam HITFAT+.')) return;
+  if(acLocked(e) && needPlus('Kursus Pemakanan penuh ada dalam HITFAT+.')) return;
   if($('academy').style.display!=='block'){ return openAcademy(id); }
   acView=id; acQuiz=null; renderAcademy(); $('screen').scrollTop=0;
 }
@@ -15074,7 +15087,7 @@ function acHomeCard(){
   const nx=acNext(); if(!nx || !AC_EPS.some(acReady)) return '';
   const n=acCount(), num=String(acNum(nx)).padStart(2,'0');
   return '<div class="ac-card" onclick="acOpen(\''+nx.id+'\')"><span class="ic">'+glyph('food')+'</span><div class="tx">'+
-    '<div class="k">Nutrition Academy'+(n?' · '+n+'/'+AC_EPS.length:'')+'</div>'+
+    '<div class="k">Kursus Pemakanan'+(n?' · '+n+'/'+AC_EPS.length:'')+'</div>'+
     '<div class="t">'+(n?'Sambung: ':'')+'Ep'+num+' '+hesc(nx.t)+'</div>'+
     '<div class="s">'+(n?'Satu episod pendek dan kuiz 3 soalan.':AC_EPS.length+' episod tentang makan untuk turun lemak, cara Malaysia.')+'</div></div><span class="pdx-chev">›</span></div>';
 }
