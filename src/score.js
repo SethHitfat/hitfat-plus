@@ -67,7 +67,7 @@ function scHabits(d,days){
   if(!SC_FAST_LIVE){}
   else if(typeof scRamadan==='function' && scRamadan(d)) out.push({k:'fast', n:'Fast', ic:'moon', c:'#E30613', v:dy.ram?1:0, val:dy.ram?'Done':'Not yet'});
   else if(scHasIF()){ var f=scFast(d); out.push({k:'fast', n:'Fast', ic:'clock', c:'#A855F7', v:Math.min(1,f.hrs/f.target), val:Math.min(Math.floor(f.hrs),f.target)+'/'+f.target+'h'}); }
-  var T={workout:out[0].v>=1?'Workout done':'Time to train', meal:out[1].val+' meals', water:out[2].val+' glasses', steps:out[3].val+' steps'};
+  var T={workout:out[0].v>=1?'Workout done':'Time to train', meal:out[1].val+' meals', water:out[2].val+' glasses', steps:(dy.steps>=SC_STEPS?k1(dy.steps):out[3].val)+' steps'};
   for(var i=0;i<out.length;i++){ out[i].t=T[out[i].k]||out[i].val; if(out[i].v>=1) out[i].val='✓ '+out[i].val; }
   return out;
 }
@@ -123,7 +123,7 @@ function scRing(h){
   return '<button class="sc-h'+(h.v>=1?' full':'')+'" onclick="scTap(\''+h.k+'\')" aria-label="'+h.n+'">'+
     '<span class="sc-ring" style="color:'+c+'"><svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" class="sc-ring-t"/>'+
     (h.v>0?'<circle cx="26" cy="26" r="22" class="sc-ring-v" pathLength="100" stroke="currentColor" stroke-dasharray="'+Math.round(h.v*100)+' 100"/>':'')+
-    '</svg><span class="sc-ic"'+(h.v>0?' style="color:'+c+'"':'')+'>'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'')+'</span>'+
+    '</svg><span class="sc-ic"'+(h.v>0?' style="color:'+c+'"':'')+'>'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'<span class="sc-plus sc-okb">✓</span>')+'</span>'+
     '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span><span class="sc-t">'+hesc(h.t||h.val)+'</span></button>';
 }
 /* the card takes the score's colour, as Simple's screens do (A); Bell's
