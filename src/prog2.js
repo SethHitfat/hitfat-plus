@@ -169,6 +169,7 @@ function renderProgress(){
   /* The date small, the title large — the Home header's shape. */
   const dl=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
   let h='<div class="hsum"><div class="hsum-l"><div class="k">'+dl+'</div><div class="t">Progress</div></div></div>';
+  h+='<div id="mascot-progress"></div>';
   /* The window for the whole page, as a Fitness+ segmented control at the
      top rather than a pair of chips halfway down. */
   h+='<div class="obseg pgper">'+
@@ -275,7 +276,7 @@ function renderProgress(){
 
   h+='<div class="pgacts"><button class="bigbtn" onclick="askMeasure()">Log Measurements</button>'+
      '<button class="bigbtn sec" onclick="openShare()">Share Progress Card</button></div>';
-  $('prog-body').innerHTML=h;
+  $('prog-body').innerHTML=h; if(typeof mascotRender==='function') mascotRender();
   if(typeof loadBoard==='function') loadBoard('month','lb-prog',{limit:5});
 }
 

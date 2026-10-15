@@ -1,0 +1,41 @@
+/* HITFAT+ Maskot Progres — tiada CSS var(), sesuai ES5 PWA */
+.hfm { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; color: #111; box-sizing: border-box; }
+.hfm * { box-sizing: border-box; }
+.hfm-fig img, .hfm-fig svg { display: block; width: 100%; height: auto; }
+
+/* Mod kecil (Home) */
+.hfm-compact { display: flex; align-items: center; padding: 10px 12px; background: #fff; border: 1px solid #eee; border-radius: 16px; cursor: pointer; }
+.hfm-compact .hfm-fig { width: 64px; height: 64px; flex: 0 0 64px; }
+.hfm-compact .hfm-bubble { margin-left: 12px; min-width: 0; }
+.hfm-compact .hfm-tag { font-size: 12px; font-weight: 700; color: #E30613; text-transform: uppercase; letter-spacing: .04em; }
+.hfm-compact .hfm-msg { font-size: 14px; line-height: 1.35; margin-top: 2px; }
+
+/* Mod penuh (Progress) */
+.hfm-full { text-align: center; padding: 20px 16px; background: #fff; border-radius: 20px; border: 1px solid #eee; }
+.hfm-full .hfm-fig { width: 180px; height: 180px; margin: 0 auto; }
+.hfm-full .hfm-name { font-size: 24px; font-weight: 800; margin-top: 8px; }
+.hfm-full .hfm-msg { font-size: 15px; color: #444; margin: 4px auto 0; max-width: 300px; line-height: 1.4; }
+.hfm-steps { display: flex; justify-content: center; margin: 16px 0 6px; }
+.hfm-step { flex: 1; max-width: 80px; font-size: 11px; font-weight: 700; color: #aaa; padding-top: 8px; border-top: 4px solid #eee; margin: 0 2px; }
+.hfm-step.on { color: #E30613; border-top-color: #E30613; }
+.hfm-count { font-size: 14px; margin-top: 10px; }
+.hfm-count b { font-size: 20px; color: #E30613; }
+.hfm-week { display: flex; justify-content: space-between; max-width: 300px; margin: 10px auto 0; }
+.hfm-day { text-align: center; width: 36px; }
+.hfm-dot { display: block; width: 22px; height: 22px; margin: 0 auto; border-radius: 50%; background: #f0f0f0; }
+.hfm-day.on .hfm-dot { background: #E30613; }
+.hfm-day.today .hfm-dot { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #111; }
+.hfm-dl { display: block; font-size: 11px; color: #888; margin-top: 4px; }
+.hfm-hint { font-size: 13px; color: #555; margin-top: 14px; }
+
+/* Animasi kecil ikut tahap */
+.hfm-lv1 .hfm-fig { -webkit-animation: hfm-breathe 3.5s ease-in-out infinite; animation: hfm-breathe 3.5s ease-in-out infinite; }
+.hfm-lv2 .hfm-fig, .hfm-lv3 .hfm-fig { -webkit-animation: hfm-bob 1.8s ease-in-out infinite; animation: hfm-bob 1.8s ease-in-out infinite; }
+.hfm-lv4 .hfm-fig { -webkit-animation: hfm-hop 1.2s ease-in-out infinite; animation: hfm-hop 1.2s ease-in-out infinite; }
+@-webkit-keyframes hfm-breathe { 0%,100% { -webkit-transform: scale(1); } 50% { -webkit-transform: scale(.97); } }
+@keyframes hfm-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(.97); } }
+@-webkit-keyframes hfm-bob { 0%,100% { -webkit-transform: translateY(0); } 50% { -webkit-transform: translateY(-4px); } }
+@keyframes hfm-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@-webkit-keyframes hfm-hop { 0%,100% { -webkit-transform: translateY(0); } 40% { -webkit-transform: translateY(-10px); } }
+@keyframes hfm-hop { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-10px); } }
+@media (prefers-reduced-motion: reduce) { .hfm-fig { -webkit-animation: none !important; animation: none !important; } }

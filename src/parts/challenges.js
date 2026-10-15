@@ -134,7 +134,7 @@ const HF={
       else { this.load(); this.pushCloud(); }
     }catch(e){ console.warn('cloud pull failed — using local cache',e.message||e); this.load(); }
   },
-  markDone(key,meta){ this.data.sessions[key]=Object.assign({date:new Date().toISOString()},meta||{}); bumpStreak(); this.save(); },
+  markDone(key,meta){ this.data.sessions[key]=Object.assign({date:new Date().toISOString()},meta||{}); bumpStreak(); this.save(); if(typeof mascotDone==='function') mascotDone(); },
   undone(key){ delete this.data.sessions[key]; this.save(); },
   isDone(key){ return !!this.data.sessions[key]; },
   count(){ return Object.keys(this.data.sessions).length; }

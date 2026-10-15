@@ -2036,6 +2036,48 @@
 .mbadge .m{font-size:11px;color:var(--dim2);margin-top:4px;}
 
 /* The design layer, last so it wins. Delete this marker to go back. */
+/* HITFAT+ Maskot Progres — tiada CSS var(), sesuai ES5 PWA */
+.hfm { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; color: #111; box-sizing: border-box; }
+.hfm * { box-sizing: border-box; }
+.hfm-fig img, .hfm-fig svg { display: block; width: 100%; height: auto; }
+
+/* Mod kecil (Home) */
+.hfm-compact { display: flex; align-items: center; padding: 10px 12px; background: #fff; border: 1px solid #eee; border-radius: 16px; cursor: pointer; }
+.hfm-compact .hfm-fig { width: 64px; height: 64px; flex: 0 0 64px; }
+.hfm-compact .hfm-bubble { margin-left: 12px; min-width: 0; }
+.hfm-compact .hfm-tag { font-size: 12px; font-weight: 700; color: #E30613; text-transform: uppercase; letter-spacing: .04em; }
+.hfm-compact .hfm-msg { font-size: 14px; line-height: 1.35; margin-top: 2px; }
+
+/* Mod penuh (Progress) */
+.hfm-full { text-align: center; padding: 20px 16px; background: #fff; border-radius: 20px; border: 1px solid #eee; }
+.hfm-full .hfm-fig { width: 180px; height: 180px; margin: 0 auto; }
+.hfm-full .hfm-name { font-size: 24px; font-weight: 800; margin-top: 8px; }
+.hfm-full .hfm-msg { font-size: 15px; color: #444; margin: 4px auto 0; max-width: 300px; line-height: 1.4; }
+.hfm-steps { display: flex; justify-content: center; margin: 16px 0 6px; }
+.hfm-step { flex: 1; max-width: 80px; font-size: 11px; font-weight: 700; color: #aaa; padding-top: 8px; border-top: 4px solid #eee; margin: 0 2px; }
+.hfm-step.on { color: #E30613; border-top-color: #E30613; }
+.hfm-count { font-size: 14px; margin-top: 10px; }
+.hfm-count b { font-size: 20px; color: #E30613; }
+.hfm-week { display: flex; justify-content: space-between; max-width: 300px; margin: 10px auto 0; }
+.hfm-day { text-align: center; width: 36px; }
+.hfm-dot { display: block; width: 22px; height: 22px; margin: 0 auto; border-radius: 50%; background: #f0f0f0; }
+.hfm-day.on .hfm-dot { background: #E30613; }
+.hfm-day.today .hfm-dot { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #111; }
+.hfm-dl { display: block; font-size: 11px; color: #888; margin-top: 4px; }
+.hfm-hint { font-size: 13px; color: #555; margin-top: 14px; }
+
+/* Animasi kecil ikut tahap */
+.hfm-lv1 .hfm-fig { -webkit-animation: hfm-breathe 3.5s ease-in-out infinite; animation: hfm-breathe 3.5s ease-in-out infinite; }
+.hfm-lv2 .hfm-fig, .hfm-lv3 .hfm-fig { -webkit-animation: hfm-bob 1.8s ease-in-out infinite; animation: hfm-bob 1.8s ease-in-out infinite; }
+.hfm-lv4 .hfm-fig { -webkit-animation: hfm-hop 1.2s ease-in-out infinite; animation: hfm-hop 1.2s ease-in-out infinite; }
+@-webkit-keyframes hfm-breathe { 0%,100% { -webkit-transform: scale(1); } 50% { -webkit-transform: scale(.97); } }
+@keyframes hfm-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(.97); } }
+@-webkit-keyframes hfm-bob { 0%,100% { -webkit-transform: translateY(0); } 50% { -webkit-transform: translateY(-4px); } }
+@keyframes hfm-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@-webkit-keyframes hfm-hop { 0%,100% { -webkit-transform: translateY(0); } 40% { -webkit-transform: translateY(-10px); } }
+@keyframes hfm-hop { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-10px); } }
+@media (prefers-reduced-motion: reduce) { .hfm-fig { -webkit-animation: none !important; animation: none !important; } }
+
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · design layer
 
@@ -4534,6 +4576,22 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 /* one look for photos shot on many backdrops: a little less colour, a little darker */
 .fland .im,.fwr .th,.frow .th,.fcoll .ph{filter:saturate(.82) brightness(.92);}
 
+/* The progress mascot (parts/hitfat-mascot.css is Seth's file, as it came):
+   its white cards, in the app's own surfaces so it sits right in dark and light */
+#mascot-home{margin:4px 0 16px;}
+#mascot-progress{margin:4px 0 18px;}
+.hfm{color:var(--txt);}
+.hfm-compact,.hfm-full{background:var(--surface);border:0;}
+.hfm-full .hfm-msg,.hfm-hint{color:var(--dim);}
+.hfm-step{color:var(--dim2);border-top-color:var(--surface2);}
+.hfm-step.on{color:#E30613;border-top-color:#E30613;}
+.hfm-dot{background:var(--surface2);}
+.hfm-day.on .hfm-dot{background:#E30613;}
+.hfm-day.today .hfm-dot{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--txt);}
+.hfm-dl{color:var(--dim2);}
+/* the mascot's ".today" day is not the app's ".today" card */
+.hfm-day.today{position:static;border:0;border-radius:0;background:none;padding:0;margin:0;overflow:visible;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -4872,6 +4930,8 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 
     <div id="home" class="pad" style="display:none;">
       <div id="home-hdr"></div>
+      <!-- the progress mascot, at the top: tap it for Progress -->
+      <div id="mascot-home"></div>
       <!-- The week sits under the greeting, as the Fitness Summary puts it. -->
       <div id="home-week"></div>
       <!-- T42, above everything else on Home. A running challenge is the most
@@ -5269,6 +5329,287 @@ async function scanToken(){
 function toast(m){ const t=$('toast'); if(!t) return; t.textContent=m; t.classList.add('on');
   clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('on'),1900); }
 
+/*
+ * HITFAT+ Maskot Progres (ES5)
+ * --------------------------------------------------------------
+ * Maskot berubah ikut BILANGAN HARI AKTIF dalam 7 hari terakhir,
+ * dari mana-mana program (Burn 30, IF, HYROX, dll). Tak terikat
+ * dengan jadual program.
+ *
+ *   0-1 hari  -> Tahap 1 Comel  (mengantuk, BUKAN gemuk)
+ *   2-3 hari  -> Tahap 2 Aktif
+ *   4-5 hari  -> Tahap 3 Tegap
+ *   6-7 hari  -> Tahap 4 Juara
+ *
+ * "Aktiviti siap" = user tekan selesai pada mana-mana workout.
+ * Panggil HFMascot.logActivity() pada saat itu.
+ *
+ * Guna:
+ *   HFMascot.config.images = ['img/m1.png','img/m2.png','img/m3.png','img/m4.png'];
+ *   HFMascot.render(document.getElementById('mascot-home'), { mode: 'compact' });
+ *   HFMascot.render(document.getElementById('mascot-progress'), { mode: 'full' });
+ *
+ * Kalau data aktiviti datang dari server, hantar terus:
+ *   HFMascot.render(el, { mode: 'full', dates: ['2026-10-14', '2026-10-15T08:00:00Z'] });
+ */
+(function (root) {
+  'use strict';
+
+  var STORAGE_KEY = 'hf_activity_log';
+  var DAY_MS = 86400000;
+
+  var STAGES = [
+    { level: 1, name: 'Comel', min: 0, max: 1, msg: 'Zzz... jom gerak sikit hari ni? Satu sesi pun cukup.' },
+    { level: 2, name: 'Aktif', min: 2, max: 3, msg: 'Best! Badan dah mula panas. Teruskan!' },
+    { level: 3, name: 'Tegap', min: 4, max: 5, msg: 'Tengok lengan ni! Konsisten betul minggu ni.' },
+    { level: 4, name: 'Juara', min: 6, max: 7, msg: 'JUARA! Minggu ni memang padu. Kekalkan!' }
+  ];
+
+  var config = {
+    images: [null, null, null, null],
+    windowDays: 7
+  };
+
+  /* ---------- tarikh ---------- */
+
+  function pad(n) {
+    return n < 10 ? '0' + n : '' + n;
+  }
+
+  // Kunci hari ikut waktu tempatan peranti (YYYY-MM-DD)
+  function dayKey(d) {
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+
+  function toDate(v) {
+    if (v instanceof Date) { return v; }
+    if (typeof v === 'number') { return new Date(v); }
+    if (typeof v === 'string') {
+      // 'YYYY-MM-DD' sahaja -> anggap hari tempatan
+      var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
+      if (m) { return new Date(+m[1], +m[2] - 1, +m[3]); }
+      return new Date(v);
+    }
+    return null;
+  }
+
+  /* ---------- storan (fallback tempatan) ---------- */
+
+  function readLog() {
+    try {
+      var raw = root.localStorage.getItem(STORAGE_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      return arr instanceof Array ? arr : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function writeLog(arr) {
+    try {
+      root.localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    } catch (e) { /* storan disekat: abaikan */ }
+  }
+
+  function logActivity(when) {
+    var d = toDate(when || new Date());
+    if (!d || isNaN(d.getTime())) { return; }
+    var key = dayKey(d);
+    var log = readLog();
+    var i;
+    for (i = 0; i < log.length; i++) {
+      if (log[i] === key) { return; } // satu hari dikira sekali sahaja
+    }
+    log.push(key);
+    // simpan 60 hari terakhir sahaja
+    if (log.length > 60) { log = log.slice(log.length - 60); }
+    writeLog(log);
+  }
+
+  /* ---------- logik ---------- */
+
+  // Pulangkan array 7 boolean (paling lama -> hari ini)
+  function weekMap(dates, now) {
+    var today = toDate(now || new Date());
+    var set = {};
+    var i, d, out = [];
+    for (i = 0; i < dates.length; i++) {
+      d = toDate(dates[i]);
+      if (d && !isNaN(d.getTime())) { set[dayKey(d)] = true; }
+    }
+    for (i = config.windowDays - 1; i >= 0; i--) {
+      d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+      out.push(set[dayKey(d)] === true);
+    }
+    return out;
+  }
+
+  function countActive(map) {
+    var n = 0, i;
+    for (i = 0; i < map.length; i++) { if (map[i]) { n++; } }
+    return n;
+  }
+
+  function stageFor(activeDays) {
+    var i;
+    for (i = STAGES.length - 1; i >= 0; i--) {
+      if (activeDays >= STAGES[i].min) { return STAGES[i]; }
+    }
+    return STAGES[0];
+  }
+
+  function getState(opts) {
+    opts = opts || {};
+    var dates = opts.dates || readLog();
+    var map = weekMap(dates, opts.now);
+    var active = countActive(map);
+    var stage = stageFor(active);
+    var next = stage.level < 4 ? STAGES[stage.level] : null;
+    return {
+      activeDays: active,
+      week: map,
+      stage: stage,
+      daysToNext: next ? next.min - active : 0,
+      nextName: next ? next.name : null,
+      doneToday: map[map.length - 1]
+    };
+  }
+
+  /* ---------- placeholder SVG (sementara, sebelum imej sebenar) ---------- */
+
+  function placeholderSvg(level) {
+    var eyes, mouth, arms, extra = '';
+    if (level === 1) {
+      eyes = '<path d="M38 62 q6 4 12 0" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+             '<path d="M70 62 q6 4 12 0" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/>';
+      mouth = '<ellipse cx="60" cy="78" rx="4" ry="5" fill="#7a0010"/>';
+      arms = '<ellipse cx="22" cy="80" rx="6" ry="9" fill="#E30613"/><ellipse cx="98" cy="80" rx="6" ry="9" fill="#E30613"/>';
+      extra = '<text x="88" y="34" font-size="12" fill="#888" font-family="sans-serif">z</text>';
+    } else {
+      eyes = '<circle cx="44" cy="62" r="7" fill="#111"/><circle cx="76" cy="62" r="7" fill="#111"/>' +
+             '<circle cx="46" cy="59" r="2.5" fill="#fff"/><circle cx="78" cy="59" r="2.5" fill="#fff"/>';
+      mouth = '<path d="M52 76 q8 9 16 0" fill="#7a0010"/>';
+      if (level === 2) {
+        arms = '<ellipse cx="22" cy="76" rx="7" ry="9" fill="#E30613"/><ellipse cx="100" cy="60" rx="7" ry="9" fill="#E30613"/>';
+      } else if (level === 3) {
+        arms = '<circle cx="18" cy="70" r="11" fill="#E30613"/><circle cx="102" cy="70" r="11" fill="#E30613"/>';
+      } else {
+        arms = '<circle cx="16" cy="44" r="11" fill="#E30613"/><circle cx="104" cy="44" r="11" fill="#E30613"/>';
+        extra = '<text x="6" y="22" font-size="14" fill="#FFC20E" font-family="sans-serif">*</text>' +
+                '<text x="104" y="22" font-size="14" fill="#FFC20E" font-family="sans-serif">*</text>';
+      }
+    }
+    var band = level >= 3 ? '<rect x="28" y="40" width="64" height="6" rx="3" fill="#fff"/>' : '';
+    var scale = level === 1 ? 0.92 : (level === 4 ? 1.06 : 1);
+    return '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<g transform="translate(60 64) scale(' + scale + ') translate(-60 -64)">' +
+      '<path d="M40 40 v-12 a20 20 0 0 1 40 0 v12" stroke="#111" stroke-width="10" fill="none" stroke-linecap="round"/>' +
+      arms +
+      '<circle cx="60" cy="70" r="36" fill="#E30613"/>' +
+      band +
+      '<circle cx="36" cy="74" r="5" fill="#ff9aa8" opacity=".8"/><circle cx="84" cy="74" r="5" fill="#ff9aa8" opacity=".8"/>' +
+      eyes + mouth +
+      '<rect x="42" y="102" width="12" height="8" rx="4" fill="#fff" stroke="#ddd"/><rect x="66" y="102" width="12" height="8" rx="4" fill="#fff" stroke="#ddd"/>' +
+      extra + '</g></svg>';
+  }
+
+  function figureHtml(level) {
+    var src = config.images[level - 1];
+    if (src) {
+      return '<img src="' + src + '" alt="Maskot HITFAT tahap ' + level + '">';
+    }
+    return placeholderSvg(level);
+  }
+
+  /* ---------- paparan ---------- */
+
+  var DAY_LABELS = ['Ah', 'Is', 'Se', 'Ra', 'Kh', 'Ju', 'Sa'];
+
+  function render(el, opts) {
+    if (!el) { return null; }
+    opts = opts || {};
+    var s = getState(opts);
+    var lv = s.stage.level;
+    var html = '';
+    var i, d, today = toDate(opts.now || new Date());
+
+    if (opts.mode === 'compact') {
+      html =
+        '<div class="hfm hfm-compact hfm-lv' + lv + '">' +
+          '<div class="hfm-fig">' + figureHtml(lv) + '</div>' +
+          '<div class="hfm-bubble">' +
+            '<div class="hfm-tag">' + s.stage.name + ' &middot; ' + s.activeDays + '/7 hari</div>' +
+            '<div class="hfm-msg">' + (s.doneToday ? 'Hari ni dah aktif. Mantap!' : s.stage.msg) + '</div>' +
+          '</div>' +
+        '</div>';
+    } else {
+      var dots = '';
+      for (i = 0; i < s.week.length; i++) {
+        d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (s.week.length - 1 - i));
+        dots += '<div class="hfm-day' + (s.week[i] ? ' on' : '') + (i === s.week.length - 1 ? ' today' : '') + '">' +
+                  '<span class="hfm-dot"></span><span class="hfm-dl">' + DAY_LABELS[d.getDay()] + '</span>' +
+                '</div>';
+      }
+      var steps = '';
+      for (i = 0; i < STAGES.length; i++) {
+        steps += '<div class="hfm-step' + (STAGES[i].level <= lv ? ' on' : '') + '">' + STAGES[i].name + '</div>';
+      }
+      var hint = s.nextName
+        ? 'Aktif <b>' + s.daysToNext + ' hari lagi</b> minggu ni untuk naik ke <b>' + s.nextName + '</b>.'
+        : 'Tahap tertinggi! Kekalkan supaya tak turun.';
+      html =
+        '<div class="hfm hfm-full hfm-lv' + lv + '">' +
+          '<div class="hfm-fig">' + figureHtml(lv) + '</div>' +
+          '<div class="hfm-name">' + s.stage.name + '</div>' +
+          '<div class="hfm-msg">' + s.stage.msg + '</div>' +
+          '<div class="hfm-steps">' + steps + '</div>' +
+          '<div class="hfm-count"><b>' + s.activeDays + '</b>/7 hari aktif</div>' +
+          '<div class="hfm-week">' + dots + '</div>' +
+          '<div class="hfm-hint">' + hint + '</div>' +
+        '</div>';
+    }
+
+    el.innerHTML = html;
+    if (typeof opts.onClick === 'function') {
+      el.onclick = function () { opts.onClick(s); };
+    }
+    return s;
+  }
+
+  root.HFMascot = {
+    config: config,
+    STAGES: STAGES,
+    logActivity: logActivity,
+    getState: getState,
+    stageFor: stageFor,
+    render: render,
+    _readLog: readLog,
+    _writeLog: writeLog
+  };
+}(typeof window !== 'undefined' ? window : this));
+/* ═══════════════ The progress mascot · glue ═══════════════
+   parts/hitfat-mascot.js is Seth's file, loaded as it came; it puts HFMascot
+   on window. This is what ties it to HITFAT+: the days come from the workouts
+   saved on the account (HF.data.sessions, which syncs to the database),
+   joined with the mascot's own log on this phone, so a workout done on
+   another device still counts. */
+function hfm(){ return (typeof window!=='undefined' && window.HFMascot) || null; }
+function mascotDates(){
+  var out=[], s=(HF.data&&HF.data.sessions)||{}, k;
+  for(k in s){ if(s.hasOwnProperty(k) && s[k] && s[k].date) out.push(s[k].date); }
+  return hfm() ? out.concat(hfm()._readLog()) : out;
+}
+function mascotRender(){
+  var M=hfm(); if(!M) return;
+  var d=mascotDates();
+  M.render($('mascot-home'), { mode:'compact', dates:d, onClick:function(){ switchTab('progress'); } });
+  M.render($('mascot-progress'), { mode:'full', dates:d });
+}
+/* a workout finished, in any program */
+function mascotDone(){
+  var M=hfm(); if(!M) return;
+  M.logActivity(); mascotRender();
+}
 /* ═══════════════ LANGUAGE: BM / EN ═══════════════
    The app is written in English. Bahasa Melayu is laid over it on screen:
    every text node, placeholder, aria-label and title that matches the
@@ -14932,7 +15273,7 @@ const HF={
       else { this.load(); this.pushCloud(); }
     }catch(e){ console.warn('cloud pull failed — using local cache',e.message||e); this.load(); }
   },
-  markDone(key,meta){ this.data.sessions[key]=Object.assign({date:new Date().toISOString()},meta||{}); bumpStreak(); this.save(); },
+  markDone(key,meta){ this.data.sessions[key]=Object.assign({date:new Date().toISOString()},meta||{}); bumpStreak(); this.save(); if(typeof mascotDone==='function') mascotDone(); },
   undone(key){ delete this.data.sessions[key]; this.save(); },
   isDone(key){ return !!this.data.sessions[key]; },
   count(){ return Object.keys(this.data.sessions).length; }
@@ -21341,6 +21682,7 @@ function renderHome(){
     if(typeof Club!=='undefined' && Club.state==='ready' && !Club.isMember() && !Club.isStaff())
       $('home-quick').innerHTML += clubPromoHTML();
   }catch(e){}
+  if(typeof mascotRender==='function') mascotRender();
 }
 function daysSince(){ const l=HF.data.lastISO; return l?daysBetween(l,iso(0)):0; }
 /* A two-up Home tile: label, one number, one line, and a ring. */
@@ -22961,6 +23303,7 @@ function renderProgress(){
   /* The date small, the title large — the Home header's shape. */
   const dl=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
   let h='<div class="hsum"><div class="hsum-l"><div class="k">'+dl+'</div><div class="t">Progress</div></div></div>';
+  h+='<div id="mascot-progress"></div>';
   /* The window for the whole page, as a Fitness+ segmented control at the
      top rather than a pair of chips halfway down. */
   h+='<div class="obseg pgper">'+
@@ -23067,7 +23410,7 @@ function renderProgress(){
 
   h+='<div class="pgacts"><button class="bigbtn" onclick="askMeasure()">Log Measurements</button>'+
      '<button class="bigbtn sec" onclick="openShare()">Share Progress Card</button></div>';
-  $('prog-body').innerHTML=h;
+  $('prog-body').innerHTML=h; if(typeof mascotRender==='function') mascotRender();
   if(typeof loadBoard==='function') loadBoard('month','lb-prog',{limit:5});
 }
 

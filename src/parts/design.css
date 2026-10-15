@@ -2495,3 +2495,19 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fcoll .ph::after{background:linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.88) 100%);}
 /* one look for photos shot on many backdrops: a little less colour, a little darker */
 .fland .im,.fwr .th,.frow .th,.fcoll .ph{filter:saturate(.82) brightness(.92);}
+
+/* The progress mascot (parts/hitfat-mascot.css is Seth's file, as it came):
+   its white cards, in the app's own surfaces so it sits right in dark and light */
+#mascot-home{margin:4px 0 16px;}
+#mascot-progress{margin:4px 0 18px;}
+.hfm{color:var(--txt);}
+.hfm-compact,.hfm-full{background:var(--surface);border:0;}
+.hfm-full .hfm-msg,.hfm-hint{color:var(--dim);}
+.hfm-step{color:var(--dim2);border-top-color:var(--surface2);}
+.hfm-step.on{color:#E30613;border-top-color:#E30613;}
+.hfm-dot{background:var(--surface2);}
+.hfm-day.on .hfm-dot{background:#E30613;}
+.hfm-day.today .hfm-dot{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--txt);}
+.hfm-dl{color:var(--dim2);}
+/* the mascot's ".today" day is not the app's ".today" card */
+.hfm-day.today{position:static;border:0;border-radius:0;background:none;padding:0;margin:0;overflow:visible;}

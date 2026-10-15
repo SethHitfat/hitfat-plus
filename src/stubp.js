@@ -58,7 +58,7 @@ var _ls={};
 var localStorage={ getItem:function(k){return _ls[k]===undefined?null:_ls[k];},
   setItem:function(k,v){_ls[k]=String(v);}, removeItem:function(k){delete _ls[k];} };
 var window={ addEventListener:function(){}, location:{origin:'https://plus.hitfat.io',pathname:'/',href:'',hostname:'plus.hitfat.io',protocol:'https:'},
-  innerWidth:390, innerHeight:844, devicePixelRatio:3, supabase:null };
+  innerWidth:390, innerHeight:844, devicePixelRatio:3, supabase:null, localStorage:localStorage };
 var _cam={mode:'ok', stopped:0};   // 'ok' | 'deny' | 'hang' | 'none'
 function _track(){ return {stop:function(){_cam.stopped++;}}; }
 var navigator={ userAgent:'jsc', mediaDevices:{

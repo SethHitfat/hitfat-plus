@@ -3810,5 +3810,26 @@ print("\n── TRAIN · TIDY (15 Oct 2026) ──");
   ok("Browse fills a 3 × 2 grid", RECOVERY_LIVE || document.getElementById('tr-body').innerHTML.split('class="fbr"').length-1===6);
   switchTab('train');
 })();
+print("\n── PROGRESS MASCOT ──");
+(function(){
+  var keepS=HF.data.sessions, keepSave=HF.save, keepLog=window.HFMascot._readLog();
+  HF.save=function(){}; window.HFMascot._writeLog([]);
+  function ago(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.toISOString(); }
+  ok("Seth's file is loaded as it came", typeof window.HFMascot.render==='function' && window.HFMascot.STAGES.length===4 && window.HFMascot.STAGES[3].name==='Juara');
+  HF.data.sessions={};
+  ok("no workouts: Comel", window.HFMascot.getState({dates:mascotDates()}).stage.name==='Comel');
+  HF.data.sessions={a:{date:ago(1)},b:{date:ago(2)},c:{date:ago(2)},d:{date:ago(3)},e:{date:ago(4)},old:{date:ago(12)}};
+  var st=window.HFMascot.getState({dates:mascotDates()});
+  ok("the days come from the account's saved workouts: 4 days, one counted once, old ones out", st.activeDays===4 && st.stage.name==='Tegap');
+  window.HFMascot._writeLog([]); HF.markDone('mascot-t',{name:'x',mins:10});
+  st=window.HFMascot.getState({dates:mascotDates()});
+  ok("finishing a workout logs today and lifts the count", st.doneToday && st.activeDays===5 && window.HFMascot._readLog().length===1);
+  ok("Home has the mascot at the top, tapping it opens Progress", String(mascotRender).indexOf("switchTab('progress')")>0 &&
+     document.getElementById('mascot-home')!==null);
+  renderProgress();
+  ok("Progress has the full mascot", document.getElementById('prog-body').innerHTML.indexOf('id="mascot-progress"')>0 && String(renderProgress).indexOf('mascotRender()')>0);
+  ok("markDone re-renders both", String(HF.markDone).indexOf('mascotDone')>0 && String(mascotDone).indexOf('logActivity')>0);
+  HF.data.sessions=keepS; HF.save=keepSave; window.HFMascot._writeLog(keepLog);
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

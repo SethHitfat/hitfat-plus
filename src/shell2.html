@@ -684,6 +684,7 @@
 .mbadge .m{font-size:11px;color:var(--dim2);margin-top:4px;}
 
 /* The design layer, last so it wins. Delete this marker to go back. */
+/*__MASCOTCSS__*/
 /*__DESIGN__*/
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /*__BRAND__*/
@@ -735,6 +736,8 @@
 
     <div id="home" class="pad" style="display:none;">
       <div id="home-hdr"></div>
+      <!-- the progress mascot, at the top: tap it for Progress -->
+      <div id="mascot-home"></div>
       <!-- The week sits under the greeting, as the Fitness Summary puts it. -->
       <div id="home-week"></div>
       <!-- T42, above everything else on Home. A running challenge is the most
@@ -1094,7 +1097,7 @@ async function scanToken(){
 function toast(m){ const t=$('toast'); if(!t) return; t.textContent=m; t.classList.add('on');
   clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('on'),1900); }
 
-/*__I18N__*//*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__WL30__*//*__LB30__*//*__D6DATA__*//*__D6__*//*__IFAST__*//*__MONTHLY__*//*__AICOACH__*//*__ACADEMY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
+/*__MASCOT__*//*__MASCOTGLUE__*//*__I18N__*//*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__WL30__*//*__LB30__*//*__D6DATA__*//*__D6__*//*__IFAST__*//*__MONTHLY__*//*__AICOACH__*//*__ACADEMY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
 /*__ICONS__*//*__CLUB__*//*__T42__*//*__T42DEMO__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
 
 /* The splash plays its whole sequence once (about 1.9 s from the page

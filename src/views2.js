@@ -308,6 +308,7 @@ function renderHome(){
     if(typeof Club!=='undefined' && Club.state==='ready' && !Club.isMember() && !Club.isStaff())
       $('home-quick').innerHTML += clubPromoHTML();
   }catch(e){}
+  if(typeof mascotRender==='function') mascotRender();
 }
 function daysSince(){ const l=HF.data.lastISO; return l?daysBetween(l,iso(0)):0; }
 /* A two-up Home tile: label, one number, one line, and a ring. */
