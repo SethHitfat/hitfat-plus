@@ -36,7 +36,7 @@ function scRamRow(){
 function scRamToggle(){
   var all=HF.data.daily||(HF.data.daily={}), d=iso(0), o=all[d]||(all[d]={water:0,steps:0});
   o.ram=o.ram?0:1; HF.save();
-  if(o.ram){ _scSay='ram'; _scSayAt=Date.now(); scBanner('Fasting today 🌙','Bell pun puasa juga… dari minyak 😅 Jumpa waktu berbuka.'); }
+  if(o.ram){ _scSay='ram'; _scSayAt=Date.now(); scBanner('Fasting today 🌙','Bell is fasting too… from oil 😅 See you at iftar.'); }
   scRender();
 }
 
@@ -59,26 +59,26 @@ function scJunk(m){
   var n=String((m&&m.name)||'');
   return SC_JUNK.test(n) || (m && m.kcal>=900);
 }
-SC_LINES.junk=['{x} tu Bell rampas dulu ya 😇 Esok kita ganti dengan buah.',
-  'Bell tak marah… cuma {x} ni Bell simpan untuk "keselamatan" 😏 Minum air kosong sekali ya.',
-  'Sekali-sekala boleh. Tapi Bell nampak {x} tu 👀'];
-SC_LINES.ram=['Selamat berpuasa! 🌙 Bell pun puasa juga… dari minyak 😅'];
-SC_LINES.fast=['Puasa bermula ⏱️ Bell temankan sampai waktu makan.'];
+SC_LINES.junk=['Bell is confiscating that {x} 😇 Tomorrow we swap it for fruit.',
+  'Bell isn\'t mad… Bell is just keeping this {x} "safe" 😏 Have some plain water too.',
+  'Once in a while is fine. But Bell saw that {x} 👀'];
+SC_LINES.ram=['Happy fasting! 🌙 Bell is fasting too… from oil 😅'];
+SC_LINES.fast=['Fast started ⏱️ Bell will keep you company till mealtime.'];
 function scJunkLine(name){
-  var x=String(name||'Makanan tu').split(/[,(]/)[0].trim(); if(x.length>22) x=x.slice(0,22)+'…';
+  var x=String(name||'that snack').split(/[,(]/)[0].trim(); if(x.length>22) x=x.slice(0,22)+'…';
   var a=SC_LINES.junk; return a[new Date().getMinutes()%a.length].replace('{x}',x.charAt(0).toUpperCase()+x.slice(1));
 }
 /* a meal was logged (eat2.js logMeal) */
 function scMealLogged(m){
   if(scJunk(m)){ _scSay='junk'; _scSayAt=Date.now(); _scJunkName=m&&m.name; scBanner('Confiscated 😇',scJunkLine(m&&m.name)); }
-  else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Meal logged 🍽️','Bell suka orang yang jujur. Protein dulu, nasi ikut porsi.'); }
+  else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Meal logged 🍽️','Bell likes honest people. Protein first, rice by the portion.'); }
 }
 var _scJunkName='';
 
 /* ── one tap: water and the fast ── */
 function scWaterTap(){
   var dy=scDaily(); scSet('water',dy.water+1); _scSay='water'; _scSayAt=Date.now();
-  scBanner('+1 glass of water 💧',(dy.water+1)+'/'+SC_WATER+' today · Glup glup!','Undo','scSet(\'water\',scDaily().water-1);scRender()');
+  scBanner('+1 glass of water 💧',(dy.water+1)+'/'+SC_WATER+' today · Glug glug!','Undo','scSet(\'water\',scDaily().water-1);scRender()');
   scRender();
 }
 function scFastTap(){
@@ -94,20 +94,20 @@ function scFastTap(){
 }
 
 /* ── Coach Bell: the mission to hari padu, and Coach Seth ── */
-var SC_SETH=['Konsisten mengalahkan sempurna. Satu hari yang padu lebih bernilai dari seminggu yang "nanti".',
-  'Protein setiap kali makan. Ayam, ikan, telur, tauhu. Kenyang lebih lama.',
-  'Nasi ikut porsi: satu genggam. Tak perlu buang nasi, cuma kawal.',
-  'Air kosong dulu bila rasa lapar. Kadang-kadang badan cuma dahaga.',
-  'Jalan 10 minit lepas makan. Gula darah lebih stabil.',
-  'Tidur 7 jam ialah "workout" yang paling ramai skip.',
-  'Timbang berat seminggu sekali, pagi, lepas tandas. Jangan ikut naik turun harian.',
-  'Workout 15 minit yang dibuat lebih baik dari 60 minit yang dirancang.',
-  'Gula dalam air lebih bahaya dari gula dalam makanan. Teh O kosong, kopi O kosong.',
-  'Masak sendiri 2 kali seminggu pun dah banyak membantu.',
-  'Bila tersasar, jangan "rosak terus". Sambung pada hidangan seterusnya.',
-  'Simpan snek manis jauh dari mata. Yang tak nampak, tak dimakan.',
-  'Kaki lebih kuat = metabolisme lebih baik. Jangan skip squat.',
-  'Lemak hilang di dapur, badan dibentuk di gim.'];
+var SC_SETH=['Consistency beats perfect. One strong day is worth more than a week of "later".',
+  'Protein at every meal: chicken, fish, eggs, tofu. You stay full longer.',
+  'Rice by the portion: one fist. No need to cut it out, just keep it in check.',
+  'Plain water first when you feel hungry. Sometimes your body is only thirsty.',
+  'Walk 10 minutes after a meal. Your blood sugar stays steadier.',
+  'Sleeping 7 hours is the "workout" most people skip.',
+  'Weigh yourself once a week, in the morning, after the toilet. Ignore the daily ups and downs.',
+  'A 15-minute workout you do beats a 60-minute one you only plan.',
+  'Sugar in drinks is worse than sugar in food. Go for teh O kosong or kopi O kosong.',
+  'Cooking for yourself just twice a week already helps a lot.',
+  'Slipped up? Don\'t write off the whole day. Pick it up again at the next meal.',
+  'Keep sweet snacks out of sight. What you can\'t see, you don\'t eat.',
+  'Stronger legs, better metabolism. Don\'t skip squats.',
+  'Fat is lost in the kitchen; the body is shaped in the gym.'];
 function scSethTip(){ var d=new Date(), n=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5); return SC_SETH[n%SC_SETH.length]; }
 function scMission(){
   var hs=scHabits(), share=100/hs.length, s=scScore(), opts=[], i, h, dy=scDaily();
@@ -156,9 +156,9 @@ function scPlanHTML(){
 
 /* ── Kenali Bell: once, the first time the card shows ── */
 var SC_MEET=[
-  {pose:'aktif', t:'Hai! Saya Bell 👋', s:'Kettlebell peribadi anda. Saya hidup bila anda aktif, dan saya berkarat bila anda hilang 🥲'},
-  {pose:'water', t:'Isi 4 bulatan setiap hari', s:'Workout, makan, air dan langkah. Semuanya jadi Skor HITFAT anda, 0 hingga 100.'},
-  {pose:'gold',  t:'Skor 50 ke atas = strong day 🔥', s:'Strong day berturut-turut jadi streak. 7 hari, saya jadi Bell Emas. Terlepas sehari? Ada 2 freeze sebulan ❄️'}];
+  {pose:'aktif', t:'Hi! I\'m Bell 👋', s:'Your personal kettlebell. I come alive when you\'re active, and I rust when you disappear 🥲'},
+  {pose:'water', t:'Fill 4 rings every day', s:'Workout, meals, water and steps. Together they make your HITFAT Score, 0 to 100.'},
+  {pose:'gold',  t:'Score 50+ = a strong day 🔥', s:'Strong days in a row make a streak. At 7 days I turn into Gold Bell. Miss a day? You get 2 freezes a month ❄️'}];
 function scCheckMeet(){
   var sc=HF.data.sc||(HF.data.sc={});
   if(sc.met || $('scc').style.display==='flex') return false;
@@ -193,7 +193,7 @@ function scCheckWeekly(){
 }
 function scWeekly(off){
   var w=scWeekStats(off), p=scWeekStats(off+1), diff=w.avg-p.avg, st=scStreak().n;
-  var line=diff>0?'Naik '+diff+' mata dari minggu lepas 👏 Bell bangga!':diff<0?'Turun '+(-diff)+' mata. Tak apa, minggu depan kita kejar balik 💪':'Sama macam minggu lepas. Konsisten tu pun menang.';
+  var line=diff>0?'Up '+diff+' points on last week 👏 Bell is proud!':diff<0?'Down '+(-diff)+' points. That\'s okay, we\'ll win it back next week 💪':'Same as last week. Staying consistent is a win too.';
   var bd=w.best.iso?new Date(w.best.iso+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long'}):'–';
   $('scc').className='scc scc-black';
   $('scc').innerHTML='<div class="scc-in">'+scMomentBell(w.avg>=SC_PADU?'gold':'calendar')+

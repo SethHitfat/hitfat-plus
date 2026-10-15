@@ -82,26 +82,26 @@ function scLevel(s){ return s>=80?4:s>=50?3:s>=25?2:1; }
 
 /* what Bell says: about what was just done, or else the habit furthest behind */
 var SC_LINES={
-  workout:['Workout siap! Bell nak squat sekali, tapi Bell takde lutut 😅','Padu! Peluh tu tanda lemak tengah menangis 💪'],
-  meal:['Makanan direkod! Bell suka orang yang jujur 🍽️','Dah makan? Bagus. Protein dulu, nasi ikut porsi 👍'],
-  water:['Glup glup! 💧 Bell pun rasa segar.','Air masuk! Badan anda berterima kasih 💧'],
-  steps:['Langkah demi langkah 👟 Bell kagum!','Kaki anda hari ni lagi rajin dari Bell 👟']
+  workout:['Workout done! Bell would squat with you, but Bell has no knees 😅','Strong! That sweat is fat crying 💪'],
+  meal:['Meal logged! Bell likes honest people 🍽️','Eaten? Nice. Protein first, rice by the portion 👍'],
+  water:['Glug glug! 💧 Bell feels fresh too.','Water in! Your body says thank you 💧'],
+  steps:['Step by step 👟 Bell is impressed!','Your feet are busier than Bell today 👟']
 };
 function scLine(){
   var s=scScore(), hs=scHabits(), i, low=null;
   if(_scSay==='junk' && Date.now()-_scSayAt<120000 && typeof scJunkLine==='function') return scJunkLine(_scJunkName);
   if(_scSay && SC_LINES[_scSay] && Date.now()-_scSayAt<120000){ var a=SC_LINES[_scSay]; return a[new Date().getMinutes()%a.length]; }
-  if(s>=100) return 'Skor penuh! Bell rasa macam juara dunia 🏆';
+  if(s>=100) return 'Full score! Bell feels like a world champion 🏆';
   for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
-  var hint=!low?'':low.k==='water'?'Tinggal '+(SC_WATER-scDaily().water)+' gelas air lagi.':
-           low.k==='steps'?'Tinggal '+Math.max(0,SC_STEPS-scDaily().steps).toLocaleString('en-MY')+' langkah lagi.':
-           low.k==='meal'?'Jangan lupa rekod makanan anda.':
-           low.k==='workout'?'Satu workout pendek pun cukup hari ni.':
-           'Puasa anda belum capai sasaran.';
-  if(s===0) return 'Bell masih mamai 😴 '+hint;
-  if(s<40) return 'Bell baru bangun. '+hint;
-  if(s<70) return 'Separuh jalan! '+hint;
-  return 'Hari yang padu! 🔥 '+hint;
+  var hint=!low?'':low.k==='water'?(SC_WATER-scDaily().water)+' more glasses of water to go.':
+           low.k==='steps'?Math.max(0,SC_STEPS-scDaily().steps).toLocaleString('en-MY')+' more steps to go.':
+           low.k==='meal'?'Don\'t forget to log your meals.':
+           low.k==='workout'?'One short workout is enough today.':
+           'Your fast hasn\'t reached its goal yet.';
+  if(s===0) return 'Bell is still sleepy 😴 '+hint;
+  if(s<40) return 'Bell just woke up. '+hint;
+  if(s<70) return 'Halfway there! '+hint;
+  return 'Strong day! 🔥 '+hint;
 }
 /* something was just done: Bell talks about it */
 function scEvent(k){ _scSay=k; _scSayAt=Date.now(); scRender(); }
@@ -185,7 +185,7 @@ function scPose(slot,src,ms){
   setTimeout(function(){ if(im.parentNode) im.parentNode.removeChild(im); slot.className=slot.className.replace(/ ?posing/g,''); },ms);
 }
 /* touch Bell: a giggle, and a word */
-SC_LINES.poke=['Hihi, geli! 😆','Eh eh, Bell tengah fokus ni 😤','Hehe, sentuh lagi? 🙈','Bell sihat, terima kasih tanya 💪'];
+SC_LINES.poke=['Hehe, that tickles! 😆','Hey hey, Bell is focusing here 😤','Hehe, again? 🙈','Bell is fine, thanks for asking 💪'];
 var _scPokes=0;
 function scPoke(){
   if(scState().k==='rust'){ toast('Bell has rusted 🥲 Log one thing to polish him'); return; }
@@ -221,7 +221,7 @@ function scSheet(k){
 function scClose(){ closeProduct(); scRender(); }
 function scWater(n){ scSet('water',scDaily().water+n); if(n>0){ _scSay='water'; _scSayAt=Date.now(); } scSheet('water'); scRender(); }
 function scSteps(n){ scSet('steps',scDaily().steps+n); _scSay='steps'; _scSayAt=Date.now(); scSheet('steps'); scRender();
-  if(typeof scBanner==='function') scBanner('+'+n.toLocaleString('en-MY')+' steps 👟',scDaily().steps.toLocaleString('en-MY')+'/'+SC_STEPS.toLocaleString('en-MY')+' today · Kaki anda rajin!'); }
+  if(typeof scBanner==='function') scBanner('+'+n.toLocaleString('en-MY')+' steps 👟',scDaily().steps.toLocaleString('en-MY')+'/'+SC_STEPS.toLocaleString('en-MY')+' today · Busy feet!'); }
 function scStepsSet(){
   var v=parseInt(($('sc-steps')||{}).value,10);
   if(!(v>=0) || v>100000){ toast('Enter your steps'); return; }
@@ -235,9 +235,9 @@ function scStepsSet(){
    being earned. Reaching 3, 7, 14, 30, 60 or 100 days opens a celebration
    once per run, with a card the member can share to an IG Story. */
 var SC_PADU=50, SC_MILES=[3,7,14,30,60,100];
-var SC_MILE_LINES={3:'Permulaan yang padu! Bell dah nampak potensi anda 🔥',
-  7:'Seminggu penuh! Bell bangga gila 💪',14:'Dua minggu! Ini dah jadi tabiat, bukan lagi usaha.',
-  30:'30 hari! Anda juara sebenar 🏆',60:'60 hari! Badan anda dah lain, kan? 😎',100:'100 hari! Bell tabik spring 🫡'};
+var SC_MILE_LINES={3:'A strong start! Bell can see your potential 🔥',
+  7:'A full week! Bell is so proud 💪',14:'Two weeks! This is a habit now, not an effort.',
+  30:'30 days! You are a real champion 🏆',60:'60 days! Your body feels different, right? 😎',100:'100 days! Bell salutes you 🫡'};
 
 var SC_FREEZES=2;
 function scFrozen(){ var sc=HF.data.sc||(HF.data.sc={}); return sc.frozen||(sc.frozen={}); }
@@ -307,7 +307,7 @@ function scCelebrate(n,mine){
   var gold=n>=7, pose=gold?'gold':'calendar', next=scNextMile(n), conf='', i;
   var cols=['#E30613','#FFC20E','#FFFFFF','#111111'];
   if(!mine) for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%cols.length]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
-  var line=SC_MILE_LINES[n]||(next?'Tinggal '+(next-n)+' hari lagi ke sasaran '+next+' hari. Jangan putus! 🔥':'Teruskan, juara 🔥');
+  var line=SC_MILE_LINES[n]||(next?(next-n)+' more '+(next-n===1?'day':'days')+' to your '+next+'-day goal. Don\'t break it! 🔥':'Keep going, champion 🔥');
   $('scc').className='scc '+(gold?'scc-gold':'scc-red');
   $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
     scMomentBell(pose)+
@@ -328,7 +328,7 @@ function scFreezeScreen(frozen){
     scMomentBell('frozen','scc-still')+
     '<div class="scc-t">Streak saved ❄️</div>'+
     '<div class="scc-s">Your <b>'+st.n+'-day</b> streak is safe: '+frozen.length+(frozen.length>1?' freezes':' freeze')+' used for '+(frozen.length>1?'the days':'the day')+' you missed, '+scFreezeLeft()+'/'+SC_FREEZES+' left this month.</div>'+
-    '<div class="scc-s scc-bellsays">Bell beku sekejap untuk anda 🥶 Jom pastikan skor hari ni 50 ke atas.</div>'+
+    '<div class="scc-s scc-bellsays">Bell froze for a moment to save you 🥶 Let\'s make today 50 or more.</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Continue</button></div>';
   $('scc').style.display='flex'; scMomentPlay('frozen');
 }
@@ -339,7 +339,7 @@ function scRustScreen(st){
   $('scc').innerHTML='<div class="scc-in">'+
     '<div class="scc-bell scc-still scc-rusty"><img src="'+p+'" alt="Rusty Bell"><span class="sc-rustfx" style="-webkit-mask-image:url('+p+');mask-image:url('+p+')"></span></div>'+
     '<div class="scc-t">Bell has rusted</div>'+
-    '<div class="scc-s">'+st.idle+' days with nothing logged.</div><div class="scc-s scc-bellsays">Bell duduk sorang-sorang dalam gelap 🥲 Satu rekod pun cukup untuk gilap Bell semula.</div>'+
+    '<div class="scc-s">'+st.idle+' days with nothing logged.</div><div class="scc-s scc-bellsays">Bell is sitting alone in the dark 🥲 One log is enough to polish Bell again.</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose();scSheet(\'water\')">Polish Bell: log a glass of water</button>'+
     '<button class="scc-x" onclick="scCelebrateClose()">Later</button></div>';
   $('scc').style.display='flex';
@@ -413,8 +413,8 @@ function scState(){
   return {k: idle>=3?'rust':idle===2?'dust':'', idle:idle, back:false};
 }
 function scRustLine(st){
-  if(st.k==='rust') return 'Bell dah berkarat 🥲 '+st.idle+' hari tanpa apa-apa. Gilap Bell: rekod satu perkara hari ni, segelas air pun boleh.';
-  return 'Bell mula berhabuk... 😟 Rekod sesuatu hari ni supaya Bell tak berkarat esok.';
+  if(st.k==='rust') return 'Bell has rusted 🥲 '+st.idle+' days with nothing logged. Polish Bell: log one thing today, even a glass of water.';
+  return 'Bell is getting dusty... 😟 Log something today so Bell doesn\'t rust tomorrow.';
 }
 /* back after a rusty spell: once a day */
 function scCheckShine(){
@@ -429,7 +429,7 @@ function scShine(){
   $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
     scMomentBell('halo','scc-shine')+
     '<div class="scc-t">You saved Bell!</div>'+
-    '<div class="scc-s scc-bellsays">Yay! Karat dah hilang ✨ Okay okay, Bell maafkan anda. Jangan tinggal Bell lama-lama lagi ya 😇</div>'+
+    '<div class="scc-s scc-bellsays">Yay! The rust is gone ✨ Okay okay, Bell forgives you. Don\'t leave Bell alone that long again 😇</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Let\'s go!</button></div>';
   $('scc').style.display='flex'; scMomentPlay('halo');
 }

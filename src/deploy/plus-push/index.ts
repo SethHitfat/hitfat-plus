@@ -83,9 +83,9 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
   for (let i = 1; i < 400; i++) { const day = dayBack(i); if (scoreOf(d, day, wdays) >= 50) streak++; else if (!frozen[day]) break; }
 
   if (streak >= 2 && today < 50) return {
-    kind: 'streak', title: '🔥 Streak ' + streak + ' hari dalam bahaya!',
-    body: today ? 'Skor hari ni baru ' + today + '. Capai 50 sebelum tidur untuk selamatkan streak anda.'
-                : 'Belum ada apa-apa hari ni. Satu workout pendek dan segelas air pun dah banyak membantu.',
+    kind: 'streak', title: '🔥 Your ' + streak + '-day streak is at risk!',
+    body: today ? 'Your score today is only ' + today + '. Reach 50 before bed to save your streak.'
+                : 'Nothing logged yet today. A short workout and a glass of water go a long way.',
   };
   /* Sunday: the week's report, Monday to today, against the week before */
   if (new Date(Date.now() + MYT).getUTCDay() === 0) {
@@ -93,16 +93,16 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
     const now = wk(0), last = wk(7), avg = Math.round(now.reduce((a, b) => a + b, 0) / 7), prev = Math.round(last.reduce((a, b) => a + b, 0) / 7);
     if (now.some(x => x > 0)) {
       const padu = now.filter(x => x >= 50).length, diff = avg - prev;
-      return { kind: 'weekly', title: '📊 Laporan Bell minggu ini',
-        body: 'Purata Skor HITFAT ' + avg + '/100' + (diff ? (diff > 0 ? ', naik ' + diff : ', turun ' + (-diff)) : '') + ' · ' + padu + ' strong day' + (padu === 1 ? '' : 's') + '. Buka app untuk tengok laporan penuh.' };
+      return { kind: 'weekly', title: "📊 Bell's weekly report",
+        body: 'Average HITFAT Score ' + avg + '/100' + (diff ? (diff > 0 ? ', up ' + diff : ', down ' + (-diff)) : '') + ' · ' + padu + ' strong day' + (padu === 1 ? '' : 's') + '. Open the app for the full report.' };
     }
   }
   if (today >= 50 || today > 0) return null;
   const idle = gap + 1;
-  if (idle === 2) return { kind: 'dust', title: 'Bell mula berhabuk 😟', body: 'Dua hari Bell tak nampak anda. Rekod sesuatu hari ni sebelum Bell berkarat esok.' };
-  if (idle === 3) return { kind: 'rust', title: 'Alamak, Bell dah berkarat 🥲', body: 'Segelas air pun cukup untuk gilap Bell semula. Jom!' };
-  if (idle === 7) return { kind: 'rust7', title: 'Seminggu Bell berkarat...', body: 'Bell masih tunggu anda 🧽 Mula semula dengan satu perkara kecil hari ni.' };
-  if (idle === 14) return { kind: 'rust14', title: 'Bell rindu anda 🥺', body: 'Dua minggu dah. Tak perlu sempurna, cuma mula semula.' };
+  if (idle === 2) return { kind: 'dust', title: 'Bell is getting dusty 😟', body: "Bell hasn't seen you for two days. Log something today before Bell rusts tomorrow." };
+  if (idle === 3) return { kind: 'rust', title: 'Oh no, Bell has rusted 🥲', body: "A glass of water is enough to polish Bell again. Let's go!" };
+  if (idle === 7) return { kind: 'rust7', title: 'A week of rusty Bell...', body: 'Bell is still waiting for you 🧽 Start again with one small thing today.' };
+  if (idle === 14) return { kind: 'rust14', title: 'Bell misses you 🥺', body: "It's been two weeks. It doesn't have to be perfect, just start again." };
   return null;
 }
 
@@ -152,7 +152,7 @@ Deno.serve(async (req: Request) => {
     const user = ud && ud.user;
     if (!user || !user.id || user.role === 'anon') return json({ error: 'Sign in' }, 401);
     const { data: subs } = await admin.from('plus_push_subs').select('*').eq('user_id', user.id);
-    const n = await sendTo(admin, subs || [], { kind: 'test', title: 'Hai, ini Bell! 👋', body: 'Peringatan dah hidup. Bell akan tegur anda pukul 8 malam bila perlu.' });
+    const n = await sendTo(admin, subs || [], { kind: 'test', title: "Hi, it's Bell! 👋", body: 'Reminders are on. Bell will nudge you at 8 pm when there is something to say.' });
     return json({ ok: true, sent: n });
   }
 
