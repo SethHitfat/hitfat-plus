@@ -289,6 +289,23 @@ function fyPlanCard(p){
       :'<div class="fyplan-next"><div class="n">Every day done.</div></div>')+
     '<button class="fglass" onclick="openProgram(\''+p.id+'\')">'+glyph('calendar')+'View Plan</button></div>';
 }
+/* For You's hero: the studio photo, a TODAY'S PICK tag, the name, minutes, level and kit, Start and Details */
+function fyHero(p){
+  const lv=String(p.level||'');
+  return '<div class="fyh" onclick="openProgram(\''+p.id+'\')" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.poster):'')+'">'+
+    '<div class="ov"></div><span class="fp-tag">TODAY\'S PICK</span>'+lockTag(p)+
+    '<div class="in"><div class="t">'+p.name+'</div>'+
+    '<div class="m"><b>'+p.dur+'</b> min'+(lv?' <span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span>':'')+' · '+fweekKit(p)+'</div>'+
+    '<div class="bt"><button class="go" onclick="event.stopPropagation();playSingle(\''+p.id+'\')">▶ Start</button>'+
+    '<button class="dt" onclick="event.stopPropagation();openProgram(\''+p.id+'\')">Details</button></div></div></div>';
+}
+/* a quick workout as one tidy row, like All Plans */
+function fyQuickRow(p){
+  const lv=String(p.level||'');
+  return '<div class="plr" onclick="openProgram(\''+p.id+'\')"><div class="th" style="background-image:url(\''+progImg(p)+'\')"></div>'+
+    '<div class="tx"><div class="t">'+p.name+'</div><div class="m">'+p.dur+' min · '+(p.goal||'')+(lv?' <span class="fw-lv fw-'+lv.toLowerCase()+'">'+lv+'</span>':'')+'</div></div>'+
+    lockTag(p)+'<span class="ch">›</span></div>';
+}
 function trForYou(){
   const goal=(HF.data.prefs&&HF.data.prefs.goal)||'';
   const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
@@ -304,7 +321,10 @@ function trForYou(){
   if(byGoal.length>=3){ pick=byGoal.slice(0,8); pickSub='For your goal: '+goal.toLowerCase()+' · '+lvl; }
   else if(byLvl.length>=3){ pick=byLvl.slice(0,8); pickSub='Matched to your level · '+lvl; }
   else { pick=singles.slice(0,8); pickSub='A mix to start with'; }
-  const quick=singles.filter(p=>p.dur<=20&&pick.indexOf(p)<0).slice(0,9);
+  const lvR={Beginner:0,Intermediate:1,Advanced:2};
+  /* the member's own level first, then the nearest */
+  const quick=singles.filter(p=>p.dur<=20&&pick.indexOf(p)<0)
+    .map((p,i)=>[p,i]).sort((a,b)=>(Math.abs((lvR[a[0].level]??1)-(lvR[lvl]??0))-Math.abs((lvR[b[0].level]??1)-(lvR[lvl]??0)))||(a[1]-b[1])).map(x=>x[0]).slice(0,9);
 
   let h='';
   if(!contentOpen()) h+=fyJoinCard();
@@ -317,14 +337,15 @@ function trForYou(){
     h+=fsec('Find Your Plan','Four questions, one match.');
     h+=fqCard();
   }
-  h+=fsec('Picked for You',pickSub);
-  h+='<div class="hscroll">'+pick.map((p,i)=>flandCard(p,i<2?'NEW':'')).join('')+'</div>';
+  /* Today's pick (16 Oct): one session, big, with Start right there; a new one each day */
+  const day=Math.floor(Date.now()/864e5), hero=pick.length?pick[day%pick.length]:null;
+  if(hero){ h+=fsec("Today's Pick",pickSub); h+=fyHero(hero); }
+  const rest=pick.filter(p=>p!==hero);
+  if(rest.length){ h+=fsec('More for You',''); h+='<div class="hscroll">'+rest.map((p,i)=>flandCard(p,i<1?'NEW':'')).join('')+'</div>'; }
   if(quick.length){
     h+=fsec('Quick Workouts','Twenty minutes or less.');
-    h+=fwCols(quick);
+    h+='<div class="pl-list">'+quick.slice(0,5).map(fyQuickRow).join('')+'</div>';
   }
-  h+=fsec('Popular Programs','Where most members start.',true);
-  h+='<div class="hscroll">'+trainingPlans().filter(p=>p.id!=='custom'&&going.indexOf(p)<0).slice(0,5).map(fbigCard).join('')+'</div>';
   $('tr-body').innerHTML=h;
 }
 
