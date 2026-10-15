@@ -447,9 +447,10 @@ function plChipsHTML(){
 function plThumb(p){
   const img=FBIG_IMG[p.id]||progImg(p), f=(typeof FOCAL!=='undefined')&&hasPhoto(p)&&!FBIG_IMG[p.id]&&FOCAL[p.id];
   if(!f) return 'background-image:url(\''+img+'\');background-size:cover;background-position:50% 25%';
-  const ar=f[2], z=1.9;
+  /* a square thumb: a wide photo shows whole at its height; an upright or square one zooms in a little */
+  const ar=f[2], z=ar>1.2?1:1.35;
   return 'background-image:url(\''+img+'\');background-size:'+(ar>=1?'auto '+Math.round(z*100)+'%':Math.round(z*100)+'% auto')+
-    ';background-position:'+f[0]+'% '+Math.max(0,f[1]-4)+'%';
+    ';background-position:'+f[0]+'% '+Math.max(0,f[1]-6)+'%';
 }
 const LV_DOT={Beginner:'#2E9E5B',Intermediate:'#E0A100',Advanced:'#E30613'};
 function plMeta(p,len){
@@ -458,7 +459,7 @@ function plMeta(p,len){
 }
 function plRow(p){
   const done=progDone(p.id), tot=progDays(p), on=done>0&&done<tot;
-  const len=p.oneTime?(tot+' days'):(p.weeks||[]).length+' weeks';
+  const wk=(p.weeks||[]).length, len=p.oneTime?(tot+' days'):wk+(wk===1?' week':' weeks');
   const eb=/^sig\d/.test(p.id)?'<b>HITFAT ORIGINAL</b> · '+(p.goal||''):(p.goal||'Program');
   return '<div class="plr" onclick="openProgram(\''+p.id+'\')">'+
     '<div class="th" style="'+plThumb(p)+'"></div>'+
