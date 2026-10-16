@@ -3553,3 +3553,22 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
 /* (16 Oct) the wordmark on Home's red, light theme: HITFAT white, + a deeper red so it still reads on the red band */
 :root[data-theme="light"] .screen:has(> #home:not([style*="none"])) > .topbar > div:first-child{color:#FFFFFF;}
 :root[data-theme="light"] .screen:has(> #home:not([style*="none"])) > .topbar span{color:#A50C14 !important;}
+
+/* ── Home after Simple, round two (16 Oct) ── */
+/* 4 the bubble shows only when Buddy has something to say, then fades */
+#mascot-home .sc-bub{opacity:0;visibility:hidden;-webkit-transition:opacity .35s,visibility .35s;transition:opacity .35s,visibility .35s;}
+#mascot-home .sc-bub.show{opacity:1;visibility:visible;-webkit-transition:none;transition:none;}
+/* 5 a thinner, lighter arc */
+#mascot-home .sc-page .sc-arc-t,#mascot-home .sc-page .sc-arc-v{stroke-width:6;}
+:root[data-theme="light"] #mascot-home .sc-page .sc-arc-t{stroke:rgba(227,6,19,.16);}
+
+/* 1+2 light: a deep red top that holds longer, and a white spotlight behind Buddy */
+:root[data-theme="light"] .screen:has(> #home:not([style*="none"])){
+  background:
+    radial-gradient(closest-side,#FFFFFF 0%,rgba(255,255,255,.94) 32%,rgba(255,255,255,.5) 62%,rgba(255,255,255,0) 100%) 50% 95px/360px 320px no-repeat local,
+    linear-gradient(180deg,#EC3437 0,#F04A4A 150px,#F4706C 290px,#F9AFA9 390px,#FDE6E3 440px,var(--bg) 480px) 0 0/100% 500px no-repeat local,
+    var(--bg);}
+/* 3 pulling Home down shows the red above it, not grey */
+.screen{position:relative;}
+:root[data-theme="light"] .screen:has(> #home:not([style*="none"]))::before{content:'';position:absolute;left:0;right:0;top:-900px;height:900px;background:#EC3437;pointer-events:none;}
+:root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"]))::before{content:'';position:absolute;left:0;right:0;top:-900px;height:900px;background:#000;pointer-events:none;}

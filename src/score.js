@@ -132,7 +132,7 @@ function scArc(s){
   return '<svg class="sc-arc" viewBox="0 0 240 184" aria-hidden="true">'+
     '<path d="'+d+'" class="sc-arc-t" pathLength="100"/>'+
     (s>0?'<path d="'+d+'" class="sc-arc-v" pathLength="100" stroke="'+c+'" stroke-dasharray="'+s+' 100"/>':'')+
-    '<circle class="sc-knob" cx="'+k[0]+'" cy="'+k[1]+'" r="8" fill="#FFFFFF" stroke="'+c+'" stroke-width="4.5"/></svg>';
+    '<circle class="sc-knob" cx="'+k[0]+'" cy="'+k[1]+'" r="7" fill="#FFFFFF" stroke="'+c+'" stroke-width="4"/></svg>';
 }
 function scRing(h){
   var c=h.v>=1?'#FFC20E':'#E30613';
@@ -198,11 +198,16 @@ function scBubLines(){
   return SC_BUB[s>=100?'full':s>=SC_PADU?'red':s>0?'low':'zero'];
 }
 function scBubText(){ var l=scBubLines(); return l[_scBubI%l.length]; }
+/* (16 Oct, after Simple) the bubble only speaks when there is a reason — a
+   log, a poke, turning red, the first look of a visit — then fades out */
+var _scBubHide=null;
 function scBubSet(t){
   var b=$('sc-bub'); if(!b) return;
   b.textContent=t; b.className='sc-bub';
   try{ void b.offsetWidth; }catch(e){}
-  b.className='sc-bub pop';
+  b.className='sc-bub show pop';
+  if(_scBubHide) clearTimeout(_scBubHide);
+  _scBubHide=setTimeout(function(){ var x=$('sc-bub'); if(x) x.className='sc-bub'; },4500);
 }
 function scBubNext(){
   var b=$('sc-bub');
@@ -222,7 +227,7 @@ function scHTML(){
     '<div class="scx-seth">At 8 pm, only when a streak is at risk or Buddy misses you. One a day at most.</div>'+inv+'</div>');
   slides.unshift(scBellCard(st));
   return '<div class="sc sc-page" style="--scc:'+scRGB(c)+'">'+
-    '<div class="sc-stage"><div class="sc-bub pop" id="sc-bub">'+hesc(scBubText())+'</div>'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Buddy">'+img+'</div></div>'+
+    '<div class="sc-stage"><div class="sc-bub" id="sc-bub">'+hesc(scBubText())+'</div>'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Buddy">'+img+'</div></div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>'+
     '<div class="sc-tail"></div>'+scCarHTML(slides)+
     (typeof scPlanHTML==='function'?scPlanHTML():'');
@@ -256,7 +261,7 @@ function scRender(){
   if(!scRender._in){ scRender._in=true; el.className=(el.className||'')+' sc-enter';
     setTimeout(function(){ el.className=String(el.className||'').replace(/ ?sc-enter/g,''); },1800); }
   if(_scBubT) clearInterval(_scBubT);
-  _scBubT=setInterval(scBubNext,5000);
+  if(!scRender._said || (_scSay && Date.now()-_scSayAt<5000)){ scRender._said=true; scBubSet(scBubText()); }
   if($('sc-pills')) $('sc-pills').innerHTML=scPills();
   try{ var sr=$('screen'); if(sr && sr.style && sr.style.setProperty) sr.style.setProperty('--scb',scRGB(scBand())); var gl=scGlow(); sr.style.setProperty('--sga',scRGB(gl[0])); sr.style.setProperty('--sgb',scRGB(gl[1])); }catch(e){}
   var car=$('sc-car'); if(car && _scCar){ try{ car.scrollLeft=_scCar*(car.clientWidth||0); }catch(e){} }

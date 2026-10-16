@@ -5719,6 +5719,25 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
 :root[data-theme="light"] .screen:has(> #home:not([style*="none"])) > .topbar > div:first-child{color:#FFFFFF;}
 :root[data-theme="light"] .screen:has(> #home:not([style*="none"])) > .topbar span{color:#A50C14 !important;}
 
+/* ── Home after Simple, round two (16 Oct) ── */
+/* 4 the bubble shows only when Buddy has something to say, then fades */
+#mascot-home .sc-bub{opacity:0;visibility:hidden;-webkit-transition:opacity .35s,visibility .35s;transition:opacity .35s,visibility .35s;}
+#mascot-home .sc-bub.show{opacity:1;visibility:visible;-webkit-transition:none;transition:none;}
+/* 5 a thinner, lighter arc */
+#mascot-home .sc-page .sc-arc-t,#mascot-home .sc-page .sc-arc-v{stroke-width:6;}
+:root[data-theme="light"] #mascot-home .sc-page .sc-arc-t{stroke:rgba(227,6,19,.16);}
+
+/* 1+2 light: a deep red top that holds longer, and a white spotlight behind Buddy */
+:root[data-theme="light"] .screen:has(> #home:not([style*="none"])){
+  background:
+    radial-gradient(closest-side,#FFFFFF 0%,rgba(255,255,255,.94) 32%,rgba(255,255,255,.5) 62%,rgba(255,255,255,0) 100%) 50% 95px/360px 320px no-repeat local,
+    linear-gradient(180deg,#EC3437 0,#F04A4A 150px,#F4706C 290px,#F9AFA9 390px,#FDE6E3 440px,var(--bg) 480px) 0 0/100% 500px no-repeat local,
+    var(--bg);}
+/* 3 pulling Home down shows the red above it, not grey */
+.screen{position:relative;}
+:root[data-theme="light"] .screen:has(> #home:not([style*="none"]))::before{content:'';position:absolute;left:0;right:0;top:-900px;height:900px;background:#EC3437;pointer-events:none;}
+:root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"]))::before{content:'';position:absolute;left:0;right:0;top:-900px;height:900px;background:#000;pointer-events:none;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -7046,7 +7065,7 @@ function scArc(s){
   return '<svg class="sc-arc" viewBox="0 0 240 184" aria-hidden="true">'+
     '<path d="'+d+'" class="sc-arc-t" pathLength="100"/>'+
     (s>0?'<path d="'+d+'" class="sc-arc-v" pathLength="100" stroke="'+c+'" stroke-dasharray="'+s+' 100"/>':'')+
-    '<circle class="sc-knob" cx="'+k[0]+'" cy="'+k[1]+'" r="8" fill="#FFFFFF" stroke="'+c+'" stroke-width="4.5"/></svg>';
+    '<circle class="sc-knob" cx="'+k[0]+'" cy="'+k[1]+'" r="7" fill="#FFFFFF" stroke="'+c+'" stroke-width="4"/></svg>';
 }
 function scRing(h){
   var c=h.v>=1?'#FFC20E':'#E30613';
@@ -7112,11 +7131,16 @@ function scBubLines(){
   return SC_BUB[s>=100?'full':s>=SC_PADU?'red':s>0?'low':'zero'];
 }
 function scBubText(){ var l=scBubLines(); return l[_scBubI%l.length]; }
+/* (16 Oct, after Simple) the bubble only speaks when there is a reason — a
+   log, a poke, turning red, the first look of a visit — then fades out */
+var _scBubHide=null;
 function scBubSet(t){
   var b=$('sc-bub'); if(!b) return;
   b.textContent=t; b.className='sc-bub';
   try{ void b.offsetWidth; }catch(e){}
-  b.className='sc-bub pop';
+  b.className='sc-bub show pop';
+  if(_scBubHide) clearTimeout(_scBubHide);
+  _scBubHide=setTimeout(function(){ var x=$('sc-bub'); if(x) x.className='sc-bub'; },4500);
 }
 function scBubNext(){
   var b=$('sc-bub');
@@ -7136,7 +7160,7 @@ function scHTML(){
     '<div class="scx-seth">At 8 pm, only when a streak is at risk or Buddy misses you. One a day at most.</div>'+inv+'</div>');
   slides.unshift(scBellCard(st));
   return '<div class="sc sc-page" style="--scc:'+scRGB(c)+'">'+
-    '<div class="sc-stage"><div class="sc-bub pop" id="sc-bub">'+hesc(scBubText())+'</div>'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Buddy">'+img+'</div></div>'+
+    '<div class="sc-stage"><div class="sc-bub" id="sc-bub">'+hesc(scBubText())+'</div>'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Buddy">'+img+'</div></div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>'+
     '<div class="sc-tail"></div>'+scCarHTML(slides)+
     (typeof scPlanHTML==='function'?scPlanHTML():'');
@@ -7170,7 +7194,7 @@ function scRender(){
   if(!scRender._in){ scRender._in=true; el.className=(el.className||'')+' sc-enter';
     setTimeout(function(){ el.className=String(el.className||'').replace(/ ?sc-enter/g,''); },1800); }
   if(_scBubT) clearInterval(_scBubT);
-  _scBubT=setInterval(scBubNext,5000);
+  if(!scRender._said || (_scSay && Date.now()-_scSayAt<5000)){ scRender._said=true; scBubSet(scBubText()); }
   if($('sc-pills')) $('sc-pills').innerHTML=scPills();
   try{ var sr=$('screen'); if(sr && sr.style && sr.style.setProperty) sr.style.setProperty('--scb',scRGB(scBand())); var gl=scGlow(); sr.style.setProperty('--sga',scRGB(gl[0])); sr.style.setProperty('--sgb',scRGB(gl[1])); }catch(e){}
   var car=$('sc-car'); if(car && _scCar){ try{ car.scrollLeft=_scCar*(car.clientWidth||0); }catch(e){} }
