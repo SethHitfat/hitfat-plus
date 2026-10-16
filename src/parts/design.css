@@ -3619,3 +3619,23 @@ html,body{overscroll-behavior:none;}
     linear-gradient(var(--bg),var(--bg)) 0 499px/100% 100000px no-repeat local,
     #EC3437;}
 :root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"])){background-color:#000000;}
+
+
+/* Kenali Buddy (16 Oct, "terlalu merah"): a soft light ground with a white
+   spotlight and a blush of red behind Buddy, as on Home, instead of the full
+   red of the turn-red moment; dark words, one red button */
+#scc.scc-meet{background:
+  radial-gradient(closest-side,#FFFFFF 0%,rgba(255,255,255,.9) 40%,rgba(255,255,255,0) 100%) 50% 30%/120% 60% no-repeat,
+  radial-gradient(circle at 50% 30%,#FFD9D4 0%,#FCE9E6 45%,#F7F3F2 80%) ;color:#141416;}
+#scc.scc-meet .scc-t{color:#141416;}
+#scc.scc-meet .scc-s{color:rgba(20,20,22,.72);}
+#scc.scc-meet .scc-share{background:#E30613 !important;color:#FFFFFF !important;}
+#scc.scc-meet .scc-x{background:rgba(20,20,22,.06);color:rgba(20,20,22,.72);}
+#scc.scc-meet .scx-dots i{background:rgba(20,20,22,.18);}
+#scc.scc-meet .scx-dots i.on{background:#E30613;}
+:root:not([data-theme="light"]) #scc.scc-meet{background:
+  radial-gradient(circle at 50% 30%,rgba(227,6,19,.38) 0%,rgba(120,6,12,.22) 40%,#0B0B0D 78%);color:#FFFFFF;}
+:root:not([data-theme="light"]) #scc.scc-meet .scc-t{color:#FFFFFF;}
+:root:not([data-theme="light"]) #scc.scc-meet .scc-s{color:rgba(255,255,255,.78);}
+:root:not([data-theme="light"]) #scc.scc-meet .scc-x{background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);}
+:root:not([data-theme="light"]) #scc.scc-meet .scx-dots i{background:rgba(255,255,255,.25);}

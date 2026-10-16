@@ -59,9 +59,11 @@ function plTap(e){
   if(el.classList.contains('idle')) plWake(); else if(pl && pl.running){ el.classList.add('idle'); }
 }
 function plSetPlayIcon(running){
-  const b=$('pl-play'); if(!b) return;
-  b.innerHTML=running?PL_ICON_PAUSE:PL_ICON_PLAY;
-  try{ b.setAttribute('aria-label',running?'Pause':'Play'); }catch(e){}
+  ['pl-play','pl-play2'].forEach(id=>{
+    const b=$(id); if(!b) return;
+    b.innerHTML=running?PL_ICON_PAUSE:PL_ICON_PLAY;
+    try{ b.setAttribute('aria-label',running?'Pause':'Play'); }catch(e){}
+  });
 }
 /* The movement's time, as Fitness+ shows it: elapsed on the left, what is
    left on the right, and a bar between. pl.len grows and shrinks with the
@@ -73,6 +75,12 @@ function plTime(){
   if($('pl-el'))  $('pl-el').textContent=fmtT(el);
   if($('pl-rem')) $('pl-rem').textContent='−'+fmtT(pl.left);
   if($('pl-fill')) $('pl-fill').style.width=(len?Math.round(el/len*100):0)+'%';
+  /* the segment under way fills with the time; the last three seconds go
+     red, and in the last five what comes next steps forward */
+  const seg=document.querySelector('#pl-segs i.now');
+  if(seg && seg.style && seg.style.setProperty) seg.style.setProperty('--p',(len?Math.round(el/len*1000)/10:0)+'%');
+  const c=$('pl-clock'); if(c && c.classList) c.classList.toggle('hot', !!pl.running && pl.left<=3 && pl.left>0);
+  const nx=$('pl-next'); if(nx && nx.classList) nx.classList.toggle('soon', !!pl.running && pl.left<=5 && pl.left>0);
 }
 function plKcal(){
   if(!pl) return 0;
@@ -161,7 +169,7 @@ function plResume(){
     if(pl.left<=0) plNext(true);
   },1000);
 }
-function plPause(){ stopTick(); plSetPlayIcon(false); plWake(); }
+function plPause(){ stopTick(); plSetPlayIcon(false); plTime(); plWake(); }
 function plToggle(){ if(!pl) return; pl.running?plPause():plResume(); }
 function plAdjust(d){ if(!pl) return; const was=pl.left; pl.left=Math.max(5,pl.left+d); pl.len=(pl.len||was)+(pl.left-was); plTime(); }
 
@@ -239,8 +247,8 @@ function renderPl(){
   $('pl-name').textContent=ex.n;
   $('pl-sub').textContent=ex.m+' · '+ex.eq;
   plTime(); plSetPlayIcon(!!pl.running);
-  $('pl-pill').innerHTML=(pl.rounds>1?'Round <b>'+pl.round+'/'+pl.rounds+'</b> · ':'')+
-                         '<b>'+(pl.i+1)+'</b>/'+pl.exs.length;
+  /* the segments count the movements; the pill says only the round */
+  $('pl-pill').innerHTML=pl.rounds>1?'Round <b>'+pl.round+'/'+pl.rounds+'</b>':'';
   // one tick per exercise beats a bare percentage — you can see the shape of the set
   $('pl-segs').innerHTML=pl.exs.map((_,i)=>
     '<i class="'+(i<pl.i?'done':(i===pl.i?'now':''))+'"></i>').join('');

@@ -537,6 +537,14 @@ plAdjust(-999);ok("never below 5s", pl.left===5, pl.left);
 plPause(); ok("paused shows play", document.getElementById('pl-play').innerHTML.indexOf('M8 5.5')>0);
 plResume(); ok("playing shows pause", document.getElementById('pl-play').innerHTML.indexOf('<rect')>=0);
 plPause();
+/* the foot's big play/pause follows the same state as the one over the clip */
+ok("the foot's play/pause shows play when paused", document.getElementById('pl-play2').innerHTML.indexOf('M8 5.5')>0);
+ok("the pill says only the round (the segments count the movements)",
+   pl.rounds>1 ? document.getElementById('pl-pill').innerHTML.indexOf('Round')===0 && document.getElementById('pl-pill').innerHTML.indexOf('/'+pl.exs.length)<0
+               : document.getElementById('pl-pill').innerHTML==='');
+var _shTl=readFile('shell2.html');
+ok("the transport row has back 10, play/pause and forward 10",
+   _shTl.indexOf('id="pl-play2"')>0 && _shTl.slice(_shTl.indexOf('class="pl-tl"'), _shTl.indexOf('id="pl-play2"')).indexOf('plAdjust(10)')>0);
 
 pl.i=pl.exs.length-1; pl.round=pl.rounds;
 ok("last exercise of last round has no next", plNextIndex()===null);

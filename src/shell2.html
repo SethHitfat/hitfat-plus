@@ -435,6 +435,39 @@ body:has(#play.on)::before{display:none;}
 #pl-done .hc-days{color:#FF4D55;}
 #pl-done .hc-mins,#pl-done .hc-cons,#pl-done .hc-streak{color:#FFFFFF;}
 
+/* ── the workout itself, round two (16 Oct: "player tu USP aku") ──
+   Fitness+ and Simple: the coach is the screen, and the few things that
+   matter mid-set are big and always there. */
+@media (orientation:portrait){
+  /* the transport lives at the foot, always on: previous, back 10, a big
+     play/pause, forward 10, next. No tap-to-find controls over the coach. */
+  #play.nomirror .pl-mid{display:none;}
+  #play.nomirror .pl-bar{display:none;}
+  #play.nomirror .pl-tl{justify-content:space-between;gap:0;padding:0 2px;}
+  #play.nomirror .pl-sm{width:48px;height:48px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);}
+  #play.nomirror .pl-sm svg{width:18px;height:18px;}
+  #play.nomirror .pl-s10 svg{width:28px;height:28px;}
+  #play.nomirror .pl-go2{width:72px;height:72px;background:#FFFFFF;color:#111111;border:0;box-shadow:0 8px 28px rgba(0,0,0,.45);}
+  #play.nomirror .pl-go2 svg{width:30px;height:30px;}
+  #play.nomirror .pl-go2[aria-label="Play"]{background:#E30613;color:#FFFFFF;box-shadow:0 8px 28px rgba(227,6,19,.45);}
+  /* the time left is the number that matters: big and bold; kcal beside it, quieter */
+  #play.nomirror .pl-stats{margin-bottom:18px;align-items:flex-end;}
+  #play.nomirror .pl-stat .pl-clock{font-size:68px;font-weight:700;letter-spacing:-3px;line-height:.92;}
+  #play.nomirror .pl-stat.r b{font-size:30px;font-weight:600;letter-spacing:-.8px;}
+  /* the last three seconds: the time turns red and beats */
+  #play.nomirror .pl-clock.hot{color:#FF3B42;-webkit-animation:plBeat 1s ease-out infinite;animation:plBeat 1s ease-out infinite;}
+  /* the last five: what comes next steps forward */
+  #play.nomirror .pl-head .pl-next.soon{display:inline-block;margin-top:8px;padding:5px 11px;border-radius:99px;
+    background:#E30613;color:#FFFFFF;font-weight:600;}
+}
+@-webkit-keyframes plBeat{0%{-webkit-transform:scale(1.08)}60%{-webkit-transform:scale(1)}}
+@keyframes plBeat{0%{transform:scale(1.08)}60%{transform:scale(1)}}
+.pl-clock{-webkit-transform-origin:0 100%;transform-origin:0 100%;display:inline-block;}
+/* the segment of the movement under way fills as its time runs, like a story */
+.pl-head .pl-segs i.now{background:linear-gradient(90deg,#E30613 var(--p,0%),rgba(255,255,255,.26) var(--p,0%));}
+/* one round: no pill (the segments already count the movements) */
+#play .pl-pill:empty{display:none;}
+
 /* Ending early? */
 #pl-why{z-index:9;background:rgba(0,0,0,.72);justify-content:flex-end;padding:0;}
 #pl-why .wwrap{width:100%;max-width:480px;background:#141416;border-radius:24px 24px 0 0;text-align:left;
@@ -1038,6 +1071,9 @@ body:has(#play.on)::before{display:none;}
     <div class="pl-tl">
       <button class="pl-sm" onclick="plPrev()" aria-label="Previous exercise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M19 5.5l-9 6.5 9 6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
       <div class="pl-bar"><span id="pl-el">0:00</span><div class="pl-track"><i id="pl-fill"></i></div><span id="pl-rem">−0:45</span></div>
+      <button class="pl-sm pl-s10" onclick="plAdjust(10)" aria-label="Back 10 seconds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.6 12.4a7.5 7.5 0 1 0 2.3-5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M6.6 3.2v3.9h3.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><text x="12.2" y="15.4" text-anchor="middle" font-size="7" font-weight="700" fill="currentColor" font-family="system-ui,sans-serif">10</text></svg></button>
+      <button class="pl-go pl-go2" id="pl-play2" onclick="plToggle()" aria-label="Pause"></button>
+      <button class="pl-sm pl-s10" onclick="plAdjust(-10)" aria-label="Forward 10 seconds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 12.4a7.5 7.5 0 1 1-2.3-5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M17.4 3.2v3.9h-3.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><text x="11.8" y="15.4" text-anchor="middle" font-size="7" font-weight="700" fill="currentColor" font-family="system-ui,sans-serif">10</text></svg></button>
       <button class="pl-sm" onclick="plNext(false)" aria-label="Next exercise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M5 5.5l9 6.5-9 6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
     </div>
   </div>

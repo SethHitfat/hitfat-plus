@@ -191,7 +191,7 @@ function scCheckMeet(){
 }
 function scMeet(i){
   var m=SC_MEET[i], last=i===SC_MEET.length-1;
-  $('scc').className='scc scc-red';
+  $('scc').className='scc scc-meet';
   $('scc').innerHTML='<div class="scc-in">'+scMomentBell(m.pose)+
     '<div class="scc-t">'+m.t+'</div><div class="scc-s">'+hesc(m.s)+'</div>'+
     '<div class="scx-dots">'+SC_MEET.map(function(x,j){ return '<i class="'+(j===i?'on':'')+'"></i>'; }).join('')+'</div>'+
