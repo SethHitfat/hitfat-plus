@@ -161,11 +161,24 @@ function scMood(m){
 /* ── Today's plan ── */
 /* Today's Plan is in English, as the app around it (Bara himself speaks Malay) */
 function scClock(min){ min=((Math.round(min)%1440)+1440)%1440; var h=Math.floor(min/60), m=min%60; return (h%12||12)+':'+('0'+m).slice(-2)+(h<12?' am':' pm'); }
+/* the plan the member is on, at its next session, or null */
+function scPlanNext(){
+  var nx=(typeof nextUp==='function')?nextUp():null, p=nx&&nx.p&&nx.p.weeks?nx.p:null, gi, at;
+  if(p && typeof nextSession==='function' && (gi=nextSession(p))>=0 && (at=sessionAt(p,gi))) return {p:p, gi:gi, at:at};
+  return null;
+}
+/* (16 Oct) with no plan of their own, a member who has BURN30 sees it as
+   today's plan, and finding a plan steps back to a quiet link under it:
+   two equal calls one above the other left a new member unsure which */
+function scBurnIsPlan(){ return !scPlanNext() && typeof wlOwned==='function' && wlOwned() && wlNext()<WL30_DAYS.length; }
 function scPlanHTML(){
-  var rows=[], dy=scDaily(), nx=(typeof nextUp==='function')?nextUp():null, p=nx&&nx.p&&nx.p.weeks?nx.p:null, gi, at, n=function(x){ return x.toLocaleString('en-MY'); };
+  var rows=[], dy=scDaily(), pn=scPlanNext(), p=pn&&pn.p, gi=pn&&pn.gi, at=pn&&pn.at;
+  if(scBurnIsPlan())
+    return '<div class="scx-plan">'+fsec("Today's Plan",'')+wlHomeCard()+
+      '<button class="scx-alt" onclick="'+(typeof openFinder==='function'?'openFinder()':"switchTab('train')")+'">Or find a plan matched to your goal →</button></div>';
   /* (16 Oct) one way into today's workout: the plan's next day, or finding a
      plan; water and steps live in the rings above, not here again */
-  if(p && typeof nextSession==='function' && (gi=nextSession(p))>=0 && (at=sessionAt(p,gi)))
+  if(pn)
     rows.push({ic:'workout', t:(at.day.name||'Workout'), s:'Day '+(gi+1)+' of '+progDays(p)+' · '+p.name+' · '+p.dur+' min', done:scWorkouts(iso(0))>0, go:"openDay('"+p.id+"',"+gi+")", b:'Start'});
   else rows.push({ic:'target', t:'Find your first plan', s:'Four questions, matched to your goal and level', done:scWorkouts(iso(0))>0, go:(typeof openFinder==='function'?'openFinder()':"switchTab('train')"), b:'Find'});
   if(!SC_FAST_LIVE){}

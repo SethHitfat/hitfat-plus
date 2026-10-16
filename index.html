@@ -5894,6 +5894,15 @@ html,body{overscroll-behavior:none;}
 .elsum-h em{color:var(--dim);font-weight:600;}
 .elsum-h em.over{color:#E30613;font-weight:700;}
 
+
+/* BURN30 as today's plan (16 Oct): its card sits under the heading, and
+   finding another plan is a quiet line under it */
+.scx-plan .wl-poster{margin:0;}
+.scx-alt{display:block;margin:10px auto 0;padding:8px 12px;border:0;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--dim);cursor:pointer;}
+/* the kicker on the poster's foot is one line at phone width, in white, not yellow */
+.wl-poster-b .k{color:rgba(255,255,255,.62);letter-spacing:.08em;white-space:nowrap;}
+.wl-poster-b .bigbtn{background:#E30613;color:#FFFFFF;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -7845,11 +7854,24 @@ function scMood(m){
 /* ── Today's plan ── */
 /* Today's Plan is in English, as the app around it (Bara himself speaks Malay) */
 function scClock(min){ min=((Math.round(min)%1440)+1440)%1440; var h=Math.floor(min/60), m=min%60; return (h%12||12)+':'+('0'+m).slice(-2)+(h<12?' am':' pm'); }
+/* the plan the member is on, at its next session, or null */
+function scPlanNext(){
+  var nx=(typeof nextUp==='function')?nextUp():null, p=nx&&nx.p&&nx.p.weeks?nx.p:null, gi, at;
+  if(p && typeof nextSession==='function' && (gi=nextSession(p))>=0 && (at=sessionAt(p,gi))) return {p:p, gi:gi, at:at};
+  return null;
+}
+/* (16 Oct) with no plan of their own, a member who has BURN30 sees it as
+   today's plan, and finding a plan steps back to a quiet link under it:
+   two equal calls one above the other left a new member unsure which */
+function scBurnIsPlan(){ return !scPlanNext() && typeof wlOwned==='function' && wlOwned() && wlNext()<WL30_DAYS.length; }
 function scPlanHTML(){
-  var rows=[], dy=scDaily(), nx=(typeof nextUp==='function')?nextUp():null, p=nx&&nx.p&&nx.p.weeks?nx.p:null, gi, at, n=function(x){ return x.toLocaleString('en-MY'); };
+  var rows=[], dy=scDaily(), pn=scPlanNext(), p=pn&&pn.p, gi=pn&&pn.gi, at=pn&&pn.at;
+  if(scBurnIsPlan())
+    return '<div class="scx-plan">'+fsec("Today's Plan",'')+wlHomeCard()+
+      '<button class="scx-alt" onclick="'+(typeof openFinder==='function'?'openFinder()':"switchTab('train')")+'">Or find a plan matched to your goal →</button></div>';
   /* (16 Oct) one way into today's workout: the plan's next day, or finding a
      plan; water and steps live in the rings above, not here again */
-  if(p && typeof nextSession==='function' && (gi=nextSession(p))>=0 && (at=sessionAt(p,gi)))
+  if(pn)
     rows.push({ic:'workout', t:(at.day.name||'Workout'), s:'Day '+(gi+1)+' of '+progDays(p)+' · '+p.name+' · '+p.dur+' min', done:scWorkouts(iso(0))>0, go:"openDay('"+p.id+"',"+gi+")", b:'Start'});
   else rows.push({ic:'target', t:'Find your first plan', s:'Four questions, matched to your goal and level', done:scWorkouts(iso(0))>0, go:(typeof openFinder==='function'?'openFinder()':"switchTab('train')"), b:'Find'});
   if(!SC_FAST_LIVE){}
@@ -10043,7 +10065,7 @@ if(RECOVERY_LIVE) PROGRAMS = REHAB_PLANS.concat(PROGRAMS);
 
 const WL30_ID='wl30', WL30_PRICE=39;
 /* its name, the way Beachbody names a program, and what it is */
-const WL30_NAME='BURN30', WL30_SUB='30-Day Weight Loss', WL30_POSTER='/img/p/burn30-poster.jpg?v=3';
+const WL30_NAME='BURN30', WL30_SUB='30-Day Weight Loss', WL30_POSTER='/img/p/burn30-poster.jpg?v=4';
 const WL30_TEST=['Bodyweight Squat','Knee Push Ups','Jumping Jack','Crunch','Plank'];
 const WL30_RECOVER=['IC Warm','Bird Dog','Dead Bug','Hip Thrust','Calf Raises'];
 const WL30_PHASES=[
@@ -10556,7 +10578,7 @@ function wlHomeCard(){
   /* not started: the poster, as Beachbody shows a program before you begin */
   return '<div class="wl-poster" onclick="openProgram(\''+WL30_ID+'\')">'+
     img+
-    '<div class="wl-poster-b"><div class="tx"><div class="k">'+(owned?(contentOpen()?'New · Included in HITFAT+':'Yours · Ready when you are'):'New Program')+'</div>'+
+    '<div class="wl-poster-b"><div class="tx"><div class="k">'+(owned?(contentOpen()?'New · In HITFAT+':'Yours · Ready when you are'):'New Program')+'</div>'+
     '<div class="t">'+(owned?WL30_SUB:'RM'+WL30_PRICE+' · yours for good')+'</div></div>'+
     '<button class="bigbtn" onclick="event.stopPropagation();'+(owned?'wlOpenDay(0)':'openProgram(\''+WL30_ID+'\')')+'">'+
     (owned?glyph('play')+'Start Day 1':'See the Program')+'</button></div></div>';
@@ -24176,7 +24198,7 @@ function renderHome(){
   $('home-week').innerHTML='';
 
   // 3) membership, then T42
-  if($('home-t42')) $('home-t42').innerHTML=wlHomeCard()+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard():'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
+  if($('home-t42')) $('home-t42').innerHTML=((typeof scBurnIsPlan==='function'&&scBurnIsPlan())?'':wlHomeCard())+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard():'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
   // 4) Up Next went into Today's Plan (one row: the plan's next day, or find a plan)

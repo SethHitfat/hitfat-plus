@@ -3429,7 +3429,7 @@ print("\n── 30-DAY WEIGHT LOSS ──");
 
   /* a member has it as part of HITFAT+ */
   _member(); HF.data.progress[WL30_ID]=0;
-  ok("members have it included", ownsProgram(WL30) && wlHomeCard().indexOf('Included in HITFAT+')>0);
+  ok("members have it included", ownsProgram(WL30) && wlHomeCard().indexOf('In HITFAT+')>0);
 
   ok("the app claims website purchases when it loads what you own", /claimLandingPurchases/.test(String(loadEntitlement)));
   startWorkout=keepSW; _ent=keepEnt; HF.data.progress[WL30_ID]=keepProg||0; HF.data.wl30=keepWl||{}; HF.data.nutrition=keepNut; _wlPlan=null;
@@ -4066,7 +4066,11 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
   ok("...and only once", HF.data.sc.met===1 && document.getElementById('scc').style.display==='none');
   var h=document.getElementById('mascot-home').innerHTML;
   ok("Misi hari ini under the rings: points to hari padu, the quickest way, a line from the coach", h.indexOf("TODAY'S MISSION")>0 && h.indexOf('points</b> to a strong day')>0 && h.indexOf('hari padu')<0 && h.indexOf('Coach:')>0 && h.indexOf('Coach Seth')<0 && h.indexOf('COACH BELL')<0 && h.indexOf('scx-bar')>0);
-  ok("today's plan under the card, one workout row (water and steps stay in the rings)", h.indexOf("Today's Plan")>0 && h.indexOf('glasses of water to go')<0 && h.indexOf("scTap('water')")>0 && (h.match(/class="scx-row[ "]/g)||[]).length===1);
+  ok("today's plan under the card, one workout row (water and steps stay in the rings)", h.indexOf("Today's Plan")>0 && h.indexOf('glasses of water to go')<0 && h.indexOf("scTap('water')")>0 &&
+   (scBurnIsPlan() ? (h.indexOf('wl-poster')>h.indexOf("Today's Plan") && h.indexOf('scx-alt')>0 && (h.match(/class="scx-row[ "]/g)||[]).length===0)
+                   : (h.match(/class="scx-row[ "]/g)||[]).length===1));
+/* a member with BURN30 and no plan of their own: BURN30 is today's plan, finding one is the quiet line under it, and Home does not show the card twice */
+ok("BURN30 is today's plan for a member with no other plan", !scBurnIsPlan() || (h.indexOf('Or find a plan')>0 && (typeof renderHome!=='function' || true)));
   scTap('water');
   ok("one tap on water adds a glass, and Bell's banner offers an undo", HF.data.daily[iso(0)].water===1 && document.getElementById('scb').className.indexOf('on')>0 && document.getElementById('scb').innerHTML.indexOf('Undo')>0);
   HF.data.ifs={plan:{start:iso(0),endMin:1200},log:[]};

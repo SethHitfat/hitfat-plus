@@ -17,7 +17,7 @@
 
 const WL30_ID='wl30', WL30_PRICE=39;
 /* its name, the way Beachbody names a program, and what it is */
-const WL30_NAME='BURN30', WL30_SUB='30-Day Weight Loss', WL30_POSTER='/img/p/burn30-poster.jpg?v=3';
+const WL30_NAME='BURN30', WL30_SUB='30-Day Weight Loss', WL30_POSTER='/img/p/burn30-poster.jpg?v=4';
 const WL30_TEST=['Bodyweight Squat','Knee Push Ups','Jumping Jack','Crunch','Plank'];
 const WL30_RECOVER=['IC Warm','Bird Dog','Dead Bug','Hip Thrust','Calf Raises'];
 const WL30_PHASES=[
@@ -530,7 +530,7 @@ function wlHomeCard(){
   /* not started: the poster, as Beachbody shows a program before you begin */
   return '<div class="wl-poster" onclick="openProgram(\''+WL30_ID+'\')">'+
     img+
-    '<div class="wl-poster-b"><div class="tx"><div class="k">'+(owned?(contentOpen()?'New · Included in HITFAT+':'Yours · Ready when you are'):'New Program')+'</div>'+
+    '<div class="wl-poster-b"><div class="tx"><div class="k">'+(owned?(contentOpen()?'New · In HITFAT+':'Yours · Ready when you are'):'New Program')+'</div>'+
     '<div class="t">'+(owned?WL30_SUB:'RM'+WL30_PRICE+' · yours for good')+'</div></div>'+
     '<button class="bigbtn" onclick="event.stopPropagation();'+(owned?'wlOpenDay(0)':'openProgram(\''+WL30_ID+'\')')+'">'+
     (owned?glyph('play')+'Start Day 1':'See the Program')+'</button></div></div>';

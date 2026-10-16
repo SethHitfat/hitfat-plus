@@ -250,7 +250,7 @@ function renderHome(){
   $('home-week').innerHTML='';
 
   // 3) membership, then T42
-  if($('home-t42')) $('home-t42').innerHTML=wlHomeCard()+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard():'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
+  if($('home-t42')) $('home-t42').innerHTML=((typeof scBurnIsPlan==='function'&&scBurnIsPlan())?'':wlHomeCard())+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard():'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
   // 4) Up Next went into Today's Plan (one row: the plan's next day, or find a plan)

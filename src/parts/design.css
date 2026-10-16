@@ -3655,3 +3655,12 @@ html,body{overscroll-behavior:none;}
 /* the log's bar is red like Today's ring; what is left reads quietly, and over is red */
 .elsum-h em{color:var(--dim);font-weight:600;}
 .elsum-h em.over{color:#E30613;font-weight:700;}
+
+
+/* BURN30 as today's plan (16 Oct): its card sits under the heading, and
+   finding another plan is a quiet line under it */
+.scx-plan .wl-poster{margin:0;}
+.scx-alt{display:block;margin:10px auto 0;padding:8px 12px;border:0;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--dim);cursor:pointer;}
+/* the kicker on the poster's foot is one line at phone width, in white, not yellow */
+.wl-poster-b .k{color:rgba(255,255,255,.62);letter-spacing:.08em;white-space:nowrap;}
+.wl-poster-b .bigbtn{background:#E30613;color:#FFFFFF;}
