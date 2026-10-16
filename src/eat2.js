@@ -168,7 +168,8 @@ function eatToday(){
   else                     st={c:'info', t:left.toLocaleString()+' kcal still to eat today'};
 
   /* One card (16 Oct): the calorie ring with what is left in the middle, and
-     the three macros as bars beside it; then Exercise and the Day Score. */
+     the three macros as bars beside it; then Exercise and the meal balance
+     (named so since 16 Oct: "Day Score" sat beside the HITFAT Score and read as a second score). */
   const over=t.kcal>budget;
   const bar=(l,v,tg,c)=>{ const p=Math.min(100,Math.round(v/(tg||1)*100));
     return '<div class="emb"><div class="emb-h"><span>'+l+'</span><b>'+v+'<i> / '+(tg||0)+' g</i></b></div><div class="emb-t"><i style="width:'+p+'%;background:'+c+'"></i></div></div>'; };
@@ -179,7 +180,7 @@ function eatToday(){
     '</div>'+
     '<div class="etiles">'+
       '<div class="etile" onclick="openBurn()"><span class="ic" style="--c:#E30613">'+glyph('flame')+'</span><div><b>+'+burned.toLocaleString()+'<i> kcal</i></b><span>'+(burnFor().length?'Exercise · '+burnFor().length+' logged':'Exercise · tap to log')+'</span></div></div>'+
-      '<div class="etile"><span class="ic" style="--c:#C9962E">'+glyph('target')+'</span><div><b>'+(logged?score:'—')+'</b><span>Day Score · balance</span></div></div>'+
+      '<div class="etile"><span class="ic" style="--c:#C9962E">'+glyph('target')+'</span><div><b>'+(logged?score:'—')+'</b><span>Meal balance</span></div></div>'+
     '</div>';
 
   // meals: one grouped list, the slot to fill next marked, + to add
@@ -403,7 +404,7 @@ function eatLog(){
     const left=n.cal-tot, pct=Math.min(100,Math.round(tot/n.cal*100));
     h+='<div class="elsum"><div class="elsum-h"><b>'+tot.toLocaleString()+'</b><span> / '+n.cal.toLocaleString()+' kcal</span>'+
        '<em class="'+(left<0?'over':'')+'">'+(left<0?(-left).toLocaleString()+' over':left.toLocaleString()+' left')+'</em></div>'+
-       '<div class="emb-t"><i style="width:'+pct+'%;background:'+(left<0?'#E30613':'#2E9E5B')+'"></i></div></div>';
+       '<div class="emb-t"><i style="width:'+pct+'%;background:'+(left<0?'#8A0A10':'#E30613')+'"></i></div></div>';
   }
   if(!list.length) h+='<div class="elnone">Nothing logged yet today — tap + on a meal, or scan a plate.</div>';
   SLOTS.forEach(s=>{

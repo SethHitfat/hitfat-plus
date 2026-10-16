@@ -5878,6 +5878,22 @@ html,body{overscroll-behavior:none;}
 :root:not([data-theme="light"]) #scc.scc-meet .scc-x{background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);}
 :root:not([data-theme="light"]) #scc.scc-meet .scx-dots i{background:rgba(255,255,255,.25);}
 
+
+/* ── Eat, tidied (16 Oct) ── */
+/* the meal plan card is a full-width card like the scan card (it kept the
+   340px width of a card in a scroller, short of the right edge), with its
+   words clear of the plate */
+.fmade.emade2{width:auto;max-width:none;}
+.emade2 .fm-ph{width:58%;background-position:80% 50%;}
+.emade2 .t{max-width:56%;}
+.emade2 .s{max-width:50%;}
+.emade2 .emp-chips{max-width:54%;}
+/* one red: the + on a meal is the HITFAT red */
+:root[data-theme="light"] .nadd.nadd{background:#E30613;}
+/* the log's bar is red like Today's ring; what is left reads quietly, and over is red */
+.elsum-h em{color:var(--dim);font-weight:600;}
+.elsum-h em.over{color:#E30613;font-weight:700;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -8299,7 +8315,7 @@ const I18N_MS={
 'Weight day #':'Berat hari #','Waist day #':'Pinggang hari #','Your # Days':'# Hari Anda',
 
 /* ── progress ── */
-'Progress Score':'Skor Progress','Day Score':'Skor Hari','Streak':'Streak','Day streak':'Streak hari','days in a row':'hari berturut-turut','No streak yet':'Belum ada streak',
+'Progress Score':'Skor Progress','Day Score':'Skor Hari','Meal balance':'Imbangan makan','Streak':'Streak','Day streak':'Streak hari','days in a row':'hari berturut-turut','No streak yet':'Belum ada streak',
 'Badges':'Lencana','Body':'Badan','Body Check-ins':'Semakan Badan','Log Measurements':'Log Ukuran','Weight logged':'Berat direkod','Goal set':'Matlamat ditetapkan',
 'Weight today (kg)':'Berat hari ini (kg)','Goal weight (kg)':'Berat sasaran (kg)','Enter a weight between 20 and 300':'Masukkan berat antara 20 dan 300','Enter a goal between 30 and 250':'Masukkan sasaran antara 30 dan 250',
 'Waist (cm) — leave blank to skip':'Pinggang (cm) — biar kosong untuk langkau','Body fat % — leave blank to skip':'Lemak badan % — biar kosong untuk langkau','Weight today (kg) — leave blank to skip':'Berat hari ini (kg) — biar kosong untuk langkau',
@@ -24900,7 +24916,8 @@ function eatToday(){
   else                     st={c:'info', t:left.toLocaleString()+' kcal still to eat today'};
 
   /* One card (16 Oct): the calorie ring with what is left in the middle, and
-     the three macros as bars beside it; then Exercise and the Day Score. */
+     the three macros as bars beside it; then Exercise and the meal balance
+     (named so since 16 Oct: "Day Score" sat beside the HITFAT Score and read as a second score). */
   const over=t.kcal>budget;
   const bar=(l,v,tg,c)=>{ const p=Math.min(100,Math.round(v/(tg||1)*100));
     return '<div class="emb"><div class="emb-h"><span>'+l+'</span><b>'+v+'<i> / '+(tg||0)+' g</i></b></div><div class="emb-t"><i style="width:'+p+'%;background:'+c+'"></i></div></div>'; };
@@ -24911,7 +24928,7 @@ function eatToday(){
     '</div>'+
     '<div class="etiles">'+
       '<div class="etile" onclick="openBurn()"><span class="ic" style="--c:#E30613">'+glyph('flame')+'</span><div><b>+'+burned.toLocaleString()+'<i> kcal</i></b><span>'+(burnFor().length?'Exercise · '+burnFor().length+' logged':'Exercise · tap to log')+'</span></div></div>'+
-      '<div class="etile"><span class="ic" style="--c:#C9962E">'+glyph('target')+'</span><div><b>'+(logged?score:'—')+'</b><span>Day Score · balance</span></div></div>'+
+      '<div class="etile"><span class="ic" style="--c:#C9962E">'+glyph('target')+'</span><div><b>'+(logged?score:'—')+'</b><span>Meal balance</span></div></div>'+
     '</div>';
 
   // meals: one grouped list, the slot to fill next marked, + to add
@@ -25135,7 +25152,7 @@ function eatLog(){
     const left=n.cal-tot, pct=Math.min(100,Math.round(tot/n.cal*100));
     h+='<div class="elsum"><div class="elsum-h"><b>'+tot.toLocaleString()+'</b><span> / '+n.cal.toLocaleString()+' kcal</span>'+
        '<em class="'+(left<0?'over':'')+'">'+(left<0?(-left).toLocaleString()+' over':left.toLocaleString()+' left')+'</em></div>'+
-       '<div class="emb-t"><i style="width:'+pct+'%;background:'+(left<0?'#E30613':'#2E9E5B')+'"></i></div></div>';
+       '<div class="emb-t"><i style="width:'+pct+'%;background:'+(left<0?'#8A0A10':'#E30613')+'"></i></div></div>';
   }
   if(!list.length) h+='<div class="elnone">Nothing logged yet today — tap + on a meal, or scan a plate.</div>';
   SLOTS.forEach(s=>{

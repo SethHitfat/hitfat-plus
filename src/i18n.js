@@ -257,7 +257,7 @@ const I18N_MS={
 'Weight day #':'Berat hari #','Waist day #':'Pinggang hari #','Your # Days':'# Hari Anda',
 
 /* ── progress ── */
-'Progress Score':'Skor Progress','Day Score':'Skor Hari','Streak':'Streak','Day streak':'Streak hari','days in a row':'hari berturut-turut','No streak yet':'Belum ada streak',
+'Progress Score':'Skor Progress','Day Score':'Skor Hari','Meal balance':'Imbangan makan','Streak':'Streak','Day streak':'Streak hari','days in a row':'hari berturut-turut','No streak yet':'Belum ada streak',
 'Badges':'Lencana','Body':'Badan','Body Check-ins':'Semakan Badan','Log Measurements':'Log Ukuran','Weight logged':'Berat direkod','Goal set':'Matlamat ditetapkan',
 'Weight today (kg)':'Berat hari ini (kg)','Goal weight (kg)':'Berat sasaran (kg)','Enter a weight between 20 and 300':'Masukkan berat antara 20 dan 300','Enter a goal between 30 and 250':'Masukkan sasaran antara 30 dan 250',
 'Waist (cm) — leave blank to skip':'Pinggang (cm) — biar kosong untuk langkau','Body fat % — leave blank to skip':'Lemak badan % — biar kosong untuk langkau','Weight today (kg) — leave blank to skip':'Berat hari ini (kg) — biar kosong untuk langkau',

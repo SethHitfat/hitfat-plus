@@ -1395,7 +1395,7 @@ setEatSeg('today');
    and no score until there is something to score. */
 var _et=document.getElementById('eat-body').innerHTML;
 ok("an empty day says nothing is logged", _et.indexOf('Nothing logged yet')>0);
-ok("...and scores nothing yet",           _et.indexOf('<b>—</b><span>Day Score')>0);
+ok("...and scores nothing yet",           _et.indexOf('<b>—</b><span>Meal balance')>0);
 ok("each meal suggests its share",        _et.indexOf('Aim for about')>0);
 logMeal({name:'Roti canai',bm:'Roti canai',kcal:300,p:6,c:40,f:12,slot:'breakfast'});
 logMeal({name:'Nasi ayam',bm:'Nasi ayam',kcal:600,p:30,c:70,f:20,slot:'lunch'});

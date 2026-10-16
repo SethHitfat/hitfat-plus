@@ -3639,3 +3639,19 @@ html,body{overscroll-behavior:none;}
 :root:not([data-theme="light"]) #scc.scc-meet .scc-s{color:rgba(255,255,255,.78);}
 :root:not([data-theme="light"]) #scc.scc-meet .scc-x{background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);}
 :root:not([data-theme="light"]) #scc.scc-meet .scx-dots i{background:rgba(255,255,255,.25);}
+
+
+/* ── Eat, tidied (16 Oct) ── */
+/* the meal plan card is a full-width card like the scan card (it kept the
+   340px width of a card in a scroller, short of the right edge), with its
+   words clear of the plate */
+.fmade.emade2{width:auto;max-width:none;}
+.emade2 .fm-ph{width:58%;background-position:80% 50%;}
+.emade2 .t{max-width:56%;}
+.emade2 .s{max-width:50%;}
+.emade2 .emp-chips{max-width:54%;}
+/* one red: the + on a meal is the HITFAT red */
+:root[data-theme="light"] .nadd.nadd{background:#E30613;}
+/* the log's bar is red like Today's ring; what is left reads quietly, and over is red */
+.elsum-h em{color:var(--dim);font-weight:600;}
+.elsum-h em.over{color:#E30613;font-weight:700;}
