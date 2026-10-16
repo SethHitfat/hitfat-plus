@@ -215,6 +215,9 @@ function kelasHTML(){
   h+=kelasWeekHTML()+kelasLevelHTML()+kelasStreakHTML();
   h+=kelasLatestHTML();
 
+  /* HITFAT Points, after F45 FIT Rewards: earned at HQ, spent at the counter */
+  h+=kelasPointsHTML();
+
   /* personal records, after Burn Boot Camp: log one, ring the bell, share it */
   h+=kelasPRHTML();
 
@@ -522,6 +525,57 @@ function kelasDraw(){
   x.fillStyle='rgba(255,255,255,.8)'; x.font=F(700,34); x.fillText('app.hitfat.io',cx,H-110);
 }
 
+/* ═══════════════ HITFAT Points ═══════════════
+   Counted by HITFAT OS from the kiosk (083_hitfat_points.sql): +100 a class
+   day, a weekly bonus for 3+ classes that grows with each week in a row,
+   missions. Spent at the counter, where staff redeem them in OS. The app
+   only shows; nothing here can add a point. */
+function kelasPts(){ return (Kelas.data&&Kelas.data.points)||null; }
+function kelasN(n){ return (+n||0).toLocaleString('en-MY'); }
+function kelasPointsHTML(){
+  const P=kelasPts(); if(!P) return '';
+  const life=P.lifetime||0, seg=[['Classes',P['class']||0,'c'],['Weekly bonus',P.bonus||0,'b'],['Missions',P.missions||0,'m']];
+  let h=fsec('HITFAT Points','Earned at HQ, spent at the counter.');
+  h+='<div class="kl-pts"><div class="kl-pts-top"><div><b>'+kelasN(P.balance)+'</b><small>Current balance</small></div>'+
+     '<span class="kl-pts-mark">'+glyph('star')+'</span></div>'+
+     '<div class="kl-pts-life"><b>'+kelasN(life)+'</b> lifetime earned</div>'+
+     '<div class="kl-pts-bar">'+(life?seg.filter(x=>x[1]>0).map(x=>'<i class="'+x[2]+'" style="width:'+(x[1]/life*100).toFixed(1)+'%"></i>').join(''):'')+'</div>'+
+     '<div class="kl-pts-leg">'+seg.map(x=>'<span><i class="'+x[2]+'"></i><b>'+(life?Math.round(x[1]/life*100):0)+'%</b> '+x[0]+'</span>').join('')+'</div>'+
+     kelasPtsChart(P.weeks||[])+'</div>';
+
+  /* how to earn */
+  const linked=(P.history||[]).some(x=>x.t==='link');
+  h+='<div class="kl-earn">'+
+     '<div class="kl-er"><span class="kl-eic">'+glyph('calendar')+'</span><div><b>Class at HQ</b><small>Once a day, from the kiosk</small></div><em>+100</em></div>'+
+     '<div class="kl-er"><span class="kl-eic">'+glyph('chart')+'</span><div><b>Weekly bonus</b><small>3+ classes in a week: +25, then +50, +75… up to +200 a week in a row</small></div><em>+25↑</em></div>'+
+     '<div class="kl-er"><span class="kl-eic">'+glyph('trophy')+'</span><div><b>Connect HITFAT+</b><small>'+(linked?'Done':'Once')+'</small></div><em>'+(linked?glyph('check'):'+300')+'</em></div></div>';
+
+  /* rewards */
+  h+='<div class="kl-rwh">Rewards</div><div class="kl-rws">'+(P.rewards||[]).map(r=>{
+    const ok=(P.balance||0)>=r.points, pct=Math.min(100,Math.round((P.balance||0)/r.points*100));
+    return '<div class="kl-rw'+(ok?' ok':'')+'"><div class="kl-rwm"><b>'+hesc(r.name)+'</b><small>'+hesc(r.note||'')+'</small>'+
+      (ok?'<span class="kl-rwok">Ready. Show your QR at the counter</span>'
+         :'<span class="kl-tb"><i style="width:'+pct+'%"></i></span><small>'+kelasN(r.points-(P.balance||0))+' to go</small>')+
+      '</div><em>'+kelasN(r.points)+'</em></div>';
+  }).join('')+'</div>';
+  const hist=(P.history||[]).slice(0,5);
+  if(hist.length) h+='<div class="kl-rwh">Recent</div><div class="kl-hist">'+hist.map(x=>
+    '<div><span>'+hesc(x.name)+'<small>'+new Date(x.at).toLocaleDateString('en-MY',{day:'numeric',month:'short'})+'</small></span>'+
+    '<b class="'+(x.p<0?'neg':'')+'">'+(x.p>0?'+':'')+kelasN(x.p)+'</b></div>').join('')+'</div>';
+  h+='<div class="kl-fine2">Points count from 17 Oct 2026. Staff redeem them at the counter; this screen updates after.</div>';
+  return h;
+}
+/* the last 12 weeks of points as bars, this week on the right */
+function kelasPtsChart(weeks){
+  const now=kelasNowMY(), mon=new Date(now.getTime()); mon.setUTCDate(mon.getUTCDate()-(kelasDow(now)-1));
+  const by={}; weeks.forEach(x=>{ by[String(x.w).slice(0,10)]=+x.p||0; });
+  const col=[]; for(let i=11;i>=0;i--){ const d=new Date(mon.getTime()); d.setUTCDate(d.getUTCDate()-7*i); col.push(by[kelasDayKey(d)]||0); }
+  const mx=Math.max(400,...col);
+  return '<div class="kl-ch"><div class="kl-chh">Points, last 12 weeks</div><div class="kl-chb">'+
+    col.map((v,i)=>'<span title="'+v+'"><i style="height:'+Math.max(v?6:2,Math.round(v/mx*100))+'%"'+(i===11?' class="now"':'')+'></i></span>').join('')+
+    '</div></div>';
+}
+
 function kelasPickDay(d){ Kelas.day=d; renderKelas(); }
 function kelasRenew(){
   const m=kelasMain();
@@ -653,6 +707,14 @@ function kelasDemo(){
   Kelas.data={linked:true, member_id:'5b0f2c1e-8d3a-4c7e-9f21-3a6d0b9e4c11', name:'Aina Rahman',
     memberships:[{category:'Membership',plan:'1 Month',start_date:iso(s),end_date:iso(e),active:true}],
     classes:cls, checkins:ins, total:61,
+    points:{balance:1450, lifetime:2250, 'class':1600, bonus:350, missions:300, redeemed:800, since:'2026-10-17',
+      weeks:(function(){ const w=[], m=new Date(now.getTime()); m.setUTCDate(m.getUTCDate()-(kelasDow(now)-1));
+        [300,425,400,550,0,325,450].forEach((p,i)=>{ const d=new Date(m.getTime()); d.setUTCDate(d.getUTCDate()-7*(6-i)); w.push({w:kelasDayKey(d),p:p}); }); return w; })(),
+      rewards:[{id:'drink',name:'A drink at the counter',points:600,note:'Any drink on the counter menu'},
+        {id:'renew20',name:'RM20 off your next renewal',points:2500,note:'Used at the counter when you renew'},
+        {id:'inbody',name:'InBody body analysis',points:3500,note:'Book a time with the counter'}],
+      history:[{t:'redeem',name:'A drink at the counter',p:-600,at:new Date(Date.now()-2*864e5).toISOString()},
+        {t:'link',name:'Connected HITFAT+',p:300,at:new Date(Date.now()-20*864e5).toISOString()}]},
     weeks:(function(){ const w=[], m=new Date(now.getTime()); m.setUTCDate(m.getUTCDate()-(kelasDow(now)-1));
       for(let i=0;i<9;i++){ const d=new Date(m.getTime()); d.setUTCDate(d.getUTCDate()-7*i); w.push(kelasDayKey(d)); }
       for(let i=14;i<26;i++){ const d=new Date(m.getTime()); d.setUTCDate(d.getUTCDate()-7*i); w.push(kelasDayKey(d)); }

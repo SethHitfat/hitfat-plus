@@ -4061,3 +4061,55 @@ html,body{overscroll-behavior:none;}
 @media (prefers-reduced-motion: reduce){.klpr-bell.rang .gly{animation:none;}}
 .klpr-val{font-size:56px;font-weight:900;text-align:center;color:var(--txt);letter-spacing:-1px;font-variant-numeric:tabular-nums;}
 .klpr-note{font-size:15px;color:var(--dim);text-align:center;margin:4px 0 6px;}
+
+/* HITFAT Points, after F45 FIT Rewards (17 Oct): the balance, what it was
+   earned from as one bar, 12 weeks of points, how to earn, the rewards */
+.kl-pts{padding:18px 16px;border-radius:18px;background:var(--surface);}
+:root[data-theme="light"] .kl-pts,:root[data-theme="light"] .kl-earn,:root[data-theme="light"] .kl-rws,:root[data-theme="light"] .kl-hist{background:#FFFFFF;}
+.kl-pts-top{display:flex;align-items:flex-start;justify-content:space-between;}
+.kl-pts-top b{display:block;font-size:40px;font-weight:900;letter-spacing:-1px;line-height:1;color:var(--txt);font-variant-numeric:tabular-nums;}
+.kl-pts-top small{display:block;font-size:14px;color:var(--dim);margin-top:4px;}
+.kl-pts-mark{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,#FF5A5A,#E30613 60%,#8E0410);}
+.kl-pts-mark .gly{width:28px;height:28px;stroke:#FFFFFF;}
+.kl-pts-life{font-size:14px;color:var(--dim);margin-top:12px;}
+.kl-pts-life b{color:var(--txt);font-weight:800;font-variant-numeric:tabular-nums;}
+.kl-pts-bar{display:flex;gap:3px;height:10px;margin-top:12px;border-radius:99px;overflow:hidden;background:rgba(127,127,127,.18);}
+.kl-pts-bar i{display:block;height:100%;}
+.kl-pts-bar i.c,.kl-pts-leg i.c{background:#E30613;}
+.kl-pts-bar i.b,.kl-pts-leg i.b{background:#FF9500;}
+.kl-pts-bar i.m,.kl-pts-leg i.m{background:#34C15F;}
+.kl-pts-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:13px;color:var(--dim);}
+.kl-pts-leg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;}
+.kl-pts-leg b{color:var(--txt);}
+.kl-ch{margin-top:16px;padding-top:14px;border-top:1px solid var(--sep);}
+.kl-chh{font-size:14px;font-weight:800;color:var(--txt);margin-bottom:10px;}
+.kl-chb{display:flex;align-items:flex-end;gap:5px;height:80px;}
+.kl-chb span{flex:1;height:100%;display:flex;align-items:flex-end;}
+.kl-chb i{display:block;width:100%;border-radius:4px 4px 2px 2px;background:rgba(227,6,19,.55);}
+.kl-chb i.now{background:#E30613;}
+.kl-earn,.kl-rws,.kl-hist{margin-top:10px;border-radius:16px;background:var(--surface);overflow:hidden;}
+.kl-er{display:flex;align-items:center;gap:12px;padding:12px 14px;}
+.kl-er+.kl-er{border-top:1px solid var(--sep);}
+.kl-eic{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(227,6,19,.12);}
+.kl-eic .gly{width:18px;height:18px;stroke:#E30613;}
+.kl-er>div{flex:1;min-width:0;}
+.kl-er b{display:block;font-size:15px;color:var(--txt);}
+.kl-er small{display:block;font-size:12px;color:var(--dim);margin-top:2px;line-height:1.35;}
+.kl-er em{flex:none;font-style:normal;padding:5px 10px;border-radius:99px;background:#E30613;color:#FFFFFF;font-size:12px;font-weight:800;}
+.kl-er em .gly{width:14px;height:14px;stroke:#FFFFFF;vertical-align:-2px;}
+.kl-rwh{font-size:17px;font-weight:800;color:var(--txt);margin:18px 2px 0;}
+.kl-rw{display:flex;align-items:center;gap:12px;padding:13px 14px;}
+.kl-rw+.kl-rw{border-top:1px solid var(--sep);}
+.kl-rwm{flex:1;min-width:0;}
+.kl-rwm b{display:block;font-size:15px;color:var(--txt);}
+.kl-rwm small{display:block;font-size:12px;color:var(--dim);margin-top:2px;}
+.kl-rwm .kl-tb{margin-top:8px;}
+.kl-rw em{flex:none;font-style:normal;font-size:16px;font-weight:900;color:var(--txt);font-variant-numeric:tabular-nums;}
+.kl-rw.ok em{color:#1F9D4C;}
+.kl-rwok{display:inline-block;margin-top:6px;padding:4px 9px;border-radius:99px;background:rgba(52,193,95,.16);color:#1F9D4C;font-size:12px;font-weight:800;}
+.kl-hist>div{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;font-size:14px;color:var(--txt);}
+.kl-hist>div+div{border-top:1px solid var(--sep);}
+.kl-hist small{display:block;font-size:12px;color:var(--dim);}
+.kl-hist b{font-weight:800;color:#1F9D4C;font-variant-numeric:tabular-nums;}
+.kl-hist b.neg{color:var(--dim);}
+.kl-fine2{font-size:12px;color:var(--dim);margin:10px 2px 0;line-height:1.5;}
