@@ -3719,3 +3719,12 @@ html,body{overscroll-behavior:none;}
 /* the progress bar stops short of the Start button */
 .hpo:has(.hpo-play) .hpo-go{right:62px;}
 .hpo-w:has(.hpo-play) .hpo-go{right:74px;bottom:14px;}
+
+/* one red for the big buttons (16 Oct): brand.css had them a darker red
+   (#C21A14 in light, #DC1A22 in dark) beside the HITFAT red everywhere else */
+:root[data-theme="light"] .bigbtn.bigbtn:not(.sec):not(.t42-stage-cta),
+:root:not([data-theme="light"]) .bigbtn.bigbtn:not(.sec):not(.t42-stage-cta){background:#E30613;}
+/* Find my program as a poster; the athlete in Browse larger, on the right */
+.hpo.hpo-fq{margin-top:2px;}
+.hpo-fq .hpo-t{font-size:32px;}
+.hpo-br .hpo-ph{background-size:150% auto;-webkit-mask-size:150% auto;mask-size:150% auto;}

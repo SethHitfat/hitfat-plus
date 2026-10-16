@@ -5958,6 +5958,15 @@ html,body{overscroll-behavior:none;}
 .hpo:has(.hpo-play) .hpo-go{right:62px;}
 .hpo-w:has(.hpo-play) .hpo-go{right:74px;bottom:14px;}
 
+/* one red for the big buttons (16 Oct): brand.css had them a darker red
+   (#C21A14 in light, #DC1A22 in dark) beside the HITFAT red everywhere else */
+:root[data-theme="light"] .bigbtn.bigbtn:not(.sec):not(.t42-stage-cta),
+:root:not([data-theme="light"]) .bigbtn.bigbtn:not(.sec):not(.t42-stage-cta){background:#E30613;}
+/* Find my program as a poster; the athlete in Browse larger, on the right */
+.hpo.hpo-fq{margin-top:2px;}
+.hpo-fq .hpo-t{font-size:32px;}
+.hpo-br .hpo-ph{background-size:150% auto;-webkit-mask-size:150% auto;mask-size:150% auto;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -26643,8 +26652,8 @@ function hpoBrowse(a){
   const n=PROGRAMS.filter(p=>activityMatch(a.k,p)).length, c=HPO_PAL[HPO_BR[a.k]||'blue'];
   const pic=String(a.br||'').split('/').pop().replace(/\.\w+$/,''), cut=a.br && HPO_MASK.has(pic);
   return '<div class="hpo hpo-sq hpo-br'+(cut?'':' hpo-flat')+'" onclick="openActivity(\''+a.k+'\')" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+
-    (a.br?'<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\''+a.br+'\'),linear-gradient('+c[2]+','+c[2]+');background-position:70% 50%'+
-      (cut?';-webkit-mask-image:url(\'/img/p/mask/'+pic+'.png\');mask-image:url(\'/img/p/mask/'+pic+'.png\');-webkit-mask-position:70% 50%;mask-position:70% 50%':'')+'"></div></div>':'')+
+    (a.br?'<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\''+a.br+'\'),linear-gradient('+c[2]+','+c[2]+');background-position:92% 38%'+
+      (cut?';-webkit-mask-image:url(\'/img/p/mask/'+pic+'.png\');mask-image:url(\'/img/p/mask/'+pic+'.png\');-webkit-mask-position:92% 38%;mask-position:92% 38%':'')+'"></div></div>':'')+
     '<span class="hpo-len">'+n+' programs</span><div class="hpo-t">'+hesc(a.n)+'</div><span class="hpo-lv">'+hesc(a.s||'')+'</span></div>';
 }
 function madeForYou(){
@@ -26728,10 +26737,16 @@ function renderTrain(){
 
 /* ── FOR YOU ── */
 function fqCard(){
-  return '<div class="fqcta" onclick="openFinder()"><div class="ic">'+glyph('target')+'</div>'+
-    '<div style="flex:1;"><div class="t">Find my program</div>'+
-    '<div class="m">Four questions, one match — from '+PROGRAMS.filter(p=>p.weeks).length+' programs</div></div>'+
-    '<div class="chev">›</div></div>';
+  /* (16 Oct) a poster like the rest of Train: an athlete cut out on HITFAT red,
+     the words big, the button that starts the four questions */
+  const c=HPO_PAL.red, n=PROGRAMS.filter(p=>p.weeks).length;
+  return '<div class="hpo hpo-w hpo-fq fqcta" onclick="openFinder()" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+
+    '<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\'/img/p/br-beginner.jpg\'),linear-gradient('+c[2]+','+c[2]+');background-position:80% 30%;'+
+    '-webkit-mask-image:url(\'/img/p/mask/br-beginner.png\');mask-image:url(\'/img/p/mask/br-beginner.png\');-webkit-mask-position:80% 30%;mask-position:80% 30%"></div></div>'+
+    '<span class="hpo-len">4 questions · '+n+' programs</span>'+
+    '<div class="hpo-t">Find my program</div>'+
+    '<span class="hpo-lv">One match for your goal</span>'+
+    '<button class="hpo-play" aria-label="Find my program" onclick="event.stopPropagation();openFinder()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button></div>';
 }
 /* ── For You, after Fitness+ ──
    Someone who is not a member meets the membership first, on a collage of
