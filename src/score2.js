@@ -1,11 +1,11 @@
 /* ═══════════════ SKOR HITFAT · the rest of Simple, and ours ═══════════════
    What Simple has that the score card did not, and what we said we would add:
 
-     Kenali Buddy     the first time: three screens, Buddy says who he is
-     Coach Buddy      a mission card under the rings: points to hari padu,
+     Kenali Bara     the first time: three screens, Bara says who he is
+     Coach Bara      a mission card under the rings: points to hari padu,
                      the quickest way there, and a line from Coach Seth
-     Banner          Buddy's face at the top when something is logged
-     Junk food       Buddy "confiscates" the cake (and says so)
+     Banner          Bara's face at the top when something is logged
+     Junk food       Bara "confiscates" the cake (and says so)
      One tap         the water ring adds a glass; the fast ring starts the
                      fast (or, in Ramadan, marks the day fasted)
      Today's plan    the day's session, eating window and what is left
@@ -36,11 +36,11 @@ function scRamRow(){
 function scRamToggle(){
   var all=HF.data.daily||(HF.data.daily={}), d=iso(0), o=all[d]||(all[d]={water:0,steps:0});
   o.ram=o.ram?0:1; HF.save();
-  if(o.ram){ _scSay='ram'; _scSayAt=Date.now(); scBanner('Fasting today 🌙','Buddy is fasting too… from oil 😅 See you at iftar.'); }
+  if(o.ram){ _scSay='ram'; _scSayAt=Date.now(); scBanner('Fasting today 🌙','Bara is fasting too… from oil 😅 See you at iftar.'); }
   scRender();
 }
 
-/* ── the banner: Buddy's face, a word, sometimes an undo ── */
+/* ── the banner: Bara's face, a word, sometimes an undo ── */
 var _scbT=0;
 function scBanner(title,body,act,actFn){
   var el=$('scb'); if(!el) return;
@@ -53,17 +53,17 @@ function scBanner(title,body,act,actFn){
 }
 function scBannerHide(){ var el=$('scb'); if(el) el.className='scb'; }
 
-/* ── junk food: Buddy confiscates it ── */
+/* ── junk food: Bara confiscates it ── */
 var SC_JUNK=/\b(kek|cake|donut|doughnut|kuih|biskut|cookies?|coklat|chocolate|aiskrim|ais krim|ice ?cream|teh tarik|milo|kopi ais|bubble tea|boba|coke|cola|soda|pepsi|sirap|bandung|cendol|ais kacang|keropok|chips|kerepek|pisang goreng|goreng pisang|burger|pizza|fries|kentang goreng|nugget|roti canai|maggi|mee segera|candy|gula-gula|waffle|pancake|brownies?|cheesecake)\b/i;
 function scJunk(m){
   var n=String((m&&m.name)||'');
   return SC_JUNK.test(n) || (m && m.kcal>=900);
 }
-SC_LINES.junk=['Buddy simpan {x} tu dulu ya 😇 Esok kita tukar dengan buah.',
-  'Buddy tak marah… cuma {x} tu Buddy "simpan" 😏 Minum air kosong sekali ya.',
-  'Sekali-sekala tak apa. Tapi Buddy nampak {x} tu 👀'];
-SC_LINES.ram=['Selamat berpuasa! 🌙 Buddy pun puasa… dari makanan berminyak 😅'];
-SC_LINES.fast=['Puasa dah mula ⏱️ Buddy temankan awak sampai waktu makan.'];
+SC_LINES.junk=['Bara simpan {x} tu dulu ya 😇 Esok kita tukar dengan buah.',
+  'Bara tak marah… cuma {x} tu Bara "simpan" 😏 Minum air kosong sekali ya.',
+  'Sekali-sekala tak apa. Tapi Bara nampak {x} tu 👀'];
+SC_LINES.ram=['Selamat berpuasa! 🌙 Bara pun puasa… dari makanan berminyak 😅'];
+SC_LINES.fast=['Puasa dah mula ⏱️ Bara temankan awak sampai waktu makan.'];
 function scJunkLine(name){
   var x=String(name||'snek').split(/[,(]/)[0].trim(); if(x.length>22) x=x.slice(0,22)+'…';
   var a=SC_LINES.junk; return a[new Date().getMinutes()%a.length].replace('{x}',x.charAt(0).toUpperCase()+x.slice(1));
@@ -71,7 +71,7 @@ function scJunkLine(name){
 /* a meal was logged (eat2.js logMeal) */
 function scMealLogged(m){
   if(scJunk(m)){ _scSay='junk'; _scSayAt=Date.now(); _scJunkName=m&&m.name; scBanner('Confiscated 😇',scJunkLine(m&&m.name)); }
-  else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Meal logged 🍽️','Buddy likes honest people. Protein first, rice by the portion.'); }
+  else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Meal logged 🍽️','Bara likes honest people. Protein first, rice by the portion.'); }
 }
 var _scJunkName='';
 
@@ -93,7 +93,7 @@ function scFastTap(){
   scRender();
 }
 
-/* ── Coach Buddy: the mission to hari padu, and Coach Seth ── */
+/* ── Coach Bara: the mission to hari padu, and Coach Seth ── */
 var SC_SETH=['Consistency beats perfect. One strong day is worth more than a week of "later".',
   'Protein at every meal: chicken, fish, eggs, tofu. You stay full longer.',
   'Rice by the portion: one fist. No need to cut it out, just keep it in check.',
@@ -134,7 +134,7 @@ function scCoachHTML(){
 
 /* ── Check-in: how are you feeling? (Simple asks every day) ──
    One tap, kept in daily[day].mood (1 to 5). It does not change the score;
-   Buddy answers it, and a low day gets kindness, not a push. */
+   Bara answers it, and a low day gets kindness, not a push. */
 var SC_MOODS=[[1,'😫','Awful'],[2,'😕','Bad'],[3,'😐','Okay'],[4,'🙂','Good'],[5,'😄','Great']];
 var SC_MOOD_LINES={
   1:'Hari yang berat ya. Jaga diri 🤍 Jalan sikit dan minum air pun dah dikira.',
@@ -159,7 +159,7 @@ function scMood(m){
 }
 
 /* ── Today's plan ── */
-/* Today's Plan is in English, as the app around it (Buddy himself speaks Malay) */
+/* Today's Plan is in English, as the app around it (Bara himself speaks Malay) */
 function scClock(min){ min=((Math.round(min)%1440)+1440)%1440; var h=Math.floor(min/60), m=min%60; return (h%12||12)+':'+('0'+m).slice(-2)+(h<12?' am':' pm'); }
 function scPlanHTML(){
   var rows=[], dy=scDaily(), nx=(typeof nextUp==='function')?nextUp():null, p=nx&&nx.p&&nx.p.weeks?nx.p:null, gi, at, n=function(x){ return x.toLocaleString('en-MY'); };
@@ -179,11 +179,11 @@ function scPlanHTML(){
       (r.done?'<span class="ok">✓</span>':(r.b?'<button onclick="event.stopPropagation();'+r.go+'">'+r.b+'</button>':''))+'</div>'; }).join('')+'</div></div>';
 }
 
-/* ── Kenali Buddy: once, the first time the card shows ── */
+/* ── Kenali Bara: once, the first time the card shows ── */
 var SC_MEET=[
-  {pose:'aktif', t:'Hai! Ini Buddy 👋', s:'Kawan HITFAT awak. Buddy jadi merah bila awak aktif, dan bulu Buddy kusut bila awak lama menghilang 🥲'},
+  {pose:'aktif', t:'Hai! Ini Bara 👋', s:'Kawan HITFAT awak. Bara jadi merah bila awak aktif, dan bulu Bara kusut bila awak lama menghilang 🥲'},
   {pose:'water', t:'Penuhkan 4 bulatan setiap hari', s:'Workout, makan, air dan langkah. Semuanya jadi HITFAT Score awak, 0 hingga 100.'},
-  {pose:'gold',  t:'Skor 50+ = hari padu 🔥', s:'Hari padu berturut-turut jadi streak. Cukup 7 hari, Buddy jadi emas. Terlepas sehari? Awak ada 2 freeze sebulan ❄️'}];
+  {pose:'gold',  t:'Skor 50+ = hari padu 🔥', s:'Hari padu berturut-turut jadi streak. Cukup 7 hari, Bara jadi emas. Terlepas sehari? Awak ada 2 freeze sebulan ❄️'}];
 function scCheckMeet(){
   var sc=HF.data.sc||(HF.data.sc={});
   if(sc.met || $('scc').style.display==='flex') return false;
@@ -218,7 +218,7 @@ function scCheckWeekly(){
 }
 function scWeekly(off){
   var w=scWeekStats(off), p=scWeekStats(off+1), diff=w.avg-p.avg, st=scStreak().n;
-  var line=diff>0?'Up '+diff+' points on last week 👏 Buddy is proud!':diff<0?'Down '+(-diff)+' points. That\'s okay, we\'ll win it back next week 💪':'Same as last week. Staying consistent is a win too.';
+  var line=diff>0?'Up '+diff+' points on last week 👏 Bara is proud!':diff<0?'Down '+(-diff)+' points. That\'s okay, we\'ll win it back next week 💪':'Same as last week. Staying consistent is a win too.';
   var bd=w.best.iso?new Date(w.best.iso+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long'}):'–';
   $('scc').className='scc scc-black';
   $('scc').innerHTML='<div class="scc-in">'+scMomentBell(w.avg>=SC_PADU?'gold':'calendar')+
@@ -237,10 +237,10 @@ function scWeekly(off){
 function scInsights(){
   var s=scScore(), hs=scHabits(), share=100/hs.length, c=scColor(s), st=scStreak(), lv=scLevel(s), i;
   var poster=(typeof bellPoster==='function')?bellPoster(lv):'';
-  var status=s>=100?'Full score 🏆 Buddy couldn\'t be prouder.':s>=SC_PADU?'Strong day ✓ Buddy is red.':(SC_PADU-s)+' points to a strong day, when Buddy turns red.';
+  var status=s>=100?'Full score 🏆 Bara couldn\'t be prouder.':s>=SC_PADU?'Strong day ✓ Bara is red.':(SC_PADU-s)+' points to a strong day, when Bara turns red.';
   var h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="scClose()">✕</button></div>'+
     '<div class="sci"><div class="sc-sh-k">Score insights</div>'+
-    '<div class="sci-top">'+(poster?'<img src="'+poster+'" alt="Buddy">':'')+
+    '<div class="sci-top">'+(poster?'<img src="'+poster+'" alt="Bara">':'')+
       '<div><div class="sci-n" style="color:'+c+'">'+s+'<span>/100</span></div><div class="sci-s">'+status+'</div></div></div>';
   /* habit by habit: what each is worth and what is left */
   h+='<div class="sci-h">Today, habit by habit</div><div class="sci-rows">'+hs.map(function(x){
@@ -263,9 +263,9 @@ function scInsights(){
   /* how it works */
   h+='<div class="sci-h">How it works</div><div class="sci-how">'+
     '<div><b>4 habits, 25 points each.</b> A workout, '+SC_MEALS+' meals, '+SC_WATER+' glasses of water, '+SC_STEPS.toLocaleString('en-MY')+' steps. Part of a habit counts too.</div>'+
-    '<div><b>50 or more is a strong day.</b> Buddy turns from cream to red.</div>'+
+    '<div><b>50 or more is a strong day.</b> Bara turns from cream to red.</div>'+
     '<div><b>Strong days in a row make your streak.</b> Miss one? '+SC_FREEZES+' freezes a month keep it alive.</div>'+
-    '<div><b>Nothing logged for 2 days</b> and Buddy gets dusty; 3 days and Buddy\'s fur gets messy. One log fixes it.</div></div>'+
+    '<div><b>Nothing logged for 2 days</b> and Bara gets dusty; 3 days and Bara\'s fur gets messy. One log fixes it.</div></div>'+
     '<button class="bigbtn sci-go" onclick="scClose();switchTab(\'progress\')">See your history</button></div>';
   $('pw-body').innerHTML=h; $('pwm').classList.add('on');
   try{ $('pwm').scrollTop=0; }catch(e){}

@@ -16,7 +16,7 @@
    restarts. ES5. */
 
 var BELL_DIR='/img/mascot/anim/';
-/* Buddy (15 Oct 2026): cream-white under 50, red from a strong day (50+);
+/* Bara (15 Oct 2026): cream-white under 50, red from a strong day (50+);
    the file names are the kettlebell Bell's, kept so nothing else moves */
 var BELL_LOOPS={1:'comel',2:'aktif',3:'tegap',4:'juara',kusut:'kusut'};
 var _bell={node:null, v:null, cv:null, g:null, buf:null, bg:null, loop:'', react:'', raf:0, live:false};

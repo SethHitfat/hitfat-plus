@@ -2915,8 +2915,8 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 :root:not([data-theme="light"]) #home-hdr .sc-pill,:root:not([data-theme="light"]) #home-hdr .sc-pills .sc-chip{background:#161618;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
 
 /* ── Home, tidier (16 Oct, after the user's own screenshots and Simple's video) ──
-   Buddy's bubble on top, a smaller stage so Today's Plan shows sooner, the
-   glow in Buddy's own colour (cream under 50, red at 50+) behind Buddy, not
+   Bara's bubble on top, a smaller stage so Today's Plan shows sooner, the
+   glow in Bara's own colour (cream under 50, red at 50+) behind Bara, not
    behind the rings; the shadow at the feet. */
 .screen:has(> #home:not([style*="none"])){
   background:radial-gradient(closest-side,rgba(var(--scb),.30),rgba(var(--scb),.10) 55%,rgba(var(--scb),0)) 50% 40px/150% 560px no-repeat local,var(--bg);}
@@ -2987,7 +2987,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .sci-how{display:flex;flex-direction:column;gap:12px;font-size:14px;line-height:1.45;color:var(--dim);}
 .sci-how b{color:var(--txt);}
 .sci-go{width:100%;max-width:none;margin:20px 0 0;}
-/* a cream Buddy reacts in its own colour: a squash-and-stretch bounce */
+/* a cream Bara reacts in its own colour: a squash-and-stretch bounce */
 #mascot-home .sc-bell.sc-boing{-webkit-animation:scboing .62s cubic-bezier(.3,1.6,.5,1) both;animation:scboing .62s cubic-bezier(.3,1.6,.5,1) both;}
 @-webkit-keyframes scboing{0%{-webkit-transform:none;}25%{-webkit-transform:translateY(4%) scale(1.08,.9);}55%{-webkit-transform:translateY(-9%) scale(.95,1.06);}80%{-webkit-transform:translateY(0) scale(1.03,.97);}100%{-webkit-transform:none;}}
 @keyframes scboing{0%{transform:none;}25%{transform:translateY(4%) scale(1.08,.9);}55%{transform:translateY(-9%) scale(.95,1.06);}80%{transform:translateY(0) scale(1.03,.97);}100%{transform:none;}}
@@ -3431,8 +3431,8 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .fmade.hfind .t{color:#FFFFFF;} .fmade.hfind .s{color:rgba(255,255,255,.78);}
 :root[data-theme="light"] .fmade.hfind{box-shadow:0 10px 28px rgba(0,0,0,.14);}
 
-/* ── Home behind Buddy, after Simple's Blinky (16 Oct: "putih punya mcm clean sangat") ──
-   two soft lights in Buddy's family, coral and peach for cream, orange and
+/* ── Home behind Bara, after Simple's Blinky (16 Oct: "putih punya mcm clean sangat") ──
+   two soft lights in Bara's family, coral and peach for cream, orange and
    red for red, so the white fur has something to stand on */
 .screen{--sga:232,66,74;--sgb:244,124,110;}
 .screen:has(> #home:not([style*="none"])){
@@ -3502,7 +3502,7 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
 /* 5 the score card's one action is the red button; Score insights is a quiet link */
 .scx-btns .scx-act{background:#E30613 !important;color:#FFFFFF !important;font-weight:700;}
 .scx-got{color:var(--dim);font-size:14px;font-weight:600;}
-/* 7 a shadow under Buddy's feet */
+/* 7 a shadow under Bara's feet */
 :root[data-theme="light"] #mascot-home .sc-page .sc-bell::before{background:radial-gradient(closest-side,rgba(140,20,20,.32),rgba(140,20,20,0));height:14px;}
 /* 8 the red is gone by the score card, which sits on clean white */
 :root[data-theme="light"] .screen:has(> #home:not([style*="none"])){
@@ -3511,8 +3511,8 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
 /* the arc's track in the dark theme: white, faint, so the half ring reads on dark red (16 Oct) */
 :root:not([data-theme="light"]) #mascot-home .sc-page .sc-arc-t{stroke:rgba(255,255,255,.16);}
 
-/* ── the moment Buddy turns red (16 Oct) ──
-   Buddy squashes and springs, a red glow floods out from behind, two rings
+/* ── the moment Bara turns red (16 Oct) ──
+   Bara squashes and springs, a red glow floods out from behind, two rings
    ripple out, then the red cheer plays */
 .sc-burst{position:absolute;inset:0;pointer-events:none;z-index:0;}
 .sc-burst b{position:absolute;left:-30%;right:-30%;top:-20%;bottom:-10%;border-radius:50%;
@@ -3532,20 +3532,20 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
 @media (prefers-reduced-motion: reduce){ .sc-burst{display:none;} .sc-turnred .sc-bell{-webkit-animation:none !important;animation:none !important;} }
 
 /* Home, dark theme (16 Oct: "kene byk hitam sikit"): mostly black — a short
-   red light at the very top and a low glow behind Buddy, no red wash */
+   red light at the very top and a low glow behind Bara, no red wash */
 :root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"])){
   background:
     linear-gradient(180deg,rgba(227,6,19,.34) 0,rgba(227,6,19,.12) 110px,rgba(227,6,19,0) 260px) 0 0/100% 280px no-repeat local,
     radial-gradient(closest-side,rgba(var(--sgb),.16),rgba(var(--sgb),0)) 50% 170px/80% 340px no-repeat local,
     var(--bg);}
 /* (16 Oct, "kalau start hitam atas tu") dark Home starts black at the top, like
-   the status bar; the red is a glow behind Buddy only, fading back to black */
+   the status bar; the red is a glow behind Bara only, fading back to black */
 :root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"])){
   background:
     radial-gradient(closest-side,rgba(227,6,19,.30),rgba(227,6,19,.10) 55%,rgba(227,6,19,0)) 50% 150px/120% 400px no-repeat local,
     var(--bg);}
 /* (16 Oct, both together) black at the top like the status bar, and a big,
-   deep red spotlight behind Buddy, gone before the habit rings */
+   deep red spotlight behind Bara, gone before the habit rings */
 :root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"])){
   background:
     radial-gradient(closest-side,rgba(200,10,20,.62),rgba(150,8,16,.36) 45%,rgba(120,6,12,.12) 75%,rgba(120,6,12,0)) 50% 120px/150% 440px no-repeat local,
@@ -3555,14 +3555,14 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
 :root[data-theme="light"] .screen:has(> #home:not([style*="none"])) > .topbar span{color:#A50C14 !important;}
 
 /* ── Home after Simple, round two (16 Oct) ── */
-/* 4 the bubble shows only when Buddy has something to say, then fades */
+/* 4 the bubble shows only when Bara has something to say, then fades */
 #mascot-home .sc-bub{opacity:0;visibility:hidden;-webkit-transition:opacity .35s,visibility .35s;transition:opacity .35s,visibility .35s;}
 #mascot-home .sc-bub.show{opacity:1;visibility:visible;-webkit-transition:none;transition:none;}
 /* 5 a thinner, lighter arc */
 #mascot-home .sc-page .sc-arc-t,#mascot-home .sc-page .sc-arc-v{stroke-width:6;}
 :root[data-theme="light"] #mascot-home .sc-page .sc-arc-t{stroke:rgba(227,6,19,.16);}
 
-/* 1+2 light: a deep red top that holds longer, and a white spotlight behind Buddy */
+/* 1+2 light: a deep red top that holds longer, and a white spotlight behind Bara */
 :root[data-theme="light"] .screen:has(> #home:not([style*="none"])){
   background:
     radial-gradient(closest-side,#FFFFFF 0%,rgba(255,255,255,.94) 32%,rgba(255,255,255,.5) 62%,rgba(255,255,255,0) 100%) 50% 95px/360px 320px no-repeat local,
@@ -3580,17 +3580,17 @@ html,body{overscroll-behavior:none;}
 :root[data-theme="light"]:has(#home:not([style*="none"])){background:#EC3437;}
 :root:not([data-theme="light"]):has(#home:not([style*="none"])){background:#000000;}
 
-/* Buddy's colours (16 Oct): cream under 50, red at 50+, orange when he misses you, gold at 7 days, black (Beast Mode) at 30 */
+/* Bara's colours (16 Oct): cream under 50, red at 50+, orange when he misses you, gold at 7 days, black (Beast Mode) at 30 */
 .scc.scc-black{background:radial-gradient(circle at 50% 30%,#3A0B0E 0%,#1A0506 40%,#000000 100%);color:#FFFFFF;}
 .scc-black .scc-t b{color:#FF2A35;}
 .scc-black .scc-bell img{-webkit-filter:drop-shadow(0 0 28px rgba(227,6,19,.55));filter:drop-shadow(0 0 28px rgba(227,6,19,.55));}
 .scc-black .scc-share{background:#E30613 !important;color:#FFFFFF !important;}
-/* the orange Buddy needs no grey rust wash */
+/* the orange Bara needs no grey rust wash */
 .sc-bell.sc-rust .sc-rustfx,.sc-bell.sc-dust .sc-rustfx{display:none;}
 .sc-dust img,.sc-rust img,.sc-dust .bell-cv{-webkit-filter:none !important;filter:none !important;}
 .sc-rust{-webkit-transform:none;transform:none;}
 
-/* the orange Buddy's screen (16 Oct: orange on black looked muddy): its own warm orange, like gold has gold */
+/* the orange Bara's screen (16 Oct: orange on black looked muddy): its own warm orange, like gold has gold */
 .scc.scc-orange{background:radial-gradient(circle at 50% 32%,#FFF0E2 0%,#FFC796 30%,#F7924A 62%,#E5671C 100%);color:#2A1206;}
 .scc-orange .scc-t{color:#2A1206;}
 .scc-orange .scc-s{color:rgba(42,18,6,.78);}
@@ -3598,7 +3598,7 @@ html,body{overscroll-behavior:none;}
 .scc-orange .scc-x{background:rgba(42,18,6,.1);color:#2A1206;}
 .scc-orange .scc-bell img{-webkit-filter:drop-shadow(0 10px 24px rgba(150,60,0,.35));filter:drop-shadow(0 10px 24px rgba(150,60,0,.35));}
 
-/* Beast Mode (16 Oct: the black Buddy vanished on the dark screen): bold HITFAT red behind him, a white-and-red rim light on him */
+/* Beast Mode (16 Oct: the black Bara vanished on the dark screen): bold HITFAT red behind him, a white-and-red rim light on him */
 .scc.scc-black{background:radial-gradient(circle at 50% 32%,#FF6A55 0%,#F23B3B 26%,#E30613 52%,#9E0910 82%,#5E050A 100%);color:#FFFFFF;}
 .scc-black .scc-t b{color:#111111;}
 .scc-black .scc-bell img,.scc-black .scc-bell canvas{-webkit-filter:drop-shadow(0 0 1.5px rgba(255,255,255,.85)) drop-shadow(0 0 18px rgba(255,210,200,.55)) drop-shadow(0 14px 22px rgba(60,0,0,.45));filter:drop-shadow(0 0 1.5px rgba(255,255,255,.85)) drop-shadow(0 0 18px rgba(255,210,200,.55)) drop-shadow(0 14px 22px rgba(60,0,0,.45));}
@@ -3621,8 +3621,8 @@ html,body{overscroll-behavior:none;}
 :root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"])){background-color:#000000;}
 
 
-/* Kenali Buddy (16 Oct, "terlalu merah"): a soft light ground with a white
-   spotlight and a blush of red behind Buddy, as on Home, instead of the full
+/* Kenali Bara (16 Oct, "terlalu merah"): a soft light ground with a white
+   spotlight and a blush of red behind Bara, as on Home, instead of the full
    red of the turn-red moment; dark words, one red button */
 #scc.scc-meet{background:
   radial-gradient(closest-side,#FFFFFF 0%,rgba(255,255,255,.9) 40%,rgba(255,255,255,0) 100%) 50% 30%/120% 60% no-repeat,

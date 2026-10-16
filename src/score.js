@@ -1,7 +1,7 @@
 /* ═══════════════ SKOR HITFAT · phase 1 ═══════════════
-   Simple's Success Score, the HITFAT+ way. Buddy, the HITFAT mascot, sits
+   Simple's Success Score, the HITFAT+ way. Bara, the HITFAT mascot, sits
    in an arc that fills 0–100 with today's habits; under it, one ring a habit
-   with its own way in; over it, Buddy says something about the day.
+   with its own way in; over it, Bara says something about the day.
 
      Workout   a session finished today (HF.data.sessions)        → Train
      Makan     meals logged today, 3 fill it (HF.data.meals)      → Eat
@@ -11,7 +11,7 @@
                counted only for a member with an IF plan, so no one is
                marked down for a habit they never took up
 
-   Each habit counted is an equal share of 100. Buddy's look follows the score
+   Each habit counted is an equal share of 100. Bara's look follows the score
    (the four stages of the artwork); the Progress page keeps the weekly one.
    Phase 2 (streaks, share card) and 3 (rust and shine) come later. ES5. */
 
@@ -20,11 +20,11 @@ var SC_WATER=8, SC_STEPS=8000, SC_MEALS=3;
    everyone. IF HITFAT keeps its own timer; true brings the fifth ring back,
    with Mod Ramadan (and SC_FAST_LIVE in plus-push to match) */
 var SC_FAST_LIVE=false;
-/* Buddy's poses (img/mascot/anim/, each a clip with its first frame as poster): the moments and the habit reactions */
+/* Bara's poses (img/mascot/anim/, each a clip with its first frame as poster): the moments and the habit reactions */
 var SC_POSE={hitam:'/img/mascot/anim/hitam.png', aktif:'/img/mascot/anim/aktif.png', gold:'/img/mascot/anim/gold.png', frozen:'/img/mascot/anim/frozen.jpg', halo:'/img/mascot/anim/halo.png',
   water:'/img/mascot/anim/water.png', meal:'/img/mascot/anim/meal.png', calendar:'/img/mascot/anim/calendar.png', kusut:'/img/mascot/anim/kusut.png'};
 /* the moment's slot: the pose's poster now, its clip once it plays */
-function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+SC_POSE[name]+'" alt="Buddy"></div>'; }
+function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+SC_POSE[name]+'" alt="Bara"></div>'; }
 function scMomentPlay(name){ if(typeof bellMini==='function') bellMini($('scc-bell'),name); }
 var _scSay=null, _scSayAt=0;
 
@@ -81,27 +81,27 @@ function scScore(d,days){
 function scColor(s){ return s>=70?'#FFC20E':s>=40?'#E30613':'#A1A1AA'; }
 function scLevel(s){ return s>=80?4:s>=50?3:s>=25?2:1; }
 
-/* what Buddy says: about what was just done, or else the habit furthest behind */
+/* what Bara says: about what was just done, or else the habit furthest behind */
 var SC_LINES={
-  workout:['Workout siap! Buddy bangga sangat 💪','Hebatnya awak! Peluh tu tanda lemak terbakar 🔥'],
+  workout:['Workout siap! Bara bangga sangat 💪','Hebatnya awak! Peluh tu tanda lemak terbakar 🔥'],
   meal:['Makanan dah dilog. Bagus, awak jujur! 🍽️','Dah makan? Protein dulu, nasi secukupnya ya 👍'],
   water:['Glug glug! Segarnya 💧','Air masuk! Badan awak berterima kasih 💧'],
-  steps:['Langkah demi langkah, Buddy kagum! 👟','Wah, kaki awak lagi aktif dari Buddy hari ni 👟']
+  steps:['Langkah demi langkah, Bara kagum! 👟','Wah, kaki awak lagi aktif dari Bara hari ni 👟']
 };
 function scLine(){
   var s=scScore(), hs=scHabits(), i, low=null;
   if(_scSay==='junk' && Date.now()-_scSayAt<120000 && typeof scJunkLine==='function') return scJunkLine(_scJunkName);
   if(_scSay==='mood' && Date.now()-_scSayAt<120000 && typeof scMoodLine==='function') return scMoodLine(scDaily().mood);
   if(_scSay && SC_LINES[_scSay] && Date.now()-_scSayAt<120000){ var a=SC_LINES[_scSay]; return a[new Date().getMinutes()%a.length]; }
-  /* Buddy speaks Malay, calls himself Buddy and the member awak (16 Oct, the user's style A); the cards around him stay English */
-  if(s>=100) return '100 penuh! Buddy rasa macam juara dunia 🏆';
+  /* Bara speaks Malay, calls himself Bara and the member awak (16 Oct, the user's style A); the cards around him stay English */
+  if(s>=100) return '100 penuh! Bara rasa macam juara dunia 🏆';
   var hint=scHintBM();
-  if(s===0) return 'Buddy masih mengantuk 😴 '+hint;
-  if(s<40) return 'Buddy baru bangun. '+hint;
+  if(s===0) return 'Bara masih mengantuk 😴 '+hint;
+  if(s<40) return 'Bara baru bangun. '+hint;
   if(s<70) return 'Dah separuh jalan! '+hint;
   return 'Hari padu! 🔥 '+hint;
 }
-/* the habit furthest behind, in Buddy's Malay */
+/* the habit furthest behind, in Bara's Malay */
 function scHintBM(){
   var hs=scHabits(), i, low=null;
   for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
@@ -120,10 +120,10 @@ function scHint(){
            low.k==='workout'?'One short workout is enough today.':
            'Your fast hasn\'t reached its goal yet.';
 }
-/* something was just done: Buddy talks about it */
+/* something was just done: Bara talks about it */
 function scEvent(k){ _scSay=k; _scSayAt=Date.now(); scRender(); }
 
-/* the arc, after Simple's (16 Oct): a half ring over Buddy, its track a soft
+/* the arc, after Simple's (16 Oct): a half ring over Bara, its track a soft
    tint of HITFAT red, the score in full red, a white knob ringed in red */
 function scArc(s){
   var cx=120, cy=120, r=100, a0=170, sweep=200;
@@ -142,7 +142,7 @@ function scRing(h){
     '</svg><span class="sc-ic"'+(h.v>0?' style="color:'+c+'"':'')+'>'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'<span class="sc-plus sc-okb">✓</span>')+'</span>'+
     '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span><span class="sc-t">'+hesc(h.t||h.val)+'</span></button>';
 }
-/* the card takes the score's colour, as Simple's screens do (A); Buddy's
+/* the card takes the score's colour, as Simple's screens do (A); Bara's
    look and liveliness follow the stage (B, and bell.js) */
 function scRGB(c){ var n=parseInt(c.slice(1),16); return (n>>16&255)+','+(n>>8&255)+','+(n&255); }
 function scTint(c){ return 'rgba('+scRGB(c)+',.16)'; }
@@ -154,7 +154,7 @@ function scPills(){
     (s>0?'<circle cx="10" cy="10" r="7.5" fill="none" stroke="'+c+'" stroke-width="3" stroke-linecap="round" pathLength="100" stroke-dasharray="'+s+' 100" transform="rotate(-90 10 10)"/>':'')+
     '</svg><b>'+s+'</b></button>'+scChip();
 }
-/* Buddy's card, first of the swipe cards: what Buddy says, and the one thing to do now */
+/* Bara's card, first of the swipe cards: what Bara says, and the one thing to do now */
 function scAct(){
   var hs=scHabits(), i, low=null;
   for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
@@ -165,31 +165,31 @@ function scAct(){
           steps:['Add steps',"scSheet('steps')"], fast:['Start your fast',"scTap('fast')"]}[low.k]||null;
 }
 /* the card says where the day stands, Simple's "Success Score" card: the
-   playful lines are Buddy's, in the bubble above; this one is the plain truth */
+   playful lines are Bara's, in the bubble above; this one is the plain truth */
 function scInsight(st){
   var s=scScore(), h=scHint();
   if(st.k) return scRustLine(st);
-  if(s>=100) return 'Full score today 🏆 Rest well. Buddy will be here tomorrow.';
-  if(s>=SC_PADU) return 'Strong day! Buddy is red 🔥 Go for 100: '+h.charAt(0).toLowerCase()+h.slice(1);
-  if(s===0) return 'Log one thing to wake Buddy up. Even a glass of water counts.';
-  return '<b>'+(SC_PADU-s)+' points</b> to a strong day, when Buddy turns red. '+hesc(h);
+  if(s>=100) return 'Full score today 🏆 Rest well. Bara will be here tomorrow.';
+  if(s>=SC_PADU) return 'Strong day! Bara is red 🔥 Go for 100: '+h.charAt(0).toLowerCase()+h.slice(1);
+  if(s===0) return 'Log one thing to wake Bara up. Even a glass of water counts.';
+  return '<b>'+(SC_PADU-s)+' points</b> to a strong day, when Bara turns red. '+hesc(h);
 }
 function scBellCard(st){
-  var a=st.k?['Fluff Buddy up','scWaterTap()']:scAct();
+  var a=st.k?['Fluff Bara up','scWaterTap()']:scAct();
   return '<div class="scx-coach scx-bell"><div class="scx-k"><i></i>HITFAT SCORE</div>'+
     '<div class="scx-say" id="sc-say">'+(st.k?hesc(scInsight(st)):scInsight(st))+'</div>'+
     '<div class="scx-btns">'+(a?'<button class="scx-act" onclick="'+a[1]+'">'+a[0]+'</button>':'')+
     '<button class="scx-got" onclick="scInsights()">Score insights</button></div></div>';
 }
-/* Buddy's bubble, above Buddy: cheeky lines, a new one every few seconds
+/* Bara's bubble, above Bara: cheeky lines, a new one every few seconds
    (Simple's mascot does this), or what was just done */
 var SC_BUB={
-  zero:['Satu log pun jadi… Buddy tunggu ni 🥺','Minum segelas air dulu? Buddy nak bangun 😴','Buddy masih mengantuk… tolong kejutkan 🥱','Buddy setia tunggu awak di sini 🤍'],
-  low:['Dah mula! Buddy makin segar 👀','Sikit lagi Buddy jadi merah! 🔥','Buddy dah bangun. Teruskan, awak hebat!'],
-  red:['Yeay, Buddy dah merah! Terima kasih awak 😎','Hari padu! Buddy bangga dengan awak 💪','Jom kejar 100? Buddy dah tak sabar!'],
-  full:['100! Buddy paling gembira hari ni 🏆','Hari sempurna! Awak memang juara 🎉'],
-  dust:['Buddy rasa sunyi sikit… 😟','Satu log je, Buddy terus ceria balik.'],
-  rust:['Bulu Buddy dah kusut… 🥲','Segelas air pun boleh buat Buddy gebu balik.','Buddy rindu awak 🥺']};
+  zero:['Satu log pun jadi… Bara tunggu ni 🥺','Minum segelas air dulu? Bara nak bangun 😴','Bara masih mengantuk… tolong kejutkan 🥱','Bara setia tunggu awak di sini 🤍'],
+  low:['Dah mula! Bara makin segar 👀','Sikit lagi Bara jadi merah! 🔥','Bara dah bangun. Teruskan, awak hebat!'],
+  red:['Yeay, Bara dah merah! Terima kasih awak 😎','Hari padu! Bara bangga dengan awak 💪','Jom kejar 100? Bara dah tak sabar!'],
+  full:['100! Bara paling gembira hari ni 🏆','Hari sempurna! Awak memang juara 🎉'],
+  dust:['Bara rasa sunyi sikit… 😟','Satu log je, Bara terus ceria balik.'],
+  rust:['Bulu Bara dah kusut… 🥲','Segelas air pun boleh buat Bara gebu balik.','Bara rindu awak 🥺']};
 var _scBubI=0, _scBubT=null;
 function scBubLines(){
   var st=scState(), s=scScore();
@@ -218,16 +218,16 @@ function scHTML(){
   var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState(), c=st.k==='rust'?'#8E8E93':scColor(s);
   var poster=(typeof bellPoster==='function')?bellPoster(st.k?1:lv):(M&&M.config.images[lv-1]), fx='';
   if(st.k){ poster=SC_ART.rust||poster; if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+poster+');mask-image:url('+poster+')"></span>'; }
-  var img=poster?'<img class="sc-poster" src="'+poster+'" alt="Buddy'+(st.k==='rust'?', messy':', level '+lv)+'">'+fx:'';
+  var img=poster?'<img class="sc-poster" src="'+poster+'" alt="Bara'+(st.k==='rust'?', messy':', level '+lv)+'">'+fx:'';
   var slides=[];
   if(typeof scCoachHTML==='function') slides.push(scCoachHTML());
   if(typeof scMoodHTML==='function') slides.push(scMoodHTML());
   var inv=(typeof pushInvite==='function')?pushInvite():'';
-  if(inv) slides.push('<div class="scx-coach scx-push"><div class="scx-k"><i></i>REMINDERS</div><div class="scx-t"><b>Let Buddy nudge you</b></div>'+
-    '<div class="scx-seth">At 8 pm, only when a streak is at risk or Buddy misses you. One a day at most.</div>'+inv+'</div>');
+  if(inv) slides.push('<div class="scx-coach scx-push"><div class="scx-k"><i></i>REMINDERS</div><div class="scx-t"><b>Let Bara nudge you</b></div>'+
+    '<div class="scx-seth">At 8 pm, only when a streak is at risk or Bara misses you. One a day at most.</div>'+inv+'</div>');
   slides.unshift(scBellCard(st));
   return '<div class="sc sc-page" style="--scc:'+scRGB(c)+'">'+
-    '<div class="sc-stage"><div class="sc-bub" id="sc-bub">'+hesc(scBubText())+'</div>'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Buddy">'+img+'</div></div>'+
+    '<div class="sc-stage"><div class="sc-bub" id="sc-bub">'+hesc(scBubText())+'</div>'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Bara">'+img+'</div></div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>'+
     '<div class="sc-tail"></div>'+scCarHTML(slides)+
     (typeof scPlanHTML==='function'?scPlanHTML():'');
@@ -250,14 +250,14 @@ function scCarScroll(el){
 function scCarGo(i){ var el=$('sc-car'); if(!el) return; _scCar=i; try{ el.scrollTo({left:i*el.clientWidth,behavior:'smooth'}); }catch(e){ el.scrollLeft=i*el.clientWidth; } scCarScroll(el); }
 /* the colour behind the top of Home: red, gold on a strong-enough day, rust when rusty */
 function scBand(){ var s=scScore(), st=scState(); return st.k?'#F06A1C':s>=SC_PADU?'#E30613':'#D9C2A3'; }
-/* the two soft lights behind Buddy, Simple's way (16 Oct): a cream Buddy on
+/* the two soft lights behind Bara, Simple's way (16 Oct): a cream Bara on
    coral and peach so the white fur stands out, a red one on orange and red */
 function scGlow(){ var s=scScore(), st=scState(); return st.k?['#F06A1C','#C24A0E']:s>=SC_PADU?['#FF8A5B','#E30613']:['#E8424A','#F47C6E']; }
 function scRender(){
   var el=$('mascot-home'); if(!el) return;
   el.innerHTML=scHTML();
   /* the first Home of a visit comes in the way Simple's does: the arc draws,
-     Buddy appears, the bubble pops, the cards rise. Once. */
+     Bara appears, the bubble pops, the cards rise. Once. */
   if(!scRender._in){ scRender._in=true; el.className=(el.className||'')+' sc-enter';
     setTimeout(function(){ el.className=String(el.className||'').replace(/ ?sc-enter/g,''); },1800); }
   if(_scBubT) clearInterval(_scBubT);
@@ -265,7 +265,7 @@ function scRender(){
   if($('sc-pills')) $('sc-pills').innerHTML=scPills();
   try{ var sr=$('screen'); if(sr && sr.style && sr.style.setProperty) sr.style.setProperty('--scb',scRGB(scBand())); var gl=scGlow(); sr.style.setProperty('--sga',scRGB(gl[0])); sr.style.setProperty('--sgb',scRGB(gl[1])); }catch(e){}
   var car=$('sc-car'); if(car && _scCar){ try{ car.scrollLeft=_scCar*(car.clientWidth||0); }catch(e){} }
-  /* Buddy alive; messy (the rust state) has its own sad loop */
+  /* Bara alive; messy (the rust state) has its own sad loop */
   var slot=$('sc-bell'), st=scState(), lv=scLevel(scScore());
   if(slot && typeof bellAttach==='function' && bellAttach(slot, st.k?'kusut':lv)){
     slot.className+=' sc-live';
@@ -273,11 +273,11 @@ function scRender(){
       _scCheered=_scSayAt;
       /* each habit its own clip; its poster shows till the clip plays */
       var R={water:'water', meal:'meal', junk:'giggle', workout:'squat', steps:'walk', mood:scDaily().mood>=4?'cheer':scDaily().mood===3?'giggle':''};
-      if(_scSay==='mood' && !R.mood){ /* a hard day: Buddy stays quiet and kind, no dancing */ }
+      if(_scSay==='mood' && !R.mood){ /* a hard day: Bara stays quiet and kind, no dancing */ }
       else scReact(R[_scSay]||'cheer');
     } else if(scRed() && _scPose.until>Date.now()+150) scPose(slot,_scPose.src,_scPose.until-Date.now());
   }
-  /* (16 Oct) the moment Buddy turns red, live: a squash, a red burst, the cheer */
+  /* (16 Oct) the moment Bara turns red, live: a squash, a red burst, the cheer */
   var red=scRed();
   if(scRender._red===false && red) scTurnRed();
   scRender._red=red;
@@ -293,7 +293,7 @@ function scTurnRed(){
   var b=document.createElement('div'); b.className='sc-burst'; b.innerHTML='<i></i><i></i><b></b>';
   stg.appendChild(b); stg.className=stg.className.replace(/ ?sc-turnred/g,'')+' sc-turnred';
   setTimeout(function(){ if(b.parentNode) b.parentNode.removeChild(b); stg.className=stg.className.replace(/ ?sc-turnred/g,''); },1800);
-  setTimeout(function(){ scReact('cheer'); scBubSet("Buddy dah MERAH! 🔥 Hari padu!"); },420);
+  setTimeout(function(){ scReact('cheer'); scBubSet("Bara dah MERAH! 🔥 Hari padu!"); },420);
 }
 function scCheckFreeze(){
   if($('scc').style.display==='flex') return false;
@@ -305,7 +305,7 @@ function scCheckRust(){
   if(st.k!=='rust' || seen[key] || $('scc').style.display==='flex') return false;
   seen[key]=1; HF.save(); scRustScreen(st); return true;
 }
-/* a pose for a moment (Buddy with the water bottle, with the plate), then back */
+/* a pose for a moment (Bara with the water bottle, with the plate), then back */
 var _scPose={src:'', until:0};
 function scPose(slot,src,ms){
   ms=ms||2600; _scPose={src:src, until:Date.now()+ms};
@@ -314,11 +314,11 @@ function scPose(slot,src,ms){
   slot.appendChild(im); slot.className+=' posing';
   setTimeout(function(){ if(im.parentNode) im.parentNode.removeChild(im); slot.className=slot.className.replace(/ ?posing/g,''); },ms);
 }
-/* touch Buddy: a giggle, and a word */
-SC_LINES.poke=['Hehe, gelilah! 😆','Eh, Buddy tengah fokus ni 😤','Hehe, lagi? 🙈','Buddy okay, terima kasih tanya 💪'];
+/* touch Bara: a giggle, and a word */
+SC_LINES.poke=['Hehe, gelilah! 😆','Eh, Bara tengah fokus ni 😤','Hehe, lagi? 🙈','Bara okay, terima kasih tanya 💪'];
 var _scPokes=0;
 /* the reactions come in both colours: w_water, w_giggle... for a cream
-   Buddy (under 50), the plain names for a red one. A cream Buddy whose
+   Bara (under 50), the plain names for a red one. A cream Bara whose
    reaction has no cream clip bounces instead. */
 var SC_WREACT={giggle:1, water:1, meal:1, squat:1, walk:1, cheer:1};
 function scRed(){ return scScore()>=SC_PADU && !scState().k; }
@@ -336,7 +336,7 @@ function scBounce(){
   setTimeout(function(){ b.className=b.className.replace(/ ?sc-boing/g,''); },700);
 }
 function scPoke(){
-  if(scState().k==='rust'){ toast('Buddy is all messy 🥲 Log one thing to fluff Buddy up again'); return; }
+  if(scState().k==='rust'){ toast('Bara is all messy 🥲 Log one thing to fluff Bara up again'); return; }
   scReact('giggle');
   scBubSet(SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]);
 }
@@ -383,9 +383,9 @@ function scStepsSet(){
    being earned. Reaching 3, 7, 14, 30, 60 or 100 days opens a celebration
    once per run, with a card the member can share to an IG Story. */
 var SC_PADU=50, SC_MILES=[3,7,14,30,60,100];
-var SC_MILE_LINES={3:'A strong start! Buddy can see your potential 🔥',
-  7:'A full week! Buddy is so proud 💪',14:'Two weeks! This is a habit now, not an effort.',
-  30:'30 days! You are a real champion 🏆',60:'60 days! Your body feels different, right? 😎',100:'100 days! Buddy salutes you 🫡'};
+var SC_MILE_LINES={3:'A strong start! Bara can see your potential 🔥',
+  7:'A full week! Bara is so proud 💪',14:'Two weeks! This is a habit now, not an effort.',
+  30:'30 days! You are a real champion 🏆',60:'60 days! Your body feels different, right? 😎',100:'100 days! Bara salutes you 🫡'};
 
 var SC_FREEZES=2;
 function scFrozen(){ var sc=HF.data.sc||(HF.data.sc={}); return sc.frozen||(sc.frozen={}); }
@@ -468,7 +468,7 @@ function scCelebrate(n,mine){
     '<div class="scc-fine">A strong day is a HITFAT Score of '+SC_PADU+' or more. A freeze saves your streak when you miss a day.</div></div>';
   $('scc').style.display='flex'; scMomentPlay(pose);
 }
-/* a freeze was used: Buddy in ice, the run safe */
+/* a freeze was used: Bara in ice, the run safe */
 function scFreezeScreen(frozen){
   var st=scStreak();
   $('scc').className='scc scc-ice';
@@ -476,18 +476,18 @@ function scFreezeScreen(frozen){
     scMomentBell('frozen','scc-still')+
     '<div class="scc-t">Streak saved ❄️</div>'+
     '<div class="scc-s">Your <b>'+st.n+'-day</b> streak is safe: '+frozen.length+(frozen.length>1?' freezes':' freeze')+' used for '+(frozen.length>1?'the days':'the day')+' you missed, '+scFreezeLeft()+'/'+SC_FREEZES+' left this month.</div>'+
-    '<div class="scc-s scc-bellsays">Buddy froze for a moment to save you 🥶 Let\'s make today 50 or more.</div>'+
+    '<div class="scc-s scc-bellsays">Bara froze for a moment to save you 🥶 Let\'s make today 50 or more.</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Continue</button></div>';
   $('scc').style.display='flex'; scMomentPlay('frozen');
 }
-/* Buddy has rusted: the black screen, once a day */
+/* Bara has rusted: the black screen, once a day */
 function scRustScreen(st){
   $('scc').className='scc scc-orange';
   $('scc').innerHTML='<div class="scc-in">'+
     scMomentBell('kusut')+
-    '<div class="scc-t">Buddy is all messy</div>'+
-    '<div class="scc-s">'+st.idle+' days with nothing logged.</div><div class="scc-s scc-bellsays">Buddy is sitting alone, fur all tangled 🥲 One log is enough to fluff Buddy up again.</div>'+
-    '<button class="bigbtn scc-share" onclick="scCelebrateClose();scSheet(\'water\')">Fluff Buddy up: log a glass of water</button>'+
+    '<div class="scc-t">Bara is all messy</div>'+
+    '<div class="scc-s">'+st.idle+' days with nothing logged.</div><div class="scc-s scc-bellsays">Bara is sitting alone, fur all tangled 🥲 One log is enough to fluff Bara up again.</div>'+
+    '<button class="bigbtn scc-share" onclick="scCelebrateClose();scSheet(\'water\')">Fluff Bara up: log a glass of water</button>'+
     '<button class="scc-x" onclick="scCelebrateClose()">Later</button></div>';
   $('scc').style.display='flex'; scMomentPlay('kusut');
 }
@@ -539,9 +539,9 @@ function scShare(n){
 
 
 /* ═══════════════ phase 3 · rust and shine ═══════════════
-   Buddy left alone gets messy (the "rust" state, named from the kettlebell days). A day "kosong" is a day with nothing at all
-   logged (score 0). Two kosong days in a row and Buddy gathers dust; three,
-   and Buddy rusts. Log anything after a rusty spell and Buddy shines again,
+   Bara left alone gets messy (the "rust" state, named from the kettlebell days). A day "kosong" is a day with nothing at all
+   logged (score 0). Two kosong days in a row and Bara gathers dust; three,
+   and Bara rusts. Log anything after a rusty spell and Bara shines again,
    with a moment of its own. Until the drawn rusty and shiny Bells come, the
    looks are effects on the artwork: SC_ART can name them later. */
 var SC_ART={rust:'/img/mascot/anim/kusut.png', shine:null};
@@ -560,8 +560,8 @@ function scState(){
   return {k: idle>=3?'rust':idle===2?'dust':'', idle:idle, back:false};
 }
 function scRustLine(st){
-  if(st.k==='rust') return 'Buddy is all messy 🥲 '+st.idle+' days with nothing logged. Log one thing today, even a glass of water, to fluff Buddy up.';
-  return 'Buddy is getting dusty... 😟 Log something today so Buddy\'s fur doesn\'t get messy tomorrow.';
+  if(st.k==='rust') return 'Bara is all messy 🥲 '+st.idle+' days with nothing logged. Log one thing today, even a glass of water, to fluff Bara up.';
+  return 'Bara is getting dusty... 😟 Log something today so Bara\'s fur doesn\'t get messy tomorrow.';
 }
 /* back after a rusty spell: once a day */
 function scCheckShine(){
@@ -575,8 +575,8 @@ function scShine(){
   $('scc').className='scc scc-red';
   $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
     scMomentBell('halo','scc-shine')+
-    '<div class="scc-t">You saved Buddy!</div>'+
-    '<div class="scc-s scc-bellsays">Yay! Fluffy again ✨ Okay okay, Buddy forgives you. Don\'t leave Buddy alone that long again 😇</div>'+
+    '<div class="scc-t">You saved Bara!</div>'+
+    '<div class="scc-s scc-bellsays">Yay! Fluffy again ✨ Okay okay, Bara forgives you. Don\'t leave Bara alone that long again 😇</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Let\'s go!</button></div>';
   $('scc').style.display='flex'; scMomentPlay('halo');
 }

@@ -41,7 +41,7 @@
   font:11px/1.4 'Inter',system-ui,sans-serif;font-weight:700;letter-spacing:.6px;text-align:center;
   padding:calc(5px + env(safe-area-inset-top,0px)) 10px 5px;border-bottom:1px solid rgba(255,179,122,.25);}
 /* The splash, Simple's way (16 Oct): dark, the HITFAT+ mark up top, "Starring
-   Buddy", and Buddy's face rising from the foot of the screen. Buddy's picture
+   Bara", and Bara's face rising from the foot of the screen. Bara's picture
    sits on #0B0B0D, so the page ends in that colour. It stays at least as long
    as the sequence takes (hideSplash). */
 #splash{position:fixed;inset:0;z-index:99999;overflow:hidden;transition:opacity .5s ease;
@@ -66,7 +66,7 @@
 /* (16 Oct) the new peek's ground is a blacker black than the splash's: lighten drops it, so no box shows */
 #splash .sp-buddy{mix-blend-mode:lighten;}
 #splash .sp-buddy img{display:block;width:100%;height:auto;}
-/* the address sits under the wordmark, off Buddy's fur */
+/* the address sits under the wordmark, off Bara's fur */
 #splash .sp-url{position:absolute;left:0;right:0;top:calc(16vh + env(safe-area-inset-top,0px) + 150px);text-align:center;
   font-family:'Inter',system-ui,sans-serif;font-size:14px;color:rgba(255,255,255,.45);opacity:0;animation:spIn .6s ease .9s forwards;}
 @keyframes spPeek{to{transform:translateY(0)}}
@@ -875,8 +875,8 @@ body:has(#play.on)::before{display:none;}
     </div>
     <div class="sp-word">HITFAT<b>+</b></div>
   </div>
-  <div class="sp-star"><span>Starring</span><b>Buddy</b></div>
-  <div class="sp-buddy"><img src="/img/mascot/peek.jpg" alt="Buddy"></div>
+  <div class="sp-star"><span>Starring</span><b>Bara</b></div>
+  <div class="sp-buddy"><img src="/img/mascot/peek.jpg" alt="Bara"></div>
   <div class="sp-url">app.hitfat.io</div>
 </div>
 </div>

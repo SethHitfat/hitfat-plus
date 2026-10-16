@@ -316,7 +316,7 @@ function plWhyPick(r){
   q.push({d:iso(0), r, n:m.name||pl.exs[0].n, k:m.key||'', at:pl.done, of:pl.exs.length*(pl.rounds||1), s:pl.work||0});
   if(q.length>60) q.splice(0,q.length-60);
   HF.save();
-  toast({came:'No worries. Pick it up when you can 👊',break:'Rest well. Buddy will be here 🔔',dislike:'Thanks, we\'ll use that to pick better moves',
+  toast({came:'No worries. Pick it up when you can 👊',break:'Rest well. Bara will be here 🔔',dislike:'Thanks, we\'ll use that to pick better moves',
          hard:'Noted. Try an easier one next time, you\'ll get there 💪',easy:'Noted. Time for something harder 🔥'}[r]||'Saved');
   plCloseNow();
 }
