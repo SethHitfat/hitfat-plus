@@ -3817,3 +3817,17 @@ html,body{overscroll-behavior:none;}
 .chrec-b{margin-top:auto;padding-top:22px;display:flex;flex-direction:column;gap:10px;}
 .chrec-go{padding:16px;border-radius:99px;border:0;font:inherit;font-size:17px;font-weight:800;background:#E30613;color:#FFFFFF;cursor:pointer;}
 .chrec-later{padding:16px;border-radius:99px;border:0;font:inherit;font-size:17px;font-weight:700;background:rgba(127,127,127,.18);color:var(--txt);cursor:pointer;}
+
+/* Nutrition Academy as a poster (16 Oct, after FIIT): the green of the poster
+   palette as a gradient with a light in the corner, the name heavy and in
+   capitals, the fork big and faint, a white button in the poster's green */
+.ac-hero,:root[data-theme="light"] .ac-hero{background:linear-gradient(155deg,#36D884 0%,#0F7A4A 100%);box-shadow:0 10px 28px rgba(15,122,74,.25);border-radius:16px;}
+.ac-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 12%,rgba(255,255,255,.24),rgba(255,255,255,0) 55%);pointer-events:none;}
+.ac-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.18) 100%);pointer-events:none;}
+.ac-hero>.fw-ic{width:170px;height:170px;right:-26px;top:-18px;opacity:.16;}
+.ac-hero .k{color:rgba(255,255,255,.88);letter-spacing:1.4px;}
+.ac-hero .t{font-weight:900;text-transform:uppercase;letter-spacing:-.6px;line-height:.95;font-size:32px;text-shadow:0 2px 14px rgba(0,0,0,.18);}
+.ac-hero .s{color:rgba(255,255,255,.9);}
+.ac-hero .bigbtn,#eat-body .ac-hero .bigbtn,#academy .ac-hero .bigbtn,.ac-hero button.bigbtn.bigbtn{color:#0F7A4A!important;-webkit-text-fill-color:#0F7A4A!important;}
+.ac-hero::before,.ac-hero::after{z-index:0;}
+.ac-hero>*:not(.fw-ic){z-index:1;}
