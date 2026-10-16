@@ -353,7 +353,7 @@ function acHomeWorkout(){
 function eatLearn(){
   const tiles=(typeof d6LearnCard==='function'?d6LearnCard():'')+(typeof ifLearnTile==='function'?ifLearnTile():'');
   $('eat-body').innerHTML='<div class="ac-in-eat">'+
-    (tiles?fsec('Courses','Follow along, day by day.')+'<div class="lcourses">'+tiles+'</div>':'')+
+    (tiles?fsec('Courses','Follow along, day by day.')+'<div class="hpo-grid hcourses">'+tiles+'</div>':'')+
     '<div class="lc-gap"></div>'+academyHTML()+'</div>';
 }
 

@@ -14373,11 +14373,11 @@ function hubRow(){
 }
 /* Eat → Belajar: the course above the Academy */
 function d6LearnCard(){
-  /* Eat → Learn: a colour tile beside IF's, the Library's look (16 Oct) */
+  /* (16 Oct) a poster like Train's, on Home and in Eat → Learn: the plate cut out on orange */
   var owned=d6Owned(), done=d6Done();
-  return '<div class="lib-t lct d6-home" onclick="openD6()" style="--wk:#C4561E;--wkt:#FFFFFF"><span class="fw-ic">'+glyph('food')+'</span>'+
-    '<b>'+(owned&&done?done+'<i>/'+D6_TOT+'</i>':D6_TOT+'<i> hari</i>')+'</b>'+
-    '<div class="lt">'+hesc(D6_NAME)+'</div><div class="ls">'+(owned&&done?'Hari '+done+' daripada '+D6_TOT:'Program makan 6 minggu')+'</div></div>';
+  if(typeof hpoTile!=='function') return '';
+  return hpoTile({t:'Diet 6 Minggu',kick:owned&&done?'Hari '+done+' / '+D6_TOT:D6_TOT+' hari',lv:'Program makan · 6KG',pal:'orange',
+    img:'/img/p/mealplan.jpg',pic:'mealplan',pos:'50% 50%',go:'openD6()'});
 }
 /* ═══════════════ IF HITFAT · PUASA BERSELANG ═══════════════
    Intermittent fasting as a feature of its own: something to learn, and
@@ -14696,11 +14696,12 @@ function ifLocked(title,text){
 /* ── Home: the IF card, live while fasting ── */
 /* Eat → Learn: IF as a colour tile beside Diet 6 (16 Oct); Home keeps ifHomeCard */
 function ifLearnTile(){
+  /* (16 Oct) a poster like Train's, on Home and in Eat → Learn: 16:8 big, a faint clock */
   var d=ifData(), p=ifPlan(), sub='4-week plan + timer';
   if(ifOwned() && d.active) sub='Fasting · '+ifDur(Date.now()-d.active.at);
   else if(ifOwned() && p && !p.blocked) sub='Week '+(ifWeek()+1)+' · tap to start';
-  return '<div class="lib-t lct if-card" onclick="openIF()" style="--wk:#2F4A68;--wkt:#FFFFFF"><span class="fw-ic">'+glyph('clock')+'</span>'+
-    '<b>16:8</b><div class="lt">IF HITFAT</div><div class="ls">'+sub+'</div></div>';
+  if(typeof hpoTile!=='function') return '';
+  return hpoTile({t:'16:8 IF',kick:'IF HITFAT',lv:sub,pal:'blue',glyph:'clock',go:'openIF()'});
 }
 function ifHomeCard(){
   var d=ifData(), p=ifPlan(), sub, t, k='IF HITFAT · Intermittent Fasting';
@@ -15654,7 +15655,7 @@ function acHomeWorkout(){
 function eatLearn(){
   const tiles=(typeof d6LearnCard==='function'?d6LearnCard():'')+(typeof ifLearnTile==='function'?ifLearnTile():'');
   $('eat-body').innerHTML='<div class="ac-in-eat">'+
-    (tiles?fsec('Courses','Follow along, day by day.')+'<div class="lcourses">'+tiles+'</div>':'')+
+    (tiles?fsec('Courses','Follow along, day by day.')+'<div class="hpo-grid hcourses">'+tiles+'</div>':'')+
     '<div class="lc-gap"></div>'+academyHTML()+'</div>';
 }
 
@@ -24375,16 +24376,8 @@ function homeCourses(){
   const t=[], P=o=>typeof hpoTile==='function'?hpoTile(o):'';
   if(typeof lbFull==='function' && !lbFull() && lbNext()<LB30_DAYS.length)
     t.push(P({t:LB30_NAME,kick:'30 hari',lv:'Khas wanita · di rumah',pal:'magenta',img:'/img/p/lad4.jpg',pic:'lad4',pos:'50% 15%',go:"openProgram('"+LB30_ID+"')"}));
-  if(typeof d6Full==='function' && !d6Full() && d6Next()<D6_TOT){
-    const own=d6Owned(), dn=d6Done();
-    t.push(P({t:'Diet 6 Minggu',kick:own&&dn?'Hari '+dn+' / '+D6_TOT:D6_TOT+' hari',lv:'Program makan · 6KG',pal:'orange',img:'/img/p/mealplan.jpg',pic:'mealplan',pos:'50% 50%',go:'openD6()'}));
-  }
-  if(typeof ifLearnTile==='function'){
-    const d=ifData(), p=ifPlan(); let sub='4-week plan + timer';
-    if(ifOwned() && d.active) sub='Fasting · '+ifDur(Date.now()-d.active.at);
-    else if(ifOwned() && p && !p.blocked) sub='Week '+(ifWeek()+1)+' · tap to start';
-    t.push(P({t:'16:8 IF',kick:'IF HITFAT',lv:sub,pal:'blue',glyph:'clock',go:'openIF()'}));
-  }
+  if(typeof d6Full==='function' && !d6Full() && d6Next()<D6_TOT) t.push(d6LearnCard());
+  if(typeof ifLearnTile==='function') t.push(ifLearnTile());
   if(typeof acHomeCard==='function' && acHomeCard()){
     const nx=acNext(), n=acCount();
     t.push(P({t:'Nutrition Academy',kick:'Ep '+String(acNum(nx)).padStart(2,'0'),lv:n?n+' / '+AC_EPS.length+' selesai':nx.t,pal:'green',glyph:'play',go:"acOpen('"+nx.id+"')"}));

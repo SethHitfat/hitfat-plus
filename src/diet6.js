@@ -568,9 +568,9 @@ function hubRow(){
 }
 /* Eat → Belajar: the course above the Academy */
 function d6LearnCard(){
-  /* Eat → Learn: a colour tile beside IF's, the Library's look (16 Oct) */
+  /* (16 Oct) a poster like Train's, on Home and in Eat → Learn: the plate cut out on orange */
   var owned=d6Owned(), done=d6Done();
-  return '<div class="lib-t lct d6-home" onclick="openD6()" style="--wk:#C4561E;--wkt:#FFFFFF"><span class="fw-ic">'+glyph('food')+'</span>'+
-    '<b>'+(owned&&done?done+'<i>/'+D6_TOT+'</i>':D6_TOT+'<i> hari</i>')+'</b>'+
-    '<div class="lt">'+hesc(D6_NAME)+'</div><div class="ls">'+(owned&&done?'Hari '+done+' daripada '+D6_TOT:'Program makan 6 minggu')+'</div></div>';
+  if(typeof hpoTile!=='function') return '';
+  return hpoTile({t:'Diet 6 Minggu',kick:owned&&done?'Hari '+done+' / '+D6_TOT:D6_TOT+' hari',lv:'Program makan · 6KG',pal:'orange',
+    img:'/img/p/mealplan.jpg',pic:'mealplan',pos:'50% 50%',go:'openD6()'});
 }
