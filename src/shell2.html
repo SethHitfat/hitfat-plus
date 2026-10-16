@@ -395,16 +395,22 @@
 #play.resting .pl-top{z-index:9;}
 #play.nomirror #pl-ready .rdk{color:#FF4D55;}
 
-/* (16 Oct) the clip raised, the foot a clean dark panel: Vimeo fits a
-   portrait clip inside its box, which left black bands above and below and
-   half a screen of empty gym ceiling over the coach. The box is now the
-   clip's own 9:16 at full width, lifted 60px so the ceiling is cropped and
-   the coach sits higher; under it the clip fades into black, where time,
-   kcal and the transport sit. */
+/* (16 Oct) the clip raised above the numbers: Vimeo fitted the portrait clip
+   inside a full-screen box, so the coach's feet ran into time, kcal and the
+   transport at the foot. The box is now the clip's own 9:16 at full width,
+   lifted so it ends about 250px above the bottom (the numbers' panel, plus
+   the home indicator); the ceiling above the coach is what is cropped, at
+   most a fifth of the clip on a short phone. Under the clip, solid black. */
 @media (orientation:portrait){
-  #play.nomirror #pl-video{inset:auto;top:-60px;left:0;width:100%;height:calc(100vw*16/9);}
-  #play.nomirror .pl-scrim{background:linear-gradient(180deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.26) 17%,
-    rgba(0,0,0,0) 30%,rgba(0,0,0,0) 54%,rgba(0,0,0,.55) 64%,rgba(0,0,0,.92) 72%,#000 77%,#000 100%);}
+  #play.nomirror{--vh16:calc(100vw*16/9);
+    --vtop:min(0px,max(calc(var(--vh16)*-.2),calc(100vh - 250px - env(safe-area-inset-bottom,0px) - var(--vh16))));
+    --vtop:min(0px,max(calc(var(--vh16)*-.2),calc(100dvh - 250px - env(safe-area-inset-bottom,0px) - var(--vh16))));
+    --vb:calc(var(--vtop) + var(--vh16));}
+  #play.nomirror #pl-video{inset:auto;top:var(--vtop);left:0;width:100%;height:var(--vh16);}
+  #play.nomirror .pl-scrim{background:
+    linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,.6) 55%,#000 100%) 0 calc(var(--vb) - 150px)/100% 151px no-repeat,
+    linear-gradient(#000,#000) 0 var(--vb)/100% 100% no-repeat,
+    linear-gradient(180deg,rgba(0,0,0,.72) 0,rgba(0,0,0,.28) 120px,rgba(0,0,0,0) 240px) 0 0/100% 260px no-repeat;}
   #play.nomirror .pl-fill{background:#000;}
 }
 
