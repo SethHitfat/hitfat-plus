@@ -3890,9 +3890,9 @@ html,body{overscroll-behavior:none;}
 .kl-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:12px 0 10px;}
 .kl-days button{position:relative;padding:10px 0;border:0;border-radius:12px;background:rgba(127,127,127,.14);color:var(--txt);font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
 .kl-days button.rest{color:var(--dim);opacity:.6;}
-.kl-days button.today::after{content:'';position:absolute;left:50%;bottom:4px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:#E30613;}
+.kl-days button.now::after{content:'';position:absolute;left:50%;bottom:4px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:#E30613;}
 .kl-days button.on{background:#E30613;color:#FFFFFF;opacity:1;}
-.kl-days button.on.today::after{background:#FFFFFF;}
+.kl-days button.on.now::after{background:#FFFFFF;}
 .kl-list{border-radius:16px;background:var(--surface);overflow:hidden;}
 .kl-cls{display:flex;align-items:center;gap:14px;padding:13px 16px;}
 .kl-cls+.kl-cls{border-top:1px solid var(--sep);}
@@ -3959,3 +3959,40 @@ html,body{overscroll-behavior:none;}
 .klqr-q{padding:8px;line-height:0;}
 .klqr-n{font-size:24px;font-weight:900;letter-spacing:-.4px;}
 .klqr-s{font-size:15px;color:#555555;}
+
+/* HITFAT Class progress, after Keep Moving Club (17 Oct): the club level
+   track and the week streak with this week day by day */
+.kl-lvl,.kl-stk{padding:18px 16px;border-radius:18px;background:var(--surface);margin-bottom:10px;}
+:root[data-theme="light"] .kl-lvl,:root[data-theme="light"] .kl-stk{background:#FFFFFF;}
+.kl-lvl-top{display:flex;align-items:center;gap:14px;}
+.kl-badge{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:19px;font-weight:900;color:#FFFFFF;
+  background:radial-gradient(circle at 30% 25%,#FF5A5A,#E30613 55%,#8E0410);box-shadow:0 6px 16px rgba(227,6,19,.3);}
+.kl-badge .gly{width:26px;height:26px;stroke:#FFFFFF;}
+.kl-lvl-n{flex:1;min-width:0;}
+.kl-lvl small,.kl-stk small{display:block;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);}
+.kl-lvl-n b{display:block;font-size:21px;white-space:nowrap;font-weight:900;text-transform:uppercase;letter-spacing:-.6px;line-height:1.05;color:var(--txt);margin-top:2px;}
+.kl-lvl-c{text-align:right;}
+.kl-lvl-c b{display:block;font-size:30px;font-weight:900;line-height:1;color:var(--txt);margin-top:2px;font-variant-numeric:tabular-nums;}
+.kl-track{position:relative;height:34px;margin:20px 17px 8px;}
+.kl-line{position:absolute;left:0;right:0;top:50%;height:6px;margin-top:-3px;border-radius:99px;background:rgba(127,127,127,.22);overflow:hidden;}
+.kl-line i{display:block;height:100%;background:#E30613;border-radius:99px;}
+.kl-stop{position:absolute;top:0;width:34px;height:34px;margin-left:-17px;border-radius:50%;display:grid;place-items:center;
+  font-size:11px;font-weight:800;color:#FFFFFF;background:#5A5A60;font-variant-numeric:tabular-nums;}
+.kl-stop.on{background:#E30613;}
+.kl-stop.cur{box-shadow:0 0 0 4px rgba(227,6,19,.22);}
+.kl-lvl-s{font-size:13px;font-weight:700;color:var(--dim);margin-top:10px;text-transform:uppercase;letter-spacing:.3px;}
+.kl-stk-row{display:grid;grid-template-columns:1fr 1fr;padding-bottom:14px;border-bottom:1px solid var(--sep);}
+.kl-stk-row>div{display:flex;align-items:center;gap:10px;}
+.kl-stk-row>div+div{padding-left:12px;border-left:1px solid var(--sep);}
+.kl-stk-row .gly{flex:none;width:28px;height:28px;stroke:#E30613;}
+.kl-stk-row b{display:block;font-size:22px;font-weight:900;color:var(--txt);text-transform:uppercase;letter-spacing:-.4px;line-height:1.05;}
+.kl-stk-row small{text-transform:none;letter-spacing:0;font-weight:600;font-size:13px;}
+.kl-wrow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:14px;text-align:center;}
+.kl-wd small{text-transform:uppercase;font-size:11px;letter-spacing:.4px;}
+.kl-wd span{display:grid;place-items:center;width:34px;height:34px;margin:8px auto 0;border-radius:50%;background:rgba(127,127,127,.18);}
+.kl-wd span .gly{width:18px;height:18px;stroke:#FFFFFF;stroke-width:2.6;}
+.kl-wd.done span{background:#E30613;}
+.kl-wd.now span{background:transparent;border:2px dashed #E30613;}
+.kl-wd.next span{background:transparent;border:2px solid rgba(127,127,127,.35);}
+.kl-wd.rest span{background:transparent;}
+.kl-wd.rest small{opacity:.5;}

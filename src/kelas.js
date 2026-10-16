@@ -208,6 +208,12 @@ function kelasHTML(){
     });
   }
 
+  /* progress, after Keep Moving Club: the club level by classes, the week
+     streak (classes run 3 to 6 days a week, so a day streak would break on
+     every rest day), and this week day by day */
+  h+=fsec('Your progress','Every class at HQ counts.');
+  h+=kelasLevelHTML()+kelasStreakHTML();
+
   /* the timetable */
   const cls=d.classes||[];
   if(cls.length){
@@ -220,7 +226,7 @@ function kelasHTML(){
     const today=kelasDow(kelasNowMY());
     h+='<div class="kl-days">'+KELAS_DOW.map((w,i)=>{
       const dd=i+1, has=cls.some(c=>c.dow===dd);
-      return '<button class="'+(dd===Kelas.day?'on ':'')+(has?'':'rest ')+(dd===today?'today':'')+'" onclick="kelasPickDay('+dd+')">'+w+'</button>';
+      return '<button class="'+(dd===Kelas.day?'on ':'')+(has?'':'rest ')+(dd===today?'now':'')+'" onclick="kelasPickDay('+dd+')">'+w+'</button>';
     }).join('')+'</div>';
     const day=cls.filter(c=>c.dow===Kelas.day);
     h+='<div class="kl-list">'+(day.length?day.map(c=>
@@ -229,15 +235,11 @@ function kelasHTML(){
       :'<div class="kl-none">No class on '+KELAS_DOW[Kelas.day-1]+'. Rest day.</div>')+'</div>';
   }
 
-  /* attendance */
-  const month=kelasThisMonth(), streak=kelasWeekStreak(), last=kelasLastIn();
-  h+=fsec('Attendance','From the kiosk at the door.');
-  h+='<div class="kl-att">'+
-     '<div><b>'+month+'</b><small>this month</small></div>'+
-     '<div><b>'+streak+'</b><small>week'+(streak===1?'':'s')+' in a row</small></div>'+
-     '<div><b>'+(d.total||0)+'</b><small>all time</small></div></div>';
+  /* history: 12 weeks of check-ins from the kiosk */
+  const month=kelasThisMonth(), last=kelasLastIn();
+  h+=fsec('History','From the kiosk at the door.');
   h+='<div class="kl-grid" aria-label="Check-ins, last 12 weeks">'+kelasGrid()+'</div>';
-  h+='<div class="kl-last">Last 12 weeks'+(last?' · last check-in '+last.charAt(0).toLowerCase()+last.slice(1):'')+'</div>';
+  h+='<div class="kl-last">'+month+' class'+(month===1?'':'es')+' this month'+(last?' · last check-in '+last.charAt(0).toLowerCase()+last.slice(1):'')+'</div>';
 
   h+='<div class="kl-foot">Your HITFAT+ All Access runs with this membership'+(act&&m?', until '+kelasDate(m.end_date):'')+'.<br>'+
      '<button class="kl-unlink" onclick="kelasUnlink()">'+(Kelas.unlinkAsk?'Tap again to disconnect':'Not you? Disconnect')+'</button></div>';
@@ -259,6 +261,57 @@ function kelasGrid(){
   }
   return h;
 }
+/* ── club levels: 10, 25, 50 … classes ── */
+var KELAS_LEVELS=[10,25,50,100,150,200,250,300,400,500,750,1000];
+function kelasTotal(){ return (Kelas.data&&Kelas.data.total)||0; }
+function kelasLevel(n){
+  let cur=null, next=KELAS_LEVELS[0];
+  KELAS_LEVELS.forEach(m=>{ if(n>=m) cur=m; });
+  next=KELAS_LEVELS.filter(m=>m>n)[0]||null;
+  return {cur:cur, next:next};
+}
+function kelasLevelHTML(){
+  const n=kelasTotal(), L=kelasLevel(n), i=L.cur?KELAS_LEVELS.indexOf(L.cur):-1;
+  /* five stops on the track: the one reached, and what comes after it */
+  const from=Math.max(0,Math.min(i,KELAS_LEVELS.length-5)), stops=KELAS_LEVELS.slice(from,from+5);
+  const fill=(()=>{ // how far along the track the member is, between the stops
+    if(n>=stops[stops.length-1]) return 100;
+    let k=0; while(k<stops.length && n>=stops[k]) k++;
+    const lo=k?stops[k-1]:0, hi=stops[k], seg=100/(stops.length-1);
+    const base=k?(k-1)*seg:0, part=k?(n-lo)/(hi-lo)*seg:0;
+    return Math.max(0,Math.min(100,base+part));
+  })();
+  return '<div class="kl-lvl">'+
+    '<div class="kl-lvl-top"><span class="kl-badge">'+(L.cur?L.cur:glyph('flag'))+'</span>'+
+    '<div class="kl-lvl-n"><small>Level</small><b>'+(L.cur?L.cur+' Class Club':'Getting started')+'</b></div>'+
+    '<div class="kl-lvl-c"><small>Classes</small><b>'+n+'</b></div></div>'+
+    '<div class="kl-track"><span class="kl-line"><i style="width:'+fill.toFixed(1)+'%"></i></span>'+
+    stops.map((m,k)=>'<span class="kl-stop'+(n>=m?' on':'')+(m===L.cur?' cur':'')+'" style="left:'+(k*25)+'%">'+m+'</span>').join('')+'</div>'+
+    '<div class="kl-lvl-s">'+(L.next?(L.next-n)+' class'+(L.next-n===1?'':'es')+' to the '+L.next+' Class Club. Keep it up!':'Top of the club. Legend.')+'</div></div>';
+}
+/* the longest run of weeks with a class, from every week OS has */
+function kelasLongest(){
+  const w=((Kelas.data&&Kelas.data.weeks)||[]).map(x=>Date.parse(String(x).slice(0,10)+'T00:00:00Z')).sort((a,b)=>a-b);
+  let best=0, run=0, prev=null;
+  w.forEach(t=>{ run=(prev!==null && t-prev===7*864e5)?run+1:1; if(run>best) best=run; prev=t; });
+  return Math.max(best, kelasWeekStreak());
+}
+function kelasStreakHTML(){
+  const cur=kelasWeekStreak(), best=kelasLongest(), now=kelasNowMY(), today=kelasDow(now);
+  const days=new Set(kelasIns().map(kelasDayKey)), cls=(Kelas.data&&Kelas.data.classes)||[];
+  const mon=new Date(now.getTime()); mon.setUTCDate(mon.getUTCDate()-(today-1));
+  const row=KELAS_DOW.map((w,i)=>{
+    const d=new Date(mon.getTime()); d.setUTCDate(d.getUTCDate()+i);
+    const done=days.has(kelasDayKey(d)), has=cls.some(c=>c.dow===i+1);
+    const st=done?'done':(i+1===today?'now':(i+1>today?(has?'next':'rest'):'miss'));
+    return '<div class="kl-wd '+st+'"><small>'+w+'</small><span>'+(done?glyph('check'):'')+'</span></div>';
+  }).join('');
+  return '<div class="kl-stk"><div class="kl-stk-row">'+
+    '<div>'+glyph('flame')+'<div><b>'+cur+' week'+(cur===1?'':'s')+'</b><small>current streak</small></div></div>'+
+    '<div>'+glyph('calendar')+'<div><b>'+best+' week'+(best===1?'':'s')+'</b><small>longest streak</small></div></div></div>'+
+    '<div class="kl-wrow">'+row+'</div></div>';
+}
+
 function kelasPickDay(d){ Kelas.day=d; renderKelas(); }
 function kelasRenew(){
   const m=kelasMain();
@@ -389,6 +442,10 @@ function kelasDemo(){
     .forEach(c=>cls.push({name:c[0],dow:dw,start:c[1],min:45,coach:null,category:'Membership'})));
   Kelas.data={linked:true, member_id:'5b0f2c1e-8d3a-4c7e-9f21-3a6d0b9e4c11', name:'Aina Rahman',
     memberships:[{category:'Membership',plan:'1 Month',start_date:iso(s),end_date:iso(e),active:true}],
-    classes:cls, checkins:ins, total:47};
+    classes:cls, checkins:ins, total:61,
+    weeks:(function(){ const w=[], m=new Date(now.getTime()); m.setUTCDate(m.getUTCDate()-(kelasDow(now)-1));
+      for(let i=0;i<9;i++){ const d=new Date(m.getTime()); d.setUTCDate(d.getUTCDate()-7*i); w.push(kelasDayKey(d)); }
+      for(let i=14;i<26;i++){ const d=new Date(m.getTime()); d.setUTCDate(d.getUTCDate()-7*i); w.push(kelasDayKey(d)); }
+      return w.sort(); })()};
   Kelas.state='ready';
 }
