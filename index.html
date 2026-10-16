@@ -1410,13 +1410,16 @@
 #splash .sp-word{margin-top:16px;font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:32px;letter-spacing:1px;
   color:#FFFFFF;opacity:0;animation:spIn .6s ease .35s forwards;}
 #splash .sp-word b{color:#FF3B30;font-weight:800;}
-#splash .sp-star{position:absolute;left:0;right:0;top:54vh;text-align:center;opacity:0;animation:spIn .6s ease .7s forwards;}
+#splash .sp-star{position:absolute;left:0;right:0;top:49vh;text-align:center;opacity:0;animation:spIn .6s ease .7s forwards;}
 #splash .sp-star span{display:block;font-family:'Inter',system-ui,sans-serif;font-size:14px;color:#8E8E93;}
 #splash .sp-star b{display:block;font-family:'Inter',system-ui,sans-serif;font-size:26px;font-weight:800;color:#FF6B6B;margin-top:6px;letter-spacing:-.2px;}
-#splash .sp-buddy{position:absolute;left:50%;bottom:0;width:min(86vw,460px);margin-left:calc(min(86vw,460px) / -2);
+#splash .sp-buddy{position:absolute;left:50%;bottom:0;width:min(74vw,400px);margin-left:calc(min(74vw,400px) / -2);
   transform:translateY(55%);animation:spPeek 1s cubic-bezier(.2,.9,.25,1.05) .25s forwards;}
+/* (16 Oct) the new peek's ground is a blacker black than the splash's: lighten drops it, so no box shows */
+#splash .sp-buddy{mix-blend-mode:lighten;}
 #splash .sp-buddy img{display:block;width:100%;height:auto;}
-#splash .sp-url{position:absolute;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));text-align:center;
+/* the address sits under the wordmark, off Buddy's fur */
+#splash .sp-url{position:absolute;left:0;right:0;top:calc(16vh + env(safe-area-inset-top,0px) + 150px);text-align:center;
   font-family:'Inter',system-ui,sans-serif;font-size:14px;color:rgba(255,255,255,.45);opacity:0;animation:spIn .6s ease .9s forwards;}
 @keyframes spPeek{to{transform:translateY(0)}}
 @keyframes spRise{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
