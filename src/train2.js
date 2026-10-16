@@ -202,6 +202,18 @@ function hpoCard(p,o){
           :'<span class="hpo-lv">'+(fin?'✓ Completed':(p.level||''))+'</span>')+
     (o.start||o.go?'<button class="hpo-play" aria-label="Start '+hesc(p.name)+'" onclick="event.stopPropagation();'+(o.go||'playSingle(\''+p.id+'\')')+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button>':'')+'</div>';
 }
+/* any poster that is not a program (16 Oct): a title, a kicker, a foot line,
+   a palette, and either a photo cut out by its mask or a big faint glyph */
+function hpoTile(o){
+  const c=HPO_PAL[o.pal]||HPO_PAL.blue, pos=o.pos||'50% 40%';
+  const ph=o.img?'<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\''+o.img+'\'),linear-gradient('+c[2]+','+c[2]+');background-position:'+pos+
+      (o.pic?';-webkit-mask-image:url(\'/img/p/mask/'+o.pic+'.png\');mask-image:url(\'/img/p/mask/'+o.pic+'.png\');-webkit-mask-position:'+pos+';mask-position:'+pos:'')+'"></div></div>'
+    : (o.glyph?'<span class="hpo-gly">'+glyph(o.glyph)+'</span>':'');
+  return '<div class="hpo '+(o.cls||'hpo-sq hpo-br')+(o.img&&!o.pic?' hpo-flat':'')+'" onclick="'+o.go+'" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+ph+
+    (o.kick?'<span class="hpo-len">'+hesc(o.kick)+'</span>':'')+
+    '<div class="hpo-t'+(o.t.length>14?' sm':'')+'">'+hesc(o.t)+'</div>'+
+    (o.lv?'<span class="hpo-lv">'+hesc(o.lv)+'</span>':'')+'</div>';
+}
 /* a Browse category as a poster (16 Oct): its studio photo cut out and toned,
    the name big, how many programs, what it is for */
 const HPO_BR={'Fat Loss':'red','Strength':'charcoal','Core':'teal','Beginner':'blue','Equipment':'purple','Quick':'orange','Recovery':'green'};

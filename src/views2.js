@@ -276,19 +276,26 @@ function renderHome(){
 /* Home: the courses not yet started (a course under way shows its own
    full card above) and IF and the Academy, as the Learn tab's colour tiles */
 function homeCourses(){
-  const t=[];
+  /* (16 Oct) the courses as posters, like Train after FIIT */
+  const t=[], P=o=>typeof hpoTile==='function'?hpoTile(o):'';
   if(typeof lbFull==='function' && !lbFull() && lbNext()<LB30_DAYS.length)
-    t.push('<div class="lib-t lct" onclick="openProgram(\''+LB30_ID+'\')" style="--wk:#B7837A;--wkt:#FFFFFF"><span class="fw-ic">'+glyph('workout')+'</span>'+
-      '<b>30<i> hari</i></b><div class="lt">'+hesc(LB30_NAME)+'</div><div class="ls">Khas wanita · di rumah</div></div>');
-  if(typeof d6Full==='function' && !d6Full() && d6Next()<D6_TOT) t.push(d6LearnCard());
-  if(typeof ifLearnTile==='function') t.push(ifLearnTile());
+    t.push(P({t:LB30_NAME,kick:'30 hari',lv:'Khas wanita · di rumah',pal:'magenta',img:'/img/p/lad4.jpg',pic:'lad4',pos:'50% 15%',go:"openProgram('"+LB30_ID+"')"}));
+  if(typeof d6Full==='function' && !d6Full() && d6Next()<D6_TOT){
+    const own=d6Owned(), dn=d6Done();
+    t.push(P({t:'Diet 6 Minggu',kick:own&&dn?'Hari '+dn+' / '+D6_TOT:D6_TOT+' hari',lv:'Program makan · 6KG',pal:'orange',img:'/img/p/mealplan.jpg',pic:'mealplan',pos:'50% 50%',go:'openD6()'}));
+  }
+  if(typeof ifLearnTile==='function'){
+    const d=ifData(), p=ifPlan(); let sub='4-week plan + timer';
+    if(ifOwned() && d.active) sub='Fasting · '+ifDur(Date.now()-d.active.at);
+    else if(ifOwned() && p && !p.blocked) sub='Week '+(ifWeek()+1)+' · tap to start';
+    t.push(P({t:'16:8 IF',kick:'IF HITFAT',lv:sub,pal:'blue',glyph:'clock',go:'openIF()'}));
+  }
   if(typeof acHomeCard==='function' && acHomeCard()){
     const nx=acNext(), n=acCount();
-    t.push('<div class="lib-t lct" onclick="acOpen(\''+nx.id+'\')" style="--wk:#4A5240;--wkt:#FFFFFF"><span class="fw-ic">'+glyph('play')+'</span>'+
-      '<b>Ep'+String(acNum(nx)).padStart(2,'0')+'</b><div class="lt">Nutrition Academy</div><div class="ls">'+(n?n+' / '+AC_EPS.length+' selesai':hesc(nx.t))+'</div></div>');
+    t.push(P({t:'Nutrition Academy',kick:'Ep '+String(acNum(nx)).padStart(2,'0'),lv:n?n+' / '+AC_EPS.length+' selesai':nx.t,pal:'green',glyph:'play',go:"acOpen('"+nx.id+"')"}));
   }
   if(!t.length) return '';
-  return fsec('Courses','Follow along, day by day.')+'<div class="lcourses'+(t.length%2?' odd':'')+'">'+t.join('')+'</div>';
+  return fsec('Courses','Follow along, day by day.')+'<div class="hpo-grid hcourses">'+t.join('')+'</div>';
 }
 function daysSince(){ const l=HF.data.lastISO; return l?daysBetween(l,iso(0)):0; }
 /* A two-up Home tile: label, one number, one line, and a ring. */

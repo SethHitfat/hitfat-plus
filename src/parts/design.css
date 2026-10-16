@@ -3761,3 +3761,8 @@ html,body{overscroll-behavior:none;}
 .td-body .tdm{stroke:var(--tdbg);stroke-width:1.3;}
 .td-body .tdn{fill:#E2E2E6;}
 :root:not([data-theme="light"]) .td-body .tdn{fill:#2C2C2F;}
+
+/* a big faint glyph on a poster with no photo */
+.hpo-gly{position:absolute;right:-14px;bottom:-14px;z-index:1;width:62%;opacity:.18;color:#FFFFFF;}
+.hpo-gly .gly{width:100%;height:auto;stroke:#FFFFFF;stroke-width:1.4;}
+.hcourses{margin-top:4px;}

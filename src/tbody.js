@@ -102,7 +102,7 @@ ok("home leads with the date and a large greeting", (function(){ var h=document.
 ok("rings are paths from twelve o'clock", ringArc(50,50,40,25).indexOf('M50 10')===0);
 ok("today's plan switches to the plan's next day", scPlanHTML().indexOf('Day 2 of')>0 && document.getElementById('home-today').innerHTML==='');
 ok("Home leaves the catalogue to Train", document.getElementById('home-plans').innerHTML==='' && document.getElementById('home-quick').innerHTML.indexOf('Quick Workouts')<0);
-ok("courses on Home as colour tiles", homeCourses().indexOf('class="lcourses')>0 && homeCourses().indexOf('openIF()')>0);
+ok("courses on Home as posters", homeCourses().indexOf('hpo-grid hcourses')>0 && homeCourses().indexOf('openIF()')>0);
 
 
 /* the early-morning bug: a session stamped in UTC read as yesterday for

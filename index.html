@@ -6000,6 +6000,11 @@ html,body{overscroll-behavior:none;}
 .td-body .tdn{fill:#E2E2E6;}
 :root:not([data-theme="light"]) .td-body .tdn{fill:#2C2C2F;}
 
+/* a big faint glyph on a poster with no photo */
+.hpo-gly{position:absolute;right:-14px;bottom:-14px;z-index:1;width:62%;opacity:.18;color:#FFFFFF;}
+.hpo-gly .gly{width:100%;height:auto;stroke:#FFFFFF;stroke-width:1.4;}
+.hcourses{margin-top:4px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -24314,19 +24319,26 @@ function renderHome(){
 /* Home: the courses not yet started (a course under way shows its own
    full card above) and IF and the Academy, as the Learn tab's colour tiles */
 function homeCourses(){
-  const t=[];
+  /* (16 Oct) the courses as posters, like Train after FIIT */
+  const t=[], P=o=>typeof hpoTile==='function'?hpoTile(o):'';
   if(typeof lbFull==='function' && !lbFull() && lbNext()<LB30_DAYS.length)
-    t.push('<div class="lib-t lct" onclick="openProgram(\''+LB30_ID+'\')" style="--wk:#B7837A;--wkt:#FFFFFF"><span class="fw-ic">'+glyph('workout')+'</span>'+
-      '<b>30<i> hari</i></b><div class="lt">'+hesc(LB30_NAME)+'</div><div class="ls">Khas wanita · di rumah</div></div>');
-  if(typeof d6Full==='function' && !d6Full() && d6Next()<D6_TOT) t.push(d6LearnCard());
-  if(typeof ifLearnTile==='function') t.push(ifLearnTile());
+    t.push(P({t:LB30_NAME,kick:'30 hari',lv:'Khas wanita · di rumah',pal:'magenta',img:'/img/p/lad4.jpg',pic:'lad4',pos:'50% 15%',go:"openProgram('"+LB30_ID+"')"}));
+  if(typeof d6Full==='function' && !d6Full() && d6Next()<D6_TOT){
+    const own=d6Owned(), dn=d6Done();
+    t.push(P({t:'Diet 6 Minggu',kick:own&&dn?'Hari '+dn+' / '+D6_TOT:D6_TOT+' hari',lv:'Program makan · 6KG',pal:'orange',img:'/img/p/mealplan.jpg',pic:'mealplan',pos:'50% 50%',go:'openD6()'}));
+  }
+  if(typeof ifLearnTile==='function'){
+    const d=ifData(), p=ifPlan(); let sub='4-week plan + timer';
+    if(ifOwned() && d.active) sub='Fasting · '+ifDur(Date.now()-d.active.at);
+    else if(ifOwned() && p && !p.blocked) sub='Week '+(ifWeek()+1)+' · tap to start';
+    t.push(P({t:'16:8 IF',kick:'IF HITFAT',lv:sub,pal:'blue',glyph:'clock',go:'openIF()'}));
+  }
   if(typeof acHomeCard==='function' && acHomeCard()){
     const nx=acNext(), n=acCount();
-    t.push('<div class="lib-t lct" onclick="acOpen(\''+nx.id+'\')" style="--wk:#4A5240;--wkt:#FFFFFF"><span class="fw-ic">'+glyph('play')+'</span>'+
-      '<b>Ep'+String(acNum(nx)).padStart(2,'0')+'</b><div class="lt">Nutrition Academy</div><div class="ls">'+(n?n+' / '+AC_EPS.length+' selesai':hesc(nx.t))+'</div></div>');
+    t.push(P({t:'Nutrition Academy',kick:'Ep '+String(acNum(nx)).padStart(2,'0'),lv:n?n+' / '+AC_EPS.length+' selesai':nx.t,pal:'green',glyph:'play',go:"acOpen('"+nx.id+"')"}));
   }
   if(!t.length) return '';
-  return fsec('Courses','Follow along, day by day.')+'<div class="lcourses'+(t.length%2?' odd':'')+'">'+t.join('')+'</div>';
+  return fsec('Courses','Follow along, day by day.')+'<div class="hpo-grid hcourses">'+t.join('')+'</div>';
 }
 function daysSince(){ const l=HF.data.lastISO; return l?daysBetween(l,iso(0)):0; }
 /* A two-up Home tile: label, one number, one line, and a ring. */
@@ -26762,6 +26774,18 @@ function hpoCard(p,o){
     (going?'<div class="hpo-go"><span>Day '+(done+1)+' of '+tot+'</span><i><b style="width:'+Math.round(done/tot*100)+'%"></b></i></div>'
           :'<span class="hpo-lv">'+(fin?'✓ Completed':(p.level||''))+'</span>')+
     (o.start||o.go?'<button class="hpo-play" aria-label="Start '+hesc(p.name)+'" onclick="event.stopPropagation();'+(o.go||'playSingle(\''+p.id+'\')')+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button>':'')+'</div>';
+}
+/* any poster that is not a program (16 Oct): a title, a kicker, a foot line,
+   a palette, and either a photo cut out by its mask or a big faint glyph */
+function hpoTile(o){
+  const c=HPO_PAL[o.pal]||HPO_PAL.blue, pos=o.pos||'50% 40%';
+  const ph=o.img?'<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\''+o.img+'\'),linear-gradient('+c[2]+','+c[2]+');background-position:'+pos+
+      (o.pic?';-webkit-mask-image:url(\'/img/p/mask/'+o.pic+'.png\');mask-image:url(\'/img/p/mask/'+o.pic+'.png\');-webkit-mask-position:'+pos+';mask-position:'+pos:'')+'"></div></div>'
+    : (o.glyph?'<span class="hpo-gly">'+glyph(o.glyph)+'</span>':'');
+  return '<div class="hpo '+(o.cls||'hpo-sq hpo-br')+(o.img&&!o.pic?' hpo-flat':'')+'" onclick="'+o.go+'" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+ph+
+    (o.kick?'<span class="hpo-len">'+hesc(o.kick)+'</span>':'')+
+    '<div class="hpo-t'+(o.t.length>14?' sm':'')+'">'+hesc(o.t)+'</div>'+
+    (o.lv?'<span class="hpo-lv">'+hesc(o.lv)+'</span>':'')+'</div>';
 }
 /* a Browse category as a poster (16 Oct): its studio photo cut out and toned,
    the name big, how many programs, what it is for */
