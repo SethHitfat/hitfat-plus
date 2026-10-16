@@ -3589,3 +3589,11 @@ html,body{overscroll-behavior:none;}
 .sc-bell.sc-rust .sc-rustfx,.sc-bell.sc-dust .sc-rustfx{display:none;}
 .sc-dust img,.sc-rust img,.sc-dust .bell-cv{-webkit-filter:none !important;filter:none !important;}
 .sc-rust{-webkit-transform:none;transform:none;}
+
+/* the orange Buddy's screen (16 Oct: orange on black looked muddy): its own warm orange, like gold has gold */
+.scc.scc-orange{background:radial-gradient(circle at 50% 32%,#FFF0E2 0%,#FFC796 30%,#F7924A 62%,#E5671C 100%);color:#2A1206;}
+.scc-orange .scc-t{color:#2A1206;}
+.scc-orange .scc-s{color:rgba(42,18,6,.78);}
+.scc-orange .scc-share{background:#2A1206 !important;color:#FFFFFF !important;}
+.scc-orange .scc-x{background:rgba(42,18,6,.1);color:#2A1206;}
+.scc-orange .scc-bell img{-webkit-filter:drop-shadow(0 10px 24px rgba(150,60,0,.35));filter:drop-shadow(0 10px 24px rgba(150,60,0,.35));}

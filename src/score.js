@@ -482,7 +482,7 @@ function scFreezeScreen(frozen){
 }
 /* Buddy has rusted: the black screen, once a day */
 function scRustScreen(st){
-  $('scc').className='scc scc-black';
+  $('scc').className='scc scc-orange';
   $('scc').innerHTML='<div class="scc-in">'+
     scMomentBell('kusut')+
     '<div class="scc-t">Buddy is all messy</div>'+

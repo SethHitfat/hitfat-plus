@@ -4022,7 +4022,7 @@ print("\n── SKOR HITFAT · FREEZE, SCREENS, POSES ──");
   scCelebrateClose();
   HF.data.sc={met:1}; HF.data.daily={}; HF.data.daily[iso(-4)]={water:1,steps:0};
   scRender();
-  ok("Bell rusted: the black screen once that day, a way to polish him", document.getElementById('scc').className.indexOf('scc-black')>0 &&
+  ok("Bell rusted: the orange screen once that day, a way to fluff him up", document.getElementById('scc').className.indexOf('scc-orange')>0 &&
      document.getElementById('scc').innerHTML.indexOf("scSheet('water')")>0);
   scCelebrateClose(); scRender();
   ok("...not again that day", document.getElementById('scc').style.display==='none');
