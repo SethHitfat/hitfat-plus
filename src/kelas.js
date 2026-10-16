@@ -64,7 +64,7 @@ async function kelasCall(action, extra){
 async function kelasLoad(){
   if(!KELAS_LIVE || typeof sb==='undefined' || !sb || !HF.userId) return;
   if(Kelas.state==='idle') kelasRestore();
-  Kelas.state='loading';
+  Kelas.state='loading'; _kelasAt=Date.now();
   try{
     const was=kelasLinked();
     const st=await kelasCall('status');
@@ -76,6 +76,15 @@ async function kelasLoad(){
   }catch(e){ Kelas.state='error'; }
   kelasRepaint();
 }
+/* back to the app after a while (a check-in at the kiosk, the phone in a
+   pocket): read the class again, at most every five minutes, so Bara on
+   Home counts this morning's class without a restart */
+var _kelasAt=0;
+if(typeof document!=='undefined' && document.addEventListener) document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState!=='visible' || !kelasLinked() || Kelas.state==='loading') return;
+  if(Date.now()-_kelasAt<5*60e3) return;
+  kelasLoad();
+});
 function kelasRepaint(){
   if($('kelas') && $('kelas').style.display==='block') renderKelas();
   else if($('home') && $('home').style.display!=='none' && typeof renderHome==='function') renderHome();
