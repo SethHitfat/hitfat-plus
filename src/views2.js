@@ -369,6 +369,93 @@ function pdxSub(p){
   const n=p.weeks.length;
   return (n===1?'1 Week':n+' Weeks')+' of '+String(p.goal||'Training').replace(/\b\w/g,c=>c.toUpperCase());
 }
+/* ── Training details, after FIIT's class details (16 Oct) ──
+   Level, intensity, metric, equipment, target area and goal, then a front
+   and back body with the muscles the moves work lit in HITFAT red (the main
+   ones full, the ones one move touches lighter), and the kcal estimate the
+   player itself uses. Everything is worked out from the moves themselves. */
+const TD_MAP={Legs:['quads','hams','glutes','calves'],Glutes:['glutes','hams'],Calves:['calves'],Core:['abs','obl','lowback'],
+  Arms:['biceps','forearms','triceps'],Triceps:['triceps'],Shoulders:['delts','reardelts'],Back:['upback','lats','lowback'],
+  Chest:['chest','triceps'],Cardio:['quads','calves','glutes','abs','delts'],Power:['quads','glutes','hams','delts','abs'],
+  'Full Body':['quads','glutes','hams','abs','delts','chest','upback','calves']};
+function tdWork(exs){
+  const hit={};
+  exs.forEach(e=>(TD_MAP[e.m]||[]).forEach(r=>{ hit[r]=(hit[r]||0)+1; }));
+  return hit;
+}
+/* the area named by zone: upper body, lower body, core, or all of them */
+const TD_ZONE={Arms:'up',Triceps:'up',Shoulders:'up',Chest:'up',Back:'up',Legs:'low',Glutes:'low',Calves:'low',Core:'core',
+  Cardio:'all',Power:'all','Full Body':'all'};
+function tdArea(exs){
+  const c={}, z={}; exs.forEach(e=>{ if(e.m && e.m!=='Mobility'){ c[e.m]=(c[e.m]||0)+1; z[TD_ZONE[e.m]||'x']=1; } });
+  const k=Object.keys(c).sort((a,b)=>c[b]-c[a]);
+  if(!k.length) return 'Mobility';
+  if(z.all || (z.up && z.low)) return 'Full Body';
+  if(k.length<=2) return k.join(' & ');
+  if(z.up && !z.low) return z.core ? 'Upper Body & Core' : 'Upper Body';
+  if(z.low && !z.up) return z.core ? 'Lower Body & Core' : 'Lower Body';
+  return k.slice(0,2).join(' & ');
+}
+function tdIntensity(p,exs){
+  let n={Beginner:4,Intermediate:6,Advanced:8}[p.level]||5;
+  const hard=exs.filter(e=>/Cardio|Power|Full Body/.test(e.m)).length, soft=exs.filter(e=>/Mobility|Core/.test(e.m)).length;
+  if(hard>=exs.length/3) n++;
+  if(soft>exs.length/2) n--;
+  return Math.max(1,Math.min(10,n));
+}
+function tdKit(exs){
+  const k={}; exs.forEach(e=>{ if(e.eq && !/body ?weight|none/i.test(e.eq)) k[e.eq]=1; });
+  const a=Object.keys(k); return a.length?a.slice(0,2).join(' & '):'No equipment';
+}
+/* the body: one smooth outline (a mirrored curve, TD_OUTLINE), the muscle
+   regions laid over it and clipped to it, with thin gaps between them in the
+   card's colour, so it reads as one figure in segments */
+const TD_OUTLINE='M45.0 26.0C42.2 26.6 40.3 28.7 38.0 29.5C35.7 30.3 33.1 30.1 31.0 31.0C28.9 31.9 27.1 32.7 25.5 35.0C23.9 37.3 22.5 41.2 21.5 45.0C20.5 48.8 20.2 53.8 19.5 58.0C18.8 62.2 18.2 65.8 17.5 70.0C16.8 74.2 16.1 79.2 15.5 83.0C14.9 86.8 14.6 90.2 14.2 93.0C13.8 95.8 12.7 97.8 12.8 100.0C12.9 102.2 13.8 105.1 14.8 106.0C15.8 106.9 18.1 106.8 19.0 105.5C19.9 104.2 20.1 100.4 20.5 98.0C20.9 95.6 21.0 94.0 21.5 91.0C22.0 88.0 22.8 83.5 23.5 80.0C24.2 76.5 24.8 73.7 25.5 70.0C26.2 66.3 27.0 61.5 28.0 58.0C29.0 54.5 30.7 49.0 31.5 49.0C32.3 49.0 32.5 53.8 33.0 58.0C33.5 62.2 34.5 68.7 34.5 74.0C34.5 79.3 33.6 84.7 33.2 90.0C32.8 95.3 32.1 100.0 32.0 106.0C31.9 112.0 32.3 119.5 32.8 126.0C33.3 132.5 34.6 139.3 34.8 145.0C35.0 150.7 33.8 154.2 34.0 160.0C34.2 165.8 35.2 175.0 35.8 180.0C36.4 185.0 38.0 187.1 37.8 190.0C37.6 192.9 33.8 196.0 34.8 197.5C35.8 199.0 42.1 199.5 43.8 199.0C45.5 198.5 45.1 196.5 45.2 194.5C45.3 192.5 44.2 191.1 44.2 187.0C44.2 182.9 44.7 176.2 45.0 170.0C45.3 163.8 45.8 157.0 46.2 150.0C46.6 143.0 46.8 134.7 47.2 128.0C47.6 121.3 47.9 114.2 48.4 110.0C48.9 105.8 49.5 103.0 50.0 103.0C50.5 103.0 51.1 105.8 51.6 110.0C52.1 114.2 52.4 121.3 52.8 128.0C53.2 134.7 53.4 143.0 53.8 150.0C54.2 157.0 54.7 163.8 55.0 170.0C55.3 176.2 55.8 182.9 55.8 187.0C55.8 191.1 54.7 192.5 54.8 194.5C54.9 196.5 54.5 198.5 56.2 199.0C57.9 199.5 64.2 199.0 65.2 197.5C66.2 196.0 62.4 192.9 62.2 190.0C62.0 187.1 63.6 185.0 64.2 180.0C64.8 175.0 65.8 165.8 66.0 160.0C66.2 154.2 65.0 150.7 65.2 145.0C65.4 139.3 66.7 132.5 67.2 126.0C67.7 119.5 68.1 112.0 68.0 106.0C67.9 100.0 67.2 95.3 66.8 90.0C66.4 84.7 65.5 79.3 65.5 74.0C65.5 68.7 66.5 62.2 67.0 58.0C67.5 53.8 67.7 49.0 68.5 49.0C69.3 49.0 71.0 54.5 72.0 58.0C73.0 61.5 73.8 66.3 74.5 70.0C75.2 73.7 75.8 76.5 76.5 80.0C77.2 83.5 78.0 88.0 78.5 91.0C79.0 94.0 79.1 95.6 79.5 98.0C79.9 100.4 80.0 104.2 81.0 105.5C82.0 106.8 84.2 106.9 85.2 106.0C86.2 105.1 87.1 102.2 87.2 100.0C87.3 97.8 86.2 95.8 85.8 93.0C85.3 90.2 85.0 86.8 84.5 83.0C84.0 79.2 83.2 74.2 82.5 70.0C81.8 65.8 81.2 62.2 80.5 58.0C79.8 53.8 79.5 48.8 78.5 45.0C77.5 41.2 76.1 37.3 74.5 35.0C72.9 32.7 71.1 31.9 69.0 31.0C66.9 30.1 64.3 30.3 62.0 29.5C59.7 28.7 57.8 26.6 55.0 26.0C52.2 25.4 47.8 25.4 45.0 26.0Z';
+function tdBody(hit){
+  const f=r=>hit[r]?(hit[r]>=2?'tdm on':'tdm on2'):'tdm';
+  const R=(r,x,y,w,h,rx)=>'<rect class="'+f(r)+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(rx||3)+'"/>';
+  const E=(r,cx,cy,rx,ry)=>'<ellipse class="'+f(r)+'" cx="'+cx+'" cy="'+cy+'" rx="'+rx+'" ry="'+ry+'"/>';
+  const both=(fn)=>fn(0)+fn(1), mx=(x,w,i)=>i?100-x-w:x, mc=(cx,i)=>i?100-cx:cx;
+  const fig=(id,inner)=>'<svg viewBox="0 0 100 210" aria-hidden="true"><defs><clipPath id="'+id+'"><path d="'+TD_OUTLINE+'"/></clipPath></defs>'+
+    '<ellipse class="tdn" cx="50" cy="14.5" rx="9.2" ry="11.2"/><path class="tdn" d="'+TD_OUTLINE+'"/>'+
+    '<g clip-path="url(#'+id+')">'+inner+'</g></svg>';
+  const front=fig('tdcF',
+    both(i=>E('delts',mc(26.5,i),39,8.6,9))+
+    both(i=>R('chest',mx(33.5,16,i),33,16,18.5,5))+
+    both(i=>E('biceps',mc(22.2,i),58,6.2,11.5))+
+    both(i=>E('forearms',mc(18.4,i),82,5.8,12.5))+
+    R('abs',41,53,18,10,3)+R('abs',41,64,18,10,3)+R('abs',41,75,18,12,4)+
+    both(i=>R('obl',mx(32,8.4,i),53,8.4,33,3))+
+    both(i=>R('quads',mx(31,18.4,i),101,18.4,42,6))+
+    both(i=>R('calves',mx(32,15.6,i),151,15.6,37,6)));
+  const back=fig('tdcB',
+    R('upback',35,29,30,18,4)+
+    both(i=>E('reardelts',mc(26.5,i),39,8.6,9))+
+    both(i=>R('lats',mx(32.5,16.8,i),48,16.8,22,4))+
+    both(i=>E('triceps',mc(22.2,i),58,6.2,11.5))+
+    both(i=>E('forearms',mc(18.4,i),82,5.8,12.5))+
+    R('lowback',37.5,71,25,16,4)+
+    both(i=>R('glutes',mx(31.5,18,i),88,18,21,8))+
+    both(i=>R('hams',mx(31.5,18,i),110,18,33,6))+
+    both(i=>R('calves',mx(32,15.6,i),151,15.6,37,6)));
+  return '<div class="td-body"><div><span>Front</span>'+front+'</div><div><span>Back</span>'+back+'</div></div>';
+}
+function trainingDetails(p,exs){
+  if(!exs || !exs.length) return '';
+  const lv=tdIntensity(p,exs), mins=p.dur||Math.round(exs.length*3), kc=Math.round(mins*(typeof PL_KCAL_MIN!=='undefined'?PL_KCAL_MIN:7));
+  const bars='<span class="td-bars">'+[1,2,3,4,5].map(i=>'<i class="'+(i<=Math.round(lv/2)?'on':'')+'" style="height:'+(4+i*2)+'px"></i>').join('')+'</span>';
+  const row=(k,v)=>'<div class="td-r"><b>'+k+'</b><span>'+v+'</span></div>';
+  return '<div class="td">'+
+    '<div class="td-h">Training details</div>'+
+    row('Level',p.level||'All levels')+
+    row('Intensity',bars+'<em>'+lv+'</em><small>/10</small>')+
+    row('Metric','Time')+
+    row('Equipment',tdKit(exs))+
+    row('Target area',tdArea(exs))+
+    row('Goal',p.goal||'Workout')+
+    tdBody(tdWork(exs))+
+    '<div class="td-kcal">'+glyph('flame')+'<b>≈ '+kc+'</b> kcal · estimate for '+mins+' min</div></div>';
+}
 function renderProgram(){
   const p=curProg; if(!p) return;
   if(p.hub) return p.hub==='lb30' ? renderLB30() : p.hub==='d6' ? renderD6() : renderWL30();
@@ -427,6 +514,7 @@ function renderProgram(){
     }).join('')+'</div>';
   } else {
     const exs=pickEx(p.ex||[], progEq(p));
+    h+=trainingDetails(p,exs);
     h+='<div class="fsec"><div class="ft">In This Workout</div><div class="fs">'+exs.length+' exercises · '+(p.rounds||3)+' rounds</div></div>';
     h+='<div class="pdx-eps">'+exs.map((e,i)=>
       '<div class="pdx-ex"><span class="n">'+(i+1)+'</span><div class="tx"><div class="t">'+e.n+'</div>'+
@@ -461,6 +549,7 @@ function openDay(pid,gi){
                 exs.length+' exercises · '+(p.rounds||3)+' rounds · '+p.dur+' min',{icon:'play',label:'Start',go:'playDay()'});
   h+='<div class="pdx-btns"><button class="bigbtn" onclick="playDay()">'+glyph('play')+'Start Workout</button>'+
      '<button class="pdx-prev" onclick="completeDay()">'+glyph('check')+'Mark done without playing</button></div>';
+  h+=trainingDetails(p,exs);
   h+='<div class="fsec"><div class="ft">In This Workout</div><div class="fs">Tap a movement to watch it.</div></div>'+
     '<div class="pdx-eps">'+exs.map((e,i)=>'<div class="pdx-ex" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
       '<span class="n">'+(i+1)+'</span>'+

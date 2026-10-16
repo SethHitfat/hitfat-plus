@@ -4196,5 +4196,18 @@ print("\n── THIS WEEK · BEGINNER FRIENDLY ──");
   scRender(); ok("...and only once", fired===1);
   scTurnRed=keep; HF.data.daily=kd; HF.data.meals=km; HF.data.sessions=ks; scRender._red=undefined;
 })();
+print("\n── TRAINING DETAILS · AFTER FIIT ──");
+(function(){
+  var arms=PROGRAMS.filter(function(p){ return p.id==='db2'; })[0];
+  var ex=pickEx(arms.ex||[], progEq(arms)), h=trainingDetails(arms,ex);
+  ok("training details: level, intensity, metric, equipment, target area, goal", ['Level','Intensity','Metric','Equipment','Target area','Goal'].every(function(k){ return h.indexOf('<b>'+k+'</b>')>0; }));
+  ok("an arms and shoulders session is upper body, not full body", tdArea(ex)==='Upper Body');
+  ok("...its arms and shoulders lit, its legs not", tdWork(ex).biceps>=2 && tdWork(ex).delts>=2 && !tdWork(ex).quads);
+  ok("...on a front and a back body", h.indexOf('>Front<')>0 && h.indexOf('>Back<')>0 && (h.match(/class="tdm on/g)||[]).length>0);
+  ok("the kcal is the player's own estimate", h.indexOf('≈ '+Math.round(arms.dur*PL_KCAL_MIN))>0);
+  var burn=PROGRAMS.filter(function(p){ return p.id==='p1'; })[0];
+  ok("a cardio and legs session is full body", tdArea(pickEx(burn.ex||[], progEq(burn)))==='Full Body');
+  ok("intensity stays within 1 to 10", PROGRAMS.filter(function(p){ return p.ex; }).every(function(p){ var n=tdIntensity(p,pickEx(p.ex,progEq(p))); return n>=1 && n<=10; }));
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");
