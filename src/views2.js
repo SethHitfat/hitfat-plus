@@ -79,7 +79,7 @@ const FOCAL={
   p6:[50,22,0.593], p7:[40,46,1.859,1], p9:[55,36,0.593], reset12:[48,13,1], rh1:[65,25,1.34],
   rh2:[70,15,1.34], rh3:[63,32,1.898,1], rh4:[55,35,1.798], rh5:[65,10,1.34], rh6:[60,35,1.34],
   sig1:[47,13,1], sig2:[48,20,1], sig3:[47,15,1], sig4:[48,10,1], tw1:[55,15,0.593],
-  tw2:[60,44,0.634], bt1:[50,20,1.19], bt2:[60,35,1.196,1], p34:[50,50,1.192,1], wl30:[55,16,1,1.6,0.6]
+  tw2:[60,44,0.634], bt1:[50,20,1.19], bt2:[60,35,1.196,1], p34:[50,50,1.192,1], wl30:[50,22,1]
 };
 const FA={wide:1.77, row:1.65, poster:1.5, hero:0.87, card:0.75, tall:0.67, join:0.6};
 /* Many studio pictures stand their person right of centre. A frame no
@@ -105,8 +105,10 @@ function imgPos(p,frame){
   return (z>1?'background-size:'+(W*100).toFixed(1)+'% auto;':'')+
     'background-position:'+px.toFixed(1)+'% '+py.toFixed(1)+'%;';
 }
+/* a picture replaced under the same name gets a version, so phones fetch it again */
+const IMG_V={wl30:2};
 function progImg(p){
-  if(hasPhoto(p)) return '/img/p/'+p.id+'.jpg';
+  if(hasPhoto(p)) return '/img/p/'+p.id+'.jpg'+(IMG_V[p.id]?'?v='+IMG_V[p.id]:'');
   const n=(p&&p.name)||'', g=(p&&p.goal)||'';
   /* Recovery and BAR before anything else — a knee prehab program showing a
      man carrying kettlebells in a dark gym reads as the wrong product. These

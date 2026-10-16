@@ -190,7 +190,8 @@ function hpoCard(p,o){
   o=o||{};
   const c=hpoPal(p), pic=hpoPic(p), cut=hasPhoto(p) && HPO_MASK.has(pic);
   const pos=hasPhoto(p)?(imgPos(p,o.wide?1.78:1.6)||'').replace(/;$/,''):'';
-  const msk=cut?';-webkit-mask-image:url(\'/img/p/mask/'+pic+'.png\');mask-image:url(\'/img/p/mask/'+pic+'.png\')'+
+  const mv=(typeof IMG_V!=='undefined'&&IMG_V[pic])?'?v='+IMG_V[pic]:'';
+  const msk=cut?';-webkit-mask-image:url(\'/img/p/mask/'+pic+'.png'+mv+'\');mask-image:url(\'/img/p/mask/'+pic+'.png'+mv+'\')'+
     (pos?';'+pos.replace(/background-/g,'-webkit-mask-')+';'+pos.replace(/background-/g,'mask-'):''):'';
   const tot=typeof p.days==='number'?p.days:(p.weeks||p.oneTime)?progDays(p):0, done=tot?progDone(p.id):0, going=done>0&&done<tot, fin=tot>0&&done>=tot;
   return '<div class="hpo'+(o.wide?' hpo-w':'')+(o.cls?' '+o.cls:'')+(cut?'':' hpo-flat')+'" onclick="openProgram(\''+p.id+'\')" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+
