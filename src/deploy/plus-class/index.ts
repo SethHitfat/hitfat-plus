@@ -14,6 +14,11 @@
                                      check-ins; and keeps access in step
                                      with the end date
    POST { action:'unlink' }          disconnect, end the access
+   POST { action:'inbody', image_base64, media_type }
+                                     a photograph of the InBody printout,
+                                     read by Claude, saved in HITFAT OS
+                                     (inbody_scans, and the headline numbers
+                                     in client_metrics for the coach)
 
    HITFAT OS is another Supabase project. Its four plus_* functions refuse
    anything without the bridge key, which lives here in plus_settings
@@ -40,6 +45,93 @@ const OS_ANON = '__OS_ANON__';
 
 const SKU = 'sub_plus_class';
 const LOOKUPS_PER_HOUR = 8;
+
+/* InBody: dense small print where every digit matters, so the strongest
+   model. Four sheets a day is more than any member needs; every attempt
+   costs money whether or not it reads. */
+const INBODY_MODEL = 'claude-opus-5-5';
+const INBODY_PER_DAY = 4;
+const MAX_IMAGE_B64 = 5_500_000;
+
+const INBODY_SYSTEM = `You read InBody body-composition result sheets (InBody 120, 270, 370, 570, 770, 970 and similar) and return their numbers.
+
+Reply with one JSON object and nothing else: no markdown, no code fence, no commentary. Use exactly these keys. Use null, never a guess, for any value that is not printed or not legible. Numbers are plain numbers (no units, no strings).
+
+{
+  "scan_date": "YYYY-MM-DD" | null,
+  "model": string | null,
+  "height_cm": number | null, "age": number | null, "sex": "male" | "female" | null,
+  "weight": number | null,          // kg
+  "tbw": number | null,             // total body water, L
+  "protein": number | null,         // kg
+  "mineral": number | null,         // kg
+  "bfm": number | null,             // body fat mass, kg
+  "ffm": number | null,             // fat free mass, kg
+  "smm": number | null,             // skeletal muscle mass, kg
+  "pbf": number | null,             // percent body fat
+  "bmi": number | null,
+  "ranges": {                        // the printed normal range for each, [low, high]
+    "weight": [number, number] | null, "smm": [number, number] | null, "bfm": [number, number] | null,
+    "pbf": [number, number] | null, "bmi": [number, number] | null
+  },
+  "score": number | null,           // InBody Score, out of 100
+  "target_weight": number | null, "weight_control": number | null,
+  "fat_control": number | null, "muscle_control": number | null,   // kg, signed as printed (+/-)
+  "vfl": number | null,             // visceral fat level
+  "vfa": number | null,             // visceral fat area, cm2
+  "bmr": number | null,             // kcal
+  "whr": number | null,             // waist-hip ratio
+  "smi": number | null,             // skeletal muscle index, kg/m2
+  "ecw_ratio": number | null,       // ECW/TBW
+  "seg_lean": { "right_arm": {"kg": n|null, "pct": n|null}, "left_arm": {...}, "trunk": {...}, "right_leg": {...}, "left_leg": {...} } | null,
+  "seg_fat":  { "right_arm": {"kg": n|null, "pct": n|null}, "left_arm": {...}, "trunk": {...}, "right_leg": {...}, "left_leg": {...} } | null,
+  "confidence": "high" | "medium" | "low",
+  "unreadable": true | false
+}
+
+Rules:
+- pct in seg_lean and seg_fat is the percentage of normal printed under each segment (e.g. 104.3), not a body fat percentage.
+- Sheets differ by model; a missing section is normal, return null for it.
+- Never carry a number over from another row because it looks plausible.
+- If the photograph is not an InBody result sheet, set unreadable to true and every measurement to null.`;
+
+function num(v: unknown): number | null {
+  const n = typeof v === 'string' ? parseFloat(v) : v;
+  return typeof n === 'number' && isFinite(n) ? n : null;
+}
+function pair(v: unknown): [number, number] | null {
+  if (!Array.isArray(v) || v.length !== 2) return null;
+  const a = num(v[0]), b = num(v[1]);
+  return a !== null && b !== null && a < b ? [a, b] : null;
+}
+function segs(v: any) {
+  if (!v || typeof v !== 'object') return null;
+  const out: Record<string, { kg: number | null; pct: number | null }> = {};
+  let any = false;
+  for (const k of ['right_arm', 'left_arm', 'trunk', 'right_leg', 'left_leg']) {
+    const kg = num(v?.[k]?.kg), pct = num(v?.[k]?.pct);
+    out[k] = { kg, pct };
+    if (kg !== null || pct !== null) any = true;
+  }
+  return any ? out : null;
+}
+/* Only the keys the app knows, every number checked, nothing else kept. */
+function clean(r: any) {
+  const N = ['height_cm', 'age', 'weight', 'tbw', 'protein', 'mineral', 'bfm', 'ffm', 'smm', 'pbf', 'bmi', 'score',
+    'target_weight', 'weight_control', 'fat_control', 'muscle_control', 'vfl', 'vfa', 'bmr', 'whr', 'smi', 'ecw_ratio'];
+  const d: Record<string, unknown> = {};
+  for (const k of N) { const v = num(r?.[k]); if (v !== null) d[k] = v; }
+  if (typeof r?.model === 'string') d.model = r.model.slice(0, 40);
+  if (r?.sex === 'male' || r?.sex === 'female') d.sex = r.sex;
+  const rg: Record<string, [number, number]> = {};
+  for (const k of ['weight', 'smm', 'bfm', 'pbf', 'bmi']) { const p = pair(r?.ranges?.[k]); if (p) rg[k] = p; }
+  if (Object.keys(rg).length) d.ranges = rg;
+  const sl = segs(r?.seg_lean), sf = segs(r?.seg_fat);
+  if (sl) d.seg_lean = sl;
+  if (sf) d.seg_fat = sf;
+  d.confidence = ['high', 'medium', 'low'].includes(r?.confidence) ? r.confidence : 'medium';
+  return d;
+}
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -112,7 +204,7 @@ Deno.serve(async (req: Request) => {
     if (action === 'lookup') {
       const since = new Date(Date.now() - 3600e3).toISOString();
       const { count } = await admin.from('plus_class_tries').select('*', { count: 'exact', head: true })
-        .eq('user_id', uid).gt('at', since);
+        .eq('user_id', uid).eq('kind', 'lookup').gt('at', since);
       if ((count || 0) >= LOOKUPS_PER_HOUR) return json({ error: 'too_many' }, 429);
       await admin.from('plus_class_tries').insert({ user_id: uid });
       const r = await os('plus_lookup', { p_key: key, p_phone: phone });
@@ -135,6 +227,57 @@ Deno.serve(async (req: Request) => {
       const st = await os('plus_status', { p_key: key, p_user: uid });
       const until = await syncAccess(admin, uid, st);
       return json({ ...st, until });
+    }
+
+    if (action === 'inbody') {
+      const st = await os('plus_status', { p_key: key, p_user: uid });
+      if (!st || !st.linked) return json({ error: 'not_linked' }, 403);
+
+      const dayAgo = new Date(Date.now() - 86400e3).toISOString();
+      const { count } = await admin.from('plus_class_tries').select('*', { count: 'exact', head: true })
+        .eq('user_id', uid).eq('kind', 'inbody').gt('at', dayAgo);
+      if ((count || 0) >= INBODY_PER_DAY) return json({ error: 'too_many' }, 429);
+
+      const b64 = String(body.image_base64 || '').replace(/^data:image\/\w+;base64,/, '');
+      if (!b64) return json({ error: 'no_image' }, 400);
+      if (b64.length > MAX_IMAGE_B64) return json({ error: 'too_large' }, 413);
+      if (!/^[A-Za-z0-9+/]+={0,2}$/.test(b64)) return json({ error: 'bad_image' }, 400);
+      const mediaType = /^image\/(jpeg|png|webp)$/.test(String(body.media_type || '')) ? String(body.media_type) : 'image/jpeg';
+      const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
+      if (!apiKey) return json({ error: 'not_ready' }, 503);
+      await admin.from('plus_class_tries').insert({ user_id: uid, kind: 'inbody' });
+
+      const ai = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({
+          model: INBODY_MODEL, max_tokens: 2000, system: INBODY_SYSTEM,
+          messages: [{ role: 'user', content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: b64 } },
+            { type: 'text', text: 'Read every number on this InBody result sheet.' },
+          ] }],
+        }),
+      });
+      if (!ai.ok) { console.error('inbody anthropic', ai.status, (await ai.text()).slice(0, 300)); return json({ error: 'unread' }, 502); }
+      const out = await ai.json();
+      const text = String((out?.content || []).filter((c: any) => c.type === 'text').map((c: any) => c.text).join('')).trim()
+        .replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+      let r: any = null;
+      try { r = JSON.parse(text); } catch { const m = text.match(/\{[\s\S]*\}/); if (m) { try { r = JSON.parse(m[0]); } catch { r = null; } } }
+      if (!r) return json({ error: 'unread' }, 502);
+      if (r.unreadable === true) return json({ error: 'not_inbody' }, 422);
+      const d = clean(r);
+      if (d.weight === undefined && d.pbf === undefined) return json({ error: 'not_inbody' }, 422);
+
+      /* the date printed on the sheet; today in Malaysia when it is not legible,
+         or when it reads as a day in the future */
+      const todayMY = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+      let scanDate = String(r.scan_date || '').slice(0, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(scanDate) || scanDate > todayMY || scanDate < '2015-01-01') scanDate = todayMY;
+
+      const sv = await os('plus_inbody_save', { p_key: key, p_user: uid, p_date: scanDate, p_data: d });
+      if (!sv || !sv.ok) return json({ error: (sv && sv.error) || 'failed' }, 500);
+      return json({ ok: true, scan: { ...d, scan_date: scanDate, src: 'sheet' } });
     }
 
     if (action === 'unlink') {

@@ -95,7 +95,7 @@ function handleKelasParam(){
 
 /* ── open ── */
 function openKelas(){
-  hidePanels(); $('kelas').style.display='block'; $('screen').scrollTop=0;
+  hidePanels(); $('kelas').style.display='block'; $('screen').scrollTop=0; Kelas.view=null;
   if(!kelasLinked()){ Kelas.step='phone'; Kelas.err=''; Kelas.found=null; }
   Kelas.unlinkAsk=false;
   renderKelas();
@@ -169,7 +169,7 @@ function renderKelas(){
       '<p class="kl-p">Sign in to HITFAT+, then connect your class membership with your phone number.</p></div>';
     return;
   }
-  el.innerHTML=kelasLinked()?kelasHTML():kelasLinkHTML();
+  el.innerHTML=kelasLinked()?(Kelas.view==='ib'?kelasIBDetail():kelasHTML()):kelasLinkHTML();
 }
 
 function kelasQR(px){ return typeof qrSVG==='function' ? qrSVG(String(Kelas.data.member_id), px) : ''; }
@@ -216,6 +216,9 @@ function kelasHTML(){
   h+=kelasLatestHTML();
 
   /* HITFAT Points, after F45 FIT Rewards: earned at HQ, spent at the counter */
+  /* InBody: photograph the printed sheet, read in full (after the InBody app) */
+  h+=kelasIBCard();
+
   h+=kelasPointsHTML();
 
   /* personal records, after Burn Boot Camp: log one, ring the bell, share it */
@@ -496,6 +499,7 @@ function kelasDraw(){
   const r=x.createRadialGradient(W*.85,H*.08,0,W*.85,H*.08,W*.9); r.addColorStop(0,'rgba(255,255,255,.28)'); r.addColorStop(1,'rgba(255,255,255,0)');
   x.fillStyle=r; x.fillRect(0,0,W,H);
   x.textAlign='center'; x.textBaseline='alphabetic';
+  if(S.kind==='ib') return kelasDrawIB(x,W,H,cx,F,S);
   // big faint mark behind
   x.fillStyle='rgba(255,255,255,.10)'; x.font=F(900,S.kind==='pr'?560:420);
   x.fillText(S.kind==='pr'?'PR':'#'+(S.n||0),cx,H-260);
@@ -575,6 +579,267 @@ function kelasPtsChart(weeks){
   return '<div class="kl-ch"><div class="kl-chh">Points, last 12 weeks</div><div class="kl-chb">'+
     col.map((v,i)=>'<span title="'+v+'"><i style="height:'+Math.max(v?6:2,Math.round(v/mx*100))+'%"'+(i===11?' class="now"':'')+'></i></span>').join('')+
     '</div></div>';
+}
+
+/* ═══════════════ InBody ═══════════════
+   The member photographs the sheet the InBody machine prints; plus-class
+   reads it with Claude and saves the full reading in HITFAT OS (085), where
+   the coach sees it too. Shown here more plainly than the InBody app does:
+   what each number means, in or out of the normal range, what changed since
+   the last scan, the body by segment, every scan over time, and a story
+   card that shares the progress (muscle and fat), never the weight. */
+function kelasIBs(){ return ((Kelas.data&&Kelas.data.inbody)||[]).slice().sort((a,b)=>String(b.scan_date).localeCompare(String(a.scan_date))); }
+function kelasIBDate(d,short){
+  return new Date(String(d).slice(0,10)+'T00:00:00+08:00').toLocaleDateString('en-MY',
+    short?{day:'numeric',month:'short',timeZone:'Asia/Kuala_Lumpur'}:{day:'numeric',month:'short',year:'numeric',timeZone:'Asia/Kuala_Lumpur'});
+}
+function kelasF(v,dp){ return (v===undefined||v===null||v==='')?'—':(+v).toFixed(dp===undefined?1:dp).replace(/\.0+$/,''); }
+/* the normal range: printed on the sheet, or the usual one where the sheet has none */
+function kelasRange(s,k){
+  const r=s.ranges&&s.ranges[k]; if(r) return r;
+  if(k==='bmi') return [18.5,25];
+  if(k==='pbf') return s.sex==='female'?[18,28]:[10,20];
+  return null;
+}
+function kelasZone(s,k){
+  const v=s[k], r=kelasRange(s,k); if(v===undefined||v===null||!r) return null;
+  return v<r[0]?'under':v>r[1]?'over':'normal';
+}
+/* good or not depends on what it is: more muscle is good, more fat is not */
+function kelasTone(k,z){
+  if(!z) return '';
+  if(k==='smm') return z==='under'?'warn':'good';
+  if(k==='bfm'||k==='pbf') return z==='over'?'bad':'good';
+  return z==='normal'?'good':'warn';
+}
+var KL_ZLABEL={under:'Under',normal:'Normal',over:'Over'};
+function kelasDelta(k,cur,prev){
+  if(!prev || prev[k]===undefined || prev[k]===null || cur[k]===undefined || cur[k]===null) return '';
+  const d=Math.round((cur[k]-prev[k])*10)/10; if(!d) return '<span class="ib-d">no change</span>';
+  const better = (k==='smm'||k==='score'||k==='bmr') ? d>0 : (k==='bfm'||k==='pbf'||k==='vfl') ? d<0 : null;
+  return '<span class="ib-d '+(better===null?'':better?'up':'down')+'">'+(d>0?'▲ +':'▼ ')+kelasF(Math.abs(d))+'</span>';
+}
+/* one plain sentence about the result, and one about the change */
+function kelasIBSay(s,prev){
+  const m=kelasZone(s,'smm'), f=kelasZone(s,'pbf')||kelasZone(s,'bfm');
+  let a;
+  if(f==='over' && m==='under') a='Body fat is above the healthy range and muscle is below it. The plan: build muscle and lose fat together, with strength classes 3 times a week and enough protein.';
+  else if(f==='over') a='Muscle is where it should be; body fat is above the healthy range.'+(s.fat_control?' Aim to lose about '+kelasF(Math.abs(s.fat_control))+' kg of fat and keep the muscle.':' Lose fat, keep the muscle.');
+  else if(m==='under') a='Body fat is healthy; muscle is below the normal range.'+(s.muscle_control?' Aim to build about '+kelasF(Math.abs(s.muscle_control))+' kg of muscle.':' Strength work and protein will build it.');
+  else if(m==='over') a='Strong build: muscle above normal and body fat in the healthy range. Keep it there.';
+  else if(m||f) a='Muscle and body fat are both in the normal range. Keep it there.';
+  else a='Your latest body composition reading.';
+  if(prev){
+    const dm=(s.smm!=null&&prev.smm!=null)?Math.round((s.smm-prev.smm)*10)/10:null, df=(s.bfm!=null&&prev.bfm!=null)?Math.round((s.bfm-prev.bfm)*10)/10:null;
+    const bits=[]; if(dm) bits.push('muscle '+(dm>0?'+':'−')+kelasF(Math.abs(dm))+' kg'); if(df) bits.push('fat '+(df>0?'+':'−')+kelasF(Math.abs(df))+' kg');
+    if(bits.length) a+=' Since '+kelasIBDate(prev.scan_date,true)+': '+bits.join(', ')+'.';
+  }
+  return a;
+}
+function kelasRing(score,px){
+  const r=42, c=2*Math.PI*r, p=Math.max(0,Math.min(100,+score||0))/100;
+  return '<svg class="ib-ring" viewBox="0 0 100 100" width="'+px+'" height="'+px+'" aria-hidden="true">'+
+    '<circle cx="50" cy="50" r="'+r+'" class="ib-rbg"/><circle cx="50" cy="50" r="'+r+'" class="ib-rfg" stroke-dasharray="'+(c*p).toFixed(1)+' '+c.toFixed(1)+'" transform="rotate(-90 50 50)"/></svg>';
+}
+
+/* the card on the Class screen */
+function kelasIBCard(){
+  const all=kelasIBs(), s=all[0], prev=all[1];
+  let h=fsec('Body composition','InBody, from a photo of your result sheet.');
+  h+='<input type="file" id="kl-ibf" accept="image/*" style="display:none" onchange="kelasIBPick(this)">';
+  if(Kelas.ibBusy) return h+'<div class="ib-card ib-busy"><span class="ib-spin"></span><b>Reading your sheet…</b><small>This takes about 20 seconds. Keep the app open.</small></div>';
+  if(!s){
+    return h+'<div class="ib-card ib-empty"><div class="ib-ei">'+glyph('scale')+'</div><b>Snap your InBody sheet</b>'+
+      '<small>Take a straight, bright photo of the whole printed result. Every number is read for you, explained, and kept with your coach.</small>'+
+      '<button class="bigbtn kl-go" onclick="kelasIBShoot()">'+glyph('photo')+' Scan my InBody sheet</button>'+
+      '<span class="ib-bonus">+200 points for your first scan</span></div>';
+  }
+  const tile=(k,label,unit)=>{ const z=kelasZone(s,k);
+    return '<div class="ib-t"><small>'+label+'</small><b>'+kelasF(s[k])+'<i>'+unit+'</i></b>'+
+      (z?'<span class="ib-z '+kelasTone(k,z)+'">'+KL_ZLABEL[z]+'</span>':'')+kelasDelta(k,s,prev)+'</div>'; };
+  h+='<div class="ib-card" onclick="kelasIBOpen(0)"><div class="ib-top"><div><b>InBody result</b><small>'+kelasIBDate(s.scan_date)+(s.src==='staff'?' · recorded at HQ':'')+'</small></div>'+
+     (s.score!=null?'<div class="ib-sc">'+kelasRing(s.score,64)+'<span><b>'+kelasF(s.score,0)+'</b><small>score</small></span></div>':'')+'</div>'+
+     '<div class="ib-tiles">'+tile('weight','Weight','kg')+tile('smm','Muscle','kg')+tile('pbf','Body fat','%')+'</div>'+
+     '<div class="ib-say">'+hesc(kelasIBSay(s,prev))+'</div>'+
+     '<div class="ib-acts"><button class="kl-add" onclick="event.stopPropagation();kelasIBOpen(0)">Full result</button>'+
+     '<button class="kl-alt2" onclick="event.stopPropagation();kelasIBShoot()">'+glyph('photo')+' New scan</button></div></div>';
+  return h;
+}
+
+/* the full result */
+function kelasIBOpen(i){ Kelas.view='ib'; Kelas.ibIdx=i||0; Kelas.ibSeg=Kelas.ibSeg||'lean'; renderKelas(); $('screen').scrollTop=0; }
+function kelasIBBack(){ Kelas.view=null; renderKelas(); $('screen').scrollTop=0; }
+/* the panel's Back: from the InBody result to the Class screen, else Home */
+function kelasBack(){ if(Kelas.view==='ib') kelasIBBack(); else switchTab('home'); }
+function kelasIBBar(s,k,label,unit){
+  const v=s[k]; if(v===undefined||v===null) return '';
+  const r=kelasRange(s,k), z=kelasZone(s,k);
+  let track='';
+  if(r){
+    const w=r[1]-r[0], lo=r[0]-w*.9, hi=r[1]+w*1.3, pos=x=>Math.max(2,Math.min(98,(x-lo)/(hi-lo)*100));
+    track='<div class="ib-track"><span class="ib-norm" style="left:'+pos(r[0]).toFixed(1)+'%;right:'+(100-pos(r[1])).toFixed(1)+'%"></span>'+
+      '<i class="ib-mark '+kelasTone(k,z)+'" style="left:'+pos(v).toFixed(1)+'%"></i></div>'+
+      '<div class="ib-scale"><span>Under</span><span>Normal '+kelasF(r[0])+'–'+kelasF(r[1])+'</span><span>Over</span></div>';
+  }
+  return '<div class="ib-bar"><div class="ib-bh"><span>'+label+'</span><b>'+kelasF(v)+' <i>'+unit+'</i></b>'+
+    (z?'<em class="ib-z '+kelasTone(k,z)+'">'+KL_ZLABEL[z]+'</em>':'')+'</div>'+track+'</div>';
+}
+function kelasIBBody(s){
+  if(!s.seg_lean && !s.seg_fat) return '';
+  const fat=Kelas.ibSeg==='fat' && !!s.seg_fat || !s.seg_lean, seg=fat?s.seg_fat:s.seg_lean;
+  /* muscle: below normal orange, normal green, above normal dark green;
+     fat: more than normal red, otherwise green */
+  const tone=p=>p==null?'':fat?(p>110?'bad':'good'):(p<90?'warn':p>110?'top':'good');
+  const g=k=>(seg&&seg[k])||{};
+  const R=(k,x,y,w,h,rx)=>'<rect class="ib-seg '+tone(g(k).pct)+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(rx||4)+'"/>';
+  /* the figure faces you: its right arm is on your left */
+  const svg='<svg viewBox="0 0 100 210" aria-hidden="true"><defs><clipPath id="ibclip"><path d="'+TD_OUTLINE+'"/></clipPath></defs>'+
+    '<ellipse class="ib-head" cx="50" cy="14.5" rx="9.2" ry="11.2"/><path class="ib-out" d="'+TD_OUTLINE+'"/>'+
+    '<g clip-path="url(#ibclip)">'+R('right_arm',8,30,24.5,80)+R('left_arm',67.5,30,24.5,80)+R('trunk',33,26,34,77,6)+
+    R('right_leg',28,104,21.5,100)+R('left_leg',50.5,104,21.5,100)+'</g></svg>';
+  const lab=(k,name)=>{ const v=g(k);
+    return '<div class="ib-sl '+tone(v.pct)+'"><small>'+name+'</small><b>'+(v.kg!=null?kelasF(v.kg)+' kg':'—')+'</b><span>'+(v.pct!=null?kelasF(v.pct)+'%':'')+'</span></div>'; };
+  return '<div class="ib-sec"><div class="ib-sech"><b>Body by segment</b>'+(s.seg_lean&&s.seg_fat?'<div class="obseg ib-tog">'+
+    '<button class="'+(fat?'':'on')+'" onclick="Kelas.ibSeg=\'lean\';renderKelas()">Muscle</button>'+
+    '<button class="'+(fat?'on':'')+'" onclick="Kelas.ibSeg=\'fat\';renderKelas()">Fat</button></div>':'')+'</div>'+
+    '<div class="ib-fig"><div class="ib-col">'+lab('right_arm','Right arm')+lab('trunk','Trunk')+lab('right_leg','Right leg')+'</div>'+svg+
+    '<div class="ib-col">'+lab('left_arm','Left arm')+'<div class="ib-sl ib-key">'+(fat?'<i class="bad"></i>More than normal<i class="good"></i>Normal or less'
+      :'<i class="top"></i>Above normal<i class="good"></i>Normal<i class="warn"></i>Below normal')+'</div>'+lab('left_leg','Left leg')+'</div></div>'+
+    '<div class="ib-note">'+(fat?'% is against the normal amount of fat for each part. Over 110% is more than normal.'
+      :'% is against the normal amount of muscle for each part. 90–110% is normal, and left and right close together means a balanced body.')+'</div></div>';
+}
+var KL_IB_MORE=[['bmr','Basal metabolic rate','kcal',0,'Calories your body burns at rest in a day. More muscle raises it.'],
+  ['vfl','Visceral fat level','',0,'Fat around the organs. Under 10 is the healthy zone.'],
+  ['tbw','Body water','L',1,'Water in your body, mostly held in muscle.'],
+  ['protein','Protein','kg',1,'The building blocks of muscle.'],
+  ['mineral','Minerals','kg',2,'Mostly bone. Keeps your frame strong.'],
+  ['ffm','Fat-free mass','kg',1,'Everything that is not fat: muscle, bone, water.'],
+  ['smi','Skeletal muscle index','kg/m²',1,'Arm and leg muscle for your height.'],
+  ['whr','Waist-hip ratio','',2,'Where fat sits. Lower is healthier.'],
+  ['ecw_ratio','ECW ratio','',3,'Water balance. Around 0.36–0.39 is normal.']];
+function kelasIBDetail(){
+  const all=kelasIBs(), i=Math.min(Kelas.ibIdx||0,all.length-1), s=all[i]; if(!s){ Kelas.view=null; return kelasHTML(); }
+  const prev=all[i+1];
+  let h='<div class="ib-hero"><div class="kl-kick">InBody result</div><div class="ib-hd">'+kelasIBDate(s.scan_date)+(s.model?' · '+hesc(s.model):'')+'</div>'+
+     (s.score!=null?'<div class="ib-big">'+kelasRing(s.score,150)+'<span><b>'+kelasF(s.score,0)+'</b><small>InBody score</small></span></div>':'')+
+     '<div class="ib-say">'+hesc(kelasIBSay(s,prev))+'</div>'+
+     '<button class="ib-sharebtn" onclick="kelasIBShare('+i+')">'+glyph('share')+' Share my progress</button></div>';
+  h+='<div class="ib-sec"><div class="ib-sech"><b>Muscle and fat</b></div>'+kelasIBBar(s,'weight','Weight','kg')+kelasIBBar(s,'smm','Skeletal muscle','kg')+kelasIBBar(s,'bfm','Body fat','kg')+'</div>';
+  if(s.bmi!=null||s.pbf!=null) h+='<div class="ib-sec"><div class="ib-sech"><b>Obesity check</b></div>'+kelasIBBar(s,'bmi','BMI','')+kelasIBBar(s,'pbf','Body fat','%')+'</div>';
+  if(s.target_weight!=null||s.fat_control!=null||s.muscle_control!=null){
+    const c=(v)=>v==null?'—':(v>0?'+':v<0?'−':'')+kelasF(Math.abs(v))+' kg';
+    h+='<div class="ib-sec"><div class="ib-sech"><b>Your targets</b></div><div class="ib-goal">'+
+      '<div><small>Target weight</small><b>'+(s.target_weight!=null?kelasF(s.target_weight)+' kg':'—')+'</b></div>'+
+      '<div><small>Fat</small><b class="'+((s.fat_control||0)<0?'good':'')+'">'+c(s.fat_control)+'</b></div>'+
+      '<div><small>Muscle</small><b class="'+((s.muscle_control||0)>0?'good':'')+'">'+c(s.muscle_control)+'</b></div></div></div>';
+  }
+  h+=kelasIBBody(s);
+  const more=KL_IB_MORE.filter(m=>s[m[0]]!=null);
+  if(more.length) h+='<div class="ib-sec"><div class="ib-sech"><b>More from your sheet</b></div><div class="ib-more">'+more.map(m=>
+    '<div><small>'+m[1]+'</small><b>'+kelasF(s[m[0]],m[3])+(m[2]?' <i>'+m[2]+'</i>':'')+'</b>'+kelasDelta(m[0],s,prev)+'<p>'+m[4]+'</p></div>').join('')+'</div></div>';
+  if(all.length>1) h+=kelasIBHistory(all);
+  h+='<div class="ib-sec"><div class="ib-sech"><b>Every scan</b></div><div class="ib-list">'+all.map((x,j)=>
+    '<button class="'+(j===i?'on':'')+'" onclick="kelasIBOpen('+j+')"><span>'+kelasIBDate(x.scan_date)+'<small>'+(x.src==='staff'?'Recorded at HQ':'From your sheet')+'</small></span>'+
+    '<b>'+kelasF(x.weight)+' kg · '+kelasF(x.pbf)+'%</b></button>').join('')+'</div></div>';
+  h+='<button class="bigbtn kl-go" onclick="kelasIBShoot()">'+glyph('photo')+' Scan a new sheet</button>';
+  h+='<input type="file" id="kl-ibf" accept="image/*" style="display:none" onchange="kelasIBPick(this)">';
+  h+='<div class="kl-fine2">A body composition estimate from the InBody machine, not a medical diagnosis. Your coach sees the same numbers.</div>';
+  return h;
+}
+/* every scan as a line, after the InBody app's History, oldest on the left */
+function kelasIBHistory(all){
+  const rows=all.slice(0,10).reverse();
+  const chart=(k,label,unit,dp)=>{
+    const pts=rows.filter(x=>x[k]!=null); if(pts.length<2) return '';
+    const vs=pts.map(x=>+x[k]), mn=Math.min(...vs), mx=Math.max(...vs), pad=(mx-mn)||1;
+    const W=300, H=96, X=j=>18+j*(W-36)/(pts.length-1), Y=v=>H-14-(v-mn)/pad*(H-44);
+    const line=pts.map((x,j)=>(j?'L':'M')+X(j).toFixed(1)+' '+Y(+x[k]).toFixed(1)).join('');
+    return '<div class="ib-hc"><div class="ib-hch"><span>'+label+'</span><b>'+kelasF(vs[vs.length-1],dp)+(unit?' '+unit:'')+'</b></div>'+
+      '<svg viewBox="0 0 '+W+' '+H+'"><path class="ib-hl" d="'+line+'"/>'+
+      pts.map((x,j)=>'<circle class="'+(j===pts.length-1?'last':'')+'" cx="'+X(j).toFixed(1)+'" cy="'+Y(+x[k]).toFixed(1)+'" r="3.6"/>'+
+        '<text class="'+(j===pts.length-1?'last':'')+'" x="'+X(j).toFixed(1)+'" y="'+(Y(+x[k])-9).toFixed(1)+'">'+kelasF(x[k],dp)+'</text>').join('')+'</svg>'+
+      '<div class="ib-hx">'+pts.map(x=>'<span>'+kelasIBDate(x.scan_date,true)+'</span>').join('')+'</div></div>';
+  };
+  return '<div class="ib-sec"><div class="ib-sech"><b>Over time</b></div>'+
+    chart('score','InBody score','',0)+chart('smm','Skeletal muscle','kg',1)+chart('bfm','Body fat','kg',1)+chart('pbf','Body fat','%',1)+chart('weight','Weight','kg',1)+'</div>';
+}
+
+/* taking the photo: the camera or the library, shrunk on the phone to a
+   size that reads well and uploads fast */
+function kelasIBShoot(){ const f=$('kl-ibf'); if(f){ f.value=''; f.click(); } }
+function kelasIBPick(inp){
+  const file=inp&&inp.files&&inp.files[0]; if(!file) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const mx=2000, sc=Math.min(1,mx/Math.max(img.width,img.height));
+      const c=document.createElement('canvas'); c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      kelasIBSend(c.toDataURL('image/jpeg',.86));
+    };
+    img.onerror=()=>toast('Could not open that photo. Try another one.');
+    img.src=rd.result;
+  };
+  rd.readAsDataURL(file);
+}
+var KL_IB_ERR={too_many:'That is 4 scans today. Try again tomorrow.',
+  not_inbody:'That does not look like an InBody result sheet. Take a straight, bright photo of the whole sheet.',
+  unread:'Could not read that sheet. Try a straighter, brighter photo.', too_large:'That photo is too large. Try again.',
+  not_linked:'Connect your class membership first.', signin:'Sign in first.'};
+async function kelasIBSend(dataUrl){
+  Kelas.ibBusy=true; renderKelas();
+  try{
+    const firstEver=!kelasIBs().some(x=>x.src==='sheet');
+    const r=await kelasCall('inbody',{image_base64:dataUrl, media_type:'image/jpeg'});
+    const list=((Kelas.data.inbody)||[]).filter(x=>String(x.scan_date)!==String(r.scan.scan_date));
+    list.push(r.scan); Kelas.data.inbody=list; kelasSave();
+    Kelas.ibBusy=false;
+    toast(firstEver?'Sheet read. +200 points for your first InBody scan.':'Sheet read and saved.');
+    kelasIBOpen(kelasIBs().findIndex(x=>x.scan_date===r.scan.scan_date));
+    kelasLoad();
+  }catch(e){
+    Kelas.ibBusy=false; renderKelas();
+    toast(KL_IB_ERR[e.message]||'Could not read the sheet. Check your connection and try again.');
+  }
+}
+function kelasIBShare(i){
+  const all=kelasIBs(), s=all[i], prev=all[i+1]; if(!s) return;
+  Kelas.share={kind:'ib', s:s, prev:prev||null}; openShare('kelas');
+}
+
+/* the InBody story card: the score as a ring, then muscle and fat with the
+   change since the last scan. Weight is left off; it is theirs to share. */
+function kelasDrawIB(x,W,H,cx,F,S){
+  const s=S.s, p=S.prev;
+  x.fillStyle='#FFFFFF'; x.font=F(900,64); x.fillText('HITFAT+',cx,200);
+  x.fillStyle='rgba(255,255,255,.85)'; x.font=F(800,30); _spaced(x,'MY INBODY · '+kelasIBDate(s.scan_date).toUpperCase(),cx,256,5);
+  let y=330;
+  if(s.score!=null){
+    const r=170, c0=cx, c1=y+r+20;
+    x.lineCap='round'; x.lineWidth=34; x.strokeStyle='rgba(255,255,255,.22)'; x.beginPath(); x.arc(c0,c1,r,0,Math.PI*2); x.stroke();
+    x.strokeStyle='#FFFFFF'; x.beginPath(); x.arc(c0,c1,r,-Math.PI/2,-Math.PI/2+Math.min(1,s.score/100)*Math.PI*2); x.stroke();
+    x.fillStyle='#FFFFFF'; x.font=F(900,150); x.fillText(String(Math.round(s.score)),c0,c1+36);
+    x.fillStyle='rgba(255,255,255,.85)'; x.font=F(800,28); _spaced(x,'INBODY SCORE',c0,c1+86,3);
+    y=c1+r+80;
+  }
+  const card=(ty,label,val,unit,delta,good)=>{
+    x.save(); x.shadowColor='rgba(0,0,0,.25)'; x.shadowBlur=40; x.shadowOffsetY=16;
+    x.fillStyle='#FFFFFF'; _rr(x,110,ty,860,230,48); x.fill(); x.restore();
+    x.textAlign='left'; x.fillStyle='#55555C'; x.font=F(800,36); x.fillText(label,170,ty+78);
+    x.fillStyle='#111111'; x.font=F(900,104); x.fillText(val,170,ty+188);
+    const vw=x.measureText(val).width; x.fillStyle='#55555C'; x.font=F(800,40); x.fillText(unit,182+vw,ty+186);
+    if(delta){ x.textAlign='right'; x.fillStyle=good?'#1F9D4C':'#E30613'; x.font=F(900,64); x.fillText(delta,910,ty+170); }
+    x.textAlign='center';
+  };
+  const dl=(k)=>{ if(!p||p[k]==null||s[k]==null) return ['',false]; const d=Math.round((s[k]-p[k])*10)/10; if(!d) return ['',false];
+    return [(d>0?'+':'−')+kelasF(Math.abs(d))+' kg', k==='smm'?d>0:d<0]; };
+  const m=dl('smm'), f=dl('bfm');
+  if(s.smm!=null){ card(y,'Muscle',kelasF(s.smm),'kg',m[0],m[1]); y+=270; }
+  if(s.pbf!=null){ card(y,'Body fat',kelasF(s.pbf),'%',f[0]?'fat '+f[0]:'',f[1]); y+=270; }
+  x.fillStyle='rgba(255,255,255,.9)'; x.font=F(700,36);
+  if(p) x.fillText('since '+kelasIBDate(p.scan_date),cx,y+30);
+  x.fillStyle='rgba(255,255,255,.8)'; x.font=F(700,34); x.fillText('HITFAT HQ · app.hitfat.io',cx,H-110);
 }
 
 function kelasPickDay(d){ Kelas.day=d; renderKelas(); }
@@ -716,6 +981,14 @@ function kelasDemo(){
         {id:'inbody',name:'InBody body analysis',points:3500,note:'Book a time with the counter'}],
       history:[{t:'redeem',name:'A drink at the counter',p:-600,at:new Date(Date.now()-2*864e5).toISOString()},
         {t:'link',name:'Connected HITFAT+',p:300,at:new Date(Date.now()-20*864e5).toISOString()}]},
+    inbody:[
+      {scan_date:'2026-10-14',src:'sheet',model:'InBody 270',sex:'female',height_cm:158,weight:62.4,smm:23.1,bfm:20.6,pbf:33.0,bmi:25.0,score:68,
+       tbw:30.4,protein:8.2,mineral:3.1,ffm:41.8,vfl:9,bmr:1273,whr:0.89,smi:6.1,ecw_ratio:0.378,target_weight:56.3,fat_control:-6.1,muscle_control:0,
+       ranges:{weight:[45.8,61.9],smm:[20.6,25.2],bfm:[11.6,18.5],pbf:[18,28],bmi:[18.5,25]},
+       seg_lean:{right_arm:{kg:2.1,pct:96.2},left_arm:{kg:2.0,pct:94.1},trunk:{kg:18.9,pct:101.5},right_leg:{kg:6.4,pct:92.3},left_leg:{kg:6.3,pct:91.4}},
+       seg_fat:{right_arm:{kg:1.4,pct:168.0},left_arm:{kg:1.5,pct:171.2},trunk:{kg:10.3,pct:188.4},right_leg:{kg:3.2,pct:139.5},left_leg:{kg:3.2,pct:140.1}}},
+      {scan_date:'2026-09-12',src:'sheet',weight:63.9,smm:22.6,bfm:22.3,pbf:34.9,bmi:25.6,score:65,bmr:1258,vfl:10,sex:'female',ranges:{smm:[20.6,25.2],bfm:[11.6,18.5],pbf:[18,28]}},
+      {scan_date:'2026-08-10',src:'staff',weight:65.2,smm:22.2,bfm:23.8,pbf:36.5,score:63}],
     weeks:(function(){ const w=[], m=new Date(now.getTime()); m.setUTCDate(m.getUTCDate()-(kelasDow(now)-1));
       for(let i=0;i<9;i++){ const d=new Date(m.getTime()); d.setUTCDate(d.getUTCDate()-7*i); w.push(kelasDayKey(d)); }
       for(let i=14;i<26;i++){ const d=new Date(m.getTime()); d.setUTCDate(d.getUTCDate()-7*i); w.push(kelasDayKey(d)); }
