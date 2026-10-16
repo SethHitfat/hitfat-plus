@@ -658,18 +658,90 @@ function trLibrary(){
   $('tr-body').innerHTML=h;
 }
 /* The catalogue lists the Library rows open onto. */
+/* ── Filter, after FIIT (16 Oct) ──
+   A sheet from the foot of the Library's Workouts and Programs: duration,
+   done or not, goal, level, the body part the moves work, and equipment.
+   Within a group any ticked choice matches; across groups all must. The
+   Apply button counts what will show as choices change. */
+const LF_SECS=[
+  ['dur','Duration',[['s','15 min or less'],['m','16–25 min'],['l','26 min +']]],
+  ['done','Done workouts',[['y','Done'],['n','Not done']]],
+  ['goal','Goal',[['Fat Loss','Fat Loss'],['Strength','Strength'],['Core','Core']]],
+  ['lv','Level',[['Beginner','Beginner'],['Intermediate','Intermediate'],['Advanced','Advanced']]],
+  ['body','Target body part',[['Chest','Chest'],['Arms','Arms'],['Shoulders','Shoulders'],['Back','Back'],['Core','Core'],['Legs','Legs'],['Glutes','Glutes']]],
+  ['eq','Equipment',[['none','No equipment'],['Dumbbell','Dumbbell'],['Kettlebell','Kettlebell'],['other','Chair, towel, bottle']]]];
+let _lfK='', _lf={}, _lfDraft={};
+function lfExs(p){
+  const names=[]; (p.ex||[]).forEach(n=>names.push(n));
+  (p.weeks||[]).forEach(w=>(w.days||[]).forEach(d=>(d.ex||[]).forEach(n=>names.push(n))));
+  return names.map(n=>DB.find(e=>e.n===n)).filter(Boolean);
+}
+const LF_BODY={Arms:['Arms','Triceps'],Legs:['Legs','Calves'],Core:['Core'],Chest:['Chest'],Shoulders:['Shoulders'],Back:['Back'],Glutes:['Glutes']};
+function lfDone(p){
+  if(p.weeks) return progDone(p.id)>0;
+  return Object.keys(HF.data.sessions||{}).some(k=>k===p.id||k.indexOf(p.id+'-')===0);
+}
+function lfTest(p,key,v){
+  if(key==='dur'){ const m=p.dur||0; return v==='s'?m<=15:v==='m'?(m>15&&m<=25):m>25; }
+  if(key==='done') return v==='y'?lfDone(p):!lfDone(p);
+  if(key==='goal') return p.goal===v;
+  if(key==='lv') return p.level===v;
+  const ex=lfExs(p);
+  if(key==='body') return ex.some(e=>(LF_BODY[v]||[v]).indexOf(e.m)>=0);
+  if(key==='eq'){
+    const kit=ex.map(e=>String(e.eq||'')).filter(q=>q && !/body ?weight|none/i.test(q));
+    if(v==='none') return !kit.length;
+    if(v==='other') return kit.some(q=>/chair|towel|bottle/i.test(q));
+    return kit.some(q=>q.toLowerCase().indexOf(v.toLowerCase())>=0);
+  }
+  return true;
+}
+function lfMatch(p,sel){ return Object.keys(sel).every(key=>!sel[key]||!sel[key].length||sel[key].some(v=>lfTest(p,key,v))); }
+function lfCount(sel){ return Object.keys(sel).reduce((n,k)=>n+((sel[k]||[]).length),0); }
+function lfPool(k){ return k==='programs'?trainingPlans().filter(p=>p.id!=='custom'):PROGRAMS.filter(p=>!p.weeks&&!p.rehab); }
+function lfOpen(){
+  _lfDraft=JSON.parse(JSON.stringify(_lf));
+  let el=$('lfs'); if(!el){ el=document.createElement('div'); el.id='lfs'; el.className='lfs'; document.body.appendChild(el); }
+  lfPaint(); el.classList.add('on');
+}
+function lfPaint(){
+  const el=$('lfs'); if(!el) return;
+  const n=lfPool(_lfK).filter(p=>lfMatch(p,_lfDraft)).length;
+  el.innerHTML='<div class="lfs-bg" onclick="lfClose()"></div><div class="lfs-sh"><div class="lfs-grab"></div><div class="lfs-t">Filter</div>'+
+    '<div class="lfs-body">'+LF_SECS.filter(sc=>!(_lfK==='programs'&&sc[0]==='done')).map(sc=>'<div class="lfs-k">'+sc[1]+'</div><div class="lfs-chips">'+
+      sc[2].map(c=>{ const on=(_lfDraft[sc[0]]||[]).indexOf(c[0])>=0;
+        return '<button class="'+(on?'on':'')+'" onclick="lfTick(\''+sc[0]+'\',\''+c[0]+'\')">'+c[1]+'</button>'; }).join('')+'</div>').join('')+'</div>'+
+    '<div class="lfs-foot"><button class="lfs-reset" onclick="lfReset()">Reset</button>'+
+    '<button class="lfs-go'+(n?'':' off')+'" onclick="lfApply()">'+(n?'Apply ('+n+')':'Nothing matches')+'</button></div></div>';
+}
+function lfTick(key,v){
+  const a=_lfDraft[key]=_lfDraft[key]||[], i=a.indexOf(v);
+  if(i>=0) a.splice(i,1); else a.push(v);
+  lfPaint();
+}
+function lfReset(){ _lfDraft={}; lfPaint(); }
+function lfClose(){ const el=$('lfs'); if(el) el.classList.remove('on'); }
+function lfApply(){
+  if(!lfPool(_lfK).some(p=>lfMatch(p,_lfDraft))) return;
+  _lf=_lfDraft; lfClose(); openLibList(_lfK);
+}
 function openLibList(k){
   const T={workouts:['Workouts',PROGRAMS.filter(p=>!p.weeks&&!p.rehab)],
            programs:['Programs',trainingPlans().filter(p=>p.id!=='custom')],
            collections:['Collections',CHALLENGES]}[k];
   if(!T) return;
-  let h='<div class="hgroup"><div class="k">Library</div><h2>'+T[0]+'</h2><p>'+T[1].length+' in HITFAT+</p></div>';
+  if(_lfK!==k){ _lfK=k; _lf={}; }
+  const canF=k!=='collections', list=canF?T[1].filter(p=>lfMatch(p,_lf)):T[1], nf=lfCount(_lf);
+  let h='<div class="hgroup"><div class="k">Library</div><h2>'+T[0]+'</h2><p>'+(nf?list.length+' of '+T[1].length:T[1].length+' in HITFAT+')+'</p></div>';
+  if(canF) h+='<div class="lf-bar"><button class="lf-btn'+(nf?' on':'')+'" onclick="lfOpen()">'+glyph('sliders')+'Filter'+(nf?' · '+nf:'')+'</button>'+
+    (nf?'<button class="lf-clear" onclick="_lf={};openLibList(\''+k+'\')">Clear</button>':'')+'</div>';
   /* Collections are posters wherever they appear, as in Explore and in
      Fitness+ — here stacked full width rather than as rows. */
   /* (16 Oct, after FIIT) the Library's shelves are posters: collections
      full width, workouts and programs two to a row */
   h+= k==='collections' ? '<div class="hpo-stack">'+T[1].map(c=>hpoCard(c,{wide:true,kick:'Challenge',cls:'fcoll'})).join('')+'</div>'
-                        : '<div class="hpo-grid">'+T[1].map(p=>hpoCard(p,{cls:'hpo-sq'})).join('')+'</div>';
+                        : (list.length?'<div class="hpo-grid">'+list.map(p=>hpoCard(p,{cls:'hpo-sq'})).join('')+'</div>'
+                                      :'<div class="pl-none">Nothing matches these filters.</div>');
   $('lib-body').innerHTML=h;
   hidePanels(); $('library').style.display='block'; $('screen').scrollTop=0;
 }
