@@ -6481,6 +6481,15 @@ html,body{overscroll-behavior:none;}
 .ib-list b{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;}
 .ib-sec+.bigbtn,.ib-sec~.bigbtn{margin-top:14px;}
 
+/* HITFAT Class · Bara (17 Oct): one line from Bara under the QR; a class
+   at HQ counts as the day's workout in the HITFAT Score */
+.kl-bara{display:flex;align-items:center;gap:12px;margin:10px 0 2px;padding:10px 14px 10px 8px;border-radius:18px;background:var(--surface);}
+:root[data-theme="light"] .kl-bara{background:#FFFFFF;}
+.kl-bara img{flex:none;width:64px;height:64px;object-fit:contain;}
+.kl-bara b{display:block;font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#E30613;}
+.kl-bara span{display:block;font-size:14px;line-height:1.45;color:var(--txt);margin-top:2px;}
+.ib-first{margin:0 0 6px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -7729,15 +7738,20 @@ function scSet(k,v){
   var all=HF.data.daily||(HF.data.daily={}), d=iso(0), o=all[d]||(all[d]={water:0,steps:0});
   o[k]=Math.max(0,Math.round(v)); HF.save();
 }
+/* a class at HITFAT HQ (kiosk check-in, HF.data.kelas.days from kelas.js)
+   counts as that day's workout */
+function scClassDays(){ var k=HF.data.kelas; return (k && Array.isArray(k.days)) ? k.days : []; }
 function scWorkouts(d,days){
   if(days) return days[d]||0;
   var s=HF.data.sessions||{}, n=0, k;
   for(k in s){ if(s.hasOwnProperty(k) && s[k] && s[k].date && scDayOf(s[k].date)===d) n++; }
+  if(scClassDays().indexOf(d)>=0) n++;
   return n;
 }
 function scWorkoutDays(){
-  var s=HF.data.sessions||{}, out={}, k, d;
+  var s=HF.data.sessions||{}, out={}, k, d, cd=scClassDays(), i;
   for(k in s){ if(s.hasOwnProperty(k) && s[k] && s[k].date){ d=scDayOf(s[k].date); out[d]=(out[d]||0)+1; } }
+  for(i=0;i<cd.length;i++) out[cd[i]]=(out[cd[i]]||0)+1;
   return out;
 }
 function scHasIF(){ var f=HF.data.ifs||{}; return !!(f.plan && !f.plan.blocked); }
@@ -20150,6 +20164,7 @@ async function kelasLoad(){
     const was=kelasLinked();
     const st=await kelasCall('status');
     Kelas.data=st&&st.linked?st:null; kelasSave(); Kelas.state='ready';
+    kelasSyncDays();
     /* the pass may have moved (renewed, ended, released at the counter):
        read it again so the app opens or closes with it */
     if(was || kelasLinked()) await loadEntitlement();
@@ -20268,6 +20283,9 @@ function kelasHTML(){
      '<div class="kl-cat">'+kelasMems().filter(x=>x.active).map(x=>hesc(kelasCat(x.category))).join(' · ')+'</div>'+
      '<button class="kl-qr" onclick="kelasQRFull()" aria-label="Show my check-in QR full screen">'+kelasQR(184)+'</button>'+
      '<div class="kl-qrs">'+(act?'Show this at the kiosk to check in':'Membership ended: renew at the counter')+'</div></div>';
+
+  /* Bara, who counts every class as the day's workout */
+  h+=kelasBaraHTML();
 
   /* the membership */
   if(m){
@@ -20818,7 +20836,7 @@ function kelasIBDetail(){
   const more=KL_IB_MORE.filter(m=>s[m[0]]!=null);
   if(more.length) h+='<div class="ib-sec"><div class="ib-sech"><b>More from your sheet</b></div><div class="ib-more">'+more.map(m=>
     '<div><small>'+m[1]+'</small><b>'+kelasF(s[m[0]],m[3])+(m[2]?' <i>'+m[2]+'</i>':'')+'</b>'+kelasDelta(m[0],s,prev)+'<p>'+m[4]+'</p></div>').join('')+'</div></div>';
-  if(all.length>1) h+=kelasIBHistory(all);
+  h+=kelasIBHistory(all);
   h+='<div class="ib-sec"><div class="ib-sech"><b>Every scan</b></div><div class="ib-list">'+all.map((x,j)=>
     '<button class="'+(j===i?'on':'')+'" onclick="kelasIBOpen('+j+')"><span>'+kelasIBDate(x.scan_date)+'<small>'+(x.src==='staff'?'Recorded at HQ':'From your sheet')+'</small></span>'+
     '<b>'+kelasF(x.weight)+' kg · '+kelasF(x.pbf)+'%</b></button>').join('')+'</div></div>';
@@ -20831,9 +20849,9 @@ function kelasIBDetail(){
 function kelasIBHistory(all){
   const rows=all.slice(0,10).reverse();
   const chart=(k,label,unit,dp)=>{
-    const pts=rows.filter(x=>x[k]!=null); if(pts.length<2) return '';
+    const pts=rows.filter(x=>x[k]!=null); if(!pts.length) return '';
     const vs=pts.map(x=>+x[k]), mn=Math.min(...vs), mx=Math.max(...vs), pad=(mx-mn)||1;
-    const W=300, H=96, X=j=>18+j*(W-36)/(pts.length-1), Y=v=>H-14-(v-mn)/pad*(H-44);
+    const W=300, H=96, X=j=>pts.length<2?W/2:18+j*(W-36)/(pts.length-1), Y=v=>pts.length<2?H/2+6:H-14-(v-mn)/pad*(H-44);
     const line=pts.map((x,j)=>(j?'L':'M')+X(j).toFixed(1)+' '+Y(+x[k]).toFixed(1)).join('');
     return '<div class="ib-hc"><div class="ib-hch"><span>'+label+'</span><b>'+kelasF(vs[vs.length-1],dp)+(unit?' '+unit:'')+'</b></div>'+
       '<svg viewBox="0 0 '+W+' '+H+'"><path class="ib-hl" d="'+line+'"/>'+
@@ -20842,6 +20860,7 @@ function kelasIBHistory(all){
       '<div class="ib-hx">'+pts.map(x=>'<span>'+kelasIBDate(x.scan_date,true)+'</span>').join('')+'</div></div>';
   };
   return '<div class="ib-sec"><div class="ib-sech"><b>Over time</b></div>'+
+    (all.length<2?'<div class="ib-note ib-first">This is your first scan, so each line starts here. Scan again in about 4 weeks and the change shows.</div>':'')+
     chart('score','InBody score','',0)+chart('smm','Skeletal muscle','kg',1)+chart('bfm','Body fat','kg',1)+chart('pbf','Body fat','%',1)+chart('weight','Weight','kg',1)+'</div>';
 }
 
@@ -20889,38 +20908,122 @@ function kelasIBShare(i){
   Kelas.share={kind:'ib', s:s, prev:prev||null}; openShare('kelas');
 }
 
-/* the InBody story card: the score as a ring, then muscle and fat with the
-   change since the last scan. Weight is left off; it is theirs to share. */
+/* the InBody story card, an explainer more than a brag (17 Oct): the score
+   and what it means; then muscle, body fat, visceral fat and metabolism, each
+   with one line on what it is, the normal range as a bar, the verdict in a
+   word and the change since the last scan. Weight is left off; it is theirs
+   to share. */
 function kelasDrawIB(x,W,H,cx,F,S){
-  const s=S.s, p=S.prev;
-  x.fillStyle='#FFFFFF'; x.font=F(900,64); x.fillText('HITFAT+',cx,200);
-  x.fillStyle='rgba(255,255,255,.85)'; x.font=F(800,30); _spaced(x,'MY INBODY · '+kelasIBDate(s.scan_date).toUpperCase(),cx,256,5);
-  let y=330;
+  const s=S.s, p=S.prev, L=110, R=W-110;
+  x.textAlign='center';
+  x.fillStyle='#FFFFFF'; x.font=F(900,60); x.fillText('HITFAT+',cx,170);
+  x.fillStyle='rgba(255,255,255,.88)'; x.font=F(800,28); _spaced(x,'MY BODY COMPOSITION · '+kelasIBDate(s.scan_date).toUpperCase(),cx,222,4);
+  /* the score, and what it is */
+  let y=290;
   if(s.score!=null){
-    const r=170, c0=cx, c1=y+r+20;
-    x.lineCap='round'; x.lineWidth=34; x.strokeStyle='rgba(255,255,255,.22)'; x.beginPath(); x.arc(c0,c1,r,0,Math.PI*2); x.stroke();
+    const r=104, c0=L+r+10, c1=y+r+6;
+    x.lineCap='round'; x.lineWidth=26; x.strokeStyle='rgba(255,255,255,.22)'; x.beginPath(); x.arc(c0,c1,r,0,Math.PI*2); x.stroke();
     x.strokeStyle='#FFFFFF'; x.beginPath(); x.arc(c0,c1,r,-Math.PI/2,-Math.PI/2+Math.min(1,s.score/100)*Math.PI*2); x.stroke();
-    x.fillStyle='#FFFFFF'; x.font=F(900,150); x.fillText(String(Math.round(s.score)),c0,c1+36);
-    x.fillStyle='rgba(255,255,255,.85)'; x.font=F(800,28); _spaced(x,'INBODY SCORE',c0,c1+86,3);
-    y=c1+r+80;
-  }
-  const card=(ty,label,val,unit,delta,good)=>{
-    x.save(); x.shadowColor='rgba(0,0,0,.25)'; x.shadowBlur=40; x.shadowOffsetY=16;
-    x.fillStyle='#FFFFFF'; _rr(x,110,ty,860,230,48); x.fill(); x.restore();
-    x.textAlign='left'; x.fillStyle='#55555C'; x.font=F(800,36); x.fillText(label,170,ty+78);
-    x.fillStyle='#111111'; x.font=F(900,104); x.fillText(val,170,ty+188);
-    const vw=x.measureText(val).width; x.fillStyle='#55555C'; x.font=F(800,40); x.fillText(unit,182+vw,ty+186);
-    if(delta){ x.textAlign='right'; x.fillStyle=good?'#1F9D4C':'#E30613'; x.font=F(900,64); x.fillText(delta,910,ty+170); }
+    x.fillStyle='#FFFFFF'; x.font=F(900,96); x.fillText(String(Math.round(s.score)),c0,c1+30);
+    x.textAlign='left';
+    x.fillStyle='#FFFFFF'; x.font=F(900,44); x.fillText('InBody Score',c0+r+50,c1-46);
+    x.fillStyle='rgba(255,255,255,.9)'; x.font=F(600,30);
+    _wrapL(x,'Muscle against fat for your body, out of 100. 80 and up is fit and strong.',c0+r+50,c1+2,R-(c0+r+50),40);
     x.textAlign='center';
-  };
-  const dl=(k)=>{ if(!p||p[k]==null||s[k]==null) return ['',false]; const d=Math.round((s[k]-p[k])*10)/10; if(!d) return ['',false];
-    return [(d>0?'+':'−')+kelasF(Math.abs(d))+' kg', k==='smm'?d>0:d<0]; };
-  const m=dl('smm'), f=dl('bfm');
-  if(s.smm!=null){ card(y,'Muscle',kelasF(s.smm),'kg',m[0],m[1]); y+=270; }
-  if(s.pbf!=null){ card(y,'Body fat',kelasF(s.pbf),'%',f[0]?'fat '+f[0]:'',f[1]); y+=270; }
-  x.fillStyle='rgba(255,255,255,.9)'; x.font=F(700,36);
-  if(p) x.fillText('since '+kelasIBDate(p.scan_date),cx,y+30);
-  x.fillStyle='rgba(255,255,255,.8)'; x.font=F(700,34); x.fillText('HITFAT HQ · app.hitfat.io',cx,H-110);
+    y=c1+r+50;
+  }
+  /* four rows on a white card */
+  const rows=[['smm','Skeletal muscle','kg','The muscle you train. More is stronger and burns more.'],
+    ['pbf','Body fat','%','How much of your body is fat.'],
+    ['vfl','Visceral fat','level','Fat around your organs. Under 10 is healthy.'],
+    ['bmr','Metabolism (BMR)','kcal','Calories your body burns at rest, every day.']].filter(r=>s[r[0]]!=null);
+  const rh=270, ch=rows.length*rh+40;
+  x.save(); x.shadowColor='rgba(0,0,0,.25)'; x.shadowBlur=50; x.shadowOffsetY=20;
+  x.fillStyle='#FFFFFF'; _rr(x,L-20,y,R-L+40,ch,52); x.fill(); x.restore();
+  const zoneOf=(k)=>k==='vfl'?(s.vfl<10?'normal':'over'):kelasZone(s,k);
+  const rangeOf=(k)=>k==='vfl'?[1,9]:kelasRange(s,k);
+  const ZC={good:'#1F9D4C',warn:'#C26A00',bad:'#E30613'};
+  rows.forEach((r,ix)=>{
+    const k=r[0], ty=y+40+ix*rh, z=zoneOf(k), tone=k==='vfl'?(z==='normal'?'good':'bad'):kelasTone(k,z);
+    if(ix) { x.fillStyle='#EEEEF0'; x.fillRect(L+30,ty-22,R-L-60,3); }
+    x.textAlign='left';
+    x.fillStyle='#111111'; x.font=F(900,40); x.fillText(r[1],L+30,ty+40);
+    x.fillStyle='#6A6A70'; x.font=F(600,26); _wrapL(x,r[3],L+30,ty+80,R-L-60-230,32);
+    /* the value, right */
+    x.textAlign='right';
+    const val=kelasF(s[k],k==='bmr'||k==='vfl'?0:1);
+    x.fillStyle='#111111'; x.font=F(900,64); x.fillText(val,R-30,ty+48);
+    x.fillStyle='#6A6A70'; x.font=F(800,26); x.fillText(r[2],R-30,ty+82);
+    /* the range bar with the normal zone, the marker, the verdict */
+    const rg=rangeOf(k), bx=L+30, bw=R-L-60-190, by=ty+150;
+    if(rg){
+      const w=rg[1]-rg[0], lo=rg[0]-w*.9, hi=rg[1]+w*1.3, pos=v=>bx+Math.max(.02,Math.min(.98,(v-lo)/(hi-lo)))*bw;
+      x.fillStyle='#EDEDF0'; _rr(x,bx,by,bw,18,9); x.fill();
+      x.fillStyle='rgba(52,193,95,.45)'; _rr(x,pos(rg[0]),by,pos(rg[1])-pos(rg[0]),18,9); x.fill();
+      x.fillStyle=ZC[tone]||'#55555C'; x.beginPath(); x.arc(pos(s[k]),by+9,17,0,Math.PI*2); x.fill();
+      x.strokeStyle='#FFFFFF'; x.lineWidth=6; x.stroke();
+      x.textAlign='center'; x.fillStyle='#8A8A90'; x.font=F(700,22);
+      x.fillText('Normal '+kelasF(rg[0],k==='vfl'?0:1)+'–'+kelasF(rg[1],k==='vfl'?0:1),(pos(rg[0])+pos(rg[1]))/2,by+52);
+    }
+    if(z){
+      const lab=k==='vfl'?(z==='normal'?'Healthy':'High'):KL_ZLABEL[z], tw=150, tx=R-30-tw;
+      x.fillStyle=(ZC[tone]||'#55555C')+'22'; _rr(x,tx,by-14,tw,46,23); x.fill();
+      x.textAlign='center'; x.fillStyle=ZC[tone]||'#55555C'; x.font=F(900,26); x.fillText(lab,tx+tw/2,by+18);
+    }
+    /* the change since the last scan, under the bar */
+    if(p && p[k]!=null){
+      const d=Math.round((s[k]-p[k])*10)/10;
+      if(d){
+        const good=(k==='smm'||k==='bmr')?d>0:d<0;
+        x.textAlign='right'; x.fillStyle=good?'#1F9D4C':'#E30613'; x.font=F(900,28);
+        x.fillText((d>0?'▲ +':'▼ −')+kelasF(Math.abs(d),k==='bmr'||k==='vfl'?0:1)+' since '+kelasIBDate(p.scan_date,true),R-30,by+52);
+      }
+    }
+  });
+  y+=ch+60;
+  /* the takeaway, in one plain sentence */
+  x.textAlign='center'; x.fillStyle='#FFFFFF'; x.font=F(800,34);
+  _wrap(x,kelasIBSay(s,null).split('. ')[0]+'.',cx,y,W-220,46);
+  x.fillStyle='rgba(255,255,255,.8)'; x.font=F(700,30); x.fillText('Measured on InBody at HITFAT HQ · app.hitfat.io',cx,H-90);
+}
+/* left-aligned wrap for the card's explainer */
+function _wrapL(x,t,lx,y,maxW,lh){
+  const words=String(t).split(' '); let line='', n=0;
+  words.forEach(w=>{ const tst=line?line+' '+w:w; if(x.measureText(tst).width>maxW&&line){ x.fillText(line,lx,y+n*lh); n++; line=w; } else line=tst; });
+  if(line) x.fillText(line,lx,y+n*lh);
+}
+
+/* ═══════════════ Bara ═══════════════
+   A class at HQ is a workout. Its days (from the kiosk, in Malaysia) are kept
+   in HF.data.kelas.days, which the HITFAT Score reads (scWorkouts in
+   score.js) and which syncs with the rest of the member's data, so Bara's
+   evening reminder from plus-push counts it too. */
+function kelasClassDays(){
+  const out=new Set(); kelasIns().forEach(d=>out.add(kelasDayKey(d)));
+  return Array.from(out).sort();
+}
+function kelasSyncDays(){
+  if(!HF.data) return;
+  const k=HF.data.kelas||(HF.data.kelas={});
+  const days=Kelas.data && Kelas.data.linked ? kelasClassDays() : [];
+  const was=JSON.stringify(k.days||[]), now=JSON.stringify(days);
+  if(was!==now){ k.days=days; HF.save(); }
+}
+/* what Bara says on the Class screen: one line, the most useful one */
+function kelasBaraLine(){
+  const m=kelasMain(), act=kelasActive(), left=m?kelasDaysLeft(m.end_date):null;
+  const today=kelasDayKey(kelasNowMY()), days=new Set(kelasIns().map(kelasDayKey));
+  const n=kelasThisWeekN(), t=kelasTarget(), nx=kelasNext();
+  if(!act) return ['kusut','Membership awak dah tamat. Bara rindu nak tengok awak kat kelas. Renew di kaunter ya!'];
+  if(left!==null && left<=7) return ['calendar','Membership awak tamat dalam '+(left+1)+' hari. Renew awal supaya streak awak tak putus!'];
+  if(days.has(today)) return ['cheer','Bara nampak awak dah datang kelas hari ni! Dikira sebagai workout dalam Skor HITFAT, +100 mata 💪'];
+  if(n>=t) return ['gold','Sasaran '+t+' kelas minggu ni dah capai! Bara bangga sangat 🔥'];
+  if(nx && nx.inDays===0) return ['aktif','Kelas seterusnya pukul '+kelasClock(nx.c.start)+'. Bara tunggu awak! '+n+' daripada '+t+' kelas minggu ni.'];
+  return ['aktif','Datang kelas = workout hari tu siap, +100 mata. '+n+' daripada '+t+' kelas minggu ni.'];
+}
+function kelasBaraHTML(){
+  const L=kelasBaraLine(), src=(typeof SC_POSE!=='undefined'&&SC_POSE[L[0]])||'/img/mascot/anim/'+L[0]+'.png';
+  return '<div class="kl-bara"><img src="'+src+'" alt="Bara" onerror="this.style.visibility=\'hidden\'"><div><b>Bara</b><span>'+hesc(L[1])+'</span></div></div>';
 }
 
 function kelasPickDay(d){ Kelas.day=d; renderKelas(); }
@@ -21008,7 +21111,7 @@ async function kelasClaim(){
     const r=await kelasCall('claim',{phone:Kelas.phone});
     if(!r.ok){ Kelas.err=KELAS_ERR[r.error]||KELAS_ERR.failed; Kelas.step='phone'; }
     else {
-      Kelas.data=Object.assign({}, r.status, {until:r.until}); kelasSave(); Kelas.state='ready';
+      Kelas.data=Object.assign({}, r.status, {until:r.until}); kelasSave(); Kelas.state='ready'; kelasSyncDays();
       Kelas.step='phone'; Kelas.found=null; Kelas.phone='';
       await loadEntitlement();
       toast('Connected. HITFAT+ All Access is yours with your class.');

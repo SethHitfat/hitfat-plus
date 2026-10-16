@@ -74,6 +74,8 @@ function scoreOf(d: Data, day: string, wdays: Record<string, number>): number {
 export function messageFor(d: Data): { kind: string; title: string; body: string } | null {
   const wdays: Record<string, number> = {};
   for (const k in (d.sessions || {})) { const s = d.sessions[k]; if (s && s.date) { const dd = dayOf(s.date); wdays[dd] = (wdays[dd] || 0) + 1; } }
+  /* a class at HITFAT HQ (kiosk check-in; kelas.js keeps the days in Malaysia) is a workout too */
+  for (const dd of ((d as any).kelas?.days || [])) if (typeof dd === 'string') wdays[dd] = (wdays[dd] || 0) + 1;
   const today = scoreOf(d, dayBack(0), wdays);
   let gap = -1;                                            /* empty days before today */
   for (let i = 1; i < 60; i++) if (scoreOf(d, dayBack(i), wdays) > 0) { gap = i - 1; break; }

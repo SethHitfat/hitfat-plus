@@ -35,15 +35,20 @@ function scSet(k,v){
   var all=HF.data.daily||(HF.data.daily={}), d=iso(0), o=all[d]||(all[d]={water:0,steps:0});
   o[k]=Math.max(0,Math.round(v)); HF.save();
 }
+/* a class at HITFAT HQ (kiosk check-in, HF.data.kelas.days from kelas.js)
+   counts as that day's workout */
+function scClassDays(){ var k=HF.data.kelas; return (k && Array.isArray(k.days)) ? k.days : []; }
 function scWorkouts(d,days){
   if(days) return days[d]||0;
   var s=HF.data.sessions||{}, n=0, k;
   for(k in s){ if(s.hasOwnProperty(k) && s[k] && s[k].date && scDayOf(s[k].date)===d) n++; }
+  if(scClassDays().indexOf(d)>=0) n++;
   return n;
 }
 function scWorkoutDays(){
-  var s=HF.data.sessions||{}, out={}, k, d;
+  var s=HF.data.sessions||{}, out={}, k, d, cd=scClassDays(), i;
   for(k in s){ if(s.hasOwnProperty(k) && s[k] && s[k].date){ d=scDayOf(s[k].date); out[d]=(out[d]||0)+1; } }
+  for(i=0;i<cd.length;i++) out[cd[i]]=(out[cd[i]]||0)+1;
   return out;
 }
 function scHasIF(){ var f=HF.data.ifs||{}; return !!(f.plan && !f.plan.blocked); }

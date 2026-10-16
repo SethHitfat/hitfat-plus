@@ -4242,3 +4242,12 @@ html,body{overscroll-behavior:none;}
 .ib-list small{display:block;font-size:12px;color:var(--dim);font-weight:600;}
 .ib-list b{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;}
 .ib-sec+.bigbtn,.ib-sec~.bigbtn{margin-top:14px;}
+
+/* HITFAT Class · Bara (17 Oct): one line from Bara under the QR; a class
+   at HQ counts as the day's workout in the HITFAT Score */
+.kl-bara{display:flex;align-items:center;gap:12px;margin:10px 0 2px;padding:10px 14px 10px 8px;border-radius:18px;background:var(--surface);}
+:root[data-theme="light"] .kl-bara{background:#FFFFFF;}
+.kl-bara img{flex:none;width:64px;height:64px;object-fit:contain;}
+.kl-bara b{display:block;font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#E30613;}
+.kl-bara span{display:block;font-size:14px;line-height:1.45;color:var(--txt);margin-top:2px;}
+.ib-first{margin:0 0 6px;}
