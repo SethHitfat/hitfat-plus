@@ -3996,3 +3996,68 @@ html,body{overscroll-behavior:none;}
 .kl-wd.next span{background:transparent;border:2px solid rgba(127,127,127,.35);}
 .kl-wd.rest span{background:transparent;}
 .kl-wd.rest small{opacity:.5;}
+
+/* HITFAT Class, after Burn Boot Camp's My Plan (17 Oct): this week and the
+   club count as two tiles, the latest class with Share, personal records
+   with a bell to ring */
+.kl-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.kl-tile{padding:14px;border-radius:16px;background:var(--surface);}
+:root[data-theme="light"] .kl-tile,:root[data-theme="light"] .kl-latest,:root[data-theme="light"] .kl-prs{background:#FFFFFF;}
+.kl-tile small{display:block;font-size:13px;font-weight:700;color:var(--txt);}
+.kl-tile b{font-size:30px;font-weight:900;color:var(--txt);font-variant-numeric:tabular-nums;}
+.kl-tile div span{font-size:14px;color:var(--dim);font-weight:600;}
+.kl-tb{display:block;height:6px;border-radius:99px;background:rgba(127,127,127,.2);margin-top:8px;overflow:hidden;}
+.kl-tb i{display:block;height:100%;border-radius:99px;background:#E30613;}
+.kl-latest{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--surface);}
+.kl-ld{flex:none;padding:8px 10px;border-radius:12px;border:1px solid var(--sep);text-align:center;}
+.kl-ld b{display:block;font-size:14px;font-weight:800;color:var(--txt);}
+.kl-ld small{display:block;font-size:12px;color:var(--dim);margin-top:2px;}
+.kl-ln{flex:1;min-width:0;font-size:15px;font-weight:800;color:var(--txt);}
+.kl-ln small{display:block;font-size:12px;font-weight:600;color:var(--dim);margin-top:2px;}
+.kl-share{flex:none;display:flex;align-items:center;gap:6px;padding:9px 13px;border-radius:99px;border:1.5px solid #E30613;background:none;
+  color:#E30613;font:inherit;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;}
+.kl-share .gly{width:15px;height:15px;stroke:#E30613;}
+.kl-prs{border-radius:16px;background:var(--surface);overflow:hidden;}
+.kl-pr{display:flex;align-items:center;gap:12px;padding:13px 14px 13px 16px;}
+.kl-pr+.kl-pr{border-top:1px solid var(--sep);}
+.kl-prm{flex:1;min-width:0;font-size:15px;font-weight:700;color:var(--txt);}
+.kl-prm small{display:block;font-size:12px;font-weight:600;color:var(--dim);margin-top:2px;}
+.kl-coach{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;
+  background:rgba(227,6,19,.12);color:#E30613;vertical-align:2px;}
+.kl-pr>b{font-size:20px;font-weight:900;color:var(--txt);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.kl-prs-sh{flex:none;width:36px;height:36px;border-radius:50%;border:0;background:rgba(127,127,127,.14);display:grid;place-items:center;cursor:pointer;}
+.kl-prs-sh .gly{width:16px;height:16px;stroke:var(--txt);}
+.kl-prbar{display:flex;gap:8px;margin-top:10px;}
+.kl-add{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:13px;border-radius:99px;border:1.5px solid #E30613;background:none;
+  color:#E30613;font:inherit;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;}
+.kl-add .gly{width:16px;height:16px;stroke:#E30613;}
+.kl-alt2{padding:13px 16px;border-radius:99px;border:0;background:rgba(127,127,127,.14);color:var(--txt);font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+
+.klpr{position:fixed;inset:0;z-index:9500;display:none;align-items:flex-end;background:rgba(0,0,0,.5);}
+.klpr.on{display:flex;}
+.klpr-in{width:100%;max-width:560px;margin:0 auto;max-height:92%;overflow-y:auto;box-sizing:border-box;border-radius:24px 24px 0 0;background:var(--bg);
+  padding:20px 18px calc(22px + env(safe-area-inset-bottom,0px));}
+:root[data-theme="light"] .klpr-in{background:#FFFFFF;}
+.klpr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--sep);margin-bottom:16px;}
+.klpr-t{font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:-.6px;color:var(--txt);line-height:1;}
+.klpr-s{font-size:15px;font-weight:700;color:var(--dim);margin-top:6px;}
+.klpr-x{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:rgba(127,127,127,.15);color:var(--txt);font-size:16px;cursor:pointer;}
+.klpr-moves{display:flex;flex-wrap:wrap;gap:8px;}
+.klpr-moves button{padding:9px 13px;border-radius:99px;border:1.5px solid rgba(127,127,127,.3);background:none;color:var(--txt);font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+.klpr-moves button small{font-weight:600;color:var(--dim);margin-left:5px;font-size:12px;}
+.klpr-moves button.on{background:#E30613;border-color:#E30613;color:#FFFFFF;}
+.klpr-moves button.on small{color:rgba(255,255,255,.85);}
+.klpr-name{margin-top:14px;}
+.klpr-units{margin-top:10px;}
+.klpr-row{display:flex;align-items:center;gap:10px;margin-top:16px;}
+.klpr-row .kl-in{flex:1;min-width:0;width:auto;font-size:26px;text-align:center;}
+.klpr-row span{font-size:15px;font-weight:700;color:var(--dim);}
+.klpr-ring .gly,.kl-go .gly{width:20px;height:20px;stroke:#FFFFFF;vertical-align:-4px;margin-right:4px;}
+.klpr-bell{width:110px;height:110px;margin:10px auto 6px;border-radius:50%;display:grid;place-items:center;background:rgba(127,127,127,.15);}
+.klpr-bell .gly{width:54px;height:54px;stroke:var(--dim);stroke-width:1.6;}
+.klpr-bell.rang{background:radial-gradient(circle at 30% 25%,#FF5A5A,#E30613 60%,#8E0410);box-shadow:0 0 0 10px rgba(227,6,19,.14),0 12px 30px rgba(227,6,19,.35);}
+.klpr-bell.rang .gly{stroke:#FFFFFF;transform-origin:50% 12%;animation:klbell 1.1s ease-in-out 2;}
+@keyframes klbell{0%,100%{transform:rotate(0)}15%{transform:rotate(22deg)}30%{transform:rotate(-20deg)}45%{transform:rotate(14deg)}60%{transform:rotate(-10deg)}75%{transform:rotate(5deg)}}
+@media (prefers-reduced-motion: reduce){.klpr-bell.rang .gly{animation:none;}}
+.klpr-val{font-size:56px;font-weight:900;text-align:center;color:var(--txt);letter-spacing:-1px;font-variant-numeric:tabular-nums;}
+.klpr-note{font-size:15px;color:var(--dim);text-align:center;margin:4px 0 6px;}

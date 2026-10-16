@@ -349,7 +349,7 @@ function weightChart(wl){
    screen); anything else shares the progress window, as before. */
 let _shareKind='progress';
 function openShare(kind){
-  _shareKind=kind==='workout'&&typeof _lastWorkout!=='undefined'&&_lastWorkout?'workout':'progress';
+  _shareKind=kind==='kelas'?'kelas':kind==='workout'&&typeof _lastWorkout!=='undefined'&&_lastWorkout?'workout':'progress';
   $('sharemodal').classList.add('on');
   $('share-img').style.display='none';
   $('share-load').style.display='block';
@@ -374,7 +374,7 @@ function shareImage(){
         if(b&&navigator.canShare){
           const f=new File([b],'hitfat-plus.png',{type:'image/png'});
           if(navigator.canShare({files:[f]})){
-            navigator.share({files:[f],title:'HITFAT+',text:_shareKind==='workout'?'Workout done with HITFAT+ 💪':'My progress with HITFAT+ 💪'}).catch(()=>{});
+            navigator.share({files:[f],title:'HITFAT+',text:_shareKind==='kelas'?'At HITFAT HQ 💪':_shareKind==='workout'?'Workout done with HITFAT+ 💪':'My progress with HITFAT+ 💪'}).catch(()=>{});
             return;
           }
         }
@@ -426,6 +426,7 @@ function _scTile(x,tx,ty,tw,th,label,val,unit,col){
   x.fillStyle=SC_DIM; x.font="700 34px 'Inter',system-ui,sans-serif"; x.fillText(unit,tx+52+vw,ty+th-48);
 }
 function drawShareCard(){
+  if(_shareKind==='kelas' && typeof kelasDraw==='function') return kelasDraw();
   const cv=$('share-canvas'), x=cv.getContext('2d'), W=1080, H=1920, cx=W/2, L=90;
   const tr=pgTraining(), nu=pgNutrition(), wl=weightLog(), streak=liveStreak();
   const wk=(typeof _shareKind!=='undefined'&&_shareKind==='workout'&&typeof _lastWorkout!=='undefined')?_lastWorkout:null;

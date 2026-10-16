@@ -212,7 +212,11 @@ function kelasHTML(){
      streak (classes run 3 to 6 days a week, so a day streak would break on
      every rest day), and this week day by day */
   h+=fsec('Your progress','Every class at HQ counts.');
-  h+=kelasLevelHTML()+kelasStreakHTML();
+  h+=kelasWeekHTML()+kelasLevelHTML()+kelasStreakHTML();
+  h+=kelasLatestHTML();
+
+  /* personal records, after Burn Boot Camp: log one, ring the bell, share it */
+  h+=kelasPRHTML();
 
   /* the timetable */
   const cls=d.classes||[];
@@ -310,6 +314,212 @@ function kelasStreakHTML(){
     '<div>'+glyph('flame')+'<div><b>'+cur+' week'+(cur===1?'':'s')+'</b><small>current streak</small></div></div>'+
     '<div>'+glyph('calendar')+'<div><b>'+best+' week'+(best===1?'':'s')+'</b><small>longest streak</small></div></div></div>'+
     '<div class="kl-wrow">'+row+'</div></div>';
+}
+
+/* ═══════════════ this week, the latest class, personal records ═══════════════
+   After Burn Boot Camp's My Plan (17 Oct 2026). Calories, protein and water
+   are not repeated here: the HITFAT Score on Home already has them. */
+var KELAS_TARGET={Membership:4, Ladies:4, Mens:3, HYROX:3};   // classes a week, by hitfat.io/one
+function kelasTarget(){
+  const a=kelasMems().filter(m=>m.active).map(m=>KELAS_TARGET[m.category]||3);
+  return a.length?Math.max.apply(null,a):3;
+}
+function kelasThisWeekN(){
+  const now=kelasNowMY(), mon=new Date(now.getTime()); mon.setUTCDate(mon.getUTCDate()-(kelasDow(now)-1));
+  const m=kelasDayKey(mon);
+  return new Set(kelasIns().map(kelasDayKey).filter(k=>k>=m)).size;
+}
+function kelasWeekHTML(){
+  const n=kelasThisWeekN(), t=kelasTarget(), tot=kelasTotal(), L=kelasLevel(tot);
+  const lo=L.cur||0, hi=L.next||tot||1;
+  return '<div class="kl-tiles">'+
+    '<div class="kl-tile"><small>Classes this week</small><div><b>'+n+'</b><span> / '+t+'</span></div>'+
+    '<span class="kl-tb"><i style="width:'+Math.min(100,Math.round(n/t*100))+'%"></i></span></div>'+
+    '<div class="kl-tile"><small>Club count</small><div><b>'+tot+'</b><span> / '+(L.next||tot)+'</span></div>'+
+    '<span class="kl-tb"><i style="width:'+(L.next?Math.round((tot-lo)/(hi-lo)*100):100)+'%"></i></span></div></div>';
+}
+/* the last check-in, matched to the class on the timetable it was for */
+function kelasLatest(){
+  const a=kelasIns(); if(!a.length) return null;
+  const d=a[0], dow=kelasDow(d), mins=d.getUTCHours()*60+d.getUTCMinutes();
+  let best=null, gap=1e9;
+  ((Kelas.data&&Kelas.data.classes)||[]).filter(c=>c.dow===dow).forEach(c=>{
+    const p=String(c.start).split(':'), st=(+p[0])*60+(+p[1]||0), g=mins-st;
+    if(g>=-60 && g<=(c.min||60) && Math.abs(g)<gap){ gap=Math.abs(g); best=c; }
+  });
+  return {d:d, c:best};
+}
+function kelasLatestHTML(){
+  const L=kelasLatest(); if(!L) return '';
+  const dd=L.d, date=dd.toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
+  const t=kelasClock(String(dd.getUTCHours()).padStart(2,'0')+':'+String(dd.getUTCMinutes()).padStart(2,'0'));
+  return fsec('Latest class','')+'<div class="kl-latest"><div class="kl-ld"><b>'+date+'</b><small>'+t+'</small></div>'+
+    '<div class="kl-ln">'+hesc(L.c?L.c.name:'Class at HQ')+'<small>'+(L.c?(L.c.min||60)+' min · ':'')+'class #'+kelasTotal()+'</small></div>'+
+    '<button class="kl-share" onclick="kelasShare(\'class\')">'+glyph('share')+' Share</button></div>';
+}
+
+/* ── personal records ── */
+/* [name, unit, note, lower is better] */
+var KELAS_MOVES=[['Push-ups','reps','1 min'],['Burpees','reps','1 min'],['Plank hold','time'],['Wall sit','time'],
+  ['Kettlebell swings','reps','1 min'],['Wall balls','reps','1 min'],['Pull-ups','reps'],['Squat','kg'],['Deadlift','kg'],
+  ['Bench press','kg'],['Row 500 m','time','',1],['SkiErg 1000 m','time','',1],['1 km run','time','',1]];
+function kelasMove(n){ return KELAS_MOVES.filter(m=>m[0].toLowerCase()===String(n||'').toLowerCase())[0]||null; }
+function kelasLower(n){ const m=kelasMove(n); return !!(m&&m[3]); }
+function kelasFmt(v,u){
+  if(u==='time'){ const s=Math.round(+v||0); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+  return (Math.round((+v||0)*10)/10)+(u==='kg'?' kg':' reps');
+}
+function kelasOwnPRs(){ const k=HF.data&&HF.data.kelas; return (k&&Array.isArray(k.prs))?k.prs:[]; }
+/* the best of each movement: the member's own, and the coach's from HITFAT LIVE */
+function kelasBests(){
+  const by={};
+  kelasOwnPRs().forEach(e=>{
+    const k=e.m.toLowerCase(), b=by[k], lower=kelasLower(e.m);
+    if(!b || (lower?e.v<b.v:e.v>b.v)) by[k]={m:e.m,u:e.u,v:e.v,at:e.at,disp:kelasFmt(e.v,e.u)};
+  });
+  ((Kelas.data&&Kelas.data.prs)||[]).forEach(e=>{
+    const k=String(e.m||'').toLowerCase(); if(!k) return;
+    const at=Date.parse(e.at)||0;
+    if(!by[k] || at>=by[k].at) by[k]={m:e.m,u:e.t||'',v:+e.v||0,at:at,disp:e.d||String(e.v),coach:true};
+  });
+  return Object.keys(by).map(k=>by[k]).sort((a,b)=>b.at-a.at);
+}
+function kelasPRHTML(){
+  const all=kelasBests(), show=Kelas.prAll?all:all.slice(0,4);
+  let h=fsec('Personal records','Log a best, ring the bell.');
+  h+='<div class="kl-prs">'+(all.length?show.map(b=>
+    '<div class="kl-pr"><div class="kl-prm">'+hesc(b.m)+(b.coach?'<span class="kl-coach">Coach</span>':'')+
+    '<small>'+new Date(b.at).toLocaleDateString('en-MY',{day:'numeric',month:'short'})+'</small></div>'+
+    '<b>'+hesc(b.disp)+'</b>'+
+    '<button class="kl-prs-sh" aria-label="Share this record" onclick="kelasSharePR('+all.indexOf(b)+')">'+glyph('share')+'</button></div>').join('')
+    :'<div class="kl-none">No records yet. Log your first one after class.</div>')+'</div>';
+  h+='<div class="kl-prbar"><button class="kl-add" onclick="kelasPROpen()">'+glyph('plus')+' Add a PR</button>'+
+     (all.length>4?'<button class="kl-alt2" onclick="Kelas.prAll=!Kelas.prAll;renderKelas()">'+(Kelas.prAll?'Show less':'View all '+all.length)+'</button>':'')+'</div>';
+  return h;
+}
+
+/* the sheet: pick a movement, the number, ring the bell */
+function kelasPROpen(){
+  Kelas.pr={m:null, custom:'', u:'reps', rung:null};
+  let o=$('klpr'); if(!o){ o=document.createElement('div'); o.id='klpr'; o.className='klpr'; document.body.appendChild(o); }
+  kelasPRPaint(); o.classList.add('on');
+}
+function kelasPRClose(){ const o=$('klpr'); if(o) o.classList.remove('on'); }
+function kelasPRPick(i){
+  const p=Kelas.pr;
+  if(i<0){ p.m='__other'; p.u='reps'; }
+  else { p.m=KELAS_MOVES[i][0]; p.u=KELAS_MOVES[i][1]; }
+  kelasPRPaint();
+  setTimeout(()=>{ const f=$('klpr-v')||$('klpr-mm')||$('klpr-n'); if(f) f.focus(); },60);
+}
+function kelasPRUnit(u){ Kelas.pr.u=u; kelasPRPaint(); }
+function kelasPRPaint(){
+  const o=$('klpr'), p=Kelas.pr; if(!o||!p) return;
+  let h='<div class="klpr-in"><div class="klpr-top"><div><div class="klpr-t">'+(p.rung?(p.rung.pr?'New PR!':'Logged'):'Add new PR')+'</div>'+
+    '<div class="klpr-s">'+(p.m&&p.m!=='__other'?hesc(p.m):p.rung?hesc(p.rung.m):'Pick a movement')+'</div></div>'+
+    '<button class="klpr-x" aria-label="Close" onclick="kelasPRClose()">✕</button></div>';
+  if(p.rung){
+    const r=p.rung;
+    h+='<div class="klpr-bell'+(r.pr?' rang':'')+'">'+glyph('bell')+'</div>'+
+       '<div class="klpr-val">'+hesc(kelasFmt(r.v,r.u))+'</div>'+
+       '<div class="klpr-note">'+(r.pr?(r.prev?'Beat your best of '+hesc(kelasFmt(r.prev.v,r.prev.u))+'.':'Your first record for this one.'):
+         'Your best is still '+hesc(kelasFmt(r.best.v,r.best.u))+'. Next time.')+'</div>'+
+       (r.pr?'<button class="bigbtn kl-go" onclick="kelasPRShareRung()">'+glyph('share')+' Share it</button>':'')+
+       '<button class="kl-alt" onclick="kelasPRClose()">Done</button>';
+  } else {
+    h+='<div class="klpr-moves">'+KELAS_MOVES.map((m,i)=>
+      '<button class="'+(p.m===m[0]?'on':'')+'" onclick="kelasPRPick('+i+')">'+hesc(m[0])+(m[2]?'<small>'+m[2]+'</small>':'')+'</button>').join('')+
+      '<button class="'+(p.m==='__other'?'on':'')+'" onclick="kelasPRPick(-1)">Other</button></div>';
+    if(p.m){
+      if(p.m==='__other'){
+        h+='<input id="klpr-n" class="kl-in klpr-name" placeholder="Movement name" maxlength="40" value="'+hesc(p.custom)+'" oninput="Kelas.pr.custom=this.value">'+
+           '<div class="obseg klpr-units">'+['reps','kg','time'].map(u=>'<button class="'+(p.u===u?'on':'')+'" onclick="kelasPRUnit(\''+u+'\')">'+u+'</button>').join('')+'</div>';
+      }
+      h+=p.u==='time'
+        ? '<div class="klpr-row"><input id="klpr-mm" class="kl-in" type="number" inputmode="numeric" min="0" placeholder="0"><span>min</span>'+
+          '<input id="klpr-ss" class="kl-in" type="number" inputmode="numeric" min="0" max="59" placeholder="00"><span>sec</span></div>'
+        : '<div class="klpr-row"><input id="klpr-v" class="kl-in" type="number" inputmode="decimal" min="0" placeholder="0"><span>'+(p.u==='kg'?'kg':'reps')+'</span></div>';
+      h+='<button class="bigbtn kl-go klpr-ring" onclick="kelasPRRing()">'+glyph('bell')+' Ring the bell</button>';
+    }
+  }
+  o.innerHTML=h+'</div>';
+}
+function kelasPRRing(){
+  const p=Kelas.pr; if(!p||!p.m) return;
+  const name=p.m==='__other'?String(p.custom||'').trim():p.m;
+  if(!name){ toast('Name the movement first.'); return; }
+  let v;
+  if(p.u==='time'){
+    const mm=+(($('klpr-mm')||{}).value||0), ss=+(($('klpr-ss')||{}).value||0);
+    v=Math.round(mm*60+ss);
+  } else v=+(($('klpr-v')||{}).value||0);
+  if(!(v>0) || v>100000){ toast('Enter your number first.'); return; }
+  const lower=kelasLower(name), own=kelasOwnPRs().filter(e=>e.m.toLowerCase()===name.toLowerCase());
+  let prev=null; own.forEach(e=>{ if(!prev || (lower?e.v<prev.v:e.v>prev.v)) prev=e; });
+  const pr=!prev || (lower?v<prev.v:v>prev.v);
+  if(!HF.data.kelas) HF.data.kelas={};
+  if(!Array.isArray(HF.data.kelas.prs)) HF.data.kelas.prs=[];
+  const e={m:name, u:p.u, v:v, at:Date.now()};
+  HF.data.kelas.prs.push(e); HF.data.kelas.prs=HF.data.kelas.prs.slice(-300); HF.save();
+  p.rung={m:name, u:p.u, v:v, pr:pr, prev:prev, best:pr?e:prev};
+  kelasPRPaint();
+  if(pr && navigator.vibrate) try{ navigator.vibrate([30,60,30]); }catch(x){}
+  if($('kelas') && $('kelas').style.display==='block') renderKelas();
+}
+function kelasPRShareRung(){
+  const r=Kelas.pr&&Kelas.pr.rung; if(!r) return;
+  kelasPRClose();
+  Kelas.share={kind:'pr', m:r.m, val:kelasFmt(r.v,r.u)}; openShare('kelas');
+}
+function kelasSharePR(i){
+  const b=kelasBests()[i]; if(!b) return;
+  Kelas.share={kind:'pr', m:b.m, val:b.disp}; openShare('kelas');
+}
+function kelasShare(kind){
+  const L=kelasLatest(), lv=kelasLevel(kelasTotal());
+  Kelas.share={kind:'class', n:kelasTotal(), name:L&&L.c?L.c.name:'Class at HQ',
+    level:lv.cur?lv.cur+' Class Club':'', streak:kelasWeekStreak()};
+  openShare('kelas');
+}
+
+/* the story card, 1080×1920: HITFAT red, a white card with the record or
+   the class, the member's first name, a big faint PR behind */
+function kelasDraw(){
+  const cv=$('share-canvas'), x=cv.getContext('2d'), W=1080, H=1920, cx=W/2, S=Kelas.share||{kind:'class'};
+  const F=(w,px)=>w+' '+px+"px 'Inter',system-ui,sans-serif";
+  cv.width=W; cv.height=H;
+  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,'#FF3B3B'); g.addColorStop(.45,'#E30613'); g.addColorStop(1,'#6E020C');
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  const r=x.createRadialGradient(W*.85,H*.08,0,W*.85,H*.08,W*.9); r.addColorStop(0,'rgba(255,255,255,.28)'); r.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle=r; x.fillRect(0,0,W,H);
+  x.textAlign='center'; x.textBaseline='alphabetic';
+  // big faint mark behind
+  x.fillStyle='rgba(255,255,255,.10)'; x.font=F(900,S.kind==='pr'?560:420);
+  x.fillText(S.kind==='pr'?'PR':'#'+(S.n||0),cx,H-260);
+  // the mark
+  x.fillStyle='#FFFFFF'; x.font=F(900,64); x.fillText('HITFAT+',cx,220);
+  x.fillStyle='rgba(255,255,255,.85)'; x.font=F(800,30); _spaced(x,'HITFAT HQ · CLASS',cx,276,6);
+  // the card
+  const cw=820, chh=560, cxl=cx-cw/2, cy=520;
+  x.save(); x.shadowColor='rgba(0,0,0,.28)'; x.shadowBlur=60; x.shadowOffsetY=24;
+  x.fillStyle='#FFFFFF'; _rr(x,cxl,cy,cw,chh,56); x.fill(); x.restore();
+  x.fillStyle='#E30613'; x.font=F(900,58);
+  const title=S.kind==='pr'?('NEW PR: '+String(S.m||'').toUpperCase()):'CLASS DONE';
+  const lines=_wrap(x,title,cx,cy+120,cw-120,66);
+  const ly=cy+120+(lines-1)*66+50;
+  x.fillStyle='rgba(227,6,19,.25)'; x.fillRect(cxl+90,ly,cw-180,4);
+  x.fillStyle='#E30613'; x.font=F(900,S.kind==='pr'?170:200);
+  x.fillText(S.kind==='pr'?String(S.val||''):'#'+(S.n||0),cx,ly+220);
+  x.fillStyle='#55555C'; x.font=F(700,36);
+  x.fillText(S.kind==='pr'?'HITFAT HQ · Kota Bharu':String(S.name||''),cx,cy+chh-60);
+  // under the card
+  const first=String((Kelas.data&&Kelas.data.name)||'').trim().split(/\s+/)[0]||'';
+  x.fillStyle='#FFFFFF'; x.font=F(900,64); if(first) x.fillText(first.toUpperCase(),cx,cy+chh+130);
+  x.fillStyle='rgba(255,255,255,.9)'; x.font=F(700,38);
+  const sub=S.kind==='pr'?new Date().toLocaleDateString('en-MY',{day:'numeric',month:'long',year:'numeric'})
+    :[S.level,S.streak?S.streak+'-week streak':''].filter(Boolean).join(' · ');
+  if(sub) x.fillText(sub,cx,cy+chh+196);
+  x.fillStyle='rgba(255,255,255,.8)'; x.font=F(700,34); x.fillText('app.hitfat.io',cx,H-110);
 }
 
 function kelasPickDay(d){ Kelas.day=d; renderKelas(); }
