@@ -3976,7 +3976,8 @@ print("\n── BELL, ALIVE ──");
 (function(){
   ok("a loop for each stage, two reactions", BELL_LOOPS[1]==='comel' && BELL_LOOPS[4]==='juara' && bellPoster(2)==='/img/mascot/anim/aktif.png');
   ok("Bell is touched: a giggle; something logged: a cheer", String(scPoke).indexOf("scReact('giggle')")>0 && String(scRender).indexOf("'cheer'")>0);
-  ok("a messy Buddy has its own sad loop", String(scRender).indexOf("st.k==='rust'?'kusut'")>0);
+  ok("a Buddy who misses you (2+ idle days) is the orange sad loop", String(scRender).indexOf("st.k?'kusut'")>0);
+  ok("30 days: Beast Mode, the black Buddy", String(scCelebrate).indexOf("n>=30")>0 && SC_POSE.hitam==='/img/mascot/anim/hitam.png');
   ok("no canvas, no motion: the poster stays", bellAttach(null,2)===false);
   ok("the card takes the score's colour", scHTML().indexOf('--scc:')>0 && scTint('#22C55E')==='rgba(34,197,94,.16)' && scRGB('#E30613')==='227,6,19');
   ok("the clip is drawn with its mask as alpha", String(bellDraw).indexOf('t[i+3]=b[i]')>0);

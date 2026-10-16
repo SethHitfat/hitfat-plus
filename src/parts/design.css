@@ -3579,3 +3579,13 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
 html,body{overscroll-behavior:none;}
 :root[data-theme="light"]:has(#home:not([style*="none"])){background:#EC3437;}
 :root:not([data-theme="light"]):has(#home:not([style*="none"])){background:#000000;}
+
+/* Buddy's colours (16 Oct): cream under 50, red at 50+, orange when he misses you, gold at 7 days, black (Beast Mode) at 30 */
+.scc.scc-black{background:radial-gradient(circle at 50% 30%,#3A0B0E 0%,#1A0506 40%,#000000 100%);color:#FFFFFF;}
+.scc-black .scc-t b{color:#FF2A35;}
+.scc-black .scc-bell img{-webkit-filter:drop-shadow(0 0 28px rgba(227,6,19,.55));filter:drop-shadow(0 0 28px rgba(227,6,19,.55));}
+.scc-black .scc-share{background:#E30613 !important;color:#FFFFFF !important;}
+/* the orange Buddy needs no grey rust wash */
+.sc-bell.sc-rust .sc-rustfx,.sc-bell.sc-dust .sc-rustfx{display:none;}
+.sc-dust img,.sc-rust img,.sc-dust .bell-cv{-webkit-filter:none !important;filter:none !important;}
+.sc-rust{-webkit-transform:none;transform:none;}

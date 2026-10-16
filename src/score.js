@@ -21,7 +21,7 @@ var SC_WATER=8, SC_STEPS=8000, SC_MEALS=3;
    with Mod Ramadan (and SC_FAST_LIVE in plus-push to match) */
 var SC_FAST_LIVE=false;
 /* Buddy's poses (img/mascot/anim/, each a clip with its first frame as poster): the moments and the habit reactions */
-var SC_POSE={aktif:'/img/mascot/anim/aktif.png', gold:'/img/mascot/anim/gold.png', frozen:'/img/mascot/anim/frozen.jpg', halo:'/img/mascot/anim/halo.png',
+var SC_POSE={hitam:'/img/mascot/anim/hitam.png', aktif:'/img/mascot/anim/aktif.png', gold:'/img/mascot/anim/gold.png', frozen:'/img/mascot/anim/frozen.jpg', halo:'/img/mascot/anim/halo.png',
   water:'/img/mascot/anim/water.png', meal:'/img/mascot/anim/meal.png', calendar:'/img/mascot/anim/calendar.png', kusut:'/img/mascot/anim/kusut.png'};
 /* the moment's slot: the pose's poster now, its clip once it plays */
 function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+SC_POSE[name]+'" alt="Buddy"></div>'; }
@@ -217,7 +217,7 @@ function scBubNext(){
 function scHTML(){
   var s=scScore(), lv=scLevel(s), M=(typeof hfm==='function')?hfm():null, st=scState(), c=st.k==='rust'?'#8E8E93':scColor(s);
   var poster=(typeof bellPoster==='function')?bellPoster(st.k?1:lv):(M&&M.config.images[lv-1]), fx='';
-  if(st.k==='rust'){ poster=SC_ART.rust||poster; if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+poster+');mask-image:url('+poster+')"></span>'; }
+  if(st.k){ poster=SC_ART.rust||poster; if(!SC_ART.rust) fx='<span class="sc-rustfx" style="-webkit-mask-image:url('+poster+');mask-image:url('+poster+')"></span>'; }
   var img=poster?'<img class="sc-poster" src="'+poster+'" alt="Buddy'+(st.k==='rust'?', messy':', level '+lv)+'">'+fx:'';
   var slides=[];
   if(typeof scCoachHTML==='function') slides.push(scCoachHTML());
@@ -249,10 +249,10 @@ function scCarScroll(el){
 }
 function scCarGo(i){ var el=$('sc-car'); if(!el) return; _scCar=i; try{ el.scrollTo({left:i*el.clientWidth,behavior:'smooth'}); }catch(e){ el.scrollLeft=i*el.clientWidth; } scCarScroll(el); }
 /* the colour behind the top of Home: red, gold on a strong-enough day, rust when rusty */
-function scBand(){ var s=scScore(), st=scState(); return st.k==='rust'?'#8E8E93':s>=SC_PADU?'#E30613':'#D9C2A3'; }
+function scBand(){ var s=scScore(), st=scState(); return st.k?'#F06A1C':s>=SC_PADU?'#E30613':'#D9C2A3'; }
 /* the two soft lights behind Buddy, Simple's way (16 Oct): a cream Buddy on
    coral and peach so the white fur stands out, a red one on orange and red */
-function scGlow(){ var s=scScore(), st=scState(); return st.k==='rust'?['#B8B8BE','#8E8E93']:s>=SC_PADU?['#FF8A5B','#E30613']:['#E8424A','#F47C6E']; }
+function scGlow(){ var s=scScore(), st=scState(); return st.k?['#F06A1C','#C24A0E']:s>=SC_PADU?['#FF8A5B','#E30613']:['#E8424A','#F47C6E']; }
 function scRender(){
   var el=$('mascot-home'); if(!el) return;
   el.innerHTML=scHTML();
@@ -267,7 +267,7 @@ function scRender(){
   var car=$('sc-car'); if(car && _scCar){ try{ car.scrollLeft=_scCar*(car.clientWidth||0); }catch(e){} }
   /* Buddy alive; messy (the rust state) has its own sad loop */
   var slot=$('sc-bell'), st=scState(), lv=scLevel(scScore());
-  if(slot && typeof bellAttach==='function' && bellAttach(slot, st.k==='rust'?'kusut':st.k?1:lv)){
+  if(slot && typeof bellAttach==='function' && bellAttach(slot, st.k?'kusut':lv)){
     slot.className+=' sc-live';
     if(_scSay && _scSay!=='poke' && _scSayAt>_scCheered && Date.now()-_scSayAt<8000){
       _scCheered=_scSayAt;
@@ -452,14 +452,14 @@ function scWeekPill(){
   return '<div class="scc-week">'+out+'</div>';
 }
 function scCelebrate(n,mine){
-  var gold=n>=7, pose=gold?'gold':'calendar', next=scNextMile(n), conf='', i;
+  var black=n>=30, gold=n>=7&&!black, pose=black?'hitam':gold?'gold':'calendar', next=scNextMile(n), conf='', i;
   var cols=['#E30613','#FFC20E','#FFFFFF','#111111'];
   if(!mine) for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%cols.length]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
   var line=SC_MILE_LINES[n]||(next?(next-n)+' more '+(next-n===1?'day':'days')+' to your '+next+'-day goal. Don\'t break it! 🔥':'Keep going, champion 🔥');
-  $('scc').className='scc '+(gold?'scc-gold':'scc-red');
+  $('scc').className='scc '+(black?'scc-black':gold?'scc-gold':'scc-red');
   $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
     scMomentBell(pose)+
-    '<div class="scc-t">'+(gold?'<b>'+n+'-day</b> streak! 🏆':'You\'re on a <b>'+n+'-day</b> streak')+'</div>'+
+    '<div class="scc-t">'+(black?'<b>'+n+'-day</b> streak! Beast Mode 🖤':gold?'<b>'+n+'-day</b> streak! 🏆':'You\'re on a <b>'+n+'-day</b> streak')+'</div>'+
     '<div class="scc-s">'+hesc(line)+'</div>'+
     scWeekPill()+
     '<div class="scc-fz">❄️ '+scFreezeLeft()+'/'+SC_FREEZES+' freezes left this month'+(next?' · Next goal: '+next+' days':'')+'</div>'+
