@@ -3909,7 +3909,7 @@ print("\n── SKOR HITFAT ──");
   ok("Home card: score, arc, Bell's picture, a line, a ring a habit", scPills().indexOf('>88<')>0 && h.indexOf('sc-arc')>0 && h.indexOf('/img/mascot/anim/juara.png')>0 && h.indexOf('sc-say')>0 && (h.match(/class="sc-h( full)?"/g)||[]).length===4);
   ok("each habit has its way in", h.indexOf("scTap('workout')")>0 && h.indexOf("scTap('water')")>0 && String(scTap).indexOf("switchTab('eat')")>0 && String(scTap).indexOf('openIF()')>0);
   scSet('water',3); _scSay=null;
-  ok("Bell points at the habit furthest behind", scLine().indexOf('steps to go')>0 || scLine().indexOf('glasses of water')>0);
+  ok("Bell points at the habit furthest behind", scLine().indexOf(' langkah.')>0 || scLine().indexOf('gelas air')>0 || scLine().indexOf('workout pendek')>0);
   scEvent('water');
   ok("...and talks about what was just done", SC_LINES.water.indexOf(scLine())>=0);
   scSheet('water'); scWater(1);

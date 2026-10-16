@@ -59,13 +59,13 @@ function scJunk(m){
   var n=String((m&&m.name)||'');
   return SC_JUNK.test(n) || (m && m.kcal>=900);
 }
-SC_LINES.junk=['Buddy is confiscating that {x} 😇 Tomorrow we swap it for fruit.',
-  'Buddy isn\'t mad… Buddy is just keeping this {x} "safe" 😏 Have some plain water too.',
-  'Once in a while is fine. But Buddy saw that {x} 👀'];
-SC_LINES.ram=['Happy fasting! 🌙 Buddy is fasting too… from oil 😅'];
-SC_LINES.fast=['Fast started ⏱️ Buddy will keep you company till mealtime.'];
+SC_LINES.junk=['Aku rampas {x} tu 😇 Esok kita tukar dengan buah.',
+  'Aku tak marah… aku cuma "simpan" {x} ni 😏 Minum air kosong sekali.',
+  'Sekali-sekala ok. Tapi aku nampak {x} tu 👀'];
+SC_LINES.ram=['Selamat berpuasa! 🌙 Aku pun puasa… dari minyak 😅'];
+SC_LINES.fast=['Puasa dah mula ⏱️ Aku teman kau sampai waktu makan.'];
 function scJunkLine(name){
-  var x=String(name||'that snack').split(/[,(]/)[0].trim(); if(x.length>22) x=x.slice(0,22)+'…';
+  var x=String(name||'snek').split(/[,(]/)[0].trim(); if(x.length>22) x=x.slice(0,22)+'…';
   var a=SC_LINES.junk; return a[new Date().getMinutes()%a.length].replace('{x}',x.charAt(0).toUpperCase()+x.slice(1));
 }
 /* a meal was logged (eat2.js logMeal) */
@@ -137,12 +137,12 @@ function scCoachHTML(){
    Buddy answers it, and a low day gets kindness, not a push. */
 var SC_MOODS=[[1,'😫','Awful'],[2,'😕','Bad'],[3,'😐','Okay'],[4,'🙂','Good'],[5,'😄','Great']];
 var SC_MOOD_LINES={
-  1:'Rough day. Be kind to yourself 🤍 A short walk and some water still count.',
-  2:'Take it easy today. Small wins still count 🙏',
-  3:'Okay is a fine place to start. One small win?',
-  4:'Nice! Let\'s make it a strong day 💪',
-  5:'Love that energy! Go get that strong day 🔥'};
-function scMoodLine(m){ return SC_MOOD_LINES[m]||'How are you feeling today?'; }
+  1:'Hari yang berat. Berlembut dengan diri sendiri 🤍 Jalan sikit dan minum air pun dah kira.',
+  2:'Slow-slow hari ni. Kemenangan kecil pun kira 🙏',
+  3:'Ok pun dah cukup untuk mula. Satu kemenangan kecil?',
+  4:'Best! Jom jadikan hari padu 💪',
+  5:'Suka tenaga ni! Jom kejar hari padu 🔥'};
+function scMoodLine(m){ return SC_MOOD_LINES[m]||'Kau rasa macam mana hari ni?'; }
 function scMoodHTML(){
   var m=scDaily().mood, cur=null, i;
   for(i=0;i<SC_MOODS.length;i++) if(SC_MOODS[i][0]===m) cur=SC_MOODS[i];
@@ -181,9 +181,9 @@ function scPlanHTML(){
 
 /* ── Kenali Buddy: once, the first time the card shows ── */
 var SC_MEET=[
-  {pose:'aktif', t:'Hi! I\'m Buddy 👋', s:'Your HITFAT buddy. I turn red when you\'re active, and my fur gets all messy when you disappear 🥲'},
-  {pose:'water', t:'Fill 4 rings every day', s:'Workout, meals, water and steps. Together they make your HITFAT Score, 0 to 100.'},
-  {pose:'gold',  t:'Score 50+ = a strong day 🔥', s:'Strong days in a row make a streak. At 7 days I turn gold. Miss a day? You get 2 freezes a month ❄️'}];
+  {pose:'aktif', t:'Hai! Aku Buddy 👋', s:'Geng HITFAT kau. Aku jadi merah bila kau aktif, dan bulu aku kusut bila kau hilang 🥲'},
+  {pose:'water', t:'Penuhkan 4 bulatan setiap hari', s:'Workout, makan, air dan langkah. Semua tu jadi HITFAT Score kau, 0 hingga 100.'},
+  {pose:'gold',  t:'Skor 50+ = hari padu 🔥', s:'Hari padu berturut-turut jadi streak. 7 hari, aku jadi emas. Terlepas sehari? Kau ada 2 freeze sebulan ❄️'}];
 function scCheckMeet(){
   var sc=HF.data.sc||(HF.data.sc={});
   if(sc.met || $('scc').style.display==='flex') return false;
@@ -195,8 +195,8 @@ function scMeet(i){
   $('scc').innerHTML='<div class="scc-in">'+scMomentBell(m.pose)+
     '<div class="scc-t">'+m.t+'</div><div class="scc-s">'+hesc(m.s)+'</div>'+
     '<div class="scx-dots">'+SC_MEET.map(function(x,j){ return '<i class="'+(j===i?'on':'')+'"></i>'; }).join('')+'</div>'+
-    '<button class="bigbtn scc-share" onclick="'+(last?'scMeetDone()':'scMeet('+(i+1)+')')+'">'+(last?'Let\'s start!':'Next')+'</button>'+
-    (last?'':'<button class="scc-x" onclick="scMeetDone()">Skip</button>')+'</div>';
+    '<button class="bigbtn scc-share" onclick="'+(last?'scMeetDone()':'scMeet('+(i+1)+')')+'">'+(last?'Jom mula!':'Seterusnya')+'</button>'+
+    (last?'':'<button class="scc-x" onclick="scMeetDone()">Langkau</button>')+'</div>';
   $('scc').style.display='flex'; scMomentPlay(m.pose);
 }
 function scMeetDone(){ var sc=HF.data.sc||(HF.data.sc={}); sc.met=1; HF.save(); scCelebrateClose(); }

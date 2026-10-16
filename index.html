@@ -6997,22 +6997,33 @@ function scLevel(s){ return s>=80?4:s>=50?3:s>=25?2:1; }
 
 /* what Buddy says: about what was just done, or else the habit furthest behind */
 var SC_LINES={
-  workout:['Workout done! Buddy did every rep with you (in spirit) 😅','Strong! That sweat is fat crying 💪'],
-  meal:['Meal logged! Buddy likes honest people 🍽️','Eaten? Nice. Protein first, rice by the portion 👍'],
-  water:['Glug glug! 💧 Buddy feels fresh too.','Water in! Your body says thank you 💧'],
-  steps:['Step by step 👟 Buddy is impressed!','Your feet are busier than Buddy today 👟']
+  workout:['Siap workout! Aku buat setiap rep dengan kau (dalam hati) 😅','Padu! Peluh tu lemak tengah menangis 💪'],
+  meal:['Makan dah log! Aku suka orang jujur 🍽️','Dah makan? Bagus. Protein dulu, nasi ikut sukatan 👍'],
+  water:['Glug glug! 💧 Aku pun rasa segar.','Air masuk! Badan kau ucap terima kasih 💧'],
+  steps:['Langkah demi langkah 👟 Aku kagum!','Kaki kau lagi sibuk dari aku hari ni 👟']
 };
 function scLine(){
   var s=scScore(), hs=scHabits(), i, low=null;
   if(_scSay==='junk' && Date.now()-_scSayAt<120000 && typeof scJunkLine==='function') return scJunkLine(_scJunkName);
   if(_scSay==='mood' && Date.now()-_scSayAt<120000 && typeof scMoodLine==='function') return scMoodLine(scDaily().mood);
   if(_scSay && SC_LINES[_scSay] && Date.now()-_scSayAt<120000){ var a=SC_LINES[_scSay]; return a[new Date().getMinutes()%a.length]; }
-  if(s>=100) return 'Full score! Buddy feels like a world champion 🏆';
-  var hint=scHint();
-  if(s===0) return 'Buddy is still sleepy 😴 '+hint;
-  if(s<40) return 'Buddy just woke up. '+hint;
-  if(s<70) return 'Halfway there! '+hint;
-  return 'Strong day! 🔥 '+hint;
+  /* Buddy speaks Malay (16 Oct, the user); the cards around him stay English */
+  if(s>=100) return '100 penuh! Aku rasa macam juara dunia 🏆';
+  var hint=scHintBM();
+  if(s===0) return 'Aku masih mengantuk 😴 '+hint;
+  if(s<40) return 'Aku baru bangun. '+hint;
+  if(s<70) return 'Dah separuh jalan! '+hint;
+  return 'Hari padu! 🔥 '+hint;
+}
+/* the habit furthest behind, in Buddy's Malay */
+function scHintBM(){
+  var hs=scHabits(), i, low=null;
+  for(i=0;i<hs.length;i++) if(hs[i].v<1 && (!low || hs[i].v<low.v)) low=hs[i];
+  return !low?'':low.k==='water'?'Lagi '+(SC_WATER-scDaily().water)+' gelas air.':
+           low.k==='steps'?'Lagi '+Math.max(0,SC_STEPS-scDaily().steps).toLocaleString('en-MY')+' langkah.':
+           low.k==='meal'?'Jangan lupa log makan.':
+           low.k==='workout'?'Satu workout pendek dah cukup hari ni.':
+           'Puasa kau belum capai sasaran.';
 }
 function scHint(){
   var hs=scHabits(), i, low=null;
@@ -7087,12 +7098,12 @@ function scBellCard(st){
 /* Buddy's bubble, above Buddy: cheeky lines, a new one every few seconds
    (Simple's mascot does this), or what was just done */
 var SC_BUB={
-  zero:['Just one quick log… for me? Do it for the fluff. Pls? 🥺','Imagine how proud I\'ll look if you log.','You logging? Cool. No big deal. (IT IS)','Still here. Still cute. Still waiting for your log.'],
-  low:['Ooh, we\'ve started! Don\'t stop now 👀','A little more and I turn red. I can feel it in my fur.','I\'m waking up… keep it coming!'],
-  red:['Look at me. I\'m RED. Thanks to you 😎','Strong day unlocked. Fur: fabulous.','Can we go for 100? Asking for a friend.'],
-  full:['100! I\'m the fluffiest I\'ve ever been 🏆','Perfect day. I\'m framing this.'],
-  dust:['Psst… I\'m getting a bit dusty here 😟','One log and I\'m fluffy again. Just saying.'],
-  rust:['My fur is a mess… 🥲','A glass of water would fix me right up.','I missed you. Like, a lot.']};
+  zero:['Satu log je… untuk aku? Demi bulu ni. Pls? 🥺','Bayangkan bangganya aku kalau kau log.','Kau nak log? Ok. Biasa je. (PADAHAL BESAR)','Masih sini. Masih comel. Masih tunggu log kau.'],
+  low:['Ooh, dah mula! Jangan berhenti sekarang 👀','Sikit lagi aku jadi merah. Bulu aku dah rasa.','Aku tengah bangun… teruskan!'],
+  red:['Tengok aku. MERAH. Terima kasih kau 😎','Hari padu! Bulu aku tengah power.','Jom kejar 100? Tanya untuk kawan.'],
+  full:['100! Aku tak pernah segebu ni 🏆','Hari sempurna. Aku nak bingkaikan.'],
+  dust:['Psst… aku dah mula berhabuk ni 😟','Satu log, aku gebu balik. Cakap je.'],
+  rust:['Bulu aku kusut… 🥲','Segelas air pun dah cukup baiki aku.','Aku rindu kau. Serius.']};
 var _scBubI=0, _scBubT=null;
 function scBubLines(){
   var st=scState(), s=scScore();
@@ -7191,7 +7202,7 @@ function scTurnRed(){
   var b=document.createElement('div'); b.className='sc-burst'; b.innerHTML='<i></i><i></i><b></b>';
   stg.appendChild(b); stg.className=stg.className.replace(/ ?sc-turnred/g,'')+' sc-turnred';
   setTimeout(function(){ if(b.parentNode) b.parentNode.removeChild(b); stg.className=stg.className.replace(/ ?sc-turnred/g,''); },1800);
-  setTimeout(function(){ scReact('cheer'); scBubSet("I'm RED! 🔥 Strong day!"); },420);
+  setTimeout(function(){ scReact('cheer'); scBubSet("Aku MERAH! 🔥 Hari padu!"); },420);
 }
 function scCheckFreeze(){
   if($('scc').style.display==='flex') return false;
@@ -7213,7 +7224,7 @@ function scPose(slot,src,ms){
   setTimeout(function(){ if(im.parentNode) im.parentNode.removeChild(im); slot.className=slot.className.replace(/ ?posing/g,''); },ms);
 }
 /* touch Buddy: a giggle, and a word */
-SC_LINES.poke=['Hehe, that tickles! 😆','Hey hey, Buddy is focusing here 😤','Hehe, again? 🙈','Buddy is fine, thanks for asking 💪'];
+SC_LINES.poke=['Hehe, geli lah! 😆','Eh eh, aku tengah fokus ni 😤','Hehe, lagi? 🙈','Aku ok, terima kasih tanya 💪'];
 var _scPokes=0;
 /* the reactions come in both colours: w_water, w_giggle... for a cream
    Buddy (under 50), the plain names for a red one. A cream Buddy whose
@@ -7539,13 +7550,13 @@ function scJunk(m){
   var n=String((m&&m.name)||'');
   return SC_JUNK.test(n) || (m && m.kcal>=900);
 }
-SC_LINES.junk=['Buddy is confiscating that {x} 😇 Tomorrow we swap it for fruit.',
-  'Buddy isn\'t mad… Buddy is just keeping this {x} "safe" 😏 Have some plain water too.',
-  'Once in a while is fine. But Buddy saw that {x} 👀'];
-SC_LINES.ram=['Happy fasting! 🌙 Buddy is fasting too… from oil 😅'];
-SC_LINES.fast=['Fast started ⏱️ Buddy will keep you company till mealtime.'];
+SC_LINES.junk=['Aku rampas {x} tu 😇 Esok kita tukar dengan buah.',
+  'Aku tak marah… aku cuma "simpan" {x} ni 😏 Minum air kosong sekali.',
+  'Sekali-sekala ok. Tapi aku nampak {x} tu 👀'];
+SC_LINES.ram=['Selamat berpuasa! 🌙 Aku pun puasa… dari minyak 😅'];
+SC_LINES.fast=['Puasa dah mula ⏱️ Aku teman kau sampai waktu makan.'];
 function scJunkLine(name){
-  var x=String(name||'that snack').split(/[,(]/)[0].trim(); if(x.length>22) x=x.slice(0,22)+'…';
+  var x=String(name||'snek').split(/[,(]/)[0].trim(); if(x.length>22) x=x.slice(0,22)+'…';
   var a=SC_LINES.junk; return a[new Date().getMinutes()%a.length].replace('{x}',x.charAt(0).toUpperCase()+x.slice(1));
 }
 /* a meal was logged (eat2.js logMeal) */
@@ -7617,12 +7628,12 @@ function scCoachHTML(){
    Buddy answers it, and a low day gets kindness, not a push. */
 var SC_MOODS=[[1,'😫','Awful'],[2,'😕','Bad'],[3,'😐','Okay'],[4,'🙂','Good'],[5,'😄','Great']];
 var SC_MOOD_LINES={
-  1:'Rough day. Be kind to yourself 🤍 A short walk and some water still count.',
-  2:'Take it easy today. Small wins still count 🙏',
-  3:'Okay is a fine place to start. One small win?',
-  4:'Nice! Let\'s make it a strong day 💪',
-  5:'Love that energy! Go get that strong day 🔥'};
-function scMoodLine(m){ return SC_MOOD_LINES[m]||'How are you feeling today?'; }
+  1:'Hari yang berat. Berlembut dengan diri sendiri 🤍 Jalan sikit dan minum air pun dah kira.',
+  2:'Slow-slow hari ni. Kemenangan kecil pun kira 🙏',
+  3:'Ok pun dah cukup untuk mula. Satu kemenangan kecil?',
+  4:'Best! Jom jadikan hari padu 💪',
+  5:'Suka tenaga ni! Jom kejar hari padu 🔥'};
+function scMoodLine(m){ return SC_MOOD_LINES[m]||'Kau rasa macam mana hari ni?'; }
 function scMoodHTML(){
   var m=scDaily().mood, cur=null, i;
   for(i=0;i<SC_MOODS.length;i++) if(SC_MOODS[i][0]===m) cur=SC_MOODS[i];
@@ -7661,9 +7672,9 @@ function scPlanHTML(){
 
 /* ── Kenali Buddy: once, the first time the card shows ── */
 var SC_MEET=[
-  {pose:'aktif', t:'Hi! I\'m Buddy 👋', s:'Your HITFAT buddy. I turn red when you\'re active, and my fur gets all messy when you disappear 🥲'},
-  {pose:'water', t:'Fill 4 rings every day', s:'Workout, meals, water and steps. Together they make your HITFAT Score, 0 to 100.'},
-  {pose:'gold',  t:'Score 50+ = a strong day 🔥', s:'Strong days in a row make a streak. At 7 days I turn gold. Miss a day? You get 2 freezes a month ❄️'}];
+  {pose:'aktif', t:'Hai! Aku Buddy 👋', s:'Geng HITFAT kau. Aku jadi merah bila kau aktif, dan bulu aku kusut bila kau hilang 🥲'},
+  {pose:'water', t:'Penuhkan 4 bulatan setiap hari', s:'Workout, makan, air dan langkah. Semua tu jadi HITFAT Score kau, 0 hingga 100.'},
+  {pose:'gold',  t:'Skor 50+ = hari padu 🔥', s:'Hari padu berturut-turut jadi streak. 7 hari, aku jadi emas. Terlepas sehari? Kau ada 2 freeze sebulan ❄️'}];
 function scCheckMeet(){
   var sc=HF.data.sc||(HF.data.sc={});
   if(sc.met || $('scc').style.display==='flex') return false;
@@ -7675,8 +7686,8 @@ function scMeet(i){
   $('scc').innerHTML='<div class="scc-in">'+scMomentBell(m.pose)+
     '<div class="scc-t">'+m.t+'</div><div class="scc-s">'+hesc(m.s)+'</div>'+
     '<div class="scx-dots">'+SC_MEET.map(function(x,j){ return '<i class="'+(j===i?'on':'')+'"></i>'; }).join('')+'</div>'+
-    '<button class="bigbtn scc-share" onclick="'+(last?'scMeetDone()':'scMeet('+(i+1)+')')+'">'+(last?'Let\'s start!':'Next')+'</button>'+
-    (last?'':'<button class="scc-x" onclick="scMeetDone()">Skip</button>')+'</div>';
+    '<button class="bigbtn scc-share" onclick="'+(last?'scMeetDone()':'scMeet('+(i+1)+')')+'">'+(last?'Jom mula!':'Seterusnya')+'</button>'+
+    (last?'':'<button class="scc-x" onclick="scMeetDone()">Langkau</button>')+'</div>';
   $('scc').style.display='flex'; scMomentPlay(m.pose);
 }
 function scMeetDone(){ var sc=HF.data.sc||(HF.data.sc={}); sc.met=1; HF.save(); scCelebrateClose(); }
