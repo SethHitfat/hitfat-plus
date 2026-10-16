@@ -194,13 +194,19 @@ function eatToday(){
     }).join('')+'</div>';
 
   // tools, as colour tiles (the Library's look)
+  /* (17 Oct) the tools as posters, like Train after FIIT: Scan a Meal wide
+     (the plate cut out on HITFAT red, the scans left, a camera button), then
+     Meal Plan and Log Exercise two to a row */
   h+=fsec('Tools','Log faster, plan ahead.');
-  const tl=(t,sub,bg,fg,ic,go)=>'<div class="lib-t etool" onclick="'+go+'" style="--wk:'+bg+';--wkt:'+fg+'"><span class="fw-ic">'+glyph(ic)+'</span><div class="lt">'+t+'</div><div class="ls">'+sub+'</div></div>';
-  h+='<div class="etools">'+
-     tl('Scan a Meal',canScan()?'AI reads the plate':'Get more scans','#B3121B','#FFFFFF','photo','openScan()')+
-     tl('Meal Plan',contentOpen()?'Malaysian menus':'With HITFAT+','#C9962E','#1A1A1A','clipboard',"setEatSeg('plan')")+
-     tl('Log Exercise','Earn calories back','#3A3A3E','#FFFFFF','flame','openBurn()')+
-     '</div>';
+  if(typeof hpoTile==='function'){
+    const sa=typeof scanAccess==='function'?scanAccess():null;
+    h+=hpoTile({cls:'hpo-w hpo-tool',t:'Scan a Meal',kick:'AI · reads the plate',lv:canScan()?(sa&&sa.label?sa.label:'Snap, check, log'):'Get more scans',
+      pal:'red',img:'/img/p/scanmeal.jpg',pic:'scanmeal',pos:'78% 50%',go:'openScan()',btn:{ic:'photo',go:'openScan()',label:'Scan a meal'}});
+    h+='<div class="hpo-grid etools2">'+
+      hpoTile({t:'Meal Plan',kick:contentOpen()?'Malaysian menus':'With HITFAT+',lv:'1–14 days · 51 menus',cls:'hpo-sq hpo-br hpo-mp',pal:'gold',img:'/img/p/mealplan.jpg',pic:'mealplan',pos:'130% 125%',go:"setEatSeg('plan')"})+
+      hpoTile({t:'Log Exercise',kick:'Earn calories back',lv:'Steps, runs, classes',pal:'charcoal',img:'/img/p/br-quick.jpg',pic:'br-quick',pos:'88% 30%',go:'openBurn()'})+
+      '</div>';
+  }
 
   h+='<button class="authalt" onclick="HF.data.nutrition={};HF.save();renderEat()">Change my daily target</button>';
   $('eat-body').innerHTML=h;

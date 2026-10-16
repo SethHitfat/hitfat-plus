@@ -3831,3 +3831,12 @@ html,body{overscroll-behavior:none;}
 .ac-hero .bigbtn,#eat-body .ac-hero .bigbtn,#academy .ac-hero .bigbtn,.ac-hero button.bigbtn.bigbtn{color:#0F7A4A!important;-webkit-text-fill-color:#0F7A4A!important;}
 .ac-hero::before,.ac-hero::after{z-index:0;}
 .ac-hero>*:not(.fw-ic){z-index:1;}
+
+/* Eat's tools as posters (17 Oct) */
+.hpo.hpo-tool{margin-bottom:10px;}
+.hpo-tool .hpo-t{font-size:34px;place-items:center start;text-align:left;padding:0 0 0 18px;max-width:60%;}
+.hpo-tool .hpo-ph{background-size:auto 120%;-webkit-mask-size:auto 120%;mask-size:auto 120%;}
+.hpo-btn .gly{width:20px;height:20px;stroke:#111111;}
+.etools2 .hpo{aspect-ratio:1/1;}
+.etools2 .hpo-t{font-size:23px;place-items:start start;text-align:left;padding:36px 12px 0;line-height:.95;}
+.hpo-mp .hpo-ph{background-size:auto 82%;-webkit-mask-size:auto 82%;mask-size:auto 82%;}

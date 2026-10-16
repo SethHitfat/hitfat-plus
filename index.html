@@ -6070,6 +6070,15 @@ html,body{overscroll-behavior:none;}
 .ac-hero::before,.ac-hero::after{z-index:0;}
 .ac-hero>*:not(.fw-ic){z-index:1;}
 
+/* Eat's tools as posters (17 Oct) */
+.hpo.hpo-tool{margin-bottom:10px;}
+.hpo-tool .hpo-t{font-size:34px;place-items:center start;text-align:left;padding:0 0 0 18px;max-width:60%;}
+.hpo-tool .hpo-ph{background-size:auto 120%;-webkit-mask-size:auto 120%;mask-size:auto 120%;}
+.hpo-btn .gly{width:20px;height:20px;stroke:#111111;}
+.etools2 .hpo{aspect-ratio:1/1;}
+.etools2 .hpo-t{font-size:23px;place-items:start start;text-align:left;padding:36px 12px 0;line-height:.95;}
+.hpo-mp .hpo-ph{background-size:auto 82%;-webkit-mask-size:auto 82%;mask-size:auto 82%;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -25216,13 +25225,19 @@ function eatToday(){
     }).join('')+'</div>';
 
   // tools, as colour tiles (the Library's look)
+  /* (17 Oct) the tools as posters, like Train after FIIT: Scan a Meal wide
+     (the plate cut out on HITFAT red, the scans left, a camera button), then
+     Meal Plan and Log Exercise two to a row */
   h+=fsec('Tools','Log faster, plan ahead.');
-  const tl=(t,sub,bg,fg,ic,go)=>'<div class="lib-t etool" onclick="'+go+'" style="--wk:'+bg+';--wkt:'+fg+'"><span class="fw-ic">'+glyph(ic)+'</span><div class="lt">'+t+'</div><div class="ls">'+sub+'</div></div>';
-  h+='<div class="etools">'+
-     tl('Scan a Meal',canScan()?'AI reads the plate':'Get more scans','#B3121B','#FFFFFF','photo','openScan()')+
-     tl('Meal Plan',contentOpen()?'Malaysian menus':'With HITFAT+','#C9962E','#1A1A1A','clipboard',"setEatSeg('plan')")+
-     tl('Log Exercise','Earn calories back','#3A3A3E','#FFFFFF','flame','openBurn()')+
-     '</div>';
+  if(typeof hpoTile==='function'){
+    const sa=typeof scanAccess==='function'?scanAccess():null;
+    h+=hpoTile({cls:'hpo-w hpo-tool',t:'Scan a Meal',kick:'AI · reads the plate',lv:canScan()?(sa&&sa.label?sa.label:'Snap, check, log'):'Get more scans',
+      pal:'red',img:'/img/p/scanmeal.jpg',pic:'scanmeal',pos:'78% 50%',go:'openScan()',btn:{ic:'photo',go:'openScan()',label:'Scan a meal'}});
+    h+='<div class="hpo-grid etools2">'+
+      hpoTile({t:'Meal Plan',kick:contentOpen()?'Malaysian menus':'With HITFAT+',lv:'1–14 days · 51 menus',cls:'hpo-sq hpo-br hpo-mp',pal:'gold',img:'/img/p/mealplan.jpg',pic:'mealplan',pos:'130% 125%',go:"setEatSeg('plan')"})+
+      hpoTile({t:'Log Exercise',kick:'Earn calories back',lv:'Steps, runs, classes',pal:'charcoal',img:'/img/p/br-quick.jpg',pic:'br-quick',pos:'88% 30%',go:'openBurn()'})+
+      '</div>';
+  }
 
   h+='<button class="authalt" onclick="HF.data.nutrition={};HF.save();renderEat()">Change my daily target</button>';
   $('eat-body').innerHTML=h;
@@ -26803,7 +26818,8 @@ function fplanCard(p){
 const HPO_PAL={red:['#FF4A3D','#B3121B','#5E070C','#FFC21A'], orange:['#FF8A2A','#D9480F','#6A2604','#FFE14D'],
   magenta:['#F0509E','#9C1A72','#4A0A36','#3EE6CF'], charcoal:['#4A4A50','#151517','#000000','#E30613'],
   blue:['#4D78FF','#1B2FA8','#0E1A60','#3EE6CF'], purple:['#8A5CFF','#3A1C9C','#1E0F55','#FF4D8D'],
-  teal:['#3FD3C9','#0E7C86','#073F44','#FF4D8D'], green:['#36D884','#0F7A4A','#073F26','#FFE14D']};
+  teal:['#3FD3C9','#0E7C86','#073F44','#FF4D8D'], green:['#36D884','#0F7A4A','#073F26','#FFE14D'],
+  gold:['#F5C042','#B5790A','#5A3A03','#E30613']};
 const HPO_OF={c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
   sig2:'charcoal',men6:'blue',f40:'purple',bws8:'charcoal',min3:'blue',reset12:'purple',mkb:'charcoal',mdb:'blue',m2:'purple',core14:'teal'};
 const HPO_GOAL={'Fat Loss':['red','orange','magenta'],'Strength':['charcoal','blue','purple'],'Core':['teal','green']};
@@ -26844,7 +26860,8 @@ function hpoTile(o){
   return '<div class="hpo '+(o.cls||'hpo-sq hpo-br')+(o.img&&!o.pic?' hpo-flat':'')+'" onclick="'+o.go+'" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+ph+
     (o.kick?'<span class="hpo-len">'+hesc(o.kick)+'</span>':'')+
     '<div class="hpo-t'+(o.t.length>14?' sm':'')+'">'+hesc(o.t)+'</div>'+
-    (o.lv?'<span class="hpo-lv">'+hesc(o.lv)+'</span>':'')+'</div>';
+    (o.lv?'<span class="hpo-lv">'+hesc(o.lv)+'</span>':'')+
+    (o.btn?'<button class="hpo-play hpo-btn" aria-label="'+hesc(o.btn.label||o.t)+'" onclick="event.stopPropagation();'+o.btn.go+'">'+glyph(o.btn.ic||'play')+'</button>':'')+'</div>';
 }
 /* a Browse category as a poster (16 Oct): its studio photo cut out and toned,
    the name big, how many programs, what it is for */

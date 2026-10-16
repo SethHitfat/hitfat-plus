@@ -171,7 +171,8 @@ function fplanCard(p){
 const HPO_PAL={red:['#FF4A3D','#B3121B','#5E070C','#FFC21A'], orange:['#FF8A2A','#D9480F','#6A2604','#FFE14D'],
   magenta:['#F0509E','#9C1A72','#4A0A36','#3EE6CF'], charcoal:['#4A4A50','#151517','#000000','#E30613'],
   blue:['#4D78FF','#1B2FA8','#0E1A60','#3EE6CF'], purple:['#8A5CFF','#3A1C9C','#1E0F55','#FF4D8D'],
-  teal:['#3FD3C9','#0E7C86','#073F44','#FF4D8D'], green:['#36D884','#0F7A4A','#073F26','#FFE14D']};
+  teal:['#3FD3C9','#0E7C86','#073F44','#FF4D8D'], green:['#36D884','#0F7A4A','#073F26','#FFE14D'],
+  gold:['#F5C042','#B5790A','#5A3A03','#E30613']};
 const HPO_OF={c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
   sig2:'charcoal',men6:'blue',f40:'purple',bws8:'charcoal',min3:'blue',reset12:'purple',mkb:'charcoal',mdb:'blue',m2:'purple',core14:'teal'};
 const HPO_GOAL={'Fat Loss':['red','orange','magenta'],'Strength':['charcoal','blue','purple'],'Core':['teal','green']};
@@ -212,7 +213,8 @@ function hpoTile(o){
   return '<div class="hpo '+(o.cls||'hpo-sq hpo-br')+(o.img&&!o.pic?' hpo-flat':'')+'" onclick="'+o.go+'" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+ph+
     (o.kick?'<span class="hpo-len">'+hesc(o.kick)+'</span>':'')+
     '<div class="hpo-t'+(o.t.length>14?' sm':'')+'">'+hesc(o.t)+'</div>'+
-    (o.lv?'<span class="hpo-lv">'+hesc(o.lv)+'</span>':'')+'</div>';
+    (o.lv?'<span class="hpo-lv">'+hesc(o.lv)+'</span>':'')+
+    (o.btn?'<button class="hpo-play hpo-btn" aria-label="'+hesc(o.btn.label||o.t)+'" onclick="event.stopPropagation();'+o.btn.go+'">'+glyph(o.btn.ic||'play')+'</button>':'')+'</div>';
 }
 /* a Browse category as a poster (16 Oct): its studio photo cut out and toned,
    the name big, how many programs, what it is for */
