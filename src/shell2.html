@@ -414,6 +414,27 @@
   #play.nomirror .pl-fill{background:#000;}
 }
 
+/* ── the player tidied (16 Oct, "kemaskan kaw2") ── */
+/* the player is always dark: its chrome must not take the light theme's ink
+   (ROUND, the counts, the close and rotate glyphs went dark on dark) */
+#play{--txt:#FFFFFF;--ink-90:rgba(255,255,255,.9);--ink-55:rgba(255,255,255,.55);--hairline:rgba(255,255,255,.14);
+  --tint:rgba(255,255,255,.22);color:#FFFFFF;}
+#play .pl-x,#play .pl-ic{color:#FFFFFF;background:rgba(0,0,0,.38);border-color:rgba(255,255,255,.14);}
+#play .pl-pill{color:rgba(255,255,255,.78);background:rgba(0,0,0,.38);border-color:rgba(255,255,255,.14);}
+#play .pl-pill b{color:#FF4D55;}
+/* plain inline text, so "1/7" is not split by the flex gap */
+#play .pl-pill{display:inline-block;}
+/* the clip runs up under the clock; the black strip is for the app's other screens */
+body:has(#play.on)::before{display:none;}
+/* one red */
+#play .bigbtn,#pl-rest .rs{background:#E30613;color:#FFFFFF;}
+/* the rest ring is the count-in's red */
+#pl-rest .rring path{stroke:#E30613;}
+/* the finish in HITFAT's red and white */
+#pl-done .dk{color:#FF4D55;}
+#pl-done .hc-days{color:#FF4D55;}
+#pl-done .hc-mins,#pl-done .hc-cons,#pl-done .hc-streak{color:#FFFFFF;}
+
 /* Ending early? */
 #pl-why{z-index:9;background:rgba(0,0,0,.72);justify-content:flex-end;padding:0;}
 #pl-why .wwrap{width:100%;max-width:480px;background:#141416;border-radius:24px 24px 0 0;text-align:left;
@@ -1055,7 +1076,7 @@
   <div class="pl-ov pl-gr" id="pl-rest">
     <div class="rring"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="88" fill="none" stroke-width="12"/><g id="pl-restarc"></g></svg>
       <div class="rin"><div class="rn" id="pl-restn">20</div></div></div>
-    <div class="rk">Get ready!</div>
+    <div class="rk">Rest</div>
     <div class="rnext"><div class="rnk">→ Up next</div><div class="rnn" id="pl-restnext"></div><div class="rnm" id="pl-restmeta"></div></div>
     <div class="rbtns"><button class="rplus" onclick="plRestAdd(20)">+20s</button><button class="rs" onclick="plSkipRest()">Skip</button></div>
   </div>
