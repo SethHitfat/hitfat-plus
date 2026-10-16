@@ -3393,7 +3393,7 @@ print("\n── 30-DAY WEIGHT LOSS ──");
   ok("...or claimed with an order number from the website", html('pw-body').indexOf('wl-order')>0);
   ok("checkout knows what it is", checkoutItem('prog_wl30').price===39);
   ok("an old product link lands on the same offer", (openProduct('prog_wl30'), html('pw-body').indexOf('Buy for RM39')>0));
-  ok("Home offers it to a guest, on its poster", wlHomeCard().indexOf('New Program')>0 && wlHomeCard().indexOf('RM39')>0 && wlHomeCard().indexOf(WL30_POSTER)>0);
+  ok("Home offers it to a guest, on its poster", wlHomeCard().indexOf('New Program')>0 && wlHomeCard().indexOf('RM39')>0 && wlHomeCard().indexOf('hpo hpo-w')>0);
   ok("it goes by its name, BURN30", WL30.name==='BURN30' && checkoutItem('prog_wl30').name==='BURN30' && html('pgd-body').indexOf('BURN30')>0);
 
   /* someone who bought only this */
@@ -3409,7 +3409,7 @@ print("\n── 30-DAY WEIGHT LOSS ──");
   played=null; playExercise('Kettlebell Swing'); ok("...but the rest of the library does not", played===null);
   HF.data.progress[WL30_ID]=5; openProgram(WL30_ID); pg=html('pgd-body');
   ok("progress shows on the calendar", (pg.match(/wl-day done/g)||[]).length===5 && pg.indexOf('wl-day now')>0 && pg.indexOf('Day 6 of 30')>0);
-  ok("Home carries on from the day reached", wlHomeCard().indexOf('Start Day 6')>0);
+  ok("Home carries on from the day reached", wlHomeCard().indexOf('Day 6 · ')>0 && wlHomeCard().indexOf('wlOpenDay(5)')>0);
   wlTick('water'); ok("the checklist ticks", wlData().check[iso(0)].water===true);
 
   /* nutrition: asks for three numbers, then builds thirty days */
@@ -4070,7 +4070,7 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
   var h=document.getElementById('mascot-home').innerHTML;
   ok("Misi hari ini under the rings: points to hari padu, the quickest way, a line from the coach", h.indexOf("TODAY'S MISSION")>0 && h.indexOf('points</b> to a strong day')>0 && h.indexOf('hari padu')<0 && h.indexOf('Coach:')>0 && h.indexOf('Coach Seth')<0 && h.indexOf('COACH BELL')<0 && h.indexOf('scx-bar')>0);
   ok("today's plan under the card, one workout row (water and steps stay in the rings)", h.indexOf("Today's Plan")>0 && h.indexOf('glasses of water to go')<0 && h.indexOf("scTap('water')")>0 &&
-   (scBurnIsPlan() ? (h.indexOf('wl-poster')>h.indexOf("Today's Plan") && h.indexOf('scx-alt')>0 && (h.match(/class="scx-row[ "]/g)||[]).length===0)
+   (scBurnIsPlan() ? (h.indexOf('hpo hpo-w')>h.indexOf("Today's Plan") && h.indexOf('scx-alt')>0 && (h.match(/class="scx-row[ "]/g)||[]).length===0)
                    : (h.match(/class="scx-row[ "]/g)||[]).length===1));
 /* a member with BURN30 and no plan of their own: BURN30 is today's plan, finding one is the quiet line under it, and Home does not show the card twice */
 ok("BURN30 is today's plan for a member with no other plan", !scBurnIsPlan() || (h.indexOf('Or find a plan')>0 && (typeof renderHome!=='function' || true)));
