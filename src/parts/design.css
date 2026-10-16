@@ -3606,3 +3606,16 @@ html,body{overscroll-behavior:none;}
 .scc-black .scc-share{background:#111111 !important;color:#FFFFFF !important;}
 .scc-black .scc-x{background:rgba(0,0,0,.22);color:#FFFFFF;}
 .scc-black .scc-week{background:rgba(0,0,0,.18);}
+
+/* (16 Oct, still grey on the phone) what iOS shows above Home when it is
+   pulled down is the scroller's own background colour, not anything above
+   its content. So on Home that colour is the top red (black in dark), and the
+   grey below the red band is a layer that scrolls with the content, from
+   500px down. */
+:root[data-theme="light"] .screen:has(> #home:not([style*="none"])){
+  background:
+    radial-gradient(closest-side,#FFFFFF 0%,rgba(255,255,255,.94) 32%,rgba(255,255,255,.5) 62%,rgba(255,255,255,0) 100%) 50% 95px/360px 320px no-repeat local,
+    linear-gradient(180deg,#EC3437 0,#F04A4A 150px,#F4706C 290px,#F9AFA9 390px,#FDE6E3 440px,var(--bg) 480px) 0 0/100% 500px no-repeat local,
+    linear-gradient(var(--bg),var(--bg)) 0 499px/100% 100000px no-repeat local,
+    #EC3437;}
+:root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"])){background-color:#000000;}
