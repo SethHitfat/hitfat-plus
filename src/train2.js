@@ -161,6 +161,40 @@ function fplanCard(p){
     '<button class="fglass" onclick="openProgram(\''+p.id+'\')">'+glyph('calendar')+
       (going?'Continue · Day '+(done+1):'Plan Preview')+'</button></div>';
 }
+/* ── Program posters, after FIIT (16 Oct: "aku nak vibe poster betul2 hidup") ──
+   The athlete cut out of the studio photo (a mask made once per photo with
+   Vision, img/p/mask/<id>.png), toned in the poster's colour, a neon edge
+   on one side, on a bright gradient; the name big and heavy in the middle,
+   how long top left, the level bottom left. The words are live text, not
+   baked into a picture, so they stay sharp and can change. Each plan keeps
+   its own colour wherever it shows. */
+const HPO_PAL={red:['#FF4A3D','#B3121B','#5E070C','#FFC21A'], orange:['#FF8A2A','#D9480F','#6A2604','#FFE14D'],
+  magenta:['#F0509E','#9C1A72','#4A0A36','#3EE6CF'], charcoal:['#4A4A50','#151517','#000000','#E30613'],
+  blue:['#4D78FF','#1B2FA8','#0E1A60','#3EE6CF'], purple:['#8A5CFF','#3A1C9C','#1E0F55','#FF4D8D'],
+  teal:['#3FD3C9','#0E7C86','#073F44','#FF4D8D'], green:['#36D884','#0F7A4A','#073F26','#FFE14D']};
+const HPO_OF={wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
+  sig2:'charcoal',men6:'blue',f40:'purple',bws8:'charcoal',min3:'blue',reset12:'purple',mkb:'charcoal',mdb:'blue',m2:'purple',core14:'teal'};
+const HPO_GOAL={'Fat Loss':['red','orange','magenta'],'Strength':['charcoal','blue','purple'],'Core':['teal','green']};
+function hpoPal(p){
+  if(HPO_OF[p.id]) return HPO_PAL[HPO_OF[p.id]];
+  const set=HPO_GOAL[p.goal]||['blue'], n=String(p.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  return HPO_PAL[set[n%set.length]];
+}
+function hpoLen(p){ return p.oneTime ? progDays(p)+' days' : p.weeks ? (p.weeks.length===1?'1 week':p.weeks.length+' weeks') : p.dur+' min'; }
+function hpoCard(p,o){
+  o=o||{};
+  const c=hpoPal(p), cut=!!HPO_OF[p.id] && hasPhoto(p);
+  const pos=hasPhoto(p)?(imgPos(p,o.wide?1.78:1.6)||'').replace(/;$/,''):'';
+  const msk=cut?';-webkit-mask-image:url(\'/img/p/mask/'+p.id+'.png\');mask-image:url(\'/img/p/mask/'+p.id+'.png\')'+
+    (pos?';'+pos.replace(/background-/g,'-webkit-mask-')+';'+pos.replace(/background-/g,'mask-'):''):'';
+  const done=progDone(p.id), tot=progDays(p), going=done>0&&done<tot;
+  return '<div class="hpo'+(o.wide?' hpo-w':'')+(cut?'':' hpo-flat')+'" onclick="openProgram(\''+p.id+'\')" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+
+    (hasPhoto(p)?'<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\''+progImg(p)+'\'),linear-gradient('+c[2]+','+c[2]+')'+(pos?';'+pos:'')+msk+'"></div></div>':'')+
+    '<span class="hpo-len">'+(o.kick?o.kick+' · ':'')+hpoLen(p)+'</span>'+lockTag(p)+
+    '<div class="hpo-t'+(p.name.length>14?' sm':'')+'">'+hesc(p.name)+'</div>'+
+    (going?'<div class="hpo-go"><span>Day '+(done+1)+' of '+tot+'</span><i><b style="width:'+Math.round(done/tot*100)+'%"></b></i></div>'
+          :'<span class="hpo-lv">'+(p.level||'')+'</span>')+'</div>';
+}
 function madeForYou(){
   const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
   const goal=(HF.data.prefs&&HF.data.prefs.goal)||'';
@@ -391,7 +425,7 @@ function trExplore(){
   h+='<div class="hscroll">'+take(rotated,6).map((p,i)=>fweekCard(p,i<2?'NEW':'',i)).join('')+'</div>';
 
   h+=fsec('Top Programs','HITFAT signature programs first',true);
-  h+='<div class="hscroll">'+take(multi,5).map(fbigCard).join('')+'</div>';
+  h+='<div class="hscroll hpo-row">'+take(multi,5).map(p=>hpoCard(p)).join('')+'</div>';
 
   h+=fsec('Browse');
   h+='<div class="fbrs">'+ACTIVITIES.filter(a=>PROGRAMS.some(p=>activityMatch(a.k,p))).map(fbrowse).join('')+'</div>';
@@ -494,8 +528,17 @@ function trPlans(){
   /* Made For You: big plan cards, the one in progress first, then the
      ones matched to this member's goal and level. */
   let h='';
-  h+=fsec('Made For You','Programs matched to your goal and level. Preview one before you start.');
-  h+='<div class="hscroll fmades">'+madeForYou().map(fplanCard).join('')+'</div>';
+  const mfy=madeForYou();
+  h+=fsec('Made For You','Matched to your goal and level.');
+  if(mfy[0]) h+=hpoCard(mfy[0],{wide:true,kick:'For you'});
+  /* every plan once, by goal, as posters (16 Oct, after FIIT) */
+  [['Lose fat','Fat Loss'],['Build strength','Strength'],['Core','Core']].forEach(r=>{
+    const ps=multi.filter(p=>p.goal===r[1]); if(!ps.length) return;
+    h+=fsec(r[0],ps.length+(ps.length>1?' plans':' plan'));
+    h+='<div class="hscroll hpo-row">'+ps.map(p=>hpoCard(p)).join('')+'</div>';
+  });
+  const other=multi.filter(p=>['Fat Loss','Strength','Core'].indexOf(p.goal)<0);
+  if(other.length){ h+=fsec('More plans',''); h+='<div class="hscroll hpo-row">'+other.map(p=>hpoCard(p)).join('')+'</div>'; }
 
   /* Build Your Own: the custom plan, on the gold card */
   h+=fsec('Build Your Own','Choose the activities and set your schedule.');
@@ -508,10 +551,8 @@ function trPlans(){
      (hasCustom()?'<button class="fglass fglass-q" onclick="cpDelete()">Delete it</button>':'')+
      '</div>';
 
-  /* Everything else (16 Oct): one list with filter chips, in place of six rows
-     of posters that showed the same plans again and again */
-  h+='<div class="pl-all">'+fsec('All Plans',multi.length+' plans · pick a filter')+
-     '<div class="plf-chips" id="pl-chips">'+plChipsHTML()+'</div><div class="pl-list" id="pl-list">'+plListHTML(multi)+'</div></div>';
+  /* (16 Oct) the goal rows above hold every plan once; the old All Plans list
+     with its filters (plChipsHTML, plListHTML) is no longer shown here */
   $('tr-body').innerHTML=h;
 }
 

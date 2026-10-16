@@ -366,12 +366,16 @@ HF.apply(null); HF.data.onboarded=true;
 HF.data.prefs={name:'Seth',goal:'Lose fat',level:'Beginner',days:3,equip:'Bodyweight only'};
 noThrow("plans renders", function(){ setTrSeg('plans'); });
 var _ph=document.getElementById('tr-body').innerHTML;
-ok("Made For You leads the page", _ph.indexOf('Made For You')>0 && _ph.indexOf('fmade')>0 &&
-   _ph.indexOf('fmade')<_ph.indexOf('pl-all'));
-ok("...each card previews its plan", _ph.indexOf('Plan Preview')>0);
+ok("Made For You leads the page, one wide poster", _ph.indexOf('Made For You')>0 && _ph.indexOf('hpo hpo-w')>0 &&
+   _ph.indexOf('hpo hpo-w')<_ph.indexOf('Lose fat'));
+ok("...a poster opens its plan", _ph.indexOf("openProgram('"+madeForYou()[0].id+"')")>0);
 ok("...the goal's plans first",  madeForYou()[0].goal==='Fat Loss');
 ok("Build Your Own on its own card", _ph.indexOf('fcustom')>0 && _ph.indexOf('Build Your Own')>0);
-ok("one list of every plan, not rows of posters", _ph.indexOf('All Plans')>0 && (_ph.match(/class="plr"/g)||[]).length===trainingPlans().filter(function(p){return p.id!=='custom';}).length && _ph.indexOf('class="nrow"')<0);
+/* (16 Oct, after FIIT) every plan once, by goal, as posters: one wide poster
+   for the top match, then each plan exactly once in its goal's row */
+ok("every plan once, in its goal's row of posters", ['Lose fat','Build strength','Core'].every(function(k){ return _ph.indexOf('>'+k+'<')>0; }) &&
+   (_ph.match(/class="hpo[ "]/g)||[]).length===trainingPlans().filter(function(p){return p.id!=='custom';}).length+1 && _ph.indexOf('class="nrow"')<0);
+ok("the posters' words are live text, the athlete a masked photo", _ph.indexOf('class="hpo-t')>0 && _ph.indexOf('/img/p/mask/')>0);
 ok("no unverifiable 'Top 10 in Malaysia' claim", _ph.indexOf('Top 10 in Malaysia')<0);
 ok("Recovery stays in its own tab, not in Plans", _ph.indexOf('Knee Prehab')<0 && _ph.indexOf('Desk Reset')<0);
 ok("...and the billboard is a training plan", trainingPlans().every(function(p){ return !p.rehab; }));
@@ -380,14 +384,11 @@ ok("every plan's minutes match its content", trainingPlans().filter(function(p){
    .every(function(p){ return p.dur===progMinutes(p); }));
 ok("Morning 10 is about ten minutes", Math.abs(PROGRAMS.filter(function(p){ return p.id==='am21'; })[0].dur-10)<=1);
 ok("names are written one way", PROGRAMS.every(function(p){ return !/^\d+ (Day|Week|Minutes?) /.test(p.name); }));
-ok("filter chips for goal, level and length", ['Fat Loss','Strength','Core','Beginner','4 weeks or less','6+ weeks'].every(function(k){ return _ph.indexOf('>'+k+'</button>')>0; }));
-plFilter('Strength');
-ok("a chip narrows the list", (document.getElementById('pl-list').innerHTML.match(/class="plr"/g)||[]).length===trainingPlans().filter(function(p){return p.id!=='custom' && p.goal==='Strength';}).length);
-plFilter('all');
+ok("a plan keeps its colour wherever it shows", hpoPal(trainingPlans()[0])===hpoPal(trainingPlans()[0]) && Object.keys(HPO_OF).every(function(id){ return !!HPO_PAL[HPO_OF[id]]; }));
 HF.data.progress={}; HF.data.progress[trainingPlans()[0].id]=3;
 noThrow("continue row renders", function(){ setTrSeg('plans'); });
-ok("started plan promoted", document.getElementById('tr-body').innerHTML.indexOf('Continue')>0);
-ok("progress bar on the plan", document.getElementById('tr-body').innerHTML.indexOf('class="pb"')>0);
+ok("started plan shows where it is", document.getElementById('tr-body').innerHTML.indexOf('Day 4 of')>0);
+ok("progress bar on the plan", document.getElementById('tr-body').innerHTML.indexOf('class="hpo-go"')>0);
 HF.data.progress={};
 
 print("\n── TRAIN · FITNESS+ SEGMENTS ──");
@@ -399,7 +400,7 @@ setTrSeg('explore');
 var ex=document.getElementById('tr-body').innerHTML;
 ok("sampler strip",        ex.indexOf('This Week')>0 && ex.indexOf('Free This Week')<0);
 ok("one Browse grid of studio photo tiles, no white cards", ex.indexOf('>Browse<')>0 && ex.indexOf('class="fbr fbp')>0 && ex.indexOf('/img/p/br-fatloss.jpg')>0 && / programs<\/div>/.test(ex) && ex.indexOf('class="fact"')<0 && ex.indexOf('Activity Types')<0);
-ok("top programs",         ex.indexOf('Top Programs')>0 && ex.indexOf('fbig')>0);
+ok("top programs",         ex.indexOf('Top Programs')>0 && ex.indexOf('class="hpo')>0);
 ok("no second category row, no third strip of workouts", ex.indexOf('ftile')<0 && ex.indexOf('fwcol')<0 && ex.split('class="fsec"').length-1===4);
 ok("browse is by category",  ex.indexOf("openActivity('Fat Loss')")>0);
 ok("challenges as collections", ex.indexOf('Collections')>0 && ex.indexOf('fcoll')>0);
@@ -409,7 +410,7 @@ ok("NEW badge used",       ex.indexOf('fw-new')>0);
 ok("This Week is type, not photos", ex.indexOf('class="fweek"')>0 && (ex.match(/class="fweek"/g)||[]).length>=3 && /fw-lv fw-(beginner|intermediate|advanced)/.test(ex));
 setTrSeg('plans');
 var _plansHtml=document.getElementById('tr-body').innerHTML;
-ok("plans lead with Made For You", _plansHtml.indexOf('fmade')>0);
+ok("plans lead with Made For You", _plansHtml.indexOf('Made For You')>0 && _plansHtml.indexOf('hpo-w')>0);
 ok("build your own still offered", _plansHtml.toLowerCase().indexOf('build your own')>0);
 setTrSeg('library');
 var lb=document.getElementById('tr-body').innerHTML;
