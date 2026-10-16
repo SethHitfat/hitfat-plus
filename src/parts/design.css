@@ -3597,3 +3597,12 @@ html,body{overscroll-behavior:none;}
 .scc-orange .scc-share{background:#2A1206 !important;color:#FFFFFF !important;}
 .scc-orange .scc-x{background:rgba(42,18,6,.1);color:#2A1206;}
 .scc-orange .scc-bell img{-webkit-filter:drop-shadow(0 10px 24px rgba(150,60,0,.35));filter:drop-shadow(0 10px 24px rgba(150,60,0,.35));}
+
+/* Beast Mode (16 Oct: the black Buddy vanished on the dark screen): bold HITFAT red behind him, a white-and-red rim light on him */
+.scc.scc-black{background:radial-gradient(circle at 50% 32%,#FF6A55 0%,#F23B3B 26%,#E30613 52%,#9E0910 82%,#5E050A 100%);color:#FFFFFF;}
+.scc-black .scc-t b{color:#111111;}
+.scc-black .scc-bell img,.scc-black .scc-bell canvas{-webkit-filter:drop-shadow(0 0 1.5px rgba(255,255,255,.85)) drop-shadow(0 0 18px rgba(255,210,200,.55)) drop-shadow(0 14px 22px rgba(60,0,0,.45));filter:drop-shadow(0 0 1.5px rgba(255,255,255,.85)) drop-shadow(0 0 18px rgba(255,210,200,.55)) drop-shadow(0 14px 22px rgba(60,0,0,.45));}
+.scc-black .scc-s{color:rgba(255,255,255,.9);}
+.scc-black .scc-share{background:#111111 !important;color:#FFFFFF !important;}
+.scc-black .scc-x{background:rgba(0,0,0,.22);color:#FFFFFF;}
+.scc-black .scc-week{background:rgba(0,0,0,.18);}
