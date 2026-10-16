@@ -3693,3 +3693,20 @@ html,body{overscroll-behavior:none;}
 .hpo-go i{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.3);overflow:hidden;}
 .hpo-go b{display:block;height:100%;background:#FFFFFF;border-radius:2px;}
 .hpo-row{gap:10px;scroll-snap-type:x mandatory;scroll-padding-left:16px;}
+
+/* posters in more places (16 Oct): a Start button on the session posters,
+   the Library's shelves two to a row, collections stacked */
+.hpo-play{position:absolute;right:10px;bottom:9px;z-index:4;width:40px;height:40px;border-radius:50%;border:0;padding:0;
+  display:grid;place-items:center;background:#FFFFFF;color:#111111;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer;}
+.hpo-play svg{width:18px;height:18px;margin-left:2px;}
+.hpo-w .hpo-play{width:48px;height:48px;right:12px;bottom:12px;}
+.hpo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
+.hpo.hpo-sq{width:auto;max-width:none;aspect-ratio:4/5;}
+.hpo-sq .hpo-t{font-size:21px;padding:0 10px;}
+.hpo-sq .hpo-t.sm{font-size:18px;}
+.hpo-sq .hpo-len{font-size:10px;letter-spacing:1.2px;}
+.hpo-stack{display:grid;gap:12px;margin-top:6px;}
+/* the old card classes these posters keep for their hooks must not size them */
+.hpo.fyh{height:auto;border-radius:14px;}
+.hpo.fcoll{min-height:0;padding:0;border-radius:14px;width:78%;max-width:330px;}
+.hpo.fcoll.hpo-w{width:auto;max-width:none;}

@@ -172,7 +172,7 @@ const HPO_PAL={red:['#FF4A3D','#B3121B','#5E070C','#FFC21A'], orange:['#FF8A2A',
   magenta:['#F0509E','#9C1A72','#4A0A36','#3EE6CF'], charcoal:['#4A4A50','#151517','#000000','#E30613'],
   blue:['#4D78FF','#1B2FA8','#0E1A60','#3EE6CF'], purple:['#8A5CFF','#3A1C9C','#1E0F55','#FF4D8D'],
   teal:['#3FD3C9','#0E7C86','#073F44','#FF4D8D'], green:['#36D884','#0F7A4A','#073F26','#FFE14D']};
-const HPO_OF={wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
+const HPO_OF={c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
   sig2:'charcoal',men6:'blue',f40:'purple',bws8:'charcoal',min3:'blue',reset12:'purple',mkb:'charcoal',mdb:'blue',m2:'purple',core14:'teal'};
 const HPO_GOAL={'Fat Loss':['red','orange','magenta'],'Strength':['charcoal','blue','purple'],'Core':['teal','green']};
 function hpoPal(p){
@@ -180,20 +180,26 @@ function hpoPal(p){
   const set=HPO_GOAL[p.goal]||['blue'], n=String(p.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
   return HPO_PAL[set[n%set.length]];
 }
-function hpoLen(p){ return p.oneTime ? progDays(p)+' days' : p.weeks ? (p.weeks.length===1?'1 week':p.weeks.length+' weeks') : p.dur+' min'; }
+/* the pictures that have a mask (img/p/mask/<picture>.png), by file name */
+const HPO_MASK=new Set(('wl30 sig1 sig2 sig3 sig4 fl30 lad4 men6 f40 core14 bws8 hiit4 min3 am21 reset12 mkb mdb mch m1 m2 m3 m4 '+
+  'kb1 kb2 kb3 db1 db2 db3 bt1 bt2 ch1 ch2 tw1 tw2 p1 p2 p4 p5 p6 p7 p9 p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 p20 '+
+  'p21 p22 p23 p24 p25 p26 p27 p28 p29 p30 p31 p32 p33 p34 c1 c2 c3').split(' '));
+function hpoPic(p){ return String(progImg(p)).split('/').pop().replace(/\.\w+(\?.*)?$/,''); }
+function hpoLen(p){ return typeof p.days==='number' ? p.days+' days' : p.oneTime ? progDays(p)+' days' : p.weeks ? (p.weeks.length===1?'1 week':p.weeks.length+' weeks') : p.dur+' min'; }
 function hpoCard(p,o){
   o=o||{};
-  const c=hpoPal(p), cut=!!HPO_OF[p.id] && hasPhoto(p);
+  const c=hpoPal(p), pic=hpoPic(p), cut=hasPhoto(p) && HPO_MASK.has(pic);
   const pos=hasPhoto(p)?(imgPos(p,o.wide?1.78:1.6)||'').replace(/;$/,''):'';
-  const msk=cut?';-webkit-mask-image:url(\'/img/p/mask/'+p.id+'.png\');mask-image:url(\'/img/p/mask/'+p.id+'.png\')'+
+  const msk=cut?';-webkit-mask-image:url(\'/img/p/mask/'+pic+'.png\');mask-image:url(\'/img/p/mask/'+pic+'.png\')'+
     (pos?';'+pos.replace(/background-/g,'-webkit-mask-')+';'+pos.replace(/background-/g,'mask-'):''):'';
-  const done=progDone(p.id), tot=progDays(p), going=done>0&&done<tot;
-  return '<div class="hpo'+(o.wide?' hpo-w':'')+(cut?'':' hpo-flat')+'" onclick="openProgram(\''+p.id+'\')" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+
+  const tot=typeof p.days==='number'?p.days:(p.weeks||p.oneTime)?progDays(p):0, done=tot?progDone(p.id):0, going=done>0&&done<tot, fin=tot>0&&done>=tot;
+  return '<div class="hpo'+(o.wide?' hpo-w':'')+(o.cls?' '+o.cls:'')+(cut?'':' hpo-flat')+'" onclick="openProgram(\''+p.id+'\')" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+
     (hasPhoto(p)?'<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\''+progImg(p)+'\'),linear-gradient('+c[2]+','+c[2]+')'+(pos?';'+pos:'')+msk+'"></div></div>':'')+
     '<span class="hpo-len">'+(o.kick?o.kick+' · ':'')+hpoLen(p)+'</span>'+lockTag(p)+
     '<div class="hpo-t'+(p.name.length>14?' sm':'')+'">'+hesc(p.name)+'</div>'+
     (going?'<div class="hpo-go"><span>Day '+(done+1)+' of '+tot+'</span><i><b style="width:'+Math.round(done/tot*100)+'%"></b></i></div>'
-          :'<span class="hpo-lv">'+(p.level||'')+'</span>')+'</div>';
+          :'<span class="hpo-lv">'+(fin?'✓ Completed':(p.level||''))+'</span>')+
+    (o.start?'<button class="hpo-play" aria-label="Start '+hesc(p.name)+'" onclick="event.stopPropagation();playSingle(\''+p.id+'\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button>':'')+'</div>';
 }
 function madeForYou(){
   const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
@@ -391,9 +397,10 @@ function trForYou(){
   }
   /* Today's pick (16 Oct): one session, big, with Start right there; a new one each day */
   const day=Math.floor(Date.now()/864e5), hero=pick.length?pick[day%pick.length]:null;
-  if(hero){ h+=fsec("Today's Pick",pickSub); h+=fyHero(hero); }
+  /* (16 Oct, after FIIT) Today's Pick and More for You are posters, with Start on them */
+  if(hero){ h+=fsec("Today's Pick",pickSub); h+=hpoCard(hero,{wide:true,kick:"Today's pick",start:true,cls:'fyh'}); }
   const rest=pick.filter(p=>p!==hero);
-  if(rest.length){ h+=fsec('More for You','Picked for your goal and level.'); h+='<div class="hscroll fmore">'+rest.map(p=>fyMoreCard(p,goalKey,lvl)).join('')+'</div>'; }
+  if(rest.length){ h+=fsec('More for You','Picked for your goal and level.'); h+='<div class="hscroll hpo-row fmore">'+rest.map(p=>hpoCard(p,{kick:fyWhy(p,goalKey,lvl)[1],start:true})).join('')+'</div>'; }
   if(quick.length){
     h+=fsec('Quick Workouts','Twenty minutes or less.');
     h+='<div class="pl-list">'+quick.slice(0,5).map(fyQuickRow).join('')+'</div>';
@@ -431,7 +438,7 @@ function trExplore(){
   h+='<div class="fbrs">'+ACTIVITIES.filter(a=>PROGRAMS.some(p=>activityMatch(a.k,p))).map(fbrowse).join('')+'</div>';
 
   h+=fsec('Collections','Challenges with a finish line',true);
-  h+='<div class="hscroll">'+CHALLENGES.map(fcoll).join('')+'</div>';
+  h+='<div class="hscroll hpo-row">'+CHALLENGES.map(c=>hpoCard(c,{kick:'Challenge',cls:'fcoll'})).join('')+'</div>';
   $('tr-body').innerHTML=h;
 }
 
@@ -615,7 +622,10 @@ function openLibList(k){
   let h='<div class="hgroup"><div class="k">Library</div><h2>'+T[0]+'</h2><p>'+T[1].length+' in HITFAT+</p></div>';
   /* Collections are posters wherever they appear, as in Explore and in
      Fitness+ — here stacked full width rather than as rows. */
-  h+= k==='collections' ? '<div class="fcolls">'+T[1].map(fcoll).join('')+'</div>' : T[1].map(p=>frow(p)).join('');
+  /* (16 Oct, after FIIT) the Library's shelves are posters: collections
+     full width, workouts and programs two to a row */
+  h+= k==='collections' ? '<div class="hpo-stack">'+T[1].map(c=>hpoCard(c,{wide:true,kick:'Challenge',cls:'fcoll'})).join('')+'</div>'
+                        : '<div class="hpo-grid">'+T[1].map(p=>hpoCard(p,{cls:'hpo-sq'})).join('')+'</div>';
   $('lib-body').innerHTML=h;
   hidePanels(); $('library').style.display='block'; $('screen').scrollTop=0;
 }

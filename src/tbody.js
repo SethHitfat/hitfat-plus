@@ -342,7 +342,7 @@ noThrow("for you renders for a guest", function(){ setTrSeg('foryou'); });
 var _fy=document.getElementById('tr-body').innerHTML;
 ok("a guest meets the membership first", _fy.indexOf('fyjoin')>=0 && _fy.indexOf('Join HITFAT+')>0 && _fy.indexOf('openPaywall()')>0);
 ok("...and it promises no free trial", _fy.indexOf('Free')<0 || _fy.indexOf('Try It Free')<0);
-ok("...with the sections after it", _fy.indexOf("Today's Pick")>0 && _fy.indexOf('class="fyh"')>0 && _fy.indexOf('playSingle(')>0);
+ok("...with the sections after it", _fy.indexOf("Today's Pick")>0 && _fy.indexOf('hpo hpo-w fyh')>0 && _fy.indexOf('playSingle(')>0);
 ok("Picked for You holds what its line promises", (function(){
     var keep=HF.data.prefs; HF.data.prefs=Object.assign({},keep,{goal:'',level:'Beginner'}); trForYou();
     var h=document.getElementById('tr-body').innerHTML; HF.data.prefs=keep;
@@ -3285,8 +3285,8 @@ print("\n── PROGRAM PAGE: the bar that stays ──");
 
 print("\n── COLLECTIONS ──");
 noThrow("the Collections page opens", function(){ openLibList('collections'); });
-ok("...as posters, every collection", document.getElementById('lib-body').innerHTML.split('class="fcoll fc2"').length-1===CHALLENGES.length);
-ok("...each with its length as one big number", document.getElementById('lib-body').innerHTML.indexOf('<div class="fc-num"><b>'+(CHALLENGES[0].days||progDays(CHALLENGES[0]))+'</b>')>0);
+ok("...as posters, every collection", document.getElementById('lib-body').innerHTML.split('hpo hpo-w fcoll').length-1===CHALLENGES.length);
+ok("...each with its length on it", document.getElementById('lib-body').innerHTML.indexOf('Challenge · '+(CHALLENGES[0].days||progDays(CHALLENGES[0]))+' days')>0);
 noThrow("a collection opens", function(){ openProgram(CHALLENGES[0].id); });
 ok("its days do not say Day n twice", document.getElementById('pgd-body').innerHTML.indexOf('>Day 2</div><div class="m">Day 2')<0);
 
