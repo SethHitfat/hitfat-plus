@@ -395,6 +395,19 @@
 #play.resting .pl-top{z-index:9;}
 #play.nomirror #pl-ready .rdk{color:#FF4D55;}
 
+/* (16 Oct) the clip raised, the foot a clean dark panel: Vimeo fits a
+   portrait clip inside its box, which left black bands above and below and
+   half a screen of empty gym ceiling over the coach. The box is now the
+   clip's own 9:16 at full width, lifted 60px so the ceiling is cropped and
+   the coach sits higher; under it the clip fades into black, where time,
+   kcal and the transport sit. */
+@media (orientation:portrait){
+  #play.nomirror #pl-video{inset:auto;top:-60px;left:0;width:100%;height:calc(100vw*16/9);}
+  #play.nomirror .pl-scrim{background:linear-gradient(180deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.26) 17%,
+    rgba(0,0,0,0) 30%,rgba(0,0,0,0) 54%,rgba(0,0,0,.55) 64%,rgba(0,0,0,.92) 72%,#000 77%,#000 100%);}
+  #play.nomirror .pl-fill{background:#000;}
+}
+
 /* Ending early? */
 #pl-why{z-index:9;background:rgba(0,0,0,.72);justify-content:flex-end;padding:0;}
 #pl-why .wwrap{width:100%;max-width:480px;background:#141416;border-radius:24px 24px 0 0;text-align:left;
