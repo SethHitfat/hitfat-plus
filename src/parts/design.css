@@ -3572,3 +3572,10 @@ body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#play
 .screen{position:relative;}
 :root[data-theme="light"] .screen:has(> #home:not([style*="none"]))::before{content:'';position:absolute;left:0;right:0;top:-900px;height:900px;background:#EC3437;pointer-events:none;}
 :root:not([data-theme="light"]) .screen:has(> #home:not([style*="none"]))::before{content:'';position:absolute;left:0;right:0;top:-900px;height:900px;background:#000;pointer-events:none;}
+/* (16 Oct) the pull-down showed grey: iOS bounced the whole document, not the
+   app's scroller. The document no longer bounces (the scroller still does,
+   showing the red above Home), and on Home the document itself is red/black
+   underneath, for any iOS that bounces it anyway. */
+html,body{overscroll-behavior:none;}
+:root[data-theme="light"]:has(#home:not([style*="none"])){background:#EC3437;}
+:root:not([data-theme="light"]):has(#home:not([style*="none"])){background:#000000;}
