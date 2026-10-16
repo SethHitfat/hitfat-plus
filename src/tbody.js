@@ -2074,6 +2074,12 @@ ok("...in its own try, apart from the Club's",
 var _wd=_shell.slice(_shell.indexOf('App did not start')-2600, _shell.indexOf('App did not start'));
 ok("the watchdog trusts the app's own _started flag", _wd.indexOf('_started')>0);
 ok("...and any open panel, not just the five tabs",    _wd.indexOf("querySelectorAll('.pad')")>0);
+/* A slow sign-in (HF.pull on mobile data) is not a failed start: the watchdog
+   waits while _signingIn is set, and startApp() takes a shown panel away. */
+ok("the watchdog waits while a sign-in is still loading", _wd.indexOf('_signingIn')>0 && _wd.indexOf('setTimeout(check')>0);
+var _sa=_shell.slice(_shell.indexOf('function startApp(){'), _shell.indexOf('async function _onSignedIn('));
+ok("startApp removes the panel once Home has started", _sa.indexOf("getElementById('bootdiag')")>0 && _sa.indexOf('.remove()')>0);
+ok("onSignedIn marks the sign-in as loading until it ends", _sa.indexOf('_signingIn=true')>0 && _sa.indexOf('finally { _signingIn=false; }')>0);
 /* And the banner is above the fold: under the greeting and the week, above
    everything else on Home. */
 ok("the banner sits under the header and the week, above the rest",

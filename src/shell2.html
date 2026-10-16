@@ -1120,8 +1120,18 @@
   window.addEventListener('unhandledrejection',function(e){
     var r=e.reason; note('promise: '+((r&&(r.message||r))||'unknown'));
   });
-  setTimeout(function(){
+  /* A returning member's start waits on the network (HF.pull, the
+     entitlement) before Home paints. On a slow phone connection that took
+     longer than six seconds, so the panel covered the top of a Home that
+     painted a moment later. While a sign-in is still loading, look again
+     later instead (up to half a minute); startApp() also takes the panel
+     away if it was shown and the app then started. */
+  var tries=0;
+  setTimeout(function check(){
     if(shown) return;
+    var loading=false;
+    try{ loading = (typeof _signingIn!=='undefined') && !!_signingIn; }catch(e){}
+    if(loading && ++tries<5){ setTimeout(check,6000); return; }
     /* "Did the app start" is a question the app answers itself: startApp()
        sets _started once Home has painted. Asking instead whether one of the
        five TABS was on screen meant anyone who had opened a panel within six
@@ -1218,13 +1228,18 @@ function hideSplash(){
   if(left>0){ if(!s._wait) s._wait=setTimeout(()=>{ s._wait=null; hideSplash(); },left); return; }
   s.classList.add('gone'); setTimeout(()=>{s.style.display='none';},500);
 }
-let _started=false;
+let _started=false, _signingIn=false;
 function startApp(){
   hideSplash();
   try{ applyCustom(); switchTab('home'); if(!HF.data.onboarded) startOnboarding(); _started=true; updateAvatar(); }
   catch(e){ console.error(e); }
+  if(_started){ const d=document.getElementById('bootdiag'); if(d) d.remove(); }
 }
 async function onSignedIn(session){
+  _signingIn=true;
+  try{ await _onSignedIn(session); } finally { _signingIn=false; }
+}
+async function _onSignedIn(session){
   hideAuth();
   HF.setUser(session.user.id,session.user.email);
   await HF.pull();
