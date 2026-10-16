@@ -375,6 +375,14 @@ function fyQuickRow(p){
     '<div class="tx"><div class="eb">'+(p.goal||'Workout')+'</div><div class="t">'+p.name+'</div><div class="m">'+plMeta(p,fweekKit(p))+'</div></div>'+
     lockTag(p)+'<span class="ch">›</span></div>';
 }
+/* the six sessions in Explore's This Week, worked out as trExplore does */
+function trWeekIds(){
+  const singles=PROGRAMS.filter(p=>!p.weeks), wk=Math.floor(new Date().getTime()/6048e5);
+  let rotated=singles.map((_,i)=>singles[(wk+i)%singles.length]);
+  if(Object.keys(HF.data.sessions||{}).length<3){ const lv={Beginner:0,Intermediate:1,Advanced:2};
+    rotated=rotated.map((p,i)=>[p,i]).sort((a,b)=>((lv[a[0].level]??1)-(lv[b[0].level]??1))||(a[1]-b[1])).map(x=>x[0]); }
+  return new Set(rotated.slice(0,6).map(p=>p.id));
+}
 function trForYou(){
   const goal=(HF.data.prefs&&HF.data.prefs.goal)||'';
   const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
@@ -384,15 +392,19 @@ function trForYou(){
   /* What the line under the title promises is what the row holds: goal and
      level when there are enough of those, then level alone, then a mix —
      never "matched to your level" over sessions at another level. */
-  const byGoal=goalKey?singles.filter(p=>activityMatch(goalKey,p)&&p.level===lvl):[];
-  const byLvl=singles.filter(p=>p.level===lvl);
+  /* leave out what Explore's This Week already shows, while three or more remain */
+  const wkIds=trWeekIds(), fresh=a=>{ const b=a.filter(p=>!wkIds.has(p.id)); return b.length>=3?b:a; };
+  const byGoal=goalKey?fresh(singles.filter(p=>activityMatch(goalKey,p)&&p.level===lvl)):[];
+  const byLvl=fresh(singles.filter(p=>p.level===lvl));
   let pick, pickSub;
   if(byGoal.length>=3){ pick=byGoal.slice(0,8); pickSub='For your goal: '+goal.toLowerCase()+' · '+lvl; }
   else if(byLvl.length>=3){ pick=byLvl.slice(0,8); pickSub='Matched to your level · '+lvl; }
   else { pick=singles.slice(0,8); pickSub='A mix to start with'; }
   const lvR={Beginner:0,Intermediate:1,Advanced:2};
   /* the member's own level first, then the nearest */
-  const quick=singles.filter(p=>p.dur<=20&&pick.indexOf(p)<0)
+  /* not the sessions Explore's This Week already shows this week (16 Oct): the
+     two rows were five of the same posters */
+  const quick=singles.filter(p=>p.dur<=20&&pick.indexOf(p)<0&&!wkIds.has(p.id))
     .map((p,i)=>[p,i]).sort((a,b)=>(Math.abs((lvR[a[0].level]??1)-(lvR[lvl]??0))-Math.abs((lvR[b[0].level]??1)-(lvR[lvl]??0)))||(a[1]-b[1])).map(x=>x[0]).slice(0,9);
 
   let h='';

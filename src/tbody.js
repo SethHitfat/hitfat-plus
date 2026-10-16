@@ -357,6 +357,8 @@ ok("a member does not see the join card", _fy.indexOf('fyjoin')<0);
 ok("a member with a plan sees Your Plan", _fy.indexOf('Your Plan')>0 && _fy.indexOf('Up Next')>0);
 ok("...and its next day starts from here", _fy.indexOf("openDay('"+_pp.id+"',"+nextSession(_pp)+")")>0);
 ok("short sessions as a row of posters with Start", _fy.indexOf('Quick Workouts')>0 && _fy.indexOf('class="hpo-play"')>0 && _fy.indexOf('Popular Programs')<0);
+ok("...none of them already in Explore's This Week", (function(){ var ids=trWeekIds(), sec=_fy.slice(_fy.indexOf('Quick Workouts'));
+  return PROGRAMS.filter(function(p){ return ids.has(p.id); }).every(function(p){ return sec.indexOf("openProgram('"+p.id+"')")<0; }); })());
 HF.data.progress={}; setTrSeg('foryou'); _fy=document.getElementById('tr-body').innerHTML;
 ok("no plan yet: the finder instead", _fy.indexOf('Find Your Plan')>0 && _fy.indexOf('openFinder()')>0);
 HF.apply(null);
