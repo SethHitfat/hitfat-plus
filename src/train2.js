@@ -402,6 +402,46 @@ function trWeekIds(){
     rotated=rotated.map((p,i)=>[p,i]).sort((a,b)=>((lv[a[0].level]??1)-(lv[b[0].level]??1))||(a[1]-b[1])).map(x=>x[0]); }
   return new Set(rotated.slice(0,6).map(p=>p.id));
 }
+/* ── Your recommended challenge, after FIIT (16 Oct) ──
+   Once, to a member on For You: the challenge that fits their goal, its
+   poster, how long, why it was picked, a key to success, and Join or Maybe
+   later. Not while one is going; after Maybe later, not for 14 days. No
+   member counts or success rates: HITFAT+ does not have those numbers yet. */
+function chRecPick(){
+  const g=String((HF.data.prefs&&HF.data.prefs.goal)||'');
+  const id=/strong|strength|muscle/i.test(g)?'c3':/core|abs/i.test(g)?'c2':'c1';
+  return CHALLENGES.find(c=>c.id===id)||CHALLENGES[0];
+}
+function chRecMaybe(){
+  try{
+    if(!contentOpen() || !HF.data.onboarded || !CHALLENGES.length) return;
+    if(CHALLENGES.some(c=>progDone(c.id)>0)) return;
+    const last=HF.data.chOffer; if(last && Date.now()-last<14*864e5) return;
+    if(!$('train') || $('train').style.display==='none' || trSeg!=='foryou') return;
+    chRecShow();
+  }catch(e){}
+}
+function chRecShow(){
+  const c=chRecPick(), days=c.days||progDays(c), g=String((HF.data.prefs&&HF.data.prefs.goal)||'').toLowerCase();
+  HF.data.chOffer=Date.now(); HF.save();
+  let el=$('chrec'); if(!el){ el=document.createElement('div'); el.id='chrec'; el.className='chrec'; document.body.appendChild(el); }
+  el.innerHTML='<div class="chrec-in"><button class="chrec-x" aria-label="Close" onclick="chRecClose()">'+glyph('chevleft')+'</button>'+
+    '<div class="chrec-t">Your recommended challenge</div>'+
+    hpoCard(c,{wide:true,kick:'Challenge',cls:'fcoll'})+
+    '<div class="chrec-m">'+days+'-day challenge · '+(c.dur||15)+' min a day</div>'+
+    '<div class="chrec-why">'+glyph('target')+(g?'Picked for your goal: '+hesc(g):'A good first challenge')+'</div>'+
+    '<div class="chrec-key"><b>Key to success 💡</b><span>Small and daily wins. One short session a day for '+days+' days builds the habit faster than a long one now and then. Miss a day? Just carry on the next.</span></div>'+
+    '<div class="chrec-b"><button class="chrec-go" onclick="chRecJoin(\''+c.id+'\')">Join</button>'+
+    '<button class="chrec-later" onclick="chRecClose()">Maybe later</button></div></div>';
+  el.classList.add('on');
+}
+function chRecClose(){ const el=$('chrec'); if(el) el.classList.remove('on'); }
+function chRecJoin(id){
+  chRecClose();
+  const c=findProg(id); if(!c) return;
+  const gi=typeof nextSession==='function'?nextSession(c):0;
+  if(gi>=0) openDay(id,gi); else openProgram(id);
+}
 function trForYou(){
   const goal=(HF.data.prefs&&HF.data.prefs.goal)||'';
   const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
@@ -450,6 +490,7 @@ function trForYou(){
     h+='<div class="hscroll hpo-row">'+quick.slice(0,6).map(p=>hpoCard(p,{start:true})).join('')+'</div>';
   }
   $('tr-body').innerHTML=h;
+  setTimeout(chRecMaybe,700);
 }
 
 /* ── EXPLORE ──

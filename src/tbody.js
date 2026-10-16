@@ -4226,5 +4226,17 @@ print("\n── FILTER · AFTER FIIT ──");
   ok("...filtered, it says how many of how many", document.getElementById('lib-body').innerHTML.indexOf(arms.length+' of '+all.length)>0);
   _lf={}; _lfK='';
 })();
+print("\n── RECOMMENDED CHALLENGE · AFTER FIIT ──");
+(function(){
+  var keepP=HF.data.prefs, keepO=HF.data.chOffer;
+  HF.data.prefs={goal:'Lose fat'}; ok("lose fat: the 7-day shred", chRecPick().id==='c1');
+  HF.data.prefs={goal:'Get stronger'}; ok("strength: the strong challenge", chRecPick().id==='c3');
+  HF.data.prefs={goal:'Core & abs'}; ok("core: the core challenge", chRecPick().id==='c2');
+  noThrow("the sheet builds", function(){ chRecShow(); });
+  var h=document.getElementById('chrec')?document.getElementById('chrec').innerHTML:'';
+  ok("...poster, Join and Maybe later, and no member counts", h.indexOf('Your recommended challenge')>=0 && h.indexOf('chRecJoin(')>0 && h.indexOf('Maybe later')>0 && !/members/i.test(h));
+  ok("...offered once: the time is kept", typeof HF.data.chOffer==='number');
+  HF.data.prefs=keepP; if(keepO===undefined) delete HF.data.chOffer; else HF.data.chOffer=keepO;
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

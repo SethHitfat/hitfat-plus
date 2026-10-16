@@ -3796,3 +3796,24 @@ html,body{overscroll-behavior:none;}
   background:transparent;color:var(--txt);border:1.5px solid rgba(127,127,127,.4);}
 .lfs-go{flex:1;padding:14px;border-radius:99px;border:0;font:inherit;font-size:16px;font-weight:800;cursor:pointer;background:#E30613;color:#FFFFFF;}
 .lfs-go.off{background:rgba(127,127,127,.25);color:var(--dim);cursor:default;}
+
+
+/* ── Your recommended challenge, after FIIT (16 Oct) ── see chRecShow in train2.js */
+.chrec{position:fixed;inset:0;z-index:9400;display:none;background:var(--bg);overflow-y:auto;}
+:root[data-theme="light"] .chrec{background:#F2F2F7;}
+.chrec.on{display:block;}
+.chrec-in{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;
+  padding:calc(14px + env(safe-area-inset-top,0px)) 18px calc(20px + env(safe-area-inset-bottom,0px));}
+.chrec-x{width:40px;height:40px;border-radius:50%;border:0;background:rgba(127,127,127,.15);color:var(--txt);display:grid;place-items:center;cursor:pointer;}
+.chrec-x .gly{width:20px;height:20px;}
+.chrec-t{font-size:24px;font-weight:800;letter-spacing:-.5px;color:var(--txt);margin:16px 0 12px;}
+.chrec .hpo{pointer-events:none;}
+.chrec-m{font-size:15px;color:var(--dim);margin:12px 2px 6px;}
+.chrec-why{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--txt);margin:0 2px 14px;}
+.chrec-why .gly{width:18px;height:18px;stroke:#E30613;}
+.chrec-key{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:16px;background:var(--surface);font-size:15px;line-height:1.45;color:var(--dim);}
+:root[data-theme="light"] .chrec-key{background:#FFFFFF;}
+.chrec-key b{font-size:16px;color:var(--txt);}
+.chrec-b{margin-top:auto;padding-top:22px;display:flex;flex-direction:column;gap:10px;}
+.chrec-go{padding:16px;border-radius:99px;border:0;font:inherit;font-size:17px;font-weight:800;background:#E30613;color:#FFFFFF;cursor:pointer;}
+.chrec-later{padding:16px;border-radius:99px;border:0;font:inherit;font-size:17px;font-weight:700;background:rgba(127,127,127,.18);color:var(--txt);cursor:pointer;}
