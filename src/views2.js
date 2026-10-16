@@ -249,7 +249,7 @@ function renderHome(){
      beside the greeting showed the same initial twice. */
 
   // 2) (16 Oct) the week strip went: Progress has the month's calendar
-  $('home-week').innerHTML='';
+  $('home-week').innerHTML=(typeof kelasHomeCard==='function') ? kelasHomeCard() : '';   // a class member's door, at the top
 
   // 3) membership, then T42
   if($('home-t42')) $('home-t42').innerHTML=((typeof scBurnIsPlan==='function'&&scBurnIsPlan())?'':wlHomeCard())+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard():'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
@@ -663,6 +663,7 @@ function renderMe(){
       (COACH_GROUP_URL?grow('people','Members group','WhatsApp','coachGroup()'):'')+
       (T42_LIVE?grow('trophy','T42 included','One edition','openT42()'):'')+'</div>';
   }
+  if(typeof kelasMeRow==='function' && kelasMeRow()) h+=fsec('HITFAT HQ','')+'<div class="glist">'+kelasMeRow()+'</div>';
   h+=fsec('Challenges','')+'<div class="glist">';
   if(T42_LIVE && typeof T42!=='undefined' && T42.state==='ready' && (T42.challenge||T42.past))
     h+=grow('trophy','T42 Challenge', meT42Line(), 'openT42()');

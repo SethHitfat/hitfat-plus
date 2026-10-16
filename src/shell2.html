@@ -962,6 +962,11 @@ body:has(#play.on)::before{display:none;}
       <div id="mth-body"></div>
     </div>
 
+    <div id="kelas" class="pad" style="display:none;">
+      <button class="back" onclick="switchTab('home')"><span class="bk-c" aria-hidden="true"></span>Back</button>
+      <div id="kelas-body"></div>
+    </div>
+
     <div id="club" class="pad" style="display:none;">
       <button class="back" onclick="switchTab('home')"><span class="bk-c" aria-hidden="true"></span>Back</button>
       <div class="segs" id="club-segs">
@@ -1291,7 +1296,7 @@ function toast(m){ const t=$('toast'); if(!t) return; t.textContent=m; t.classLi
   clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('on'),1900); }
 
 /*__MASCOT__*//*__MASCOTGLUE__*//*__BELL__*//*__SCORE__*//*__SCORE2__*//*__PUSH__*//*__I18N__*//*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__WL30__*//*__LB30__*//*__D6DATA__*//*__D6__*//*__IFAST__*//*__MONTHLY__*//*__AICOACH__*//*__ACADEMY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
-/*__ICONS__*//*__CLUB__*//*__T42__*//*__T42DEMO__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
+/*__ICONS__*//*__CLUB__*//*__KELAS__*//*__T42__*//*__T42DEMO__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
 
 /* The splash plays its whole sequence once (about 1.9 s from the page
    starting) before it lifts, however fast the app is ready. */
@@ -1321,6 +1326,7 @@ async function _onSignedIn(session){
   await HF.pull();
   await loadEntitlement();  // read plus_entitlements before anything renders
   handlePaidRedirect();     // pick up a purchase made just before this load
+  if(typeof kelasRestore==='function') kelasRestore();   // the class QR, even offline
   applyCustom();            // the spec may have arrived from the cloud
   syncProfile(session);
   if(!_started) startApp(); else { switchTab('home'); if(!HF.data.onboarded) startOnboarding(); }
@@ -1335,6 +1341,12 @@ async function _onSignedIn(session){
       await Club.load(true);
       if($('home') && $('home').style.display!=='none') renderHome();
     }
+  }catch(e){}
+
+  /* HITFAT Class: is this account a physical class member? Keeps the All
+     Access pass in step with the class end date, then the ?kelas link. */
+  try{
+    if(typeof kelasLoad==='function'){ await kelasLoad(); handleKelasParam(); }
   }catch(e){}
 
   /* T42 the same way, and for the same reason. Its only door is the card on
@@ -1422,6 +1434,7 @@ function boot(){
   try{ if(typeof t42DemoMount==='function') t42DemoMount(); }catch(e){}
 
   setTimeout(hideSplash,4500);
+  captureKelasParam();
   capturePaidParam();      // before auth — an OAuth redirect would otherwise drop it
   HF.load();
   if(!SUPA_READY){

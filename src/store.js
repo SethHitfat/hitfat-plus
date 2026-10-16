@@ -667,6 +667,7 @@ function paywallHTML(sheet){
          '<span class="sub-pr">RM'+p.price+'</span></button>';
      }).join('')+'</div>';
   h+='<button class="bigbtn sub-cta" onclick="pwBuy()">Continue · RM'+chosen.price+'</button>';
+  if(typeof kelasPaywallLine==='function') h+=kelasPaywallLine();
   h+='<div class="sub-fine">One payment for '+chosen.months+' months — FPX or DuitNow. It does not renew by itself; '+
      'we remind you before it ends. '+(T42_LIVE?(pwTier==='coach'?'Includes one T42 edition during your membership.':'T42 challenges are sold separately.'):'')+
      ' All purchases are final. <a href="/terms" target="_blank" rel="noopener">Terms</a> · <a href="/refund" target="_blank" rel="noopener">Refunds</a></div>';
@@ -677,6 +678,15 @@ function paywallHTML(sheet){
 function storeMembership(){
   const t=memberTier(), until=memberUntil();
   let h='';
+  /* A class member's access is the class: nothing to buy, renew at HQ. */
+  if(t==='plus' && typeof kelasActive==='function' && kelasActive() && !liveDate(_ent.coachUntil)){
+    const m=kelasMain();
+    $('store-body').innerHTML='<div class="sub-status"><span class="sub-mark" aria-hidden="true"></span><div>'+
+      '<div class="sub-status-t">HITFAT+ with HITFAT Class</div>'+
+      '<div class="sub-status-s">All Access while your '+hesc(kelasCat(m&&m.category))+' membership runs, until '+kelasDate(m&&m.end_date)+'.</div></div></div>'+
+      '<button class="bigbtn kl-go" onclick="openKelas()">Open HITFAT Class</button>';
+    return;
+  }
   if(t){
     h+='<div class="sub-status"><span class="sub-mark" aria-hidden="true"></span><div>'+
        '<div class="sub-status-t">'+(t==='coach'?'HITFAT+ Coach':'HITFAT+')+' member</div>'+
