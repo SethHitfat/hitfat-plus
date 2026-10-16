@@ -59,11 +59,11 @@ function scJunk(m){
   var n=String((m&&m.name)||'');
   return SC_JUNK.test(n) || (m && m.kcal>=900);
 }
-SC_LINES.junk=['Aku rampas {x} tu 😇 Esok kita tukar dengan buah.',
-  'Aku tak marah… aku cuma "simpan" {x} ni 😏 Minum air kosong sekali.',
-  'Sekali-sekala ok. Tapi aku nampak {x} tu 👀'];
-SC_LINES.ram=['Selamat berpuasa! 🌙 Aku pun puasa… dari minyak 😅'];
-SC_LINES.fast=['Puasa dah mula ⏱️ Aku teman kau sampai waktu makan.'];
+SC_LINES.junk=['Buddy simpan {x} tu dulu ya 😇 Esok kita tukar dengan buah.',
+  'Buddy tak marah… cuma {x} tu Buddy "simpan" 😏 Minum air kosong sekali ya.',
+  'Sekali-sekala tak apa. Tapi Buddy nampak {x} tu 👀'];
+SC_LINES.ram=['Selamat berpuasa! 🌙 Buddy pun puasa… dari makanan berminyak 😅'];
+SC_LINES.fast=['Puasa dah mula ⏱️ Buddy temankan awak sampai waktu makan.'];
 function scJunkLine(name){
   var x=String(name||'snek').split(/[,(]/)[0].trim(); if(x.length>22) x=x.slice(0,22)+'…';
   var a=SC_LINES.junk; return a[new Date().getMinutes()%a.length].replace('{x}',x.charAt(0).toUpperCase()+x.slice(1));
@@ -137,12 +137,12 @@ function scCoachHTML(){
    Buddy answers it, and a low day gets kindness, not a push. */
 var SC_MOODS=[[1,'😫','Awful'],[2,'😕','Bad'],[3,'😐','Okay'],[4,'🙂','Good'],[5,'😄','Great']];
 var SC_MOOD_LINES={
-  1:'Hari yang berat. Berlembut dengan diri sendiri 🤍 Jalan sikit dan minum air pun dah kira.',
-  2:'Slow-slow hari ni. Kemenangan kecil pun kira 🙏',
-  3:'Ok pun dah cukup untuk mula. Satu kemenangan kecil?',
-  4:'Best! Jom jadikan hari padu 💪',
-  5:'Suka tenaga ni! Jom kejar hari padu 🔥'};
-function scMoodLine(m){ return SC_MOOD_LINES[m]||'Kau rasa macam mana hari ni?'; }
+  1:'Hari yang berat ya. Jaga diri 🤍 Jalan sikit dan minum air pun dah dikira.',
+  2:'Slow-slow hari ni. Kemenangan kecil pun dikira 🙏',
+  3:'Okay pun dah cukup untuk mula. Satu langkah kecil?',
+  4:'Bagus! Jom jadikan hari ni hari padu 💪',
+  5:'Semangatnya! Jom kejar hari padu 🔥'};
+function scMoodLine(m){ return SC_MOOD_LINES[m]||'Awak rasa macam mana hari ni?'; }
 function scMoodHTML(){
   var m=scDaily().mood, cur=null, i;
   for(i=0;i<SC_MOODS.length;i++) if(SC_MOODS[i][0]===m) cur=SC_MOODS[i];
@@ -181,9 +181,9 @@ function scPlanHTML(){
 
 /* ── Kenali Buddy: once, the first time the card shows ── */
 var SC_MEET=[
-  {pose:'aktif', t:'Hai! Aku Buddy 👋', s:'Geng HITFAT kau. Aku jadi merah bila kau aktif, dan bulu aku kusut bila kau hilang 🥲'},
-  {pose:'water', t:'Penuhkan 4 bulatan setiap hari', s:'Workout, makan, air dan langkah. Semua tu jadi HITFAT Score kau, 0 hingga 100.'},
-  {pose:'gold',  t:'Skor 50+ = hari padu 🔥', s:'Hari padu berturut-turut jadi streak. 7 hari, aku jadi emas. Terlepas sehari? Kau ada 2 freeze sebulan ❄️'}];
+  {pose:'aktif', t:'Hai! Ini Buddy 👋', s:'Kawan HITFAT awak. Buddy jadi merah bila awak aktif, dan bulu Buddy kusut bila awak lama menghilang 🥲'},
+  {pose:'water', t:'Penuhkan 4 bulatan setiap hari', s:'Workout, makan, air dan langkah. Semuanya jadi HITFAT Score awak, 0 hingga 100.'},
+  {pose:'gold',  t:'Skor 50+ = hari padu 🔥', s:'Hari padu berturut-turut jadi streak. Cukup 7 hari, Buddy jadi emas. Terlepas sehari? Awak ada 2 freeze sebulan ❄️'}];
 function scCheckMeet(){
   var sc=HF.data.sc||(HF.data.sc={});
   if(sc.met || $('scc').style.display==='flex') return false;
