@@ -3710,3 +3710,12 @@ html,body{overscroll-behavior:none;}
 .hpo.fyh{height:auto;border-radius:14px;}
 .hpo.fcoll{min-height:0;padding:0;border-radius:14px;width:78%;max-width:330px;}
 .hpo.fcoll.hpo-w{width:auto;max-width:none;}
+
+/* NEW on a poster, and the Browse posters (16 Oct) */
+.hpo-new{position:absolute;right:10px;top:9px;z-index:3;padding:3px 8px;border-radius:99px;background:#FFFFFF;color:#111111;
+  font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+.hpo.hpo-br{aspect-ratio:4/3;}
+.hpo-br .hpo-t{font-size:24px;}
+/* the progress bar stops short of the Start button */
+.hpo:has(.hpo-play) .hpo-go{right:62px;}
+.hpo-w:has(.hpo-play) .hpo-go{right:74px;bottom:14px;}

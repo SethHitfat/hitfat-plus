@@ -5949,6 +5949,15 @@ html,body{overscroll-behavior:none;}
 .hpo.fcoll{min-height:0;padding:0;border-radius:14px;width:78%;max-width:330px;}
 .hpo.fcoll.hpo-w{width:auto;max-width:none;}
 
+/* NEW on a poster, and the Browse posters (16 Oct) */
+.hpo-new{position:absolute;right:10px;top:9px;z-index:3;padding:3px 8px;border-radius:99px;background:#FFFFFF;color:#111111;
+  font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+.hpo.hpo-br{aspect-ratio:4/3;}
+.hpo-br .hpo-t{font-size:24px;}
+/* the progress bar stops short of the Start button */
+.hpo:has(.hpo-play) .hpo-go{right:62px;}
+.hpo-w:has(.hpo-play) .hpo-go{right:74px;bottom:14px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -26621,11 +26630,22 @@ function hpoCard(p,o){
   const tot=typeof p.days==='number'?p.days:(p.weeks||p.oneTime)?progDays(p):0, done=tot?progDone(p.id):0, going=done>0&&done<tot, fin=tot>0&&done>=tot;
   return '<div class="hpo'+(o.wide?' hpo-w':'')+(o.cls?' '+o.cls:'')+(cut?'':' hpo-flat')+'" onclick="openProgram(\''+p.id+'\')" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+
     (hasPhoto(p)?'<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\''+progImg(p)+'\'),linear-gradient('+c[2]+','+c[2]+')'+(pos?';'+pos:'')+msk+'"></div></div>':'')+
-    '<span class="hpo-len">'+(o.kick?o.kick+' · ':'')+hpoLen(p)+'</span>'+lockTag(p)+
+    '<span class="hpo-len">'+(o.kick?o.kick+' · ':'')+hpoLen(p)+'</span>'+lockTag(p)+(o.badge?'<span class="hpo-new">'+o.badge+'</span>':'')+
     '<div class="hpo-t'+(p.name.length>14?' sm':'')+'">'+hesc(p.name)+'</div>'+
     (going?'<div class="hpo-go"><span>Day '+(done+1)+' of '+tot+'</span><i><b style="width:'+Math.round(done/tot*100)+'%"></b></i></div>'
           :'<span class="hpo-lv">'+(fin?'✓ Completed':(p.level||''))+'</span>')+
-    (o.start?'<button class="hpo-play" aria-label="Start '+hesc(p.name)+'" onclick="event.stopPropagation();playSingle(\''+p.id+'\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button>':'')+'</div>';
+    (o.start||o.go?'<button class="hpo-play" aria-label="Start '+hesc(p.name)+'" onclick="event.stopPropagation();'+(o.go||'playSingle(\''+p.id+'\')')+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button>':'')+'</div>';
+}
+/* a Browse category as a poster (16 Oct): its studio photo cut out and toned,
+   the name big, how many programs, what it is for */
+const HPO_BR={'Fat Loss':'red','Strength':'charcoal','Core':'teal','Beginner':'blue','Equipment':'purple','Quick':'orange','Recovery':'green'};
+function hpoBrowse(a){
+  const n=PROGRAMS.filter(p=>activityMatch(a.k,p)).length, c=HPO_PAL[HPO_BR[a.k]||'blue'];
+  const pic=String(a.br||'').split('/').pop().replace(/\.\w+$/,''), cut=a.br && HPO_MASK.has(pic);
+  return '<div class="hpo hpo-sq hpo-br'+(cut?'':' hpo-flat')+'" onclick="openActivity(\''+a.k+'\')" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+
+    (a.br?'<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\''+a.br+'\'),linear-gradient('+c[2]+','+c[2]+');background-position:70% 50%'+
+      (cut?';-webkit-mask-image:url(\'/img/p/mask/'+pic+'.png\');mask-image:url(\'/img/p/mask/'+pic+'.png\');-webkit-mask-position:70% 50%;mask-position:70% 50%':'')+'"></div></div>':'')+
+    '<span class="hpo-len">'+n+' programs</span><div class="hpo-t">'+hesc(a.n)+'</div><span class="hpo-lv">'+hesc(a.s||'')+'</span></div>';
 }
 function madeForYou(){
   const lvl=(HF.data.prefs&&HF.data.prefs.level)||'Beginner';
@@ -26816,7 +26836,9 @@ function trForYou(){
 
   if(going.length){
     h+=fsec('Your Plan',going.length>1?'You have '+going.length+' plans going.':'Today, and the rest of the week.');
-    h+='<div class="hscroll fmades">'+going.map(fyPlanCard).join('')+'</div>';
+    /* (16 Oct, after FIIT) the plan under way is its poster: where it is, and the next day starts from the button */
+    h+='<div class="hpo-stack">'+going.map(p=>{ const gi=nextSession(p), at=gi>=0?sessionAt(p,gi):null;
+      return hpoCard(p,{wide:true,kick:at?'Up Next · '+(at.day.name||'Day '+(gi+1)):'Every day done',go:at?"openDay('"+p.id+"',"+gi+")":''}); }).join('')+'</div>';
   } else {
     h+=fsec('Find Your Plan','Four questions, one match.');
     h+=fqCard();
@@ -26829,7 +26851,7 @@ function trForYou(){
   if(rest.length){ h+=fsec('More for You','Picked for your goal and level.'); h+='<div class="hscroll hpo-row fmore">'+rest.map(p=>hpoCard(p,{kick:fyWhy(p,goalKey,lvl)[1],start:true})).join('')+'</div>'; }
   if(quick.length){
     h+=fsec('Quick Workouts','Twenty minutes or less.');
-    h+='<div class="pl-list">'+quick.slice(0,5).map(fyQuickRow).join('')+'</div>';
+    h+='<div class="hscroll hpo-row">'+quick.slice(0,6).map(p=>hpoCard(p,{start:true})).join('')+'</div>';
   }
   $('tr-body').innerHTML=h;
 }
@@ -26855,13 +26877,13 @@ function trExplore(){
 
   let h=(contentOpen()?'':fyJoinCard())+(t42InTrain()?t42HomeCard():'');
   h+=fsec('This Week',fresh?'New here? The easy ones come first.':'A new set of sessions every week.');
-  h+='<div class="hscroll">'+take(rotated,6).map((p,i)=>fweekCard(p,i<2?'NEW':'',i)).join('')+'</div>';
+  h+='<div class="hscroll hpo-row">'+take(rotated,6).map((p,i)=>hpoCard(p,{badge:i<2?'New':'',start:true})).join('')+'</div>';
 
   h+=fsec('Top Programs','HITFAT signature programs first',true);
   h+='<div class="hscroll hpo-row">'+take(multi,5).map(p=>hpoCard(p)).join('')+'</div>';
 
   h+=fsec('Browse');
-  h+='<div class="fbrs">'+ACTIVITIES.filter(a=>PROGRAMS.some(p=>activityMatch(a.k,p))).map(fbrowse).join('')+'</div>';
+  h+='<div class="hpo-grid">'+ACTIVITIES.filter(a=>PROGRAMS.some(p=>activityMatch(a.k,p))).map(hpoBrowse).join('')+'</div>';
 
   h+=fsec('Collections','Challenges with a finish line',true);
   h+='<div class="hscroll hpo-row">'+CHALLENGES.map(c=>hpoCard(c,{kick:'Challenge',cls:'fcoll'})).join('')+'</div>';
