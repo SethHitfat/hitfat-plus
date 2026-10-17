@@ -4397,10 +4397,27 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ['push','pull','bbj','row','carry','lunge','wb'].forEach(function(k,i){ Kelas.data.hyrox.push({id:'s'+i,st:k,s:[200,260,330,300,110,280,400][i],div:'Open Women',d:'2026-10-13'}); });
   var P=kelasHxPredict('Open Women'), want=300*8*1.15+280+200+260+330+300+110+280+400+360;
   ok("...then a predicted finish: runs ×1.15, the stations, 6 min Roxzone", P.done && Math.abs(P.total-want)<0.01 && kelasHxHTML().indexOf(hxClock(want))>0);
-  ok("...and where the time goes, the costliest station marked to focus", kelasHxHTML().indexOf('Where your time goes')>0 && kelasHxHTML().indexOf('Wall Balls <em>focus</em>')>0);
+  ok("...and where the time goes, the costliest station marked to focus", kelasHxHTML().indexOf('Where your time goes')>0 && kelasHxHTML().indexOf('Wall Balls <em>focus · train it</em>')>0);
   HF.data.kelas.hx.race=new Date(Date.parse(kelasDayKey(kelasNowMY())+'T00:00:00Z')+50*864e5).toISOString().slice(0,10);
   ok("race date: the days left and the phase", kelasHxDays()===50 && kelasHxHTML().indexOf('Build')>0 && kelasTodayTab().indexOf('50 days to race')>0);
   ok("...the phases by days left", kelasHxPhase(3)[0]==='Race week' && kelasHxPhase(20)[0]==='Peak' && kelasHxPhase(60)[0]==='Build' && kelasHxPhase(100)[0]==='Base' && kelasHxPhase(-1)===null);
+  /* from HITFAT Hybrid: the race plan, Targets, PaceMe */
+  var _wk=function(b){ return {block:b, days:[1,2,3,4,5].map(function(i){ return {type:'HYROX Aerobic', workout:b+' day '+i+'\nline 2', notes:'cue '+i}; })}; };
+  var _lv=function(){ return {name:'X', desc:'d', weeks:['Base','Base','Base','Base','Pace','Pace','Pace','Pace','Accelerate','Accelerate','Prime','Race'].map(_wk)}; };
+  Kelas.hxData={levels:{PRO:_lv(),OPEN:_lv(),Beginner:_lv()}, prep:{PRO:[1,2,3,4].map(function(){return _wk('Prep');}),OPEN:[1,2,3,4].map(function(){return _wk('Prep');}),Beginner:[1,2,3,4].map(function(){return _wk('Prep');})},
+    targets:{ski:{tag:'Engine',workouts:[{title:'Ski Intervals',focus:'Pace',mins:20,workout:'8 × 250m',notes:'Long pulls'}]}}, defaults:{ski:255,sledpush:135,sledpull:165,burpee:270,row:255,farmers:105,lunge:240,wallball:360}};
+  ok("race plan: 50 days out is week 9 of 16, Pace", kelasHxWeek().n===9 && kelasHxPlanHTML().indexOf('Week 9 of 16')>0 && kelasHxPlanHTML().indexOf('<b>Pace</b>')>0 && kelasHxPhase(50)[0]==='Pace');
+  ok("...Open by default for Open Women, the level can change", kelasHxLvl()==='OPEN' && (kelasHxSetLvl('Beginner'), kelasHxLvl()==='Beginner'));
+  Kelas.hxDay='w9d2'; ok("...a day opens with its workout and the cue", kelasHxPlanHTML().indexOf('Pace day 2')>0 && kelasHxPlanHTML().indexOf('cue 2')>0); Kelas.hxDay=null;
+  kelasHxDone('w9d2'); ok("...and is marked done", kelasHxPlanHTML().indexOf('1 / 5 done')>0); kelasHxDone('w9d2');
+  var _race=HF.data.kelas.hx.race; HF.data.kelas.hx.race=new Date(Date.parse(kelasDayKey(kelasNowMY())+'T00:00:00Z')+150*864e5).toISOString().slice(0,10);
+  ok("...a race further than 16 weeks: the plan's start date", !!kelasHxWeek().before && kelasHxPlanHTML().indexOf('Your plan starts on')>0);
+  delete HF.data.kelas.hx.race; ok("...no race: start it today", kelasHxPlanHTML().indexOf('Start the plan today')>0 && (kelasHxStartPlan(), kelasHxWeek().n===1)); delete HF.data.kelas.hx.start; HF.data.kelas.hx.race=_race;
+  Kelas.hxLog='ski'; ok("Targets: the station's own sessions in its log", kelasHxHTML().indexOf('Train this station')>0 && kelasHxHTML().indexOf('Ski Intervals')>0); Kelas.hxLog=null;
+  var R=kelasHxPace('1:30:00','Open Women'), P2=kelasHxPredict('Open Women');
+  ok("PaceMe: scaled from the member's own times", R.mine && Math.abs(R.pace-(300*1.15*5400/P2.total))<0.01 && Math.abs(R.run+R.rox+R.stations.reduce(function(a,x){return a+x.s;},0)-5400)<0.5);
+  HF.data.kelas.hx.goal='1:30:00'; ok("...shown in Perform", kelasHxHTML().indexOf('run / km')>0); delete HF.data.kelas.hx.goal;
+  ok("...a goal that is not a time gives nothing", kelasHxPace('abc','Open Women')===null);
   Kelas.hxLog='ski'; ok("a station opens its log: best, history", kelasHxHTML().indexOf('Best 4:40')>0 && kelasHxHTML().indexOf('kl-hx-spark')>0); Kelas.hxLog=null;
   Kelas.cm.cat='HYROX'; ok("the HYROX group gets a Stations board", kelasBoardKinds(Kelas.cm).some(function(k){return k[0]==='stations';}));
   Kelas.cmKind='stations'; Kelas.hxB={'Open Women':{boards:{run:{top:[{r:1,name:'Nur A.',s:285,me:false},{r:2,name:'You',s:300,me:true}],people:2}}}};
@@ -4408,7 +4425,7 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("...fastest first, by division", hb.indexOf('4:45')>0 && hb.indexOf('5:00')>0 && hb.indexOf('Open Women')>0);
   Kelas.cm.cat='Membership'; ok("...not in the other groups", !kelasBoardKinds(Kelas.cm).some(function(k){return k[0]==='stations';}) && kelasBoardHTML(Kelas.cm).indexOf('kl-hx-bst')<0);
   Kelas.cmKind='classes'; Kelas.hxB=null;
-  Kelas.data=keepD; Kelas.data.memberships=keepMs; Kelas.data.hyrox=keepHx; Kelas.space=keepSp; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
+  Kelas.hxData=null; Kelas.data=keepD; Kelas.data.memberships=keepMs; Kelas.data.hyrox=keepHx; Kelas.space=keepSp; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
   if(keepHp===undefined) delete HF.data.kelas.hx; else HF.data.kelas.hx=keepHp; HF.save=keepSv5;
   /* profile photo (17 Oct) */
   var keepPh=HF.data.prefs.photo, keepG=HF.gphoto, keepSv3=HF.save; HF.save=function(){};

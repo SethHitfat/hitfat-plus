@@ -4606,3 +4606,36 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-hero.hx .kl-kick{color:#FFD400;}
 .kl-hero.hx .kl-ci{background:#FFD400;color:#16161A;}
 .kl-hero.hx .kl-ci .gly{stroke:#16161A;}
+
+/* ── HYROX: the race plan, Targets, PaceMe (from HITFAT Hybrid, 17 Oct) ── */
+.kl-hxp,.kl-hxpm{padding:14px;border-radius:18px;background:var(--surface);}
+:root[data-theme="light"] .kl-hxp,:root[data-theme="light"] .kl-hxpm{background:#FFFFFF;}
+.kl-hxp-l{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;}
+.kl-hxp-l button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:9px;border-radius:12px;border:1.5px solid rgba(127,127,127,.22);background:transparent;color:var(--txt);text-align:left;cursor:pointer;min-width:0;}
+.kl-hxp-l button b{font-size:14px;font-weight:900;} .kl-hxp-l button small{font-size:10.5px;line-height:1.3;color:var(--dim);}
+.kl-hxp-l button.on{border-color:#16161A;background:#16161A;color:#FFD400;} .kl-hxp-l button.on small{color:rgba(255,255,255,.65);}
+.kl-hxp-0{font-size:14px;line-height:1.5;color:var(--txt);display:flex;flex-direction:column;gap:10px;}
+.kl-hxp-w{display:flex;justify-content:space-between;align-items:flex-end;}
+.kl-hxp-w small{display:block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);}
+.kl-hxp-w b{font-size:22px;font-weight:900;color:var(--txt);} .kl-hxp-w span{font-size:13px;font-weight:800;color:#E30613;}
+.kl-hxp-bar{display:grid;grid-template-columns:repeat(16,1fr);gap:3px;margin:8px 0 10px;}
+.kl-hxp-bar i{height:6px;border-radius:3px;background:rgba(127,127,127,.2);} .kl-hxp-bar i.past{background:rgba(22,22,26,.55);} .kl-hxp-bar i.now{background:#FFD400;box-shadow:0 0 0 1.5px #16161A;}
+:root[data-theme="dark"] .kl-hxp-bar i.past{background:rgba(255,255,255,.5);}
+.kl-hxd{border-top:1px solid rgba(127,127,127,.14);}
+.kl-hxd-h{display:grid;grid-template-columns:38px 1fr 20px;gap:10px;align-items:center;width:100%;padding:10px 0;border:0;background:none;color:var(--txt);text-align:left;cursor:pointer;}
+.kl-hxd-n{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:900;font-size:13px;background:rgba(127,127,127,.12);color:var(--txt);line-height:1;}
+.kl-hxd-n em{display:block;font-style:normal;font-size:9px;font-weight:700;color:var(--dim);}
+.kl-hxd.done .kl-hxd-n{background:#1F9D4C;} .kl-hxd.done .kl-hxd-n .gly{stroke:#FFFFFF;width:16px;height:16px;}
+.kl-hxd-t{min-width:0;} .kl-hxd-t b{display:block;font-size:14.5px;font-weight:800;}
+.kl-hxd-t small{display:block;font-size:12.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kl-hxd-h i{font-style:normal;font-size:20px;color:var(--dim);text-align:center;}
+.kl-hxd-b{padding:0 0 12px 48px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;}
+.kl-hxd-w{white-space:pre-wrap;font-size:14px;line-height:1.55;font-weight:700;color:var(--txt);}
+.kl-hxd-c{white-space:pre-wrap;font-size:13px;line-height:1.5;color:var(--dim);padding-left:10px;border-left:3px solid #FFD400;}
+.kl-hxt2{margin-top:14px;padding-top:10px;border-top:1px solid rgba(127,127,127,.18);}
+.kl-hxt2-h b{display:block;font-size:15px;font-weight:900;color:var(--txt);} .kl-hxt2-h small{font-size:12px;color:var(--dim);}
+.kl-hxpm-in{display:flex;gap:8px;} .kl-hxpm-in .kl-in{flex:1;min-width:0;padding:12px;} .kl-hxpm-in .kl-go{width:auto;margin:0;padding:0 18px;}
+.kl-hxpm-top{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0 6px;}
+.kl-hxpm-top div{padding:10px 6px;border-radius:12px;background:#16161A;text-align:center;}
+.kl-hxpm-top b{display:block;font-size:20px;font-weight:900;color:#FFD400;font-variant-numeric:tabular-nums;} .kl-hxpm-top small{font-size:11px;color:rgba(255,255,255,.65);}
+.kl-hxpm .kl-hx-row{border-top-color:rgba(127,127,127,.14);color:var(--txt);} .kl-hxpm .kl-hx-row small{color:var(--dim);}

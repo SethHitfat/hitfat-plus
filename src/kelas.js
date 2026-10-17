@@ -1664,6 +1664,8 @@ function kelasHxPredict(div){
 function kelasHxDays(){ const r=kelasHxProf().race; if(!r) return null; return Math.round((Date.parse(r+'T00:00:00Z')-Date.parse(kelasDayKey(kelasNowMY())+'T00:00:00Z'))/864e5); }
 function kelasHxPhase(d){
   if(d===null||d<0) return null;
+  const D=Kelas.hxData, W=D&&kelasHxProf().race?kelasHxWeek():null;
+  if(W&&W.n){ const wk=kelasHxPlanWeek(D,W.n); if(wk) return [wk.block, 'Week '+W.n+' of the 16-week race plan.']; }
   if(d<=7) return ['Race week','Short and sharp. Sleep, eat well, nothing new.'];
   if(d<=28) return ['Peak','Race-pace work and one full simulation.'];
   if(d<=84) return ['Build','Heavy sleds and lunges; a simulation every two weeks.'];
@@ -1701,13 +1703,13 @@ function kelasHxHTML(){
     const top=P.parts.filter(p=>p.k!=='run'&&p.k!=='rox')[0];
     h+='<div class="kl-hx-where"><div class="kl-hx-wh">Where your time goes</div><div class="kl-hx-bar">'+
       P.parts.map(p=>'<i class="'+(p.k==='run'?'run':p.k==='rox'?'rox':p===top?'top':'')+'" style="width:'+(p.s/P.total*100).toFixed(1)+'%"></i>').join('')+'</div>'+
-      P.parts.map(p=>'<div class="kl-hx-row'+(p===top?' top':'')+'"><span>'+hesc(p.label)+(p===top?' <em>focus</em>':'')+'</span><b>'+hxClock(p.s)+'</b><small>'+Math.round(p.s/P.total*100)+'%</small></div>').join('')+
+      P.parts.map(p=>'<div class="kl-hx-row'+(p===top?' top':'')+'"'+(p===top?' onclick="Kelas.hxLog=\''+p.k+'\';renderKelas();setTimeout(()=>{const e=document.querySelector(\'.kl-hx-log\');if(e)e.scrollIntoView({block:\'start\'});},50)" style="cursor:pointer"':'')+'><span>'+hesc(p.label)+(p===top?' <em>focus · train it</em>':'')+'</span><b>'+hxClock(p.s)+'</b><small>'+Math.round(p.s/P.total*100)+'%</small></div>').join('')+
       '<div class="kl-hx-fine">An estimate: race runs ×1.15 on your best 1 km, Roxzone 6 min. '+(top?hesc(top.label)+' costs you the most time of the stations.':'')+'</div></div>';
   } else {
     h+='<div class="kl-hx-pred off"><small>Predicted finish</small><b>'+P.have+'<span> / 9</span></b><em>Log your 1 km run and all 8 stations to see your race time.</em></div>';
   }
   h+='</div>';
-  return h+kelasHxStationsHTML(div);
+  return h+kelasHxPlanHTML()+kelasHxStationsHTML(div)+kelasHxPaceHTML(div);
 }
 function kelasHxStationsHTML(div){
   const open=Kelas.hxLog;
@@ -1731,6 +1733,7 @@ function kelasHxLogHTML(st,div){
   if(last.length>1) h+='<div class="kl-hx-spark">'+last.map(r=>'<i class="'+(+r.s===b?'best':'')+'" style="height:'+(mx===mn?60:Math.round(25+(mx-r.s)/(mx-mn)*75))+'%" title="'+hxClock(r.s)+'"></i>').join('')+'</div>';
   if(L.length) h+='<div class="kl-hx-hist">'+L.slice(0,5).map(r=>'<div><span>'+kelasIBDate(r.d,true)+'</span><b>'+hxClock(r.s)+(+r.s===b?' <em>best</em>':'')+'</b>'+
       (r.id&&r.id!=='tmp'?'<button onclick="kelasHxDel(\''+r.id+'\')" aria-label="Delete">✕</button>':'')+'</div>').join('')+'</div>';
+  if(st!=='sim') h+=kelasHxTargetsHTML(st);
   return h+'</div>';
 }
 function kelasHxSetDiv(v){ const p=kelasHxProf(); p.div=v; HF.save(); renderKelas(); }
@@ -1783,6 +1786,114 @@ async function kelasHxBoardLoad(div){
   try{ const r=await kelasCall('hx_board',{div:div}); Kelas.hxB=Kelas.hxB||{}; Kelas.hxB[div]=r&&r.ok?r:{boards:{}}; }
   catch(e){ Kelas.hxBErr=true; }
   Kelas.hxBBusy=false; if(Kelas.tab==='group') renderKelas();
+}
+
+/* ═══════════════ HYROX: from HITFAT Hybrid (17 Oct 2026) ═══════════════
+   Seth: one app, everything in app.hitfat.io. Three things come over from
+   hybrid.hitfat.io, its content unchanged (/hx/hyrox.json, read when
+   Perform opens):
+     the race plan   16 weeks: 4 of Prep, then Base, Pace, Accelerate,
+                     Prime, Race; 5 days a week; PRO, OPEN or Beginner.
+                     It follows the race date (race week = week 16), or
+                     the day the member started it.
+     Targets         three sessions for each station (and grip, engine),
+                     with the coaching cue; in each station's log.
+     PaceMe          a goal time turned into a run pace and station splits,
+                     scaled from the member's own times when all are in.
+   Hybrid's race-floor photos stay there: HITFAT+ uses studio photos. */
+var HX_TGT={run:'run',ski:'ski',push:'sledpush',pull:'sledpull',bbj:'burpee',row:'row',carry:'farmers',lunge:'lunge',wb:'wallball'};
+var HX_DEF_KEY={ski:'ski',push:'sledpush',pull:'sledpull',bbj:'burpee',row:'row',carry:'farmers',lunge:'lunge',wb:'wallball'};
+var HX_LVLS=[['Beginner','Beginner','New to lifting, 10K over 1 hour'],['OPEN','Open','Some training behind you'],['PRO','Pro','Strong lifter, 10K under 40–45 min']];
+function kelasHxData(){
+  if(Kelas.hxData || Kelas.hxDataBusy || typeof fetch!=='function') return Kelas.hxData||null;
+  Kelas.hxDataBusy=true;
+  fetch('/hx/hyrox.json').then(r=>r.json()).then(d=>{ Kelas.hxData=d; }).catch(()=>{}).then(()=>{ Kelas.hxDataBusy=false; if(Kelas.tab==='progress') renderKelas(); });
+  return null;
+}
+function kelasHxLvl(){ const p=kelasHxProf(); return p.lvl||(/^Pro/.test(p.div||'')?'PRO':'OPEN'); }
+/* where the member is in the 16 weeks: {n:1..16} or {before:weeks} or null */
+function kelasHxWeek(){
+  const p=kelasHxProf(), today=Date.parse(kelasDayKey(kelasNowMY())+'T00:00:00Z');
+  if(p.race){
+    const d=Math.round((Date.parse(p.race+'T00:00:00Z')-today)/864e5); if(d<0) return null;
+    const out=Math.floor(d/7)+1, n=16-out+1;
+    return n<1?{before:out-16, from:new Date(Date.parse(p.race+'T00:00:00Z')-(16*7-1)*864e5).toISOString().slice(0,10)}:{n:n};
+  }
+  if(p.start){ const n=Math.floor((today-Date.parse(p.start+'T00:00:00Z'))/(7*864e5))+1; return n>=1&&n<=16?{n:n}:null; }
+  return null;
+}
+function kelasHxPlanWeek(D,n){ const L=kelasHxLvl(); return n<=4?D.prep[L][n-1]:D.levels[L].weeks[n-5]; }
+function kelasHxPlanHTML(){
+  const D=kelasHxData(), p=kelasHxProf(), W=kelasHxWeek();
+  let h=fsec('Race plan',"16 weeks to race day, from HITFAT Hybrid.");
+  if(!D) return h+'<div class="kl-none">Loading the plan…</div>';
+  h+='<div class="kl-hxp"><div class="kl-hxp-l">'+HX_LVLS.map(l=>'<button class="'+(kelasHxLvl()===l[0]?'on':'')+'" onclick="kelasHxSetLvl(\''+l[0]+'\')"><b>'+l[1]+'</b><small>'+l[2]+'</small></button>').join('')+'</div>';
+  if(!W){
+    return h+'<div class="kl-hxp-0">'+(p.race?'Your race is past. Set the next one with Edit above.':'No race date? Start the 16 weeks from today.')+
+      (p.race?'':'<button class="bigbtn kl-go" onclick="kelasHxStartPlan()">Start the plan today</button>')+'</div></div>';
+  }
+  if(W.before) return h+'<div class="kl-hxp-0">Your plan starts on <b>'+kelasIBDate(W.from)+'</b>, 16 weeks out. Until then: easy runs and clean technique on every station.</div></div>';
+  const wk=kelasHxPlanWeek(D,W.n); if(!wk) return h+'</div>';
+  const done=p.done||{}, nd=wk.days.filter((x,i)=>done['w'+W.n+'d'+(i+1)]).length, open=Kelas.hxDay;
+  h+='<div class="kl-hxp-w"><div><small>Week '+W.n+' of 16</small><b>'+hesc(wk.block)+'</b></div><span>'+nd+' / '+wk.days.length+' done</span></div>'+
+    '<div class="kl-hxp-bar">'+Array.from({length:16},(x,i)=>'<i class="'+(i+1<W.n?'past':i+1===W.n?'now':'')+'"></i>').join('')+'</div>';
+  h+=wk.days.map((x,i)=>{ const k='w'+W.n+'d'+(i+1), on=open===k, dn=!!done[k];
+    return '<div class="kl-hxd'+(dn?' done':'')+(on?' on':'')+'"><button class="kl-hxd-h" onclick="Kelas.hxDay=Kelas.hxDay===\''+k+'\'?null:\''+k+'\';renderKelas()">'+
+      '<span class="kl-hxd-n">'+(dn?glyph('check'):'D'+(i+1))+'</span><span class="kl-hxd-t"><b>'+hesc(x.type.replace(/^HYROX\s*/,'')||'Session')+'</b><small>'+hesc(String(x.workout).split('\n')[0])+'</small></span><i>'+(on?'−':'+')+'</i></button>'+
+      (on?'<div class="kl-hxd-b"><div class="kl-hxd-w">'+hesc(x.workout)+'</div>'+(x.notes?'<div class="kl-hxd-c">'+hesc(x.notes)+'</div>':'')+
+        '<button class="kl-alt2" onclick="kelasHxDone(\''+k+'\')">'+(dn?'Mark not done':'Mark done')+'</button></div>':'')+'</div>';
+  }).join('');
+  return h+'<div class="kl-fine2">Do these around your HYROX classes at HQ: a class counts as the session it is closest to.</div></div>';
+}
+function kelasHxSetLvl(l){ kelasHxProf().lvl=l; HF.save(); renderKelas(); }
+function kelasHxStartPlan(){ kelasHxProf().start=kelasDayKey(kelasNowMY()); HF.save(); renderKelas(); }
+function kelasHxDone(k){
+  const p=kelasHxProf(); p.done=p.done||{};
+  if(p.done[k]) delete p.done[k]; else { p.done[k]=kelasDayKey(kelasNowMY()); if(typeof hfSound==='function') hfSound('pop'); }
+  HF.save(); renderKelas();
+}
+/* Targets: the station's own sessions, in its log */
+function kelasHxTargetsHTML(st){
+  const D=kelasHxData(), T=D&&D.targets&&D.targets[HX_TGT[st]]; if(!T) return '';
+  return '<div class="kl-hxt2"><div class="kl-hxt2-h"><b>Train this station</b><small>'+hesc(T.tag||'')+'</small></div>'+
+    T.workouts.map((w,i)=>{ const k=st+i, on=Kelas.hxTgt===k;
+      return '<div class="kl-hxd'+(on?' on':'')+'"><button class="kl-hxd-h" onclick="Kelas.hxTgt=Kelas.hxTgt===\''+k+'\'?null:\''+k+'\';renderKelas()">'+
+        '<span class="kl-hxd-n">'+(w.mins||'')+'<em>min</em></span><span class="kl-hxd-t"><b>'+hesc(w.title)+'</b><small>'+hesc(w.focus||'')+'</small></span><i>'+(on?'−':'+')+'</i></button>'+
+        (on?'<div class="kl-hxd-b"><div class="kl-hxd-w">'+hesc(w.workout)+'</div>'+(w.notes?'<div class="kl-hxd-c">'+hesc(w.notes)+'</div>':'')+'</div>':'')+'</div>';
+    }).join('')+'</div>';
+}
+/* PaceMe: a goal time, the paces to hit it */
+function kelasHxPace(goal,div){
+  const G=hxParse(goal); if(!G) return null;
+  const P=kelasHxPredict(div), D=kelasHxData(), def=(D&&D.defaults)||{};
+  let run, rox, sts;
+  if(P.done){
+    const f=G/P.total, part=k=>(P.parts.filter(p=>p.k===k)[0]||{}).s||0;
+    run=part('run')*f; rox=part('rox')*f;
+    sts=HX_ST.slice(1).map(x=>({k:x[0], label:x[1], s:part(x[0])*f}));
+  } else {
+    run=G*0.55; rox=G*0.07;
+    const tot=HX_ST.slice(1).reduce((a,x)=>a+(def[HX_DEF_KEY[x[0]]]||240),0);
+    sts=HX_ST.slice(1).map(x=>({k:x[0], label:x[1], s:G*0.38*(def[HX_DEF_KEY[x[0]]]||240)/tot}));
+  }
+  return {goal:G, pace:run/8, run:run, rox:rox, stations:sts, mine:P.done};
+}
+function kelasHxPaceHTML(div){
+  const p=kelasHxProf(), R=p.goal?kelasHxPace(p.goal,div):null;
+  let h=fsec('PaceMe','Your goal time, as paces to hit.');
+  h+='<div class="kl-hxpm"><div class="kl-hxpm-in"><input id="kl-hxg" class="kl-in" maxlength="8" placeholder="Goal, e.g. 1:15:00" value="'+hesc(p.goal||'')+'">'+
+    '<button class="bigbtn kl-go" onclick="kelasHxSetGoal()">Plan</button></div>';
+  if(R){
+    h+='<div class="kl-hxpm-top"><div><b>'+hxClock(R.pace)+'</b><small>run / km</small></div><div><b>'+hxClock(R.stations.reduce((a,x)=>a+x.s,0))+'</b><small>stations</small></div><div><b>'+hxClock(R.rox)+'</b><small>Roxzone</small></div></div>'+
+      R.stations.map(x=>'<div class="kl-hx-row"><span>'+hesc(x.label)+'</span><b>'+hxClock(x.s)+'</b><small></small></div>').join('')+
+      '<div class="kl-hx-fine" style="color:var(--dim)">'+(R.mine?'Scaled from your own station times.':'A standard split. Log your 1 km and all 8 stations to make it yours.')+'</div>';
+  }
+  return h+'</div>';
+}
+function kelasHxSetGoal(){
+  const v=(($('kl-hxg')||{}).value||'').trim();
+  if(v && !hxParse(v)){ toast('Type the goal as h:mm:ss, e.g. 1:15:00'); return; }
+  const p=kelasHxProf(); if(v) p.goal=v; else delete p.goal; HF.save(); renderKelas();
 }
 
 /* ═══════════════ Today's workout (17 Oct 2026) ═══════════════
