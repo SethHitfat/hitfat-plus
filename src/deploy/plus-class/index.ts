@@ -19,6 +19,15 @@
                                      read by Claude, saved in HITFAT OS
                                      (inbody_scans, and the headline numbers
                                      in client_metrics for the coach)
+   POST { action:'cm_feed', cat }    Community: the group's feed, the weekly
+                                     and monthly class boards, my choices
+   POST { action:'cm_post', move, value }   a personal record to the group
+   POST { action:'cm_react', post, emoji }  fire / clap / muscle, on and off
+   POST { action:'cm_pref', hide_board, hide_feed }
+   POST { action:'cm_admin', op, post, cat, title, body }
+                                     announce, pin, hide: admins only, the
+                                     HITFAT+ user ids in plus_settings
+                                     'cm_admin_ids' (086_community.sql)
 
    HITFAT OS is another Supabase project. Its four plus_* functions refuse
    anything without the bridge key, which lives here in plus_settings
@@ -278,6 +287,24 @@ Deno.serve(async (req: Request) => {
       const sv = await os('plus_inbody_save', { p_key: key, p_user: uid, p_date: scanDate, p_data: d });
       if (!sv || !sv.ok) return json({ error: (sv && sv.error) || 'failed' }, 500);
       return json({ ok: true, scan: { ...d, scan_date: scanDate, src: 'sheet' } });
+    }
+
+    if (action.startsWith('cm_')) {
+      const { data: ad } = await admin.from('plus_settings').select('value').eq('key', 'cm_admin_ids').maybeSingle();
+      const isAdmin = !!ad && String(ad.value || '').split(/[\s,]+/).includes(uid);
+      if (action === 'cm_feed') return json(await os('plus_cm_feed', { p_key: key, p_user: uid, p_cat: String(body.cat || ''), p_admin: isAdmin }));
+      if (action === 'cm_post') return json(await os('plus_cm_post', { p_key: key, p_user: uid, p_move: String(body.move || '').slice(0, 40), p_value: String(body.value || '').slice(0, 16) }));
+      if (action === 'cm_react') {
+        if (!/^[0-9a-f-]{36}$/.test(String(body.post || ''))) return json({ ok: false });
+        return json(await os('plus_cm_react', { p_key: key, p_user: uid, p_post: String(body.post), p_emoji: String(body.emoji || '') }));
+      }
+      if (action === 'cm_pref') return json(await os('plus_cm_pref', { p_key: key, p_user: uid, p_hide_board: !!body.hide_board, p_hide_feed: !!body.hide_feed }));
+      if (action === 'cm_admin') {
+        if (!isAdmin) return json({ error: 'admins only' }, 403);
+        const post = /^[0-9a-f-]{36}$/.test(String(body.post || '')) ? String(body.post) : null;
+        return json(await os('plus_cm_admin', { p_key: key, p_action: String(body.op || ''), p_post: post,
+          p_cat: String(body.cat || ''), p_title: String(body.title || '').slice(0, 120), p_body: String(body.body || '').slice(0, 1000) }));
+      }
     }
 
     if (action === 'unlink') {

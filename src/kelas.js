@@ -191,14 +191,15 @@ function kelasQR(px){ return typeof qrSVG==='function' ? qrSVG(String(Kelas.data
      Body      InBody
      Points    HITFAT Points and the rewards
    Home's card and Check in open Today. */
-var KL_TABS=[['today','Today'],['progress','Progress'],['body','Body'],['points','Points']];
-function kelasTab(t){ Kelas.tab=t; renderKelas(); $('screen').scrollTop=0; }
+var KL_TABS=[['today','Today'],['progress','Progress'],['body','Body'],['points','Points'],['group','Group']];
+function kelasTab(t){ Kelas.tab=t; if(t==='group' && !Kelas.cm && !Kelas.cmBusy) kelasCmLoad(); renderKelas(); $('screen').scrollTop=0; }
 function kelasHTML(){
   const tab=Kelas.tab||'today';
   let h='<div class="obseg kl-tabs">'+KL_TABS.map(t=>'<button class="'+(t[0]===tab?'on':'')+'" onclick="kelasTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>';
   if(tab==='progress') h+=kelasProgressTab();
   else if(tab==='body') h+=kelasBodyTab();
   else if(tab==='points') h+=kelasPointsHTML()||'<div class="kl-none">Points load with your class. Pull to refresh.</div>';
+  else if(tab==='group') h+=kelasGroupTab();
   else h+=kelasTodayTab();
   return h;
 }
@@ -470,7 +471,7 @@ function kelasPRPaint(){
     const r=p.rung;
     h+='<div class="klpr-bell'+(r.pr?' rang':'')+'">'+glyph('bell')+'</div>'+
        '<div class="klpr-val">'+hesc(kelasFmt(r.v,r.u))+'</div>'+
-       '<div class="klpr-note">'+(r.pr?(r.prev?'Beat your best of '+hesc(kelasFmt(r.prev.v,r.prev.u))+'.':'Your first record for this one.'):
+       '<div class="klpr-note">'+(r.pr?(r.prev?'Beat your best of '+hesc(kelasFmt(r.prev.v,r.prev.u))+'.':'Your first record for this one.')+(kelasLinked()?' Rung in your class group too.':''):
          'Your best is still '+hesc(kelasFmt(r.best.v,r.best.u))+'. Next time.')+'</div>'+
        (r.pr?'<button class="bigbtn kl-go" onclick="kelasPRShareRung()">'+glyph('share')+' Share it</button>':'')+
        '<button class="kl-alt" onclick="kelasPRClose()">Done</button>';
@@ -512,6 +513,8 @@ function kelasPRRing(){
   p.rung={m:name, u:p.u, v:v, pr:pr, prev:prev, best:pr?e:prev};
   kelasPRPaint();
   if(pr && navigator.vibrate) try{ navigator.vibrate([30,60,30]); }catch(x){}
+  /* a new best rings in the class group too */
+  if(pr && kelasLinked()){ kelasCall('cm_post',{move:name, value:kelasFmt(v,p.u)}).then(()=>{ Kelas.cm=null; }).catch(()=>{}); }
   if($('kelas') && $('kelas').style.display==='block') renderKelas();
 }
 function kelasPRShareRung(){
@@ -968,6 +971,106 @@ function kelasBaraHTML(){
   return '<div class="kl-bara"><img src="'+src+'" alt="Bara" onerror="this.style.visibility=\'hidden\'"><div class="kl-bub"><b>Bara</b><span>'+hesc(L[1])+'</span></div></div>';
 }
 
+/* ═══════════════ Group: the community and the leaderboard ═══════════════
+   After Everfit and Bod groups (17 Oct 2026), for class members first.
+   A group is the class (Active Class, Ladies Only, Mens Only, HYROX):
+   members are in theirs without joining, and Ladies Only stays among women.
+   The feed fills itself from the kiosk (first class, Class Club, 3 classes in
+   a week) and from Ring the bell; members react with fire, clap or muscle.
+   The board counts classes this week or this month, from the kiosk only.
+   No comments and no messages yet. Admin (Seth) posts an announcement,
+   pins and hides. All of it lives in HITFAT OS (086_community.sql). */
+var KL_CM_ICON={first:'people',club:'trophy',week:'flame',pr:'bell',announce:'flag'};
+var KL_CM_EMO=[['fire','🔥'],['clap','👏'],['muscle','💪']];
+async function kelasCmLoad(cat){
+  Kelas.cmBusy=true; Kelas.cmErr=false;
+  try{ Kelas.cm=await kelasCall('cm_feed',{cat:cat||Kelas.cmCat||''}); Kelas.cmCat=Kelas.cm.cat; }
+  catch(e){ Kelas.cmErr=true; }
+  Kelas.cmBusy=false;
+  if($('kelas') && $('kelas').style.display==='block' && Kelas.tab==='group') renderKelas();
+}
+function kelasAgo(t){
+  const m=Math.max(0,Math.round((Date.now()-Date.parse(t))/60000));
+  if(m<1) return 'just now'; if(m<60) return m+' min ago';
+  const h=Math.round(m/60); if(h<24) return h+' h ago';
+  const d=Math.round(h/24); return d<7?d+' d ago':new Date(t).toLocaleDateString('en-MY',{day:'numeric',month:'short'});
+}
+function kelasGroupTab(){
+  const C=Kelas.cm;
+  if(!C) return Kelas.cmErr
+    ? '<div class="kl-none">Could not load the group. <button class="kl-unlink" onclick="kelasCmLoad()">Try again</button></div>'
+    : '<div class="ib-card ib-busy"><span class="ib-spin"></span><b>Loading your group…</b></div>';
+  const cats=C.cats||[];
+  if(!cats.length) return '<div class="kl-none">The group opens while your class membership is active.</div>';
+  let h='';
+  if(cats.length>1) h+='<div class="kl-gchips">'+cats.map(c=>'<button class="'+(c===C.cat?'on':'')+'" onclick="kelasCmLoad(\''+c+'\')">'+hesc(kelasCat(c))+'</button>').join('')+'</div>';
+  h+='<div class="kl-ghead"><div class="kl-kick">Group</div><b>'+hesc(kelasCat(C.cat))+'</b>'+(C.admin?'<span class="kl-admin">Admin</span>':'')+'</div>';
+  h+=kelasBoardHTML(C);
+  if(C.admin) h+=kelasCmComposer(C);
+  h+=fsec('Feed','Milestones from the kiosk and the bell.');
+  const posts=C.posts||[];
+  h+='<div class="kl-feed">'+(posts.length?posts.map(kelasPostHTML).join('')
+    :'<div class="kl-none">Nothing here yet. Every first class, Class Club and 3-class week shows up here, and so does every bell rung.</div>')+'</div>';
+  const P=C.prefs||{};
+  h+='<div class="kl-gprefs"><button onclick="kelasCmPref(\'feed\')">'+(P.hide_feed?'Show':'Hide')+' my milestones in the group</button>'+
+     '<button onclick="kelasCmPref(\'board\')">'+(P.hide_board?'Show me on':'Hide me from')+' the leaderboard</button></div>';
+  return h;
+}
+function kelasBoardHTML(C){
+  const which=Kelas.cmBoard||'week', B=(C[which])||{}, top=B.top||[], me=B.me;
+  let h='<div class="kl-board"><div class="kl-bh"><b>Leaderboard</b><div class="obseg kl-bseg">'+
+    '<button class="'+(which==='week'?'on':'')+'" onclick="Kelas.cmBoard=\'week\';renderKelas()">Week</button>'+
+    '<button class="'+(which==='month'?'on':'')+'" onclick="Kelas.cmBoard=\'month\';renderKelas()">Month</button></div></div>';
+  if(!top.length) return h+'<div class="kl-none">No classes yet '+(which==='week'?'this week':'this month')+'. Be the first on the board.</div></div>';
+  const row=r=>'<div class="kl-br'+(r.me?' me':'')+'"><span class="kl-rk r'+r.r+'">'+r.r+'</span><span class="kl-bn">'+hesc(r.name)+(r.me?' <i>you</i>':'')+'</span><b>'+r.n+'</b><small>class'+(r.n===1?'':'es')+'</small></div>';
+  h+=top.map(row).join('');
+  if(me && !top.some(r=>r.me)) h+='<div class="kl-bsep">⋯</div>'+row({r:me.r,name:'You',n:me.n,me:true});
+  h+='<div class="kl-bfoot">'+(me?(me.r===1?'You are top of the board. Keep it there!':(me.gap?me.gap+' more class'+(me.gap===1?'':'es')+' to move up':'Level with the next place up')+' · #'+me.r+' of '+B.people)
+      :'Check in at the kiosk to get on the board.')+'</div></div>';
+  return h;
+}
+function kelasPostHTML(p){
+  const r=p.r||{}, my=p.my||[], C=Kelas.cm||{};
+  return '<div class="kl-post k-'+p.kind+(p.pinned?' pin':'')+(p.hidden?' hid':'')+'"><span class="kl-pic">'+glyph(KL_CM_ICON[p.kind]||'star')+'</span>'+
+    '<div class="kl-pb"><div class="kl-pt">'+hesc(p.title)+'</div>'+(p.body?'<div class="kl-pbody">'+hesc(p.body)+'</div>':'')+
+    '<div class="kl-pm">'+(p.pinned?'<span class="kl-pin">Pinned</span>':'')+(p.hidden?'<span class="kl-pin">Hidden</span>':'')+kelasAgo(p.at)+'</div>'+
+    '<div class="kl-reacts">'+KL_CM_EMO.map(e=>'<button class="'+(my.indexOf(e[0])>=0?'on':'')+'" onclick="kelasCmReact(\''+p.id+'\',\''+e[0]+'\')">'+e[1]+(r[e[0]]?' <b>'+r[e[0]]+'</b>':'')+'</button>').join('')+
+    (C.admin?'<span class="kl-adm"><button onclick="kelasCmAdmin(\''+(p.pinned?'unpin':'pin')+'\',\''+p.id+'\')">'+(p.pinned?'Unpin':'Pin')+'</button>'+
+      '<button onclick="kelasCmAdmin(\''+(p.hidden?'unhide':'hide')+'\',\''+p.id+'\')">'+(p.hidden?'Unhide':'Hide')+'</button></span>':'')+
+    '</div></div></div>';
+}
+async function kelasCmReact(id,emo){
+  const p=((Kelas.cm&&Kelas.cm.posts)||[]).filter(x=>x.id===id)[0]; if(!p) return;
+  p.r=p.r||{}; p.my=p.my||[];
+  const on=p.my.indexOf(emo)<0;
+  if(on){ p.my.push(emo); p.r[emo]=(p.r[emo]||0)+1; } else { p.my=p.my.filter(x=>x!==emo); p.r[emo]=Math.max(0,(p.r[emo]||1)-1); }
+  renderKelas();
+  try{ await kelasCall('cm_react',{post:id,emoji:emo}); }catch(e){ toast('Could not react. Check your connection.'); }
+}
+async function kelasCmPref(k){
+  const P=Object.assign({hide_board:false,hide_feed:false},(Kelas.cm&&Kelas.cm.prefs)||{});
+  if(k==='feed') P.hide_feed=!P.hide_feed; else P.hide_board=!P.hide_board;
+  try{ await kelasCall('cm_pref',P); toast(k==='feed'?(P.hide_feed?'Your milestones stay private now.':'Your milestones show in the group.'):(P.hide_board?'You are off the leaderboard.':'You are back on the leaderboard.')); kelasCmLoad(); }
+  catch(e){ toast('Could not save. Check your connection.'); }
+}
+/* admin: one announcement, pinned, to this group or every group */
+function kelasCmComposer(C){
+  return '<div class="kl-comp"><b>Post an announcement</b>'+
+    '<input id="kl-cmt" class="kl-in" maxlength="120" placeholder="Title, e.g. Class 3 moves to 6:30 PM today">'+
+    '<textarea id="kl-cmb" class="kl-in" maxlength="1000" rows="3" placeholder="Details (optional)"></textarea>'+
+    '<div class="kl-crow"><select id="kl-cmc" class="kl-in"><option value="'+hesc(C.cat)+'">'+hesc(kelasCat(C.cat))+'</option><option value="all">Every class group</option></select>'+
+    '<button class="bigbtn kl-go" onclick="kelasCmAnnounce()">Post and pin</button></div></div>';
+}
+async function kelasCmAnnounce(){
+  const t=(($('kl-cmt')||{}).value||'').trim(), b=(($('kl-cmb')||{}).value||'').trim(), c=($('kl-cmc')||{}).value||'';
+  if(!t){ toast('Write a title first.'); return; }
+  try{ const r=await kelasCall('cm_admin',{op:'announce',title:t,body:b,cat:c}); if(r&&r.ok){ toast('Posted and pinned.'); kelasCmLoad(); } else toast('Could not post.'); }
+  catch(e){ toast('Could not post. Check your connection.'); }
+}
+async function kelasCmAdmin(op,id){
+  try{ await kelasCall('cm_admin',{op:op,post:id}); kelasCmLoad(); }catch(e){ toast('Could not change that post.'); }
+}
+
 function kelasPickDay(d){ Kelas.day=d; renderKelas(); }
 function kelasRenew(){
   const m=kelasMain();
@@ -1120,4 +1223,14 @@ function kelasDemo(){
       for(let i=14;i<26;i++){ const d=new Date(m.getTime()); d.setUTCDate(d.getUTCDate()-7*i); w.push(kelasDayKey(d)); }
       return w.sort(); })()};
   Kelas.state='ready';
+  const ago=h=>new Date(Date.now()-h*3600e3).toISOString();
+  Kelas.cm={linked:true, admin:true, cats:['Membership'], cat:'Membership', prefs:{hide_board:false,hide_feed:false},
+    posts:[{id:'00000000-0000-0000-0000-000000000001',kind:'announce',title:'Class 3 moves to 6:30 PM today',body:'Hari ni sahaja. Jumpa di HQ!',pinned:true,at:ago(2),r:{fire:4},my:[]},
+      {id:'00000000-0000-0000-0000-000000000002',kind:'pr',title:'Hakim A. rang the bell: Plank hold 3:05',at:ago(5),r:{fire:6,muscle:3},my:['fire']},
+      {id:'00000000-0000-0000-0000-000000000003',kind:'week',title:'Aina R. hit 3 classes this week',body:'5 weeks in a row',at:ago(20),r:{clap:5},my:[]},
+      {id:'00000000-0000-0000-0000-000000000004',kind:'club',title:'Siti N. reached the 50 Class Club',at:ago(30),r:{fire:9,clap:7},my:['clap']},
+      {id:'00000000-0000-0000-0000-000000000005',kind:'first',title:'Farah Z. came to their first class',at:ago(50),r:{clap:11},my:[]}],
+    week:{people:18,top:[{r:1,name:'Hakim A.',n:5},{r:2,name:'Siti N.',n:4},{r:2,name:'Aina R.',n:4,me:true},{r:4,name:'Farah Z.',n:3},{r:5,name:'Amir S.',n:3},
+      {r:6,name:'Lina M.',n:2},{r:7,name:'Zul H.',n:2},{r:8,name:'Nora K.',n:1},{r:9,name:'Haziq R.',n:1},{r:10,name:'Mira T.',n:1}],me:{r:2,n:4,gap:1}},
+    month:{people:22,top:[{r:1,name:'Siti N.',n:14},{r:2,name:'Hakim A.',n:13},{r:3,name:'Amir S.',n:11}],me:{r:7,n:8,gap:1}}};
 }

@@ -4283,3 +4283,63 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-pr0 span{display:block;font-size:13px;color:var(--dim);margin-top:2px;}
 .kl-add.kl-add1{background:#E30613;color:#FFFFFF;border-color:#E30613;}
 .kl-add.kl-add1 .gly{stroke:#FFFFFF;}
+
+/* HITFAT Class · Group (17 Oct): the class group's leaderboard and feed,
+   after Everfit and Bod groups; five tabs now, so the labels go a size down */
+.kl-tabs button{font-size:13px;padding-left:2px;padding-right:2px;}
+.kl-gchips{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;scrollbar-width:none;}
+.kl-gchips button{flex:none;padding:8px 12px;border-radius:99px;border:1.5px solid rgba(127,127,127,.3);background:none;color:var(--txt);font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.kl-gchips button.on{background:#E30613;border-color:#E30613;color:#FFFFFF;}
+.kl-ghead{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:2px 2px 10px;}
+.kl-ghead .kl-kick{color:#E30613;width:100%;}
+.kl-ghead b{font-size:24px;font-weight:900;letter-spacing:-.5px;color:var(--txt);}
+.kl-admin{padding:3px 9px;border-radius:99px;background:rgba(227,6,19,.12);color:#E30613;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;}
+.kl-board{padding:14px 14px 10px;border-radius:18px;background:var(--surface);}
+:root[data-theme="light"] .kl-board,:root[data-theme="light"] .kl-feed,:root[data-theme="light"] .kl-comp{background:#FFFFFF;}
+.kl-bh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.kl-bh b{font-size:17px;font-weight:900;color:var(--txt);}
+.kl-bseg button{padding:6px 10px;font-size:12.5px;}
+.kl-br{display:grid;grid-template-columns:30px 1fr auto auto;align-items:center;gap:8px;padding:8px 6px;border-radius:12px;}
+.kl-br.me{background:rgba(227,6,19,.09);}
+.kl-rk{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:900;color:var(--txt);background:rgba(127,127,127,.14);}
+.kl-rk.r1{background:#F5C042;color:#5A3A03;} .kl-rk.r2{background:#C9CBD1;color:#33353A;} .kl-rk.r3{background:#D99A63;color:#4A2608;}
+.kl-bn{font-size:15px;font-weight:700;color:var(--txt);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.kl-bn i{font-style:normal;font-size:11px;font-weight:800;color:#E30613;text-transform:uppercase;margin-left:4px;}
+.kl-br b{font-size:17px;font-weight:900;color:var(--txt);font-variant-numeric:tabular-nums;}
+.kl-br small{font-size:11px;color:var(--dim);width:44px;}
+.kl-bsep{text-align:center;color:var(--dim);line-height:1;padding:2px 0;}
+.kl-bfoot{font-size:13px;color:var(--dim);padding:8px 6px 2px;border-top:1px solid var(--sep);margin-top:6px;}
+.kl-feed{border-radius:18px;background:var(--surface);overflow:hidden;}
+.kl-post{display:flex;gap:12px;padding:14px;}
+.kl-post+.kl-post{border-top:1px solid var(--sep);}
+.kl-post.pin{background:rgba(227,6,19,.06);}
+.kl-post.hid{opacity:.45;}
+.kl-pic{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(227,6,19,.12);}
+.kl-pic .gly{width:20px;height:20px;stroke:#E30613;}
+.k-club .kl-pic{background:rgba(245,192,66,.22);} .k-club .kl-pic .gly{stroke:#B5790A;}
+.k-first .kl-pic{background:rgba(52,193,95,.16);} .k-first .kl-pic .gly{stroke:#1F9D4C;}
+.k-announce .kl-pic{background:#E30613;} .k-announce .kl-pic .gly{stroke:#FFFFFF;}
+.kl-pb{flex:1;min-width:0;}
+.kl-pt{font-size:15px;font-weight:800;color:var(--txt);line-height:1.35;}
+.kl-pbody{font-size:14px;color:var(--txt);line-height:1.45;margin-top:3px;white-space:pre-wrap;}
+.kl-pm{font-size:12px;color:var(--dim);margin-top:4px;}
+.kl-pin{display:inline-block;margin-right:6px;padding:1px 7px;border-radius:99px;background:rgba(227,6,19,.12);color:#E30613;font-size:10.5px;font-weight:800;text-transform:uppercase;}
+.kl-reacts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:9px;}
+.kl-reacts button{padding:5px 10px;border-radius:99px;border:1.5px solid rgba(127,127,127,.25);background:none;font:inherit;font-size:14px;cursor:pointer;color:var(--txt);}
+.kl-reacts button b{font-size:12.5px;font-weight:800;}
+.kl-reacts button.on{border-color:#E30613;background:rgba(227,6,19,.1);}
+.kl-adm{margin-left:auto;display:flex;gap:4px;}
+.kl-adm button{padding:4px 8px;font-size:12px;font-weight:700;border-style:dashed;}
+.kl-comp{margin-top:12px;padding:14px;border-radius:18px;background:var(--surface);display:flex;flex-direction:column;gap:8px;}
+.kl-comp b{font-size:15px;font-weight:900;color:var(--txt);}
+.kl-comp .kl-in{font-size:15px;font-weight:600;padding:12px;}
+.kl-comp textarea.kl-in{resize:vertical;font-family:inherit;}
+.kl-crow{display:flex;gap:8px;align-items:center;}
+.kl-crow select{flex:1;min-width:0;}
+.kl-crow .bigbtn.kl-go{margin:0;flex:none;width:auto;padding:12px 16px;font-size:14px;}
+.kl-gprefs{display:flex;flex-direction:column;align-items:center;gap:2px;margin:16px 0 6px;}
+.kl-gprefs button{border:0;background:none;color:var(--dim);font:inherit;font-size:13px;font-weight:700;text-decoration:underline;cursor:pointer;padding:6px;}
+/* the sticky tab bar is solid, so the page does not show through it */
+.obseg.kl-tabs{background:#2C2C2E;}
+:root[data-theme="light"] .obseg.kl-tabs{background:#E4E4E9;}
+.kl-bseg button{min-width:58px;}
