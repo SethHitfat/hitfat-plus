@@ -6695,6 +6695,11 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 #klzoom.on{display:flex;}
 #klzoom img{max-width:100%;max-height:100%;}
 
+/* replies under a comment (17 Oct) */
+.kl-cm.rep{margin-left:36px;}
+.kl-replying{font-size:12.5px;color:var(--dim);margin-top:10px;}
+.kl-replying button{border:0;background:none;color:var(--dim);font:inherit;cursor:pointer;padding:0 4px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -21432,17 +21437,34 @@ function kelasPostMenu(p){
   return '<div class="kl-pmenu"><button class="kl-dots" aria-label="More" onclick="Kelas.cmMenu=Kelas.cmMenu===\''+p.id+'\'?null:\''+p.id+'\';renderKelas()">⋯</button>'+
     (open?'<div class="kl-pmenu-l">'+items+'</div>':'')+'</div>';
 }
-/* the comments: the last two in the feed, all of them once opened */
+/* the comments: the last two in the feed, all of them once opened, with
+   replies under their comment (one level, like Facebook) */
+function kelasCmOne(p,c,reply){
+  const adm=Kelas.cm&&Kelas.cm.admin;
+  return '<div class="kl-cm'+(c.hidden?' hid':'')+(reply?' rep':'')+'"><span class="kl-av sm">'+hesc(String(c.name||'M').charAt(0))+'</span>'+
+    '<div class="kl-cmb"><b>'+hesc(c.name||'Member')+'</b> '+hesc(c.body)+'<small>'+kelasAgo(c.at)+
+    (c.id!=='tmp'?' · <button onclick="kelasCmReplyTo(\''+p.id+'\',\''+(c.parent||c.id)+'\',\''+hesc(String(c.name||'Member')).replace(/'/g,'')+'\')">Reply</button>':'')+
+    (c.id==='tmp'?'':(c.mine||adm)?' · <button onclick="kelasCmDelete(\''+p.id+'\',\''+c.id+'\')">Delete</button>':' · <button onclick="kelasCmReport(\''+p.id+'\',\''+c.id+'\')">Report</button>')+
+    '</small></div></div>';
+}
 function kelasCommentsHTML(p){
-  const all=(Kelas.cmC||{})[p.id], list=all||p.cm||[], open=Kelas.cmOpenId===p.id;
+  const all=(Kelas.cmC||{})[p.id], list=all||p.cm||[], open=Kelas.cmOpenId===p.id, R=Kelas.cmReply&&Kelas.cmReply.post===p.id?Kelas.cmReply:null;
   let h='';
   if(p.nc>list.length && !all) h+='<button class="kl-cmore" onclick="kelasCmOpen(\''+p.id+'\')">View all '+p.nc+' comments</button>';
-  if(list.length) h+='<div class="kl-cms">'+list.map(c=>'<div class="kl-cm'+(c.hidden?' hid':'')+'"><span class="kl-av sm">'+hesc(String(c.name||'M').charAt(0))+'</span>'+
-    '<div class="kl-cmb"><b>'+hesc(c.name||'Member')+'</b> '+hesc(c.body)+'<small>'+kelasAgo(c.at)+
-    (c.mine||(Kelas.cm&&Kelas.cm.admin)?' · <button onclick="kelasCmDelete(\''+p.id+'\',\''+c.id+'\')">Delete</button>':' · <button onclick="kelasCmReport(\''+p.id+'\',\''+c.id+'\')">Report</button>')+'</small></div></div>').join('')+'</div>';
-  if(open) h+='<div class="kl-cin"><input id="kl-cin-'+p.id+'" class="kl-in" maxlength="500" placeholder="Write a comment…" onkeydown="if(event.key===\'Enter\')kelasCmSend(\''+p.id+'\')">'+
+  if(list.length){
+    const tops=all?list.filter(c=>!c.parent):list;
+    h+='<div class="kl-cms">'+tops.map(c=>kelasCmOne(p,c,false)+
+      (all?list.filter(x=>x.parent===c.id).map(x=>kelasCmOne(p,x,true)).join(''):'')).join('')+'</div>';
+  }
+  if(open) h+=(R?'<div class="kl-replying">Replying to <b>'+hesc(R.name)+'</b> <button onclick="Kelas.cmReply=null;renderKelas()">✕</button></div>':'')+
+    '<div class="kl-cin"><input id="kl-cin-'+p.id+'" class="kl-in" maxlength="500" placeholder="'+(R?'Write a reply…':'Write a comment…')+'" onkeydown="if(event.key===\'Enter\')kelasCmSend(\''+p.id+'\')">'+
     '<button class="f30-go" onclick="kelasCmSend(\''+p.id+'\')">Send</button></div>';
   return h;
+}
+function kelasCmReplyTo(pid,parent,name){
+  Kelas.cmReply={post:pid,parent:parent,name:name};
+  if(Kelas.cmOpenId!==pid) return kelasCmOpen(pid);
+  renderKelas(); setTimeout(()=>{ const f=$('kl-cin-'+pid); if(f) f.focus(); },50);
 }
 async function kelasCmOpen(id){
   Kelas.cmOpenId=id; renderKelas();
@@ -21453,13 +21475,14 @@ async function kelasCmSend(id){
   const f=$('kl-cin-'+id), t=(f&&f.value||'').trim(); if(!t) return;
   f.value='';
   const p=((Kelas.cm&&Kelas.cm.posts)||[]).filter(x=>x.id===id)[0];
+  const R=Kelas.cmReply&&Kelas.cmReply.post===id?Kelas.cmReply:null; Kelas.cmReply=null;
   Kelas.cmC=Kelas.cmC||{}; const list=Kelas.cmC[id]||(p&&p.cm)||[];
-  Kelas.cmC[id]=list.concat([{id:'tmp',name:'You',body:t,at:new Date().toISOString(),mine:true}]);
+  Kelas.cmC[id]=list.concat([{id:'tmp',parent:R?R.parent:null,name:'You',body:t,at:new Date().toISOString(),mine:true}]);
   if(p) p.nc=(p.nc||0)+1;
   if(typeof hfSound==='function') hfSound('pop');
   renderKelas();
   try{
-    const r=await kelasCall('cm_comment',{post:id,body:t});
+    const r=await kelasCall('cm_comment',{post:id,body:t,parent:R?R.parent:null});
     if(!r||!r.ok) toast(r&&r.error==='too_many'?'That is a lot of comments today. Try again tomorrow.':'Could not post the comment.');
     const all=await kelasCall('cm_comments',{post:id}); if(all&&all.ok){ Kelas.cmC[id]=all.comments||[]; renderKelas(); }
   }catch(e){ toast('Could not post the comment. Check your connection.'); }

@@ -348,7 +348,9 @@ Deno.serve(async (req: Request) => {
       const pid = /^[0-9a-f-]{36}$/.test(String(body.post || '')) ? String(body.post) : null;
       const cid = /^[0-9a-f-]{36}$/.test(String(body.comment || '')) ? String(body.comment) : null;
       if (action === 'cm_comments') return json(pid ? await os('plus_cm_comments', { p_key: key, p_user: uid, p_post: pid, p_admin: isAdmin }) : { ok: false });
-      if (action === 'cm_comment') return json(pid ? await os('plus_cm_comment', { p_key: key, p_user: uid, p_post: pid, p_body: String(body.body || '').slice(0, 500) }) : { ok: false });
+      /* a comment, or a reply under one (091: one level, like Facebook) */
+      const par = /^[0-9a-f-]{36}$/.test(String(body.parent || '')) ? String(body.parent) : null;
+      if (action === 'cm_comment') return json(pid ? await os('plus_cm_comment2', { p_key: key, p_user: uid, p_post: pid, p_body: String(body.body || '').slice(0, 500), p_parent: par }) : { ok: false });
       if (action === 'cm_report') return json(await os('plus_cm_report', { p_key: key, p_user: uid, p_post: pid, p_comment: cid }));
       if (action === 'cm_delete') {
         const r = await os('plus_cm_delete', { p_key: key, p_user: uid, p_post: pid, p_comment: cid, p_admin: isAdmin });
