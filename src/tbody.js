@@ -3969,6 +3969,8 @@ print("\n── SKOR HITFAT · RUST & SHINE ──");
 (function(){
   var keepS=HF.data.sessions, keepM=HF.data.meals, keepD=HF.data.daily, keepI=HF.data.ifs, keepSc=HF.data.sc, keepSave=HF.save;
   HF.save=function(){}; HF.data.sessions={}; HF.data.meals={}; HF.data.daily={}; HF.data.ifs={}; HF.data.sc={met:1};
+  /* on a Sunday or Monday the week's report would open on the next render; it is not what these check */
+  _tKeepWk=scCheckWeekly; scCheckWeekly=function(){ return false; };   /* global: put back after the rusted screen checks below */
   document.getElementById('scc').style.display='none';
   ok("a new member never rusts", scState().k==='' && scGap(1,{})===-1);
   HF.data.daily[iso(-1)]={water:1,steps:0};
@@ -4043,6 +4045,7 @@ print("\n── SKOR HITFAT · FREEZE, SCREENS, POSES ──");
      document.getElementById('scc').innerHTML.indexOf("scSheet('water')")>0);
   scCelebrateClose(); scRender();
   ok("...not again that day", document.getElementById('scc').style.display==='none');
+  scCheckWeekly=_tKeepWk;
   ok("water and meals have their own pose", SC_POSE.water.indexOf('water.png')>0 && SC_POSE.meal.indexOf('meal.png')>0 && String(scRender).indexOf('scPose(slot')>0);
   ok("the freezes survive a reload", (function(){ HF.data.sc={frozen:{'2026-10-14':1}}; var o=JSON.parse(JSON.stringify(HF.data)), keep=HF.data; HF.apply(o);
      var r=HF.data.sc.frozen['2026-10-14']===1; HF.data=keep; return r; })());
@@ -4518,7 +4521,8 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   Kelas.space=keepSp3; Kelas.data=keepD3; HF.data.kelas=keepK3; HF.save=keepSv7; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
   /* Personal coaching (098) */
   var keepD4=JSON.parse(JSON.stringify(Kelas.data)), keepSp4=Kelas.space, keepTab4=Kelas.tab; Kelas.space=null; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
-  var tmr=new Date(Date.now()+864e5); tmr.setUTCHours(1,0,0,0);
+  /* tomorrow 9 am in Malaysia (a UTC 'tomorrow' is still today in the early MY morning) */
+  var tmr=new Date(new Date(Date.now()+8*36e5+864e5).toISOString().slice(0,10)+'T09:00:00+08:00');
   Kelas.data.memberships=[];
   Kelas.data.pt={id:'p1',type:'1-on-1',coach:'Amir Hakim',total:12,used:10,start:'2026-10-11',end:new Date(Date.now()+5*864e5).toISOString().slice(0,10),active:true,
     next:[{at:tmr.toISOString(),coach:'Amir Hakim'}],notes:[{d:'2026-10-15',focus:'Upper push',note:'Push-up dah 12 tanpa henti!',coach:'Amir Hakim'},{d:'2026-10-12',focus:'Lower body',note:'Squat 60 kg',coach:'Amir Hakim'}],

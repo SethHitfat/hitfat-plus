@@ -4787,3 +4787,16 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .scbs-key i.log{background:rgba(227,6,19,.25);box-shadow:none;} .scbs-key i.strong{background:#E30613;box-shadow:none;}
 .scbs .sci-how div.on{color:var(--txt);}
 .scbs .sci-how div.on b{color:#E30613;}
+
+/* ── This week's report: its own light screen (score2.js scWeekly) ── */
+.scc.scc-report{background:radial-gradient(circle at 50% 30%,#FFFFFF 0%,#FFF5F2 38%,#FFE3DD 72%,#FFCFC6 100%);color:#111111;}
+.scc-report .scc-bell img,.scc-report .bell-mini{-webkit-filter:drop-shadow(0 14px 22px rgba(120,0,0,.22));filter:drop-shadow(0 14px 22px rgba(120,0,0,.22));}
+.scc-report .scx-wk{color:#E30613;}
+.scc-report .scx-wn{color:#111111;}
+.scc-report .scx-wn.strong{color:#E30613;}
+.scc-report .scx-wn span{color:rgba(17,17,17,.5);}
+.scc-report .scc-s{color:rgba(17,17,17,.78);}
+.scc-report .scx-wg div{background:#FFFFFF;box-shadow:0 6px 18px rgba(120,0,0,.08);}
+.scc-report .scx-wg b{color:#111111;}
+.scc-report .scx-wg span{color:rgba(17,17,17,.55);}
+#scc.scc-report .scc-share{background:#E30613 !important;color:#FFFFFF !important;}

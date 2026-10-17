@@ -233,10 +233,14 @@ function scWeekly(off){
   var w=scWeekStats(off), p=scWeekStats(off+1), diff=w.avg-p.avg, st=scStreak().n;
   var line=diff>0?'Up '+diff+' points on last week 👏 Bara is proud!':diff<0?'Down '+(-diff)+' points. That\'s okay, we\'ll win it back next week 💪':'Same as last week. Staying consistent is a win too.';
   var bd=w.best.iso?new Date(w.best.iso+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long'}):'–';
-  $('scc').className='scc scc-black';
+  /* its own light look (18 Oct): it used to borrow Beast Mode's red, where the
+     red Bara vanished, the score went grey on red and the tiles were black.
+     Now white to soft pink, so a red or gold Bara stands out; the number is
+     ink, red on a strong week */
+  $('scc').className='scc scc-report';
   $('scc').innerHTML='<div class="scc-in">'+scMomentBell(w.avg>=SC_PADU?'gold':'calendar')+
     '<div class="scx-wk">This week\'s report</div>'+
-    '<div class="scx-wn" style="color:'+scColor(w.avg)+'">'+w.avg+'<span>/100 average</span></div>'+
+    '<div class="scx-wn'+(w.avg>=SC_PADU?' strong':'')+'">'+w.avg+'<span>/100 average</span></div>'+
     '<div class="scc-s scc-bellsays">'+line+'</div>'+
     '<div class="scx-wg"><div><b>'+w.padu+'</b><span>strong days</span></div><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+(w.best.v||'–')+'</b><span>'+bd+'</span></div></div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">New week, let\'s go!</button></div>';
