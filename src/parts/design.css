@@ -4386,3 +4386,16 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .f30-win .gly{flex:none;width:36px;height:36px;stroke:#B5790A;}
 .f30-win b{display:block;font-size:17px;font-weight:900;color:var(--txt);}
 .f30-win span{display:block;font-size:13px;color:var(--dim);}
+
+/* 60-day journeys after FIRST 30 (17 Oct) */
+.f30.jr{border-color:rgba(127,127,127,.25);}
+.jr-h{display:block;font-size:21px;font-weight:900;letter-spacing:-.4px;color:var(--txt);margin-top:4px;}
+.jr-pick .kl-kick{color:#E30613;}
+.jr-sub{font-size:13px;color:var(--dim);margin:4px 0 10px;}
+.jr-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.jr-o{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border-radius:14px;border:1.5px solid rgba(127,127,127,.25);background:none;text-align:left;font:inherit;cursor:pointer;color:var(--txt);}
+.jr-o.on{border-color:#E30613;background:rgba(227,6,19,.07);}
+.jr-o .f30-c .gly{stroke:#E30613;}
+.jr-ot b{display:block;font-size:15px;font-weight:800;}
+.jr-ot b em{font-style:normal;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#1F9D4C;background:rgba(52,193,95,.14);padding:2px 7px;border-radius:99px;margin-left:4px;}
+.jr-ot small{display:block;font-size:12.5px;color:var(--dim);margin-top:1px;}

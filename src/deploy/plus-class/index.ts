@@ -14,6 +14,8 @@
                                      check-ins; and keeps access in step
                                      with the end date
    POST { action:'unlink' }          disconnect, end the access
+   POST { action:'journey_start', kind }   a 60-day journey after FIRST 30
+                                     (fat60, strong60, engine60, hyrox60)
    POST { action:'goal', goal }      FIRST 30: the member's goal, to OS
                                      members.goal unless the coach set one
    POST { action:'inbody', image_base64, media_type }
@@ -241,7 +243,15 @@ Deno.serve(async (req: Request) => {
       if (st && st.first30 && st.first30.complete && !st.first30.awarded) {
         try { const a = await os('plus_first30_award', { p_key: key, p_user: uid }); if (a && a.ok) st.first30.awarded = true; } catch (_) { /* next time */ }
       }
+      /* a 60-day journey done: +600 and a post, once (089) */
+      if (st && st.journey && st.journey.complete) {
+        try { const a = await os('plus_journey_award', { p_key: key, p_user: uid }); if (a && a.ok) st.journey.awarded = true; } catch (_) { /* next time */ }
+      }
       return json({ ...st, until });
+    }
+
+    if (action === 'journey_start') {
+      return json(await os('plus_journey_start', { p_key: key, p_user: uid, p_kind: String(body.kind || '') }));
     }
 
     if (action === 'goal') {

@@ -219,8 +219,10 @@ function kelasTodayTab(){
      '<button class="kl-qr kl-qr2" onclick="kelasQRFull()" aria-label="Show my check-in QR full screen">'+kelasQR(116)+'<small>Tap to enlarge</small></button></div>'+
      kelasBaraHTML()+'</div>';
 
-  /* FIRST 30: a new member's first month, mission by mission */
+  /* FIRST 30: a new member's first month, mission by mission; then a
+     60-day journey for the goal */
   h+=kelasF30HTML();
+  h+=kelasJourneyHTML();
 
   /* the next class and the timetable */
   const cls=d.classes||[];
@@ -965,7 +967,9 @@ function kelasBaraLine(){
   const n=kelasThisWeekN(), t=kelasTarget(), nx=kelasNext();
   if(!act) return ['kusut','Membership awak dah tamat. Bara rindu nak tengok awak kat kelas. Renew di kaunter ya!'];
   if(left!==null && left<=7) return ['calendar','Membership awak tamat dalam '+(left+1)+' hari. Renew awal supaya streak awak tak putus!'];
-  const f30=kelasF30(); if(f30) return kelasF30Line(f30);
+  const f30=kelasF30(); if(f30 && !f30.complete) return kelasF30Line(f30);
+  const jr=kelasJr(); if(jr) return kelasJrLine(jr);
+  if(f30) return kelasF30Line(f30);
   if(days.has(today)) return ['cheer','Bara nampak awak dah datang kelas hari ni! Dikira sebagai workout dalam Skor HITFAT, +100 mata 💪'];
   if(n>=t) return ['gold','Sasaran '+t+' kelas minggu ni dah capai! Bara bangga sangat 🔥'];
   if(nx && nx.inDays===0) return ['aktif','Kelas seterusnya pukul '+kelasClock(nx.c.start)+'. Bara tunggu awak! '+n+' daripada '+t+' kelas minggu ni.'];
@@ -1146,7 +1150,7 @@ function kelasF30HTML(){
     '<b>'+(f.complete?'First 30 complete':'Your first 30 days')+'</b></div><span class="f30-n">'+f.done+'<small>/'+(f.total||7)+'</small></span></div>'+
     '<span class="kl-tb f30-bar"><i style="width:'+pct+'%"></i></span>';
   if(f.complete){
-    h+='<div class="f30-win">'+glyph('trophy')+'<div><b>+300 points'+(f.awarded?' added':'')+'</b><span>Seven of seven. The next step: keep 3 classes a week.</span></div></div>'+
+    h+='<div class="f30-win">'+glyph('trophy')+'<div><b>+300 points'+(f.awarded?' added':'')+'</b><span>Seven of seven. Next: choose a 60-day journey below.</span></div></div>'+
        '<button class="bigbtn kl-go" onclick="kelasF30Share()">'+glyph('share')+' Share my First 30</button></div>';
     return h;
   }
@@ -1178,6 +1182,73 @@ async function kelasF30SetGoal(g){
 }
 function kelasF30Share(){
   Kelas.share={kind:'f30', n:kelasTotal(), streak:kelasWeekStreak()}; openShare('kelas');
+}
+
+/* ═══════════════ 60-day journeys ═══════════════
+   After FIRST 30, or any time for a member who joined before it (089):
+   one journey for the goal, 60 days, four missions from OS data. Done:
+   +600 and a post in the class group. One at a time; an unfinished one
+   ends on day 67 and another can start. */
+var KL_JR={
+  fat60:   {n:'Fat Loss 60',       s:'Lose fat, keep the muscle',      r:'Body fat % lower than at the start', ic:'flame', unit:'%'},
+  strong60:{n:'Stronger 60',       s:'Build muscle and strength',      r:'More muscle than at the start',      ic:'trophy', unit:'kg'},
+  engine60:{n:'Build Your Engine', s:'Fitter, faster, for longer',     r:'A higher InBody Score than at the start', ic:'bolt', unit:''},
+  hyrox60: {n:'HYROX Foundation',  s:'Ready for your first HYROX',     r:'More muscle than at the start',      ic:'flag', unit:'kg'}};
+var KL_JR_M={weeks:['8 weeks of 3+ classes','A week counts with 3 classes','calendar'],
+  classes:['24 classes','Every class at HQ counts','trophy'],
+  inbody:['2 InBody scans','Week 4 and week 8','scale'],
+  result:['The result','','chart']};
+function kelasJr(){ const j=Kelas.data&&Kelas.data.journey; return j&&j.active?j:null; }
+function kelasJrM(j,k){ return ((j&&j.missions)||[]).filter(m=>m.k===k)[0]||{}; }
+function kelasJrLine(j){
+  const w=Math.ceil(Math.min(j.day,60)/7), wk=kelasJrM(j,'weeks'), J=KL_JR[j.kind]||{n:'Journey'};
+  if(j.complete) return ['gold','Awak dah tamatkan '+J.n+'! +600 mata. Bara bangga sangat 🏅'];
+  if(j.day>60) return ['calendar',J.n+' dah sampai hari 60: '+j.done+' daripada 4. Ada seminggu lagi untuk habiskan, awak boleh!'];
+  if(w===4 || w===8) return ['aktif','Minggu '+w+': masa untuk InBody. Tengok apa yang berubah, awak!'];
+  return ['aktif',J.n+', minggu '+w+' daripada 8. Awak dah ada '+(wk.n||0)+' minggu dengan 3+ kelas.'];
+}
+function kelasJourneyHTML(){
+  const J=Kelas.data&&Kelas.data.journey, f30=kelasF30();
+  if(!J) return '';
+  if(J.active){
+    const D=KL_JR[J.kind]||{n:'Journey',r:''}, pct=Math.round(J.done/(J.total||4)*100);
+    let h='<div class="f30 jr'+(J.complete?' done':'')+'"><div class="f30-top"><div><div class="kl-kick">'+hesc(D.n)+' · Day '+Math.min(J.day,60)+' of 60</div>'+
+      '<b>'+(J.complete?D.n+' complete':hesc(D.s))+'</b></div><span class="f30-n">'+J.done+'<small>/'+(J.total||4)+'</small></span></div>'+
+      '<span class="kl-tb f30-bar"><i style="width:'+pct+'%"></i></span>';
+    if(J.complete) return h+'<div class="f30-win">'+glyph('trophy')+'<div><b>+600 points</b><span>Four of four. Choose your next journey any time.</span></div></div></div>';
+    if(J.day>60) h+='<div class="f30-late">Day 60 has passed. You have until day 67 to finish.</div>';
+    h+='<div class="f30-list">'+['weeks','classes','inbody','result'].map(k=>{
+      const m=kelasJrM(J,k), d=KL_JR_M[k];
+      let sub=d[1];
+      if(k==='result'){
+        sub=D.r+(m.base!=null?' · start '+kelasF(m.base)+(D.unit?' '+D.unit:'')+(m.last!=null?' → now '+kelasF(m.last)+(D.unit?' '+D.unit:''):''):' · scan in week 1 to set the start');
+      }
+      return '<div class="f30-m'+(m.done?' ok':'')+'"><span class="f30-c">'+(m.done?glyph('check'):glyph(k==='result'?D.ic:d[2]))+'</span>'+
+        '<div class="f30-t"><b>'+d[0]+(m.of&&!m.done?' <em>'+(m.n||0)+'/'+m.of+'</em>':'')+'</b><small>'+hesc(sub)+'</small></div>'+
+        (k==='inbody'&&!m.done?'<button class="f30-go" onclick="kelasTab(\'body\')">Scan</button>':'')+'</div>';
+    }).join('')+'</div></div>';
+    return h;
+  }
+  /* no journey running: choose one, if FIRST 30 is behind them */
+  if(!J.eligible || (f30 && !f30.complete)) return '';
+  const pick=Kelas.jrPick;
+  let h='<div class="f30 jr-pick"><div class="kl-kick">'+(J.done?'Your next journey':'60-day journeys')+'</div><b class="jr-h">Choose your next journey</b>'+
+    '<div class="jr-sub">Sixty days, four missions, +600 points. One at a time.</div><div class="jr-opts">'+
+    Object.keys(KL_JR).map(k=>{ const D=KL_JR[k];
+      return '<button class="jr-o'+(pick===k?' on':'')+'" onclick="Kelas.jrPick=\''+k+'\';renderKelas()"><span class="f30-c">'+glyph(D.ic)+'</span>'+
+        '<span class="jr-ot"><b>'+D.n+(J.suggest===k?' <em>For your goal</em>':'')+'</b><small>'+D.s+'</small></span></button>'; }).join('')+'</div>';
+  if(pick) h+='<button class="bigbtn kl-go" onclick="kelasJrStart()"'+(Kelas.jrBusy?' disabled':'')+'>'+(Kelas.jrBusy?'Starting…':'Start '+KL_JR[pick].n)+'</button>';
+  return h+'</div>';
+}
+async function kelasJrStart(){
+  const k=Kelas.jrPick; if(!k) return;
+  Kelas.jrBusy=true; renderKelas();
+  try{
+    const r=await kelasCall('journey_start',{kind:k});
+    if(r && r.ok){ toast(KL_JR[k].n+' starts today. Bara is with you!'); Kelas.jrPick=null; await kelasLoad(); }
+    else toast(r&&r.error==='first30'?'Finish FIRST 30 first.':r&&r.error==='running'?'A journey is already running.':'Could not start. Try again.');
+  }catch(e){ toast('Could not start. Check your connection.'); }
+  Kelas.jrBusy=false; renderKelas();
 }
 
 function kelasPickDay(d){ Kelas.day=d; renderKelas(); }
@@ -1319,6 +1390,7 @@ function kelasDemo(){
         {id:'inbody',name:'InBody body analysis',points:3500,note:'Book a time with the counter'}],
       history:[{t:'redeem',name:'A drink at the counter',p:-600,at:new Date(Date.now()-2*864e5).toISOString()},
         {t:'link',name:'Connected HITFAT+',p:300,at:new Date(Date.now()-20*864e5).toISOString()}]},
+    journey:{active:false, eligible:false, suggest:'fat60', done:0},
     first30:{active:true, day:6, done:3, total:7, complete:false, awarded:false, missions:[
       {k:'goal',done:true,goal:'Lose fat'},{k:'inbody1',done:true},{k:'coach',done:false},{k:'class1',done:true},
       {k:'week3',done:false,n:2},{k:'ten',done:false,n:4},{k:'inbody2',done:false,from:21}]},
