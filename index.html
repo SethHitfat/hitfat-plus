@@ -7076,6 +7076,22 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .pdx-hero .hpo-hero.land .hpo-fig{top:22%;bottom:12%;}
 .wl-today-im{position:relative;overflow:hidden;background:none;}   /* holds the poster art (18 Oct) */
 
+/* ── BURN30 day banner and the kit tiles (18 Oct) ── */
+.wl-kic{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(227,6,19,.12);color:#E30613;}
+.wl-kic .gly{width:21px;height:21px;stroke:#E30613;}
+:root:not([data-theme="light"]) .wl-kic{background:rgba(255,90,78,.16);}
+.wl-need .wl-kic{width:32px;height:32px;border-radius:9px;}
+.wl-need .wl-kic .gly{width:18px;height:18px;}
+.wl-hero.wl-dh{position:relative;overflow:hidden;aspect-ratio:16/9;}
+.wl-dh .hpo-art{border-radius:0;}
+.wl-dh .hpo-fig{left:40%;}
+.wl-dh-tx{position:absolute;left:20px;bottom:18px;z-index:3;display:flex;flex-direction:column;color:#FFFFFF;}
+.wl-dh-tx .k{font-size:12px;font-weight:900;letter-spacing:.2em;opacity:.85;font-style:italic;}
+.wl-dh-tx .d{font-size:13px;font-weight:800;letter-spacing:.18em;margin-top:10px;}
+.wl-dh-tx b{font-size:84px;font-weight:900;line-height:.9;letter-spacing:-3px;}
+.wl-dh-tx em{display:flex;align-items:center;gap:6px;font-style:normal;font-size:13px;font-weight:700;margin-top:6px;opacity:.95;}
+.wl-dh-tx em .gly{width:16px;height:16px;stroke:#FFFFFF;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -11504,9 +11520,15 @@ function renderWL30(){
    the same picture: whole on the program's home, its top (the name and the
    two faces) as a banner on a day. The poster carries the name, so the home
    adds no title over it. */
-function wlHero(kicker,title,sub,meta,pill){
-  return pdxBar(kicker,pill)+
-    '<div class="wl-hero'+(kicker==='day'?' day':'')+'"><img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days at home"></div>'+
+function wlHero(kicker,title,sub,meta,pill,day){
+  /* a day (18 Oct): not the poster cut off at the shins on every day, but a
+     red banner of its own: the day's number big, the kind of day, and the
+     poster's athlete cut out on the right */
+  const top=day
+    ? '<div class="wl-hero day wl-dh">'+hpoArt(WL30,{ar:1.0})+
+      '<div class="wl-dh-tx"><span class="k">BURN30</span><span class="d">DAY</span><b>'+day.n+'</b><em>'+glyph(WL30_GLY[day.k]||'workout')+(WL30_KIND[day.k]||'')+'</em></div></div>'
+    : '<div class="wl-hero'+(kicker==='day'?' day':'')+'"><img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days at home"></div>';
+  return pdxBar(kicker,pill)+top+
     '<div class="wl-hero-tx">'+(title?'<div class="t">'+title+'</div>':'')+
     '<div class="s">'+sub+'</div>'+(meta?'<div class="m">'+meta+'</div>':'')+'</div>';
 }
@@ -11582,7 +11604,7 @@ function wlOpenDay(gi){
   curDay={p, day, gi};
   let h=wlHero('day',d.n,'Day '+(gi+1)+' of 30 · '+ph.n,
     wlMinutes(d)+' min · '+exs.length+' moves · '+d.r+(d.r===1?' round':' rounds'),
-    owned?{icon:'play',label:'Start',go:'playDay()'}:{icon:'lock',label:'RM'+WL30_PRICE,go:'wlBuy()'});
+    owned?{icon:'play',label:'Start',go:'playDay()'}:{icon:'lock',label:'RM'+WL30_PRICE,go:'wlBuy()'}, {n:gi+1, k:d.k});
   h+='<div class="pdx-btns">'+(owned
     ? '<button class="bigbtn" onclick="playDay()">'+glyph('play')+'Start Workout</button>'+
       '<button class="pdx-prev" onclick="completeDay()">'+glyph('check')+'Mark done without playing</button>'
@@ -11598,7 +11620,7 @@ function wlOpenDay(gi){
       '<span class="n">'+(i+1)+'</span>'+
       '<div class="tx"><div class="t">'+e.n+'</div><div class="m">'+(e.dur||45)+'s · '+e.m+' · '+e.eq+'</div></div>'+
       '<span class="pdx-play">'+glyph(owned?'play':'lock')+'</span></div>').join('')+'</div>';
-  h+='<div class="wl-need">'+ic('chair')+'<span>You need: '+wlNeeds(exs)+'</span></div>';
+  h+='<div class="wl-need"><span class="wl-kic">'+glyph('mat')+'</span><span>You need: '+wlNeeds(exs)+'</span></div>';
   $('dd-body').innerHTML=h;
   hidePanels(); $('daydetail').style.display='block'; $('screen').scrollTop=0;
 }
@@ -11666,7 +11688,13 @@ const WL30_MS={
   'Chickpeas + sweetcorn':'Kacang kuda + jagung manis','Cut papaya':'Betik potong','Vegetable curry (dhal + pumpkin)':'Kari sayur (dal + labu)',
   'Stir-fried long beans':'Kacang panjang tumis','Sambal':'Sambal','Orange':'Oren','Salad + tomato':'Salad + tomato','Salad + ulam':'Salad + ulam',
   'Cucumber + tomato':'Timun + tomato',
+  /* snacks (the Eat plans) */
+  'Cut fruit (papaya / watermelon)':'Buah potong (betik / tembikai)','Papaya / watermelon':'Betik / tembikai','Edamame / boiled beans':'Edamame / kacang rebus',
+  'High-protein milk':'Susu tinggi protein','High-protein milk / shake':'Susu tinggi protein / shake','Small chicken sandwich':'Sandwic ayam kecil',
+  'Almonds / groundnuts':'Badam / kacang tanah','Boiled eggs':'Telur rebus','Peanut butter':'Mentega kacang','Greek yoghurt + honey':'Yogurt Greek + madu',
+  'Tofu':'Tauhu','Low-sodium soy sauce':'Kicap rendah natrium',
   /* parts */
+  'nuts':'kacang','peanut butter':'mentega kacang','soy sauce':'kicap','honey':'madu',
   'a little rice':'sedikit nasi','fruit':'buah','milk':'susu','potato':'kentang','salad':'salad','tuna':'tuna','greens':'sayur hijau','beans':'kacang'};
 function wlMs1(s){ if(WL30_MS.hasOwnProperty(s)) return WL30_MS[s]; const t=(typeof i18n==='function')?i18n(s):null; return t; }
 function wlMs(s){
@@ -11678,7 +11706,7 @@ function wlMs(s){
 }
 /* portions in Malay: the measures; the numbers and grams as they are */
 const WL30_UNITS=[[/\bsmall bowl\b/g,'mangkuk kecil'],[/\blarge bowl\b/g,'mangkuk besar'],[/\bbowl\b/g,'mangkuk'],[/\blarge palm\b/g,'tapak tangan besar'],
-  [/\bpalm\b/g,'tapak tangan'],[/\bsmall pancakes\b/g,'pancake kecil'],[/\bfist\b/g,'kepal'],[/\bhandfuls?\b/g,'genggam'],[/\bcooked\b/g,'masak'],
+  [/\bpalm\b/g,'tapak tangan'],[/\bsmall pancakes\b/g,'pancake kecil'],[/\bfists?\b/g,'kepal'],[/\bsmall slices\b/g,'keping kecil'],[/\bthumbs?\b/g,'ibu jari'],[/\bhandfuls?\b/g,'genggam'],[/\bcooked\b/g,'masak'],
   [/\btbsp\b/g,'sudu besar'],[/\btsp\b/g,'sudu kecil'],[/\bglass\b/g,'gelas'],[/\bcup\b/g,'cawan'],[/\bcan\b/g,'tin'],[/\bladle\b/g,'senduk'],
   [/\bstick\b/g,'batang'],[/\bwhole\b/g,'biji'],[/\bpieces?\b/g,'ketul'],[/\bblocks?\b/g,'keping'],[/\bslices?\b/g,'keping'],
   [/(\d) medium\b/g,'$1 biji sederhana'],[/\bmedium\b/g,'sederhana'],[/\ba little\b/g,'sedikit']];
@@ -11824,8 +11852,9 @@ function wlGuide(){
     ['chart','Day 30: test again','Same five moves. Then compare in Progress.']]
     .map((s,i)=>'<div class="wl-step"><span class="n">'+(i+1)+'</span><div><div class="t">'+s[1]+'</div><div class="m">'+s[2]+'</div></div></div>').join('')+'</div>';
   h+=fsec('What You Need','Nothing you have to buy.');
-  h+='<div class="wl-kit">'+[['person','A mat or a towel'],['chair','A sturdy chair'],['water','Two water bottles'],['clock','20 minutes a day']]
-    .map(k=>'<div>'+ic(k[0])+'<span>'+k[1]+'</span></div>').join('')+'</div>';
+  /* one look for all four, each glyph what it says (18 Oct: a person for a mat, tiles in three colours) */
+  h+='<div class="wl-kit">'+[['mat','A mat or a towel'],['chair','A sturdy chair'],['bottle','Two water bottles'],['clock','20 minutes a day']]
+    .map(k=>'<div><span class="wl-kic">'+glyph(k[0])+'</span><span>'+k[1]+'</span></div>').join('')+'</div>';
   h+=fsec('The Five Phases','');
   h+='<div class="wl-phases">'+WL30_PHASES.map((p,i)=>'<div><b>'+p.n+'</b><span>Days '+p.from+'–'+p.to+'</span><small>'+p.s+'</small></div>').join('')+'</div>';
   h+=fsec('The Rules','');
@@ -12345,7 +12374,7 @@ function lbOpenDay(gi){
       return '<div class="pdx-ex" onclick="'+(owned?'lbPlayOne(\''+e.n.replace(/'/g,"\\'")+'\')':'lbBuy()')+'">'+
       '<span class="n">'+(i+1)+'</span><div class="tx"><div class="t">'+e.n+'</div><div class="m">'+e.dur+'s · tanpa lompat</div></div>'+
       '<span class="pdx-play">'+glyph(owned?'play':'lock')+'</span></div>'; }).join('')+'</div>';
-  h+='<div class="wl-need">'+ic('person')+'<span>Anda perlukan: tikar atau tuala'+(d.ex.join(' ').indexOf('Wall')>=0?', dinding':'')+'</span></div>';
+  h+='<div class="wl-need"><span class="wl-kic">'+glyph('mat')+'</span><span>Anda perlukan: tikar atau tuala'+(d.ex.join(' ').indexOf('Wall')>=0?', dinding':'')+'</span></div>';
   $('dd-body').innerHTML=h;
   hidePanels(); $('daydetail').style.display='block'; $('screen').scrollTop=0;
   lbLang(true);
@@ -12557,8 +12586,8 @@ function lbGuide(){
     ['Hari 15 & 30: check-in semula','Berat, pinggang, pinggul dan gambar. Hari 30, ulang fit test.']]
     .map(function(s,i){ return '<div class="wl-step"><span class="n">'+(i+1)+'</span><div><div class="t">'+s[0]+'</div><div class="m">'+s[1]+'</div></div></div>'; }).join('')+'</div>';
   h+=fsec('Apa Yang Anda Perlukan','Tiada apa yang perlu dibeli.');
-  h+='<div class="wl-kit">'+[['person','Tikar atau tuala'],['home','Sedikit ruang & dinding'],['water','Botol air minum'],['clock','20 minit sehari']]
-    .map(function(k){ return '<div>'+ic(k[0])+'<span>'+k[1]+'</span></div>'; }).join('')+'</div>';
+  h+='<div class="wl-kit">'+[['mat','Tikar atau tuala'],['home','Sedikit ruang & dinding'],['bottle','Botol air minum'],['clock','20 minit sehari']]
+    .map(function(k){ return '<div><span class="wl-kic">'+glyph(k[0])+'</span><span>'+k[1]+'</span></div>'; }).join('')+'</div>';
   h+=fsec('Empat Minggu','');
   h+='<div class="wl-phases">'+LB30_WEEKS.map(function(p,i){ return '<div><b>Minggu '+(i+1)+': '+p.n+'</b><span>Hari '+p.from+'–'+p.to+'</span><small>'+p.s+'</small></div>'; }).join('')+'</div>';
   h+=fsec('Peraturan','');
@@ -18015,6 +18044,8 @@ function mpOptions(key,prefs,styles,day,slot){
   pool.sort((a,b)=>score(b)-score(a));
   return mpShuffle(pool, day*37+slot*13).slice(0,3);
 }
+function mpMs(s){ return typeof wlMs==='function'?wlMs(s):s; }
+function mpPor(s){ return typeof wlPortion==='function'?wlPortion(s):s; }
 function kcalOf(o){ return o.items.reduce((s,i)=>s+i.kcal,0); }
 /* Word-boundary match, not substring. "goreng" contains "oren", so plain
    indexOf tagged every fried dish as fruit — tempe goreng came out as BUAH. */
@@ -18326,9 +18357,10 @@ function renderPlanView(){
       s.options.forEach((o,oi)=>{
         const tot=kcalOf(o), g=groupsOf(o.items), gap=s.target-tot;
         h+='<div class="mpopt" style="display:'+(oi===0?'block':'none')+';">'+
-          '<div class="mpopt-h"><div class="t">'+o.name+'</div><div class="k">'+tot+' kcal</div></div>'+
-          o.items.map(it=>'<div class="mpitem"><div><div class="t">'+it.food+'</div>'+
-            '<div class="m">'+it.portion+'</div></div><div class="k">'+it.kcal+'</div></div>').join('')+
+          /* the food in Malay, as in BURN30 (18 Oct); the screen around it stays English */
+          '<div class="mpopt-h"><div class="t">'+mpMs(o.name)+'</div><div class="k">'+tot+' kcal</div></div>'+
+          o.items.map(it=>'<div class="mpitem"><div><div class="t">'+mpMs(it.food)+'</div>'+
+            '<div class="m">'+mpPor(it.portion)+'</div></div><div class="k">'+it.kcal+'</div></div>').join('')+
           '<div class="mpbals" style="margin-top:10px;">'+
             (g.protein?'<span class="npill p">Protein</span>':'')+
             (g.karbo?'<span class="npill c">Carbs</span>':'')+
@@ -18337,7 +18369,7 @@ function renderPlanView(){
           '</div>'+
           (o.scale>1?nCall('info','','Portion scaled ×'+o.scale.toFixed(1)+' to reach the '+s.target+' kcal this meal needs.'):'')+
           (gap>80&&gapItems(gap,d.bal).length?nCall('warn','Still '+gap+' kcal short',
-            gapItems(gap,d.bal).map(x=>'+'+x.kcal+' kcal · '+x.food).join('<br>')):'')+
+            gapItems(gap,d.bal).map(x=>'+'+x.kcal+' kcal · '+mpMs(x.food)).join('<br>')):'')+
           '</div>';
       });
       h+='</div>';
@@ -19310,7 +19342,9 @@ var ICON_PATH={
   spark:   '<path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/>',
   heart:   '<path d="M12 20s-7.5-4.5-7.5-10A4.3 4.3 0 0 1 12 7.6 4.3 4.3 0 0 1 19.5 10c0 5.5-7.5 10-7.5 10z"/>',
   home:    '<path d="M4 11l8-6.5 8 6.5M6.5 9.5V20h11V9.5"/>',
-  chair:   '<path d="M7 4v9h10V4M6 13h12M7 13v7M17 13v7M7 17h10"/>',
+  chair:   '<path d="M8 3v18M8 13h9v8M8 13h9"/>',   /* side on: the back, the seat, the legs (18 Oct; face on it read as H) */
+  mat:     '<circle cx="17" cy="13.5" r="4"/><circle cx="17" cy="13.5" r="1.4"/><path d="M17 17.5H3.5v-3"/>',   /* a rolled exercise mat */
+  bottle:  '<path d="M10 2.8h4v3l1.6 2.2v12a1.3 1.3 0 0 1-1.3 1.3H9.7a1.3 1.3 0 0 1-1.3-1.3V8L10 5.8z"/><path d="M8.4 12h7.2"/>',
   laptop:  '<path d="M5 6h14v9H5zM3 18.5h18"/>',
   rocket:  '<path d="M12 3c3 2 4.5 5.5 4.5 9l-2 3h-5l-2-3c0-3.5 1.5-7 4.5-9zM9.5 15l-2 4 3-1M14.5 15l2 4-3-1"/><circle cx="12" cy="9" r="1.5"/>',
   sun:     '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"/>',

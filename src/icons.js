@@ -57,7 +57,9 @@ var ICON_PATH={
   spark:   '<path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/>',
   heart:   '<path d="M12 20s-7.5-4.5-7.5-10A4.3 4.3 0 0 1 12 7.6 4.3 4.3 0 0 1 19.5 10c0 5.5-7.5 10-7.5 10z"/>',
   home:    '<path d="M4 11l8-6.5 8 6.5M6.5 9.5V20h11V9.5"/>',
-  chair:   '<path d="M7 4v9h10V4M6 13h12M7 13v7M17 13v7M7 17h10"/>',
+  chair:   '<path d="M8 3v18M8 13h9v8M8 13h9"/>',   /* side on: the back, the seat, the legs (18 Oct; face on it read as H) */
+  mat:     '<circle cx="17" cy="13.5" r="4"/><circle cx="17" cy="13.5" r="1.4"/><path d="M17 17.5H3.5v-3"/>',   /* a rolled exercise mat */
+  bottle:  '<path d="M10 2.8h4v3l1.6 2.2v12a1.3 1.3 0 0 1-1.3 1.3H9.7a1.3 1.3 0 0 1-1.3-1.3V8L10 5.8z"/><path d="M8.4 12h7.2"/>',
   laptop:  '<path d="M5 6h14v9H5zM3 18.5h18"/>',
   rocket:  '<path d="M12 3c3 2 4.5 5.5 4.5 9l-2 3h-5l-2-3c0-3.5 1.5-7 4.5-9zM9.5 15l-2 4 3-1M14.5 15l2 4-3-1"/><circle cx="12" cy="9" r="1.5"/>',
   sun:     '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"/>',

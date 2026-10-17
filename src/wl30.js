@@ -176,9 +176,15 @@ function renderWL30(){
    the same picture: whole on the program's home, its top (the name and the
    two faces) as a banner on a day. The poster carries the name, so the home
    adds no title over it. */
-function wlHero(kicker,title,sub,meta,pill){
-  return pdxBar(kicker,pill)+
-    '<div class="wl-hero'+(kicker==='day'?' day':'')+'"><img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days at home"></div>'+
+function wlHero(kicker,title,sub,meta,pill,day){
+  /* a day (18 Oct): not the poster cut off at the shins on every day, but a
+     red banner of its own: the day's number big, the kind of day, and the
+     poster's athlete cut out on the right */
+  const top=day
+    ? '<div class="wl-hero day wl-dh">'+hpoArt(WL30,{ar:1.0})+
+      '<div class="wl-dh-tx"><span class="k">BURN30</span><span class="d">DAY</span><b>'+day.n+'</b><em>'+glyph(WL30_GLY[day.k]||'workout')+(WL30_KIND[day.k]||'')+'</em></div></div>'
+    : '<div class="wl-hero'+(kicker==='day'?' day':'')+'"><img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days at home"></div>';
+  return pdxBar(kicker,pill)+top+
     '<div class="wl-hero-tx">'+(title?'<div class="t">'+title+'</div>':'')+
     '<div class="s">'+sub+'</div>'+(meta?'<div class="m">'+meta+'</div>':'')+'</div>';
 }
@@ -254,7 +260,7 @@ function wlOpenDay(gi){
   curDay={p, day, gi};
   let h=wlHero('day',d.n,'Day '+(gi+1)+' of 30 · '+ph.n,
     wlMinutes(d)+' min · '+exs.length+' moves · '+d.r+(d.r===1?' round':' rounds'),
-    owned?{icon:'play',label:'Start',go:'playDay()'}:{icon:'lock',label:'RM'+WL30_PRICE,go:'wlBuy()'});
+    owned?{icon:'play',label:'Start',go:'playDay()'}:{icon:'lock',label:'RM'+WL30_PRICE,go:'wlBuy()'}, {n:gi+1, k:d.k});
   h+='<div class="pdx-btns">'+(owned
     ? '<button class="bigbtn" onclick="playDay()">'+glyph('play')+'Start Workout</button>'+
       '<button class="pdx-prev" onclick="completeDay()">'+glyph('check')+'Mark done without playing</button>'
@@ -270,7 +276,7 @@ function wlOpenDay(gi){
       '<span class="n">'+(i+1)+'</span>'+
       '<div class="tx"><div class="t">'+e.n+'</div><div class="m">'+(e.dur||45)+'s · '+e.m+' · '+e.eq+'</div></div>'+
       '<span class="pdx-play">'+glyph(owned?'play':'lock')+'</span></div>').join('')+'</div>';
-  h+='<div class="wl-need">'+ic('chair')+'<span>You need: '+wlNeeds(exs)+'</span></div>';
+  h+='<div class="wl-need"><span class="wl-kic">'+glyph('mat')+'</span><span>You need: '+wlNeeds(exs)+'</span></div>';
   $('dd-body').innerHTML=h;
   hidePanels(); $('daydetail').style.display='block'; $('screen').scrollTop=0;
 }
@@ -338,7 +344,13 @@ const WL30_MS={
   'Chickpeas + sweetcorn':'Kacang kuda + jagung manis','Cut papaya':'Betik potong','Vegetable curry (dhal + pumpkin)':'Kari sayur (dal + labu)',
   'Stir-fried long beans':'Kacang panjang tumis','Sambal':'Sambal','Orange':'Oren','Salad + tomato':'Salad + tomato','Salad + ulam':'Salad + ulam',
   'Cucumber + tomato':'Timun + tomato',
+  /* snacks (the Eat plans) */
+  'Cut fruit (papaya / watermelon)':'Buah potong (betik / tembikai)','Papaya / watermelon':'Betik / tembikai','Edamame / boiled beans':'Edamame / kacang rebus',
+  'High-protein milk':'Susu tinggi protein','High-protein milk / shake':'Susu tinggi protein / shake','Small chicken sandwich':'Sandwic ayam kecil',
+  'Almonds / groundnuts':'Badam / kacang tanah','Boiled eggs':'Telur rebus','Peanut butter':'Mentega kacang','Greek yoghurt + honey':'Yogurt Greek + madu',
+  'Tofu':'Tauhu','Low-sodium soy sauce':'Kicap rendah natrium',
   /* parts */
+  'nuts':'kacang','peanut butter':'mentega kacang','soy sauce':'kicap','honey':'madu',
   'a little rice':'sedikit nasi','fruit':'buah','milk':'susu','potato':'kentang','salad':'salad','tuna':'tuna','greens':'sayur hijau','beans':'kacang'};
 function wlMs1(s){ if(WL30_MS.hasOwnProperty(s)) return WL30_MS[s]; const t=(typeof i18n==='function')?i18n(s):null; return t; }
 function wlMs(s){
@@ -350,7 +362,7 @@ function wlMs(s){
 }
 /* portions in Malay: the measures; the numbers and grams as they are */
 const WL30_UNITS=[[/\bsmall bowl\b/g,'mangkuk kecil'],[/\blarge bowl\b/g,'mangkuk besar'],[/\bbowl\b/g,'mangkuk'],[/\blarge palm\b/g,'tapak tangan besar'],
-  [/\bpalm\b/g,'tapak tangan'],[/\bsmall pancakes\b/g,'pancake kecil'],[/\bfist\b/g,'kepal'],[/\bhandfuls?\b/g,'genggam'],[/\bcooked\b/g,'masak'],
+  [/\bpalm\b/g,'tapak tangan'],[/\bsmall pancakes\b/g,'pancake kecil'],[/\bfists?\b/g,'kepal'],[/\bsmall slices\b/g,'keping kecil'],[/\bthumbs?\b/g,'ibu jari'],[/\bhandfuls?\b/g,'genggam'],[/\bcooked\b/g,'masak'],
   [/\btbsp\b/g,'sudu besar'],[/\btsp\b/g,'sudu kecil'],[/\bglass\b/g,'gelas'],[/\bcup\b/g,'cawan'],[/\bcan\b/g,'tin'],[/\bladle\b/g,'senduk'],
   [/\bstick\b/g,'batang'],[/\bwhole\b/g,'biji'],[/\bpieces?\b/g,'ketul'],[/\bblocks?\b/g,'keping'],[/\bslices?\b/g,'keping'],
   [/(\d) medium\b/g,'$1 biji sederhana'],[/\bmedium\b/g,'sederhana'],[/\ba little\b/g,'sedikit']];
@@ -496,8 +508,9 @@ function wlGuide(){
     ['chart','Day 30: test again','Same five moves. Then compare in Progress.']]
     .map((s,i)=>'<div class="wl-step"><span class="n">'+(i+1)+'</span><div><div class="t">'+s[1]+'</div><div class="m">'+s[2]+'</div></div></div>').join('')+'</div>';
   h+=fsec('What You Need','Nothing you have to buy.');
-  h+='<div class="wl-kit">'+[['person','A mat or a towel'],['chair','A sturdy chair'],['water','Two water bottles'],['clock','20 minutes a day']]
-    .map(k=>'<div>'+ic(k[0])+'<span>'+k[1]+'</span></div>').join('')+'</div>';
+  /* one look for all four, each glyph what it says (18 Oct: a person for a mat, tiles in three colours) */
+  h+='<div class="wl-kit">'+[['mat','A mat or a towel'],['chair','A sturdy chair'],['bottle','Two water bottles'],['clock','20 minutes a day']]
+    .map(k=>'<div><span class="wl-kic">'+glyph(k[0])+'</span><span>'+k[1]+'</span></div>').join('')+'</div>';
   h+=fsec('The Five Phases','');
   h+='<div class="wl-phases">'+WL30_PHASES.map((p,i)=>'<div><b>'+p.n+'</b><span>Days '+p.from+'–'+p.to+'</span><small>'+p.s+'</small></div>').join('')+'</div>';
   h+=fsec('The Rules','');

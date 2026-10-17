@@ -4837,3 +4837,19 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .pdx-hero.pdx-hpo:has(.hpo-hero.land){height:360px;}
 .pdx-hero .hpo-hero.land .hpo-fig{top:22%;bottom:12%;}
 .wl-today-im{position:relative;overflow:hidden;background:none;}   /* holds the poster art (18 Oct) */
+
+/* ── BURN30 day banner and the kit tiles (18 Oct) ── */
+.wl-kic{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(227,6,19,.12);color:#E30613;}
+.wl-kic .gly{width:21px;height:21px;stroke:#E30613;}
+:root:not([data-theme="light"]) .wl-kic{background:rgba(255,90,78,.16);}
+.wl-need .wl-kic{width:32px;height:32px;border-radius:9px;}
+.wl-need .wl-kic .gly{width:18px;height:18px;}
+.wl-hero.wl-dh{position:relative;overflow:hidden;aspect-ratio:16/9;}
+.wl-dh .hpo-art{border-radius:0;}
+.wl-dh .hpo-fig{left:40%;}
+.wl-dh-tx{position:absolute;left:20px;bottom:18px;z-index:3;display:flex;flex-direction:column;color:#FFFFFF;}
+.wl-dh-tx .k{font-size:12px;font-weight:900;letter-spacing:.2em;opacity:.85;font-style:italic;}
+.wl-dh-tx .d{font-size:13px;font-weight:800;letter-spacing:.18em;margin-top:10px;}
+.wl-dh-tx b{font-size:84px;font-weight:900;line-height:.9;letter-spacing:-3px;}
+.wl-dh-tx em{display:flex;align-items:center;gap:6px;font-style:normal;font-size:13px;font-weight:700;margin-top:6px;opacity:.95;}
+.wl-dh-tx em .gly{width:16px;height:16px;stroke:#FFFFFF;}

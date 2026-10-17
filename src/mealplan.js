@@ -95,6 +95,8 @@ function mpOptions(key,prefs,styles,day,slot){
   pool.sort((a,b)=>score(b)-score(a));
   return mpShuffle(pool, day*37+slot*13).slice(0,3);
 }
+function mpMs(s){ return typeof wlMs==='function'?wlMs(s):s; }
+function mpPor(s){ return typeof wlPortion==='function'?wlPortion(s):s; }
 function kcalOf(o){ return o.items.reduce((s,i)=>s+i.kcal,0); }
 /* Word-boundary match, not substring. "goreng" contains "oren", so plain
    indexOf tagged every fried dish as fruit — tempe goreng came out as BUAH. */
@@ -406,9 +408,10 @@ function renderPlanView(){
       s.options.forEach((o,oi)=>{
         const tot=kcalOf(o), g=groupsOf(o.items), gap=s.target-tot;
         h+='<div class="mpopt" style="display:'+(oi===0?'block':'none')+';">'+
-          '<div class="mpopt-h"><div class="t">'+o.name+'</div><div class="k">'+tot+' kcal</div></div>'+
-          o.items.map(it=>'<div class="mpitem"><div><div class="t">'+it.food+'</div>'+
-            '<div class="m">'+it.portion+'</div></div><div class="k">'+it.kcal+'</div></div>').join('')+
+          /* the food in Malay, as in BURN30 (18 Oct); the screen around it stays English */
+          '<div class="mpopt-h"><div class="t">'+mpMs(o.name)+'</div><div class="k">'+tot+' kcal</div></div>'+
+          o.items.map(it=>'<div class="mpitem"><div><div class="t">'+mpMs(it.food)+'</div>'+
+            '<div class="m">'+mpPor(it.portion)+'</div></div><div class="k">'+it.kcal+'</div></div>').join('')+
           '<div class="mpbals" style="margin-top:10px;">'+
             (g.protein?'<span class="npill p">Protein</span>':'')+
             (g.karbo?'<span class="npill c">Carbs</span>':'')+
@@ -417,7 +420,7 @@ function renderPlanView(){
           '</div>'+
           (o.scale>1?nCall('info','','Portion scaled ×'+o.scale.toFixed(1)+' to reach the '+s.target+' kcal this meal needs.'):'')+
           (gap>80&&gapItems(gap,d.bal).length?nCall('warn','Still '+gap+' kcal short',
-            gapItems(gap,d.bal).map(x=>'+'+x.kcal+' kcal · '+x.food).join('<br>')):'')+
+            gapItems(gap,d.bal).map(x=>'+'+x.kcal+' kcal · '+mpMs(x.food)).join('<br>')):'')+
           '</div>';
       });
       h+='</div>';

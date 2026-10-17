@@ -432,7 +432,7 @@ function lbOpenDay(gi){
       return '<div class="pdx-ex" onclick="'+(owned?'lbPlayOne(\''+e.n.replace(/'/g,"\\'")+'\')':'lbBuy()')+'">'+
       '<span class="n">'+(i+1)+'</span><div class="tx"><div class="t">'+e.n+'</div><div class="m">'+e.dur+'s · tanpa lompat</div></div>'+
       '<span class="pdx-play">'+glyph(owned?'play':'lock')+'</span></div>'; }).join('')+'</div>';
-  h+='<div class="wl-need">'+ic('person')+'<span>Anda perlukan: tikar atau tuala'+(d.ex.join(' ').indexOf('Wall')>=0?', dinding':'')+'</span></div>';
+  h+='<div class="wl-need"><span class="wl-kic">'+glyph('mat')+'</span><span>Anda perlukan: tikar atau tuala'+(d.ex.join(' ').indexOf('Wall')>=0?', dinding':'')+'</span></div>';
   $('dd-body').innerHTML=h;
   hidePanels(); $('daydetail').style.display='block'; $('screen').scrollTop=0;
   lbLang(true);
@@ -644,8 +644,8 @@ function lbGuide(){
     ['Hari 15 & 30: check-in semula','Berat, pinggang, pinggul dan gambar. Hari 30, ulang fit test.']]
     .map(function(s,i){ return '<div class="wl-step"><span class="n">'+(i+1)+'</span><div><div class="t">'+s[0]+'</div><div class="m">'+s[1]+'</div></div></div>'; }).join('')+'</div>';
   h+=fsec('Apa Yang Anda Perlukan','Tiada apa yang perlu dibeli.');
-  h+='<div class="wl-kit">'+[['person','Tikar atau tuala'],['home','Sedikit ruang & dinding'],['water','Botol air minum'],['clock','20 minit sehari']]
-    .map(function(k){ return '<div>'+ic(k[0])+'<span>'+k[1]+'</span></div>'; }).join('')+'</div>';
+  h+='<div class="wl-kit">'+[['mat','Tikar atau tuala'],['home','Sedikit ruang & dinding'],['bottle','Botol air minum'],['clock','20 minit sehari']]
+    .map(function(k){ return '<div><span class="wl-kic">'+glyph(k[0])+'</span><span>'+k[1]+'</span></div>'; }).join('')+'</div>';
   h+=fsec('Empat Minggu','');
   h+='<div class="wl-phases">'+LB30_WEEKS.map(function(p,i){ return '<div><b>Minggu '+(i+1)+': '+p.n+'</b><span>Hari '+p.from+'–'+p.to+'</span><small>'+p.s+'</small></div>'; }).join('')+'</div>';
   h+=fsec('Peraturan','');

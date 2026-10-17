@@ -4149,6 +4149,8 @@ print("\n── BURN30: PICTURES AND FOOD IN MALAY ──");
 (function(){
   ok("the food in Malay: a dish, a food, a portion", wlMs('Banana oat pancakes')==='Pancake oat pisang' && wlMs('Fried egg')==='Telur goreng' && wlPortion('2 small bowl / 75g')==='2 mangkuk kecil / 75g');
   ok("...a dish with a fruit after it", wlMs('Nasi lemak, portion controlled + Cut watermelon')==='Nasi lemak, porsi terkawal + Tembikai potong');
+  ok("the Eat plans too: snacks and their measures", wlMs('Banana + nuts')==='Pisang + kacang' && wlPortion('15g / 1 thumb')==='15g / 1 ibu jari' && mpMs('Small chicken sandwich')==='Sandwic ayam kecil');
+  ok("...the Eat meal plan uses them", String(renderPlanView).indexOf('mpMs(it.food)')>0 && String(renderPlanView).indexOf('mpPor(it.portion)')>0);
   ok("...a medium fruit", wlPortion('1 medium')==='1 biji sederhana' && wlPortion('1.5 tbsp')==='1.5 sudu besar');
   ok("the days are numbered red tiles, not other people's photos", String(wlPlan).indexOf('pdx-dt')>0 && String(wlPlan).indexOf('wlPic(d)')<0);
   ok("one progress line, in days done", String(renderWL30).indexOf(' days done')>0 && String(renderWL30).indexOf("% complete'")<0);
