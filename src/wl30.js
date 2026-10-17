@@ -391,7 +391,8 @@ function wlFood(){
   const n=plan.nut, tot=plan.days.length;
   if(wlMenuDay<0) wlMenuDay=Math.min(wlNext(),tot-1);
   const day=plan.days[wlMenuDay];
-  let h='<div class="nstage wl-stage"><div class="nstage-k">Your daily target</div>'+
+  /* BURN30 red, like its cover and its day tiles (18 Oct: the black card read as another app) */
+  let h='<div class="nstage wl-stage"><span class="wl-st-gly">'+glyph('flame')+'</span><div class="nstage-k">Your daily target</div>'+
     '<div class="nstage-n">'+n.cal.toLocaleString()+'<span> kcal</span></div>'+
     '<div class="nstage-s">About 0.5 kg a week · high protein</div>'+
     '<div class="nstage-g">'+[[n.prot+'g','Protein'],[n.carb+'g','Carbs'],[n.fat+'g','Fat'],['8','Glasses']]
