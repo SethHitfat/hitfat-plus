@@ -547,7 +547,7 @@ function lbFood(){
   }
   var tot=LB30_DAYS.length;
   if(lbMenuDay<0) lbMenuDay=Math.min(lbNext(),tot-1);
-  h+='<div class="nstage wl-stage"><div class="nstage-k">Sasaran harian anda</div>'+
+  h+='<div class="nstage wl-stage lb-stage"><span class="wl-st-gly">'+glyph('flame')+'</span><div class="nstage-k">Sasaran harian anda</div>'+
     '<div class="nstage-n">'+t.cal.toLocaleString()+'<span> kcal</span></div>'+
     '<div class="nstage-s">Lebih kurang 0.5 kg seminggu · tidak pernah bawah 1,200 kcal</div>'+
     '<div class="nstage-g">'+[[t.prot+'g','Protein'],[t.carb+'g','Karbo'],[t.fat+'g','Lemak'],[lbWater(lbMenuDay).toFixed(1)+' L','Air']]

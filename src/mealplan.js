@@ -347,7 +347,8 @@ function renderPlanView(){
   let h='';
 
   /* ── the number that matters ── */
-  h+='<div class="nstage">'+
+  /* HITFAT red with a soft flame, as in BURN30 (18 Oct; it was a black card) */
+  h+='<div class="nstage wl-stage"><span class="wl-st-gly">'+glyph('flame')+'</span>'+
      '<div class="nstage-k">Your daily target</div>'+
      '<div class="nstage-n">'+n.cal.toLocaleString()+'<span> kcal</span></div>'+
      '<div class="nstage-s">'+goal+' · '+p.meta.days+(p.meta.days===1?' day':' days')+' of menus</div>'+

@@ -4891,3 +4891,6 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .wl-md.on,:root:not([data-theme="light"]) .wl-md.on{background:#E30613 !important;color:#FFFFFF !important;}
 .wl-md.on small{color:rgba(255,255,255,.85) !important;}
 .wl-meals .mpo.on{background:#E30613 !important;color:#FFFFFF !important;}
+/* Ladies Burn 30: the same card in its rose */
+.nstage.wl-stage.lb-stage{background:radial-gradient(circle at 85% 0%,rgba(255,255,255,.22),rgba(255,255,255,0) 50%),linear-gradient(155deg,#F0509E 0%,#C02A7C 55%,#6E0E4B 100%) !important;
+  box-shadow:0 12px 28px rgba(156,26,114,.28) !important;}
