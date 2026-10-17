@@ -6648,6 +6648,53 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-bslot.is-live .sc-poster{visibility:hidden;}
 .kl-hero2 .kl-bara img{width:100%;height:100%;filter:none;}
 
+/* Group like a Facebook group (17 Oct): share a win with a photo, comments
+   under every post, a ⋯ to report or delete */
+.kl-share-win{display:flex;align-items:center;gap:10px;width:100%;margin-bottom:10px;padding:12px 14px;border-radius:16px;border:0;background:var(--surface);color:var(--dim);font:inherit;font-size:14px;text-align:left;cursor:pointer;}
+:root[data-theme="light"] .kl-share-win{background:#FFFFFF;}
+.kl-share-win span:nth-child(2){flex:1;}
+.kl-share-win .gly{width:20px;height:20px;stroke:#E30613;}
+.kl-av{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(227,6,19,.12);color:#E30613;font-size:15px;font-weight:900;}
+.kl-av.sm{width:28px;height:28px;font-size:12px;}
+.kl-comp2{margin:0 0 10px;}
+.kl-comp2 .kl-crow .bigbtn.kl-go{margin-left:auto;}
+.kl-comp2 .kl-alt2{display:flex;align-items:center;gap:6px;padding:10px 12px;font-size:13px;}
+.kl-comp2 .kl-alt2 .gly{width:16px;height:16px;stroke:var(--txt);}
+.kl-cprev{position:relative;}
+.kl-cprev img{display:block;width:100%;max-height:300px;object-fit:cover;border-radius:12px;}
+.kl-cprev button{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#FFFFFF;cursor:pointer;}
+.kl-post{display:block;padding:14px;}
+.kl-prow{display:flex;gap:12px;}
+.kl-ph{display:flex;align-items:center;gap:10px;}
+.kl-ph>div:nth-child(2){flex:1;min-width:0;}
+.kl-ph b{display:block;font-size:15px;font-weight:800;color:var(--txt);}
+.kl-ph small{display:block;font-size:12px;color:var(--dim);}
+.kl-pcap{font-size:15px;line-height:1.45;color:var(--txt);margin-top:10px;white-space:pre-wrap;}
+.kl-pimg{display:block;width:calc(100% + 28px);margin:10px -14px 0;max-height:460px;object-fit:cover;background:rgba(127,127,127,.12);cursor:zoom-in;}
+.kl-pimg0{height:180px;display:grid;place-items:center;color:var(--dim);font-size:13px;}
+.kl-pindent{padding-left:50px;}
+.kl-pmenu{position:relative;flex:none;}
+.kl-dots{width:32px;height:32px;border-radius:50%;border:0;background:none;color:var(--dim);font-size:20px;line-height:1;cursor:pointer;}
+.kl-pmenu-l{position:absolute;right:0;top:34px;z-index:5;min-width:140px;padding:6px;border-radius:14px;background:var(--surface2,#2C2C2E);box-shadow:0 10px 30px rgba(0,0,0,.25);display:flex;flex-direction:column;}
+:root[data-theme="light"] .kl-pmenu-l{background:#FFFFFF;}
+.kl-pmenu-l button{padding:10px 12px;border:0;background:none;text-align:left;font:inherit;font-size:14px;font-weight:700;color:var(--txt);border-radius:10px;cursor:pointer;}
+.kl-pmenu-l button.danger{color:#E30613;}
+.kl-repn{font-size:12px;color:#E30613;font-weight:800;padding:6px 12px;}
+.kl-cbtn{margin-left:auto;}
+.kl-cmore{border:0;background:none;color:var(--dim);font:inherit;font-size:13px;font-weight:700;padding:8px 0 0;cursor:pointer;}
+.kl-cms{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.kl-cm{display:flex;gap:8px;align-items:flex-start;}
+.kl-cm.hid{opacity:.45;}
+.kl-cmb{flex:1;min-width:0;padding:8px 11px;border-radius:14px;background:rgba(127,127,127,.12);font-size:14px;line-height:1.4;color:var(--txt);word-wrap:break-word;}
+.kl-cmb b{font-weight:800;}
+.kl-cmb small{display:block;font-size:11.5px;color:var(--dim);margin-top:2px;}
+.kl-cmb small button{border:0;background:none;padding:0;font:inherit;font-size:11.5px;font-weight:700;color:var(--dim);cursor:pointer;}
+.kl-cin{display:flex;gap:8px;align-items:center;margin-top:10px;}
+.kl-cin .kl-in{flex:1;min-width:0;font-size:15px;font-weight:500;padding:10px 12px;letter-spacing:0;}
+#klzoom{position:fixed;inset:0;z-index:9700;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.92);}
+#klzoom.on{display:flex;}
+#klzoom img{max-width:100%;max-height:100%;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -21310,7 +21357,8 @@ function kelasGroupTab(){
   h+='<div class="kl-ghead"><div class="kl-kick">Group</div><b>'+hesc(kelasCat(C.cat))+'</b>'+(C.admin?'<span class="kl-admin">Admin</span>':'')+'</div>';
   h+=kelasBoardHTML(C);
   if(C.admin) h+=kelasCmComposer(C);
-  h+=fsec('Feed','Milestones from the kiosk and the bell.');
+  h+=fsec('Feed','Wins, photos and milestones from your class.');
+  h+=kelasCmComposerMember();
   const posts=C.posts||[];
   h+='<div class="kl-feed">'+(posts.length?posts.map(kelasPostHTML).join('')
     :'<div class="kl-none">Nothing here yet. Every first class, Class Club and 3-class week shows up here, and so does every bell rung.</div>')+'</div>';
@@ -21349,14 +21397,124 @@ function kelasBoardHTML(C){
   return h;
 }
 function kelasPostHTML(p){
-  const r=p.r||{}, my=p.my||[], C=Kelas.cm||{};
-  return '<div class="kl-post k-'+p.kind+(p.pinned?' pin':'')+(p.hidden?' hid':'')+'"><span class="kl-pic">'+glyph(KL_CM_ICON[p.kind]||'star')+'</span>'+
-    '<div class="kl-pb"><div class="kl-pt">'+hesc(p.title)+'</div>'+(p.body?'<div class="kl-pbody">'+hesc(p.body)+'</div>':'')+
-    '<div class="kl-pm">'+(p.pinned?'<span class="kl-pin">Pinned</span>':'')+(p.hidden?'<span class="kl-pin">Hidden</span>':'')+kelasAgo(p.at)+'</div>'+
-    '<div class="kl-reacts">'+KL_CM_EMO.map(e=>'<button class="'+(my.indexOf(e[0])>=0?'on':'')+'" onclick="kelasCmReact(\''+p.id+'\',\''+e[0]+'\')">'+e[1]+(r[e[0]]?' <b>'+r[e[0]]+'</b>':'')+'</button>').join('')+
-    (C.admin?'<span class="kl-adm"><button onclick="kelasCmAdmin(\''+(p.pinned?'unpin':'pin')+'\',\''+p.id+'\')">'+(p.pinned?'Unpin':'Pin')+'</button>'+
-      '<button onclick="kelasCmAdmin(\''+(p.hidden?'unhide':'hide')+'\',\''+p.id+'\')">'+(p.hidden?'Unhide':'Hide')+'</button></span>':'')+
-    '</div></div></div>';
+  const r=p.r||{}, my=p.my||[], C=Kelas.cm||{}, own=p.kind==='photo'||p.kind==='text';
+  let h='<div class="kl-post k-'+p.kind+(p.pinned?' pin':'')+(p.hidden?' hid':'')+(own?' own':'')+'" id="kp-'+p.id+'">';
+  if(own){
+    const nm=String(p.title||'Member');
+    h+='<div class="kl-ph"><span class="kl-av">'+hesc(nm.charAt(0).toUpperCase())+'</span><div><b>'+hesc(nm)+'</b><small>'+kelasAgo(p.at)+
+       (p.pinned?' · <span class="kl-pin">Pinned</span>':'')+(p.hidden?' · <span class="kl-pin">Hidden</span>':'')+'</small></div>'+kelasPostMenu(p)+'</div>';
+    if(p.body) h+='<div class="kl-pcap">'+hesc(p.body)+'</div>';
+    if(p.img) h+='<img class="kl-pimg" src="'+hesc(p.img)+'" alt="" loading="lazy" onclick="kelasCmZoom(this.src)">';
+    else if(p.data&&p.data.path) h+='<div class="kl-pimg kl-pimg0">Photo</div>';
+    h+='<div class="kl-pbody2">';
+  } else {
+    h+='<div class="kl-prow"><span class="kl-pic">'+glyph(KL_CM_ICON[p.kind]||'star')+'</span>'+
+      '<div class="kl-pb"><div class="kl-pt">'+hesc(p.title)+'</div>'+(p.body?'<div class="kl-pbody">'+hesc(p.body)+'</div>':'')+
+      '<div class="kl-pm">'+(p.pinned?'<span class="kl-pin">Pinned</span>':'')+(p.hidden?'<span class="kl-pin">Hidden</span>':'')+kelasAgo(p.at)+'</div></div>'+kelasPostMenu(p)+'</div>'+
+      '<div class="kl-pbody2 kl-pindent">';
+  }
+  h+='<div class="kl-reacts">'+KL_CM_EMO.map(e=>'<button class="'+(my.indexOf(e[0])>=0?'on':'')+'" onclick="kelasCmReact(\''+p.id+'\',\''+e[0]+'\')">'+e[1]+(r[e[0]]?' <b>'+r[e[0]]+'</b>':'')+'</button>').join('')+
+     '<button class="kl-cbtn" onclick="kelasCmOpen(\''+p.id+'\')">💬'+(p.nc?' <b>'+p.nc+'</b>':' Comment')+'</button></div>';
+  h+=kelasCommentsHTML(p)+'</div></div>';
+  return h;
+}
+/* ⋯ on a post: report someone else's, delete your own; the admin pins, hides, deletes */
+function kelasPostMenu(p){
+  const C=Kelas.cm||{}, open=Kelas.cmMenu===p.id, own=p.kind==='photo'||p.kind==='text';
+  let items='';
+  if(open){
+    if(C.admin) items+='<button onclick="kelasCmAdmin(\''+(p.pinned?'unpin':'pin')+'\',\''+p.id+'\')">'+(p.pinned?'Unpin':'Pin')+'</button>'+
+      '<button onclick="kelasCmAdmin(\''+(p.hidden?'unhide':'hide')+'\',\''+p.id+'\')">'+(p.hidden?'Unhide':'Hide')+'</button>';
+    if(p.mine && own || C.admin) items+='<button class="danger" onclick="kelasCmDelete(\''+p.id+'\',null)">Delete</button>';
+    if(!p.mine) items+='<button onclick="kelasCmReport(\''+p.id+'\',null)">Report</button>';
+    if(C.admin && p.rep) items+='<span class="kl-repn">'+p.rep+' report'+(p.rep===1?'':'s')+'</span>';
+  }
+  return '<div class="kl-pmenu"><button class="kl-dots" aria-label="More" onclick="Kelas.cmMenu=Kelas.cmMenu===\''+p.id+'\'?null:\''+p.id+'\';renderKelas()">⋯</button>'+
+    (open?'<div class="kl-pmenu-l">'+items+'</div>':'')+'</div>';
+}
+/* the comments: the last two in the feed, all of them once opened */
+function kelasCommentsHTML(p){
+  const all=(Kelas.cmC||{})[p.id], list=all||p.cm||[], open=Kelas.cmOpenId===p.id;
+  let h='';
+  if(p.nc>list.length && !all) h+='<button class="kl-cmore" onclick="kelasCmOpen(\''+p.id+'\')">View all '+p.nc+' comments</button>';
+  if(list.length) h+='<div class="kl-cms">'+list.map(c=>'<div class="kl-cm'+(c.hidden?' hid':'')+'"><span class="kl-av sm">'+hesc(String(c.name||'M').charAt(0))+'</span>'+
+    '<div class="kl-cmb"><b>'+hesc(c.name||'Member')+'</b> '+hesc(c.body)+'<small>'+kelasAgo(c.at)+
+    (c.mine||(Kelas.cm&&Kelas.cm.admin)?' · <button onclick="kelasCmDelete(\''+p.id+'\',\''+c.id+'\')">Delete</button>':' · <button onclick="kelasCmReport(\''+p.id+'\',\''+c.id+'\')">Report</button>')+'</small></div></div>').join('')+'</div>';
+  if(open) h+='<div class="kl-cin"><input id="kl-cin-'+p.id+'" class="kl-in" maxlength="500" placeholder="Write a comment…" onkeydown="if(event.key===\'Enter\')kelasCmSend(\''+p.id+'\')">'+
+    '<button class="f30-go" onclick="kelasCmSend(\''+p.id+'\')">Send</button></div>';
+  return h;
+}
+async function kelasCmOpen(id){
+  Kelas.cmOpenId=id; renderKelas();
+  setTimeout(()=>{ const f=$('kl-cin-'+id); if(f) f.focus(); },50);
+  try{ const r=await kelasCall('cm_comments',{post:id}); if(r&&r.ok){ Kelas.cmC=Kelas.cmC||{}; Kelas.cmC[id]=r.comments||[]; renderKelas(); const f=$('kl-cin-'+id); if(f) f.focus(); } }catch(e){}
+}
+async function kelasCmSend(id){
+  const f=$('kl-cin-'+id), t=(f&&f.value||'').trim(); if(!t) return;
+  f.value='';
+  const p=((Kelas.cm&&Kelas.cm.posts)||[]).filter(x=>x.id===id)[0];
+  Kelas.cmC=Kelas.cmC||{}; const list=Kelas.cmC[id]||(p&&p.cm)||[];
+  Kelas.cmC[id]=list.concat([{id:'tmp',name:'You',body:t,at:new Date().toISOString(),mine:true}]);
+  if(p) p.nc=(p.nc||0)+1;
+  if(typeof hfSound==='function') hfSound('pop');
+  renderKelas();
+  try{
+    const r=await kelasCall('cm_comment',{post:id,body:t});
+    if(!r||!r.ok) toast(r&&r.error==='too_many'?'That is a lot of comments today. Try again tomorrow.':'Could not post the comment.');
+    const all=await kelasCall('cm_comments',{post:id}); if(all&&all.ok){ Kelas.cmC[id]=all.comments||[]; renderKelas(); }
+  }catch(e){ toast('Could not post the comment. Check your connection.'); }
+}
+async function kelasCmReport(pid,cid){
+  Kelas.cmMenu=null;
+  try{ await kelasCall('cm_report',{post:pid,comment:cid}); toast('Reported. Thank you, the admin will look at it.'); }catch(e){ toast('Could not report. Try again.'); }
+  renderKelas();
+}
+async function kelasCmDelete(pid,cid){
+  Kelas.cmMenu=null;
+  if(Kelas.cmDel!==(cid||pid)){ Kelas.cmDel=cid||pid; toast('Tap Delete again to remove it.'); renderKelas(); return; }
+  Kelas.cmDel=null;
+  try{ await kelasCall('cm_delete',{post:pid,comment:cid}); if(cid&&Kelas.cmC) delete Kelas.cmC[pid]; toast('Deleted.'); kelasCmLoad(); }catch(e){ toast('Could not delete. Try again.'); }
+}
+function kelasCmZoom(src){
+  let o=$('klzoom'); if(!o){ o=document.createElement('div'); o.id='klzoom'; o.onclick=()=>o.classList.remove('on'); document.body.appendChild(o); }
+  o.innerHTML='<img src="'+hesc(src)+'" alt="">'; o.classList.add('on');
+}
+
+/* every member: share a win, a selfie, a word with the class */
+function kelasCmComposerMember(){
+  const c=Kelas.cmNew;
+  if(!c) return '<button class="kl-share-win" onclick="Kelas.cmNew={body:\'\',img:null};renderKelas()"><span class="kl-av">+</span><span>Share a win with your class…</span>'+glyph('photo')+'</button>';
+  return '<div class="kl-comp kl-comp2"><textarea id="kl-cmn" class="kl-in" maxlength="1000" rows="3" placeholder="A win, a selfie after class, a thank you to your coach…" oninput="Kelas.cmNew.body=this.value">'+hesc(c.body||'')+'</textarea>'+
+    (c.img?'<div class="kl-cprev"><img src="'+c.img+'" alt=""><button onclick="Kelas.cmNew.img=null;renderKelas()" aria-label="Remove photo">✕</button></div>':'')+
+    '<input type="file" id="kl-cmf" accept="image/*" style="display:none" onchange="kelasCmPhoto(this)">'+
+    '<div class="kl-crow"><button class="kl-alt2" onclick="$(\'kl-cmf\').click()">'+glyph('photo')+' Photo</button>'+
+    '<button class="kl-alt2" onclick="Kelas.cmNew=null;renderKelas()">Cancel</button>'+
+    '<button class="bigbtn kl-go" onclick="kelasCmCreate()"'+(Kelas.cmBusyNew?' disabled':'')+'>'+(Kelas.cmBusyNew?'Posting…':'Post')+'</button></div>'+
+    '<div class="kl-fine2">Only your class group sees it. Be kind; posts others report are hidden.</div></div>';
+}
+function kelasCmPhoto(inp){
+  const file=inp&&inp.files&&inp.files[0]; if(!file) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ const img=new Image();
+    img.onload=()=>{ const mx=1280, sc=Math.min(1,mx/Math.max(img.width,img.height));
+      const cv=document.createElement('canvas'); cv.width=Math.round(img.width*sc); cv.height=Math.round(img.height*sc);
+      cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+      const t=$('kl-cmn'); if(t) Kelas.cmNew.body=t.value;
+      Kelas.cmNew.img=cv.toDataURL('image/jpeg',.82); renderKelas(); };
+    img.src=rd.result; };
+  rd.readAsDataURL(file);
+}
+async function kelasCmCreate(){
+  const c=Kelas.cmNew; if(!c) return;
+  const t=$('kl-cmn'); if(t) c.body=t.value;
+  if(!(c.body||'').trim() && !c.img){ toast('Write something or add a photo.'); return; }
+  Kelas.cmBusyNew=true; renderKelas();
+  try{
+    const r=await kelasCall('cm_create',{body:c.body||'', image_base64:c.img||''});
+    if(r&&r.ok){ Kelas.cmNew=null; toast('Posted to your class group.'); if(typeof hfSound==='function') hfSound('cheer'); await kelasCmLoad(); }
+    else toast(r&&r.error==='too_many'?'That is 5 posts today. Try again tomorrow.':'Could not post. Try again.');
+  }catch(e){ toast('Could not post. Check your connection.'); }
+  Kelas.cmBusyNew=false; renderKelas();
 }
 async function kelasCmReact(id,emo){
   const p=((Kelas.cm&&Kelas.cm.posts)||[]).filter(x=>x.id===id)[0]; if(!p) return;
@@ -21693,6 +21851,8 @@ function kelasDemo(){
   const ago=h=>new Date(Date.now()-h*3600e3).toISOString();
   Kelas.cm={linked:true, admin:true, cats:['Membership'], cat:'Membership', prefs:{hide_board:false,hide_feed:false},
     posts:[{id:'00000000-0000-0000-0000-000000000001',kind:'announce',title:'Class 3 moves to 6:30 PM today',body:'Hari ni sahaja. Jumpa di HQ!',pinned:true,at:ago(2),r:{fire:4},my:[]},
+      {id:'00000000-0000-0000-0000-000000000009',kind:'photo',title:'Lina M.',body:'First time finishing Class 4 without stopping! Terima kasih coach 🙏',at:ago(1),r:{fire:7,clap:3},my:[],nc:3,
+       cm:[{id:'c1',name:'Siti N.',body:'Power gila! 🔥',at:ago(0.8)},{id:'c2',name:'Coach Amir',body:'Proud of you. Next week we go heavier.',at:ago(0.5)}]},
       {id:'00000000-0000-0000-0000-000000000002',kind:'pr',title:'Hakim A. rang the bell: Plank hold 3:05',at:ago(5),r:{fire:6,muscle:3},my:['fire']},
       {id:'00000000-0000-0000-0000-000000000003',kind:'week',title:'Aina R. hit 3 classes this week',body:'5 weeks in a row',at:ago(20),r:{clap:5},my:[]},
       {id:'00000000-0000-0000-0000-000000000004',kind:'club',title:'Siti N. reached the 50 Class Club',at:ago(30),r:{fire:9,clap:7},my:['clap']},

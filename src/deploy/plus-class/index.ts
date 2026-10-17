@@ -28,6 +28,11 @@
    POST { action:'cm_post', move, value }   a personal record to the group
    POST { action:'cm_react', post, emoji }  fire / clap / muscle, on and off
    POST { action:'cm_pref', hide_board, hide_feed }
+   POST { action:'cm_create', body, image_base64? }  a member's post, a photo
+                                     (private bucket cm-photos) or words
+   POST { action:'cm_comments' | 'cm_comment' | 'cm_report' | 'cm_delete',
+          post, comment?, body? }    the comments on a post, a new one, a
+                                     report, deleting one's own
    POST { action:'cm_admin', op, post, cat, title, body }
                                      announce, pin, hide: admins only, the
                                      HITFAT+ user ids in plus_settings
@@ -312,7 +317,44 @@ Deno.serve(async (req: Request) => {
     if (action.startsWith('cm_')) {
       const { data: ad } = await admin.from('plus_settings').select('value').eq('key', 'cm_admin_ids').maybeSingle();
       const isAdmin = !!ad && String(ad.value || '').split(/[\s,]+/).includes(uid);
-      if (action === 'cm_feed') return json(await os('plus_cm_feed', { p_key: key, p_user: uid, p_cat: String(body.cat || ''), p_admin: isAdmin }));
+      if (action === 'cm_feed') {
+        const f = await os('plus_cm_feed', { p_key: key, p_user: uid, p_cat: String(body.cat || ''), p_admin: isAdmin });
+        /* photos are private: a signed link for an hour, only for posts OS
+           has already said are in this member's group */
+        const paths = ((f && f.posts) || []).map((p: any) => p && p.data && p.data.path).filter(Boolean);
+        if (paths.length) {
+          const { data: signed } = await admin.storage.from('cm-photos').createSignedUrls(paths, 3600);
+          const by: Record<string, string> = {};
+          (signed || []).forEach((x: any) => { if (x && x.path && x.signedUrl) by[x.path] = x.signedUrl; });
+          f.posts.forEach((p: any) => { if (p.data && p.data.path) p.img = by[p.data.path] || null; });
+        }
+        return json(f);
+      }
+      if (action === 'cm_create') {
+        const caption = String(body.body || '').slice(0, 1000);
+        let path = '';
+        const b64 = String(body.image_base64 || '').replace(/^data:image\/\w+;base64,/, '');
+        if (b64) {
+          if (b64.length > 4_000_000 || !/^[A-Za-z0-9+/]+={0,2}$/.test(b64)) return json({ ok: false, error: 'bad_image' }, 400);
+          const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+          path = uid + '/' + crypto.randomUUID() + '.jpg';
+          const up = await admin.storage.from('cm-photos').upload(path, bytes, { contentType: 'image/jpeg' });
+          if (up.error) { console.error('cm photo', up.error.message); return json({ ok: false, error: 'upload' }, 500); }
+        }
+        const r = await os('plus_cm_create', { p_key: key, p_user: uid, p_body: caption, p_path: path });
+        if ((!r || !r.ok) && path) await admin.storage.from('cm-photos').remove([path]);
+        return json(r);
+      }
+      const pid = /^[0-9a-f-]{36}$/.test(String(body.post || '')) ? String(body.post) : null;
+      const cid = /^[0-9a-f-]{36}$/.test(String(body.comment || '')) ? String(body.comment) : null;
+      if (action === 'cm_comments') return json(pid ? await os('plus_cm_comments', { p_key: key, p_user: uid, p_post: pid, p_admin: isAdmin }) : { ok: false });
+      if (action === 'cm_comment') return json(pid ? await os('plus_cm_comment', { p_key: key, p_user: uid, p_post: pid, p_body: String(body.body || '').slice(0, 500) }) : { ok: false });
+      if (action === 'cm_report') return json(await os('plus_cm_report', { p_key: key, p_user: uid, p_post: pid, p_comment: cid }));
+      if (action === 'cm_delete') {
+        const r = await os('plus_cm_delete', { p_key: key, p_user: uid, p_post: pid, p_comment: cid, p_admin: isAdmin });
+        if (r && r.path) await admin.storage.from('cm-photos').remove([r.path]);
+        return json({ ok: !!(r && r.ok) });
+      }
       if (action === 'cm_post') return json(await os('plus_cm_post', { p_key: key, p_user: uid, p_move: String(body.move || '').slice(0, 40), p_value: String(body.value || '').slice(0, 16) }));
       if (action === 'cm_react') {
         if (!/^[0-9a-f-]{36}$/.test(String(body.post || ''))) return json({ ok: false });
