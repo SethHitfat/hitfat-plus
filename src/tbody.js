@@ -4427,6 +4427,42 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   Kelas.cmKind='classes'; Kelas.hxB=null;
   Kelas.hxData=null; Kelas.data=keepD; Kelas.data.memberships=keepMs; Kelas.data.hyrox=keepHx; Kelas.space=keepSp; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
   if(keepHp===undefined) delete HF.data.kelas.hx; else HF.data.kelas.hx=keepHp; HF.save=keepSv5;
+  /* Ladies: its own space (096) */
+  var keepD2=JSON.parse(JSON.stringify(Kelas.data)), keepK2=JSON.parse(JSON.stringify(HF.data.kelas||{})), keepSv6=HF.save, keepSp2=Kelas.space; HF.save=function(){};
+  Kelas.space=null; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
+  Kelas.data.memberships=[{category:'Ladies',plan:'3 Month',start_date:'2026-10-01',end_date:'2026-12-31',active:true}];
+  Kelas.data.lx_ins=Kelas.data.checkins.slice(0,5); Kelas.data.total_lx=5; Kelas.data.weeks_lx=[];
+  ok("a Ladies member: the Ladies space, no switch, her own classes", kelasSpaces().join()==='ladies' && kelasSpace()==='ladies' && kelasHTML().indexOf('kl-space')<0 && kelasIns().length===5 && kelasTotal()===5 && kelasSpaceCat()==='Ladies');
+  ok("...the rose look, Ladies2Fit, FIRST 30 still there", kelasTodayTab().indexOf('kl-hero kl-hero2 lx')>0 && kelasTodayTab().indexOf('Ladies2Fit · HQ')>0 && kelasTodayTab().indexOf('Your first 30 days')>0);
+  ok("...Ladies Burn 30 on Today, for the days without class", kelasTodayTab().indexOf("openProgram('lad4')")>0);
+  Kelas.data.memberships.push({category:'Membership',plan:'1 Month',start_date:'2026-10-01',end_date:'2026-12-31',active:true});
+  ok("Ladies + Active: a switch with both", kelasSpaces().join()==='active,ladies' && kelasHTML().indexOf('class="ladies on"')>0===false && kelasHTML().indexOf('kl-space n2')>0);
+  ok("...Active leaves the Ladies classes out", (Kelas.space='active', kelasIns().length===Kelas.data.checkins.length-5));
+  Kelas.space='ladies';
+  /* the cycle */
+  HF.data.kelas.cyc={};
+  ok("cycle: off until she starts it, private", kelasTodayTab().indexOf('Track your cycle')>0);
+  var d0=new Date(kelasNowMY().getTime()-9*864e5).toISOString().slice(0,10);
+  kelasCycSave(d0,28,5); var C=kelasCyc();
+  ok("...day 10 of 28 is follicular, next period in 19 days", C.day===10 && C.phase==='follicular' && C.next===new Date(Date.parse(d0)+28*864e5).toISOString().slice(0,10));
+  ok("...on Today with the note for the phase", kelasTodayTab().indexOf('Day 10')>0 && kelasTodayTab().indexOf('chase a PR')>0);
+  ok("...the phases", (function(){ var c=HF.data.kelas.cyc; var t=kelasDayKey(kelasNowMY()), set=function(n){ c.starts=[new Date(Date.parse(t)-(n-1)*864e5).toISOString().slice(0,10)]; return kelasCyc().phase; };
+    return set(1)==='period' && set(5)==='period' && set(6)==='follicular' && set(14)==='ovulation' && set(20)==='luteal'; })());
+  HF.data.kelas.cyc.starts=[kelasDayKey(kelasNowMY())];
+  ok("...Bara is gentle on a period day", /rehat pun okay/.test(kelasBaraLine()[1]));
+  HF.data.kelas.cyc.starts=[new Date(kelasNowMY().getTime()-29*864e5).toISOString().slice(0,10)]; kelasCycToday();
+  ok("...'period started today' logs a new start; the length learns from the gap", kelasCyc().day===1 && kelasCyc().len===29);
+  ok("...nothing of it goes to the server calls", String(kelasCall).indexOf('cyc')<0 && String(kelasLoad).indexOf('cyc')<0);
+  /* the challenge */
+  var X=kelasLxChallenge();
+  ok("challenge: 12 Ladies classes this month", X.target===12 && X.n===kelasThisMonth() && kelasProgressTab().indexOf('Ladies Challenge')>0);
+  /* measurements */
+  HF.data.kelas.meas=[{d:'2026-09-01',waist:80,hip:100}];
+  kelasLxSave({waist:'77.5',hip:'99',thigh:'',arm:'abc'});
+  var Bd=kelasBodyTab();
+  ok("measurements: saved in cm, the change since the first", HF.data.kelas.meas.length===2 && Bd.indexOf('77.5')>0 && Bd.indexOf('>-2.5<')>0 && Bd.indexOf('>-1<')>0);
+  ok("...in the Body tab, Ladies only", Bd.indexOf('Progress photos')>0 && (Kelas.space='active', kelasBodyTab().indexOf('Progress photos')<0));
+  Kelas.space=keepSp2; Kelas.data=keepD2; HF.data.kelas=keepK2; HF.save=keepSv6; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
   /* profile photo (17 Oct) */
   var keepPh=HF.data.prefs.photo, keepG=HF.gphoto, keepSv3=HF.save; HF.save=function(){};
   HF.gphoto='https://lh3.googleusercontent.com/a/x=s96-c'; delete HF.data.prefs.photo;
