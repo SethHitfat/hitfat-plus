@@ -4326,6 +4326,7 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   var keepF=Kelas.data.first30; Kelas.data.first30=Object.assign({},keepF,{complete:true,done:7});
   ok("...complete: +300 and share", kelasF30HTML().indexOf('+300 points')>0 && kelasF30HTML().indexOf('kelasF30Share()')>0);
   Kelas.data.first30={active:false}; ok("...not a new member: nothing", kelasF30HTML()===''); Kelas.data.first30=keepF;
+  ok("Bara on the Class screen is Home's Bara: his colour from today's score", kelasBaraSrc('aktif')===bellPoster(scState().k?'kusut':scLevel(scScore(iso(0)))) && kelasBaraSrc('kusut').indexOf('kusut')>0);
   ok("Bara speaks on the Class screen, in Malay, as Bara", kelasBaraHTML().indexOf('Bara')>0 && /awak/.test(kelasBaraLine()[1]));
   var keepKD=HF.data.kelas, keepS2=HF.save; HF.save=function(){};
   HF.data.kelas={}; kelasSyncDays();

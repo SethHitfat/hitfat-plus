@@ -21201,8 +21201,20 @@ function kelasBaraLine(){
   if(nx && nx.inDays===0) return ['aktif','Kelas seterusnya pukul '+kelasClock(nx.c.start)+'. Bara tunggu awak! '+n+' daripada '+t+' kelas minggu ni.'];
   return ['aktif','Datang kelas = workout hari tu siap, +100 mata. '+n+' daripada '+t+' kelas minggu ni.'];
 }
+/* The same Bara as Home (17 Oct): his colour follows today's HITFAT Score,
+   cream under 50, red from 50, messy after days with nothing logged. Only a
+   class membership that has ended shows him messy here regardless. */
+function kelasBaraSrc(pose){
+  try{
+    if(pose!=='kusut' && typeof bellPoster==='function' && typeof scScore==='function' && typeof scLevel==='function'){
+      const st=typeof scState==='function'?scState():{k:''};
+      return bellPoster(st.k?'kusut':scLevel(scScore(iso(0))));
+    }
+  }catch(e){}
+  return (typeof SC_POSE!=='undefined'&&SC_POSE[pose])||'/img/mascot/anim/'+pose+'.png';
+}
 function kelasBaraHTML(){
-  const L=kelasBaraLine(), src=(typeof SC_POSE!=='undefined'&&SC_POSE[L[0]])||'/img/mascot/anim/'+L[0]+'.png';
+  const L=kelasBaraLine(), src=kelasBaraSrc(L[0]);
   return '<div class="kl-bara"><img src="'+src+'" alt="Bara" onerror="this.style.visibility=\'hidden\'"><div class="kl-bub"><b>Bara</b><span>'+hesc(L[1])+'</span></div></div>';
 }
 
