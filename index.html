@@ -6582,6 +6582,14 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 :root[data-theme="light"] .obseg.kl-tabs{background:#E4E4E9;}
 .kl-bseg button{min-width:58px;}
 
+/* three boards: Classes, Most improved, Streak (17 Oct) */
+.kl-bkinds{display:flex;gap:6px;margin:2px 0 6px;}
+.kl-bkinds button{flex:1;padding:8px 4px;border-radius:12px;border:1.5px solid rgba(127,127,127,.25);background:none;color:var(--txt);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.kl-bkinds button.on{background:#E30613;border-color:#E30613;color:#FFFFFF;}
+.kl-bnote{font-size:12px;color:var(--dim);margin:0 2px 6px;line-height:1.4;}
+.kl-bn em{display:block;font-style:normal;font-size:11px;font-weight:600;color:var(--dim);}
+.kl-br small{width:auto;min-width:44px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -20784,6 +20792,7 @@ function kelasPointsHTML(){
   h+='<div class="kl-earn">'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('calendar')+'</span><div><b>Class at HQ</b><small>Once a day, from the kiosk</small></div><em>+100</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('chart')+'</span><div><b>Weekly bonus</b><small>3+ classes in a week: +25, then +50, +75… up to +200 a week in a row</small></div><em>+25↑</em></div>'+
+     '<div class="kl-er"><span class="kl-eic">'+glyph('repeat')+'</span><div><b>Second class, same day</b><small>3 hours or more after the first</small></div><em>+50</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('people')+'</span><div><b>Bring a friend</b><small>When they join, tell the counter you brought them</small></div><em>+500</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('trophy')+'</span><div><b>Connect HITFAT+</b><small>'+(linked?'Done':'Once')+'</small></div><em>'+(linked?glyph('check'):'+300')+'</em></div></div>';
 
@@ -21203,17 +21212,33 @@ function kelasGroupTab(){
      '<button onclick="kelasCmPref(\'board\')">'+(P.hide_board?'Show me on':'Hide me from')+' the leaderboard</button></div>';
   return h;
 }
+/* Three boards, all from the kiosk and all counted by days (a second class
+   the same day earns points, not places):
+     Classes        class days this week or this month
+     Most improved  this month against last month to the same date, so a
+                    newcomer or someone coming back can top it
+     Streak         weeks in a row with 3+ classes */
+var KL_BOARDS=[['classes','Classes'],['improved','Improved'],['streak','Streak']];
 function kelasBoardHTML(C){
-  const which=Kelas.cmBoard||'week', B=(C[which])||{}, top=B.top||[], me=B.me;
-  let h='<div class="kl-board"><div class="kl-bh"><b>Leaderboard</b><div class="obseg kl-bseg">'+
-    '<button class="'+(which==='week'?'on':'')+'" onclick="Kelas.cmBoard=\'week\';renderKelas()">Week</button>'+
-    '<button class="'+(which==='month'?'on':'')+'" onclick="Kelas.cmBoard=\'month\';renderKelas()">Month</button></div></div>';
-  if(!top.length) return h+'<div class="kl-none">No classes yet '+(which==='week'?'this week':'this month')+'. Be the first on the board.</div></div>';
-  const row=r=>'<div class="kl-br'+(r.me?' me':'')+'"><span class="kl-rk r'+r.r+'">'+r.r+'</span><span class="kl-bn">'+hesc(r.name)+(r.me?' <i>you</i>':'')+'</span><b>'+r.n+'</b><small>class'+(r.n===1?'':'es')+'</small></div>';
+  const kind=Kelas.cmKind||'classes', which=Kelas.cmBoard||'week';
+  const B=(kind==='classes'?C[which]:C[kind])||{}, top=B.top||[], me=B.me;
+  const unit=kind==='streak'?(n=>'week'+(n===1?'':'s')):kind==='improved'?(()=>'vs last month'):(n=>'class'+(n===1?'':'es'));
+  const val=kind==='improved'?(n=>(n>0?'+':'')+n):(n=>String(n));
+  let h='<div class="kl-board"><div class="kl-bh"><b>Leaderboard</b>'+
+    (kind==='classes'?'<div class="obseg kl-bseg">'+
+      '<button class="'+(which==='week'?'on':'')+'" onclick="Kelas.cmBoard=\'week\';renderKelas()">Week</button>'+
+      '<button class="'+(which==='month'?'on':'')+'" onclick="Kelas.cmBoard=\'month\';renderKelas()">Month</button></div>':'')+'</div>'+
+    '<div class="kl-bkinds">'+KL_BOARDS.map(k=>'<button class="'+(k[0]===kind?'on':'')+'" onclick="Kelas.cmKind=\''+k[0]+'\';renderKelas()">'+k[1]+'</button>').join('')+'</div>'+
+    '<div class="kl-bnote">'+(kind==='improved'?'Classes this month against last month, to the same date. Anyone can win this one.'
+      :kind==='streak'?'Weeks in a row with 3 or more classes.':'One class a day counts, morning or evening.')+'</div>';
+  if(!top.length) return h+'<div class="kl-none">'+(kind==='streak'?'No streaks yet. Three classes this week starts one.':kind==='improved'?'Nobody has come yet this month. Be the first.':'No classes yet '+(which==='week'?'this week':'this month')+'. Be the first on the board.')+'</div></div>';
+  const row=r=>'<div class="kl-br'+(r.me?' me':'')+'"><span class="kl-rk r'+r.r+'">'+r.r+'</span><span class="kl-bn">'+hesc(r.name)+(r.me?' <i>you</i>':'')+
+    (kind==='improved'&&r.was!=null?'<em>'+r.was+' → '+r.now+'</em>':'')+'</span><b>'+val(r.n)+'</b><small>'+unit(r.n)+'</small></div>';
   h+=top.map(row).join('');
   if(me && !top.some(r=>r.me)) h+='<div class="kl-bsep">⋯</div>'+row({r:me.r,name:'You',n:me.n,me:true});
-  h+='<div class="kl-bfoot">'+(me?(me.r===1?'You are top of the board. Keep it there!':(me.gap?me.gap+' more class'+(me.gap===1?'':'es')+' to move up':'Level with the next place up')+' · #'+me.r+' of '+B.people)
-      :'Check in at the kiosk to get on the board.')+'</div></div>';
+  const more=kind==='streak'?(g=>g+' more week'+(g===1?'':'s')):kind==='improved'?(g=>g+' more class'+(g===1?'':'es')):(g=>g+' more class'+(g===1?'':'es'));
+  h+='<div class="kl-bfoot">'+(me?(me.r===1?'You are top of the board. Keep it there!':(me.gap?more(me.gap)+' to move up':'Level with the next place up')+' · #'+me.r+' of '+B.people)
+      :(kind==='streak'?'Three classes this week puts you on this board.':'Check in at the kiosk to get on the board.'))+'</div></div>';
   return h;
 }
 function kelasPostHTML(p){
@@ -21419,7 +21444,9 @@ function kelasDemo(){
       {id:'00000000-0000-0000-0000-000000000005',kind:'first',title:'Farah Z. came to their first class',at:ago(50),r:{clap:11},my:[]}],
     week:{people:18,top:[{r:1,name:'Hakim A.',n:5},{r:2,name:'Siti N.',n:4},{r:2,name:'Aina R.',n:4,me:true},{r:4,name:'Farah Z.',n:3},{r:5,name:'Amir S.',n:3},
       {r:6,name:'Lina M.',n:2},{r:7,name:'Zul H.',n:2},{r:8,name:'Nora K.',n:1},{r:9,name:'Haziq R.',n:1},{r:10,name:'Mira T.',n:1}],me:{r:2,n:4,gap:1}},
-    month:{people:22,top:[{r:1,name:'Siti N.',n:14},{r:2,name:'Hakim A.',n:13},{r:3,name:'Amir S.',n:11}],me:{r:7,n:8,gap:1}}};
+    month:{people:22,top:[{r:1,name:'Siti N.',n:14},{r:2,name:'Hakim A.',n:13},{r:3,name:'Amir S.',n:11}],me:{r:7,n:8,gap:1}},
+    improved:{people:22,top:[{r:1,name:'Farah Z.',n:6,was:2,now:8},{r:2,name:'Aina R.',n:4,was:4,now:8,me:true},{r:3,name:'Zul H.',n:3,was:1,now:4}],me:{r:2,n:4,gap:2}},
+    streak:{people:8,top:[{r:1,name:'Siti N.',n:4},{r:2,name:'Hakim A.',n:3},{r:3,name:'Aina R.',n:2,me:true}],me:{r:3,n:2,gap:1}}};
 }
 /* ═══════════════════════════════════════════════════════════════
    T42 · TRANSFORMATION 42 DAYS

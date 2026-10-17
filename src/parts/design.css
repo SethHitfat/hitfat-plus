@@ -4343,3 +4343,11 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .obseg.kl-tabs{background:#2C2C2E;}
 :root[data-theme="light"] .obseg.kl-tabs{background:#E4E4E9;}
 .kl-bseg button{min-width:58px;}
+
+/* three boards: Classes, Most improved, Streak (17 Oct) */
+.kl-bkinds{display:flex;gap:6px;margin:2px 0 6px;}
+.kl-bkinds button{flex:1;padding:8px 4px;border-radius:12px;border:1.5px solid rgba(127,127,127,.25);background:none;color:var(--txt);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.kl-bkinds button.on{background:#E30613;border-color:#E30613;color:#FFFFFF;}
+.kl-bnote{font-size:12px;color:var(--dim);margin:0 2px 6px;line-height:1.4;}
+.kl-bn em{display:block;font-style:normal;font-size:11px;font-weight:600;color:var(--dim);}
+.kl-br small{width:auto;min-width:44px;}
