@@ -100,3 +100,12 @@ function pushRefresh(){
   var r=$('push-row'); if(r && r.parentNode) r.outerHTML=pushRow();
   if(typeof scRender==='function' && $('mascot-home') && $('mascot-home').innerHTML) scRender();
 }
+
+/* a notification tapped while the app is open: sw.js says where it points
+   (a comment opens the class group) */
+if(typeof navigator!=='undefined' && navigator.serviceWorker && navigator.serviceWorker.addEventListener){
+  navigator.serviceWorker.addEventListener('message',function(e){
+    var d=e&&e.data; if(!d||d.hf!=='open'||typeof d.url!=='string') return;
+    if(typeof kelasOpenUrl==='function') kelasOpenUrl(d.url);
+  });
+}

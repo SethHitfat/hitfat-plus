@@ -4351,6 +4351,24 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("Bara on the Class screen is Home's Bara: his colour from today's score", kelasBaraSrc('aktif')===bellPoster(scState().k?'kusut':scLevel(scScore(iso(0)))) && kelasBaraSrc('kusut').indexOf('kusut')>0);
   noThrow("sounds: every one plays or stays quiet without breaking", function(){ ['giggle','cheer','bell','pop','x'].forEach(hfSound); });
   var keepS=HF.data.prefs.sound, keepSv=HF.save; HF.save=function(){}; hfSoundSet(false); ok("...Me turns them off", hfSoundOn()===false); hfSoundSet(true); ok("...and on", hfSoundOn()===true); HF.data.prefs.sound=keepS; HF.save=keepSv;
+  /* today's workout, bring a friend, the month (17 Oct) */
+  var keepWod=HF.data.kelas.wod, keepSv4=HF.save; HF.save=function(){}; HF.data.kelas.wod={};
+  var wh=kelasWodHTML();
+  ok("today's workout from the coach, on Today", wh.indexOf('HITFAT 21-15-9')>0 && wh.indexOf("Today's workout")>0 && kelasTodayTab().indexOf('kl-wod')>0);
+  ok("...a score box for a timed workout", wh.indexOf('id="kl-wodv"')>0 && wh.indexOf('mm:ss')<0 || wh.indexOf('12:45')>0);
+  var today0=kelasDayKey(kelasNowMY());
+  HF.data.kelas.wod['2026-01-02']={t:'hitfat 21-15-9', v:'11:20', at:1};
+  ok("...the same workout before: the score to beat", kelasWodHTML().indexOf('Beat it')>0 && kelasWodHTML().indexOf('11:20')>0);
+  kelasWodSave(today0,'9:58');
+  ok("...a score logged stays on the account", HF.data.kelas.wod[today0] && HF.data.kelas.wod[today0].v==='9:58' && kelasWodHTML().indexOf('9:58')>0);
+  Kelas.wodEdit=true; kelasWodSave(today0,'abc'); Kelas.wodEdit=false;
+  ok("...a time that is not mm:ss is refused", HF.data.kelas.wod[today0].v==='9:58');
+  HF.data.kelas.wod=keepWod; HF.save=keepSv4;
+  ok("bring a friend: on Points, with the member's name in the invitation", kelasPointsHTML().indexOf('Invite a friend')>0 && kelasReferText().indexOf('Aina Rahman')>0 && kelasReferText().indexOf('hitfat.io/one')>0);
+  var ms=kelasMonthStats(kelasMonthKey(0));
+  ok("the month: classes from the kiosk, against the month before", ms.n===new Set(kelasIns().map(kelasDayKey).filter(function(k){return k.slice(0,7)===kelasMonthKey(0);})).size && typeof ms.prev==='number');
+  ok("...on Progress, with a share card", kelasProgressTab().indexOf('kl-mon')>0 && kelasProgressTab().indexOf('kelasShareMonth()')>0);
+  ok("a notification opens the class group", (function(){ var t=null, k=kelasTab, cm=Kelas.cm; kelasTab=function(x){ t=x; }; kelasOpenUrl('/?kelas=group'); kelasTab=k; Kelas.cm=cm; return t==='group'; })());
   /* profile photo (17 Oct) */
   var keepPh=HF.data.prefs.photo, keepG=HF.gphoto, keepSv3=HF.save; HF.save=function(){};
   HF.gphoto='https://lh3.googleusercontent.com/a/x=s96-c'; delete HF.data.prefs.photo;

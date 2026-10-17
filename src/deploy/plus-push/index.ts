@@ -9,6 +9,16 @@
                                  member with a subscription, their day
                                  read from plus_data, at most one message
    POST ?action=test             a signed-in member's own test message
+   POST ?action=notify&key=<cron>  { users, title, body, url, tag }: a
+                                 message now, for plus-class (a comment on
+                                 your post, a reply to your comment); not
+                                 counted as the evening's one message
+
+   HITFAT Class members (17 Oct) hear about their class first, from HITFAT
+   OS (plus_push_list, 093_wod_push.sql): the membership ending in 7 days,
+   3 days, tomorrow, and the day after it ended; a week and two weeks with
+   no class; and on the 1st, last month's recap. One message an evening,
+   these before the habits.
 
    What Bara says follows the HITFAT Score in the app (score.js): a day's
    score is the share of its habits done (workout, meals /3, water /8,
@@ -16,6 +26,7 @@
    is 50 or more; a "kosong" day is 0.
 
    Deploy:  supabase functions deploy plus-push --no-verify-jwt
+            (__OS_ANON__ replaced with HITFAT OS's anon key, as plus-class)
             (the cron call has no JWT; the key and the test's own JWT check
             are the gate)
    ═══════════════════════════════════════════════════════════════ */
@@ -119,14 +130,61 @@ async function vapid(admin: any): Promise<{ pub: string; priv: string }> {
   return vapid(admin);
 }
 
-async function sendTo(admin: any, subs: any[], msg: { kind: string; title: string; body: string }) {
+type Msg = { kind: string; title: string; body: string; url?: string; tag?: string };
+
+/* HITFAT OS, for the class members' end dates and last class */
+const OS_URL = 'https://ddcmfbaidkrqpeckmzou.supabase.co';
+const OS_ANON = '__OS_ANON__';
+async function classList(admin: any): Promise<Record<string, any>> {
+  const out: Record<string, any> = {};
+  try {
+    const { data: k } = await admin.from('plus_settings').select('value').eq('key', 'os_bridge_key').maybeSingle();
+    if (!k || !k.value) return out;
+    const r = await fetch(OS_URL + '/rest/v1/rpc/plus_push_list', {
+      method: 'POST', headers: { apikey: OS_ANON, Authorization: 'Bearer ' + OS_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_key: k.value }) });
+    if (!r.ok) { console.warn('plus_push_list', r.status); return out; }
+    for (const x of (await r.json()) || []) if (x && x.u) out[x.u] = x;
+  } catch (e) { console.warn('plus_push_list', e && (e as Error).message); }
+  return out;
+}
+const daysBetween = (a: string, b: string) => Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 86400000);
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+function fmtDay(d: string): string { const t = new Date(d + 'T00:00:00Z'); return t.getUTCDate() + ' ' + MONTHS[t.getUTCMonth()].slice(0, 3); }
+
+/* what Bara says to a class member about their class, if anything */
+export function classMessage(c: any, today: string): Msg | null {
+  if (!c) return null;
+  const end = c.end ? String(c.end).slice(0, 10) : '';
+  if (end) {
+    const left = daysBetween(today, end);
+    const renew = 'Renew at the HITFAT counter to keep your classes, points and streak going.';
+    if (c.active && left === 7) return { kind: 'end7', title: 'Your class membership ends in 7 days', body: 'It ends on ' + fmtDay(end) + '. ' + renew, url: '/?kelas=today' };
+    if (c.active && left === 3) return { kind: 'end3', title: '3 days left on your class membership', body: 'It ends on ' + fmtDay(end) + '. ' + renew, url: '/?kelas=today' };
+    if (c.active && left === 1) return { kind: 'end1', title: 'Your class membership ends tomorrow', body: 'Tomorrow is your last day. ' + renew, url: '/?kelas=today' };
+    if (!c.active && left === -1) return { kind: 'ended', title: 'Your class membership has ended 😢', body: 'Bara will miss you at class. Renew at the counter and the kiosk lets you in again.', url: '/?kelas=today' };
+  }
+  if (c.active && c.last) {
+    const gap = daysBetween(String(c.last).slice(0, 10), today);
+    if (gap === 7) return { kind: 'class7', title: 'Bara misses you at class 🥺', body: "It's been a week since your last class. Your class group is waiting, come back this week!", url: '/?kelas=today' };
+    if (gap === 14) return { kind: 'class14', title: 'Two weeks without class...', body: "Bara is still saving your spot. One class this week is all it takes to start again.", url: '/?kelas=today' };
+  }
+  /* the 1st: last month's recap, for a member who came to class last month */
+  if (today.slice(8, 10) === '01' && c.last) {
+    const lm = new Date(Date.parse(today + 'T00:00:00Z') - 86400000), name = MONTHS[lm.getUTCMonth()];
+    if (daysBetween(String(c.last).slice(0, 10), today) <= 31) return { kind: 'recap', title: '📅 Your ' + name + ' recap is ready', body: 'Your classes, PRs and streak for ' + name + '. Have a look, then share it!', url: '/?kelas=progress' };
+  }
+  return null;
+}
+
+async function sendTo(admin: any, subs: any[], msg: Msg, daily = true) {
   let sent = 0;
   for (const s of subs) {
     try {
       await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
-        JSON.stringify({ title: msg.title, body: msg.body, tag: 'bell-' + msg.kind, url: '/' }), { TTL: 6 * 3600 });
+        JSON.stringify({ title: msg.title, body: msg.body, tag: msg.tag || 'bell-' + msg.kind, url: msg.url || '/' }), { TTL: 6 * 3600 });
       sent++;
-      await admin.from('plus_push_subs').update({ last_sent: dayBack(0), last_kind: msg.kind }).eq('endpoint', s.endpoint);
+      if (daily) await admin.from('plus_push_subs').update({ last_sent: dayBack(0), last_kind: msg.kind }).eq('endpoint', s.endpoint);
     } catch (e: any) {
       /* gone: the member removed it, or reinstalled */
       if (e && (e.statusCode === 404 || e.statusCode === 410)) await admin.from('plus_push_subs').delete().eq('endpoint', s.endpoint);
@@ -165,14 +223,31 @@ Deno.serve(async (req: Request) => {
     const { data: subs } = await admin.from('plus_push_subs').select('*');
     const byUser: Record<string, any[]> = {};
     for (const s of (subs || [])) { if (s.last_sent === today) continue; (byUser[s.user_id] = byUser[s.user_id] || []).push(s); }
+    const cls = await classList(admin);
     let users = 0, sent = 0;
     for (const uid of Object.keys(byUser)) {
-      const { data: row } = await admin.from('plus_data').select('data').eq('user_id', uid).maybeSingle();
-      const msg = row && row.data ? messageFor(row.data) : null;
+      let msg: Msg | null = classMessage(cls[uid], today);
+      if (!msg) {
+        const { data: row } = await admin.from('plus_data').select('data').eq('user_id', uid).maybeSingle();
+        msg = row && row.data ? messageFor(row.data) : null;
+      }
       if (!msg) continue;
       users++; sent += await sendTo(admin, byUser[uid], msg);
     }
     return json({ ok: true, users, sent });
+  }
+
+  /* now, from plus-class: someone answered you in your class group */
+  if (action === 'notify') {
+    const { data: ck } = await admin.from('plus_settings').select('value').eq('key', 'push_cron_key').maybeSingle();
+    if (!ck || url.searchParams.get('key') !== ck.value) return json({ error: 'unauthorised' }, 401);
+    const b = await req.json().catch(() => ({}));
+    const users = (Array.isArray(b.users) ? b.users : []).filter((u: unknown) => typeof u === 'string' && /^[0-9a-f-]{36}$/.test(u)).slice(0, 5);
+    if (!users.length) return json({ ok: true, sent: 0 });
+    const msg: Msg = { kind: 'cm', title: String(b.title || 'HITFAT+').slice(0, 80), body: String(b.body || '').slice(0, 160),
+      url: typeof b.url === 'string' && b.url.startsWith('/') ? b.url.slice(0, 80) : '/', tag: String(b.tag || 'cm').slice(0, 60) };
+    const { data: subs } = await admin.from('plus_push_subs').select('*').in('user_id', users);
+    return json({ ok: true, sent: await sendTo(admin, subs || [], msg, false) });
   }
 
   return json({ error: 'unknown action' }, 400);

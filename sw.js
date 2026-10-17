@@ -1,7 +1,7 @@
 /* HITFAT+ service worker: Bara's reminders, and nothing else.
    No fetch handler and no cache, on purpose: the app always loads fresh
    from the network. It only shows a push from plus-push and, when one is
-   tapped, brings HITFAT+ to the front. */
+   tapped, brings HITFAT+ to the front, at the place the push points to. */
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) { e.waitUntil(self.clients.claim()); });
 
@@ -21,8 +21,12 @@ self.addEventListener('push', function (e) {
 self.addEventListener('notificationclick', function (e) {
   e.notification.close();
   var url = (e.notification.data && e.notification.data.url) || '/';
+  /* the app already open: bring it up and tell it where to go (a comment
+     opens the class group); closed: open it at that address */
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (ws) {
-    for (var i = 0; i < ws.length; i++) { if ('focus' in ws[i]) return ws[i].focus(); }
+    for (var i = 0; i < ws.length; i++) {
+      if ('focus' in ws[i]) { try { ws[i].postMessage({ hf: 'open', url: url }); } catch (x) {} return ws[i].focus(); }
+    }
     return self.clients.openWindow(url);
   }));
 });

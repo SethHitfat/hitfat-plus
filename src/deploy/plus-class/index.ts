@@ -172,6 +172,15 @@ async function os(fn: string, body: Record<string, unknown>) {
   return await r.json();
 }
 
+/* a message on the member's phone now, through plus-push (its cron key) */
+async function notify(admin: any, users: string[], title: string, text: string, url: string, tag: string) {
+  const { data: ck } = await admin.from('plus_settings').select('value').eq('key', 'push_cron_key').maybeSingle();
+  if (!ck || !ck.value) return;
+  await fetch(Deno.env.get('SUPABASE_URL')!.replace(/\/+$/, '') + '/functions/v1/plus-push?action=notify&key=' + encodeURIComponent(ck.value), {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ users, title, body: text, url, tag }) });
+}
+
 /* The end date is the last day of the membership, in Malaysia: access
    runs to midnight after it, MYT. */
 function endOfDayMY(d: string): string {
@@ -365,7 +374,21 @@ Deno.serve(async (req: Request) => {
       if (action === 'cm_comments') return json(pid ? await os('plus_cm_comments', { p_key: key, p_user: uid, p_post: pid, p_admin: isAdmin }) : { ok: false });
       /* a comment, or a reply under one (091: one level, like Facebook) */
       const par = /^[0-9a-f-]{36}$/.test(String(body.parent || '')) ? String(body.parent) : null;
-      if (action === 'cm_comment') return json(pid ? await os('plus_cm_comment2', { p_key: key, p_user: uid, p_post: pid, p_body: String(body.body || '').slice(0, 500), p_parent: par }) : { ok: false });
+      if (action === 'cm_comment') {
+        if (!pid) return json({ ok: false });
+        const text = String(body.body || '').slice(0, 500);
+        const r = await os('plus_cm_comment2', { p_key: key, p_user: uid, p_post: pid, p_body: text, p_parent: par });
+        /* tell the post's owner, and whoever was answered (093), on their phones */
+        if (r && r.ok && (r.to_post || r.to_reply)) {
+          const short = text.length > 110 ? text.slice(0, 107) + '…' : text;
+          const send = (u: string, title: string) => notify(admin, [u], title, short, '/?kelas=group', 'cm-' + pid);
+          try {
+            if (r.to_post) await send(r.to_post, r.who + ' commented on your post');
+            if (r.to_reply) await send(r.to_reply, r.who + ' replied to your comment');
+          } catch (e) { console.warn('cm notify', e && (e as Error).message); }
+        }
+        return json({ ok: !!(r && r.ok), id: r && r.id, error: r && r.error });
+      }
       if (action === 'cm_report') return json(await os('plus_cm_report', { p_key: key, p_user: uid, p_post: pid, p_comment: cid }));
       if (action === 'cm_delete') {
         const r = await os('plus_cm_delete', { p_key: key, p_user: uid, p_post: pid, p_comment: cid, p_admin: isAdmin });
