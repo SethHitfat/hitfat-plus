@@ -673,6 +673,10 @@ function renderMe(){
   h=h.replace(fsec('Challenges','')+'<div class="glist"></div>','');
 
   h+=fsec('Settings','')+'<div class="glist">'+
+    '<div class="grow grow-ctl">'+ic('bell')+'<div class="grow-l">Sounds</div>'+
+    '<div class="obseg meseg">'+
+    '<button class="'+((typeof hfSoundOn==='function'&&hfSoundOn())?'on':'')+'" onclick="hfSoundSet(true)">On</button>'+
+    '<button class="'+((typeof hfSoundOn==='function'&&!hfSoundOn())?'on':'')+'" onclick="hfSoundSet(false)">Off</button></div></div>'+
     '<div class="grow grow-ctl">'+ic('palette')+'<div class="grow-l">Appearance</div>'+
     '<div class="obseg meseg">'+
     '<button class="'+(currentTheme()==='light'?'on':'')+'" onclick="setThemeLight()">Light</button>'+

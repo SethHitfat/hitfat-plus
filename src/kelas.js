@@ -180,6 +180,7 @@ function renderKelas(){
     return;
   }
   el.innerHTML=kelasLinked()?kelasHTML():kelasLinkHTML();
+  if(kelasLinked() && (Kelas.tab||'today')==='today') kelasBaraLive();
 }
 
 function kelasQR(px){ return typeof qrSVG==='function' ? qrSVG(String(Kelas.data.member_id), px) : ''; }
@@ -518,6 +519,7 @@ function kelasPRRing(){
   p.rung={m:name, u:p.u, v:v, pr:pr, prev:prev, best:pr?e:prev};
   kelasPRPaint();
   if(pr && navigator.vibrate) try{ navigator.vibrate([30,60,30]); }catch(x){}
+  if(typeof hfSound==='function') hfSound(pr?'bell':'pop');
   /* a new best rings in the class group too */
   if(pr && kelasLinked()){ kelasCall('cm_post',{move:name, value:kelasFmt(v,p.u)}).then(()=>{ Kelas.cm=null; }).catch(()=>{}); }
   if($('kelas') && $('kelas').style.display==='block') renderKelas();
@@ -989,7 +991,33 @@ function kelasBaraSrc(pose){
 }
 function kelasBaraHTML(){
   const L=kelasBaraLine(), src=kelasBaraSrc(L[0]);
-  return '<div class="kl-bara"><img src="'+src+'" alt="Bara" onerror="this.style.visibility=\'hidden\'"><div class="kl-bub"><b>Bara</b><span>'+hesc(L[1])+'</span></div></div>';
+  Kelas.baraPose=L[0];
+  /* the same live Bara as Home (bell.js moves its one player here), in a
+     white glow so he stands out on the red; tap him and he giggles */
+  return '<div class="kl-bara"><div class="kl-bslot" id="kl-bell" onclick="kelasBaraPoke()" role="button" aria-label="Bara">'+
+    '<img class="sc-poster" src="'+src+'" alt="Bara" onerror="this.style.visibility=\'hidden\'"></div>'+
+    '<div class="kl-bub"><b>Bara</b><span>'+hesc(L[1])+'</span></div></div>';
+}
+/* Bara alive on the Class screen: the loop for today's score (or the messy
+   one for an ended membership), and once on a day with a class, a cheer */
+function kelasBaraLive(){
+  const slot=$('kl-bell'); if(!slot || typeof bellAttach!=='function') return;
+  let lv;
+  try{ const st=typeof scState==='function'?scState():{k:''};
+       lv=(Kelas.baraPose==='kusut'||st.k)?'kusut':scLevel(scScore(iso(0))); }catch(e){ lv=2; }
+  if(!bellAttach(slot,lv)) return;
+  const today=kelasDayKey(kelasNowMY()), k=HF.data&&(HF.data.kelas||(HF.data.kelas={}));
+  if(k && kelasIns().some(d=>kelasDayKey(d)===today) && k.cheer!==today){
+    k.cheer=today; try{ HF.save(); }catch(e){}
+    setTimeout(()=>{ if(typeof scReact==='function') scReact('cheer'); if(typeof hfSound==='function') hfSound('cheer'); },600);
+  }
+}
+var KL_POKE=['Hehe, gelilah! 😆','Jumpa kat kelas nanti ya! 💪','Bara tunggu awak kat HQ 😄','Hehe, lagi? 🙈'];
+function kelasBaraPoke(){
+  if(typeof scReact==='function') scReact('giggle');
+  if(typeof hfSound==='function') hfSound('giggle');
+  const b=document.querySelector('#kelas-body .kl-bub span');
+  if(b) b.textContent=KL_POKE[(Kelas.pokes=(Kelas.pokes||0)+1)%KL_POKE.length];
 }
 
 /* ═══════════════ Group: the community and the leaderboard ═══════════════
@@ -1080,7 +1108,7 @@ async function kelasCmReact(id,emo){
   const p=((Kelas.cm&&Kelas.cm.posts)||[]).filter(x=>x.id===id)[0]; if(!p) return;
   p.r=p.r||{}; p.my=p.my||[];
   const on=p.my.indexOf(emo)<0;
-  if(on){ p.my.push(emo); p.r[emo]=(p.r[emo]||0)+1; } else { p.my=p.my.filter(x=>x!==emo); p.r[emo]=Math.max(0,(p.r[emo]||1)-1); }
+  if(on){ p.my.push(emo); p.r[emo]=(p.r[emo]||0)+1; if(typeof hfSound==='function') hfSound('pop'); } else { p.my=p.my.filter(x=>x!==emo); p.r[emo]=Math.max(0,(p.r[emo]||1)-1); }
   renderKelas();
   try{ await kelasCall('cm_react',{post:id,emoji:emo}); }catch(e){ toast('Could not react. Check your connection.'); }
 }
@@ -1177,6 +1205,7 @@ async function kelasF30SetGoal(g){
   const m=kelasF30M(f,'goal'); if(m){ m.done=true; m.goal=g; f.done=Math.min(f.total||7,(f.done||0)+1); }
   if(HF.data && HF.data.prefs && !HF.data.prefs.goal){ HF.data.prefs.goal=g; HF.save(); }
   renderKelas();
+  if(typeof hfSound==='function') hfSound('cheer');
   try{ await kelasCall('goal',{goal:g}); toast('Goal set: '+g+'. Your coach sees it too.'); }
   catch(e){ toast('Could not save the goal. Try again.'); }
 }

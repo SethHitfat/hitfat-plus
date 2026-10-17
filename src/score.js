@@ -284,7 +284,7 @@ function scRender(){
   }
   /* (16 Oct) the moment Bara turns red, live: a squash, a red burst, the cheer */
   var red=scRed();
-  if(scRender._red===false && red) scTurnRed();
+  if(scRender._red===false && red){ scTurnRed(); if(typeof hfSound==='function') hfSound('cheer'); }
   scRender._red=red;
   if(typeof scCheckMeet==='function' && scCheckMeet()) return;
   if(scCheckShine()) return;
@@ -343,6 +343,7 @@ function scBounce(){
 function scPoke(){
   if(scState().k==='rust'){ toast('Bara is all messy 🥲 Log one thing to fluff Bara up again'); return; }
   scReact('giggle');
+  if(typeof hfSound==='function') hfSound('giggle');
   scBubSet(SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]);
 }
 
