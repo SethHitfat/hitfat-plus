@@ -46,8 +46,8 @@ function kelasMems(){ return (Kelas.data&&Kelas.data.memberships)||[]; }
    streak, the Class Club, the boards, the week's target, the month, the
    timetable, the group are each space's own. HITFAT Points stay one
    wallet; InBody is one body. Bara on Home counts every class. */
-function kelasMemSpace(m){ const c=m&&m.category; return c==='HYROX'?'hyrox':c==='Ladies'?'ladies':'active'; }
-var KL_SPACES=[['active','Active'],['ladies','Ladies'],['hyrox','HYROX']];
+function kelasMemSpace(m){ const c=m&&m.category; return c==='HYROX'?'hyrox':c==='Ladies'?'ladies':c==='Mens'?'mens':'active'; }
+var KL_SPACES=[['active','Active'],['ladies','Ladies'],['mens','Mens'],['hyrox','HYROX']];
 function kelasHasSpace(sp){ return kelasMems().some(m=>m.active && kelasMemSpace(m)===sp); }
 function kelasSpaces(){ return KL_SPACES.map(x=>x[0]).filter(kelasHasSpace); }
 function kelasSpace(){
@@ -67,7 +67,7 @@ function kelasSpMems(){ const sp=kelasSpace(), a=kelasMems().filter(m=>kelasMemS
 /* the space's group in the Community */
 function kelasSpaceCat(){
   const sp=kelasSpace(), a=kelasMems().filter(m=>m.active && kelasMemSpace(m)===sp);
-  return sp==='hyrox'?'HYROX':sp==='ladies'?'Ladies':((a[0]&&a[0].category)||'');
+  return sp==='hyrox'?'HYROX':sp==='ladies'?'Ladies':sp==='mens'?'Mens':((a[0]&&a[0].category)||'');
 }
 function kelasMainAll(){
   const m=kelasMems().slice().sort((a,b)=>(b.active-a.active)||String(b.end_date||'').localeCompare(String(a.end_date||'')));
@@ -215,9 +215,9 @@ function kelasWhen(n){ return n.inDays===0?'Today':n.inDays===1?'Tomorrow':KELAS
 function kelasInsAll(){ return ((Kelas.data&&Kelas.data.checkins)||[]).map(t=>new Date(Date.parse(t)+8*3600e3)); }
 /* this space's classes: HYROX ones come marked (hx_ins), the rest are Active */
 function kelasIns(){
-  const d=Kelas.data||{}, sp=kelasSpace(), hx=Array.isArray(d.hx_ins)?d.hx_ins:[], lx=Array.isArray(d.lx_ins)?d.lx_ins:[];
-  const X=new Set(hx.concat(lx).map(t=>Date.parse(t)));
-  const a=sp==='hyrox'?hx:sp==='ladies'?lx:(d.checkins||[]).filter(t=>!X.has(Date.parse(t)));
+  const d=Kelas.data||{}, sp=kelasSpace(), A=k=>Array.isArray(d[k])?d[k]:[], hx=A('hx_ins'), lx=A('lx_ins'), mx=A('mx_ins');
+  const X=new Set(hx.concat(lx,mx).map(t=>Date.parse(t)));
+  const a=sp==='hyrox'?hx:sp==='ladies'?lx:sp==='mens'?mx:(d.checkins||[]).filter(t=>!X.has(Date.parse(t)));
   return a.map(t=>new Date(Date.parse(t)+8*3600e3));
 }
 function kelasDayKey(d){ return d.toISOString().slice(0,10); }
@@ -289,9 +289,9 @@ function kelasTodayTab(){
   let h='';
   /* a shorter hero: the name and the class on the left, the QR on the
      right (tap for full screen at the kiosk), Bara underneath */
-  const spc=kelasSpace(), hxs=spc==='hyrox', lxs=spc==='ladies';
-  h+='<div class="kl-hero kl-hero2'+(hxs?' hx':lxs?' lx':'')+(act?'':' off')+'">'+
-     '<div class="kl-hrow"><div class="kl-hl"><div class="kl-kick">'+(hxs?'HYROX · HQ':lxs?'Ladies2Fit · HQ':'HITFAT Class · HQ')+'</div>'+
+  const spc=kelasSpace(), hxs=spc==='hyrox', lxs=spc==='ladies', mxs=spc==='mens';
+  h+='<div class="kl-hero kl-hero2'+(hxs?' hx':lxs?' lx':mxs?' mx':'')+(act?'':' off')+'">'+
+     '<div class="kl-hrow"><div class="kl-hl"><div class="kl-kick">'+(hxs?'HYROX · HQ':lxs?'Ladies2Fit · HQ':mxs?'Mens2Fit · HQ':'HITFAT Class · HQ')+'</div>'+
      '<div class="kl-name">'+hesc(first)+'</div>'+
      '<div class="kl-cat">'+kelasSpMems().filter(x=>x.active).map(x=>hesc(kelasCat(x.category))).join(' · ')+'</div>'+
      '<button class="kl-ci" onclick="kelasQRFull()">'+glyph('qr')+(act?' Check in':' Renew first')+'</button></div>'+
@@ -301,6 +301,7 @@ function kelasTodayTab(){
   /* FIRST 30: a new member's first month, mission by mission; then a
      60-day journey for the goal */
   if(lxs) h+=kelasLxTodayHTML();
+  if(mxs) h+=kelasMxTodayHTML();
   if(!hxs){ h+=kelasF30HTML(); h+=kelasJourneyHTML(); }
   if(kelasIsHx()) h+=kelasHxTodayHTML();
   h+=kelasWodHTML();
@@ -353,7 +354,8 @@ function kelasTodayTab(){
 function kelasProgressTab(){
   let h='';
   if(kelasIsHx()) h+=kelasHxHTML();
-  if(kelasSpace()==='ladies') h+=kelasLxChallengeHTML(true);
+  if(kelasSpace()==='ladies'||kelasSpace()==='mens') h+=kelasLxChallengeHTML(true);
+  if(kelasSpace()==='mens') h+=kelasMxStrengthHTML();
   h+=kelasMonthHTML();
   h+=kelasGlanceHTML();
   h+=kelasStreakHTML()+kelasLevelHTML();
@@ -381,7 +383,7 @@ function kelasNextReward(P){
 }
 /* Body: InBody, the full result inline */
 function kelasBodyTab(){
-  const all=kelasIBs(), lx=kelasSpace()==='ladies'?kelasLxBodyHTML():'';
+  const all=kelasIBs(), lx=(kelasSpace()==='ladies'||kelasSpace()==='mens')?kelasLxBodyHTML():'';
   if(!all.length || Kelas.ibBusy) return lx+kelasIBCard();
   return lx+kelasIBDetail();
 }
@@ -404,7 +406,7 @@ function kelasGrid(){
 /* ── club levels: 10, 25, 50 … classes ── */
 var KELAS_LEVELS=[10,25,50,100,150,200,250,300,400,500,750,1000];
 function kelasTotal(){
-  const d=Kelas.data||{}, sp=kelasSpace(), k=sp==='hyrox'?'total_hx':sp==='ladies'?'total_lx':'total_act';
+  const d=Kelas.data||{}, sp=kelasSpace(), k=sp==='hyrox'?'total_hx':sp==='ladies'?'total_lx':sp==='mens'?'total_mx':'total_act';
   return (typeof d[k]==='number'?d[k]:(sp==='active'?d.total:0))||0;
 }
 function kelasLevel(n){
@@ -434,7 +436,7 @@ function kelasLevelHTML(){
 }
 /* the longest run of weeks with a class, from every week OS has */
 function kelasLongest(){
-  const d=Kelas.data||{}, sp=kelasSpace(), wk=sp==='hyrox'?(d.weeks_hx||[]):sp==='ladies'?(d.weeks_lx||[]):(d.weeks_act||d.weeks||[]);
+  const d=Kelas.data||{}, sp=kelasSpace(), wk=sp==='hyrox'?(d.weeks_hx||[]):sp==='ladies'?(d.weeks_lx||[]):sp==='mens'?(d.weeks_mx||[]):(d.weeks_act||d.weeks||[]);
   const w=wk.map(x=>Date.parse(String(x).slice(0,10)+'T00:00:00Z')).sort((a,b)=>a-b);
   let best=0, run=0, prev=null;
   w.forEach(t=>{ run=(prev!==null && t-prev===7*864e5)?run+1:1; if(run>best) best=run; prev=t; });
@@ -1145,7 +1147,7 @@ function kelasGroupTab(){
   let h='';
   if(cats.length>1) h+='<div class="kl-gchips">'+cats.map(c=>'<button class="'+(c===C.cat?'on':'')+'" onclick="kelasCmLoad(\''+c+'\')">'+hesc(kelasCat(c))+'</button>').join('')+'</div>';
   h+='<div class="kl-ghead"><div class="kl-kick">Group</div><b>'+hesc(kelasCat(C.cat))+'</b>'+(C.admin?'<span class="kl-admin">Admin</span>':'')+'</div>';
-  if(C.cat==='Ladies') h+=kelasLxGroupHTML(C);
+  if(C.cat==='Ladies'||C.cat==='Mens') h+=kelasLxGroupHTML(C);
   h+=kelasBoardHTML(C);
   if(C.admin) h+=kelasCmComposer(C);
   h+=fsec('Feed','Wins, photos and milestones from your class.');
@@ -1165,10 +1167,12 @@ function kelasGroupTab(){
                     newcomer or someone coming back can top it
      Streak         weeks in a row with 3+ classes */
 var KL_BOARDS=[['classes','Classes'],['improved','Improved'],['streak','Streak']];
-function kelasBoardKinds(C){ return C&&C.cat==='HYROX'?KL_BOARDS.concat([['stations','Stations']]):KL_BOARDS; }
+function kelasBoardKinds(C){ return C&&C.cat==='HYROX'?KL_BOARDS.concat([['stations','Stations']]):C&&C.cat==='Mens'?KL_BOARDS.concat([['strength','Strength']]):KL_BOARDS; }
 function kelasBoardHTML(C){
   if(Kelas.cmKind==='stations' && C.cat!=='HYROX') Kelas.cmKind='classes';
+  if(Kelas.cmKind==='strength' && C.cat!=='Mens') Kelas.cmKind='classes';
   if(Kelas.cmKind==='stations') return kelasHxBoardHTML(C);
+  if(Kelas.cmKind==='strength') return kelasMxBoardHTML(C);
   const kind=Kelas.cmKind||'classes', which=Kelas.cmBoard||'week';
   const B=(kind==='classes'?C[which]:C[kind])||{}, top=B.top||[], me=B.me;
   const unit=kind==='streak'?(n=>'week'+(n===1?'':'s')):kind==='improved'?(()=>'vs last month'):(n=>'class'+(n===1?'':'es'));
@@ -1177,7 +1181,7 @@ function kelasBoardHTML(C){
     (kind==='classes'?'<div class="obseg kl-bseg">'+
       '<button class="'+(which==='week'?'on':'')+'" onclick="Kelas.cmBoard=\'week\';renderKelas()">Week</button>'+
       '<button class="'+(which==='month'?'on':'')+'" onclick="Kelas.cmBoard=\'month\';renderKelas()">Month</button></div>':'')+'</div>'+
-    '<div class="kl-bkinds'+(C.cat==='HYROX'?' kl-bk4':'')+'">'+kelasBoardKinds(C).map(k=>'<button class="'+(k[0]===kind?'on':'')+'" onclick="Kelas.cmKind=\''+k[0]+'\';renderKelas()">'+k[1]+'</button>').join('')+'</div>'+
+    '<div class="kl-bkinds'+(C.cat==='HYROX'||C.cat==='Mens'?' kl-bk4':'')+'">'+kelasBoardKinds(C).map(k=>'<button class="'+(k[0]===kind?'on':'')+'" onclick="Kelas.cmKind=\''+k[0]+'\';renderKelas()">'+k[1]+'</button>').join('')+'</div>'+
     '<div class="kl-bnote">'+(kind==='improved'?'Classes this month against last month, to the same date. Anyone can win this one.'
       :kind==='streak'?'Weeks in a row with 3 or more classes.':'One class a day counts, morning or evening.')+'</div>';
   if(!top.length) return h+'<div class="kl-none">'+(kind==='streak'?'No streaks yet. Three classes this week starts one.':kind==='improved'?'Nobody has come yet this month. Be the first.':'No classes yet '+(which==='week'?'this week':'this month')+'. Be the first on the board.')+'</div></div>';
@@ -1920,7 +1924,9 @@ function kelasHxSetGoal(){
                    days without class.
      the challenge 12 Ladies classes a month; the group sees who made it
                    (096 posts it when the 12th lands). */
-var LX_TARGET=12;
+var LX_TARGET=12, MX_TARGET=10;
+function kelasChTarget(){ return kelasSpace()==='mens'?MX_TARGET:LX_TARGET; }
+function kelasChLabel(){ return kelasSpace()==='mens'?'Mens':'Ladies'; }
 var LX_PH={period:['Period','#DB2777','Go by feel today. Class is fine if you feel good; lighter loads or mobility if you don’t. Water and iron-rich food help.'],
   follicular:['Follicular','#F59E0B','Energy usually climbs now. A good week to push the pace and chase a PR.'],
   ovulation:['Ovulation','#10B981','Many women feel strongest here. Warm up well and keep landings and knees controlled.'],
@@ -1986,12 +1992,12 @@ function kelasLxChallenge(){
   const dim=new Date(Date.UTC(y,m+1,0)).getUTCDate(), left=dim-now.getUTCDate();
   /* the months already won (the last four, from the kiosk) */
   const by={}; kelasIns().forEach(d=>{ const k=kelasDayKey(d); (by[k.slice(0,7)]=by[k.slice(0,7)]||new Set()).add(k); });
-  const months=[]; for(let i=3;i>=1;i--){ const k=new Date(Date.UTC(y,m-i,1)).toISOString().slice(0,7); months.push({k:k, won:!!(by[k]&&by[k].size>=LX_TARGET)}); }
-  return {n:n, target:LX_TARGET, left:left, done:n>=LX_TARGET, name:KL_MONTHS[m], months:months};
+  const T=kelasChTarget(), months=[]; for(let i=3;i>=1;i--){ const k=new Date(Date.UTC(y,m-i,1)).toISOString().slice(0,7); months.push({k:k, won:!!(by[k]&&by[k].size>=T)}); }
+  return {n:n, target:T, left:left, done:n>=T, name:KL_MONTHS[m], months:months, label:kelasChLabel()};
 }
 function kelasLxChallengeHTML(full){
   const X=kelasLxChallenge(), pct=Math.min(100,Math.round(X.n/X.target*100)), need=Math.max(0,X.target-X.n);
-  let h='<div class="kl-lxc'+(X.done?' done':'')+'"><div class="kl-lxc-h"><div><small>'+X.name+' Ladies Challenge</small><b>'+X.n+'<span> / '+X.target+' classes</span></b></div>'+
+  let h='<div class="kl-lxc'+(X.done?' done':'')+(kelasSpace()==='mens'?' mx':'')+'"><div class="kl-lxc-h"><div><small>'+X.name+' '+X.label+' Challenge</small><b>'+X.n+'<span> / '+X.target+' classes</span></b></div>'+
     '<span class="kl-lxc-badge">'+(X.done?'🏅 Done':glyph('trophy'))+'</span></div>'+
     '<div class="kl-lxc-bar"><i style="width:'+pct+'%"></i></div>'+
     '<div class="kl-lxc-s">'+(X.done?'Challenge complete! Your group saw it. Keep going, every class still counts.'
@@ -2001,22 +2007,26 @@ function kelasLxChallengeHTML(full){
   return h+'</div>';
 }
 function kelasLxGroupHTML(C){
-  const top=((C.month||{}).top)||[], done=top.filter(r=>r.n>=LX_TARGET);
+  const top=((C.month||{}).top)||[], done=top.filter(r=>r.n>=kelasChTarget());
   return kelasLxChallengeHTML(false)+
     (done.length?'<div class="kl-lxg"><b>Made it this month</b><div>'+done.map(r=>kelasAv(r.ph,r.name,'sm',r.me)).join('')+'</div><small>'+done.length+' of the group</small></div>':'');
 }
 /* measurements and progress photos */
 var LX_MEAS=[['waist','Waist'],['hip','Hip'],['thigh','Thigh'],['arm','Arm']];
+var MX_MEAS=[['waist','Waist'],['chest','Chest'],['arm','Arm'],['thigh','Thigh']];
+function kelasMeasSet(){ return kelasSpace()==='mens'?MX_MEAS:LX_MEAS; }
 function kelasLxMeas(){ const k=HF.data.kelas||(HF.data.kelas={}); if(!Array.isArray(k.meas)) k.meas=[]; return k.meas; }
 function kelasLxPics(){ const k=HF.data.kelas||(HF.data.kelas={}); if(!Array.isArray(k.pics)) k.pics=[]; return k.pics; }
 function kelasLxBodyHTML(){
   const M=kelasLxMeas().slice().sort((a,b)=>String(a.d).localeCompare(String(b.d))), first=M[0], last=M[M.length-1];
   let h=fsec('Measurements','Centimetres, private to you.');
   h+='<div class="kl-lxm">';
-  if(last) h+='<div class="kl-lxm-g">'+LX_MEAS.map(x=>{ const v=last[x[0]], f=first&&first[x[0]], d=(v!=null&&f!=null&&first!==last)?Math.round((v-f)*10)/10:null;
+  if(last) h+='<div class="kl-lxm-g">'+kelasMeasSet().map(x=>{ const v=last[x[0]], f=first&&first[x[0]], d=(v!=null&&f!=null&&first!==last)?Math.round((v-f)*10)/10:null;
     return '<div><small>'+x[1]+'</small><b>'+(v!=null?v:'—')+'</b>'+(d!==null?'<em class="'+(d<0?'down':d>0?'up':'')+'">'+(d>0?'+':'')+d+'</em>':'')+'</div>'; }).join('')+'</div>'+
+    (kelasSpace()==='mens'&&last.waist!=null?'<div class="kl-mxw '+(last.waist<90?'ok':'hi')+'"><b>'+(last.waist<90?'Waist under 90 cm':'Waist 90 cm or more')+'</b><span>'+
+      (last.waist<90?'Inside the healthy range for Asian men. Keep it there.':'Above 90 cm, health risk rises for Asian men (heart, diabetes). Every cm down counts.')+'</span></div>':'')+
     '<div class="kl-lxm-s">'+(first!==last?'Since '+kelasIBDate(first.d,true)+' · '+M.length+' entries':'First entry '+kelasIBDate(last.d,true))+'</div>';
-  if(Kelas.lxAdd || !last) h+='<div class="kl-lxm-in">'+LX_MEAS.map(x=>'<label>'+x[1]+'<input id="kl-lxm-'+x[0]+'" inputmode="decimal" placeholder="cm" value="'+(last&&last[x[0]]!=null?last[x[0]]:'')+'"></label>').join('')+
+  if(Kelas.lxAdd || !last) h+='<div class="kl-lxm-in">'+kelasMeasSet().map(x=>'<label>'+x[1]+'<input id="kl-lxm-'+x[0]+'" inputmode="decimal" placeholder="cm" value="'+(last&&last[x[0]]!=null?last[x[0]]:'')+'"></label>').join('')+
       '</div><button class="bigbtn kl-go kl-lxm-go" onclick="kelasLxSave()">Save today</button>';
   else h+='<button class="kl-alt2" onclick="Kelas.lxAdd=true;renderKelas()">'+glyph('plus')+' Measure again</button>';
   h+='</div>';
@@ -2034,7 +2044,7 @@ function kelasLxBodyHTML(){
 }
 function kelasLxSave(vals){
   const e={d:kelasDayKey(kelasNowMY())}; let any=false;
-  LX_MEAS.forEach(x=>{ const raw=vals?vals[x[0]]:(($('kl-lxm-'+x[0])||{}).value); const v=parseFloat(String(raw||'').replace(',','.'));
+  kelasMeasSet().forEach(x=>{ const raw=vals?vals[x[0]]:(($('kl-lxm-'+x[0])||{}).value); const v=parseFloat(String(raw||'').replace(',','.'));
     if(isFinite(v) && v>=10 && v<=250){ e[x[0]]=Math.round(v*10)/10; any=true; } });
   if(!any){ toast('Type at least one measurement in cm'); return; }
   const M=kelasLxMeas().filter(x=>x.d!==e.d); M.push(e); HF.data.kelas.meas=M.slice(-120);
@@ -2080,21 +2090,23 @@ function kelasLxShare(){
   const a=P[0], b=P[P.length-1], U=Kelas.lxUrls||{};
   if(!U[a.path]||!U[b.path]){ toast('Photos still loading. Try again in a moment.'); kelasLxSign(); return; }
   const M=kelasLxMeas().slice().sort((x,y)=>String(x.d).localeCompare(String(y.d))), f=M[0], l=M[M.length-1];
-  const ch=f&&l&&f!==l?LX_MEAS.map(x=>(f[x[0]]!=null&&l[x[0]]!=null)?[x[1],Math.round((l[x[0]]-f[x[0]])*10)/10]:null).filter(Boolean):[];
+  const ch=f&&l&&f!==l?kelasMeasSet().map(x=>(f[x[0]]!=null&&l[x[0]]!=null)?[x[1],Math.round((l[x[0]]-f[x[0]])*10)/10]:null).filter(Boolean):[];
   const wks=Math.max(1,Math.round((Date.parse(b.d)-Date.parse(a.d))/(7*864e5)));
   /* the card is drawn at once, so both photos load first */
   const ld=src=>new Promise(res=>{ const im=new Image(); im.crossOrigin='anonymous'; im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
   toast('Making your card…');
   Promise.all([ld(U[a.path]),ld(U[b.path])]).then(ims=>{
     if(!ims[0]||!ims[1]){ toast('Could not load the photos. Try again.'); return; }
-    Kelas.share={kind:'lx', ia:ims[0], ib:ims[1], da:a.d, db:b.d, wks:wks, ch:ch}; openShare('kelas');
+    Kelas.share={kind:'lx', sp:kelasSpace(), ia:ims[0], ib:ims[1], da:a.d, db:b.d, wks:wks, ch:ch}; openShare('kelas');
   });
 }
 function kelasDrawLx(x,W,H,cx,F,S){
-  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,'#F472B6'); g.addColorStop(.5,'#DB2777'); g.addColorStop(1,'#831843');
+  const M=S.sp==='mens', g=x.createLinearGradient(0,0,0,H);
+  if(M){ g.addColorStop(0,'#3B82F6'); g.addColorStop(.5,'#1D4ED8'); g.addColorStop(1,'#172554'); }
+  else { g.addColorStop(0,'#F472B6'); g.addColorStop(.5,'#DB2777'); g.addColorStop(1,'#831843'); }
   x.fillStyle=g; x.fillRect(0,0,W,H);
   x.fillStyle='#FFFFFF'; x.font=F(900,64); x.fillText('HITFAT+',cx,200);
-  x.fillStyle='rgba(255,255,255,.88)'; x.font=F(800,30); _spaced(x,'LADIES2FIT · '+S.wks+' WEEK'+(S.wks===1?'':'S'),cx,256,6);
+  x.fillStyle='rgba(255,255,255,.88)'; x.font=F(800,30); _spaced(x,(M?'MENS2FIT':'LADIES2FIT')+' · '+S.wks+' WEEK'+(S.wks===1?'':'S'),cx,256,6);
   const pw=450, ph=760, y=340;
   [[S.ia,cx-pw-15,'BEFORE',S.da],[S.ib,cx+15,'NOW',S.db]].forEach(p=>{
     const im=p[0], px=p[1];
@@ -2107,8 +2119,92 @@ function kelasDrawLx(x,W,H,cx,F,S){
   const lines=(S.ch||[]).filter(c=>c[1]!==0).slice(0,4);
   if(lines.length){ const by=y+ph+150; x.fillStyle='#FFFFFF'; _rr(x,cx-420,by,840,130,36); x.fill();
     lines.forEach((c,i)=>{ const sx=cx-420+840/(lines.length*2)*(2*i+1);
-      x.fillStyle='#DB2777'; x.font=F(900,48); x.fillText((c[1]>0?'+':'')+c[1]+' cm',sx,by+70); x.fillStyle='#55555C'; x.font=F(700,24); x.fillText(c[0],sx,by+106); }); }
+      x.fillStyle=M?'#1D4ED8':'#DB2777'; x.font=F(900,48); x.fillText((c[1]>0?'+':'')+c[1]+' cm',sx,by+70); x.fillStyle='#55555C'; x.font=F(700,24); x.fillText(c[0],sx,by+106); }); }
   x.fillStyle='rgba(255,255,255,.8)'; x.font=F(700,34); x.fillText('app.hitfat.io',cx,H-110);
+}
+
+/* ═══════════════ Mens (17 Oct 2026) ═══════════════
+   Seth: Mens2Fit gets its own space (097) and four things of its own:
+     strength      the main lifts, weight × reps, the estimated 1RM (Epley:
+                   kg × (1 + reps/30)); a new best rings the bell and goes
+                   to the Mens group; a strength board in the group.
+     measurements  waist, chest, arm, thigh, and the waist against 90 cm,
+                   the line health guidance draws for Asian men; private
+                   progress photos and a before/after card without weight
+                   (shared with Ladies' code).
+     Men's Body Reset  open with the class, for the days without class.
+     the challenge 10 Mens classes a month (Mens2Fit is 3 a week). */
+var MX_LIFTS=[['bench','Bench Press'],['squat','Back Squat'],['deadlift','Deadlift'],['ohp','Overhead Press'],['pullup','Weighted Pull-up']];
+function kelasMxRes(){ return (Kelas.data&&Array.isArray(Kelas.data.strength))?Kelas.data.strength:[]; }
+function kelasMxList(l){ return kelasMxRes().filter(r=>r.l===l).sort((a,b)=>String(b.d).localeCompare(String(a.d))); }
+function kelasMxBest(l){ const a=kelasMxList(l); return a.length?a.reduce((b,r)=>(+r.e>+b.e?r:b),a[0]):null; }
+function kelasE1rm(kg,reps){ kg=+kg; reps=+reps; return Math.round((reps===1?kg:kg*(1+reps/30))*10)/10; }
+function kelasMxTodayHTML(){
+  let h=kelasLxChallengeHTML(false);
+  h+='<button class="kl-lb mx" onclick="openProgram(\'men6\')"><span class="kl-lb-ic">'+glyph('workout')+'</span><span class="kl-lb-t"><b>Men’s Body Reset</b>'+
+     '<small>For the days without class · 6 weeks · included with your class</small></span><em>Open</em></button>';
+  return h;
+}
+function kelasMxStrengthHTML(){
+  const open=Kelas.mxLift;
+  let h=fsec('Strength','Your best lifts, as an estimated 1 rep max.');
+  h+='<div class="kl-mx-grid">'+MX_LIFTS.map(x=>{ const b=kelasMxBest(x[0]);
+    return '<button class="kl-mx-l'+(open===x[0]?' on':'')+(b?'':' empty')+'" onclick="Kelas.mxLift=Kelas.mxLift===\''+x[0]+'\'?null:\''+x[0]+'\';renderKelas()">'+
+      '<span>'+x[1]+'</span><b>'+(b?kelasF(b.e)+'<i> kg</i>':'—')+'</b><small>'+(b?kelasF(b.kg)+' kg × '+b.r:'Log a set')+'</small></button>'; }).join('')+'</div>';
+  if(open) h+=kelasMxLogHTML(open);
+  return h;
+}
+function kelasMxLogHTML(l){
+  const L=kelasMxList(l), b=kelasMxBest(l), last=L.slice(0,8).reverse();
+  const mx=last.length?Math.max.apply(null,last.map(r=>+r.e)):0, mn=last.length?Math.min.apply(null,last.map(r=>+r.e)):0;
+  let h='<div class="kl-hx-log"><div class="kl-hx-lt"><b>'+hesc((MX_LIFTS.filter(x=>x[0]===l)[0]||[])[1]||l)+'</b>'+(b?'<span>Best '+kelasF(b.e)+' kg</span>':'')+'</div>'+
+    '<div class="kl-mx-in"><input id="kl-mxkg" class="kl-in" inputmode="decimal" placeholder="kg"><span>×</span><input id="kl-mxr" class="kl-in" inputmode="numeric" placeholder="reps">'+
+    '<button class="bigbtn kl-go" onclick="kelasMxSave(\''+l+'\')"'+(Kelas.mxBusy?' disabled':'')+'>'+(Kelas.mxBusy?'…':'Save')+'</button></div>'+
+    '<div class="kl-mx-f">The heaviest set you did today. Up to 10 reps estimates best; 1 rep is the real thing.</div>';
+  if(last.length>1) h+='<div class="kl-hx-spark">'+last.map(r=>'<i class="'+(b&&r.id===b.id?'best':'')+'" style="height:'+(mx===mn?60:Math.round(25+(r.e-mn)/(mx-mn)*75))+'%"></i>').join('')+'</div>';
+  if(L.length) h+='<div class="kl-hx-hist">'+L.slice(0,5).map(r=>'<div><span>'+kelasIBDate(r.d,true)+' · '+kelasF(r.kg)+' kg × '+r.r+'</span><b>'+kelasF(r.e)+(b&&r.id===b.id?' <em>best</em>':'')+'</b>'+
+      (r.id&&r.id!=='tmp'?'<button onclick="kelasMxDel(\''+r.id+'\')" aria-label="Delete">✕</button>':'')+'</div>').join('')+'</div>';
+  return h+'</div>';
+}
+async function kelasMxSave(l,kgv,repsv){
+  const kg=parseFloat(String(kgv!==undefined?kgv:(($('kl-mxkg')||{}).value||'')).replace(',','.')), reps=parseInt(repsv!==undefined?repsv:(($('kl-mxr')||{}).value||''),10);
+  if(!(kg>=0&&kg<=500)||!(reps>=1&&reps<=30)){ toast('Type the weight in kg and the reps (1–30)'); return; }
+  Kelas.mxBusy=true; renderKelas();
+  try{
+    const r=await kelasCall('st_log',{lift:l, kg:kg, reps:reps, date:kelasDayKey(kelasNowMY())});
+    if(!r||!r.ok) throw new Error(r&&r.error||'failed');
+    if(Kelas.data){ Kelas.data.strength=[{id:r.id,l:l,kg:kg,r:reps,e:r.e1rm,d:kelasDayKey(kelasNowMY())}].concat(kelasMxRes()); kelasSave(); }
+    if(r.pb){ if(typeof hfSound==='function') hfSound('bell'); toast('New best! 🔔 Posted to your Mens group'); Kelas.cm=null; Kelas.mxB=null; }
+    else toast(r.first?'Logged. Now beat it 💪':'Logged · est. 1RM '+kelasF(r.e1rm)+' kg');
+  }catch(e){ toast(e.message==='too_many'?'That is a lot for one day. Try tomorrow.':'Could not save. Try again.'); }
+  Kelas.mxBusy=false; renderKelas();
+}
+async function kelasMxDel(id){
+  if(Kelas.mxDelAsk!==id){ Kelas.mxDelAsk=id; toast('Tap ✕ again to delete'); return; }
+  Kelas.mxDelAsk=null;
+  try{ await kelasCall('st_delete',{id:id}); if(Kelas.data){ Kelas.data.strength=kelasMxRes().filter(r=>r.id!==id); kelasSave(); } Kelas.mxB=null; renderKelas(); }
+  catch(e){ toast('Could not delete. Try again.'); }
+}
+/* the Mens group: a strength board, best estimated 1RM per lift */
+function kelasMxBoardHTML(C){
+  const l=Kelas.mxBL||'bench', B=Kelas.mxB;
+  if(!B && !Kelas.mxBBusy && !Kelas.mxBErr) setTimeout(kelasMxBoardLoad,0);
+  let h='<div class="kl-board"><div class="kl-bh"><b>Leaderboard</b></div>'+
+    '<div class="kl-bkinds kl-bk4">'+kelasBoardKinds(C).map(k=>'<button class="'+(k[0]==='strength'?'on':'')+'" onclick="Kelas.cmKind=\''+k[0]+'\';renderKelas()">'+k[1]+'</button>').join('')+'</div>'+
+    '<div class="kl-hx-bst">'+MX_LIFTS.map(x=>'<button class="'+(x[0]===l?'on':'')+'" onclick="Kelas.mxBL=\''+x[0]+'\';renderKelas()">'+x[1]+'</button>').join('')+'</div>';
+  if(!B) return h+'<div class="kl-none">'+(Kelas.mxBErr?'Could not load the board. <button class="kl-alt2" onclick="Kelas.mxBErr=false;renderKelas()">Try again</button>':'Loading…')+'</div></div>';
+  const S=(B.boards||{})[l]||{}, top=S.top||[];
+  if(!top.length) return h+'<div class="kl-none">No '+hesc((MX_LIFTS.filter(x=>x[0]===l)[0]||[])[1]||'')+' yet. Log yours in Progress and take the top spot.</div></div>';
+  const row=r=>'<div class="kl-br'+(r.me?' me':'')+'"><span class="kl-rk r'+r.r+'">'+r.r+'</span>'+kelasAv(r.ph,r.name,'bd',r.me)+
+    '<span class="kl-bn">'+hesc(r.name)+(r.me?' <i>you</i>':'')+'</span><b>'+kelasF(r.e)+'</b><small>kg</small></div>';
+  h+=top.map(row).join('');
+  if(S.me && !top.some(r=>r.me)) h+='<div class="kl-bsep">⋯</div>'+row({r:S.me.r,name:'You',e:S.me.e,me:true});
+  return h+'<div class="kl-bfoot">Estimated 1 rep max, best each · '+S.people+' on this board</div></div>';
+}
+async function kelasMxBoardLoad(){
+  Kelas.mxBBusy=true; Kelas.mxBErr=false;
+  try{ const r=await kelasCall('st_board',{}); Kelas.mxB=r&&r.ok?r:{boards:{}}; }catch(e){ Kelas.mxBErr=true; }
+  Kelas.mxBBusy=false; if(Kelas.tab==='group') renderKelas();
 }
 
 /* ═══════════════ Today's workout (17 Oct 2026) ═══════════════

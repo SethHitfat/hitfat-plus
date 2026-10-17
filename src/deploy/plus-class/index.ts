@@ -25,6 +25,8 @@
                                      in client_metrics for the coach)
    POST { action:'hx_log', station, secs, div, date } | 'hx_delete', id |
         'hx_board', div               HYROX: station times and the boards
+   POST { action:'st_log', lift, kg, reps, date } | 'st_delete', id | 'st_board'
+                                     Mens: strength sets (est. 1RM), the board
    POST { action:'photo', url }      the profile photo for the boards, posts
                                      and comments (own upload or Google's)
    POST { action:'cm_feed', cat }    Community: the group's feed, the weekly
@@ -286,6 +288,19 @@ Deno.serve(async (req: Request) => {
     if (action === 'hx_board') {
       return json(await os('plus_hx_board', { p_key: key, p_user: uid, p_div: String(body.div || 'Open Men') }));
     }
+
+    /* Mens strength (097): a set, removing one, the group's strength board */
+    if (action === 'st_log') {
+      const kg = Number(body.kg), reps = Math.round(Number(body.reps));
+      const d = /^\d{4}-\d{2}-\d{2}$/.test(String(body.date || '')) ? String(body.date) : null;
+      return json(await os('plus_st_log', { p_key: key, p_user: uid, p_lift: String(body.lift || ''), p_kg: isFinite(kg) ? kg : -1,
+        p_reps: isFinite(reps) ? reps : 0, p_date: d }));
+    }
+    if (action === 'st_delete') {
+      const id = /^[0-9a-f-]{36}$/.test(String(body.id || '')) ? String(body.id) : null;
+      return json(id ? await os('plus_st_delete', { p_key: key, p_user: uid, p_id: id }) : { ok: false });
+    }
+    if (action === 'st_board') return json(await os('plus_st_board', { p_key: key, p_user: uid }));
 
     if (action === 'journey_start') {
       return json(await os('plus_journey_start', { p_key: key, p_user: uid, p_kind: String(body.kind || '') }));

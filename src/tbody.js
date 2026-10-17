@@ -4463,6 +4463,30 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("measurements: saved in cm, the change since the first", HF.data.kelas.meas.length===2 && Bd.indexOf('77.5')>0 && Bd.indexOf('>-2.5<')>0 && Bd.indexOf('>-1<')>0);
   ok("...in the Body tab, Ladies only", Bd.indexOf('Progress photos')>0 && (Kelas.space='active', kelasBodyTab().indexOf('Progress photos')<0));
   Kelas.space=keepSp2; Kelas.data=keepD2; HF.data.kelas=keepK2; HF.save=keepSv6; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
+  /* Mens: its own space (097) */
+  var keepD3=JSON.parse(JSON.stringify(Kelas.data)), keepK3=JSON.parse(JSON.stringify(HF.data.kelas||{})), keepSv7=HF.save, keepSp3=Kelas.space; HF.save=function(){};
+  Kelas.space=null; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
+  Kelas.data.memberships=[{category:'Mens',plan:'3 Month',start_date:'2026-10-01',end_date:'2026-12-31',active:true}];
+  Kelas.data.mx_ins=Kelas.data.checkins.slice(0,4); Kelas.data.total_mx=4; Kelas.data.weeks_mx=[];
+  ok("a Mens member: the Mens space, his own classes and group", kelasSpace()==='mens' && kelasIns().length===4 && kelasTotal()===4 && kelasSpaceCat()==='Mens' && kelasTodayTab().indexOf('kl-hero kl-hero2 mx')>0 && kelasTodayTab().indexOf('Mens2Fit · HQ')>0);
+  ok("...Men's Body Reset and the 10-class challenge on Today", kelasTodayTab().indexOf("openProgram('men6')")>0 && kelasTodayTab().indexOf('Mens Challenge')>0 && kelasLxChallenge().target===10);
+  ok("...no cycle in the Mens space", kelasTodayTab().indexOf('Track your cycle')<0);
+  ok("estimated 1RM (Epley): 100 kg × 5 is 116.7; one rep is itself", kelasE1rm(100,5)===116.7 && kelasE1rm(140,1)===140);
+  Kelas.data.strength=[{id:'a',l:'bench',kg:80,r:5,e:93.3,d:'2026-10-01'},{id:'b',l:'bench',kg:90,r:3,e:99,d:'2026-10-10'},{id:'c',l:'squat',kg:120,r:1,e:120,d:'2026-10-10'}];
+  ok("strength: the best set by estimated 1RM, on Progress", kelasMxBest('bench').id==='b' && kelasProgressTab().indexOf('Strength')>0 && kelasProgressTab().indexOf('99<i> kg</i>')>0);
+  Kelas.mxLift='bench'; ok("...a lift opens its log and history", kelasProgressTab().indexOf('Best 99 kg')>0 && kelasProgressTab().indexOf('90 kg × 3')>0); Kelas.mxLift=null;
+  HF.data.kelas.meas=[{d:'2026-09-01',waist:95,chest:104},{d:'2026-10-17',waist:92,chest:103,arm:36}];
+  var Bm=kelasBodyTab();
+  ok("measurements for men: waist, chest, arm, thigh; the 90 cm line", Bm.indexOf('Chest')>0 && Bm.indexOf('Hip')<0 && Bm.indexOf('Waist 90 cm or more')>0 && Bm.indexOf('>-3<')>0);
+  HF.data.kelas.meas[1].waist=88; ok("...under 90 cm: the healthy range", kelasBodyTab().indexOf('Waist under 90 cm')>0);
+  var keepCm3=Kelas.cm; Kelas.cm={cat:'Mens', cats:['Mens'], week:{top:[]}, month:{top:[]}, posts:[]};
+  ok("the Mens group gets a Strength board", kelasBoardKinds(Kelas.cm).some(function(k){return k[0]==='strength';}));
+  Kelas.cmKind='strength'; Kelas.mxB={boards:{bench:{top:[{r:1,name:'Amir S.',e:120},{r:2,name:'You',e:99,me:true}],people:2}}};
+  ok("...best estimated 1RM per lift", kelasBoardHTML(Kelas.cm).indexOf('Amir S.')>0 && kelasBoardHTML(Kelas.cm).indexOf('>120<')>0);
+  Kelas.cmKind='classes'; Kelas.mxB=null; Kelas.cm=keepCm3;
+  Kelas.data.memberships.push({category:'Ladies',plan:'x',start_date:'2026-10-01',end_date:'2026-12-31',active:true},{category:'Membership',plan:'x',start_date:'2026-10-01',end_date:'2026-12-31',active:true},{category:'HYROX',plan:'x',start_date:'2026-10-01',end_date:'2026-12-31',active:true});
+  ok("all four packages: a four-way switch", kelasSpaces().join()==='active,ladies,mens,hyrox' && kelasHTML().indexOf('kl-space n4')>0);
+  Kelas.space=keepSp3; Kelas.data=keepD3; HF.data.kelas=keepK3; HF.save=keepSv7; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
   /* profile photo (17 Oct) */
   var keepPh=HF.data.prefs.photo, keepG=HF.gphoto, keepSv3=HF.save; HF.save=function(){};
   HF.gphoto='https://lh3.googleusercontent.com/a/x=s96-c'; delete HF.data.prefs.photo;
