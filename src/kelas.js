@@ -70,6 +70,7 @@ async function kelasLoad(){
     const st=await kelasCall('status');
     Kelas.data=st&&st.linked?st:null; kelasSave(); Kelas.state='ready';
     kelasSyncDays();
+    kelasPhotoSync();
     /* the pass may have moved (renewed, ended, released at the counter):
        read it again so the app opens or closes with it */
     if(was || kelasLinked()) await loadEntitlement();
@@ -85,6 +86,22 @@ if(typeof document!=='undefined' && document.addEventListener) document.addEvent
   if(Date.now()-_kelasAt<5*60e3) return;
   kelasLoad();
 });
+/* the profile photo (Me), to HITFAT OS for the boards, posts and comments:
+   sent when it differs from what was last sent from this phone */
+async function kelasPhotoSync(){
+  if(!kelasLinked() || typeof sb==='undefined' || !sb || !HF.userId || typeof hfPhoto!=='function') return;
+  const ph=hfPhoto(), k='hf_kelas_ph_'+HF.userId;
+  let was=null; try{ was=localStorage.getItem(k); }catch(e){}
+  if(was===ph) return;
+  try{ const r=await kelasCall('photo',{url:ph||null}); if(r&&r.ok){ try{ localStorage.setItem(k,ph); }catch(e){} } }catch(e){}
+}
+/* a member's face: their photo over their initial (the letter shows if the
+   photo will not load); my own from this phone, so a change shows at once */
+function kelasAv(ph,name,cls,mine){
+  const src=mine&&typeof hfPhoto==='function'?(hfPhoto()||ph):ph;
+  return '<span class="kl-av'+(cls?' '+cls:'')+'">'+hesc(String(name||'M').charAt(0).toUpperCase())+
+    (src?'<img src="'+hesc(src)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':'')+'</span>';
+}
 function kelasRepaint(){
   if($('kelas') && $('kelas').style.display==='block') renderKelas();
   else if($('home') && $('home').style.display!=='none' && typeof renderHome==='function') renderHome();
@@ -1086,10 +1103,10 @@ function kelasBoardHTML(C){
     '<div class="kl-bnote">'+(kind==='improved'?'Classes this month against last month, to the same date. Anyone can win this one.'
       :kind==='streak'?'Weeks in a row with 3 or more classes.':'One class a day counts, morning or evening.')+'</div>';
   if(!top.length) return h+'<div class="kl-none">'+(kind==='streak'?'No streaks yet. Three classes this week starts one.':kind==='improved'?'Nobody has come yet this month. Be the first.':'No classes yet '+(which==='week'?'this week':'this month')+'. Be the first on the board.')+'</div></div>';
-  const row=r=>'<div class="kl-br'+(r.me?' me':'')+'"><span class="kl-rk r'+r.r+'">'+r.r+'</span><span class="kl-bn">'+hesc(r.name)+(r.me?' <i>you</i>':'')+
+  const row=r=>'<div class="kl-br'+(r.me?' me':'')+'"><span class="kl-rk r'+r.r+'">'+r.r+'</span>'+kelasAv(r.ph,r.me&&r.name==='You'?((HF.data.prefs&&HF.data.prefs.name)||'Y'):r.name,'bd',r.me)+'<span class="kl-bn">'+hesc(r.name)+(r.me?' <i>you</i>':'')+
     (kind==='improved'&&r.was!=null?'<em>'+r.was+' → '+r.now+'</em>':'')+'</span><b>'+val(r.n)+'</b><small>'+unit(r.n)+'</small></div>';
   h+=top.map(row).join('');
-  if(me && !top.some(r=>r.me)) h+='<div class="kl-bsep">⋯</div>'+row({r:me.r,name:'You',n:me.n,me:true});
+  if(me && !top.some(r=>r.me)) h+='<div class="kl-bsep">⋯</div>'+row({r:me.r,name:'You',n:me.n,me:true,ph:me.ph});
   const more=kind==='streak'?(g=>g+' more week'+(g===1?'':'s')):kind==='improved'?(g=>g+' more class'+(g===1?'':'es')):(g=>g+' more class'+(g===1?'':'es'));
   h+='<div class="kl-bfoot">'+(me?(me.r===1?'You are top of the board. Keep it there!':(me.gap?more(me.gap)+' to move up':'Level with the next place up')+' · #'+me.r+' of '+B.people)
       :(kind==='streak'?'Three classes this week puts you on this board.':'Check in at the kiosk to get on the board.'))+'</div></div>';
@@ -1100,14 +1117,16 @@ function kelasPostHTML(p){
   let h='<div class="kl-post k-'+p.kind+(p.pinned?' pin':'')+(p.hidden?' hid':'')+(own?' own':'')+'" id="kp-'+p.id+'">';
   if(own){
     const nm=String(p.title||'Member');
-    h+='<div class="kl-ph"><span class="kl-av">'+hesc(nm.charAt(0).toUpperCase())+'</span><div><b>'+hesc(nm)+'</b><small>'+kelasAgo(p.at)+
+    h+='<div class="kl-ph">'+kelasAv(p.ph,nm,'',p.mine)+'<div><b>'+hesc(nm)+'</b><small>'+kelasAgo(p.at)+
        (p.pinned?' · <span class="kl-pin">Pinned</span>':'')+(p.hidden?' · <span class="kl-pin">Hidden</span>':'')+'</small></div>'+kelasPostMenu(p)+'</div>';
     if(p.body) h+='<div class="kl-pcap">'+hesc(p.body)+'</div>';
     if(p.img) h+='<img class="kl-pimg" src="'+hesc(p.img)+'" alt="" loading="lazy" onclick="kelasCmZoom(this.src)">';
     else if(p.data&&p.data.path) h+='<div class="kl-pimg kl-pimg0">Photo</div>';
     h+='<div class="kl-pbody2">';
   } else {
-    h+='<div class="kl-prow"><span class="kl-pic">'+glyph(KL_CM_ICON[p.kind]||'star')+'</span>'+
+    h+='<div class="kl-prow">'+((p.ph||p.mine&&typeof hfPhoto==='function'&&hfPhoto())&&p.kind!=='announce'
+        ?'<span class="kl-pic kl-pic-av">'+kelasAv(p.ph,p.title,'',p.mine)+'<i>'+glyph(KL_CM_ICON[p.kind]||'star')+'</i></span>'
+        :'<span class="kl-pic">'+glyph(KL_CM_ICON[p.kind]||'star')+'</span>')+
       '<div class="kl-pb"><div class="kl-pt">'+hesc(p.title)+'</div>'+(p.body?'<div class="kl-pbody">'+hesc(p.body)+'</div>':'')+
       '<div class="kl-pm">'+(p.pinned?'<span class="kl-pin">Pinned</span>':'')+(p.hidden?'<span class="kl-pin">Hidden</span>':'')+kelasAgo(p.at)+'</div></div>'+kelasPostMenu(p)+'</div>'+
       '<div class="kl-pbody2 kl-pindent">';
@@ -1135,7 +1154,7 @@ function kelasPostMenu(p){
    replies under their comment (one level, like Facebook) */
 function kelasCmOne(p,c,reply){
   const adm=Kelas.cm&&Kelas.cm.admin;
-  return '<div class="kl-cm'+(c.hidden?' hid':'')+(reply?' rep':'')+'"><span class="kl-av sm">'+hesc(String(c.name||'M').charAt(0))+'</span>'+
+  return '<div class="kl-cm'+(c.hidden?' hid':'')+(reply?' rep':'')+'">'+kelasAv(c.ph,c.name,'sm',c.mine)+
     '<div class="kl-cmb"><b>'+hesc(c.name||'Member')+'</b> '+hesc(c.body)+'<small>'+kelasAgo(c.at)+
     (c.id!=='tmp'?' · <button onclick="kelasCmReplyTo(\''+p.id+'\',\''+(c.parent||c.id)+'\',\''+hesc(String(c.name||'Member')).replace(/'/g,'')+'\')">Reply</button>':'')+
     (c.id==='tmp'?'':(c.mine||adm)?' · <button onclick="kelasCmDelete(\''+p.id+'\',\''+c.id+'\')">Delete</button>':' · <button onclick="kelasCmReport(\''+p.id+'\',\''+c.id+'\')">Report</button>')+
@@ -1200,7 +1219,7 @@ function kelasCmZoom(src){
 /* every member: share a win, a selfie, a word with the class */
 function kelasCmComposerMember(){
   const c=Kelas.cmNew;
-  if(!c) return '<button class="kl-share-win" onclick="Kelas.cmNew={body:\'\',img:null};renderKelas()"><span class="kl-av">+</span><span>Share a win with your class…</span>'+glyph('photo')+'</button>';
+  if(!c) return '<button class="kl-share-win" onclick="Kelas.cmNew={body:\'\',img:null};renderKelas()">'+((typeof hfPhoto==='function'&&hfPhoto())?kelasAv('',(HF.data.prefs&&HF.data.prefs.name)||'Me','',true):'<span class="kl-av">+</span>')+'<span>Share a win with your class…</span>'+glyph('photo')+'</button>';
   return '<div class="kl-comp kl-comp2"><textarea id="kl-cmn" class="kl-in" maxlength="1000" rows="3" placeholder="A win, a selfie after class, a thank you to your coach…" oninput="Kelas.cmNew.body=this.value">'+hesc(c.body||'')+'</textarea>'+
     (c.img?'<div class="kl-cprev"><img src="'+c.img+'" alt=""><button onclick="Kelas.cmNew.img=null;renderKelas()" aria-label="Remove photo">✕</button></div>':'')+
     '<input type="file" id="kl-cmf" accept="image/*" style="display:none" onchange="kelasCmPhoto(this)">'+

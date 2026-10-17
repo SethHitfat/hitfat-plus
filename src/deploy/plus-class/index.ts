@@ -23,6 +23,8 @@
                                      read by Claude, saved in HITFAT OS
                                      (inbody_scans, and the headline numbers
                                      in client_metrics for the coach)
+   POST { action:'photo', url }      the profile photo for the boards, posts
+                                     and comments (own upload or Google's)
    POST { action:'cm_feed', cat }    Community: the group's feed, the weekly
                                      and monthly class boards, my choices
    POST { action:'cm_post', move, value }   a personal record to the group
@@ -312,6 +314,19 @@ Deno.serve(async (req: Request) => {
       const sv = await os('plus_inbody_save', { p_key: key, p_user: uid, p_date: scanDate, p_data: d });
       if (!sv || !sv.ok) return json({ error: (sv && sv.error) || 'failed' }, 500);
       return json({ ok: true, scan: { ...d, scan_date: scanDate, src: 'sheet' } });
+    }
+
+    /* the profile photo shown on the class boards, posts and comments: the
+       member's own upload (public 'avatars' bucket, in their own folder) or
+       their Google account's picture; anything else is refused (092) */
+    if (action === 'photo') {
+      const url = body.url ? String(body.url).slice(0, 600) : null;
+      const own = Deno.env.get('SUPABASE_URL')!.replace(/\/+$/, '') + '/storage/v1/object/public/avatars/' + uid + '/';
+      const meta: any = u.user.user_metadata || {};
+      const g = String(meta.avatar_url || meta.picture || '');
+      const ok = !url || url.startsWith(own) || (!!g && url === g && url.startsWith('https://lh3.googleusercontent.com/'));
+      if (!ok) return json({ ok: false, error: 'bad_url' });
+      return json(await os('plus_photo', { p_key: key, p_user: uid, p_url: url }));
     }
 
     if (action.startsWith('cm_')) {

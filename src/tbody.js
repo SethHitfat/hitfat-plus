@@ -4351,6 +4351,18 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("Bara on the Class screen is Home's Bara: his colour from today's score", kelasBaraSrc('aktif')===bellPoster(scState().k?'kusut':scLevel(scScore(iso(0)))) && kelasBaraSrc('kusut').indexOf('kusut')>0);
   noThrow("sounds: every one plays or stays quiet without breaking", function(){ ['giggle','cheer','bell','pop','x'].forEach(hfSound); });
   var keepS=HF.data.prefs.sound, keepSv=HF.save; HF.save=function(){}; hfSoundSet(false); ok("...Me turns them off", hfSoundOn()===false); hfSoundSet(true); ok("...and on", hfSoundOn()===true); HF.data.prefs.sound=keepS; HF.save=keepSv;
+  /* profile photo (17 Oct) */
+  var keepPh=HF.data.prefs.photo, keepG=HF.gphoto, keepSv3=HF.save; HF.save=function(){};
+  HF.gphoto='https://lh3.googleusercontent.com/a/x=s96-c'; delete HF.data.prefs.photo;
+  ok("photo: Google's picture until one is uploaded", hfPhoto()===HF.gphoto && avatarHTML(60).indexOf('<img src="https://lh3.googleusercontent.com/a/x=s96-c"')>0);
+  HF.data.prefs.photo='https://ercvaagznsndvrewlvgt.supabase.co/storage/v1/object/public/avatars/u1/a.jpg';
+  ok("...the uploaded one wins", hfPhoto().indexOf('/avatars/u1/a.jpg')>0 && mePhotoPath(HF.data.prefs.photo)==='u1/a.jpg');
+  HF.data.prefs.photo=false; ok("...removed: none at all, the initial stays", hfPhoto()==='' && avatarHTML(60).indexOf('<img')<0);
+  HF.data.prefs.photo='javascript:alert(1)'; ok("...only an https address is ever shown", hfPhoto()===HF.gphoto);
+  ok("...the picture is never sent a referrer, and falls back to the letter", avImg('https://x/y.jpg').indexOf('referrerpolicy="no-referrer"')>0 && avImg('https://x/y.jpg').indexOf('onerror')>0);
+  ok("class faces: a member's photo over their initial", kelasAv('https://x/p.jpg','Siti N.','sm',false).indexOf('>S<img src="https://x/p.jpg"')>0 && kelasAv(null,'Siti','',false).indexOf('<img')<0);
+  Kelas.cm.week.top[0].ph='https://x/top.jpg'; ok("...on the leaderboard", kelasBoardHTML(Kelas.cm).indexOf('https://x/top.jpg')>0); delete Kelas.cm.week.top[0].ph;
+  HF.data.prefs.photo=keepPh; if(keepPh===undefined) delete HF.data.prefs.photo; HF.gphoto=keepG; HF.save=keepSv3;
   ok("Bara on the Class screen is live and tappable", kelasBaraHTML().indexOf('kelasBaraPoke()')>0 && kelasBaraHTML().indexOf('sc-poster')>0);
   ok("Bara speaks on the Class screen, in Malay, as Bara", kelasBaraHTML().indexOf('Bara')>0 && /awak/.test(kelasBaraLine()[1]));
   var keepKD=HF.data.kelas, keepS2=HF.save; HF.save=function(){};

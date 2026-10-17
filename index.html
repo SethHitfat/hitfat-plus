@@ -6700,6 +6700,31 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-replying{font-size:12.5px;color:var(--dim);margin-top:10px;}
 .kl-replying button{border:0;background:none;color:var(--dim);font:inherit;cursor:pointer;padding:0 4px;}
 
+/* ── Profile photo (17 Oct): the photo lies over the initial, so a picture
+   that will not load leaves the letter; Me's photo is a button with a
+   camera badge; the class board, posts and comments show faces ── */
+.av2,.kl-av{position:relative;overflow:hidden;}
+.av2 img,.kl-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.meav{position:relative;flex:none;padding:0;border:0;background:none;border-radius:50%;cursor:pointer;}
+.meav-cam{position:absolute;right:-2px;bottom:-2px;width:24px;height:24px;border-radius:50%;background:#E30613;
+  display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg);}
+.meav-cam .gly{width:13px;height:13px;stroke:#FFFFFF;}
+.meph{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.meph button{display:inline-flex;align-items:center;gap:6px;font:700 13px/1 inherit;padding:9px 13px;border-radius:999px;
+  border:1px solid rgba(127,127,127,.25);background:transparent;color:var(--txt);cursor:pointer;}
+.meph button:first-of-type{background:#E30613;border-color:#E30613;color:#FFFFFF;}
+.meph button:first-of-type .gly{stroke:#FFFFFF;width:15px;height:15px;}
+.meph button.danger{color:#E30613;}
+.meph-t{flex-basis:100%;font-size:12px;color:var(--dim);}
+.kl-br{grid-template-columns:30px 30px 1fr auto auto;}
+.kl-av.bd{width:30px;height:30px;font-size:13px;}
+.kl-pic-av{position:relative;background:none!important;border-radius:50%;overflow:visible;}
+.kl-pic-av .kl-av{width:38px;height:38px;}
+.kl-pic-av i{position:absolute;right:-4px;bottom:-4px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
+  background:#E30613;box-shadow:0 0 0 2px var(--surface);}
+.kl-pic-av i .gly{width:11px!important;height:11px!important;stroke:#FFFFFF!important;}
+.k-club .kl-pic-av i{background:#F5C042;} .k-first .kl-pic-av i{background:#1F9D4C;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -20376,6 +20401,7 @@ async function kelasLoad(){
     const st=await kelasCall('status');
     Kelas.data=st&&st.linked?st:null; kelasSave(); Kelas.state='ready';
     kelasSyncDays();
+    kelasPhotoSync();
     /* the pass may have moved (renewed, ended, released at the counter):
        read it again so the app opens or closes with it */
     if(was || kelasLinked()) await loadEntitlement();
@@ -20391,6 +20417,22 @@ if(typeof document!=='undefined' && document.addEventListener) document.addEvent
   if(Date.now()-_kelasAt<5*60e3) return;
   kelasLoad();
 });
+/* the profile photo (Me), to HITFAT OS for the boards, posts and comments:
+   sent when it differs from what was last sent from this phone */
+async function kelasPhotoSync(){
+  if(!kelasLinked() || typeof sb==='undefined' || !sb || !HF.userId || typeof hfPhoto!=='function') return;
+  const ph=hfPhoto(), k='hf_kelas_ph_'+HF.userId;
+  let was=null; try{ was=localStorage.getItem(k); }catch(e){}
+  if(was===ph) return;
+  try{ const r=await kelasCall('photo',{url:ph||null}); if(r&&r.ok){ try{ localStorage.setItem(k,ph); }catch(e){} } }catch(e){}
+}
+/* a member's face: their photo over their initial (the letter shows if the
+   photo will not load); my own from this phone, so a change shows at once */
+function kelasAv(ph,name,cls,mine){
+  const src=mine&&typeof hfPhoto==='function'?(hfPhoto()||ph):ph;
+  return '<span class="kl-av'+(cls?' '+cls:'')+'">'+hesc(String(name||'M').charAt(0).toUpperCase())+
+    (src?'<img src="'+hesc(src)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':'')+'</span>';
+}
 function kelasRepaint(){
   if($('kelas') && $('kelas').style.display==='block') renderKelas();
   else if($('home') && $('home').style.display!=='none' && typeof renderHome==='function') renderHome();
@@ -21392,10 +21434,10 @@ function kelasBoardHTML(C){
     '<div class="kl-bnote">'+(kind==='improved'?'Classes this month against last month, to the same date. Anyone can win this one.'
       :kind==='streak'?'Weeks in a row with 3 or more classes.':'One class a day counts, morning or evening.')+'</div>';
   if(!top.length) return h+'<div class="kl-none">'+(kind==='streak'?'No streaks yet. Three classes this week starts one.':kind==='improved'?'Nobody has come yet this month. Be the first.':'No classes yet '+(which==='week'?'this week':'this month')+'. Be the first on the board.')+'</div></div>';
-  const row=r=>'<div class="kl-br'+(r.me?' me':'')+'"><span class="kl-rk r'+r.r+'">'+r.r+'</span><span class="kl-bn">'+hesc(r.name)+(r.me?' <i>you</i>':'')+
+  const row=r=>'<div class="kl-br'+(r.me?' me':'')+'"><span class="kl-rk r'+r.r+'">'+r.r+'</span>'+kelasAv(r.ph,r.me&&r.name==='You'?((HF.data.prefs&&HF.data.prefs.name)||'Y'):r.name,'bd',r.me)+'<span class="kl-bn">'+hesc(r.name)+(r.me?' <i>you</i>':'')+
     (kind==='improved'&&r.was!=null?'<em>'+r.was+' → '+r.now+'</em>':'')+'</span><b>'+val(r.n)+'</b><small>'+unit(r.n)+'</small></div>';
   h+=top.map(row).join('');
-  if(me && !top.some(r=>r.me)) h+='<div class="kl-bsep">⋯</div>'+row({r:me.r,name:'You',n:me.n,me:true});
+  if(me && !top.some(r=>r.me)) h+='<div class="kl-bsep">⋯</div>'+row({r:me.r,name:'You',n:me.n,me:true,ph:me.ph});
   const more=kind==='streak'?(g=>g+' more week'+(g===1?'':'s')):kind==='improved'?(g=>g+' more class'+(g===1?'':'es')):(g=>g+' more class'+(g===1?'':'es'));
   h+='<div class="kl-bfoot">'+(me?(me.r===1?'You are top of the board. Keep it there!':(me.gap?more(me.gap)+' to move up':'Level with the next place up')+' · #'+me.r+' of '+B.people)
       :(kind==='streak'?'Three classes this week puts you on this board.':'Check in at the kiosk to get on the board.'))+'</div></div>';
@@ -21406,14 +21448,16 @@ function kelasPostHTML(p){
   let h='<div class="kl-post k-'+p.kind+(p.pinned?' pin':'')+(p.hidden?' hid':'')+(own?' own':'')+'" id="kp-'+p.id+'">';
   if(own){
     const nm=String(p.title||'Member');
-    h+='<div class="kl-ph"><span class="kl-av">'+hesc(nm.charAt(0).toUpperCase())+'</span><div><b>'+hesc(nm)+'</b><small>'+kelasAgo(p.at)+
+    h+='<div class="kl-ph">'+kelasAv(p.ph,nm,'',p.mine)+'<div><b>'+hesc(nm)+'</b><small>'+kelasAgo(p.at)+
        (p.pinned?' · <span class="kl-pin">Pinned</span>':'')+(p.hidden?' · <span class="kl-pin">Hidden</span>':'')+'</small></div>'+kelasPostMenu(p)+'</div>';
     if(p.body) h+='<div class="kl-pcap">'+hesc(p.body)+'</div>';
     if(p.img) h+='<img class="kl-pimg" src="'+hesc(p.img)+'" alt="" loading="lazy" onclick="kelasCmZoom(this.src)">';
     else if(p.data&&p.data.path) h+='<div class="kl-pimg kl-pimg0">Photo</div>';
     h+='<div class="kl-pbody2">';
   } else {
-    h+='<div class="kl-prow"><span class="kl-pic">'+glyph(KL_CM_ICON[p.kind]||'star')+'</span>'+
+    h+='<div class="kl-prow">'+((p.ph||p.mine&&typeof hfPhoto==='function'&&hfPhoto())&&p.kind!=='announce'
+        ?'<span class="kl-pic kl-pic-av">'+kelasAv(p.ph,p.title,'',p.mine)+'<i>'+glyph(KL_CM_ICON[p.kind]||'star')+'</i></span>'
+        :'<span class="kl-pic">'+glyph(KL_CM_ICON[p.kind]||'star')+'</span>')+
       '<div class="kl-pb"><div class="kl-pt">'+hesc(p.title)+'</div>'+(p.body?'<div class="kl-pbody">'+hesc(p.body)+'</div>':'')+
       '<div class="kl-pm">'+(p.pinned?'<span class="kl-pin">Pinned</span>':'')+(p.hidden?'<span class="kl-pin">Hidden</span>':'')+kelasAgo(p.at)+'</div></div>'+kelasPostMenu(p)+'</div>'+
       '<div class="kl-pbody2 kl-pindent">';
@@ -21441,7 +21485,7 @@ function kelasPostMenu(p){
    replies under their comment (one level, like Facebook) */
 function kelasCmOne(p,c,reply){
   const adm=Kelas.cm&&Kelas.cm.admin;
-  return '<div class="kl-cm'+(c.hidden?' hid':'')+(reply?' rep':'')+'"><span class="kl-av sm">'+hesc(String(c.name||'M').charAt(0))+'</span>'+
+  return '<div class="kl-cm'+(c.hidden?' hid':'')+(reply?' rep':'')+'">'+kelasAv(c.ph,c.name,'sm',c.mine)+
     '<div class="kl-cmb"><b>'+hesc(c.name||'Member')+'</b> '+hesc(c.body)+'<small>'+kelasAgo(c.at)+
     (c.id!=='tmp'?' · <button onclick="kelasCmReplyTo(\''+p.id+'\',\''+(c.parent||c.id)+'\',\''+hesc(String(c.name||'Member')).replace(/'/g,'')+'\')">Reply</button>':'')+
     (c.id==='tmp'?'':(c.mine||adm)?' · <button onclick="kelasCmDelete(\''+p.id+'\',\''+c.id+'\')">Delete</button>':' · <button onclick="kelasCmReport(\''+p.id+'\',\''+c.id+'\')">Report</button>')+
@@ -21506,7 +21550,7 @@ function kelasCmZoom(src){
 /* every member: share a win, a selfie, a word with the class */
 function kelasCmComposerMember(){
   const c=Kelas.cmNew;
-  if(!c) return '<button class="kl-share-win" onclick="Kelas.cmNew={body:\'\',img:null};renderKelas()"><span class="kl-av">+</span><span>Share a win with your class…</span>'+glyph('photo')+'</button>';
+  if(!c) return '<button class="kl-share-win" onclick="Kelas.cmNew={body:\'\',img:null};renderKelas()">'+((typeof hfPhoto==='function'&&hfPhoto())?kelasAv('',(HF.data.prefs&&HF.data.prefs.name)||'Me','',true):'<span class="kl-av">+</span>')+'<span>Share a win with your class…</span>'+glyph('photo')+'</button>';
   return '<div class="kl-comp kl-comp2"><textarea id="kl-cmn" class="kl-in" maxlength="1000" rows="3" placeholder="A win, a selfie after class, a thank you to your coach…" oninput="Kelas.cmNew.body=this.value">'+hesc(c.body||'')+'</textarea>'+
     (c.img?'<div class="kl-cprev"><img src="'+c.img+'" alt=""><button onclick="Kelas.cmNew.img=null;renderKelas()" aria-label="Remove photo">✕</button></div>':'')+
     '<input type="file" id="kl-cmf" accept="image/*" style="display:none" onchange="kelasCmPhoto(this)">'+
@@ -26620,15 +26664,80 @@ function thumbCrop(name,p){
   const x=[50,28,72,40,62][h%5], y=[40,55,30][(h>>3)%3], z=[100,135,150][(h>>5)%3];
   return 'background-size:'+(z===100?'cover':z+'%')+';background-position:'+x+'% '+y+'%;';
 }
+/* Profile photo (17 Oct). Seth: the member uploads one, and an account
+   signed in with Google has Google's picture until they do. It shows in the
+   top bar and on Me, and for a class member on the leaderboard, posts and
+   comments (HITFAT OS keeps its address: plus-class 'photo').
+   prefs.photo is the uploaded picture's address; false means no photo,
+   not even Google's; unset means Google's when there is one. The initial
+   sits under it, so a picture that fails to load leaves the letter. */
+function hfPhoto(){
+  const p=(HF.data&&HF.data.prefs)||{};
+  if(p.photo===false) return '';
+  return (typeof p.photo==='string' && /^https:\/\//.test(p.photo) ? p.photo : '') || HF.gphoto || '';
+}
+function avImg(src){ return src?'<img src="'+hesc(src)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':''; }
 function updateAvatar(){
   const a=$('topav'); if(!a) return;
   const p=HF.data.prefs||{}, n=(p.name||'').trim();
-  a.textContent = n ? n[0].toUpperCase() : '●';
+  a.innerHTML = hesc(n ? n[0].toUpperCase() : '●')+avImg(hfPhoto());
 }
 function avatarHTML(size){
   const n=((HF.data.prefs&&HF.data.prefs.name)||'').trim();
   return '<div class="av2" style="width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*.41)+'px;">'+
-    (n?n[0].toUpperCase():'●')+'</div>';
+    (n?n[0].toUpperCase():'●')+avImg(hfPhoto())+'</div>';
+}
+/* Me: tap the photo to change it. The picture is cut square from the
+   middle, 512 px, and kept in the public 'avatars' bucket under a random
+   name in the member's own folder (42-avatars.sql); the old one goes. */
+var _mePhoto=false, _mePhotoBusy=false;
+function mePhotoPath(u){ const m=typeof u==='string' && u.match(/\/storage\/v1\/object\/public\/avatars\/(.+)$/); return m?decodeURIComponent(m[1]):''; }
+function mePhotoRm(path){ try{ if(path && sb) sb.storage.from('avatars').remove([path]).catch(()=>{}); }catch(e){} }
+/* v: an address, false (none), or undefined (Google's); returns the old upload's path */
+function mePhotoSet(v){
+  const old=mePhotoPath(HF.data.prefs&&HF.data.prefs.photo);
+  HF.data.prefs=Object.assign({},HF.data.prefs);
+  if(v===undefined) delete HF.data.prefs.photo; else HF.data.prefs.photo=v;
+  HF.save(); updateAvatar(); _mePhoto=false;
+  try{ renderMe(); }catch(e){}
+  if(typeof kelasPhotoSync==='function') kelasPhotoSync();
+  return old;
+}
+function mePhotoFile(inp){
+  const f=inp&&inp.files&&inp.files[0]; if(!f) return;
+  if(typeof sb==='undefined' || !sb || !HF.userId){ toast('Sign in to add a photo.'); return; }
+  const rd=new FileReader();
+  rd.onload=()=>{ const img=new Image();
+    img.onload=()=>{ const s=Math.min(img.width,img.height), N=512, cv=document.createElement('canvas'); cv.width=cv.height=N;
+      cv.getContext('2d').drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,N,N);
+      cv.toBlob(b=>mePhotoUpload(b),'image/jpeg',.85); };
+    img.onerror=()=>toast('That photo could not be opened.');
+    img.src=rd.result; };
+  rd.readAsDataURL(f);
+}
+async function mePhotoUpload(blob){
+  if(!blob) return;
+  _mePhotoBusy=true; try{ renderMe(); }catch(e){}
+  try{
+    const path=HF.userId+'/'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)+'.jpg';
+    const up=await sb.storage.from('avatars').upload(path,blob,{contentType:'image/jpeg',cacheControl:'31536000'});
+    if(up.error) throw up.error;
+    const url=sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+    _mePhotoBusy=false;
+    mePhotoRm(mePhotoSet(url));
+    toast('Photo updated');
+  }catch(e){ _mePhotoBusy=false; toast('Could not upload the photo. Try again.'); try{ renderMe(); }catch(e2){} }
+}
+function mePhotoHTML(){
+  const p=HF.data.prefs||{}, has=!!hfPhoto(), onG=!!HF.gphoto && p.photo===undefined;
+  if(_mePhotoBusy) return '<div class="meph"><div class="meph-t">Uploading your photo…</div></div>';
+  if(!_mePhoto) return '';
+  return '<div class="meph"><input type="file" id="meph-f" accept="image/*" style="display:none" onchange="mePhotoFile(this)">'+
+    '<button onclick="$(\'meph-f\').click()">'+glyph('photo')+(has?'Change photo':'Add a photo')+'</button>'+
+    (HF.gphoto && !onG?'<button onclick="mePhotoRm(mePhotoSet(undefined))">Use my Google photo</button>':'')+
+    (has?'<button class="danger" onclick="mePhotoRm(mePhotoSet(false))">Remove photo</button>':'')+
+    '<button onclick="_mePhoto=false;renderMe()">Cancel</button>'+
+    '<div class="meph-t">'+((typeof kelasLinked==='function'&&kelasLinked())?'Your class sees it on the leaderboard, posts and comments.':'Shown on your profile.')+'</div></div>';
 }
 function greetWord(){ const h=new Date().getHours(); return h<12?'Good morning':(h<18?'Good afternoon':'Good evening'); }
 function donutSVG(pct,color,size){
@@ -27086,11 +27195,12 @@ function renderMe(){
   const tier=memberTier(), until=memberUntil();
   const st=(typeof scStreak==='function')?scStreak().n:streak;
   let h='<div class="hsum"><div class="hsum-l"><div class="k">ACCOUNT</div><div class="t">Me</div></div></div>'+
-    '<div class="meprof mecard"><div class="mec-top">'+avatarHTML(60)+
+    '<div class="meprof mecard"><div class="mec-top"><button class="meav" onclick="_mePhoto=!_mePhoto;renderMe()" aria-label="Profile photo">'+avatarHTML(60)+'<span class="meav-cam">'+glyph('photo')+'</span></button>'+
     '<div class="mec-tx"><div class="n">'+hesc((p.name||'').trim()||'Set your name')+'</div>'+
     '<div class="s">'+hesc(HF.email||'Not signed in')+'</div>'+
     '<span class="mec-chip'+(tier?' on':'')+'">'+(tier==='coach'?'HITFAT+ Coach':tier?'HITFAT+ Member':'Free')+'</span></div>'+
     '<button class="meedit" onclick="startOnboarding()">Edit Plan</button></div>'+
+    mePhotoHTML()+
     '<div class="mec-stats">'+
     '<div onclick="switchTab(\'progress\')"><b>🔥 '+st+'</b><span>'+(st===1?'day streak':'day streak')+'</span></div>'+
     '<div onclick="switchTab(\'progress\')"><b>'+HF.count()+'</b><span>sessions</span></div>'+
@@ -30099,6 +30209,9 @@ async function onSignedIn(session){
 async function _onSignedIn(session){
   hideAuth();
   HF.setUser(session.user.id,session.user.email);
+  /* the Google account's picture, the profile photo until one is uploaded */
+  { const m=session.user.user_metadata||{}; const g=String(m.avatar_url||m.picture||'');
+    HF.gphoto=/^https:\/\/lh3\.googleusercontent\.com\//.test(g)?g:''; }
   await HF.pull();
   await loadEntitlement();  // read plus_entitlements before anything renders
   handlePaidRedirect();     // pick up a purchase made just before this load

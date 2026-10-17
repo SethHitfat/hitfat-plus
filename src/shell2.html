@@ -1323,6 +1323,9 @@ async function onSignedIn(session){
 async function _onSignedIn(session){
   hideAuth();
   HF.setUser(session.user.id,session.user.email);
+  /* the Google account's picture, the profile photo until one is uploaded */
+  { const m=session.user.user_metadata||{}; const g=String(m.avatar_url||m.picture||'');
+    HF.gphoto=/^https:\/\/lh3\.googleusercontent\.com\//.test(g)?g:''; }
   await HF.pull();
   await loadEntitlement();  // read plus_entitlements before anything renders
   handlePaidRedirect();     // pick up a purchase made just before this load

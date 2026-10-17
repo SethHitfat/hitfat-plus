@@ -4461,3 +4461,28 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-cm.rep{margin-left:36px;}
 .kl-replying{font-size:12.5px;color:var(--dim);margin-top:10px;}
 .kl-replying button{border:0;background:none;color:var(--dim);font:inherit;cursor:pointer;padding:0 4px;}
+
+/* ── Profile photo (17 Oct): the photo lies over the initial, so a picture
+   that will not load leaves the letter; Me's photo is a button with a
+   camera badge; the class board, posts and comments show faces ── */
+.av2,.kl-av{position:relative;overflow:hidden;}
+.av2 img,.kl-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.meav{position:relative;flex:none;padding:0;border:0;background:none;border-radius:50%;cursor:pointer;}
+.meav-cam{position:absolute;right:-2px;bottom:-2px;width:24px;height:24px;border-radius:50%;background:#E30613;
+  display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg);}
+.meav-cam .gly{width:13px;height:13px;stroke:#FFFFFF;}
+.meph{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.meph button{display:inline-flex;align-items:center;gap:6px;font:700 13px/1 inherit;padding:9px 13px;border-radius:999px;
+  border:1px solid rgba(127,127,127,.25);background:transparent;color:var(--txt);cursor:pointer;}
+.meph button:first-of-type{background:#E30613;border-color:#E30613;color:#FFFFFF;}
+.meph button:first-of-type .gly{stroke:#FFFFFF;width:15px;height:15px;}
+.meph button.danger{color:#E30613;}
+.meph-t{flex-basis:100%;font-size:12px;color:var(--dim);}
+.kl-br{grid-template-columns:30px 30px 1fr auto auto;}
+.kl-av.bd{width:30px;height:30px;font-size:13px;}
+.kl-pic-av{position:relative;background:none!important;border-radius:50%;overflow:visible;}
+.kl-pic-av .kl-av{width:38px;height:38px;}
+.kl-pic-av i{position:absolute;right:-4px;bottom:-4px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
+  background:#E30613;box-shadow:0 0 0 2px var(--surface);}
+.kl-pic-av i .gly{width:11px!important;height:11px!important;stroke:#FFFFFF!important;}
+.k-club .kl-pic-av i{background:#F5C042;} .k-first .kl-pic-av i{background:#1F9D4C;}

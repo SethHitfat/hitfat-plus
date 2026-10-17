@@ -158,15 +158,80 @@ function thumbCrop(name,p){
   const x=[50,28,72,40,62][h%5], y=[40,55,30][(h>>3)%3], z=[100,135,150][(h>>5)%3];
   return 'background-size:'+(z===100?'cover':z+'%')+';background-position:'+x+'% '+y+'%;';
 }
+/* Profile photo (17 Oct). Seth: the member uploads one, and an account
+   signed in with Google has Google's picture until they do. It shows in the
+   top bar and on Me, and for a class member on the leaderboard, posts and
+   comments (HITFAT OS keeps its address: plus-class 'photo').
+   prefs.photo is the uploaded picture's address; false means no photo,
+   not even Google's; unset means Google's when there is one. The initial
+   sits under it, so a picture that fails to load leaves the letter. */
+function hfPhoto(){
+  const p=(HF.data&&HF.data.prefs)||{};
+  if(p.photo===false) return '';
+  return (typeof p.photo==='string' && /^https:\/\//.test(p.photo) ? p.photo : '') || HF.gphoto || '';
+}
+function avImg(src){ return src?'<img src="'+hesc(src)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':''; }
 function updateAvatar(){
   const a=$('topav'); if(!a) return;
   const p=HF.data.prefs||{}, n=(p.name||'').trim();
-  a.textContent = n ? n[0].toUpperCase() : '●';
+  a.innerHTML = hesc(n ? n[0].toUpperCase() : '●')+avImg(hfPhoto());
 }
 function avatarHTML(size){
   const n=((HF.data.prefs&&HF.data.prefs.name)||'').trim();
   return '<div class="av2" style="width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*.41)+'px;">'+
-    (n?n[0].toUpperCase():'●')+'</div>';
+    (n?n[0].toUpperCase():'●')+avImg(hfPhoto())+'</div>';
+}
+/* Me: tap the photo to change it. The picture is cut square from the
+   middle, 512 px, and kept in the public 'avatars' bucket under a random
+   name in the member's own folder (42-avatars.sql); the old one goes. */
+var _mePhoto=false, _mePhotoBusy=false;
+function mePhotoPath(u){ const m=typeof u==='string' && u.match(/\/storage\/v1\/object\/public\/avatars\/(.+)$/); return m?decodeURIComponent(m[1]):''; }
+function mePhotoRm(path){ try{ if(path && sb) sb.storage.from('avatars').remove([path]).catch(()=>{}); }catch(e){} }
+/* v: an address, false (none), or undefined (Google's); returns the old upload's path */
+function mePhotoSet(v){
+  const old=mePhotoPath(HF.data.prefs&&HF.data.prefs.photo);
+  HF.data.prefs=Object.assign({},HF.data.prefs);
+  if(v===undefined) delete HF.data.prefs.photo; else HF.data.prefs.photo=v;
+  HF.save(); updateAvatar(); _mePhoto=false;
+  try{ renderMe(); }catch(e){}
+  if(typeof kelasPhotoSync==='function') kelasPhotoSync();
+  return old;
+}
+function mePhotoFile(inp){
+  const f=inp&&inp.files&&inp.files[0]; if(!f) return;
+  if(typeof sb==='undefined' || !sb || !HF.userId){ toast('Sign in to add a photo.'); return; }
+  const rd=new FileReader();
+  rd.onload=()=>{ const img=new Image();
+    img.onload=()=>{ const s=Math.min(img.width,img.height), N=512, cv=document.createElement('canvas'); cv.width=cv.height=N;
+      cv.getContext('2d').drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,N,N);
+      cv.toBlob(b=>mePhotoUpload(b),'image/jpeg',.85); };
+    img.onerror=()=>toast('That photo could not be opened.');
+    img.src=rd.result; };
+  rd.readAsDataURL(f);
+}
+async function mePhotoUpload(blob){
+  if(!blob) return;
+  _mePhotoBusy=true; try{ renderMe(); }catch(e){}
+  try{
+    const path=HF.userId+'/'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)+'.jpg';
+    const up=await sb.storage.from('avatars').upload(path,blob,{contentType:'image/jpeg',cacheControl:'31536000'});
+    if(up.error) throw up.error;
+    const url=sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+    _mePhotoBusy=false;
+    mePhotoRm(mePhotoSet(url));
+    toast('Photo updated');
+  }catch(e){ _mePhotoBusy=false; toast('Could not upload the photo. Try again.'); try{ renderMe(); }catch(e2){} }
+}
+function mePhotoHTML(){
+  const p=HF.data.prefs||{}, has=!!hfPhoto(), onG=!!HF.gphoto && p.photo===undefined;
+  if(_mePhotoBusy) return '<div class="meph"><div class="meph-t">Uploading your photo…</div></div>';
+  if(!_mePhoto) return '';
+  return '<div class="meph"><input type="file" id="meph-f" accept="image/*" style="display:none" onchange="mePhotoFile(this)">'+
+    '<button onclick="$(\'meph-f\').click()">'+glyph('photo')+(has?'Change photo':'Add a photo')+'</button>'+
+    (HF.gphoto && !onG?'<button onclick="mePhotoRm(mePhotoSet(undefined))">Use my Google photo</button>':'')+
+    (has?'<button class="danger" onclick="mePhotoRm(mePhotoSet(false))">Remove photo</button>':'')+
+    '<button onclick="_mePhoto=false;renderMe()">Cancel</button>'+
+    '<div class="meph-t">'+((typeof kelasLinked==='function'&&kelasLinked())?'Your class sees it on the leaderboard, posts and comments.':'Shown on your profile.')+'</div></div>';
 }
 function greetWord(){ const h=new Date().getHours(); return h<12?'Good morning':(h<18?'Good afternoon':'Good evening'); }
 function donutSVG(pct,color,size){
@@ -624,11 +689,12 @@ function renderMe(){
   const tier=memberTier(), until=memberUntil();
   const st=(typeof scStreak==='function')?scStreak().n:streak;
   let h='<div class="hsum"><div class="hsum-l"><div class="k">ACCOUNT</div><div class="t">Me</div></div></div>'+
-    '<div class="meprof mecard"><div class="mec-top">'+avatarHTML(60)+
+    '<div class="meprof mecard"><div class="mec-top"><button class="meav" onclick="_mePhoto=!_mePhoto;renderMe()" aria-label="Profile photo">'+avatarHTML(60)+'<span class="meav-cam">'+glyph('photo')+'</span></button>'+
     '<div class="mec-tx"><div class="n">'+hesc((p.name||'').trim()||'Set your name')+'</div>'+
     '<div class="s">'+hesc(HF.email||'Not signed in')+'</div>'+
     '<span class="mec-chip'+(tier?' on':'')+'">'+(tier==='coach'?'HITFAT+ Coach':tier?'HITFAT+ Member':'Free')+'</span></div>'+
     '<button class="meedit" onclick="startOnboarding()">Edit Plan</button></div>'+
+    mePhotoHTML()+
     '<div class="mec-stats">'+
     '<div onclick="switchTab(\'progress\')"><b>🔥 '+st+'</b><span>'+(st===1?'day streak':'day streak')+'</span></div>'+
     '<div onclick="switchTab(\'progress\')"><b>'+HF.count()+'</b><span>sessions</span></div>'+
