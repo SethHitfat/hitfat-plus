@@ -21891,10 +21891,13 @@ function kelasDemo(){
    have theirs. Made here with Web Audio, note by note: no recording, no
    licence, nothing to download.
 
-     giggle  touching Bara: three quick chirps, upward
-     cheer   the HITFAT sound: "HIT" (a short pluck) then "FAT" (a bouncy
-             glide up), a sparkle on top; a class checked in, Bara turning
-             red, a mission done
+     giggle  touching Bara: a small voice saying "HIT-FAT!" (sfx/hitfat-tap)
+     cheer   the HITFAT sound: the same voice, a touch quicker and higher,
+             with a sparkle after it (sfx/hitfat); a class checked in, Bara
+             turning red, a mission done
+     The voice: Seth chose no. 9 (Daisy, a preset AI voice from Higgsfield,
+     not anyone's cloned voice) on 17 Oct. Until it has loaded the notes
+     below stand in; a tap while it still speaks stays quiet (no pile-up).
      bell    Ring the bell: a struck bell that rings out
      pop     a small tap: a reaction in the group
 
@@ -21925,12 +21928,32 @@ function hfTone(ac,t,type,f0,f1,dur,vol){
   o.connect(g); g.connect(ac.destination);
   o.start(t); o.stop(t+dur+0.02);
 }
+/* the spoken HITFAT, fetched once and kept decoded */
+var HF_VOICE={giggle:'/sfx/hitfat-tap.m4a',cheer:'/sfx/hitfat.m4a'}, _hfBuf={}, _hfVoiceEnd=0;
+function hfVoiceLoad(ac,name){
+  if(_hfBuf[name]!==undefined || !HF_VOICE[name] || typeof fetch!=='function') return;
+  _hfBuf[name]=null;
+  fetch(HF_VOICE[name]).then(function(r){ return r.arrayBuffer(); })
+    .then(function(b){ return new Promise(function(ok,no){ ac.decodeAudioData(b,ok,no); }); })
+    .then(function(buf){ _hfBuf[name]=buf; }, function(){ delete _hfBuf[name]; });
+}
+function hfVoice(ac,name){
+  var buf=_hfBuf[name];
+  if(!buf) return false;
+  if(ac.currentTime<_hfVoiceEnd) return true;
+  var s=ac.createBufferSource(), g=ac.createGain();
+  g.gain.value=0.55; s.buffer=buf; s.connect(g); g.connect(ac.destination); s.start();
+  _hfVoiceEnd=ac.currentTime+buf.duration;
+  return true;
+}
 function hfSound(name){
   if(!hfSoundOn()) return;
   var ac=hfAC(); if(!ac) return;
   try{ if(ac.state==='suspended') ac.resume(); }catch(e){}
+  hfVoiceLoad(ac,'giggle'); hfVoiceLoad(ac,'cheer');
   var t=ac.currentTime+0.01;
   try{
+    if(HF_VOICE[name] && hfVoice(ac,name)) return;
     if(name==='giggle'){
       hfTone(ac,t,'sine',880,1240,0.09,0.16);
       hfTone(ac,t+0.08,'sine',990,1400,0.09,0.15);
@@ -21953,6 +21976,15 @@ function hfSoundSet(on){
   HF.data.prefs=HF.data.prefs||{}; HF.data.prefs.sound=!!on; HF.save();
   if(on) hfSound('cheer');
   if(typeof renderMe==='function' && $('me') && $('me').style.display!=='none') renderMe();
+}
+/* the first touch anywhere opens the sound and fetches the voice, so the
+   first tap on Bara already speaks */
+if(typeof document!=='undefined' && document.addEventListener){
+  document.addEventListener('pointerdown',function hfWake(){
+    document.removeEventListener('pointerdown',hfWake,true);
+    if(!hfSoundOn()) return;
+    var ac=hfAC(); if(ac){ hfVoiceLoad(ac,'giggle'); hfVoiceLoad(ac,'cheer'); }
+  },true);
 }
 /* ═══════════════════════════════════════════════════════════════
    T42 · TRANSFORMATION 42 DAYS
