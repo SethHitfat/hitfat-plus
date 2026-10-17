@@ -283,3 +283,84 @@ function scInsights(){
   $('pw-body').innerHTML=h; $('pwm').classList.add('on');
   try{ $('pwm').scrollTop=0; }catch(e){}
 }
+
+/* ── Your 30-day base (17 Oct 2026, after Simple's calibration card) ──
+   Seth: "aku nk letak line mcm calibration tu". A swipe card for the first
+   30 days: Day N, what this week is about, and a pill that runs from
+   ASSESSMENT through the 30-DAY BASE to READY!. Our words, not Simple's.
+   The start is the first day anything was logged on this account (kept in
+   sc.base, so it never moves); someone who logged before is placed on the
+   right day, and someone past day 37 never sees it. Days 31–37 show what the
+   30 days added up to; after that the card is gone. */
+var SC_BASE_DAYS=30, SC_BASE_SHOW=37;
+function scBaseStart(){
+  var sc=HF.data.sc||(HF.data.sc={}), t=iso(0), first=t, k, o, d;
+  if(sc.base && /^\d{4}-\d\d-\d\d$/.test(sc.base)) return sc.base;
+  [HF.data.daily||{}, HF.data.meals||{}].forEach(function(o){ for(var k in o) if(/^\d{4}-\d\d-\d\d$/.test(k) && k<first) first=k; });
+  o=HF.data.sessions||{};
+  for(k in o){ d=o[k]&&o[k].date; if(d){ d=String(d).slice(0,10); if(/^\d{4}-\d\d-\d\d$/.test(d) && d<first) first=d; } }
+  sc.base=first; return first;
+}
+function scBase(){
+  var start=scBaseStart(), day=daysBetween(start, iso(0))+1, n=Math.min(day, SC_BASE_DAYS), days=[], logged=0, strong=0, i, d, s;
+  if(day<1) day=1;
+  var hab={workout:0, meal:0, water:0, steps:0};
+  for(i=0;i<n;i++){
+    d=iso(i-(day-1)); s=scScore(d); days.push({d:d, s:s});
+    if(s>0) logged++; if(s>=SC_PADU) strong++;
+    scHabits(d).forEach(function(h){ if(hab[h.k]!==undefined) hab[h.k]+=h.v; });
+  }
+  var best=null; for(var k in hab) if(hab[k]>0 && (!best || hab[k]>hab[best])) best=k;
+  return {start:start, day:day, days:days, logged:logged, strong:strong, best:best,
+          ready:day>SC_BASE_DAYS, show:day<=SC_BASE_SHOW, today:scScore()>0};
+}
+var SC_BASE_HAB={workout:'working out', meal:'logging meals', water:'drinking water', steps:'walking'};
+var SC_BASE_WEEK=[
+  'Week 1 is about <b>showing up</b>. Log what you eat, drink and move, honestly. Every day you log <em>{f}builds your base</em>.',
+  'Week 2: <b>patterns</b> start to show. Open Score insights and see which habit <em>{f}carries your days</em>.',
+  'Week 3: go for <b>strong days</b>, a score of 50 or more. Three a week makes a <em>{f}solid base</em>.',
+  'The last stretch. <b>Keep your streak</b> and finish the 30 days <em>{f}strong</em>.'];
+var SC_BASE_FOCUS=['Show up: log a little every day','Spot which habit carries you','Three strong days a week','Finish strong, keep the streak'];
+function scBaseFill(b){ return b.ready?100:Math.round(26+70*Math.min(b.day,SC_BASE_DAYS)/SC_BASE_DAYS); }
+function scBaseHTML(){
+  if(!HF.data.onboarded) return '';
+  var b=scBase(); if(!b.show) return '';
+  var f='<svg class="gly" viewBox="0 0 24 24" aria-hidden="true">'+ICON_PATH[iconKind('flame')]+'</svg>', t, p;
+  if(b.ready){
+    t='Your base is built! 🏆';
+    p='30 days: <b>'+b.logged+' day'+(b.logged===1?'':'s')+' logged</b>, <b>'+b.strong+' strong day'+(b.strong===1?'':'s')+'</b>.'+
+      (b.best?' Your strongest habit is <em>'+f+SC_BASE_HAB[b.best]+'</em>.':' Start again any day; one log is enough.');
+  } else {
+    t=b.today?'Day '+b.day+' done!':b.day===1?'Day 1 starts now':'Day '+b.day+': one log counts';
+    p=SC_BASE_WEEK[Math.min(3, Math.floor((b.day-1)/7))].replace('{f}', f);
+  }
+  return '<div class="scx-coach scx-base" onclick="scBaseSheet()" role="button">'+
+    '<div class="scx-k"><i></i>'+(b.ready?'BASE BUILT':'YOUR 30-DAY BASE')+' <span class="scb-chev">›</span></div>'+
+    '<div class="scb-h">'+t+'</div><div class="scb-p">'+p+'</div>'+
+    '<div class="scb-bar'+(b.ready?' done':'')+'"><div class="scb-fill" style="width:'+scBaseFill(b)+'%"><span class="scb-ok">✓</span><span class="scb-go">»</span></div><span class="scb-end">'+f+'</span></div>'+
+    '<div class="scb-lab"><span>ASSESSMENT</span><span>30-DAY BASE</span><span>READY!</span></div></div>';
+}
+/* the whole 30 days at a glance: a dot a day, and what each week is about */
+function scBaseSheet(){
+  var b=scBase(), wk=Math.min(3, Math.floor((Math.min(b.day,SC_BASE_DAYS)-1)/7)), dots='', i, x, cls;
+  for(i=0;i<SC_BASE_DAYS;i++){
+    x=b.days[i]; cls=!x?'fut':x.s>=SC_PADU?'strong':x.s>0?'log':'miss';
+    if(x && x.d===iso(0)) cls+=' now';
+    dots+='<i class="'+cls+'" title="Day '+(i+1)+'">'+(i+1)+'</i>';
+  }
+  var h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="scClose()">✕</button></div>'+
+    '<div class="sci scbs"><div class="sc-sh-k">Your 30-day base</div>'+
+    '<div class="scbs-top"><b>'+(b.ready?'Built 🏆':'Day '+b.day+'<span> of '+SC_BASE_DAYS+'</span>')+'</b>'+
+      '<div class="scbs-st"><div><b>'+b.logged+'</b><span>days logged</span></div><div><b>'+b.strong+'</b><span>strong days</span></div></div></div>'+
+    '<div class="scbs-dots">'+dots+'</div>'+
+    '<div class="scbs-key"><span><i class="strong"></i>Strong day</span><span><i class="log"></i>Logged</span><span><i class="miss"></i>Nothing logged</span></div>'+
+    '<div class="sci-h">Week by week</div><div class="sci-how">'+SC_BASE_FOCUS.map(function(t,j){
+      return '<div class="'+(!b.ready&&j===wk?'on':'')+'"><b>Week '+(j+1)+(j===3?' (days 22–30)':'')+'.</b> '+t+'</div>'; }).join('')+'</div>'+
+    '<div class="sci-h">How it works</div><div class="sci-how">'+
+      '<div><b>Day 1 is your first log.</b> Your goal and plan from sign-up are the assessment.</div>'+
+      '<div><b>Any log counts the day.</b> A score of 50 or more makes it a strong day.</div>'+
+      '<div><b>After 30 days</b> your Progress shows your real routine, not a guess.</div></div>'+
+    '<button class="bigbtn sci-go" onclick="scClose()">'+(b.today||b.ready?'Got it':'Log something now')+'</button></div>';
+  $('pw-body').innerHTML=h; $('pwm').classList.add('on');
+  try{ $('pwm').scrollTop=0; }catch(e){}
+}

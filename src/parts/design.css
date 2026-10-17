@@ -4747,3 +4747,43 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-pt-note.first{border-left-color:#6D28D9;}
 .kl-pt-nh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;} .kl-pt-nh b{font-size:14.5px;font-weight:900;color:var(--txt);} .kl-pt-nh small{font-size:11.5px;color:var(--dim);white-space:nowrap;}
 .kl-pt-nb{white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--txt);margin-top:6px;}
+
+/* ── Your 30-day base card (score2.js scBaseHTML) and its sheet ── */
+.scx-base{cursor:pointer;}
+.scx-base .scb-chev{font-size:15px;line-height:1;margin-left:2px;color:var(--dim2);font-weight:700;}
+.scb-h{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-top:8px;color:var(--txt);text-wrap:balance;}
+.scb-p{font-size:15px;line-height:1.5;margin-top:6px;color:var(--dim);}
+.scb-p b{color:var(--txt);font-weight:700;}
+.scb-p em{font-style:normal;font-weight:700;color:#E30613;}
+:root:not([data-theme="light"]) .scb-p em{color:#FF5A4E;}
+.scb-p em .gly{width:15px;height:15px;vertical-align:-2px;margin-right:2px;}
+.scb-bar{position:relative;height:36px;border-radius:99px;margin-top:14px;background:linear-gradient(90deg,rgba(227,6,19,.07),rgba(227,6,19,.16));}
+:root:not([data-theme="light"]) .scb-bar{background:linear-gradient(90deg,rgba(255,255,255,.05),rgba(227,6,19,.22));}
+.scb-fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;min-width:72px;background:linear-gradient(90deg,#C8000F,#E30613 55%,#FF5A4E);
+  display:flex;align-items:center;justify-content:space-between;padding:0 12px;box-sizing:border-box;transition:width .6s;}
+.scb-ok{color:#FFFFFF;font-weight:900;font-size:17px;}
+.scb-go{color:rgba(255,255,255,.6);font-weight:900;font-size:19px;letter-spacing:-2px;}
+.scb-end{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#E30613;display:grid;place-items:center;}
+.scb-end .gly{width:20px;height:20px;}
+.scb-bar.done .scb-go{visibility:hidden;}
+.scb-bar.done .scb-end{color:#FFFFFF;}
+.scb-lab{display:flex;justify-content:space-between;margin-top:8px;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--dim2);}
+.scbs-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:22px;}   /* clear of the sheet close button */
+.scbs-top > b{font-size:34px;font-weight:900;letter-spacing:-.03em;color:#E30613;}
+.scbs-top > b span{font-size:16px;color:var(--dim);font-weight:700;letter-spacing:0;}
+.scbs-st{display:flex;gap:16px;text-align:right;}
+.scbs-st b{display:block;font-size:20px;font-weight:800;color:var(--txt);}
+.scbs-st span{font-size:11.5px;color:var(--dim);}
+.scbs-dots{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:16px;}
+.scbs-dots i{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:10px;font-weight:700;color:var(--dim2);
+  background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--sep);}
+.scbs-dots i.fut{opacity:.45;}
+.scbs-dots i.log{background:rgba(227,6,19,.18);color:#B0000C;box-shadow:none;}
+.scbs-dots i.strong{background:#E30613;color:#FFFFFF;box-shadow:none;}
+.scbs-dots i.now{outline:2px solid #FFC20E;outline-offset:1px;}
+:root:not([data-theme="light"]) .scbs-dots i.log{color:#FF8A8F;}
+.scbs-key{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--dim);}
+.scbs-key i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--sep);}
+.scbs-key i.log{background:rgba(227,6,19,.25);box-shadow:none;} .scbs-key i.strong{background:#E30613;box-shadow:none;}
+.scbs .sci-how div.on{color:var(--txt);}
+.scbs .sci-how div.on b{color:#E30613;}
