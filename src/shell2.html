@@ -1043,6 +1043,7 @@ body:has(#play.on)::before{display:none;}
     <div class="m" id="pl-nofilm-m"></div></div>
   </div>
   <div class="pl-scrim"></div>
+  <div class="pl-vig"></div>
 
   <div class="pl-top">
     <button class="pl-x" onclick="plClose()">✕</button>
@@ -1062,6 +1063,8 @@ body:has(#play.on)::before{display:none;}
   </div>
 
   <div class="pl-head">
+    <!-- FIIT (18 Oct): the phase and what is left of the whole class, above the moves -->
+    <div class="pl-hrow"><span class="pl-ph" id="pl-ph">Work</span><span class="pl-mv" id="pl-mv"></span><span class="pl-tot" id="pl-tot"></span></div>
     <div class="pl-segs" id="pl-segs"></div>
     <div class="pl-name" id="pl-name"></div>
     <div class="pl-next" id="pl-next"></div>
@@ -1070,7 +1073,7 @@ body:has(#play.on)::before{display:none;}
 
   <div class="pl-bot">
     <div class="pl-stats">
-      <div class="pl-stat"><span><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg>time</span><b class="pl-clock" id="pl-clock">0:45</b></div>
+      <div class="pl-stat pl-tm"><svg class="pl-ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="bg" cx="60" cy="60" r="54"/><circle class="fg" id="pl-ringp" cx="60" cy="60" r="54"/></svg><b class="pl-clock" id="pl-clock">0:45</b></div>
       <div class="pl-stat r"><span><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 6 6.5 6 10.5A6 6 0 0 1 6 13.5C6 10 8 8 9 6c.5 2 1.5 3 3 3-1-2-.8-4 0-6z"/></svg>kcal</span><b id="pl-kcal">0</b></div>
     </div>
     <div class="pl-tl">
@@ -1115,6 +1118,7 @@ body:has(#play.on)::before{display:none;}
   <!-- Rest: the next clip loads behind this. A ring empties with the seconds,
        and the movement coming up waits on a card below it. -->
   <div class="pl-ov pl-gr" id="pl-rest">
+    <div class="rtop"><span class="rph">Rest</span><span class="rtot" id="pl-resttot"></span></div>
     <div class="rring"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="88" fill="none" stroke-width="12"/><g id="pl-restarc"></g></svg>
       <div class="rin"><div class="rn" id="pl-restn">20</div></div></div>
     <div class="rk">Rest</div>
@@ -1135,15 +1139,19 @@ body:has(#play.on)::before{display:none;}
   <!-- Done: the Fitness+ summary. What you did, then the week it went into. -->
   <div class="pl-ov" id="pl-done">
     <div class="dwrap">
+      <!-- FIIT (18 Oct): Bara cheers, the HITFAT Score it moved, then the numbers, how it felt, the week -->
+      <div class="dbara" id="pl-dn-bara"></div>
       <div class="dk">Workout Complete</div>
       <div class="dn" id="pl-dn-name">Workout</div>
       <div class="dd" id="pl-dn-date"></div>
+      <div class="dscore" id="pl-dn-score"></div>
       <div class="dgrid">
         <div><span>Time</span><b class="hc-days" id="pl-dn-min">0</b><i>MIN</i></div>
-        <div><span>Exercises</span><b class="hc-mins" id="pl-dn-ex">0</b><i>DONE</i></div>
-        <div><span>Rounds</span><b class="hc-cons" id="pl-dn-rnd">0</b><i>ROUNDS</i></div>
+        <div><span>Burned</span><b class="hc-mins" id="pl-dn-kcal">0</b><i>KCAL</i></div>
+        <div><span>Moves</span><b class="hc-cons" id="pl-dn-ex">0</b><i>× <span id="pl-dn-rnd">0</span> ROUNDS</i></div>
         <div><span>Streak</span><b class="hc-streak" id="pl-dn-streak">0</b><i id="pl-dn-streak-u">DAYS</i></div>
       </div>
+      <div class="dfeel" id="pl-dn-feel"></div>
       <div class="dweek" id="pl-dn-week"></div>
       <div class="dbtns"><button class="dshare" onclick="openShare('workout')">Share</button>
       <button class="bigbtn" onclick="plClose()">Done</button></div>

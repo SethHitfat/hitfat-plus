@@ -62,7 +62,7 @@ noThrow("day detail",           function(){ openProgram(openable.id); openDay(cu
 noThrow("single session opens", function(){
   openProgram(PROGRAMS.filter(function(p){ return !p.weeks; })[0].id); });
 ok("single session shows Start",  document.getElementById('pgd-body').innerHTML.indexOf('Start Workout')>0);
-ok("...and lists its movements",   document.getElementById('pgd-body').innerHTML.indexOf('In This Workout')>0);
+ok("...and lists its movements, as the class plan first",   document.getElementById('pgd-body').innerHTML.indexOf('Class plan')>0 && document.getElementById('pgd-body').innerHTML.indexOf('Class plan')<document.getElementById('pgd-body').innerHTML.indexOf('Training details'));
 ok("and draws no day list",       document.getElementById('pgd-body').innerHTML.indexOf('class="wrow')<0);
 noThrow("every program opens",    function(){
   PROGRAMS.forEach(function(p){ if(ownsProgram(p)) openProgram(p.id); }); });
@@ -568,7 +568,8 @@ ok("finish logs a session",  HF.count()===1, HF.count());
 ok("finish advances the day", progDone(_p.id)===1, progDone(_p.id));
 ok("done overlay shown",     document.getElementById('pl-done').className.indexOf('on')>=0);
 ok("the summary names the workout", document.getElementById('pl-dn-name').textContent.length>0);
-ok("...and shows the week as rings", document.getElementById('pl-dn-week').innerHTML.indexOf('hrings')>0);
+ok("...and shows the week as a bar of days (18 Oct, FIIT style)", document.getElementById('pl-dn-week').innerHTML.indexOf('class="wkd"')>0);
+ok("...Bara cheers, the score it moved, how it felt", document.getElementById('pl-dn-bara').innerHTML.indexOf('cheer.png')>0 && document.getElementById('pl-dn-score').innerHTML.indexOf('HITFAT Score')>=0 && (document.getElementById('pl-dn-feel').innerHTML.match(/plFeel\(/g)||[]).length===3);
 ok("finishing keeps the workout for the share card", _lastWorkout && _lastWorkout.exs===pl.exs.length && _lastWorkout.name.length>0);
 _canvas={fills:0,texts:0,strokes:0,nan:0,rects:0};
 noThrow("the workout share card draws", function(){ _shareKind='workout'; drawShareCard(); });

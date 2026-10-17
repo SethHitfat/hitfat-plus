@@ -4942,3 +4942,96 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-ci-r small i{font-style:normal;background:#6D28D9;color:#FFFFFF;padding:1px 7px;border-radius:99px;margin-right:4px;}
 .kl-ci-w{font-size:13px;font-weight:600;color:var(--dim);}
 .kl-ci-past{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+
+/* ── The workout, FIIT-style (18 Oct, "maybe kene tiru style peloton ke, fiit ke") ──
+   Work is red, rest is gold, and each says so in a chip; a ring round the
+   time empties with the move; the class's time left sits up top; during the
+   rest the next move's clip plays through; the finish has Bara, the score
+   the workout moved, how it felt, and the week as a bar of days. */
+#play .pl-vig{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(ellipse 85% 70% at 50% 42%,rgba(0,0,0,0) 55%,rgba(0,0,0,.5) 100%);}
+#play .pl-hrow{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+#play .pl-ph{padding:5px 11px;border-radius:99px;background:#E30613;color:#FFFFFF;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:0 4px 14px rgba(227,6,19,.45);}
+#play .pl-mv{font-size:13px;font-weight:700;color:rgba(255,255,255,.85);text-shadow:0 1px 8px rgba(0,0,0,.5);}
+#play .pl-tot{margin-left:auto;padding:5px 11px;border-radius:99px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  font-size:12.5px;font-weight:700;color:#FFFFFF;font-variant-numeric:tabular-nums;}
+#play .pl-head .pl-segs{gap:4px;margin:0 0 12px;}
+#play .pl-head .pl-segs i{height:6px;border-radius:3px;}
+#play .pl-head .pl-name{font-size:30px;font-weight:900;letter-spacing:-.8px;text-shadow:0 2px 18px rgba(0,0,0,.55);}
+#play .pl-head .pl-sub{display:none;}
+/* the time in a ring */
+#play .pl-stat.pl-tm{position:relative;width:118px;height:118px;display:grid;place-items:center;flex:none;}
+#play .pl-ring{position:absolute;inset:0;width:100%;height:100%;-webkit-transform:rotate(-90deg);transform:rotate(-90deg);}
+#play .pl-ring circle{fill:none;stroke-width:9;}
+#play .pl-ring .bg{stroke:rgba(255,255,255,.16);}
+#play .pl-ring .fg{stroke:#E30613;stroke-linecap:round;stroke-dasharray:339.3;stroke-dashoffset:0;transition:stroke-dashoffset .9s linear;}
+#play.nomirror .pl-stat.pl-tm .pl-clock{position:relative;font-size:36px;font-weight:800;letter-spacing:-1.5px;line-height:1;text-align:center;
+  -webkit-transform-origin:50% 50%;transform-origin:50% 50%;}
+#play .pl-stat.pl-tm:has(.pl-clock.hot) .fg{stroke:#FF3B42;}
+#play.nomirror .pl-stats{align-items:center;}
+/* rest: gold, and the next clip shows through */
+#play #pl-rest.pl-ov.pl-gr{justify-content:flex-start;padding-top:calc(108px + env(safe-area-inset-top,0px));-webkit-backdrop-filter:none;backdrop-filter:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.18) 34%,rgba(0,0,0,.1) 52%,rgba(0,0,0,.78) 76%,#000 100%);}
+#pl-rest .rtop{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+#pl-rest .rph{padding:5px 12px;border-radius:99px;background:#FFC21A;color:#111111;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:0 4px 14px rgba(255,194,26,.35);}
+#pl-rest .rtot{padding:5px 11px;border-radius:99px;background:rgba(0,0,0,.45);font-size:12.5px;font-weight:700;color:#FFFFFF;font-variant-numeric:tabular-nums;}
+#play #pl-rest .rring{width:132px;height:132px;margin:0;}
+#play #pl-rest .rring path{stroke:#FFC21A;}
+#play #pl-rest .rring circle{stroke:rgba(255,255,255,.18);}
+#play #pl-rest .rn{font-size:54px;font-weight:800;letter-spacing:-2px;}
+#play #pl-rest .rk{display:none;}
+#play #pl-rest .rnk{color:#FFC21A;}
+#play #pl-rest .rnn{font-size:28px;font-weight:900;letter-spacing:-.6px;}
+#play #pl-rest .rplus{background:rgba(255,255,255,.12);}
+/* get ready: the same chips */
+#play #pl-cd .cdk{font-size:28px;font-weight:900;}
+/* the finish */
+#pl-done .dbara{display:flex;justify-content:center;margin:-6px 0 4px;}
+#pl-done .dbara img{width:132px;height:132px;object-fit:contain;-webkit-animation:hfm-hop 1.2s ease-in-out infinite;animation:hfm-hop 1.2s ease-in-out infinite;}
+#pl-done .dk{text-align:center;} #pl-done .dn,#pl-done .dd{text-align:center;}
+#pl-done .dscore{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px;padding:12px 14px;border-radius:16px;
+  background:rgba(227,6,19,.16);box-shadow:inset 0 0 0 1px rgba(255,77,85,.3);}
+#pl-done .dscore:empty{display:none;}
+#pl-done .dscore span{width:100%;text-align:center;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.7);}
+#pl-done .dscore b{font-size:30px;font-weight:800;letter-spacing:-1px;color:rgba(255,255,255,.7);}
+#pl-done .dscore b.up{color:#FFFFFF;}
+#pl-done .dscore i{font-style:normal;font-size:20px;color:#FF4D55;}
+#pl-done .dscore em{font-style:normal;font-size:13px;font-weight:800;padding:4px 10px;border-radius:99px;background:#E30613;color:#FFFFFF;}
+#pl-done .dgrid{margin-top:12px;}
+#pl-done .dgrid i span{font:inherit;color:inherit;display:inline;}
+#pl-done .dfeel{margin-top:12px;padding:14px;border-radius:16px;background:#1C1C1E;}
+#pl-done .dfeel .fk{font-size:14px;font-weight:700;color:#FFFFFF;margin-bottom:10px;}
+#pl-done .dfeel .fb{display:flex;gap:8px;}
+#pl-done .dfeel button{flex:1;padding:11px 0;border:0;border-radius:99px;background:rgba(255,255,255,.1);color:#FFFFFF;font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+#pl-done .dfeel button.on{background:#E30613;}
+#pl-done .dweek{display:block;margin-top:12px;padding:14px;border-radius:16px;background:#1C1C1E;}
+#pl-done .dweek .wkh{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:#FFFFFF;}
+#pl-done .dweek .wkh span{font-size:13px;color:rgba(255,255,255,.62);font-variant-numeric:tabular-nums;}
+#pl-done .dweek .wkd{display:flex;gap:6px;margin-top:10px;}
+#pl-done .dweek .wkd i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);}
+#pl-done .dweek .wkd i.on{background:#E30613;}
+#pl-done .dweek .wkl{font-size:12.5px;color:rgba(255,255,255,.62);margin-top:8px;}
+#pl-done .dwrap{overflow-y:auto;max-height:100%;}
+/* the class plan on a day's page */
+.pdx-plan{display:flex;flex-direction:column;gap:8px;}
+.pdx-plh{display:flex;gap:6px;flex-wrap:wrap;}
+.pdx-plh span{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:99px;}
+.pdx-plh .w{background:rgba(227,6,19,.12);color:#E30613;}
+.pdx-plh .r{background:rgba(255,194,26,.18);color:#9A6B00;}
+:root:not([data-theme="light"]) .pdx-plh .r{color:#FFC21A;}
+.pdx-plh .x{background:rgba(127,127,127,.14);color:var(--txt);}
+.pdx-pl .pdx-dur{flex:none;font-size:13px;font-weight:800;color:var(--dim);font-variant-numeric:tabular-nums;margin-right:2px;}
+#play #pl-rest .rring{border-radius:50%;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}   /* the number stays readable over the coach */
+/* landscape: a smaller ring, and no time bar under it (the ring is the time) */
+@media (orientation:landscape) and (max-height:520px){
+  #play .pl-stat.pl-tm{width:84px;height:84px;}
+  #play .pl-stat.pl-tm .pl-clock{font-size:24px!important;letter-spacing:-.8px;}
+  #play .pl-bar{display:none;}
+  #play .pl-tl{justify-content:space-between;gap:6px;}
+  #play #pl-rest.pl-ov.pl-gr{padding-top:calc(54px + env(safe-area-inset-top,0px));}
+  #play #pl-rest .rring{width:96px;height:96px;}
+  #play #pl-rest .rn{font-size:40px;}
+}
+#play .pl-rot{display:none!important;}   /* no landscape (18 Oct, "aku x nk mode landscape"); the app is portrait in its manifest */

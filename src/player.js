@@ -80,7 +80,33 @@ function plTime(){
   const seg=document.querySelector('#pl-segs i.now');
   if(seg && seg.style && seg.style.setProperty) seg.style.setProperty('--p',(len?Math.round(el/len*1000)/10:0)+'%');
   const c=$('pl-clock'); if(c && c.classList) c.classList.toggle('hot', !!pl.running && pl.left<=3 && pl.left>0);
+  /* FIIT (18 Oct): a ring round the time empties with the move; the whole
+     class's time left sits up top */
+  const rg=$('pl-ringp'); if(rg && rg.style) rg.style.strokeDashoffset=String(Math.round(PL_RING*(len?el/len:0)*10)/10);
+  const tt=$('pl-tot'); if(tt) tt.textContent=fmtT(plTotalLeft())+' left';
   const nx=$('pl-next'); if(nx && nx.classList) nx.classList.toggle('soon', !!pl.running && pl.left<=5 && pl.left>0);
+}
+/* the ring's length: 2πr for r = 54 */
+const PL_RING=339.3;
+/* what is left of the whole class: this move, then every move and rest after it */
+function plTotalLeft(){
+  if(!pl) return 0;
+  let t=Math.max(0,pl.resting&&pl.rest?pl.rest.left:pl.left), i=pl.i, r=pl.round;
+  if(pl.resting&&pl.rest&&pl.rest.n){ i=pl.rest.n.i; r=pl.rest.n.round; t+=pl.exs[i].dur||45; }
+  for(;;){
+    if(i+1<pl.exs.length) i++; else if(r<pl.rounds){ i=0; r++; } else break;
+    t+=REST_SECS+(pl.exs[i].dur||45);
+  }
+  return t;
+}
+/* the count-out: a short tick for 3, 2, 1, a higher one at the change (not when the sound is off) */
+function plBeep(hi){
+  try{
+    if(typeof hfSoundOn==='function' && !hfSoundOn()) return;
+    const ac=typeof hfAC==='function'?hfAC():null; if(!ac || typeof hfTone!=='function') return;
+    if(ac.state && ac.state!=='running' && ac.resume) ac.resume();
+    hfTone(ac,ac.currentTime+0.01,'sine',hi?1320:880,hi?1320:880,hi?0.28:0.12,hi?0.22:0.14);
+  }catch(e){}
 }
 function plKcal(){
   if(!pl) return 0;
@@ -94,7 +120,8 @@ function startWorkout(exs,meta){
   if(!exs || !exs.length){ toast('Nothing to play'); return; }
   pl={exs, i:0, round:1, rounds:(meta&&meta.rounds)||1, meta:meta||{},
       left:exs[0].dur||45, len:exs[0].dur||45, running:false, resting:false, clip:null,
-      t0:Date.now(), done:0, work:0, started:false, finished:false};
+      t0:Date.now(), done:0, work:0, started:false, finished:false,
+      score0:(typeof scScore==='function'?scScore():null)};
   $('play').classList.add('on');
   $('pl-done').classList.remove('on');
   $('pl-why').classList.remove('on');
@@ -166,7 +193,8 @@ function plResume(){
     if(!pl) return;
     pl.left--; pl.work=(pl.work||0)+1;
     plTime(); plStats();
-    if(pl.left<=0) plNext(true);
+    if(pl.left>0 && pl.left<=3) plBeep(false);
+    if(pl.left<=0){ plBeep(true); plNext(true); }
   },1000);
 }
 function plPause(){ stopTick(); plSetPlayIcon(false); plTime(); plWake(); }
@@ -206,6 +234,7 @@ function plRestPaint(){
   if(!pl || !pl.rest) return;
   const r=pl.rest;
   $('pl-restn').textContent=Math.max(0,r.left);
+  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
   const a=$('pl-restarc');
   if(a && typeof ringArc==='function'){
     const pct=r.total?Math.max(0,r.left)/r.total*100:0;
@@ -222,10 +251,13 @@ function plRest(n){
     ' · '+(n.i+1)+' of '+pl.exs.length+(pl.rounds>1?', round '+n.round:'');
   $('pl-rest').classList.add('on');
   pl.rest={left:REST_SECS, total:REST_SECS, n};
+  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
   plRestPaint();
   plTick=setInterval(()=>{
     if(!pl || !pl.rest) return;
     pl.rest.left--; plRestPaint();
+    if(pl.rest.left>0 && pl.rest.left<=3) plBeep(false);
+    if(pl.rest.left<=0) plBeep(true);
     if(pl.rest.left<=0){ clearInterval(plTick); plTick=null; pl.resting=false; pl.rest=null; plGo(n); }
   },1000);
 }
@@ -249,6 +281,8 @@ function renderPl(){
   plTime(); plSetPlayIcon(!!pl.running);
   /* the segments count the movements; the pill says only the round */
   $('pl-pill').innerHTML=pl.rounds>1?'Round <b>'+pl.round+'/'+pl.rounds+'</b>':'';
+  if($('pl-ph')) $('pl-ph').textContent='Work';
+  if($('pl-mv')) $('pl-mv').textContent='Move '+(pl.i+1)+' of '+pl.exs.length;
   // one tick per exercise beats a bare percentage — you can see the shape of the set
   $('pl-segs').innerHTML=pl.exs.map((_,i)=>
     '<i class="'+(i<pl.i?'done':(i===pl.i?'now':''))+'"></i>').join('');
@@ -273,6 +307,8 @@ function plFinish(){
   /* what the share card shows when opened from here */
   _lastWorkout={name:m.name||'Workout', mins, exs:pl.exs.length, rounds:pl.rounds};
   $('pl-dn-ex').textContent=pl.exs.length;
+  if($('pl-dn-kcal')) $('pl-dn-kcal').textContent=String(plKcal());
+  plFinishExtras(m);
   $('pl-dn-min').textContent=mins;
   $('pl-dn-rnd').textContent=pl.rounds;
   /* The Fitness+ summary: the workout by name, today's date, then the week
@@ -280,14 +316,37 @@ function plFinish(){
   if($('pl-dn-name')) $('pl-dn-name').textContent=m.name||'Workout';
   if($('pl-dn-date')) $('pl-dn-date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
   try{ const st=liveStreak(); $('pl-dn-streak').textContent=st; $('pl-dn-streak-u').textContent=st===1?'DAY':'DAYS'; }catch(e){}
+  /* the week as a red bar of days to the goal (18 Oct: no more Apple rings) */
   try{
-    const days=daysThisWeek(), wg=HF.data.weekGoal||5, wm=weekMinutes(), cons=consistency();
-    $('pl-dn-week').innerHTML=ringsSVG([days/wg*100, wm/150*100, cons],78)+
-      '<div><div class="t">This Week</div>'+
-      '<div class="l"><b class="hc-days">'+days+'/'+wg+'</b> days · <b class="hc-mins">'+wm+'/150</b> min</div>'+
-      '<div class="l">'+(days>=wg?'Weekly goal reached.':(wg-days)+' more day'+(wg-days===1?'':'s')+' to your goal.')+'</div></div>';
+    const days=daysThisWeek(), wg=HF.data.weekGoal||5, wm=weekMinutes();
+    $('pl-dn-week').innerHTML='<div class="wkh"><b>This week</b><span>'+days+' of '+wg+' days · '+wm+' min</span></div>'+
+      '<div class="wkd">'+Array.from({length:wg},(_,i)=>'<i class="'+(i<days?'on':'')+'"></i>').join('')+'</div>'+
+      '<div class="wkl">'+(days>=wg?'Weekly goal reached 🎉':(wg-days)+' more day'+(wg-days===1?'':'s')+' to your goal.')+'</div>';
   }catch(e){ $('pl-dn-week').innerHTML=''; }
   $('pl-done').classList.add('on');
+}
+/* the finish's top: Bara cheering, the HITFAT Score the workout moved, how it felt */
+function plFinishExtras(m){
+  try{
+    const b=$('pl-dn-bara'); if(b) b.innerHTML='<img src="/img/mascot/anim/cheer.png" alt="Bara cheering">';
+    const sc=$('pl-dn-score');
+    if(sc && typeof scScore==='function'){
+      const a=pl.score0, z=scScore(), red=a!==null && a<SC_PADU && z>=SC_PADU;
+      sc.innerHTML=a!==null && z>a
+        ? '<span>HITFAT Score</span><b>'+a+'</b><i>→</i><b class="up">'+z+'</b>'+(red?'<em>Bara is red! 🔥</em>':'<em>+'+(z-a)+'</em>')
+        : '<span>HITFAT Score today</span><b class="up">'+z+'</b>';
+    }
+    const f=$('pl-dn-feel');
+    if(f){ pl.feelKey=m&&m.key; f.innerHTML='<div class="fk">How was it?</div><div class="fb">'+
+      [['easy','Easy'],['right','Just right'],['hard','Hard']].map(x=>'<button onclick="plFeel(\''+x[0]+'\')" data-f="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>'; }
+  }catch(e){}
+}
+function plFeel(v){
+  const f=$('pl-dn-feel'); if(!f) return;
+  Array.prototype.forEach.call(f.querySelectorAll('button'),b=>b.classList.toggle('on',b.getAttribute('data-f')===v));
+  const k=pl&&pl.feelKey, S=HF.data.sessions||{};
+  if(k && S[k]){ S[k].feel=v; HF.save(); }
+  toast(v==='hard'?'Noted. Bara will remember it was tough 💪':v==='easy'?'Noted. Time to level up? 🔥':'Noted. Just right 👌');
 }
 const PL_WHY=[['came','Something came up'],['break','I need a break'],['dislike','Didn\'t like the exercises'],
   ['hard','Too difficult'],['easy','Too easy']];

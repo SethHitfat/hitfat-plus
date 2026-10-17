@@ -588,11 +588,7 @@ function renderProgram(){
     }).join('')+'</div>';
   } else {
     const exs=pickEx(p.ex||[], progEq(p));
-    h+=trainingDetails(p,exs);
-    h+='<div class="fsec"><div class="ft">In This Workout</div><div class="fs">'+exs.length+' exercises · '+(p.rounds||3)+' rounds</div></div>';
-    h+='<div class="pdx-eps">'+exs.map((e,i)=>
-      '<div class="pdx-ex"><span class="n">'+(i+1)+'</span><div class="tx"><div class="t">'+e.n+'</div>'+
-      '<div class="m">'+e.m+' · '+e.eq+'</div></div></div>').join('')+'</div>';
+    h+=pdxPlanHTML(exs, p.rounds||3)+trainingDetails(p,exs);
   }
 
   /* related: same goal, not this one */
@@ -615,6 +611,22 @@ function markRest(pid,gi){
   if(progDone(pid)===gi){ HF.data.progress[pid]=gi+1; HF.save(); toast('Rest day logged'); renderProgram(); }
 }
 
+/* The class plan, as FIIT shows it before a class: every move with its
+   work time, the rest between, the rounds, and the total. A tap plays the
+   move's clip. */
+function pdxPlanHTML(exs, rounds){
+  if(!exs || !exs.length) return '';
+  const rest=(typeof REST_SECS!=='undefined')?REST_SECS:20, work=exs.reduce((a,e)=>a+(e.dur||45),0);
+  const tot=Math.round(((work+rest*exs.length)*rounds-rest)/60);
+  const same=exs.every(e=>(e.dur||45)===(exs[0].dur||45));
+  return '<div class="fsec"><div class="ft">Class plan</div><div class="fs">'+exs.length+' moves × '+rounds+' round'+(rounds===1?'':'s')+' · about '+tot+' min</div></div>'+
+    '<div class="pdx-plan"><div class="pdx-plh"><span class="w">'+(same?(exs[0].dur||45)+'s':'')+' work</span><span class="r">'+rest+'s rest</span><span class="x">× '+rounds+'</span></div>'+
+    exs.map((e,i)=>'<div class="pdx-ex pdx-pl" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
+      '<span class="n">'+(i+1)+'</span>'+
+      '<div class="tx"><div class="t">'+e.n+'</div><div class="m">'+e.m+' · '+e.eq+'</div></div>'+
+      '<span class="pdx-dur">'+(e.dur||45)+'s</span><span class="pdx-play">'+glyph('play')+'</span></div>').join('')+'</div>';
+}
+
 /* ── DAY DETAIL ── */
 let curDay=null;
 function openDay(pid,gi){
@@ -633,12 +645,8 @@ function openDay(pid,gi){
                 exs.length+' exercises · '+(p.rounds||3)+' rounds · '+p.dur+' min',{icon:'play',label:'Start',go:'playDay()'});
   h+='<div class="pdx-btns"><button class="bigbtn" onclick="playDay()">'+glyph('play')+'Start Workout</button>'+
      '<button class="pdx-prev" onclick="completeDay()">'+glyph('check')+'Mark done without playing</button></div>';
-  h+=trainingDetails(p,exs);
-  h+='<div class="fsec"><div class="ft">In This Workout</div><div class="fs">Tap a movement to watch it.</div></div>'+
-    '<div class="pdx-eps">'+exs.map((e,i)=>'<div class="pdx-ex" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
-      '<span class="n">'+(i+1)+'</span>'+
-      '<div class="tx"><div class="t">'+e.n+'</div><div class="m">'+e.m+' · '+e.eq+'</div></div>'+
-      '<span class="pdx-play">'+glyph('play')+'</span></div>').join('')+'</div>';
+  /* the class plan first, then the details (18 Oct, FIIT style) */
+  h+=pdxPlanHTML(exs, p.rounds||3)+trainingDetails(p,exs);
   $('dd-body').innerHTML=h;
   hidePanels(); $('daydetail').style.display='block'; $('screen').scrollTop=0;
 }

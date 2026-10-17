@@ -7181,6 +7181,99 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-ci-w{font-size:13px;font-weight:600;color:var(--dim);}
 .kl-ci-past{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
 
+/* ── The workout, FIIT-style (18 Oct, "maybe kene tiru style peloton ke, fiit ke") ──
+   Work is red, rest is gold, and each says so in a chip; a ring round the
+   time empties with the move; the class's time left sits up top; during the
+   rest the next move's clip plays through; the finish has Bara, the score
+   the workout moved, how it felt, and the week as a bar of days. */
+#play .pl-vig{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(ellipse 85% 70% at 50% 42%,rgba(0,0,0,0) 55%,rgba(0,0,0,.5) 100%);}
+#play .pl-hrow{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+#play .pl-ph{padding:5px 11px;border-radius:99px;background:#E30613;color:#FFFFFF;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:0 4px 14px rgba(227,6,19,.45);}
+#play .pl-mv{font-size:13px;font-weight:700;color:rgba(255,255,255,.85);text-shadow:0 1px 8px rgba(0,0,0,.5);}
+#play .pl-tot{margin-left:auto;padding:5px 11px;border-radius:99px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  font-size:12.5px;font-weight:700;color:#FFFFFF;font-variant-numeric:tabular-nums;}
+#play .pl-head .pl-segs{gap:4px;margin:0 0 12px;}
+#play .pl-head .pl-segs i{height:6px;border-radius:3px;}
+#play .pl-head .pl-name{font-size:30px;font-weight:900;letter-spacing:-.8px;text-shadow:0 2px 18px rgba(0,0,0,.55);}
+#play .pl-head .pl-sub{display:none;}
+/* the time in a ring */
+#play .pl-stat.pl-tm{position:relative;width:118px;height:118px;display:grid;place-items:center;flex:none;}
+#play .pl-ring{position:absolute;inset:0;width:100%;height:100%;-webkit-transform:rotate(-90deg);transform:rotate(-90deg);}
+#play .pl-ring circle{fill:none;stroke-width:9;}
+#play .pl-ring .bg{stroke:rgba(255,255,255,.16);}
+#play .pl-ring .fg{stroke:#E30613;stroke-linecap:round;stroke-dasharray:339.3;stroke-dashoffset:0;transition:stroke-dashoffset .9s linear;}
+#play.nomirror .pl-stat.pl-tm .pl-clock{position:relative;font-size:36px;font-weight:800;letter-spacing:-1.5px;line-height:1;text-align:center;
+  -webkit-transform-origin:50% 50%;transform-origin:50% 50%;}
+#play .pl-stat.pl-tm:has(.pl-clock.hot) .fg{stroke:#FF3B42;}
+#play.nomirror .pl-stats{align-items:center;}
+/* rest: gold, and the next clip shows through */
+#play #pl-rest.pl-ov.pl-gr{justify-content:flex-start;padding-top:calc(108px + env(safe-area-inset-top,0px));-webkit-backdrop-filter:none;backdrop-filter:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.18) 34%,rgba(0,0,0,.1) 52%,rgba(0,0,0,.78) 76%,#000 100%);}
+#pl-rest .rtop{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+#pl-rest .rph{padding:5px 12px;border-radius:99px;background:#FFC21A;color:#111111;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:0 4px 14px rgba(255,194,26,.35);}
+#pl-rest .rtot{padding:5px 11px;border-radius:99px;background:rgba(0,0,0,.45);font-size:12.5px;font-weight:700;color:#FFFFFF;font-variant-numeric:tabular-nums;}
+#play #pl-rest .rring{width:132px;height:132px;margin:0;}
+#play #pl-rest .rring path{stroke:#FFC21A;}
+#play #pl-rest .rring circle{stroke:rgba(255,255,255,.18);}
+#play #pl-rest .rn{font-size:54px;font-weight:800;letter-spacing:-2px;}
+#play #pl-rest .rk{display:none;}
+#play #pl-rest .rnk{color:#FFC21A;}
+#play #pl-rest .rnn{font-size:28px;font-weight:900;letter-spacing:-.6px;}
+#play #pl-rest .rplus{background:rgba(255,255,255,.12);}
+/* get ready: the same chips */
+#play #pl-cd .cdk{font-size:28px;font-weight:900;}
+/* the finish */
+#pl-done .dbara{display:flex;justify-content:center;margin:-6px 0 4px;}
+#pl-done .dbara img{width:132px;height:132px;object-fit:contain;-webkit-animation:hfm-hop 1.2s ease-in-out infinite;animation:hfm-hop 1.2s ease-in-out infinite;}
+#pl-done .dk{text-align:center;} #pl-done .dn,#pl-done .dd{text-align:center;}
+#pl-done .dscore{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px;padding:12px 14px;border-radius:16px;
+  background:rgba(227,6,19,.16);box-shadow:inset 0 0 0 1px rgba(255,77,85,.3);}
+#pl-done .dscore:empty{display:none;}
+#pl-done .dscore span{width:100%;text-align:center;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.7);}
+#pl-done .dscore b{font-size:30px;font-weight:800;letter-spacing:-1px;color:rgba(255,255,255,.7);}
+#pl-done .dscore b.up{color:#FFFFFF;}
+#pl-done .dscore i{font-style:normal;font-size:20px;color:#FF4D55;}
+#pl-done .dscore em{font-style:normal;font-size:13px;font-weight:800;padding:4px 10px;border-radius:99px;background:#E30613;color:#FFFFFF;}
+#pl-done .dgrid{margin-top:12px;}
+#pl-done .dgrid i span{font:inherit;color:inherit;display:inline;}
+#pl-done .dfeel{margin-top:12px;padding:14px;border-radius:16px;background:#1C1C1E;}
+#pl-done .dfeel .fk{font-size:14px;font-weight:700;color:#FFFFFF;margin-bottom:10px;}
+#pl-done .dfeel .fb{display:flex;gap:8px;}
+#pl-done .dfeel button{flex:1;padding:11px 0;border:0;border-radius:99px;background:rgba(255,255,255,.1);color:#FFFFFF;font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+#pl-done .dfeel button.on{background:#E30613;}
+#pl-done .dweek{display:block;margin-top:12px;padding:14px;border-radius:16px;background:#1C1C1E;}
+#pl-done .dweek .wkh{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:#FFFFFF;}
+#pl-done .dweek .wkh span{font-size:13px;color:rgba(255,255,255,.62);font-variant-numeric:tabular-nums;}
+#pl-done .dweek .wkd{display:flex;gap:6px;margin-top:10px;}
+#pl-done .dweek .wkd i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);}
+#pl-done .dweek .wkd i.on{background:#E30613;}
+#pl-done .dweek .wkl{font-size:12.5px;color:rgba(255,255,255,.62);margin-top:8px;}
+#pl-done .dwrap{overflow-y:auto;max-height:100%;}
+/* the class plan on a day's page */
+.pdx-plan{display:flex;flex-direction:column;gap:8px;}
+.pdx-plh{display:flex;gap:6px;flex-wrap:wrap;}
+.pdx-plh span{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:99px;}
+.pdx-plh .w{background:rgba(227,6,19,.12);color:#E30613;}
+.pdx-plh .r{background:rgba(255,194,26,.18);color:#9A6B00;}
+:root:not([data-theme="light"]) .pdx-plh .r{color:#FFC21A;}
+.pdx-plh .x{background:rgba(127,127,127,.14);color:var(--txt);}
+.pdx-pl .pdx-dur{flex:none;font-size:13px;font-weight:800;color:var(--dim);font-variant-numeric:tabular-nums;margin-right:2px;}
+#play #pl-rest .rring{border-radius:50%;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}   /* the number stays readable over the coach */
+/* landscape: a smaller ring, and no time bar under it (the ring is the time) */
+@media (orientation:landscape) and (max-height:520px){
+  #play .pl-stat.pl-tm{width:84px;height:84px;}
+  #play .pl-stat.pl-tm .pl-clock{font-size:24px!important;letter-spacing:-.8px;}
+  #play .pl-bar{display:none;}
+  #play .pl-tl{justify-content:space-between;gap:6px;}
+  #play #pl-rest.pl-ov.pl-gr{padding-top:calc(54px + env(safe-area-inset-top,0px));}
+  #play #pl-rest .rring{width:96px;height:96px;}
+  #play #pl-rest .rn{font-size:40px;}
+}
+#play .pl-rot{display:none!important;}   /* no landscape (18 Oct, "aku x nk mode landscape"); the app is portrait in its manifest */
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -7706,6 +7799,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
     <div class="m" id="pl-nofilm-m"></div></div>
   </div>
   <div class="pl-scrim"></div>
+  <div class="pl-vig"></div>
 
   <div class="pl-top">
     <button class="pl-x" onclick="plClose()">✕</button>
@@ -7725,6 +7819,8 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
   </div>
 
   <div class="pl-head">
+    <!-- FIIT (18 Oct): the phase and what is left of the whole class, above the moves -->
+    <div class="pl-hrow"><span class="pl-ph" id="pl-ph">Work</span><span class="pl-mv" id="pl-mv"></span><span class="pl-tot" id="pl-tot"></span></div>
     <div class="pl-segs" id="pl-segs"></div>
     <div class="pl-name" id="pl-name"></div>
     <div class="pl-next" id="pl-next"></div>
@@ -7733,7 +7829,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 
   <div class="pl-bot">
     <div class="pl-stats">
-      <div class="pl-stat"><span><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg>time</span><b class="pl-clock" id="pl-clock">0:45</b></div>
+      <div class="pl-stat pl-tm"><svg class="pl-ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="bg" cx="60" cy="60" r="54"/><circle class="fg" id="pl-ringp" cx="60" cy="60" r="54"/></svg><b class="pl-clock" id="pl-clock">0:45</b></div>
       <div class="pl-stat r"><span><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 6 6.5 6 10.5A6 6 0 0 1 6 13.5C6 10 8 8 9 6c.5 2 1.5 3 3 3-1-2-.8-4 0-6z"/></svg>kcal</span><b id="pl-kcal">0</b></div>
     </div>
     <div class="pl-tl">
@@ -7778,6 +7874,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
   <!-- Rest: the next clip loads behind this. A ring empties with the seconds,
        and the movement coming up waits on a card below it. -->
   <div class="pl-ov pl-gr" id="pl-rest">
+    <div class="rtop"><span class="rph">Rest</span><span class="rtot" id="pl-resttot"></span></div>
     <div class="rring"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="88" fill="none" stroke-width="12"/><g id="pl-restarc"></g></svg>
       <div class="rin"><div class="rn" id="pl-restn">20</div></div></div>
     <div class="rk">Rest</div>
@@ -7798,15 +7895,19 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
   <!-- Done: the Fitness+ summary. What you did, then the week it went into. -->
   <div class="pl-ov" id="pl-done">
     <div class="dwrap">
+      <!-- FIIT (18 Oct): Bara cheers, the HITFAT Score it moved, then the numbers, how it felt, the week -->
+      <div class="dbara" id="pl-dn-bara"></div>
       <div class="dk">Workout Complete</div>
       <div class="dn" id="pl-dn-name">Workout</div>
       <div class="dd" id="pl-dn-date"></div>
+      <div class="dscore" id="pl-dn-score"></div>
       <div class="dgrid">
         <div><span>Time</span><b class="hc-days" id="pl-dn-min">0</b><i>MIN</i></div>
-        <div><span>Exercises</span><b class="hc-mins" id="pl-dn-ex">0</b><i>DONE</i></div>
-        <div><span>Rounds</span><b class="hc-cons" id="pl-dn-rnd">0</b><i>ROUNDS</i></div>
+        <div><span>Burned</span><b class="hc-mins" id="pl-dn-kcal">0</b><i>KCAL</i></div>
+        <div><span>Moves</span><b class="hc-cons" id="pl-dn-ex">0</b><i>× <span id="pl-dn-rnd">0</span> ROUNDS</i></div>
         <div><span>Streak</span><b class="hc-streak" id="pl-dn-streak">0</b><i id="pl-dn-streak-u">DAYS</i></div>
       </div>
+      <div class="dfeel" id="pl-dn-feel"></div>
       <div class="dweek" id="pl-dn-week"></div>
       <div class="dbtns"><button class="dshare" onclick="openShare('workout')">Share</button>
       <button class="bigbtn" onclick="plClose()">Done</button></div>
@@ -18735,7 +18836,33 @@ function plTime(){
   const seg=document.querySelector('#pl-segs i.now');
   if(seg && seg.style && seg.style.setProperty) seg.style.setProperty('--p',(len?Math.round(el/len*1000)/10:0)+'%');
   const c=$('pl-clock'); if(c && c.classList) c.classList.toggle('hot', !!pl.running && pl.left<=3 && pl.left>0);
+  /* FIIT (18 Oct): a ring round the time empties with the move; the whole
+     class's time left sits up top */
+  const rg=$('pl-ringp'); if(rg && rg.style) rg.style.strokeDashoffset=String(Math.round(PL_RING*(len?el/len:0)*10)/10);
+  const tt=$('pl-tot'); if(tt) tt.textContent=fmtT(plTotalLeft())+' left';
   const nx=$('pl-next'); if(nx && nx.classList) nx.classList.toggle('soon', !!pl.running && pl.left<=5 && pl.left>0);
+}
+/* the ring's length: 2πr for r = 54 */
+const PL_RING=339.3;
+/* what is left of the whole class: this move, then every move and rest after it */
+function plTotalLeft(){
+  if(!pl) return 0;
+  let t=Math.max(0,pl.resting&&pl.rest?pl.rest.left:pl.left), i=pl.i, r=pl.round;
+  if(pl.resting&&pl.rest&&pl.rest.n){ i=pl.rest.n.i; r=pl.rest.n.round; t+=pl.exs[i].dur||45; }
+  for(;;){
+    if(i+1<pl.exs.length) i++; else if(r<pl.rounds){ i=0; r++; } else break;
+    t+=REST_SECS+(pl.exs[i].dur||45);
+  }
+  return t;
+}
+/* the count-out: a short tick for 3, 2, 1, a higher one at the change (not when the sound is off) */
+function plBeep(hi){
+  try{
+    if(typeof hfSoundOn==='function' && !hfSoundOn()) return;
+    const ac=typeof hfAC==='function'?hfAC():null; if(!ac || typeof hfTone!=='function') return;
+    if(ac.state && ac.state!=='running' && ac.resume) ac.resume();
+    hfTone(ac,ac.currentTime+0.01,'sine',hi?1320:880,hi?1320:880,hi?0.28:0.12,hi?0.22:0.14);
+  }catch(e){}
 }
 function plKcal(){
   if(!pl) return 0;
@@ -18749,7 +18876,8 @@ function startWorkout(exs,meta){
   if(!exs || !exs.length){ toast('Nothing to play'); return; }
   pl={exs, i:0, round:1, rounds:(meta&&meta.rounds)||1, meta:meta||{},
       left:exs[0].dur||45, len:exs[0].dur||45, running:false, resting:false, clip:null,
-      t0:Date.now(), done:0, work:0, started:false, finished:false};
+      t0:Date.now(), done:0, work:0, started:false, finished:false,
+      score0:(typeof scScore==='function'?scScore():null)};
   $('play').classList.add('on');
   $('pl-done').classList.remove('on');
   $('pl-why').classList.remove('on');
@@ -18821,7 +18949,8 @@ function plResume(){
     if(!pl) return;
     pl.left--; pl.work=(pl.work||0)+1;
     plTime(); plStats();
-    if(pl.left<=0) plNext(true);
+    if(pl.left>0 && pl.left<=3) plBeep(false);
+    if(pl.left<=0){ plBeep(true); plNext(true); }
   },1000);
 }
 function plPause(){ stopTick(); plSetPlayIcon(false); plTime(); plWake(); }
@@ -18861,6 +18990,7 @@ function plRestPaint(){
   if(!pl || !pl.rest) return;
   const r=pl.rest;
   $('pl-restn').textContent=Math.max(0,r.left);
+  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
   const a=$('pl-restarc');
   if(a && typeof ringArc==='function'){
     const pct=r.total?Math.max(0,r.left)/r.total*100:0;
@@ -18877,10 +19007,13 @@ function plRest(n){
     ' · '+(n.i+1)+' of '+pl.exs.length+(pl.rounds>1?', round '+n.round:'');
   $('pl-rest').classList.add('on');
   pl.rest={left:REST_SECS, total:REST_SECS, n};
+  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
   plRestPaint();
   plTick=setInterval(()=>{
     if(!pl || !pl.rest) return;
     pl.rest.left--; plRestPaint();
+    if(pl.rest.left>0 && pl.rest.left<=3) plBeep(false);
+    if(pl.rest.left<=0) plBeep(true);
     if(pl.rest.left<=0){ clearInterval(plTick); plTick=null; pl.resting=false; pl.rest=null; plGo(n); }
   },1000);
 }
@@ -18904,6 +19037,8 @@ function renderPl(){
   plTime(); plSetPlayIcon(!!pl.running);
   /* the segments count the movements; the pill says only the round */
   $('pl-pill').innerHTML=pl.rounds>1?'Round <b>'+pl.round+'/'+pl.rounds+'</b>':'';
+  if($('pl-ph')) $('pl-ph').textContent='Work';
+  if($('pl-mv')) $('pl-mv').textContent='Move '+(pl.i+1)+' of '+pl.exs.length;
   // one tick per exercise beats a bare percentage — you can see the shape of the set
   $('pl-segs').innerHTML=pl.exs.map((_,i)=>
     '<i class="'+(i<pl.i?'done':(i===pl.i?'now':''))+'"></i>').join('');
@@ -18928,6 +19063,8 @@ function plFinish(){
   /* what the share card shows when opened from here */
   _lastWorkout={name:m.name||'Workout', mins, exs:pl.exs.length, rounds:pl.rounds};
   $('pl-dn-ex').textContent=pl.exs.length;
+  if($('pl-dn-kcal')) $('pl-dn-kcal').textContent=String(plKcal());
+  plFinishExtras(m);
   $('pl-dn-min').textContent=mins;
   $('pl-dn-rnd').textContent=pl.rounds;
   /* The Fitness+ summary: the workout by name, today's date, then the week
@@ -18935,14 +19072,37 @@ function plFinish(){
   if($('pl-dn-name')) $('pl-dn-name').textContent=m.name||'Workout';
   if($('pl-dn-date')) $('pl-dn-date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
   try{ const st=liveStreak(); $('pl-dn-streak').textContent=st; $('pl-dn-streak-u').textContent=st===1?'DAY':'DAYS'; }catch(e){}
+  /* the week as a red bar of days to the goal (18 Oct: no more Apple rings) */
   try{
-    const days=daysThisWeek(), wg=HF.data.weekGoal||5, wm=weekMinutes(), cons=consistency();
-    $('pl-dn-week').innerHTML=ringsSVG([days/wg*100, wm/150*100, cons],78)+
-      '<div><div class="t">This Week</div>'+
-      '<div class="l"><b class="hc-days">'+days+'/'+wg+'</b> days · <b class="hc-mins">'+wm+'/150</b> min</div>'+
-      '<div class="l">'+(days>=wg?'Weekly goal reached.':(wg-days)+' more day'+(wg-days===1?'':'s')+' to your goal.')+'</div></div>';
+    const days=daysThisWeek(), wg=HF.data.weekGoal||5, wm=weekMinutes();
+    $('pl-dn-week').innerHTML='<div class="wkh"><b>This week</b><span>'+days+' of '+wg+' days · '+wm+' min</span></div>'+
+      '<div class="wkd">'+Array.from({length:wg},(_,i)=>'<i class="'+(i<days?'on':'')+'"></i>').join('')+'</div>'+
+      '<div class="wkl">'+(days>=wg?'Weekly goal reached 🎉':(wg-days)+' more day'+(wg-days===1?'':'s')+' to your goal.')+'</div>';
   }catch(e){ $('pl-dn-week').innerHTML=''; }
   $('pl-done').classList.add('on');
+}
+/* the finish's top: Bara cheering, the HITFAT Score the workout moved, how it felt */
+function plFinishExtras(m){
+  try{
+    const b=$('pl-dn-bara'); if(b) b.innerHTML='<img src="/img/mascot/anim/cheer.png" alt="Bara cheering">';
+    const sc=$('pl-dn-score');
+    if(sc && typeof scScore==='function'){
+      const a=pl.score0, z=scScore(), red=a!==null && a<SC_PADU && z>=SC_PADU;
+      sc.innerHTML=a!==null && z>a
+        ? '<span>HITFAT Score</span><b>'+a+'</b><i>→</i><b class="up">'+z+'</b>'+(red?'<em>Bara is red! 🔥</em>':'<em>+'+(z-a)+'</em>')
+        : '<span>HITFAT Score today</span><b class="up">'+z+'</b>';
+    }
+    const f=$('pl-dn-feel');
+    if(f){ pl.feelKey=m&&m.key; f.innerHTML='<div class="fk">How was it?</div><div class="fb">'+
+      [['easy','Easy'],['right','Just right'],['hard','Hard']].map(x=>'<button onclick="plFeel(\''+x[0]+'\')" data-f="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>'; }
+  }catch(e){}
+}
+function plFeel(v){
+  const f=$('pl-dn-feel'); if(!f) return;
+  Array.prototype.forEach.call(f.querySelectorAll('button'),b=>b.classList.toggle('on',b.getAttribute('data-f')===v));
+  const k=pl&&pl.feelKey, S=HF.data.sessions||{};
+  if(k && S[k]){ S[k].feel=v; HF.save(); }
+  toast(v==='hard'?'Noted. Bara will remember it was tough 💪':v==='easy'?'Noted. Time to level up? 🔥':'Noted. Just right 👌');
 }
 const PL_WHY=[['came','Something came up'],['break','I need a break'],['dislike','Didn\'t like the exercises'],
   ['hard','Too difficult'],['easy','Too easy']];
@@ -28706,11 +28866,7 @@ function renderProgram(){
     }).join('')+'</div>';
   } else {
     const exs=pickEx(p.ex||[], progEq(p));
-    h+=trainingDetails(p,exs);
-    h+='<div class="fsec"><div class="ft">In This Workout</div><div class="fs">'+exs.length+' exercises · '+(p.rounds||3)+' rounds</div></div>';
-    h+='<div class="pdx-eps">'+exs.map((e,i)=>
-      '<div class="pdx-ex"><span class="n">'+(i+1)+'</span><div class="tx"><div class="t">'+e.n+'</div>'+
-      '<div class="m">'+e.m+' · '+e.eq+'</div></div></div>').join('')+'</div>';
+    h+=pdxPlanHTML(exs, p.rounds||3)+trainingDetails(p,exs);
   }
 
   /* related: same goal, not this one */
@@ -28733,6 +28889,22 @@ function markRest(pid,gi){
   if(progDone(pid)===gi){ HF.data.progress[pid]=gi+1; HF.save(); toast('Rest day logged'); renderProgram(); }
 }
 
+/* The class plan, as FIIT shows it before a class: every move with its
+   work time, the rest between, the rounds, and the total. A tap plays the
+   move's clip. */
+function pdxPlanHTML(exs, rounds){
+  if(!exs || !exs.length) return '';
+  const rest=(typeof REST_SECS!=='undefined')?REST_SECS:20, work=exs.reduce((a,e)=>a+(e.dur||45),0);
+  const tot=Math.round(((work+rest*exs.length)*rounds-rest)/60);
+  const same=exs.every(e=>(e.dur||45)===(exs[0].dur||45));
+  return '<div class="fsec"><div class="ft">Class plan</div><div class="fs">'+exs.length+' moves × '+rounds+' round'+(rounds===1?'':'s')+' · about '+tot+' min</div></div>'+
+    '<div class="pdx-plan"><div class="pdx-plh"><span class="w">'+(same?(exs[0].dur||45)+'s':'')+' work</span><span class="r">'+rest+'s rest</span><span class="x">× '+rounds+'</span></div>'+
+    exs.map((e,i)=>'<div class="pdx-ex pdx-pl" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
+      '<span class="n">'+(i+1)+'</span>'+
+      '<div class="tx"><div class="t">'+e.n+'</div><div class="m">'+e.m+' · '+e.eq+'</div></div>'+
+      '<span class="pdx-dur">'+(e.dur||45)+'s</span><span class="pdx-play">'+glyph('play')+'</span></div>').join('')+'</div>';
+}
+
 /* ── DAY DETAIL ── */
 let curDay=null;
 function openDay(pid,gi){
@@ -28751,12 +28923,8 @@ function openDay(pid,gi){
                 exs.length+' exercises · '+(p.rounds||3)+' rounds · '+p.dur+' min',{icon:'play',label:'Start',go:'playDay()'});
   h+='<div class="pdx-btns"><button class="bigbtn" onclick="playDay()">'+glyph('play')+'Start Workout</button>'+
      '<button class="pdx-prev" onclick="completeDay()">'+glyph('check')+'Mark done without playing</button></div>';
-  h+=trainingDetails(p,exs);
-  h+='<div class="fsec"><div class="ft">In This Workout</div><div class="fs">Tap a movement to watch it.</div></div>'+
-    '<div class="pdx-eps">'+exs.map((e,i)=>'<div class="pdx-ex" onclick="playExercise(\''+e.n.replace(/'/g,"\\'")+'\')">'+
-      '<span class="n">'+(i+1)+'</span>'+
-      '<div class="tx"><div class="t">'+e.n+'</div><div class="m">'+e.m+' · '+e.eq+'</div></div>'+
-      '<span class="pdx-play">'+glyph('play')+'</span></div>').join('')+'</div>';
+  /* the class plan first, then the details (18 Oct, FIIT style) */
+  h+=pdxPlanHTML(exs, p.rounds||3)+trainingDetails(p,exs);
   $('dd-body').innerHTML=h;
   hidePanels(); $('daydetail').style.display='block'; $('screen').scrollTop=0;
 }
