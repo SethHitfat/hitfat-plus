@@ -14,6 +14,8 @@
                                      check-ins; and keeps access in step
                                      with the end date
    POST { action:'unlink' }          disconnect, end the access
+   POST { action:'goal', goal }      FIRST 30: the member's goal, to OS
+                                     members.goal unless the coach set one
    POST { action:'inbody', image_base64, media_type }
                                      a photograph of the InBody printout,
                                      read by Claude, saved in HITFAT OS
@@ -235,7 +237,15 @@ Deno.serve(async (req: Request) => {
     if (action === 'status') {
       const st = await os('plus_status', { p_key: key, p_user: uid });
       const until = await syncAccess(admin, uid, st);
+      /* FIRST 30 done: +300 and a post in the class group, once (088) */
+      if (st && st.first30 && st.first30.complete && !st.first30.awarded) {
+        try { const a = await os('plus_first30_award', { p_key: key, p_user: uid }); if (a && a.ok) st.first30.awarded = true; } catch (_) { /* next time */ }
+      }
       return json({ ...st, until });
+    }
+
+    if (action === 'goal') {
+      return json(await os('plus_set_goal', { p_key: key, p_user: uid, p_goal: String(body.goal || '').slice(0, 60) }));
     }
 
     if (action === 'inbody') {

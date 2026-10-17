@@ -4351,3 +4351,38 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-bnote{font-size:12px;color:var(--dim);margin:0 2px 6px;line-height:1.4;}
 .kl-bn em{display:block;font-style:normal;font-size:11px;font-weight:600;color:var(--dim);}
 .kl-br small{width:auto;min-width:44px;}
+
+/* FIRST 30 (17 Oct): a new member's first month as seven missions */
+.f30{margin-top:12px;padding:16px;border-radius:20px;background:var(--surface);border:1.5px solid rgba(227,6,19,.25);}
+:root[data-theme="light"] .f30{background:#FFFFFF;}
+.f30.done{border-color:#F5C042;background:linear-gradient(160deg,rgba(245,192,66,.18),rgba(245,192,66,0) 60%),var(--surface);}
+:root[data-theme="light"] .f30.done{background:linear-gradient(160deg,rgba(245,192,66,.22),rgba(255,255,255,1) 60%);}
+.f30-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.f30-top .kl-kick{color:#E30613;}
+.f30-top b{display:block;font-size:21px;font-weight:900;letter-spacing:-.4px;color:var(--txt);margin-top:4px;}
+.f30-n{font-size:30px;font-weight:900;color:var(--txt);line-height:1;font-variant-numeric:tabular-nums;}
+.f30-n small{font-size:15px;color:var(--dim);font-weight:800;}
+.f30-bar{margin:12px 0 6px;height:8px;}
+.f30-late{font-size:13px;color:#C26A00;font-weight:700;margin:8px 0 2px;}
+.f30-list{display:flex;flex-direction:column;margin-top:6px;}
+.f30-m{display:flex;align-items:center;gap:12px;padding:10px 4px;border-top:1px solid var(--sep);}
+.f30-m:first-child{border-top:0;}
+.f30-c{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(127,127,127,.14);}
+.f30-c .gly{width:17px;height:17px;stroke:var(--dim);}
+.f30-m.ok .f30-c{background:#1F9D4C;}
+.f30-m.ok .f30-c .gly{stroke:#FFFFFF;stroke-width:2.6;}
+.f30-m.next .f30-c{background:rgba(227,6,19,.14);box-shadow:0 0 0 2px #E30613;}
+.f30-m.next .f30-c .gly{stroke:#E30613;}
+.f30-m.lock{opacity:.5;}
+.f30-t{flex:1;min-width:0;}
+.f30-t b{display:block;font-size:15px;font-weight:800;color:var(--txt);}
+.f30-m.ok .f30-t b{color:var(--dim);text-decoration:line-through;text-decoration-color:rgba(127,127,127,.5);}
+.f30-t b em{font-style:normal;font-size:12px;font-weight:800;color:#E30613;margin-left:4px;}
+.f30-t small{display:block;font-size:12.5px;color:var(--dim);margin-top:1px;}
+.f30-go{flex:none;padding:7px 13px;border:0;border-radius:99px;background:#E30613;color:#FFFFFF;font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.f30-goals{display:flex;flex-wrap:wrap;gap:6px;padding:0 0 10px 44px;}
+.f30-goals button{padding:8px 12px;border-radius:99px;border:1.5px solid #E30613;background:none;color:#E30613;font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.f30-win{display:flex;align-items:center;gap:12px;margin:10px 0 12px;}
+.f30-win .gly{flex:none;width:36px;height:36px;stroke:#B5790A;}
+.f30-win b{display:block;font-size:17px;font-weight:900;color:var(--txt);}
+.f30-win span{display:block;font-size:13px;color:var(--dim);}

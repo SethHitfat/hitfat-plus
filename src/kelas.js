@@ -219,6 +219,9 @@ function kelasTodayTab(){
      '<button class="kl-qr kl-qr2" onclick="kelasQRFull()" aria-label="Show my check-in QR full screen">'+kelasQR(116)+'<small>Tap to enlarge</small></button></div>'+
      kelasBaraHTML()+'</div>';
 
+  /* FIRST 30: a new member's first month, mission by mission */
+  h+=kelasF30HTML();
+
   /* the next class and the timetable */
   const cls=d.classes||[];
   if(cls.length){
@@ -556,14 +559,14 @@ function kelasDraw(){
   x.save(); x.shadowColor='rgba(0,0,0,.28)'; x.shadowBlur=60; x.shadowOffsetY=24;
   x.fillStyle='#FFFFFF'; _rr(x,cxl,cy,cw,chh,56); x.fill(); x.restore();
   x.fillStyle='#E30613'; x.font=F(900,58);
-  const title=S.kind==='pr'?('NEW PR: '+String(S.m||'').toUpperCase()):'CLASS DONE';
+  const title=S.kind==='pr'?('NEW PR: '+String(S.m||'').toUpperCase()):S.kind==='f30'?'FIRST 30 COMPLETE':'CLASS DONE';
   const lines=_wrap(x,title,cx,cy+120,cw-120,66);
   const ly=cy+120+(lines-1)*66+50;
   x.fillStyle='rgba(227,6,19,.25)'; x.fillRect(cxl+90,ly,cw-180,4);
   x.fillStyle='#E30613'; x.font=F(900,S.kind==='pr'?170:200);
-  x.fillText(S.kind==='pr'?String(S.val||''):'#'+(S.n||0),cx,ly+220);
+  x.fillText(S.kind==='pr'?String(S.val||''):S.kind==='f30'?'30':'#'+(S.n||0),cx,ly+220);
   x.fillStyle='#55555C'; x.font=F(700,36);
-  x.fillText(S.kind==='pr'?'HITFAT HQ · Kota Bharu':String(S.name||''),cx,cy+chh-60);
+  x.fillText(S.kind==='pr'?'HITFAT HQ · Kota Bharu':S.kind==='f30'?'days · '+(S.n||0)+' classes at HQ':String(S.name||''),cx,cy+chh-60);
   // under the card
   const first=String((Kelas.data&&Kelas.data.name)||'').trim().split(/\s+/)[0]||'';
   x.fillStyle='#FFFFFF'; x.font=F(900,64); if(first) x.fillText(first.toUpperCase(),cx,cy+chh+130);
@@ -962,6 +965,7 @@ function kelasBaraLine(){
   const n=kelasThisWeekN(), t=kelasTarget(), nx=kelasNext();
   if(!act) return ['kusut','Membership awak dah tamat. Bara rindu nak tengok awak kat kelas. Renew di kaunter ya!'];
   if(left!==null && left<=7) return ['calendar','Membership awak tamat dalam '+(left+1)+' hari. Renew awal supaya streak awak tak putus!'];
+  const f30=kelasF30(); if(f30) return kelasF30Line(f30);
   if(days.has(today)) return ['cheer','Bara nampak awak dah datang kelas hari ni! Dikira sebagai workout dalam Skor HITFAT, +100 mata 💪'];
   if(n>=t) return ['gold','Sasaran '+t+' kelas minggu ni dah capai! Bara bangga sangat 🔥'];
   if(nx && nx.inDays===0) return ['aktif','Kelas seterusnya pukul '+kelasClock(nx.c.start)+'. Bara tunggu awak! '+n+' daripada '+t+' kelas minggu ni.'];
@@ -1086,6 +1090,82 @@ async function kelasCmAnnounce(){
 }
 async function kelasCmAdmin(op,id){
   try{ await kelasCall('cm_admin',{op:op,post:id}); kelasCmLoad(); }catch(e){ toast('Could not change that post.'); }
+}
+
+/* ═══════════════ FIRST 30 ═══════════════
+   A new member's first thirty days (17 Oct 2026, from Seth's talk with
+   ChatGPT: "where am I, what next, how close"). Seven missions, every one
+   from data HITFAT OS already keeps, the same list the staff see as
+   Client Onboarding (088_first30.sql). Bara speaks for the journey while it
+   runs. Done: +300 points and a post in the class group, once. Visible from
+   day 1 to day 37; members who started before it never see it. */
+var KL_F30=[
+  ['goal','Set your goal','Tell your coach what you are here for','target'],
+  ['inbody1','First InBody','Your starting point, from the sheet','scale'],
+  ['coach','Meet your coach','A consultation at the counter','person'],
+  ['class1','Your first class','Show your QR at the kiosk','qr'],
+  ['week3','3 classes in one week','Any week, at your pace','calendar'],
+  ['ten','10 classes','This is where the habit starts','trophy'],
+  ['inbody2','Second InBody','From day 21: see what changed','chart']];
+var KL_GOALS=['Lose fat','Build muscle','Get fitter','Get stronger','My first HYROX'];
+function kelasF30(){ const f=Kelas.data&&Kelas.data.first30; return f&&f.active?f:null; }
+function kelasF30M(f,k){ return ((f&&f.missions)||[]).filter(m=>m.k===k)[0]||{}; }
+/* the next thing to do: the first one not done that is open today */
+function kelasF30Next(f){
+  for(const d of KL_F30){ const m=kelasF30M(f,d[0]); if(!m.done && !(m.from && f.day<m.from)) return d; }
+  return null;
+}
+/* Bara, as the journey companion */
+function kelasF30Line(f){
+  const n=f.done, nx=kelasF30Next(f), w=kelasF30M(f,'week3');
+  if(f.complete) return ['gold','Awak dah tamatkan FIRST 30! Bara bangga sangat. Teruskan 3 kelas seminggu 🏅'];
+  if(f.day>30) return ['calendar','FIRST 30 hampir siap: '+n+' daripada 7. Jumpa coach untuk misi terakhir sebelum hari ke-37.'];
+  if(f.day<=2) return ['cheer','Selamat datang ke HITFAT! Bara teman awak 30 hari pertama. Mula dengan misi pertama ya.'];
+  if(f.day<=7) return w.done?['gold','3 kelas dalam seminggu, dah capai! Bara bangga 🔥']:['aktif','Minggu pertama awak: '+(w.n||0)+' daripada 3 kelas. Sikit lagi!'];
+  if(f.day<=14) return ['aktif','Dua minggu pertama awak paling penting. '+n+' daripada 7 misi siap. Teruskan!'];
+  if(f.day<21) return ['aktif','Separuh jalan, awak hebat! '+n+' daripada 7 misi siap'+(nx?'. Seterusnya: '+nx[1]:'')+'.'];
+  return kelasF30M(f,'inbody2').done?['cheer','InBody kedua dah ada! Tengok apa yang berubah di tab Body.']
+    :['aktif','Masa untuk InBody kedua: tengok apa yang dah berubah sejak hari pertama!'];
+}
+function kelasF30HTML(){
+  const f=kelasF30(); if(!f) return '';
+  const pct=Math.round(f.done/(f.total||7)*100), nx=kelasF30Next(f);
+  let h='<div class="f30'+(f.complete?' done':'')+'"><div class="f30-top"><div><div class="kl-kick">FIRST 30 · Day '+Math.min(f.day,30)+' of 30</div>'+
+    '<b>'+(f.complete?'First 30 complete':'Your first 30 days')+'</b></div><span class="f30-n">'+f.done+'<small>/'+(f.total||7)+'</small></span></div>'+
+    '<span class="kl-tb f30-bar"><i style="width:'+pct+'%"></i></span>';
+  if(f.complete){
+    h+='<div class="f30-win">'+glyph('trophy')+'<div><b>+300 points'+(f.awarded?' added':'')+'</b><span>Seven of seven. The next step: keep 3 classes a week.</span></div></div>'+
+       '<button class="bigbtn kl-go" onclick="kelasF30Share()">'+glyph('share')+' Share my First 30</button></div>';
+    return h;
+  }
+  if(f.day>30) h+='<div class="f30-late">Day 30 has passed. Finish the last '+(7-f.done)+' with your coach by day 37.</div>';
+  h+='<div class="f30-list">'+KL_F30.map(d=>{
+    const m=kelasF30M(f,d[0]), locked=m.from && f.day<m.from && !m.done, isNext=nx && nx[0]===d[0];
+    const prog=(d[0]==='week3'?(m.n||0)+'/3':d[0]==='ten'?(m.n||0)+'/10':'');
+    let act='';
+    if(!m.done && !locked){
+      if(d[0]==='goal') act='<button class="f30-go" onclick="kelasF30GoalOpen()">Choose</button>';
+      else if(d[0]==='inbody1'||d[0]==='inbody2') act='<button class="f30-go" onclick="kelasTab(\'body\')">Scan</button>';
+      else if(d[0]==='class1') act='<button class="f30-go" onclick="kelasQRFull()">QR</button>';
+    }
+    let row='<div class="f30-m'+(m.done?' ok':'')+(isNext?' next':'')+(locked?' lock':'')+'"><span class="f30-c">'+(m.done?glyph('check'):glyph(d[3]))+'</span>'+
+      '<div class="f30-t"><b>'+d[1]+(prog&&!m.done?' <em>'+prog+'</em>':'')+'</b><small>'+(d[0]==='goal'&&m.done&&m.goal?hesc(m.goal):locked?'Opens on day '+m.from:d[2])+'</small></div>'+act+'</div>';
+    if(d[0]==='goal' && Kelas.f30Goal && !m.done) row+='<div class="f30-goals">'+KL_GOALS.map(g=>'<button onclick="kelasF30SetGoal(\''+g+'\')">'+g+'</button>').join('')+'</div>';
+    return row;
+  }).join('')+'</div></div>';
+  return h;
+}
+function kelasF30GoalOpen(){ Kelas.f30Goal=!Kelas.f30Goal; renderKelas(); }
+async function kelasF30SetGoal(g){
+  const f=kelasF30(); Kelas.f30Goal=false;
+  const m=kelasF30M(f,'goal'); if(m){ m.done=true; m.goal=g; f.done=Math.min(f.total||7,(f.done||0)+1); }
+  if(HF.data && HF.data.prefs && !HF.data.prefs.goal){ HF.data.prefs.goal=g; HF.save(); }
+  renderKelas();
+  try{ await kelasCall('goal',{goal:g}); toast('Goal set: '+g+'. Your coach sees it too.'); }
+  catch(e){ toast('Could not save the goal. Try again.'); }
+}
+function kelasF30Share(){
+  Kelas.share={kind:'f30', n:kelasTotal(), streak:kelasWeekStreak()}; openShare('kelas');
 }
 
 function kelasPickDay(d){ Kelas.day=d; renderKelas(); }
@@ -1227,6 +1307,9 @@ function kelasDemo(){
         {id:'inbody',name:'InBody body analysis',points:3500,note:'Book a time with the counter'}],
       history:[{t:'redeem',name:'A drink at the counter',p:-600,at:new Date(Date.now()-2*864e5).toISOString()},
         {t:'link',name:'Connected HITFAT+',p:300,at:new Date(Date.now()-20*864e5).toISOString()}]},
+    first30:{active:true, day:6, done:3, total:7, complete:false, awarded:false, missions:[
+      {k:'goal',done:true,goal:'Lose fat'},{k:'inbody1',done:true},{k:'coach',done:false},{k:'class1',done:true},
+      {k:'week3',done:false,n:2},{k:'ten',done:false,n:4},{k:'inbody2',done:false,from:21}]},
     inbody:[
       {scan_date:'2026-10-14',src:'sheet',model:'InBody 270',sex:'female',height_cm:158,weight:62.4,smm:23.1,bfm:20.6,pbf:33.0,bmi:25.0,score:68,
        tbw:30.4,protein:8.2,mineral:3.1,ffm:41.8,vfl:9,bmr:1273,whr:0.89,smi:6.1,ecw_ratio:0.378,target_weight:56.3,fat_control:-6.1,muscle_control:0,
