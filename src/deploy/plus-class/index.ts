@@ -27,6 +27,9 @@
         'hx_board', div               HYROX: station times and the boards
    POST { action:'st_log', lift, kg, reps, date } | 'st_delete', id | 'st_board'
                                      Mens: strength sets (est. 1RM), the board
+   POST { action:'pt_hw', id, day, on } | 'pt_checkin', kg, energy, sleep,
+        food, note | 'pt_seen'      personal coaching (099): homework from
+                                     the coach, the weekly check-in, replies read
    POST { action:'photo', url }      the profile photo for the boards, posts
                                      and comments (own upload or Google's)
    POST { action:'cm_feed', cat }    Community: the group's feed, the weekly
@@ -305,6 +308,19 @@ Deno.serve(async (req: Request) => {
       return json(id ? await os('plus_st_delete', { p_key: key, p_user: uid, p_id: id }) : { ok: false });
     }
     if (action === 'st_board') return json(await os('plus_st_board', { p_key: key, p_user: uid }));
+
+    /* personal coaching, phase 2 (099): homework ticked, the weekly check-in, replies read */
+    if (action === 'pt_hw') {
+      const id = /^[0-9a-f-]{36}$/.test(String(body.id || '')) ? String(body.id) : null;
+      const d = /^\d{4}-\d{2}-\d{2}$/.test(String(body.day || '')) ? String(body.day) : null;
+      return json(id ? await os('plus_pt_hw', { p_key: key, p_user: uid, p_id: id, p_day: d, p_on: body.on !== false }) : { ok: false });
+    }
+    if (action === 'pt_checkin') {
+      const n = (v: any) => { const x = Number(v); return isFinite(x) ? x : null; };
+      return json(await os('plus_pt_checkin', { p_key: key, p_user: uid, p_weight: n(body.kg), p_energy: n(body.energy),
+        p_sleep: n(body.sleep), p_food: n(body.food), p_note: String(body.note || '').slice(0, 600) }));
+    }
+    if (action === 'pt_seen') return json(await os('plus_pt_seen', { p_key: key, p_user: uid }));
 
     if (action === 'journey_start') {
       return json(await os('plus_journey_start', { p_key: key, p_user: uid, p_kind: String(body.kind || '') }));

@@ -4894,3 +4894,51 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 /* Ladies Burn 30: the same card in its rose */
 .nstage.wl-stage.lb-stage{background:radial-gradient(circle at 85% 0%,rgba(255,255,255,.22),rgba(255,255,255,0) 50%),linear-gradient(155deg,#F0509E 0%,#C02A7C 55%,#6E0E4B 100%) !important;
   box-shadow:0 12px 28px rgba(156,26,114,.28) !important;}
+
+/* ── Personal coaching phase 2: homework and the weekly check-in (18 Oct) ── */
+.kl-hw{display:flex;flex-direction:column;gap:8px;}
+.kl-hw-r{display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:16px;background:var(--surface);}
+.kl-hw-b{flex:none;width:28px;height:28px;margin-top:1px;border-radius:50%;border:0;padding:0;cursor:pointer;display:grid;place-items:center;
+  background:transparent;box-shadow:inset 0 0 0 2px rgba(109,40,217,.45);color:#FFFFFF;}
+.kl-hw-b:disabled{opacity:.4;cursor:default;}
+.kl-hw-b .gly{width:16px;height:16px;stroke:#FFFFFF;}
+.kl-hw-r.on .kl-hw-b{background:#6D28D9;box-shadow:none;}
+.kl-hw-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.kl-hw-t b{font-size:15.5px;line-height:1.3;}
+.kl-hw-r.on .kl-hw-t b{color:var(--dim);}
+.kl-hw-t span{font-size:13.5px;line-height:1.4;color:var(--dim);white-space:pre-line;}
+.kl-hw-t small{font-size:12px;font-weight:700;color:#6D28D9;margin-top:2px;}
+:root:not([data-theme="light"]) .kl-hw-t small{color:#B79CFF;}
+.kl-hw-r.over .kl-hw-t small{color:#E30613;}
+.kl-hw-d{display:flex;gap:4px;margin-top:6px;}
+.kl-hw-d u{width:14px;height:14px;border-radius:50%;background:rgba(127,127,127,.18);text-decoration:none;}
+.kl-hw-d u.y{background:#6D28D9;} .kl-hw-d u.n{box-shadow:inset 0 0 0 2px #6D28D9;background:transparent;} .kl-hw-d u.m{background:rgba(227,6,19,.22);}
+.kl-ci-f{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:18px;background:var(--surface);}
+.kl-ci-kg{display:flex;align-items:center;gap:10px;}
+.kl-ci-kg span{flex:1;font-weight:700;font-size:14.5px;}
+.kl-ci-kg .kl-in{width:96px;padding:11px 12px;text-align:right;font-size:16px;}
+.kl-ci-kg em{font-style:normal;color:var(--dim);font-size:14px;}
+.kl-ci-q{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.kl-ci-q > div:first-child{display:flex;flex-direction:column;min-width:0;}
+.kl-ci-q b{font-size:14.5px;} .kl-ci-q small{font-size:12px;color:var(--dim);}
+.kl-ci-s{display:flex;gap:5px;flex:none;}
+.kl-ci-s button{width:36px;height:36px;border-radius:50%;border:0;cursor:pointer;font:inherit;font-weight:800;font-size:14px;
+  background:rgba(127,127,127,.14);color:var(--txt);}
+.kl-ci-s button.on{background:#6D28D9;color:#FFFFFF;}
+.kl-ci-note{resize:vertical;min-height:72px;font-size:15px;padding:12px 14px;}
+.kl-ci-go{margin-top:2px;background:#6D28D9 !important;}
+.kl-ci-c{padding:14px;border-radius:16px;background:var(--surface);display:flex;flex-direction:column;gap:8px;}
+.kl-ci-c.cur{box-shadow:inset 0 0 0 1.5px rgba(109,40,217,.35);}
+.kl-ci-ch{display:flex;align-items:center;justify-content:space-between;}
+.kl-ci-ch b{font-size:14.5px;}
+.kl-ci-ch button{border:0;background:rgba(109,40,217,.12);color:#6D28D9;font:inherit;font-weight:700;font-size:13px;padding:6px 12px;border-radius:99px;cursor:pointer;}
+.kl-ci-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.kl-ci-chips span{font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:99px;background:rgba(127,127,127,.12);}
+.kl-ci-n{font-size:14px;line-height:1.45;color:var(--dim);white-space:pre-line;}
+.kl-ci-r{padding:12px 14px;border-radius:14px;background:rgba(109,40,217,.1);font-size:14.5px;line-height:1.45;white-space:pre-line;}
+.kl-ci-r small{display:block;font-size:12px;font-weight:800;color:#6D28D9;margin-bottom:4px;white-space:normal;}
+:root:not([data-theme="light"]) .kl-ci-r small{color:#B79CFF;}
+.kl-ci-r.new{box-shadow:inset 0 0 0 1.5px #6D28D9;}
+.kl-ci-r small i{font-style:normal;background:#6D28D9;color:#FFFFFF;padding:1px 7px;border-radius:99px;margin-right:4px;}
+.kl-ci-w{font-size:13px;font-weight:600;color:var(--dim);}
+.kl-ci-past{display:flex;flex-direction:column;gap:8px;margin-top:8px;}

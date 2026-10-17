@@ -4564,6 +4564,26 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("...no FIRST 30, no class workout, the violet look", Tp.indexOf('Your first 30 days')<0 && Tp.indexOf('kl-hero kl-hero2 pt')>0 && Tp.indexOf('>Personal Coaching<')>0);
   ok("...sessions count for the month and the streak", kelasIns().length===2 && kelasTotal()===2 && kelasProgressTab().indexOf('Strength')>0);
   ok("...Bara speaks of the next session, in Malay", /Sesi seterusnya esok/.test(kelasBaraLine()[1]));
+  /* phase 2 (099): homework and the weekly check-in */
+  var tdy=kelasDayKey(kelasNowMY()), dPlus=function(n){ return new Date(Date.parse(tdy+'T00:00:00Z')+n*864e5).toISOString().slice(0,10); };
+  Kelas.data.pt.hw=[{id:'h1',t:'10k steps',x:'Walk after dinner',from:dPlus(-2),due:dPlus(4),daily:true,coach:'Amir Hakim',done:[dPlus(-2)]},
+                    {id:'h2',t:'Meal prep for 3 days',x:'',from:dPlus(-1),due:dPlus(2),daily:false,coach:'Amir Hakim',done:[]}];
+  Kelas.data.pt.week=dPlus(-((kelasDow(kelasNowMY())+6)%7)); Kelas.data.pt.checkins=[];
+  var Th=kelasTodayTab();
+  ok("phase 2: the coach's homework on Today, a daily one with its days", Th.indexOf('Homework')>0 && Th.indexOf('10k steps')>0 && Th.indexOf('1 of 7 days')>0 && (Th.match(/<u class=/g)||[]).length===7);
+  ok("...a one-off with its date", Th.indexOf('Meal prep for 3 days')>0 && Th.indexOf('By ')>0);
+  ok("...the weekly check-in form: weight, energy, sleep, food, a note", Th.indexOf('Weekly check-in')>0 && Th.indexOf('kl-ci-kg')>0 && (Th.match(/kelasPtCiSet\(/g)||[]).length===15 && Th.indexOf('kl-ci-note')>0);
+  Kelas.data.pt.checkins=[{w:Kelas.data.pt.week,kg:72.4,energy:4,sleep:3,food:5,note:'Lutut ok',reply:null}];
+  Th=kelasTodayTab();
+  ok("...sent: waiting for the coach", Th.indexOf('This week')>0 && Th.indexOf('72.4 kg')>0 && Th.indexOf('Waiting for')>0);
+  Kelas.data.pt.checkins[0].reply='Bagus! Minggu depan tambah protein.'; Kelas.data.pt.checkins[0].coach='Amir Hakim'; Kelas.data.pt.checkins[0].seen=false;
+  Kelas.ciSeenSent=true; Th=kelasTodayTab();
+  ok("...the coach's reply, marked new", Th.indexOf('Bagus! Minggu depan tambah protein.')>0 && Th.indexOf('<i>New</i>')>0);
+  Kelas.data.pt.next=[];
+  ok("...Bara tells of the reply", /balas check-in/.test(kelasBaraLine()[1]));
+  Kelas.data.pt.checkins[0].seen=true;
+  ok("...then of today's homework", /Homework dari coach: 10k steps/.test(kelasBaraLine()[1]));
+  Kelas.data.pt.hw=[]; Kelas.data.pt.checkins=[]; Kelas.ciSeenSent=false;
   ok("...points: a PT session is +150", (Kelas.data.points=Kelas.data.points||keepD4.points, kelasPointsHTML().indexOf('PT session')>0));
   Kelas.data.memberships=[{category:'Membership',plan:'x',start_date:'2026-10-01',end_date:'2026-12-31',active:true}];
   ok("PT + a class: a switch with both", kelasSpaces().join()==='active,pt' && kelasHTML().indexOf('kl-space n2')>0);

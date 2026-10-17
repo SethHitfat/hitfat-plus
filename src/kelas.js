@@ -1076,6 +1076,13 @@ function kelasBaraLine(){
   if(kelasSpace()==='pt'){ const p=kelasPt(), nx=p&&(p.next||[])[0];
     if(!act) return ['kusut','Pakej PT awak dah tamat. Bara rindu nak tengok awak berlatih dengan coach. Sambung dengan coach ya!'];
     const left=p?(+p.total||0)-(+p.used||0):0;
+    /* a session today or tomorrow first; then (phase 2) a reply, today's homework, the end-of-week check-in */
+    const today=kelasDayKey(kelasNowMY()), C=(p&&p.checkins)||[], cw=String(p&&p.week||'').slice(0,10);
+    if(nx && /^(today|tomorrow)/.test(kelasPtWhen(nx.at))) return ['aktif','Sesi seterusnya '+kelasPtWhen(nx.at).replace(/^tomorrow/,'esok').replace(/^today/,'hari ini')+(nx.coach?' dengan Coach '+String(nx.coach).split(' ')[0]:'')+'. Bara tunggu awak! 💪'];
+    if(C.some(c=>c.reply&&!c.seen)) return ['giggle','Coach dah balas check-in awak! Baca kat bawah 💬'];
+    const hw=kelasPtHw().filter(x=>(x.daily?(today>=x.from&&today<=x.due):true) && !kelasPtHwDone(x,today))[0];
+    if(hw) return ['aktif','Homework dari coach: '+hw.t+'. Siapkan, dapat +20 mata! 💪'];
+    if(!C.some(c=>String(c.w).slice(0,10)===cw) && kelasDow(kelasNowMY())>=5) return ['calendar','Check-in mingguan dengan coach belum lagi. Dua minit je, +50 mata!'];
     if(nx) return ['aktif','Sesi seterusnya '+kelasPtWhen(nx.at).replace(/^tomorrow/,'esok').replace(/^today/,'hari ini')+(nx.coach?' dengan Coach '+String(nx.coach).split(' ')[0]:'')+'. Bara tunggu awak! 💪'];
     if(left<=2) return ['calendar','Tinggal '+left+' sesi dalam pakej awak. Cakap dengan coach untuk sambung ya!'];
     return ['aktif','Setiap sesi PT = +150 mata. Coach awak tulis nota lepas setiap sesi, baca di bawah.']; }
@@ -2253,6 +2260,7 @@ function kelasPtTodayHTML(){
   h+='<div class="kl-pt-pk"><div class="kl-pt-ring" style="--p:'+pct+'"><b>'+left+'</b><small>left</small></div>'+
     '<div class="kl-pt-pkt"><b>'+used+' of '+total+' sessions done</b><small>'+hesc(p.type==='Small Group'?'Small Group':'1-on-1')+(p.end?' · ends '+kelasIBDate(p.end,true)+(daysEnd!==null&&daysEnd>=0?' ('+daysEnd+' day'+(daysEnd===1?'':'s')+')':''):'')+'</small>'+
     (p.active&&(left<=2||(daysEnd!==null&&daysEnd<=7))?'<em>Talk to your coach about your next month</em>':!p.active?'<em>Package ended. Talk to your coach to continue</em>':'')+'</div></div>';
+  h+=kelasPtHwHTML()+kelasPtCiHTML();
   /* the coach's notes */
   const N=p.notes||[];
   h+=fsec('From your coach','After every session.');
@@ -2262,6 +2270,105 @@ function kelasPtTodayHTML(){
     (n.note?'<div class="kl-pt-nb">'+hesc(n.note)+'</div>':'')+'</div>').join('')+'</div>';
   if(N.length>3) h+='<button class="kl-alt2" onclick="Kelas.ptAll=!Kelas.ptAll;renderKelas()">'+(Kelas.ptAll?'Show fewer':'All '+N.length+' notes')+'</button>';
   return h;
+}
+
+/* ── Phase 2 (18 Oct 2026, 099): homework from the coach, the weekly
+   check-in. The coach sets homework in OS (once, by a date; or every day
+   to a date) and the client ticks it here, +20 points each (a day of a
+   daily one). Once a week the client sends weight, energy, sleep and how
+   well they ate to plan, with a note; the coach replies from OS and the
+   reply shows here (and the evening push says so). +50 a check-in. ── */
+function kelasPtCoach(p){ const c=p&&(p.coach||'')||''; return c?'Coach '+String(c).split(' ')[0]:'your coach'; }
+function kelasPtHw(){ const p=kelasPt(); return (p&&Array.isArray(p.hw))?p.hw:[]; }
+function kelasPtHwDays(h){
+  if(!h.daily||!h.from||!h.due) return [];
+  const out=[]; let t=Date.parse(String(h.from).slice(0,10)+'T00:00:00Z'); const e=Date.parse(String(h.due).slice(0,10)+'T00:00:00Z');
+  while(t<=e && out.length<31){ out.push(new Date(t).toISOString().slice(0,10)); t+=864e5; }
+  return out;
+}
+function kelasPtHwDone(h,today){ const D=h.done||[]; return h.daily?D.indexOf(today)>=0:D.length>0; }
+function kelasPtHwHTML(){
+  const L=kelasPtHw(); if(!L.length) return '';
+  const p=kelasPt(), today=kelasDayKey(kelasNowMY());
+  const dd=d=>KELAS_DOW[(new Date(String(d).slice(0,10)+'T12:00:00Z').getUTCDay()+6)%7]+' '+kelasIBDate(d,true);
+  let h=fsec('Homework','From '+kelasPtCoach(p)+' · +20 points each');
+  h+='<div class="kl-hw">'+L.map(x=>{
+    const done=kelasPtHwDone(x,today), days=kelasPtHwDays(x), soon=x.daily&&x.from>today, over=!x.daily&&!done&&x.due&&x.due<today;
+    const n=(x.done||[]).length;
+    const meta=x.daily?(soon?'Starts '+dd(x.from):'Every day to '+dd(x.due)+' · '+n+' of '+days.length+' days')
+      :done?'Done ✓':x.due?(over?'Was due '+dd(x.due):'By '+dd(x.due)):'This week';
+    return '<div class="kl-hw-r'+(done?' on':'')+(over?' over':'')+'">'+
+      '<button class="kl-hw-b" '+(soon?'disabled':'onclick="kelasPtHwTick(\''+x.id+'\')"')+' aria-label="'+(done?'Not done':'Done')+': '+hesc(x.t)+'">'+(done?glyph('check'):'')+'</button>'+
+      '<div class="kl-hw-t"><b>'+hesc(x.t)+'</b>'+(x.x?'<span>'+hesc(x.x)+'</span>':'')+'<small>'+meta+(x.daily&&!soon&&!done?' · today not yet':'')+'</small>'+
+      (x.daily&&days.length<=14?'<i class="kl-hw-d">'+days.map(d=>'<u class="'+((x.done||[]).indexOf(d)>=0?'y':d===today?'n':d<today?'m':'')+'"></u>').join('')+'</i>':'')+'</div></div>';
+  }).join('')+'</div>';
+  return h;
+}
+async function kelasPtHwTick(id){
+  const x=kelasPtHw().filter(h=>h.id===id)[0]; if(!x) return;
+  const today=kelasDayKey(kelasNowMY()), on=!kelasPtHwDone(x,today), keep=(x.done||[]).slice();
+  x.done=x.daily?(on?keep.concat([today]):keep.filter(d=>d!==today)):(on?[today]:[]);
+  kelasSave(); renderKelas();
+  if(on) toast('+20 points · '+x.t);
+  try{ const r=await kelasCall('pt_hw',{id:id, day:today, on:on}); if(!r||!r.ok) throw new Error((r&&r.error)||'failed'); }
+  catch(e){ x.done=keep; kelasSave(); renderKelas(); toast('Could not save. Try again.'); }
+}
+var KL_CI=[['energy','Energy',['Drained','Low','Okay','Good','Great']],['sleep','Sleep',['Very bad','Poor','Okay','Good','Great']],
+           ['food','Ate to plan',['Not at all','A little','Half','Mostly','All week']]];
+function kelasPtCiHTML(){
+  const p=kelasPt(); if(!p) return '';
+  const C=Array.isArray(p.checkins)?p.checkins:[], wk=String(p.week||'').slice(0,10), cur=C.filter(c=>String(c.w).slice(0,10)===wk)[0];
+  if(!p.active && !C.length) return '';
+  const coach=kelasPtCoach(p);
+  let h=fsec('Weekly check-in','For '+coach+' · once a week · +50 points');
+  if(p.active && (!cur || Kelas.ciEdit)){
+    const f=Kelas.ci||(Kelas.ci=cur?{kg:cur.kg||'',energy:cur.energy,sleep:cur.sleep,food:cur.food,note:cur.note||''}:{kg:'',note:''});
+    h+='<div class="kl-ci-f"><label class="kl-ci-kg"><span>Weight this morning</span><input id="kl-ci-kg" class="kl-in" inputmode="decimal" maxlength="5" placeholder="e.g. 72.4" value="'+hesc(String(f.kg||''))+'"><em>kg</em></label>'+
+      KL_CI.map(q=>'<div class="kl-ci-q"><div><b>'+q[1]+'</b><small>'+(f[q[0]]?q[2][f[q[0]]-1]:'Tap one')+'</small></div>'+
+        '<div class="kl-ci-s">'+[1,2,3,4,5].map(v=>'<button class="'+(f[q[0]]===v?'on':'')+'" onclick="kelasPtCiSet(\''+q[0]+'\','+v+')" aria-label="'+q[1]+' '+v+' of 5, '+q[2][v-1]+'">'+v+'</button>').join('')+'</div></div>').join('')+
+      '<textarea id="kl-ci-note" class="kl-in kl-ci-note" maxlength="600" rows="3" placeholder="Anything for '+hesc(coach)+'? A win, a pain, a question.">'+hesc(f.note||'')+'</textarea>'+
+      '<button class="bigbtn kl-ci-go" onclick="kelasPtCiSend()"'+(Kelas.ciBusy?' disabled':'')+'>'+(Kelas.ciBusy?'Sending…':cur?'Update my check-in':'Send to '+hesc(coach))+'</button>'+
+      (cur?'<button class="kl-alt2" onclick="Kelas.ciEdit=false;Kelas.ci=null;renderKelas()">Cancel</button>':'')+'</div>';
+  } else if(cur){
+    h+=kelasPtCiCard(cur,true);
+  }
+  const past=C.filter(c=>c!==cur).slice(0,Kelas.ciAll?8:2);
+  if(past.length) h+='<div class="kl-ci-past">'+past.map(c=>kelasPtCiCard(c,false)).join('')+'</div>';
+  if(C.filter(c=>c!==cur).length>2) h+='<button class="kl-alt2" onclick="Kelas.ciAll=!Kelas.ciAll;renderKelas()">'+(Kelas.ciAll?'Show fewer':'All check-ins')+'</button>';
+  /* a reply not read yet: shown as new now, marked read on the server */
+  if(C.some(c=>c.reply&&!c.seen) && !Kelas.ciSeenSent){ Kelas.ciSeenSent=true; kelasCall('pt_seen',{}).catch(()=>{ Kelas.ciSeenSent=false; }); }
+  return h;
+}
+function kelasPtCiCard(c,mine){
+  const lab=[c.kg?'<span>'+kelasF(c.kg)+' kg</span>':'']
+    .concat(KL_CI.map(q=>c[q[0]]?'<span>'+q[1]+' '+c[q[0]]+'/5</span>':'')).filter(Boolean).join('');
+  return '<div class="kl-ci-c'+(mine?' cur':'')+'"><div class="kl-ci-ch"><b>'+(mine?'This week':'Week of '+kelasIBDate(c.w,true))+'</b>'+
+    (mine&&!c.reply?'<button onclick="Kelas.ciEdit=true;Kelas.ci=null;renderKelas()">Edit</button>':'')+'</div>'+
+    (lab?'<div class="kl-ci-chips">'+lab+'</div>':'')+(c.note?'<div class="kl-ci-n">'+hesc(c.note)+'</div>':'')+
+    (c.reply?'<div class="kl-ci-r'+(c.seen?'':' new')+'"><small>'+(c.seen?'':'<i>New</i> ')+hesc(c.coach?'Coach '+String(c.coach).split(' ')[0]:'Your coach')+(c.at?' · '+kelasIBDate(c.at,true):'')+'</small>'+hesc(c.reply)+'</div>'
+      :mine?'<div class="kl-ci-w">Sent ✓ Waiting for '+hesc(kelasPtCoach(kelasPt()))+'’s reply.</div>':'')+'</div>';
+}
+function kelasPtCiKeep(){
+  const f=Kelas.ci||(Kelas.ci={}), k=$('kl-ci-kg'), n=$('kl-ci-note');
+  if(k) f.kg=k.value; if(n) f.note=n.value;
+  return f;
+}
+function kelasPtCiSet(k,v){ const f=kelasPtCiKeep(); f[k]=v; renderKelas(); }
+async function kelasPtCiSend(){
+  const f=kelasPtCiKeep(), p=kelasPt(); if(!p) return;
+  if(!f.energy||!f.sleep||!f.food){ toast('Tap a number for energy, sleep and food'); return; }
+  const kg=parseFloat(String(f.kg||'').replace(',','.'));
+  if(f.kg && !(kg>=20 && kg<=400)){ toast('Weight in kg, e.g. 72.4'); return; }
+  Kelas.ciBusy=true; renderKelas();
+  try{
+    const r=await kelasCall('pt_checkin',{kg:f.kg?kg:null, energy:f.energy, sleep:f.sleep, food:f.food, note:String(f.note||'').slice(0,600)});
+    if(!r||!r.ok){ toast(r&&r.error==='replied'?'Your coach already replied to this week’s.':'Could not send. Try again.'); Kelas.ciBusy=false; renderKelas(); return; }
+    const wk=String(r.week||p.week).slice(0,10), had=(p.checkins||[]).some(c=>String(c.w).slice(0,10)===wk);
+    const C=p.checkins=(p.checkins||[]).filter(c=>String(c.w).slice(0,10)!==wk);
+    C.unshift({w:wk, kg:f.kg?kg:null, energy:f.energy, sleep:f.sleep, food:f.food, note:f.note||'', reply:null});
+    Kelas.ci=null; Kelas.ciEdit=false; Kelas.ciBusy=false; kelasSave(); renderKelas();
+    toast(had?'Check-in updated':'+50 points · sent to '+kelasPtCoach(p));
+  }catch(e){ Kelas.ciBusy=false; renderKelas(); toast('Could not send. Try again.'); }
 }
 
 /* ═══════════════ Today's workout (17 Oct 2026) ═══════════════

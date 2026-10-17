@@ -166,6 +166,11 @@ export function classMessage(c: any, today: string): Msg | null {
       const left = typeof pt.left === 'number' && pt.left <= 2 ? ' Only ' + pt.left + ' session' + (pt.left === 1 ? '' : 's') + ' left in your package, talk to ' + coach + ' about renewing.' : '';
       return { kind: 'pt1', title: 'PT session tomorrow at ' + at, body: 'With ' + coach + '. Sleep well and eat a good meal before.' + left, url: '/?kelas=today' };
     }
+    /* phase 2 (099): the coach replied, new homework, the Sunday check-in */
+    if (pt.reply) return { kind: 'ptreply', title: coach + ' replied to your check-in', body: 'Open HITFAT+ to read it. 💬', url: '/?kelas=today' };
+    if (pt.hw_new > 0) return { kind: 'pthw', title: 'New homework from ' + coach, body: pt.hw_new + (pt.hw_new === 1 ? ' task' : ' tasks') + ' to do. Tick each one off for +20 points.', url: '/?kelas=today' };
+    if (!pt.ci_done && new Date(today + 'T12:00:00Z').getUTCDay() === 0)
+      return { kind: 'ptci', title: 'Your weekly check-in with ' + coach, body: 'Two minutes: your weight, energy, sleep and food this week. +50 points.', url: '/?kelas=today' };
     if (pt.end && daysBetween(today, String(pt.end).slice(0, 10)) === 3)
       return { kind: 'ptend', title: 'Your PT package ends in 3 days', body: 'It ends on ' + fmtDay(String(pt.end).slice(0, 10)) + '. Talk to ' + coach + ' to keep your sessions going.', url: '/?kelas=today' };
   }
