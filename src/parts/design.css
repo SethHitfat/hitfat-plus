@@ -4865,3 +4865,11 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .wl-qc .gly{width:15px;height:15px;stroke:#E30613;}
 .wl-faq details[open] .wl-qc{transform:rotate(45deg);}
 .sc-car{transition:height .25s ease;}
+
+/* ── BURN30 hero in the covers' look (18 Oct) ── */
+.pdx-t.wl-name{font-size:44px;font-weight:900;font-style:italic;letter-spacing:-1px;}
+.wl-buy-art{position:relative;overflow:hidden;aspect-ratio:16/10;}
+.wl-buy-art .hpo-fig{left:38%;}
+.wl-buy-art .tx{position:absolute;left:18px;bottom:16px;z-index:3;color:#FFFFFF;display:flex;flex-direction:column;}
+.wl-buy-art .tx b{font-size:40px;font-weight:900;font-style:italic;letter-spacing:-1px;line-height:1;}
+.wl-buy-art .tx span{font-size:11px;font-weight:800;letter-spacing:.2em;margin-top:6px;}

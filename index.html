@@ -7104,6 +7104,14 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .wl-faq details[open] .wl-qc{transform:rotate(45deg);}
 .sc-car{transition:height .25s ease;}
 
+/* ── BURN30 hero in the covers' look (18 Oct) ── */
+.pdx-t.wl-name{font-size:44px;font-weight:900;font-style:italic;letter-spacing:-1px;}
+.wl-buy-art{position:relative;overflow:hidden;aspect-ratio:16/10;}
+.wl-buy-art .hpo-fig{left:38%;}
+.wl-buy-art .tx{position:absolute;left:18px;bottom:16px;z-index:3;color:#FFFFFF;display:flex;flex-direction:column;}
+.wl-buy-art .tx b{font-size:40px;font-weight:900;font-style:italic;letter-spacing:-1px;line-height:1;}
+.wl-buy-art .tx span{font-size:11px;font-weight:800;letter-spacing:.2em;margin-top:6px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -11544,7 +11552,14 @@ function wlHero(kicker,title,sub,meta,pill,day){
   const top=day
     ? '<div class="wl-hero day wl-dh">'+hpoArt(WL30,{ar:1.0})+
       '<div class="wl-dh-tx"><span class="k">BURN30</span><span class="d">DAY</span><b>'+day.n+'</b><em>'+glyph(WL30_GLY[day.k]||'workout')+(WL30_KIND[day.k]||'')+'</em></div></div>'
-    : '<div class="wl-hero'+(kicker==='day'?' day':'')+'"><img src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days at home"></div>';
+    : null;
+  /* the program's home (18 Oct, Seth: "poster besar ni tak cantik dan tak
+     masuk dengan tema"): the same hero as every other program, the athlete
+     cut out on BURN30 red with the neon edge, the name in type over it */
+  if(!top) return pdxBar(kicker,pill)+
+    '<div class="pdx-hero pdx-hpo wl-phero">'+pdxArt(WL30)+'<div class="pdx-ov"></div>'+
+    '<div class="pdx-in"><div class="pdx-t wl-name">'+WL30_NAME+'</div><div class="pdx-s">'+sub+'</div>'+
+    (meta?'<div class="pdx-m">'+meta+'</div>':'')+'</div></div>';
   return pdxBar(kicker,pill)+top+
     '<div class="wl-hero-tx">'+(title?'<div class="t">'+title+'</div>':'')+
     '<div class="s">'+sub+'</div>'+(meta?'<div class="m">'+meta+'</div>':'')+'</div>';
@@ -11906,13 +11921,13 @@ function wlBuy(){
   if(wlOwned()) return openProgram(WL30_ID);
   $('pw-body').innerHTML=
     '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
-    '<img class="wl-buy-poster" src="'+WL30_POSTER+'" alt="HITFAT BURN30: 30 days at home">'+
+    '<div class="wl-buy-poster wl-buy-art">'+hpoArt(WL30,{ar:1.4})+'<div class="tx"><b>'+WL30_NAME+'</b><span>30 DAYS · AT HOME</span></div></div>'+
     '<div class="pwlist">'+[
       ['workout','30 workouts, made for beginners','15–25 minutes at home, video for every move'],
       ['food','A meal plan for the month','Your calories, Malaysian food, a weekly shopping list'],
       ['chart','Fit test, check-ins, photos','Day 1 against day 30, in numbers'],
       ['trophy','Yours for good','One payment. No subscription, nothing to cancel']]
-      .map(b=>'<div class="pwf"><div class="ic">'+ic(b[0])+'</div><div><div class="t">'+b[1]+'</div><div class="m">'+b[2]+'</div></div></div>').join('')+'</div>'+
+      .map(b=>'<div class="pwf"><div class="ic"><span class="wl-kic">'+glyph(b[0])+'</span></div><div><div class="t">'+b[1]+'</div><div class="m">'+b[2]+'</div></div></div>').join('')+'</div>'+
     '<div class="pwprice"><div class="p">RM'+WL30_PRICE+'</div><div class="per">one payment</div></div>'+
     '<button class="bigbtn" onclick="startCheckout(\'prog_'+WL30_ID+'\')">Buy for RM'+WL30_PRICE+'</button>'+
     '<button class="authalt" onclick="openPaywall(\'BURN30 is included in HITFAT+.\')">Or get everything with HITFAT+</button>'+

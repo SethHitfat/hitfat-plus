@@ -4151,6 +4151,7 @@ print("\n── BURN30: PICTURES AND FOOD IN MALAY ──");
   ok("...a dish with a fruit after it", wlMs('Nasi lemak, portion controlled + Cut watermelon')==='Nasi lemak, porsi terkawal + Tembikai potong');
   ok("the Eat plans too: snacks and their measures", wlMs('Banana + nuts')==='Pisang + kacang' && wlPortion('15g / 1 thumb')==='15g / 1 ibu jari' && mpMs('Small chicken sandwich')==='Sandwic ayam kecil');
   ok("...the Eat meal plan uses them", String(renderPlanView).indexOf('mpMs(it.food)')>0 && String(renderPlanView).indexOf('mpPor(it.portion)')>0);
+  ok("BURN30's home has the covers' hero, not the flat poster", wlHero('program','','Day 1 of 30 · Foundation','',null).indexOf('pdx-hpo')>0 && wlHero('program','','x','',null).indexOf('burn30-poster')<0);
   ok("no 0% bar before day 1", String(renderWL30).indexOf("owned && done>0) h+='<div class=\"wl-prog\"")>0);
   ok("the checklist and the kit in one red tile style", String(wlChecklist).indexOf('wl-kic')>0 && String(wlGuide).indexOf("['mat','A mat or a towel']")>0);
   ok("the hand guide tip is not repeated under the portion guide", String(wlFood).indexOf('Hand guide')>0);
