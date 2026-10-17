@@ -4145,6 +4145,14 @@ print("\n── HOME · BUDDY'S BUBBLE ──");
   ok("a strong day: red glow, red lines", scScore()>=50 && scBand()==='#E30613' && (_scSay=null, SC_BUB.red.indexOf(scBubText())>=0 || SC_BUB.full.indexOf(scBubText())>=0));
   _scBubI=0; _scCar=0;
 })();
+print("\n── BURN30: PICTURES AND FOOD IN MALAY ──");
+(function(){
+  ok("the food in Malay: a dish, a food, a portion", wlMs('Banana oat pancakes')==='Pancake oat pisang' && wlMs('Fried egg')==='Telur goreng' && wlPortion('2 small bowl / 75g')==='2 mangkuk kecil / 75g');
+  ok("...a dish with a fruit after it", wlMs('Nasi lemak, portion controlled + Cut watermelon')==='Nasi lemak, porsi terkawal + Tembikai potong');
+  ok("...a medium fruit", wlPortion('1 medium')==='1 biji sederhana' && wlPortion('1.5 tbsp')==='1.5 sudu besar');
+  ok("the days are numbered red tiles, not other people's photos", String(wlPlan).indexOf('pdx-dt')>0 && String(wlPlan).indexOf('wlPic(d)')<0);
+  ok("one progress line, in days done", String(renderWL30).indexOf(' days done')>0 && String(renderWL30).indexOf("% complete'")<0);
+})();
 print("\n── PICTURES INSIDE MATCH THE COVERS ──");
 (function(){
   var sig=PROGRAMS.filter(function(p){ return p.id==='sig1'; })[0];

@@ -7074,6 +7074,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .wl-hero.day.lb-art{aspect-ratio:16/9;padding-bottom:16px;}
 .pdx-hero.pdx-hpo:has(.hpo-hero.land){height:360px;}
 .pdx-hero .hpo-hero.land .hpo-fig{top:22%;bottom:12%;}
+.wl-today-im{position:relative;overflow:hidden;background:none;}   /* holds the poster art (18 Oct) */
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -11456,6 +11457,7 @@ function wlMinutes(d){
   const rest=(typeof REST_SECS!=='undefined')?REST_SECS:20;
   return Math.max(1, Math.round(d.r*wlExercises(d).reduce((a,e)=>a+(e.dur||45)+rest,0)/60));
 }
+const WL30_GLY={test:'flag', train:'bolt', lower:'steps', upper:'workout', cardio:'flame', core:'target', recover:'leaf'};
 const WL30_KIND={test:'Fit Test', train:'Full Body', lower:'Lower Body', upper:'Upper Body',
                  cardio:'Cardio', core:'Core', recover:'Recovery'};
 
@@ -11470,7 +11472,7 @@ function renderWL30(){
            : nx<tot ? {icon:'play',label:'Day '+(nx+1),go:'wlOpenDay('+nx+')'} : null;
   let h=wlHero('program','',
     owned ? (nx<tot ? 'Day '+(nx+1)+' of '+tot+' · '+wlPhaseOf(nx).n : 'Program complete') : WL30_SUB+' · Beginner · At home',
-    owned ? pct+'% complete' : 'One payment · yours for good', pill);
+    owned ? '' : 'One payment · yours for good', pill);
 
   h+='<div class="pdx-btns">';
   if(!owned){
@@ -11483,7 +11485,8 @@ function renderWL30(){
   }
   h+='</div>';
 
-  if(owned) h+='<div class="wl-prog"><div class="wl-prog-h"><span>Day '+Math.min(done,tot)+' of '+tot+'</span><b>'+pct+'%</b></div>'+
+  /* one progress line, in days done (18 Oct: it said "Day 1 of 30" above and "Day 0 of 30" here) */
+  if(owned) h+='<div class="wl-prog"><div class="wl-prog-h"><span>'+Math.min(done,tot)+' of '+tot+' days done</span><b>'+pct+'%</b></div>'+
     '<div class="pbar"><i style="width:'+pct+'%"></i></div></div>';
 
   h+='<div class="filters wl-tabs" id="wl-tabs">'+[['plan','Plan'],['food','Nutrition'],['progress','Progress'],['guide','Start Here']]
@@ -11516,7 +11519,7 @@ function wlPlan(){
     const d=WL30_DAYS[nx];
     h+=fsec(owned?'Today':'Day 1','');
     h+='<div class="wl-today" onclick="wlOpenDay('+nx+')">'+
-      '<div class="wl-today-im" style="background-image:url(\''+wlPic(d)+'\')"></div>'+
+      '<div class="wl-today-im">'+hpoArt(WL30,{ar:FA.hero})+'</div>'+   /* the poster's own athlete, cut out on its red (18 Oct) */
       '<div class="wl-today-tx"><div class="k">Day '+(nx+1)+' · '+wlPhaseOf(nx).n+'</div>'+
       '<div class="t">'+d.n+'</div>'+
       '<div class="m">'+wlMinutes(d)+' min · '+d.ex.length+' moves · '+d.r+(d.r===1?' round':' rounds')+'</div>'+
@@ -11539,10 +11542,14 @@ function wlPlan(){
   h+='<div class="filters pdx-weeks">'+WL30_PHASES.map((x,i)=>
     '<button class="chip'+(i===wlWeek?' y':'')+'" onclick="wlWeek='+i+';renderWL30()">Week '+(i+1)+'</button>').join('')+'</div>';
   h+='<div class="wl-phase"><div class="t">'+ph.n+'</div><div class="s">'+ph.s+'</div></div>';
+  const pc=hpoPal(WL30);
   h+='<div class="pdx-eps">'+WL30_DAYS.slice(ph.from-1,ph.to).map((d,j)=>{
     const gi=ph.from-1+j, isDone=gi<done;
+    /* numbered tiles in BURN30 red, the kind of day as a glyph (18 Oct): the
+       studio photos of five other people on grey did not belong to this plan */
     return '<div class="fwr pdx-ep'+(isDone?' done':'')+'" onclick="wlOpenDay('+gi+')">'+
-      '<div class="th wl-th" style="background-image:url(\''+wlPic(d)+'\')">'+(isDone?'<span class="fnew">DONE</span>':'')+'</div>'+
+      '<div class="th pdx-dt" style="--a:'+pc[0]+';--b:'+pc[1]+'"><span class="dg">'+glyph(WL30_GLY[d.k]||'workout')+'</span>'+
+        '<span class="k">DAY</span><b>'+(gi+1)+'</b>'+(isDone?'<span class="ok">'+glyph('check')+'</span>':'')+'</div>'+
       '<div class="tx"><div class="t">'+d.n+'</div>'+
       '<div class="m">Day '+(gi+1)+' · '+WL30_KIND[d.k]+' · '+wlMinutes(d)+' min</div></div>'+
       '<span class="pdx-chev">›</span></div>';
@@ -11627,6 +11634,55 @@ function wlSaveProfile(){
   const d=wlData(); d.profile={gender:_wlSex||wlProfile().gender, wt, ht, age}; HF.save();
   renderWL30();
 }
+/* the food in Malay (18 Oct, Seth: "nutrition tu makanan bahasa melayu"):
+   dish names, items, portions and the shopping list, from the app's own
+   dictionary; the screen around them stays English like the rest */
+const WL30_MS={
+  /* dishes */
+  'Wholegrain cereal + milk + fruit':'Bijirin penuh + susu + buah','Egg fried rice + vegetables':'Nasi goreng telur + sayur',
+  'Bread wrap + tuna + salad':'Wrap roti + tuna + salad','Grilled chicken chop + potato + salad':'Chicken chop panggang + kentang + salad',
+  'Rice vermicelli soup + greens':'Bihun sup + sayur hijau','Brown rice buddha bowl':'Mangkuk nasi perang campur',
+  'Tofu + tempe + vegetables + a little rice':'Tauhu + tempe + sayur + sedikit nasi','Soy tempe + grilled aubergine + brown rice':'Tempe kicap + terung bakar + nasi perang',
+  'Greek yoghurt + granola + fruit':'Yogurt Greek + granola + buah','Wholemeal bread + omelette + cucumber':'Roti mil penuh + telur dadar + timun',
+  'Oats + banana + milk':'Oat + pisang + susu','Chicken tomyam + a little rice':'Tomyam ayam + sedikit nasi','Asam laksa, lighter version':'Asam laksa, versi ringan',
+  'Rice + egg + anchovy sambal + vegetables':'Nasi + telur + sambal ikan bilis + sayur','Chicken salad + boiled egg + dressing':'Salad ayam + telur rebus + sos salad',
+  'Fried noodles, portion controlled':'Mi goreng, porsi terkawal','Vegetable soup + tofu + a little rice':'Sup sayur + tauhu + sedikit nasi',
+  'Nasi lemak, portion controlled':'Nasi lemak, porsi terkawal','Fried noodles with vegetables + tempe':'Mi goreng sayur + tempe',
+  'Chicken stir-fry + vegetables + egg + rice':'Ayam tumis + sayur + telur + nasi','Grilled fish + ulam + sambal + a little rice':'Ikan bakar + ulam + sambal + sedikit nasi',
+  'Boiled eggs + wholemeal bread + tea':'Telur rebus + roti mil penuh + teh','Rice vermicelli chicken soup':'Bihun sup ayam',
+  'Rice + grilled fish + vegetables + sambal':'Nasi + ikan bakar + sayur + sambal','Steamed ginger fish + rice + vegetables':'Ikan stim halia + nasi + sayur',
+  'Ginger soy chicken + vegetables + a little rice':'Ayam kicap halia + sayur + sedikit nasi','Brown rice + tempe + tofu + vegetables':'Nasi perang + tempe + tauhu + sayur',
+  'Chicken vegetable soup + a little rice':'Sup sayur ayam + sedikit nasi','Fried rice vermicelli + beans':'Bihun goreng + kacang',
+  'Wholemeal bread + tuna salad':'Roti mil penuh + salad tuna','Rice + vegetable curry + tofu + beans':'Nasi + kari sayur + tauhu + kacang',
+  'Steamed rice + chicken, portion controlled':'Nasi ayam, porsi terkawal',
+  /* foods */
+  'Fried egg':'Telur goreng','Wholemeal wrap':'Wrap mil penuh','Canned tuna in water':'Tuna tin dalam air','Low-fat mayonnaise':'Mayonis rendah lemak',
+  'Boiled chickpeas':'Kacang kuda rebus','Grilled tofu':'Tauhu bakar','Olive oil':'Minyak zaitun','Oats (cooked)':'Oat (dimasak)',
+  'Rice vermicelli / laksa noodles':'Bihun / mi laksa','Mackerel / sardines':'Ikan kembung / sardin','Cucumber + pineapple':'Timun + nanas',
+  'Asam laksa broth':'Kuah asam laksa','Chicken / egg':'Ayam / telur','Mixed vegetable soup':'Sup sayur campur','Boiled tofu':'Tauhu rebus',
+  'Stir-fried spinach':'Bayam tumis','Fried tempe':'Tempe goreng','Ulam / cucumber':'Ulam / timun','Shredded boiled chicken':'Ayam rebus carik',
+  'Mustard greens / spinach':'Sawi / bayam','Steamed fish':'Ikan stim','Ginger + soy sauce':'Halia + kicap','Boiled broccoli / kailan':'Brokoli / kailan rebus',
+  'Soy chicken, light on oil':'Ayam kicap, kurang minyak','Cut watermelon':'Tembikai potong','Boiled chicken, skinless':'Ayam rebus, tanpa kulit',
+  'Chickpeas + sweetcorn':'Kacang kuda + jagung manis','Cut papaya':'Betik potong','Vegetable curry (dhal + pumpkin)':'Kari sayur (dal + labu)',
+  'Stir-fried long beans':'Kacang panjang tumis','Sambal':'Sambal','Orange':'Oren','Salad + tomato':'Salad + tomato','Salad + ulam':'Salad + ulam',
+  'Cucumber + tomato':'Timun + tomato',
+  /* parts */
+  'a little rice':'sedikit nasi','fruit':'buah','milk':'susu','potato':'kentang','salad':'salad','tuna':'tuna','greens':'sayur hijau','beans':'kacang'};
+function wlMs1(s){ if(WL30_MS.hasOwnProperty(s)) return WL30_MS[s]; const t=(typeof i18n==='function')?i18n(s):null; return t; }
+function wlMs(s){
+  s=String(s||''); const t=wlMs1(s); if(t) return t;
+  /* a dish with a fruit after it ('… + Banana'): the longest known start, then the rest one by one */
+  const parts=s.split(' + ');
+  for(let k=parts.length-1;k>=1;k--){ const h=wlMs1(parts.slice(0,k).join(' + ')); if(h) return h+' + '+parts.slice(k).map(x=>wlMs1(x)||x).join(' + '); }
+  return parts.map(x=>wlMs1(x)||x).join(' + ');
+}
+/* portions in Malay: the measures; the numbers and grams as they are */
+const WL30_UNITS=[[/\bsmall bowl\b/g,'mangkuk kecil'],[/\blarge bowl\b/g,'mangkuk besar'],[/\bbowl\b/g,'mangkuk'],[/\blarge palm\b/g,'tapak tangan besar'],
+  [/\bpalm\b/g,'tapak tangan'],[/\bsmall pancakes\b/g,'pancake kecil'],[/\bfist\b/g,'kepal'],[/\bhandfuls?\b/g,'genggam'],[/\bcooked\b/g,'masak'],
+  [/\btbsp\b/g,'sudu besar'],[/\btsp\b/g,'sudu kecil'],[/\bglass\b/g,'gelas'],[/\bcup\b/g,'cawan'],[/\bcan\b/g,'tin'],[/\bladle\b/g,'senduk'],
+  [/\bstick\b/g,'batang'],[/\bwhole\b/g,'biji'],[/\bpieces?\b/g,'ketul'],[/\bblocks?\b/g,'keping'],[/\bslices?\b/g,'keping'],
+  [/(\d) medium\b/g,'$1 biji sederhana'],[/\bmedium\b/g,'sederhana'],[/\ba little\b/g,'sedikit']];
+function wlPortion(s){ let t=String(s||''); WL30_UNITS.forEach(r=>{ t=t.replace(r[0],r[1]); }); return t; }
 function wlFood(){
   if(!wlOwned()) return wlLockedNote('food','A meal plan for all 30 days',
     'Built from your weight, height and age — breakfast, lunch and dinner every day, Malaysian food, '+
@@ -11658,8 +11714,8 @@ function wlFood(){
       '<div class="m">'+s.time+' · about '+s.target+' kcal</div></div>'+
       '<div class="mpopts">'+s.options.map((o,oi)=>'<button class="mpo'+(oi===0?' on':'')+'" aria-label="Option '+(oi+1)+'" onclick="mpOpt(\''+sid+'\','+oi+')">'+(oi+1)+'</button>').join('')+'</div></div>'+
       s.options.map((o,oi)=>'<div class="mpopt" style="display:'+(oi===0?'block':'none')+';">'+
-        '<div class="mpopt-h"><div class="t">'+o.name+'</div><div class="k">'+kcalOf(o)+' kcal</div></div>'+
-        o.items.map(it=>'<div class="mpitem"><div><div class="t">'+it.food+'</div><div class="m">'+it.portion+'</div></div><div class="k">'+it.kcal+'</div></div>').join('')+
+        '<div class="mpopt-h"><div class="t">'+wlMs(o.name)+'</div><div class="k">'+kcalOf(o)+' kcal</div></div>'+
+        o.items.map(it=>'<div class="mpitem"><div><div class="t">'+wlMs(it.food)+'</div><div class="m">'+wlPortion(it.portion)+'</div></div><div class="k">'+it.kcal+'</div></div>').join('')+
       '</div>').join('')+'</div>';
   }).join('')+'</div>';
   /* the week's shopping, from the first option of every meal */
@@ -11667,10 +11723,10 @@ function wlFood(){
   plan.days.slice(ph.from-1,ph.to).forEach(d=>d.slots.forEach(s=>{ const o=s.options[0]; if(o) o.items.forEach(it=>{ shop[it.food]=(shop[it.food]||0)+1; }); }));
   const list=Object.keys(shop).sort((a,b)=>shop[b]-shop[a]);
   h+=fsec('Shopping List','Week '+(wlPhaseIndex(wlMenuDay)+1)+' · days '+ph.from+'–'+ph.to);
-  h+='<div class="wl-shop">'+list.map(f=>'<div><span>'+f+'</span><b>×'+shop[f]+'</b></div>').join('')+'</div>';
+  h+='<div class="wl-shop">'+list.map(f=>'<div><span>'+wlMs(f)+'</span><b>×'+shop[f]+'</b></div>').join('')+'</div>';
   h+=fsec('Portion Guide','No scale needed — use your hand.');
-  h+='<div class="wl-hands">'+[['Protein','1 palm','meat, fish, eggs, tofu'],['Carbs','1 fist','rice, noodles, bread'],
-      ['Vegetables','2 handfuls','half the plate'],['Fat','1 thumb','oil, butter, nuts']]
+  h+='<div class="wl-hands">'+[['Protein','1 tapak tangan','daging, ikan, telur, tauhu'],['Carbs','1 kepal','nasi, mi, roti'],
+      ['Vegetables','2 genggam','separuh pinggan'],['Fat','1 ibu jari','minyak, mentega, kacang']]
     .map(x=>'<div><b>'+x[1]+'</b><span>'+x[0]+'</span><small>'+x[2]+'</small></div>').join('')+'</div>';
   h+='<div class="wl-tips">'+planTips({goal:'loss', struct:'3x', styles:['hiprotein']}).slice(0,4).map(t=>'<div>'+t+'</div>').join('')+'</div>';
   h+='<button class="authalt" onclick="wlForgetNumbers()">Change my numbers</button>';
