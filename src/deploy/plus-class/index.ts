@@ -23,6 +23,8 @@
                                      read by Claude, saved in HITFAT OS
                                      (inbody_scans, and the headline numbers
                                      in client_metrics for the coach)
+   POST { action:'hx_log', station, secs, div, date } | 'hx_delete', id |
+        'hx_board', div               HYROX: station times and the boards
    POST { action:'photo', url }      the profile photo for the boards, posts
                                      and comments (own upload or Google's)
    POST { action:'cm_feed', cat }    Community: the group's feed, the weekly
@@ -263,7 +265,26 @@ Deno.serve(async (req: Request) => {
       if (st && st.journey && st.journey.complete) {
         try { const a = await os('plus_journey_award', { p_key: key, p_user: uid }); if (a && a.ok) st.journey.awarded = true; } catch (_) { /* next time */ }
       }
+      /* HYROX: the member's own station times (094) */
+      if (st && st.linked) { try { st.hyrox = await os('plus_hx_mine', { p_key: key, p_user: uid }); } catch (_) { st.hyrox = []; } }
+      /* HYROX and Active apart (095): each space's check-ins, count, weeks */
+      if (st && st.linked) { try { Object.assign(st, await os('plus_status_spaces', { p_key: key, p_user: uid })); } catch (_) { /* the app falls back to all */ } }
       return json({ ...st, until });
+    }
+
+    /* HYROX (094): a station time, removing one, the station boards */
+    if (action === 'hx_log') {
+      const secs = Number(body.secs);
+      const d = /^\d{4}-\d{2}-\d{2}$/.test(String(body.date || '')) ? String(body.date) : null;
+      return json(await os('plus_hx_log', { p_key: key, p_user: uid, p_station: String(body.station || ''), p_secs: isFinite(secs) ? secs : 0,
+        p_div: String(body.div || ''), p_date: d }));
+    }
+    if (action === 'hx_delete') {
+      const id = /^[0-9a-f-]{36}$/.test(String(body.id || '')) ? String(body.id) : null;
+      return json(id ? await os('plus_hx_delete', { p_key: key, p_user: uid, p_id: id }) : { ok: false });
+    }
+    if (action === 'hx_board') {
+      return json(await os('plus_hx_board', { p_key: key, p_user: uid, p_div: String(body.div || 'Open Men') }));
     }
 
     if (action === 'journey_start') {

@@ -4369,6 +4369,47 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("the month: classes from the kiosk, against the month before", ms.n===new Set(kelasIns().map(kelasDayKey).filter(function(k){return k.slice(0,7)===kelasMonthKey(0);})).size && typeof ms.prev==='number');
   ok("...on Progress, with a share card", kelasProgressTab().indexOf('kl-mon')>0 && kelasProgressTab().indexOf('kelasShareMonth()')>0);
   ok("a notification opens the class group", (function(){ var t=null, k=kelasTab, cm=Kelas.cm; kelasTab=function(x){ t=x; }; kelasOpenUrl('/?kelas=group'); kelasTab=k; Kelas.cm=cm; return t==='group'; })());
+  /* HYROX: Perform (17 Oct) */
+  var keepMs=Kelas.data.memberships, keepHx=Kelas.data.hyrox, keepHp=HF.data.kelas.hx, keepSv5=HF.save; HF.save=function(){};
+  ok("an unlimited member does not get the HYROX screen", !kelasIsHx() && kelasProgressTab().indexOf('kl-hx')<0 && kelasHTML().indexOf('>Perform<')<0);
+  Kelas.data.memberships=keepMs.concat([{category:'HYROX',plan:'3 Month',start_date:'2026-10-01',end_date:'2026-12-31',active:true}]);
+  HF.data.kelas.hx={};
+  /* HYROX and Active apart (095) */
+  var keepD=JSON.parse(JSON.stringify(Kelas.data)), keepSp=Kelas.space; Kelas.space=null;
+  try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
+  ok("both packages: a switch, Active first", kelasSpaces().join()==='active,hyrox' && kelasSpace()==='active' && kelasHTML().indexOf('kl-space')>0 && !kelasIsHx());
+  var all=Kelas.data.checkins.length;
+  Kelas.data.hx_ins=[Kelas.data.checkins[0]]; Kelas.data.total_hx=1; Kelas.data.total_act=40; Kelas.data.weeks_hx=[]; Kelas.data.weeks_act=Kelas.data.weeks;
+  ok("...Active counts only its own classes", kelasIns().length===all-1 && kelasTotal()===40);
+  ok("...Bara on Home still counts every class", kelasClassDays().length===new Set(kelasInsAll().map(kelasDayKey)).size && kelasInsAll().length===all);
+  var _ld=Kelas.cm; Kelas.cm=null; kelasSetSpace('hyrox'); Kelas.cm=_ld;
+  ok("...HYROX: its own classes, count, membership", kelasSpace()==='hyrox' && kelasIns().length===1 && kelasTotal()===1 && kelasMain().category==='HYROX' && kelasSpaceCat()==='HYROX');
+  ok("...the HYROX look, no FIRST 30 there", kelasTodayTab().indexOf('kl-hero kl-hero2 hx')>0 && kelasTodayTab().indexOf('Your first 30 days')<0 && kelasTodayTab().indexOf('HYROX · HQ')>0);
+  ok("...the timetable is HYROX's only", kelasClasses().every(function(c){ return c.category==='HYROX'; }));
+  ok("an active HYROX member: Progress becomes Perform", kelasIsHx() && kelasHTML().indexOf('>Perform<')>0);
+  ok("...first, the division", kelasHxHTML().indexOf('Which division?')>0 && kelasHxHTML().indexOf('Doubles Mixed')>0);
+  ok("...Today points to the race", kelasTodayTab().indexOf('Set your race')>0);
+  kelasHxSetDiv('Open Women');
+  ok("times: m:ss and h:mm:ss, nothing else", hxParse('4:35')===275 && hxParse('1:15:30')===4530 && hxParse('4:75')===null && hxParse('abc')===null && hxClock(4530)==='1:15:30' && hxClock(275)==='4:35');
+  Kelas.data.hyrox=[{id:'a',st:'run',s:300,div:'Open Women',d:'2026-10-10'},{id:'b',st:'ski',s:290,div:'Open Women',d:'2026-10-10'},{id:'c',st:'ski',s:280,div:'Open Women',d:'2026-10-12'},{id:'x',st:'ski',s:200,div:'Pro Women',d:'2026-10-12'}];
+  ok("...the best is the fastest, in this division only", kelasHxBest('ski','Open Women')===280);
+  ok("...no prediction until all nine are in", kelasHxPredict('Open Women').done===false && kelasHxPredict('Open Women').have===2 && kelasHxHTML().indexOf('2<span> / 9')>0);
+  ['push','pull','bbj','row','carry','lunge','wb'].forEach(function(k,i){ Kelas.data.hyrox.push({id:'s'+i,st:k,s:[200,260,330,300,110,280,400][i],div:'Open Women',d:'2026-10-13'}); });
+  var P=kelasHxPredict('Open Women'), want=300*8*1.15+280+200+260+330+300+110+280+400+360;
+  ok("...then a predicted finish: runs ×1.15, the stations, 6 min Roxzone", P.done && Math.abs(P.total-want)<0.01 && kelasHxHTML().indexOf(hxClock(want))>0);
+  ok("...and where the time goes, the costliest station marked to focus", kelasHxHTML().indexOf('Where your time goes')>0 && kelasHxHTML().indexOf('Wall Balls <em>focus</em>')>0);
+  HF.data.kelas.hx.race=new Date(Date.parse(kelasDayKey(kelasNowMY())+'T00:00:00Z')+50*864e5).toISOString().slice(0,10);
+  ok("race date: the days left and the phase", kelasHxDays()===50 && kelasHxHTML().indexOf('Build')>0 && kelasTodayTab().indexOf('50 days to race')>0);
+  ok("...the phases by days left", kelasHxPhase(3)[0]==='Race week' && kelasHxPhase(20)[0]==='Peak' && kelasHxPhase(60)[0]==='Build' && kelasHxPhase(100)[0]==='Base' && kelasHxPhase(-1)===null);
+  Kelas.hxLog='ski'; ok("a station opens its log: best, history", kelasHxHTML().indexOf('Best 4:40')>0 && kelasHxHTML().indexOf('kl-hx-spark')>0); Kelas.hxLog=null;
+  Kelas.cm.cat='HYROX'; ok("the HYROX group gets a Stations board", kelasBoardKinds(Kelas.cm).some(function(k){return k[0]==='stations';}));
+  Kelas.cmKind='stations'; Kelas.hxB={'Open Women':{boards:{run:{top:[{r:1,name:'Nur A.',s:285,me:false},{r:2,name:'You',s:300,me:true}],people:2}}}};
+  var hb=kelasBoardHTML(Kelas.cm);
+  ok("...fastest first, by division", hb.indexOf('4:45')>0 && hb.indexOf('5:00')>0 && hb.indexOf('Open Women')>0);
+  Kelas.cm.cat='Membership'; ok("...not in the other groups", !kelasBoardKinds(Kelas.cm).some(function(k){return k[0]==='stations';}) && kelasBoardHTML(Kelas.cm).indexOf('kl-hx-bst')<0);
+  Kelas.cmKind='classes'; Kelas.hxB=null;
+  Kelas.data=keepD; Kelas.data.memberships=keepMs; Kelas.data.hyrox=keepHx; Kelas.space=keepSp; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
+  if(keepHp===undefined) delete HF.data.kelas.hx; else HF.data.kelas.hx=keepHp; HF.save=keepSv5;
   /* profile photo (17 Oct) */
   var keepPh=HF.data.prefs.photo, keepG=HF.gphoto, keepSv3=HF.save; HF.save=function(){};
   HF.gphoto='https://lh3.googleusercontent.com/a/x=s96-c'; delete HF.data.prefs.photo;

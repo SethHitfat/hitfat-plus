@@ -4529,3 +4529,80 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-mon-g div{padding:8px 4px;border-radius:12px;background:rgba(127,127,127,.08);text-align:center;}
 .kl-mon-g b{display:block;font-size:20px;font-weight:900;color:var(--txt);font-variant-numeric:tabular-nums;}
 .kl-mon-g small{font-size:11px;color:var(--dim);}
+
+/* ── HYROX: Perform (17 Oct). Darker and sharper than the class screens:
+   a performance tool, numbers first ── */
+.kl-hxt{display:grid;grid-template-columns:1fr auto;align-items:center;width:100%;text-align:left;margin:12px 0 0;padding:14px 16px;border:0;border-radius:18px;
+  background:#16161A;color:#FFFFFF;cursor:pointer;}
+.kl-hxt .kl-hxt-k{grid-column:1;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#FFD400;}
+.kl-hxt b{grid-column:1;font-size:19px;font-weight:900;margin-top:2px;}
+.kl-hxt small{grid-column:1;font-size:12.5px;color:rgba(255,255,255,.7);margin-top:2px;}
+.kl-hxt i{grid-column:2;grid-row:1/4;font-style:normal;font-size:26px;color:rgba(255,255,255,.6);}
+.kl-hx{margin:12px 0 4px;padding:16px;border-radius:20px;background:#16161A;color:#FFFFFF;}
+.kl-hx-k{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#FFD400;}
+.kl-hx-q{font-size:14px;font-weight:800;margin:12px 0 8px;} .kl-hx-q small{font-weight:600;color:rgba(255,255,255,.55);}
+.kl-hx-divs{display:flex;flex-wrap:wrap;gap:6px;}
+.kl-hx-divs button{border:1px solid rgba(255,255,255,.22);background:transparent;color:#FFFFFF;border-radius:999px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer;}
+.kl-hx-divs button.on{background:#FFD400;border-color:#FFD400;color:#16161A;}
+.kl-hx-dt{display:flex;gap:8px;}
+.kl-hx-dt input{flex:1;min-width:0;font:600 15px inherit;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#FFFFFF;color-scheme:dark;}
+.kl-hx-dt button{border:0;border-radius:12px;padding:0 18px;background:#FFD400;color:#16161A;font-weight:900;cursor:pointer;}
+.kl-hx-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.kl-hx-cd{display:flex;align-items:baseline;gap:8px;margin-top:6px;}
+.kl-hx-cd b{font-size:46px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;}
+.kl-hx-cd span{font-size:14px;font-weight:700;color:rgba(255,255,255,.75);}
+.kl-hx-ph{font-size:12.5px;line-height:1.45;color:rgba(255,255,255,.75);margin-top:6px;}
+.kl-hx-ph span{display:inline-block;margin-right:6px;padding:2px 8px;border-radius:999px;background:#E30613;color:#FFFFFF;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:.05em;}
+.kl-hx-ed{border:1px solid rgba(255,255,255,.25);background:transparent;color:#FFFFFF;border-radius:999px;padding:6px 12px;font-weight:700;font-size:12px;cursor:pointer;}
+.kl-hx-pred{margin-top:14px;padding:14px;border-radius:14px;background:rgba(255,255,255,.06);}
+.kl-hx-pred small{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6);}
+.kl-hx-pred b{display:block;font-size:44px;font-weight:900;line-height:1.05;color:#FFD400;font-variant-numeric:tabular-nums;}
+.kl-hx-pred b span{font-size:20px;color:rgba(255,255,255,.5);}
+.kl-hx-pred em{display:block;font-style:normal;font-size:12.5px;color:rgba(255,255,255,.7);margin-top:4px;}
+.kl-hx-where{margin-top:14px;}
+.kl-hx-wh{font-size:13px;font-weight:800;margin-bottom:8px;}
+.kl-hx-bar{display:flex;height:10px;border-radius:6px;overflow:hidden;gap:2px;margin-bottom:8px;}
+.kl-hx-bar i{display:block;background:rgba(255,255,255,.28);} .kl-hx-bar i.run{background:#3B82F6;} .kl-hx-bar i.rox{background:rgba(255,255,255,.12);} .kl-hx-bar i.top{background:#E30613;}
+.kl-hx-row{display:grid;grid-template-columns:1fr auto 40px;gap:8px;align-items:center;padding:6px 0;border-top:1px solid rgba(255,255,255,.08);font-size:13.5px;}
+.kl-hx-row b{font-variant-numeric:tabular-nums;} .kl-hx-row small{text-align:right;color:rgba(255,255,255,.5);font-size:12px;}
+.kl-hx-row em{font-style:normal;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#FFFFFF;background:#E30613;border-radius:999px;padding:2px 7px;margin-left:4px;}
+.kl-hx-fine{font-size:11.5px;line-height:1.45;color:rgba(255,255,255,.5);margin-top:8px;}
+.kl-hx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.kl-hx-st{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:10px;border-radius:14px;border:1.5px solid transparent;background:var(--surface);color:var(--txt);text-align:left;cursor:pointer;min-width:0;}
+:root[data-theme="light"] .kl-hx-st{background:#FFFFFF;}
+.kl-hx-st small{font-size:10.5px;color:var(--dim);}
+.kl-hx-st span{font-size:13.5px;font-weight:800;}
+.kl-hx-st b{font-size:19px;font-weight:900;font-variant-numeric:tabular-nums;}
+.kl-hx-st em{font-style:normal;font-size:10.5px;color:var(--dim);}
+.kl-hx-st.empty b{color:var(--dim);}
+.kl-hx-st.on{border-color:#E30613;}
+.kl-hx-st.sim,:root[data-theme="light"] .kl-hx-st.sim{grid-column:1/-1;background:#16161A;color:#FFFFFF;} .kl-hx-st.sim small,.kl-hx-st.sim em{color:rgba(255,255,255,.6);} .kl-hx-st.sim b{color:#FFD400;}
+.kl-hx-st:disabled{opacity:.5;cursor:default;}
+.kl-hx-log{margin-top:10px;padding:14px;border-radius:16px;background:var(--surface);}
+:root[data-theme="light"] .kl-hx-log{background:#FFFFFF;}
+.kl-hx-lt{display:flex;justify-content:space-between;align-items:baseline;} .kl-hx-lt b{font-size:16px;font-weight:900;color:var(--txt);} .kl-hx-lt span{font-size:13px;font-weight:800;color:#E30613;}
+.kl-hx-in{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:10px;}
+.kl-hx-in .kl-in{padding:11px 10px;min-width:0;font-size:15px;}
+.kl-hx-in .kl-go{width:auto;margin:0;padding:0 16px;}
+.kl-hx-spark{display:flex;align-items:flex-end;gap:4px;height:46px;margin-top:12px;}
+.kl-hx-spark i{flex:1;max-width:26px;border-radius:4px 4px 0 0;background:rgba(127,127,127,.3);} .kl-hx-spark i.best{background:#E30613;}
+.kl-hx-hist{margin-top:10px;}
+.kl-hx-hist div{display:grid;grid-template-columns:1fr auto 30px;align-items:center;gap:8px;padding:7px 0;border-top:1px solid rgba(127,127,127,.15);font-size:13.5px;color:var(--txt);}
+.kl-hx-hist b{font-variant-numeric:tabular-nums;} .kl-hx-hist em{font-style:normal;font-size:10px;font-weight:900;color:#E30613;text-transform:uppercase;}
+.kl-hx-hist button{border:0;background:none;color:var(--dim);font-size:14px;cursor:pointer;}
+.kl-hx-bc select{width:100%;margin:6px 0;font:700 14px inherit;padding:9px 10px;border-radius:12px;border:1px solid rgba(127,127,127,.28);background:transparent;color:var(--txt);}
+.kl-hx-bst{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:4px;scrollbar-width:none;}
+.kl-hx-bst::-webkit-scrollbar{display:none;}
+.kl-hx-bst button{flex:none;border:1px solid rgba(127,127,127,.25);background:transparent;color:var(--txt);border-radius:999px;padding:6px 11px;font-weight:700;font-size:12.5px;cursor:pointer;}
+.kl-hx-bst button.on{background:#16161A;border-color:#16161A;color:#FFD400;}
+.kl-bkinds.kl-bk4 button{font-size:12.5px;padding-left:4px;padding-right:4px;}
+
+/* ── HYROX and Active apart (17 Oct): the switch, and HYROX's own look ── */
+.kl-space{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:4px 0 10px;padding:5px;border-radius:16px;background:rgba(127,127,127,.12);}
+.kl-space button{border:0;border-radius:12px;padding:11px 8px;font:900 15px inherit;letter-spacing:.04em;text-transform:uppercase;background:transparent;color:var(--dim);cursor:pointer;}
+.kl-space button.act.on{background:#E30613;color:#FFFFFF;box-shadow:0 6px 18px rgba(227,6,19,.28);}
+.kl-space button.hx.on{background:#16161A;color:#FFD400;box-shadow:0 6px 18px rgba(0,0,0,.28);}
+.kl-hero.hx,.kl-hero.kl-hero2.hx{background:linear-gradient(160deg,#2A2A31 0%,#16161A 55%,#0B0B0D 100%);box-shadow:0 12px 30px rgba(0,0,0,.35);}
+.kl-hero.hx .kl-kick{color:#FFD400;}
+.kl-hero.hx .kl-ci{background:#FFD400;color:#16161A;}
+.kl-hero.hx .kl-ci .gly{stroke:#16161A;}
