@@ -7092,6 +7092,18 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .wl-dh-tx em{display:flex;align-items:center;gap:6px;font-style:normal;font-size:13px;font-weight:700;margin-top:6px;opacity:.95;}
 .wl-dh-tx em .gly{width:16px;height:16px;stroke:#FFFFFF;}
 
+/* ── BURN30 tidy (18 Oct) ── */
+.wl-chk .wl-kic{width:32px;height:32px;border-radius:9px;}
+.wl-chk .wl-kic .gly{width:18px;height:18px;}
+.wl-key{margin-bottom:18px;}
+.wl-fit-r input{min-width:0;width:100%;box-sizing:border-box;}
+.wl-faq summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.wl-faq summary::-webkit-details-marker{display:none;}
+.wl-qc{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(227,6,19,.1);color:#E30613;transition:transform .2s;}
+.wl-qc .gly{width:15px;height:15px;stroke:#E30613;}
+.wl-faq details[open] .wl-qc{transform:rotate(45deg);}
+.sc-car{transition:height .25s ease;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -8554,8 +8566,12 @@ function scCarHTML(slides){
   return '<div class="sc-car" id="sc-car" onscroll="scCarScroll(this)">'+slides.map(function(x){ return '<div class="sc-sl">'+x+'</div>'; }).join('')+'</div>'+
     (slides.length>1?'<div class="sc-cdots" id="sc-cdots">'+slides.map(function(x,i){ return '<i class="'+(i===_scCar?'on':'')+'" onclick="scCarGo('+i+')"></i>'; }).join('')+'</div>':'');
 }
+/* the box takes the height of the card in view (18 Oct): a tall card (the
+   30-day base) left an empty band under the short ones */
+function scCarFit(el,i){ try{ var s=el.children[i]; if(s && s.offsetHeight) el.style.height=s.offsetHeight+'px'; }catch(e){} }
 function scCarScroll(el){
   var w=el.clientWidth||1, i=Math.round(el.scrollLeft/w), d=$('sc-cdots');
+  scCarFit(el,i);
   if(i===_scCar) return; _scCar=i;
   if(d) for(var j=0;j<d.children.length;j++) d.children[j].className=j===i?'on':'';
 }
@@ -8577,6 +8593,7 @@ function scRender(){
   if($('sc-pills')) $('sc-pills').innerHTML=scPills();
   try{ var sr=$('screen'); if(sr && sr.style && sr.style.setProperty) sr.style.setProperty('--scb',scRGB(scBand())); var gl=scGlow(); sr.style.setProperty('--sga',scRGB(gl[0])); sr.style.setProperty('--sgb',scRGB(gl[1])); }catch(e){}
   var car=$('sc-car'); if(car && _scCar){ try{ car.scrollLeft=_scCar*(car.clientWidth||0); }catch(e){} }
+  if(car) scCarFit(car,_scCar||0);
   /* Bara alive; messy (the rust state) has its own sad loop */
   var slot=$('sc-bell'), st=scState(), lv=scLevel(scScore());
   if(slot && typeof bellAttach==='function' && bellAttach(slot, st.k?'kusut':lv)){
@@ -11502,7 +11519,7 @@ function renderWL30(){
   h+='</div>';
 
   /* one progress line, in days done (18 Oct: it said "Day 1 of 30" above and "Day 0 of 30" here) */
-  if(owned) h+='<div class="wl-prog"><div class="wl-prog-h"><span>'+Math.min(done,tot)+' of '+tot+' days done</span><b>'+pct+'%</b></div>'+
+  if(owned && done>0) h+='<div class="wl-prog"><div class="wl-prog-h"><span>'+Math.min(done,tot)+' of '+tot+' days done</span><b>'+pct+'%</b></div>'+
     '<div class="pbar"><i style="width:'+pct+'%"></i></div></div>';
 
   h+='<div class="filters wl-tabs" id="wl-tabs">'+[['plan','Plan'],['food','Nutrition'],['progress','Progress'],['guide','Start Here']]
@@ -11584,7 +11601,7 @@ const WL30_CHECKS=[['water','8 glasses of water','water'],['food','Ate to the pl
 function wlChecklist(){
   const c=wlData().check[iso(0)]||{}, trained=doneToday();
   const row=(on,label,icon,go)=>'<button class="wl-chk'+(on?' on':'')+'"'+(go?' onclick="'+go+'"':' disabled')+'>'+
-    '<span class="b">'+(on?glyph('check'):'')+'</span>'+ic(icon)+'<span class="l">'+label+'</span></button>';
+    '<span class="b">'+(on?glyph('check'):'')+'</span><span class="wl-kic">'+glyph(icon)+'</span><span class="l">'+label+'</span></button>';
   const n=(trained?1:0)+WL30_CHECKS.filter(x=>c[x[0]]).length;
   return fsec('Today\'s Checklist',n+' of 4 done')+'<div class="wl-chks">'+
     row(trained,'Today\'s workout','workout','')+
@@ -11756,7 +11773,7 @@ function wlFood(){
   h+='<div class="wl-hands">'+[['Protein','1 tapak tangan','daging, ikan, telur, tauhu'],['Carbs','1 kepal','nasi, mi, roti'],
       ['Vegetables','2 genggam','separuh pinggan'],['Fat','1 ibu jari','minyak, mentega, kacang']]
     .map(x=>'<div><b>'+x[1]+'</b><span>'+x[0]+'</span><small>'+x[2]+'</small></div>').join('')+'</div>';
-  h+='<div class="wl-tips">'+planTips({goal:'loss', struct:'3x', styles:['hiprotein']}).slice(0,4).map(t=>'<div>'+t+'</div>').join('')+'</div>';
+  h+='<div class="wl-tips">'+planTips({goal:'loss', struct:'3x', styles:['hiprotein']}).filter(t=>!/^Hand guide/.test(t)).slice(0,4).map(t=>'<div>'+t+'</div>').join('')+'</div>';
   h+='<button class="authalt" onclick="wlForgetNumbers()">Change my numbers</button>';
   return h;
 }
@@ -11872,7 +11889,7 @@ function wlGuide(){
     ['It is too hard.','Do fewer reps, rest longer, or march instead of jumping. Finishing slowly beats stopping.'],
     ['It is too easy.','Fill your bottles fuller, move slower on the way down, and add a round.'],
     ['How long do I keep it?','For good. One payment, no subscription. Do it again whenever you like.']]
-    .map(q=>'<details><summary>'+q[0]+'</summary><div>'+q[1]+'</div></details>').join('')+'</div>';
+    .map(q=>'<details><summary>'+q[0]+'<span class="wl-qc">'+glyph('plus')+'</span></summary><div>'+q[1]+'</div></details>').join('')+'</div>';
   if(typeof COACH_WA!=='undefined' && COACH_WA)
     h+='<button class="bigbtn sec" onclick="window.open(\'https://wa.me/'+COACH_WA+'\',\'_blank\',\'noopener\')">'+glyph('people')+'Ask the Coach on WhatsApp</button>';
   return h;

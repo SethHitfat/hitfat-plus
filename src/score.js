@@ -249,8 +249,12 @@ function scCarHTML(slides){
   return '<div class="sc-car" id="sc-car" onscroll="scCarScroll(this)">'+slides.map(function(x){ return '<div class="sc-sl">'+x+'</div>'; }).join('')+'</div>'+
     (slides.length>1?'<div class="sc-cdots" id="sc-cdots">'+slides.map(function(x,i){ return '<i class="'+(i===_scCar?'on':'')+'" onclick="scCarGo('+i+')"></i>'; }).join('')+'</div>':'');
 }
+/* the box takes the height of the card in view (18 Oct): a tall card (the
+   30-day base) left an empty band under the short ones */
+function scCarFit(el,i){ try{ var s=el.children[i]; if(s && s.offsetHeight) el.style.height=s.offsetHeight+'px'; }catch(e){} }
 function scCarScroll(el){
   var w=el.clientWidth||1, i=Math.round(el.scrollLeft/w), d=$('sc-cdots');
+  scCarFit(el,i);
   if(i===_scCar) return; _scCar=i;
   if(d) for(var j=0;j<d.children.length;j++) d.children[j].className=j===i?'on':'';
 }
@@ -272,6 +276,7 @@ function scRender(){
   if($('sc-pills')) $('sc-pills').innerHTML=scPills();
   try{ var sr=$('screen'); if(sr && sr.style && sr.style.setProperty) sr.style.setProperty('--scb',scRGB(scBand())); var gl=scGlow(); sr.style.setProperty('--sga',scRGB(gl[0])); sr.style.setProperty('--sgb',scRGB(gl[1])); }catch(e){}
   var car=$('sc-car'); if(car && _scCar){ try{ car.scrollLeft=_scCar*(car.clientWidth||0); }catch(e){} }
+  if(car) scCarFit(car,_scCar||0);
   /* Bara alive; messy (the rust state) has its own sad loop */
   var slot=$('sc-bell'), st=scState(), lv=scLevel(scScore());
   if(slot && typeof bellAttach==='function' && bellAttach(slot, st.k?'kusut':lv)){

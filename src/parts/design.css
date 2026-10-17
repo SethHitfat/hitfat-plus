@@ -4853,3 +4853,15 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .wl-dh-tx b{font-size:84px;font-weight:900;line-height:.9;letter-spacing:-3px;}
 .wl-dh-tx em{display:flex;align-items:center;gap:6px;font-style:normal;font-size:13px;font-weight:700;margin-top:6px;opacity:.95;}
 .wl-dh-tx em .gly{width:16px;height:16px;stroke:#FFFFFF;}
+
+/* ── BURN30 tidy (18 Oct) ── */
+.wl-chk .wl-kic{width:32px;height:32px;border-radius:9px;}
+.wl-chk .wl-kic .gly{width:18px;height:18px;}
+.wl-key{margin-bottom:18px;}
+.wl-fit-r input{min-width:0;width:100%;box-sizing:border-box;}
+.wl-faq summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.wl-faq summary::-webkit-details-marker{display:none;}
+.wl-qc{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(227,6,19,.1);color:#E30613;transition:transform .2s;}
+.wl-qc .gly{width:15px;height:15px;stroke:#E30613;}
+.wl-faq details[open] .wl-qc{transform:rotate(45deg);}
+.sc-car{transition:height .25s ease;}

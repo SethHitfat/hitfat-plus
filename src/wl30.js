@@ -158,7 +158,7 @@ function renderWL30(){
   h+='</div>';
 
   /* one progress line, in days done (18 Oct: it said "Day 1 of 30" above and "Day 0 of 30" here) */
-  if(owned) h+='<div class="wl-prog"><div class="wl-prog-h"><span>'+Math.min(done,tot)+' of '+tot+' days done</span><b>'+pct+'%</b></div>'+
+  if(owned && done>0) h+='<div class="wl-prog"><div class="wl-prog-h"><span>'+Math.min(done,tot)+' of '+tot+' days done</span><b>'+pct+'%</b></div>'+
     '<div class="pbar"><i style="width:'+pct+'%"></i></div></div>';
 
   h+='<div class="filters wl-tabs" id="wl-tabs">'+[['plan','Plan'],['food','Nutrition'],['progress','Progress'],['guide','Start Here']]
@@ -240,7 +240,7 @@ const WL30_CHECKS=[['water','8 glasses of water','water'],['food','Ate to the pl
 function wlChecklist(){
   const c=wlData().check[iso(0)]||{}, trained=doneToday();
   const row=(on,label,icon,go)=>'<button class="wl-chk'+(on?' on':'')+'"'+(go?' onclick="'+go+'"':' disabled')+'>'+
-    '<span class="b">'+(on?glyph('check'):'')+'</span>'+ic(icon)+'<span class="l">'+label+'</span></button>';
+    '<span class="b">'+(on?glyph('check'):'')+'</span><span class="wl-kic">'+glyph(icon)+'</span><span class="l">'+label+'</span></button>';
   const n=(trained?1:0)+WL30_CHECKS.filter(x=>c[x[0]]).length;
   return fsec('Today\'s Checklist',n+' of 4 done')+'<div class="wl-chks">'+
     row(trained,'Today\'s workout','workout','')+
@@ -412,7 +412,7 @@ function wlFood(){
   h+='<div class="wl-hands">'+[['Protein','1 tapak tangan','daging, ikan, telur, tauhu'],['Carbs','1 kepal','nasi, mi, roti'],
       ['Vegetables','2 genggam','separuh pinggan'],['Fat','1 ibu jari','minyak, mentega, kacang']]
     .map(x=>'<div><b>'+x[1]+'</b><span>'+x[0]+'</span><small>'+x[2]+'</small></div>').join('')+'</div>';
-  h+='<div class="wl-tips">'+planTips({goal:'loss', struct:'3x', styles:['hiprotein']}).slice(0,4).map(t=>'<div>'+t+'</div>').join('')+'</div>';
+  h+='<div class="wl-tips">'+planTips({goal:'loss', struct:'3x', styles:['hiprotein']}).filter(t=>!/^Hand guide/.test(t)).slice(0,4).map(t=>'<div>'+t+'</div>').join('')+'</div>';
   h+='<button class="authalt" onclick="wlForgetNumbers()">Change my numbers</button>';
   return h;
 }
@@ -528,7 +528,7 @@ function wlGuide(){
     ['It is too hard.','Do fewer reps, rest longer, or march instead of jumping. Finishing slowly beats stopping.'],
     ['It is too easy.','Fill your bottles fuller, move slower on the way down, and add a round.'],
     ['How long do I keep it?','For good. One payment, no subscription. Do it again whenever you like.']]
-    .map(q=>'<details><summary>'+q[0]+'</summary><div>'+q[1]+'</div></details>').join('')+'</div>';
+    .map(q=>'<details><summary>'+q[0]+'<span class="wl-qc">'+glyph('plus')+'</span></summary><div>'+q[1]+'</div></details>').join('')+'</div>';
   if(typeof COACH_WA!=='undefined' && COACH_WA)
     h+='<button class="bigbtn sec" onclick="window.open(\'https://wa.me/'+COACH_WA+'\',\'_blank\',\'noopener\')">'+glyph('people')+'Ask the Coach on WhatsApp</button>';
   return h;
