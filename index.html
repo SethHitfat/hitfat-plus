@@ -6490,6 +6490,38 @@ html,body{overscroll-behavior:none;}
 .kl-bara span{display:block;font-size:14px;line-height:1.45;color:var(--txt);margin-top:2px;}
 .ib-first{margin:0 0 6px;}
 
+/* HITFAT Class as four tabs (17 Oct): Today, Progress, Body, Points; a
+   shorter hero with the QR on the right and Bara inside it */
+.obseg.kl-tabs{position:sticky;top:0;z-index:6;margin:4px 0 12px;box-shadow:0 6px 14px rgba(0,0,0,.06);}
+.kl-tabs button{flex:1;font-weight:800;}
+.kl-hero.kl-hero2{text-align:left;padding:18px 16px 14px;}
+.kl-hrow{display:flex;align-items:center;gap:12px;}
+.kl-hl{flex:1;min-width:0;}
+.kl-hero2 .kl-name{font-size:30px;margin-top:6px;}
+.kl-hero2 .kl-cat{margin-top:4px;}
+.kl-ci{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:9px 14px;border:0;border-radius:99px;background:#FFFFFF;color:#E30613;font:inherit;font-size:14px;font-weight:800;cursor:pointer;}
+.kl-ci .gly{width:16px;height:16px;stroke:#E30613;}
+.kl-qr.kl-qr2{flex:none;margin:0;padding:8px 8px 4px;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.kl-qr2 small{font-size:10px;font-weight:700;color:#6A6A70;line-height:1.4;}
+.kl-hero2 .kl-bara{margin:14px 0 0;padding:0;background:none;border-radius:0;align-items:flex-end;}
+:root[data-theme="light"] .kl-hero2 .kl-bara{background:none;}
+.kl-hero2 .kl-bara img{width:58px;height:58px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));}
+.kl-bub{position:relative;flex:1;min-width:0;padding:10px 12px;border-radius:16px 16px 16px 4px;background:rgba(255,255,255,.96);}
+.kl-hero2 .kl-bub b{color:#E30613;}
+.kl-hero2 .kl-bub span{color:#1C1C1E;}
+.kl-wkh{font-size:14px;color:var(--dim);padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--sep);}
+.kl-wkh b{font-size:18px;font-weight:900;color:var(--txt);}
+.kl-wkh .kl-tb{margin-top:8px;}
+button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:left;cursor:pointer;color:inherit;}
+.kl-tgo b span{font-size:14px;color:var(--dim);font-weight:700;margin-left:2px;}
+.kl-tsub{display:block;font-size:12px;color:var(--dim);margin-top:4px;line-height:1.35;}
+.kl-pr0{display:flex;align-items:center;gap:12px;padding:16px;}
+.kl-pr0 .gly{flex:none;width:30px;height:30px;stroke:#E30613;}
+.kl-pr0 b{display:block;font-size:15px;color:var(--txt);}
+.kl-pr0 span{display:block;font-size:13px;color:var(--dim);margin-top:2px;}
+.kl-add.kl-add1{background:#E30613;color:#FFFFFF;border-color:#E30613;}
+.kl-add.kl-add1 .gly{stroke:#FFFFFF;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -20200,7 +20232,7 @@ function handleKelasParam(){
 
 /* ── open ── */
 function openKelas(){
-  hidePanels(); $('kelas').style.display='block'; $('screen').scrollTop=0; Kelas.view=null;
+  hidePanels(); $('kelas').style.display='block'; $('screen').scrollTop=0; Kelas.tab='today'; Kelas.ibIdx=0;
   if(!kelasLinked()){ Kelas.step='phone'; Kelas.err=''; Kelas.found=null; }
   Kelas.unlinkAsk=false;
   renderKelas();
@@ -20274,27 +20306,65 @@ function renderKelas(){
       '<p class="kl-p">Sign in to HITFAT+, then connect your class membership with your phone number.</p></div>';
     return;
   }
-  el.innerHTML=kelasLinked()?(Kelas.view==='ib'?kelasIBDetail():kelasHTML()):kelasLinkHTML();
+  el.innerHTML=kelasLinked()?kelasHTML():kelasLinkHTML();
 }
 
 function kelasQR(px){ return typeof qrSVG==='function' ? qrSVG(String(Kelas.data.member_id), px) : ''; }
 
+/* Four tabs (17 Oct 2026), the screen had grown into one long scroll:
+     Today     the QR and Bara, the next class and the timetable, membership
+     Progress  this week and the streak, the club level, the latest class,
+               personal records, 12 weeks of check-ins
+     Body      InBody
+     Points    HITFAT Points and the rewards
+   Home's card and Check in open Today. */
+var KL_TABS=[['today','Today'],['progress','Progress'],['body','Body'],['points','Points']];
+function kelasTab(t){ Kelas.tab=t; renderKelas(); $('screen').scrollTop=0; }
 function kelasHTML(){
+  const tab=Kelas.tab||'today';
+  let h='<div class="obseg kl-tabs">'+KL_TABS.map(t=>'<button class="'+(t[0]===tab?'on':'')+'" onclick="kelasTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>';
+  if(tab==='progress') h+=kelasProgressTab();
+  else if(tab==='body') h+=kelasBodyTab();
+  else if(tab==='points') h+=kelasPointsHTML()||'<div class="kl-none">Points load with your class. Pull to refresh.</div>';
+  else h+=kelasTodayTab();
+  return h;
+}
+/* Today: the door first */
+function kelasTodayTab(){
   const d=Kelas.data, m=kelasMain(), left=m?kelasDaysLeft(m.end_date):null;
   const act=kelasActive(), soon=act && left!==null && left<=7;
   const first=String(d.name||'').trim().split(/\s+/)[0]||'';
   let h='';
-
-  /* the door: the QR, large, on the hero */
-  h+='<div class="kl-hero'+(act?'':' off')+'">'+
-     '<div class="kl-kick">HITFAT Class · HQ</div>'+
+  /* a shorter hero: the name and the class on the left, the QR on the
+     right (tap for full screen at the kiosk), Bara underneath */
+  h+='<div class="kl-hero kl-hero2'+(act?'':' off')+'">'+
+     '<div class="kl-hrow"><div class="kl-hl"><div class="kl-kick">HITFAT Class · HQ</div>'+
      '<div class="kl-name">'+hesc(first)+'</div>'+
      '<div class="kl-cat">'+kelasMems().filter(x=>x.active).map(x=>hesc(kelasCat(x.category))).join(' · ')+'</div>'+
-     '<button class="kl-qr" onclick="kelasQRFull()" aria-label="Show my check-in QR full screen">'+kelasQR(184)+'</button>'+
-     '<div class="kl-qrs">'+(act?'Show this at the kiosk to check in':'Membership ended: renew at the counter')+'</div></div>';
+     '<button class="kl-ci" onclick="kelasQRFull()">'+glyph('qr')+(act?' Check in':' Renew first')+'</button></div>'+
+     '<button class="kl-qr kl-qr2" onclick="kelasQRFull()" aria-label="Show my check-in QR full screen">'+kelasQR(116)+'<small>Tap to enlarge</small></button></div>'+
+     kelasBaraHTML()+'</div>';
 
-  /* Bara, who counts every class as the day's workout */
-  h+=kelasBaraHTML();
+  /* the next class and the timetable */
+  const cls=d.classes||[];
+  if(cls.length){
+    const n=kelasNext();
+    if(Kelas.day===null||Kelas.day===undefined) Kelas.day=n?n.c.dow:kelasDow(kelasNowMY());
+    h+=fsec('Classes','Your timetable at HITFAT HQ.');
+    if(n) h+='<div class="kl-next"><div class="kl-nt">Next class</div>'+
+       '<div class="kl-nw">'+kelasWhen(n)+' · '+kelasClock(n.c.start)+'</div>'+
+       '<div class="kl-nn">'+hesc(n.c.name)+' · '+(n.c.min||60)+' min'+(n.c.coach?' · '+hesc(n.c.coach):'')+'</div></div>';
+    const today=kelasDow(kelasNowMY());
+    h+='<div class="kl-days">'+KELAS_DOW.map((w,i)=>{
+      const dd=i+1, has=cls.some(c=>c.dow===dd);
+      return '<button class="'+(dd===Kelas.day?'on ':'')+(has?'':'rest ')+(dd===today?'now':'')+'" onclick="kelasPickDay('+dd+')">'+w+'</button>';
+    }).join('')+'</div>';
+    const day=cls.filter(c=>c.dow===Kelas.day);
+    h+='<div class="kl-list">'+(day.length?day.map(c=>
+      '<div class="kl-cls"><b>'+kelasClock(c.start)+'</b><div><div class="kl-cn">'+hesc(c.name)+'</div>'+
+      '<div class="kl-cm">'+(c.min||60)+' min · '+hesc(kelasCat(c.category))+(c.coach?' · '+hesc(c.coach):'')+'</div></div></div>').join('')
+      :'<div class="kl-none">No class on '+KELAS_DOW[Kelas.day-1]+'. Rest day.</div>')+'</div>';
+  }
 
   /* the membership */
   if(m){
@@ -20315,53 +20385,42 @@ function kelasHTML(){
       h+='<div class="kl-mem2"><span>'+hesc(kelasCat(x.category))+'</span><span>until '+kelasDate(x.end_date)+'</span></div>';
     });
   }
-
-  /* progress, after Keep Moving Club: the club level by classes, the week
-     streak (classes run 3 to 6 days a week, so a day streak would break on
-     every rest day), and this week day by day */
-  h+=fsec('Your progress','Every class at HQ counts.');
-  h+=kelasWeekHTML()+kelasLevelHTML()+kelasStreakHTML();
+  h+='<div class="kl-foot">Your HITFAT+ All Access runs with this membership'+(act&&m?', until '+kelasDate(m.end_date):'')+'.<br>'+
+     '<button class="kl-unlink" onclick="kelasUnlink()">'+(Kelas.unlinkAsk?'Tap again to disconnect':'Not you? Disconnect')+'</button></div>';
+  return h;
+}
+/* Progress: the week, the level, the latest class, records, history */
+function kelasProgressTab(){
+  let h='';
+  h+=kelasGlanceHTML();
+  h+=kelasStreakHTML()+kelasLevelHTML();
   h+=kelasLatestHTML();
-
-  /* HITFAT Points, after F45 FIT Rewards: earned at HQ, spent at the counter */
-  /* InBody: photograph the printed sheet, read in full (after the InBody app) */
-  h+=kelasIBCard();
-
-  h+=kelasPointsHTML();
-
-  /* personal records, after Burn Boot Camp: log one, ring the bell, share it */
   h+=kelasPRHTML();
-
-  /* the timetable */
-  const cls=d.classes||[];
-  if(cls.length){
-    const n=kelasNext();
-    if(Kelas.day===null) Kelas.day=n?n.c.dow:kelasDow(kelasNowMY());
-    h+=fsec('Classes','Your timetable at HITFAT HQ.');
-    if(n) h+='<div class="kl-next"><div class="kl-nt">Next class</div>'+
-       '<div class="kl-nw">'+kelasWhen(n)+' · '+kelasClock(n.c.start)+'</div>'+
-       '<div class="kl-nn">'+hesc(n.c.name)+' · '+(n.c.min||60)+' min'+(n.c.coach?' · '+hesc(n.c.coach):'')+'</div></div>';
-    const today=kelasDow(kelasNowMY());
-    h+='<div class="kl-days">'+KELAS_DOW.map((w,i)=>{
-      const dd=i+1, has=cls.some(c=>c.dow===dd);
-      return '<button class="'+(dd===Kelas.day?'on ':'')+(has?'':'rest ')+(dd===today?'now':'')+'" onclick="kelasPickDay('+dd+')">'+w+'</button>';
-    }).join('')+'</div>';
-    const day=cls.filter(c=>c.dow===Kelas.day);
-    h+='<div class="kl-list">'+(day.length?day.map(c=>
-      '<div class="kl-cls"><b>'+kelasClock(c.start)+'</b><div><div class="kl-cn">'+hesc(c.name)+'</div>'+
-      '<div class="kl-cm">'+(c.min||60)+' min · '+hesc(kelasCat(c.category))+(c.coach?' · '+hesc(c.coach):'')+'</div></div></div>').join('')
-      :'<div class="kl-none">No class on '+KELAS_DOW[Kelas.day-1]+'. Rest day.</div>')+'</div>';
-  }
-
-  /* history: 12 weeks of check-ins from the kiosk */
   const month=kelasThisMonth(), last=kelasLastIn();
   h+=fsec('History','From the kiosk at the door.');
   h+='<div class="kl-grid" aria-label="Check-ins, last 12 weeks">'+kelasGrid()+'</div>';
   h+='<div class="kl-last">'+month+' class'+(month===1?'':'es')+' this month'+(last?' · last check-in '+last.charAt(0).toLowerCase()+last.slice(1):'')+'</div>';
-
-  h+='<div class="kl-foot">Your HITFAT+ All Access runs with this membership'+(act&&m?', until '+kelasDate(m.end_date):'')+'.<br>'+
-     '<button class="kl-unlink" onclick="kelasUnlink()">'+(Kelas.unlinkAsk?'Tap again to disconnect':'Not you? Disconnect')+'</button></div>';
   return h;
+}
+/* two tiles that open the other tabs: points to spend, the last InBody */
+function kelasGlanceHTML(){
+  const P=kelasPts(), ib=kelasIBs()[0];
+  return '<div class="kl-tiles">'+
+    '<button class="kl-tile kl-tgo" onclick="kelasTab(\'points\')"><small>HITFAT Points</small><div><b>'+(P?kelasN(P.balance):'—')+'</b></div>'+
+    '<span class="kl-tsub">'+(P?kelasNextReward(P):'Earn at every class')+'</span></button>'+
+    '<button class="kl-tile kl-tgo" onclick="kelasTab(\'body\')"><small>InBody</small><div><b>'+(ib&&ib.score!=null?kelasF(ib.score,0):ib?kelasF(ib.pbf)+'<span>%</span>':'—')+'</b></div>'+
+    '<span class="kl-tsub">'+(ib?(ib.score!=null?'score · ':'body fat · ')+kelasIBDate(ib.scan_date,true):'Scan your sheet')+'</span></button></div>';
+}
+function kelasNextReward(P){
+  const r=(P.rewards||[]).filter(x=>x.points>(P.balance||0)).sort((a,b)=>a.points-b.points)[0];
+  const ready=(P.rewards||[]).filter(x=>x.points<=(P.balance||0)).length;
+  return ready?ready+' reward'+(ready===1?'':'s')+' ready':r?kelasN(r.points-(P.balance||0))+' to '+r.name.toLowerCase():'Spend at the counter';
+}
+/* Body: InBody, the full result inline */
+function kelasBodyTab(){
+  const all=kelasIBs();
+  if(!all.length || Kelas.ibBusy) return kelasIBCard();
+  return kelasIBDetail();
 }
 /* 12 weeks of days, Monday at the top, this week on the right */
 function kelasGrid(){
@@ -20405,7 +20464,7 @@ function kelasLevelHTML(){
     '<div class="kl-lvl-c"><small>Classes</small><b>'+n+'</b></div></div>'+
     '<div class="kl-track"><span class="kl-line"><i style="width:'+fill.toFixed(1)+'%"></i></span>'+
     stops.map((m,k)=>'<span class="kl-stop'+(n>=m?' on':'')+(m===L.cur?' cur':'')+'" style="left:'+(k*25)+'%">'+m+'</span>').join('')+'</div>'+
-    '<div class="kl-lvl-s">'+(L.next?(L.next-n)+' class'+(L.next-n===1?'':'es')+' to the '+L.next+' Class Club. Keep it up!':'Top of the club. Legend.')+'</div></div>';
+    '<div class="kl-lvl-s">'+(L.next?(L.next-n)+' more to the '+L.next+' Class Club':'Top of the club. Legend.')+'</div></div>';
 }
 /* the longest run of weeks with a class, from every week OS has */
 function kelasLongest(){
@@ -20424,7 +20483,9 @@ function kelasStreakHTML(){
     const st=done?'done':(i+1===today?'now':(i+1>today?(has?'next':'rest'):'miss'));
     return '<div class="kl-wd '+st+'"><small>'+w+'</small><span>'+(done?glyph('check'):'')+'</span></div>';
   }).join('');
-  return '<div class="kl-stk"><div class="kl-stk-row">'+
+  const n=kelasThisWeekN(), t=kelasTarget();
+  return '<div class="kl-stk"><div class="kl-wkh"><b>'+n+' of '+t+'</b> classes this week'+(n>=t?' · target met 🔥':'')+
+    '<span class="kl-tb"><i style="width:'+Math.min(100,Math.round(n/t*100))+'%"></i></span></div><div class="kl-stk-row">'+
     '<div>'+glyph('flame')+'<div><b>'+cur+' week'+(cur===1?'':'s')+'</b><small>current streak</small></div></div>'+
     '<div>'+glyph('calendar')+'<div><b>'+best+' week'+(best===1?'':'s')+'</b><small>longest streak</small></div></div></div>'+
     '<div class="kl-wrow">'+row+'</div></div>';
@@ -20506,8 +20567,8 @@ function kelasPRHTML(){
     '<small>'+new Date(b.at).toLocaleDateString('en-MY',{day:'numeric',month:'short'})+'</small></div>'+
     '<b>'+hesc(b.disp)+'</b>'+
     '<button class="kl-prs-sh" aria-label="Share this record" onclick="kelasSharePR('+all.indexOf(b)+')">'+glyph('share')+'</button></div>').join('')
-    :'<div class="kl-none">No records yet. Log your first one after class.</div>')+'</div>';
-  h+='<div class="kl-prbar"><button class="kl-add" onclick="kelasPROpen()">'+glyph('plus')+' Add a PR</button>'+
+    :'<div class="kl-pr0">'+glyph('bell')+'<div><b>Beat a number in class?</b><span>Log it, ring the bell, share it.</span></div></div>')+'</div>';
+  h+='<div class="kl-prbar"><button class="kl-add'+(all.length?'':' kl-add1')+'" onclick="kelasPROpen()">'+glyph('plus')+(all.length?' Add a PR':' Add your first PR')+'</button>'+
      (all.length>4?'<button class="kl-alt2" onclick="Kelas.prAll=!Kelas.prAll;renderKelas()">'+(Kelas.prAll?'Show less':'View all '+all.length)+'</button>':'')+'</div>';
   return h;
 }
@@ -20775,10 +20836,9 @@ function kelasIBCard(){
 }
 
 /* the full result */
-function kelasIBOpen(i){ Kelas.view='ib'; Kelas.ibIdx=i||0; Kelas.ibSeg=Kelas.ibSeg||'lean'; renderKelas(); $('screen').scrollTop=0; }
-function kelasIBBack(){ Kelas.view=null; renderKelas(); $('screen').scrollTop=0; }
-/* the panel's Back: from the InBody result to the Class screen, else Home */
-function kelasBack(){ if(Kelas.view==='ib') kelasIBBack(); else switchTab('home'); }
+function kelasIBOpen(i){ Kelas.tab='body'; Kelas.ibIdx=i||0; Kelas.ibSeg=Kelas.ibSeg||'lean'; renderKelas(); $('screen').scrollTop=0; }
+function kelasIBBack(){ Kelas.tab='progress'; renderKelas(); $('screen').scrollTop=0; }
+function kelasBack(){ switchTab('home'); }
 function kelasIBBar(s,k,label,unit){
   const v=s[k]; if(v===undefined||v===null) return '';
   const r=kelasRange(s,k), z=kelasZone(s,k);
@@ -20826,7 +20886,7 @@ var KL_IB_MORE=[['bmr','Basal metabolic rate','kcal',0,'Calories your body burns
   ['whr','Waist-hip ratio','',2,'Where fat sits. Lower is healthier.'],
   ['ecw_ratio','ECW ratio','',3,'Water balance. Around 0.36–0.39 is normal.']];
 function kelasIBDetail(){
-  const all=kelasIBs(), i=Math.min(Kelas.ibIdx||0,all.length-1), s=all[i]; if(!s){ Kelas.view=null; return kelasHTML(); }
+  const all=kelasIBs(), i=Math.min(Kelas.ibIdx||0,all.length-1), s=all[i]; if(!s) return kelasIBCard();
   const prev=all[i+1];
   let h='<div class="ib-hero"><div class="kl-kick">InBody result</div><div class="ib-hd">'+kelasIBDate(s.scan_date)+(s.model?' · '+hesc(s.model):'')+'</div>'+
      (s.score!=null?'<div class="ib-big">'+kelasRing(s.score,150)+'<span><b>'+kelasF(s.score,0)+'</b><small>InBody score</small></span></div>':'')+
@@ -21032,7 +21092,7 @@ function kelasBaraLine(){
 }
 function kelasBaraHTML(){
   const L=kelasBaraLine(), src=(typeof SC_POSE!=='undefined'&&SC_POSE[L[0]])||'/img/mascot/anim/'+L[0]+'.png';
-  return '<div class="kl-bara"><img src="'+src+'" alt="Bara" onerror="this.style.visibility=\'hidden\'"><div><b>Bara</b><span>'+hesc(L[1])+'</span></div></div>';
+  return '<div class="kl-bara"><img src="'+src+'" alt="Bara" onerror="this.style.visibility=\'hidden\'"><div class="kl-bub"><b>Bara</b><span>'+hesc(L[1])+'</span></div></div>';
 }
 
 function kelasPickDay(d){ Kelas.day=d; renderKelas(); }

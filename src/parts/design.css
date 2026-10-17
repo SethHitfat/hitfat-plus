@@ -4251,3 +4251,35 @@ html,body{overscroll-behavior:none;}
 .kl-bara b{display:block;font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#E30613;}
 .kl-bara span{display:block;font-size:14px;line-height:1.45;color:var(--txt);margin-top:2px;}
 .ib-first{margin:0 0 6px;}
+
+/* HITFAT Class as four tabs (17 Oct): Today, Progress, Body, Points; a
+   shorter hero with the QR on the right and Bara inside it */
+.obseg.kl-tabs{position:sticky;top:0;z-index:6;margin:4px 0 12px;box-shadow:0 6px 14px rgba(0,0,0,.06);}
+.kl-tabs button{flex:1;font-weight:800;}
+.kl-hero.kl-hero2{text-align:left;padding:18px 16px 14px;}
+.kl-hrow{display:flex;align-items:center;gap:12px;}
+.kl-hl{flex:1;min-width:0;}
+.kl-hero2 .kl-name{font-size:30px;margin-top:6px;}
+.kl-hero2 .kl-cat{margin-top:4px;}
+.kl-ci{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:9px 14px;border:0;border-radius:99px;background:#FFFFFF;color:#E30613;font:inherit;font-size:14px;font-weight:800;cursor:pointer;}
+.kl-ci .gly{width:16px;height:16px;stroke:#E30613;}
+.kl-qr.kl-qr2{flex:none;margin:0;padding:8px 8px 4px;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.kl-qr2 small{font-size:10px;font-weight:700;color:#6A6A70;line-height:1.4;}
+.kl-hero2 .kl-bara{margin:14px 0 0;padding:0;background:none;border-radius:0;align-items:flex-end;}
+:root[data-theme="light"] .kl-hero2 .kl-bara{background:none;}
+.kl-hero2 .kl-bara img{width:58px;height:58px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));}
+.kl-bub{position:relative;flex:1;min-width:0;padding:10px 12px;border-radius:16px 16px 16px 4px;background:rgba(255,255,255,.96);}
+.kl-hero2 .kl-bub b{color:#E30613;}
+.kl-hero2 .kl-bub span{color:#1C1C1E;}
+.kl-wkh{font-size:14px;color:var(--dim);padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--sep);}
+.kl-wkh b{font-size:18px;font-weight:900;color:var(--txt);}
+.kl-wkh .kl-tb{margin-top:8px;}
+button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:left;cursor:pointer;color:inherit;}
+.kl-tgo b span{font-size:14px;color:var(--dim);font-weight:700;margin-left:2px;}
+.kl-tsub{display:block;font-size:12px;color:var(--dim);margin-top:4px;line-height:1.35;}
+.kl-pr0{display:flex;align-items:center;gap:12px;padding:16px;}
+.kl-pr0 .gly{flex:none;width:30px;height:30px;stroke:#E30613;}
+.kl-pr0 b{display:block;font-size:15px;color:var(--txt);}
+.kl-pr0 span{display:block;font-size:13px;color:var(--dim);margin-top:2px;}
+.kl-add.kl-add1{background:#E30613;color:#FFFFFF;border-color:#E30613;}
+.kl-add.kl-add1 .gly{stroke:#FFFFFF;}
