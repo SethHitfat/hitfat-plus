@@ -4487,6 +4487,25 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   Kelas.data.memberships.push({category:'Ladies',plan:'x',start_date:'2026-10-01',end_date:'2026-12-31',active:true},{category:'Membership',plan:'x',start_date:'2026-10-01',end_date:'2026-12-31',active:true},{category:'HYROX',plan:'x',start_date:'2026-10-01',end_date:'2026-12-31',active:true});
   ok("all four packages: a four-way switch", kelasSpaces().join()==='active,ladies,mens,hyrox' && kelasHTML().indexOf('kl-space n4')>0);
   Kelas.space=keepSp3; Kelas.data=keepD3; HF.data.kelas=keepK3; HF.save=keepSv7; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
+  /* Personal coaching (098) */
+  var keepD4=JSON.parse(JSON.stringify(Kelas.data)), keepSp4=Kelas.space, keepTab4=Kelas.tab; Kelas.space=null; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
+  var tmr=new Date(Date.now()+864e5); tmr.setUTCHours(1,0,0,0);
+  Kelas.data.memberships=[];
+  Kelas.data.pt={id:'p1',type:'1-on-1',coach:'Amir Hakim',total:12,used:10,start:'2026-10-11',end:new Date(Date.now()+5*864e5).toISOString().slice(0,10),active:true,
+    next:[{at:tmr.toISOString(),coach:'Amir Hakim'}],notes:[{d:'2026-10-15',focus:'Upper push',note:'Push-up dah 12 tanpa henti!',coach:'Amir Hakim'},{d:'2026-10-12',focus:'Lower body',note:'Squat 60 kg',coach:'Amir Hakim'}],
+    done:['2026-10-15','2026-10-12'],total_done:2};
+  ok("a PT-only client: the PT space, no Group tab", kelasSpace()==='pt' && kelasSpaces().join()==='pt' && kelasHTML().indexOf("kelasTab('group')")<0 && kelasMain().category==='PT');
+  var Tp=kelasTodayTab();
+  ok("...next session tomorrow with the coach", Tp.indexOf('Next session')>0 && Tp.indexOf('Tomorrow')>0 && Tp.indexOf('Coach Amir Hakim')>0);
+  ok("...sessions left, the end date, talk about renewing", Tp.indexOf('10 of 12 sessions done')>0 && Tp.indexOf('>2</b><small>left')>0 && Tp.indexOf('Talk to your coach')>0);
+  ok("...the coach's notes after each session", Tp.indexOf('From your coach')>0 && Tp.indexOf('Push-up dah 12 tanpa henti!')>0 && Tp.indexOf('Upper push')>0);
+  ok("...no FIRST 30, no class workout, the violet look", Tp.indexOf('Your first 30 days')<0 && Tp.indexOf('kl-hero kl-hero2 pt')>0 && Tp.indexOf('>Personal Coaching<')>0);
+  ok("...sessions count for the month and the streak", kelasIns().length===2 && kelasTotal()===2 && kelasProgressTab().indexOf('Strength')>0);
+  ok("...Bara speaks of the next session, in Malay", /Sesi seterusnya esok/.test(kelasBaraLine()[1]));
+  ok("...points: a PT session is +150", (Kelas.data.points=Kelas.data.points||keepD4.points, kelasPointsHTML().indexOf('PT session')>0));
+  Kelas.data.memberships=[{category:'Membership',plan:'x',start_date:'2026-10-01',end_date:'2026-12-31',active:true}];
+  ok("PT + a class: a switch with both", kelasSpaces().join()==='active,pt' && kelasHTML().indexOf('kl-space n2')>0);
+  Kelas.data=keepD4; Kelas.space=keepSp4; Kelas.tab=keepTab4; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
   /* profile photo (17 Oct) */
   var keepPh=HF.data.prefs.photo, keepG=HF.gphoto, keepSv3=HF.save; HF.save=function(){};
   HF.gphoto='https://lh3.googleusercontent.com/a/x=s96-c'; delete HF.data.prefs.photo;

@@ -6961,6 +6961,31 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-mxw b{display:block;font-size:13.5px;} .kl-mxw.ok{background:rgba(31,157,76,.1);color:var(--txt);} .kl-mxw.ok b{color:#1F9D4C;}
 .kl-mxw.hi{background:rgba(245,158,11,.12);color:var(--txt);} .kl-mxw.hi b{color:#B5790A;}
 
+/* ── Personal coaching (17 Oct): deep violet, the coach's voice ── */
+.kl-space.n5{grid-template-columns:repeat(5,1fr);} .kl-space.n5 button{font-size:11.5px;padding:10px 0;letter-spacing:0;}
+.kl-space button.pt.on{background:#5B21B6;color:#FFFFFF;box-shadow:0 6px 18px rgba(91,33,182,.3);}
+.obseg.kl-tabs.n4 button{flex:1;}
+.kl-hero.pt,.kl-hero.kl-hero2.pt{background:linear-gradient(155deg,#A78BFA 0%,#6D28D9 45%,#2E1065 100%);box-shadow:0 12px 30px rgba(91,33,182,.3);}
+.kl-hero.pt .kl-ci{color:#6D28D9;} .kl-hero.pt .kl-ci .gly{stroke:#6D28D9;}
+.kl-pt-next{margin:12px 0 4px;padding:16px;border-radius:18px;background:#1E1B2E;color:#FFFFFF;}
+.kl-pt-next small{display:block;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#C4B5FD;}
+.kl-pt-next b{display:block;font-size:24px;font-weight:900;margin-top:4px;} .kl-pt-next span{display:block;font-size:13.5px;color:rgba(255,255,255,.75);margin-top:2px;}
+.kl-pt-up{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px;}
+.kl-pt-up span{font-size:12px;font-weight:700;padding:6px 10px;border-radius:999px;background:rgba(109,40,217,.1);color:#6D28D9;}
+.kl-pt-pk{display:flex;gap:14px;align-items:center;margin:12px 0 4px;padding:14px;border-radius:18px;background:var(--surface);}
+:root[data-theme="light"] .kl-pt-pk,:root[data-theme="light"] .kl-pt-note{background:#FFFFFF;}
+.kl-pt-ring{--p:0;flex:none;width:76px;height:76px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(closest-side,var(--surface) 78%,transparent 79% 100%),conic-gradient(#6D28D9 calc(var(--p)*1%),rgba(109,40,217,.15) 0);}
+:root[data-theme="light"] .kl-pt-ring{background:radial-gradient(closest-side,#FFFFFF 78%,transparent 79% 100%),conic-gradient(#6D28D9 calc(var(--p)*1%),rgba(109,40,217,.15) 0);}
+.kl-pt-ring b{font-size:24px;font-weight:900;line-height:1;color:var(--txt);} .kl-pt-ring small{font-size:11px;color:var(--dim);}
+.kl-pt-pkt b{display:block;font-size:15px;font-weight:900;color:var(--txt);} .kl-pt-pkt small{display:block;font-size:12.5px;color:var(--dim);margin-top:2px;}
+.kl-pt-pkt em{display:inline-block;margin-top:6px;font-style:normal;font-size:12px;font-weight:800;color:#6D28D9;}
+.kl-pt-notes{display:flex;flex-direction:column;gap:8px;}
+.kl-pt-note{padding:14px;border-radius:16px;background:var(--surface);border-left:4px solid rgba(109,40,217,.35);}
+.kl-pt-note.first{border-left-color:#6D28D9;}
+.kl-pt-nh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;} .kl-pt-nh b{font-size:14.5px;font-weight:900;color:var(--txt);} .kl-pt-nh small{font-size:11.5px;color:var(--dim);white-space:nowrap;}
+.kl-pt-nb{white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--txt);margin-top:6px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -20601,7 +20626,7 @@ async function clubRedeem(id){
    HITFAT OS, the key's hash in OS plus_bridge, plus-class deployed.
    false hides every way in (Me, the paywall line, Home) at once. */
 var KELAS_LIVE=true;
-var KELAS_CATS={Membership:'HITFAT Active Class', Ladies:'Ladies Only', Mens:'Mens Only', HYROX:'HYROX Class'};
+var KELAS_CATS={Membership:'HITFAT Active Class', Ladies:'Ladies Only', Mens:'Mens Only', HYROX:'HYROX Class', PT:'Personal Coaching'};
 var KELAS_DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 var Kelas={state:'idle', data:null, step:'phone', phone:'', found:null, err:'', busy:false, day:null, unlinkAsk:false};
@@ -20623,12 +20648,17 @@ function kelasMems(){ return (Kelas.data&&Kelas.data.memberships)||[]; }
    timetable, the group are each space's own. HITFAT Points stay one
    wallet; InBody is one body. Bara on Home counts every class. */
 function kelasMemSpace(m){ const c=m&&m.category; return c==='HYROX'?'hyrox':c==='Ladies'?'ladies':c==='Mens'?'mens':'active'; }
-var KL_SPACES=[['active','Active'],['ladies','Ladies'],['mens','Mens'],['hyrox','HYROX']];
-function kelasHasSpace(sp){ return kelasMems().some(m=>m.active && kelasMemSpace(m)===sp); }
+var KL_SPACES=[['active','Active'],['ladies','Ladies'],['mens','Mens'],['hyrox','HYROX'],['pt','PT']];
+function kelasHasSpace(sp){ if(sp==='pt') return !!kelasPtLive(); return kelasMems().some(m=>m.active && kelasMemSpace(m)===sp); }
+/* personal coaching (098): the PT package, as a membership of its own space */
+function kelasPt(){ return (Kelas.data&&Kelas.data.pt&&typeof Kelas.data.pt==='object')?Kelas.data.pt:null; }
+function kelasPtLive(){ const p=kelasPt(); return p&&p.active?p:null; }
+function kelasPtMem(){ const p=kelasPt(); if(!p) return null;
+  return {category:'PT', plan:(p.type==='Small Group'?'Small Group':'1-on-1')+' · '+(p.total||0)+' sessions', start_date:p.start, end_date:p.end, active:!!p.active}; }
 function kelasSpaces(){ return KL_SPACES.map(x=>x[0]).filter(kelasHasSpace); }
 function kelasSpace(){
   const sp=kelasSpaces();
-  if(!sp.length){ const m=kelasMainAll(); return kelasMemSpace(m); }   /* ended: the last one */
+  if(!sp.length){ if(!kelasMems().length && kelasPt()) return 'pt'; const m=kelasMainAll(); return kelasMemSpace(m); }   /* ended: the last one */
   if(sp.length===1) return sp[0];
   let v=Kelas.space; if(!v){ try{ v=localStorage.getItem('hf_kelas_sp'); }catch(e){} }
   return sp.indexOf(v)>=0?v:'active';
@@ -20639,7 +20669,8 @@ function kelasSetSpace(v){
   if(Kelas.tab==='group') kelasCmLoad();
   renderKelas(); if($('screen')) $('screen').scrollTop=0;
 }
-function kelasSpMems(){ const sp=kelasSpace(), a=kelasMems().filter(m=>kelasMemSpace(m)===sp); return a.length?a:kelasMems(); }
+function kelasSpMems(){ const sp=kelasSpace(); if(sp==='pt'){ const m=kelasPtMem(); return m?[m]:[]; }
+  const a=kelasMems().filter(m=>kelasMemSpace(m)===sp); return a.length?a:kelasMems(); }
 /* the space's group in the Community */
 function kelasSpaceCat(){
   const sp=kelasSpace(), a=kelasMems().filter(m=>m.active && kelasMemSpace(m)===sp);
@@ -20793,6 +20824,7 @@ function kelasInsAll(){ return ((Kelas.data&&Kelas.data.checkins)||[]).map(t=>ne
 function kelasIns(){
   const d=Kelas.data||{}, sp=kelasSpace(), A=k=>Array.isArray(d[k])?d[k]:[], hx=A('hx_ins'), lx=A('lx_ins'), mx=A('mx_ins');
   const X=new Set(hx.concat(lx,mx).map(t=>Date.parse(t)));
+  if(sp==='pt') return ((kelasPt()||{}).done||[]).map(t=>new Date(Date.parse(String(t).slice(0,10)+'T12:00:00Z')));
   const a=sp==='hyrox'?hx:sp==='ladies'?lx:sp==='mens'?mx:(d.checkins||[]).filter(t=>!X.has(Date.parse(t)));
   return a.map(t=>new Date(Date.parse(t)+8*3600e3));
 }
@@ -20849,7 +20881,9 @@ function kelasHTML(){
   if(sps.length>1){ const sp=kelasSpace();
     h+='<div class="kl-space n'+sps.length+'">'+KL_SPACES.filter(x=>sps.indexOf(x[0])>=0).map(x=>
       '<button class="'+x[0]+(sp===x[0]?' on':'')+'" onclick="kelasSetSpace(\''+x[0]+'\')">'+x[1]+'</button>').join('')+'</div>'; }
-  h+='<div class="obseg kl-tabs">'+KL_TABS.map(t=>'<button class="'+(t[0]===tab?'on':'')+'" onclick="kelasTab(\''+t[0]+'\')">'+(hx&&t[0]==='progress'?'Perform':t[1])+'</button>').join('')+'</div>';
+  const tabs=kelasSpace()==='pt'?KL_TABS.filter(t=>t[0]!=='group'):KL_TABS;
+  if(kelasSpace()==='pt' && tab==='group'){ Kelas.tab='today'; return kelasHTML(); }
+  h+='<div class="obseg kl-tabs'+(tabs.length===4?' n4':'')+'">'+tabs.map(t=>'<button class="'+(t[0]===tab?'on':'')+'" onclick="kelasTab(\''+t[0]+'\')">'+(hx&&t[0]==='progress'?'Perform':t[1])+'</button>').join('')+'</div>';
   if(tab==='progress') h+=kelasProgressTab();
   else if(tab==='body') h+=kelasBodyTab();
   else if(tab==='points') h+=kelasPointsHTML()||'<div class="kl-none">Points load with your class. Pull to refresh.</div>';
@@ -20865,9 +20899,9 @@ function kelasTodayTab(){
   let h='';
   /* a shorter hero: the name and the class on the left, the QR on the
      right (tap for full screen at the kiosk), Bara underneath */
-  const spc=kelasSpace(), hxs=spc==='hyrox', lxs=spc==='ladies', mxs=spc==='mens';
-  h+='<div class="kl-hero kl-hero2'+(hxs?' hx':lxs?' lx':mxs?' mx':'')+(act?'':' off')+'">'+
-     '<div class="kl-hrow"><div class="kl-hl"><div class="kl-kick">'+(hxs?'HYROX · HQ':lxs?'Ladies2Fit · HQ':mxs?'Mens2Fit · HQ':'HITFAT Class · HQ')+'</div>'+
+  const spc=kelasSpace(), hxs=spc==='hyrox', lxs=spc==='ladies', mxs=spc==='mens', pts=spc==='pt';
+  h+='<div class="kl-hero kl-hero2'+(hxs?' hx':lxs?' lx':mxs?' mx':pts?' pt':'')+(act?'':' off')+'">'+
+     '<div class="kl-hrow"><div class="kl-hl"><div class="kl-kick">'+(hxs?'HYROX · HQ':lxs?'Ladies2Fit · HQ':mxs?'Mens2Fit · HQ':pts?'Personal Coaching':'HITFAT Class · HQ')+'</div>'+
      '<div class="kl-name">'+hesc(first)+'</div>'+
      '<div class="kl-cat">'+kelasSpMems().filter(x=>x.active).map(x=>hesc(kelasCat(x.category))).join(' · ')+'</div>'+
      '<button class="kl-ci" onclick="kelasQRFull()">'+glyph('qr')+(act?' Check in':' Renew first')+'</button></div>'+
@@ -20878,7 +20912,8 @@ function kelasTodayTab(){
      60-day journey for the goal */
   if(lxs) h+=kelasLxTodayHTML();
   if(mxs) h+=kelasMxTodayHTML();
-  if(!hxs){ h+=kelasF30HTML(); h+=kelasJourneyHTML(); }
+  if(pts) h+=kelasPtTodayHTML();
+  if(!hxs && !pts){ h+=kelasF30HTML(); h+=kelasJourneyHTML(); }
   if(kelasIsHx()) h+=kelasHxTodayHTML();
   h+=kelasWodHTML();
 
@@ -20918,7 +20953,7 @@ function kelasTodayTab(){
        '<div class="r"><small>'+(act?'Ends':'Ended')+'</small><b>'+kelasDate(m.end_date)+'</b></div></div>'+
        (soon||!act?'<button class="kl-renew" onclick="kelasRenew()">'+glyph('repeat')+' Renew with HITFAT</button>':'')+
        '</div>';
-    kelasSpMems().filter(x=>x!==m && x.active).forEach(x=>{
+    kelasSpMems().filter(x=>x!==m && x.active && x.category!==m.category).forEach(x=>{
       h+='<div class="kl-mem2"><span>'+hesc(kelasCat(x.category))+'</span><span>until '+kelasDate(x.end_date)+'</span></div>';
     });
   }
@@ -20931,7 +20966,7 @@ function kelasProgressTab(){
   let h='';
   if(kelasIsHx()) h+=kelasHxHTML();
   if(kelasSpace()==='ladies'||kelasSpace()==='mens') h+=kelasLxChallengeHTML(true);
-  if(kelasSpace()==='mens') h+=kelasMxStrengthHTML();
+  if(kelasSpace()==='mens'||kelasSpace()==='pt') h+=kelasMxStrengthHTML();
   h+=kelasMonthHTML();
   h+=kelasGlanceHTML();
   h+=kelasStreakHTML()+kelasLevelHTML();
@@ -20959,7 +20994,7 @@ function kelasNextReward(P){
 }
 /* Body: InBody, the full result inline */
 function kelasBodyTab(){
-  const all=kelasIBs(), lx=(kelasSpace()==='ladies'||kelasSpace()==='mens')?kelasLxBodyHTML():'';
+  const all=kelasIBs(), lx=['ladies','mens','pt'].indexOf(kelasSpace())>=0?kelasLxBodyHTML():'';
   if(!all.length || Kelas.ibBusy) return lx+kelasIBCard();
   return lx+kelasIBDetail();
 }
@@ -20983,6 +21018,7 @@ function kelasGrid(){
 var KELAS_LEVELS=[10,25,50,100,150,200,250,300,400,500,750,1000];
 function kelasTotal(){
   const d=Kelas.data||{}, sp=kelasSpace(), k=sp==='hyrox'?'total_hx':sp==='ladies'?'total_lx':sp==='mens'?'total_mx':'total_act';
+  if(sp==='pt') return +((kelasPt()||{}).total_done)||0;
   return (typeof d[k]==='number'?d[k]:(sp==='active'?d.total:0))||0;
 }
 function kelasLevel(n){
@@ -21012,7 +21048,8 @@ function kelasLevelHTML(){
 }
 /* the longest run of weeks with a class, from every week OS has */
 function kelasLongest(){
-  const d=Kelas.data||{}, sp=kelasSpace(), wk=sp==='hyrox'?(d.weeks_hx||[]):sp==='ladies'?(d.weeks_lx||[]):sp==='mens'?(d.weeks_mx||[]):(d.weeks_act||d.weeks||[]);
+  const d=Kelas.data||{}, sp=kelasSpace(), wk=sp==='pt'?Array.from(new Set(kelasIns().map(x=>{ const y=new Date(x.getTime()); y.setUTCDate(y.getUTCDate()-(kelasDow(y)-1)); return kelasDayKey(y); })))
+    :sp==='hyrox'?(d.weeks_hx||[]):sp==='ladies'?(d.weeks_lx||[]):sp==='mens'?(d.weeks_mx||[]):(d.weeks_act||d.weeks||[]);
   const w=wk.map(x=>Date.parse(String(x).slice(0,10)+'T00:00:00Z')).sort((a,b)=>a-b);
   let best=0, run=0, prev=null;
   w.forEach(t=>{ run=(prev!==null && t-prev===7*864e5)?run+1:1; if(run>best) best=run; prev=t; });
@@ -21041,6 +21078,7 @@ function kelasStreakHTML(){
    are not repeated here: the HITFAT Score on Home already has them. */
 var KELAS_TARGET={Membership:4, Ladies:4, Mens:3, HYROX:3};   // classes a week, by hitfat.io/one
 function kelasTarget(){
+  if(kelasSpace()==='pt'){ const p=kelasPt(); return Math.max(1,Math.round(((p&&p.total)||8)/4.3)); }
   const a=kelasSpMems().filter(m=>m.active).map(m=>KELAS_TARGET[m.category]||3);
   return a.length?Math.max.apply(null,a):3;
 }
@@ -21273,6 +21311,7 @@ function kelasPointsHTML(){
      '<div class="kl-er"><span class="kl-eic">'+glyph('calendar')+'</span><div><b>Class at HQ</b><small>Once a day, from the kiosk</small></div><em>+100</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('chart')+'</span><div><b>Weekly bonus</b><small>3+ classes in a week: +25, then +50, +75… up to +200 a week in a row</small></div><em>+25↑</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('repeat')+'</span><div><b>Second class, same day</b><small>3 hours or more after the first</small></div><em>+50</em></div>'+
+     (kelasPt()?'<div class="kl-er"><span class="kl-eic">'+glyph('workout')+'</span><div><b>PT session</b><small>Each session with your coach, once it is logged</small></div><em>+150</em></div>':'')+
      '<div class="kl-er"><span class="kl-eic">'+glyph('people')+'</span><div><b>Bring a friend</b><small>When they join, tell the counter you brought them</small></div><em>+500</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('trophy')+'</span><div><b>Connect HITFAT+</b><small>'+(linked?'Done':'Once')+'</small></div><em>'+(linked?glyph('check'):'+300')+'</em></div></div>';
 
@@ -21635,6 +21674,12 @@ function kelasBaraLine(){
   const m=kelasMain(), act=kelasActive(), left=m?kelasDaysLeft(m.end_date):null;
   const today=kelasDayKey(kelasNowMY()), days=new Set(kelasIns().map(kelasDayKey));
   const n=kelasThisWeekN(), t=kelasTarget(), nx=kelasNext();
+  if(kelasSpace()==='pt'){ const p=kelasPt(), nx=p&&(p.next||[])[0];
+    if(!act) return ['kusut','Pakej PT awak dah tamat. Bara rindu nak tengok awak berlatih dengan coach. Sambung dengan coach ya!'];
+    const left=p?(+p.total||0)-(+p.used||0):0;
+    if(nx) return ['aktif','Sesi seterusnya '+kelasPtWhen(nx.at).replace(/^tomorrow/,'esok').replace(/^today/,'hari ini')+(nx.coach?' dengan Coach '+String(nx.coach).split(' ')[0]:'')+'. Bara tunggu awak! 💪'];
+    if(left<=2) return ['calendar','Tinggal '+left+' sesi dalam pakej awak. Cakap dengan coach untuk sambung ya!'];
+    return ['aktif','Setiap sesi PT = +150 mata. Coach awak tulis nota lepas setiap sesi, baca di bawah.']; }
   if(act && kelasSpace()==='ladies'){ const cy=kelasCyc(); if(cy && cy.phase==='period') return ['aktif','Hari ni ikut badan awak. Datang kelas kalau rasa okay, rehat pun okay. Bara tetap bangga dengan awak 🤍']; }
   if(!act) return ['kusut','Membership awak dah tamat. Bara rindu nak tengok awak kat kelas. Renew di kaunter ya!'];
   if(left!==null && left<=7) return ['calendar','Membership awak tamat dalam '+(left+1)+' hari. Renew awal supaya streak awak tak putus!'];
@@ -22590,7 +22635,8 @@ function kelasLxGroupHTML(C){
 /* measurements and progress photos */
 var LX_MEAS=[['waist','Waist'],['hip','Hip'],['thigh','Thigh'],['arm','Arm']];
 var MX_MEAS=[['waist','Waist'],['chest','Chest'],['arm','Arm'],['thigh','Thigh']];
-function kelasMeasSet(){ return kelasSpace()==='mens'?MX_MEAS:LX_MEAS; }
+var PT_MEAS=[['waist','Waist'],['hip','Hip'],['chest','Chest'],['arm','Arm']];
+function kelasMeasSet(){ return kelasSpace()==='mens'?MX_MEAS:kelasSpace()==='pt'?PT_MEAS:LX_MEAS; }
 function kelasLxMeas(){ const k=HF.data.kelas||(HF.data.kelas={}); if(!Array.isArray(k.meas)) k.meas=[]; return k.meas; }
 function kelasLxPics(){ const k=HF.data.kelas||(HF.data.kelas={}); if(!Array.isArray(k.pics)) k.pics=[]; return k.pics; }
 function kelasLxBodyHTML(){
@@ -22783,6 +22829,42 @@ async function kelasMxBoardLoad(){
   Kelas.mxBBusy=false; if(Kelas.tab==='group') renderKelas();
 }
 
+/* ═══════════════ Personal coaching (17 Oct 2026) ═══════════════
+   Seth: face-to-face PT, RM1,600 a month with a fixed number of sessions.
+   The package lives in HITFAT OS's PT tab (pt_packages, pt_sessions, 098):
+   the coach schedules the sessions there and logs each one with its Focus
+   and a Performance note, which the client reads here. The client sees
+   the next session, the sessions left and the end date, the coach's notes,
+   their strength and their body; each session done is +150 points. */
+function kelasPtWhen(at){
+  const t=new Date(Date.parse(at)+8*3600e3), today=kelasDayKey(kelasNowMY()), d=kelasDayKey(t);
+  const days=Math.round((Date.parse(d)-Date.parse(today))/864e5);
+  const hm=kelasClock(String(t.getUTCHours()).padStart(2,'0')+':'+String(t.getUTCMinutes()).padStart(2,'0'));
+  return (days===0?'today':days===1?'tomorrow':KELAS_DOW[kelasDow(t)-1]+' '+t.getUTCDate()+' '+KL_MONTHS[t.getUTCMonth()].slice(0,3))+' · '+hm;
+}
+function kelasPtTodayHTML(){
+  const p=kelasPt(); if(!p) return '';
+  const total=+p.total||0, used=+p.used||0, left=Math.max(0,total-used), nx=(p.next||[])[0];
+  const daysEnd=p.end?Math.round((Date.parse(p.end)-Date.parse(kelasDayKey(kelasNowMY())))/864e5):null;
+  let h='<div class="kl-pt-next">'+(nx?'<small>Next session</small><b>'+hesc(kelasPtWhen(nx.at).replace(/^./,c=>c.toUpperCase()))+'</b>'+
+      '<span>'+(nx.coach?'with Coach '+hesc(nx.coach):'with your coach')+'</span>'
+    :'<small>Next session</small><b>Not booked yet</b><span>Your coach books it at HQ</span>')+'</div>';
+  if((p.next||[]).length>1) h+='<div class="kl-pt-up">'+p.next.slice(1,4).map(x=>'<span>'+hesc(kelasPtWhen(x.at))+'</span>').join('')+'</div>';
+  const pct=total?Math.round(used/total*100):0;
+  h+='<div class="kl-pt-pk"><div class="kl-pt-ring" style="--p:'+pct+'"><b>'+left+'</b><small>left</small></div>'+
+    '<div class="kl-pt-pkt"><b>'+used+' of '+total+' sessions done</b><small>'+hesc(p.type==='Small Group'?'Small Group':'1-on-1')+(p.end?' · ends '+kelasIBDate(p.end,true)+(daysEnd!==null&&daysEnd>=0?' ('+daysEnd+' day'+(daysEnd===1?'':'s')+')':''):'')+'</small>'+
+    (p.active&&(left<=2||(daysEnd!==null&&daysEnd<=7))?'<em>Talk to your coach about your next month</em>':!p.active?'<em>Package ended. Talk to your coach to continue</em>':'')+'</div></div>';
+  /* the coach's notes */
+  const N=p.notes||[];
+  h+=fsec('From your coach','After every session.');
+  if(!N.length) return h+'<div class="kl-none">Your coach’s notes appear here after your first session.</div>';
+  const all=Kelas.ptAll?N:N.slice(0,3);
+  h+='<div class="kl-pt-notes">'+all.map((n,i)=>'<div class="kl-pt-note'+(i===0?' first':'')+'"><div class="kl-pt-nh"><b>'+hesc(n.focus||'Session')+'</b><small>'+kelasIBDate(n.d,true)+(n.coach?' · Coach '+hesc(String(n.coach).split(' ')[0]):'')+'</small></div>'+
+    (n.note?'<div class="kl-pt-nb">'+hesc(n.note)+'</div>':'')+'</div>').join('')+'</div>';
+  if(N.length>3) h+='<button class="kl-alt2" onclick="Kelas.ptAll=!Kelas.ptAll;renderKelas()">'+(Kelas.ptAll?'Show fewer':'All '+N.length+' notes')+'</button>';
+  return h;
+}
+
 /* ═══════════════ Today's workout (17 Oct 2026) ═══════════════
    The coach writes the day's class workout in HITFAT OS (Live Class →
    Workout for members; class_wods, 093). The member sees it today, and
@@ -22793,6 +22875,7 @@ var KL_WOD_UNIT={time:['Time','mm:ss','e.g. 12:45'],reps:['Reps','reps','e.g. 86
   weight:['Weight','kg','e.g. 60'],distance:['Distance','m','e.g. 2000']};
 function kelasWods(){ return (Kelas.data&&Kelas.data.wods)||[]; }
 function kelasWodFor(day){
+  if(kelasSpace()==='pt') return null;
   const sp=kelasSpace(), a=kelasWods().filter(w=>String(w.date).slice(0,10)===day && (w.cat==='all'||kelasMemSpace({category:w.cat})===sp));
   return a.filter(w=>w.cat!=='all')[0]||a[0]||null;   /* the member's own class before the one for all */
 }

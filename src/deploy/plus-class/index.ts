@@ -193,7 +193,10 @@ function endOfDayMY(d: string): string {
 
 async function syncAccess(admin: any, uid: string, st: any) {
   const ends = (st && st.linked ? st.memberships || [] : [])
-    .filter((m: any) => m.active && m.end_date).map((m: any) => String(m.end_date)).sort();
+    .filter((m: any) => m.active && m.end_date).map((m: any) => String(m.end_date));
+  /* personal coaching (098): an active PT package opens it too, to its end */
+  if (st && st.linked && st.pt && st.pt.active && st.pt.end) ends.push(String(st.pt.end));
+  ends.sort();
   const until = ends.length ? endOfDayMY(ends[ends.length - 1]) : null;
   const { data: rows } = await admin.from('plus_entitlements')
     .select('id, expires_at').eq('user_id', uid).eq('sku', SKU);
@@ -252,12 +255,15 @@ Deno.serve(async (req: Request) => {
       const r = await os('plus_claim', { p_key: key, p_phone: phone, p_user: uid });
       if (!r || !r.ok) return json({ ok: false, error: (r && r.error) || 'failed' });
       const st = await os('plus_status', { p_key: key, p_user: uid });
+      try { Object.assign(st, await os('plus_status_spaces', { p_key: key, p_user: uid })); } catch (_) { /* below */ }
       const until = await syncAccess(admin, uid, st);
       return json({ ok: true, until, status: st });
     }
 
     if (action === 'status') {
       const st = await os('plus_status', { p_key: key, p_user: uid });
+      /* each space's check-ins, strength, the PT package (095–098): before the access, which a PT package can open */
+      if (st && st.linked) { try { Object.assign(st, await os('plus_status_spaces', { p_key: key, p_user: uid })); } catch (_) { /* the app falls back to all */ } }
       const until = await syncAccess(admin, uid, st);
       /* FIRST 30 done: +300 and a post in the class group, once (088) */
       if (st && st.first30 && st.first30.complete && !st.first30.awarded) {
@@ -269,8 +275,6 @@ Deno.serve(async (req: Request) => {
       }
       /* HYROX: the member's own station times (094) */
       if (st && st.linked) { try { st.hyrox = await os('plus_hx_mine', { p_key: key, p_user: uid }); } catch (_) { st.hyrox = []; } }
-      /* HYROX and Active apart (095): each space's check-ins, count, weeks */
-      if (st && st.linked) { try { Object.assign(st, await os('plus_status_spaces', { p_key: key, p_user: uid })); } catch (_) { /* the app falls back to all */ } }
       return json({ ...st, until });
     }
 

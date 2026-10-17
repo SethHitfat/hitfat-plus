@@ -17,8 +17,9 @@
    HITFAT Class members (17 Oct) hear about their class first, from HITFAT
    OS (plus_push_list, 093_wod_push.sql): the membership ending in 7 days,
    3 days, tomorrow, and the day after it ended; a week and two weeks with
-   no class; and on the 1st, last month's recap. One message an evening,
-   these before the habits.
+   no class; and on the 1st, last month's recap. Personal coaching (098):
+   a session tomorrow, the package ending in 3 days. One message an
+   evening, these before the habits.
 
    What Bara says follows the HITFAT Score in the app (score.js): a day's
    score is the share of its habits done (workout, meals /3, water /8,
@@ -155,6 +156,19 @@ function fmtDay(d: string): string { const t = new Date(d + 'T00:00:00Z'); retur
 /* what Bara says to a class member about their class, if anything */
 export function classMessage(c: any, today: string): Msg | null {
   if (!c) return null;
+  /* personal coaching (098): tomorrow's session, the package nearly used or ending */
+  const pt = c.pt;
+  if (pt) {
+    const coach = pt.coach ? 'Coach ' + String(pt.coach).split(' ')[0] : 'your coach';
+    if (pt.next && dayOf(pt.next) === dayOf(Date.parse(today + 'T12:00:00+08:00') + 86400000)) {
+      const t = new Date(new Date(pt.next).getTime() + MYT), hh = t.getUTCHours(), mm = String(t.getUTCMinutes()).padStart(2, '0');
+      const at = ((hh + 11) % 12 + 1) + ':' + mm + (hh < 12 ? ' AM' : ' PM');
+      const left = typeof pt.left === 'number' && pt.left <= 2 ? ' Only ' + pt.left + ' session' + (pt.left === 1 ? '' : 's') + ' left in your package, talk to ' + coach + ' about renewing.' : '';
+      return { kind: 'pt1', title: 'PT session tomorrow at ' + at, body: 'With ' + coach + '. Sleep well and eat a good meal before.' + left, url: '/?kelas=today' };
+    }
+    if (pt.end && daysBetween(today, String(pt.end).slice(0, 10)) === 3)
+      return { kind: 'ptend', title: 'Your PT package ends in 3 days', body: 'It ends on ' + fmtDay(String(pt.end).slice(0, 10)) + '. Talk to ' + coach + ' to keep your sessions going.', url: '/?kelas=today' };
+  }
   const end = c.end ? String(c.end).slice(0, 10) : '';
   if (end) {
     const left = daysBetween(today, end);
