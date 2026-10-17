@@ -4800,3 +4800,39 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .scc-report .scx-wg b{color:#111111;}
 .scc-report .scx-wg span{color:rgba(17,17,17,.55);}
 #scc.scc-report .scc-share{background:#E30613 !important;color:#FFFFFF !important;}
+
+/* ── the covers' look inside (18 Oct): rows, Related, the hero, day tiles, Ladies ── */
+.hpo.hpo-art{position:absolute;inset:0;width:auto;max-width:none;aspect-ratio:auto;border-radius:inherit;box-shadow:none;cursor:inherit;scroll-snap-align:none;}
+.frow .th,.fland .im{overflow:hidden;background:none;}
+.frow .th .fnew,.frow .th .lockt,.fland .im .fnew,.fland .im .lockt{z-index:4;}
+.hpo-art .hpo-gly{right:-8%;bottom:-10%;width:70%;}
+.pdx-hero.pdx-hpo{background:none;overflow:hidden;}
+.pdx-hero .hpo-hero{border-radius:0;}
+.pdx-hero .hpo-hero .hpo-ph{-webkit-filter:contrast(1.12) brightness(1.04);filter:contrast(1.12) brightness(1.04);}
+.pdx-hero .hpo-hero .hpo-fig{-webkit-filter:drop-shadow(-8px -3px 0 var(--rim));filter:drop-shadow(-8px -3px 0 var(--rim));}
+.pdx-hpo .pdx-ov,.pdx-hpo .pdx-in{z-index:2;}
+.fwr .th.pdx-dt,.pdx-dt{display:flex;flex-direction:column;justify-content:flex-end;padding:10px 12px;box-sizing:border-box;color:#FFFFFF;overflow:hidden;
+  background:linear-gradient(155deg,var(--a) 0%,var(--b) 100%);}
+.pdx-ep .th.pdx-dt{flex:0 0 38%;width:38%;aspect-ratio:4/3;}
+.pdx-dt::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 15%,rgba(255,255,255,.22),rgba(255,255,255,0) 55%);}
+.pdx-dt .dg{position:absolute;right:-12%;top:-10%;width:66%;opacity:.2;}
+.pdx-dt .dg .gly{width:100%;height:auto;stroke:#FFFFFF;stroke-width:1.4;}
+.pdx-dt .k{position:relative;font-size:11px;font-weight:800;letter-spacing:.16em;opacity:.9;}
+.pdx-dt b{position:relative;font-size:46px;font-weight:900;line-height:.95;letter-spacing:-1.5px;}
+.pdx-dt .ok{position:absolute;right:10px;bottom:10px;width:26px;height:26px;border-radius:50%;background:#FFFFFF;color:#111111;display:grid;place-items:center;}
+.pdx-dt .ok .gly{width:15px;height:15px;stroke:#111111;}
+.pdx-ep.done .th.pdx-dt{opacity:.55;}
+.lb-art{position:relative;overflow:hidden;align-items:flex-start;text-align:left;--rim:#FFC2DA;
+  background:linear-gradient(155deg,#F0509E 0%,#9C1A72 60%,#4A0A36 100%) !important;}
+.lb-art .hpo-fig{left:44%;}
+.lb-art .hpo-ph{background-size:cover;-webkit-mask-size:cover;mask-size:cover;}
+.lb-art .lb-tx{position:relative;z-index:2;width:56%;padding-left:18px;box-sizing:border-box;}
+.lb-art .lb-mark{margin:0 0 6px !important;width:44px !important;height:44px !important;}
+.lb-art .lb-name{padding:0;font-size:30px;color:#FFFFFF;}
+.lb-art .lb-sub{color:#FFE1EE;line-height:1.5;margin-top:6px;}
+.fwr .th.pdx-dt{-webkit-filter:none;filter:none;}   /* the photo thumbs are toned down; the tiles keep the cover colour */
+.hpo-hero.land .hpo-fig{top:30%;bottom:10%;}
+.wl-hero.lb-art{aspect-ratio:4/3;justify-content:flex-end;padding-bottom:24px;}
+.wl-hero.day.lb-art{aspect-ratio:16/9;padding-bottom:16px;}
+.pdx-hero.pdx-hpo:has(.hpo-hero.land){height:360px;}
+.pdx-hero .hpo-hero.land .hpo-fig{top:22%;bottom:12%;}

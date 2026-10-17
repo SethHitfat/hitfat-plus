@@ -272,8 +272,11 @@ function lbPic(d){ return '/img/p/'+(LB30_PIC[d.k]||'act-beginner')+'.jpg'; }
 var _lbMs=false;
 function lbLang(on){
   if(typeof i18nApply!=='function') return;
-  if(on && !_lbMs){ _lbMs=true; LANG='ms'; i18nApply(document.body); }
-  else if(!on && _lbMs){ _lbMs=false; LANG='en'; i18nRestore(document.body); }
+  /* the tab bar at the bottom stays as the rest of the app has it (18 Oct:
+     it turned into Utama / Makan / Saya on this one program) */
+  var tb=$('tabs');
+  if(on && !_lbMs){ _lbMs=true; if(tb&&tb.setAttribute) tb.setAttribute('data-noi18n','1'); LANG='ms'; i18nApply(document.body); }
+  else if(!on && _lbMs){ _lbMs=false; LANG='en'; i18nRestore(document.body); if(tb&&tb.removeAttribute) tb.removeAttribute('data-noi18n'); }
 }
 
 /* ── the program's home ── */
@@ -310,8 +313,13 @@ function renderLB30(){
 /* the poster: the photograph when there is one, the name in type until then */
 function lbPoster(cls){
   if(LB30_POSTER) return '<div class="'+cls+'"><img src="'+LB30_POSTER+'" alt="'+hesc(LB30_NAME)+'"></div>';
-  return '<div class="'+cls+' lb-type"><img class="lb-mark" src="/img/brand/hf-mark.png" alt="HITFAT">'+
-    '<div class="lb-name">'+hesc(LB30_NAME)+'</div><div class="lb-sub">30 HARI · DI RUMAH · TANPA LOMPAT</div></div>';
+  /* until the poster comes (18 Oct): the ladies' studio photo (lad4) cut out
+     on rose, in the look of the covers, with the name beside her */
+  var ph='background-image:url(\'/img/p/lad4.jpg\'),linear-gradient(#4A0A36,#4A0A36);background-position:50% 22%;'+
+    '-webkit-mask-image:url(\'/img/p/mask/lad4.png\');mask-image:url(\'/img/p/mask/lad4.png\');-webkit-mask-position:50% 22%;mask-position:50% 22%';
+  return '<div class="'+cls+' lb-type lb-art"><div class="hpo-fig"><div class="hpo-ph" style="'+ph+'"></div></div>'+
+    '<div class="lb-tx"><img class="lb-mark" src="/img/brand/hf-mark.png" alt="HITFAT">'+
+    '<div class="lb-name">'+hesc(LB30_NAME)+'</div><div class="lb-sub">30 HARI · DI RUMAH · TANPA LOMPAT</div></div></div>';
 }
 function lbHero(kicker,sub,meta,pill){
   return pdxBar(kicker,pill)+lbPoster('wl-hero lb-hero'+(kicker==='day'?' day':''))+

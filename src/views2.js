@@ -138,7 +138,7 @@ function progImg(p){
 function frow(p,badge){
   const done=progDone(p.id), tot=progDays(p), pct=tot?Math.round(done/tot*100):0;
   return '<div class="frow" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name,p)+'">'+
+    '<div class="th">'+hpoArt(p,{ar:FA.row})+   /* the cover's look (18 Oct) */
     (badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
     '<div class="m">'+(p.weeks?(p.oneTime?p.sub:wks(p.weeks.length)+' · '+tot+' days'):(p.level+' · '+p.dur+' min'))+'</div>'+
@@ -408,10 +408,17 @@ function pdxBar(kicker,pill){
     (pill?'<button class="pdx-pill" onclick="'+pill.go+'" tabindex="-1">'+glyph(pill.icon)+pill.label+'</button>':'')+
     '<span class="pdx-bar-r"></span></div></div>';
 }
+/* a picture shot lying or wide (glute bridge, plank) sits in a band across
+   the hero, whole, instead of a sliver of it in a tall frame */
+function pdxArt(p){
+  const land=hasPhoto(p) && FOCAL[p.id] && FOCAL[p.id][2]>1.1;
+  return hpoArt(p,{ar:land?FA.poster:FA.hero, cls:'hpo-hero'+(land?' land':'')});
+}
 function pdxHero(p,kicker,title,sub,meta,pill){
   return pdxBar(kicker,pill)+
     /* tall pictures keep the head in frame: crop from near the top */
-    '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.hero):'')+'">'+
+    /* the cover, big (18 Oct): its palette, the athlete cut out with the edge */
+    '<div class="pdx-hero pdx-hpo">'+pdxArt(p)+
     '<div class="pdx-ov"></div>'+
     '<div class="pdx-in"><div class="pdx-t">'+title+'</div>'+
     (sub?'<div class="pdx-s">'+sub+'</div>':'')+
@@ -565,13 +572,16 @@ function renderProgram(){
         '<button class="chip'+((i+1)===curWeek?' y':'')+'" onclick="curWeek='+(i+1)+';renderProgram()">Week '+(i+1)+'</button>').join('')+'</div>';
     const wk=p.weeks[curWeek-1];
     let offd=0; for(let i=0;i<curWeek-1;i++) offd+=p.weeks[i].days.length;
+    const pc=hpoPal(p);
     h+='<div class="pdx-eps">'+(wk.days||[]).map((d,di)=>{
       const gi=offd+di, isDone=gi<done;
       if(d.rest) return '<div class="pdx-rest" onclick="markRest(\''+p.id+'\','+gi+')">'+glyph('moon')+
         '<span>Day '+(gi+1)+' · Rest &amp; recover</span>'+(isDone?'<b>✓</b>':'')+'</div>';
+      /* a numbered tile in the plan's colour, the day's focus as a faint glyph
+         (18 Oct): one photo repeated down the list read as unfinished */
       return '<div class="fwr pdx-ep'+(isDone?' done':'')+'" onclick="openDay(\''+p.id+'\','+gi+')">'+
-        '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop((d.name||'')+gi,p)+'">'+
-          (isDone?'<span class="fnew">DONE</span>':'')+'</div>'+
+        '<div class="th pdx-dt" style="--a:'+pc[0]+';--b:'+pc[1]+'"><span class="dg">'+glyph(pdxDayGlyph(d.name))+'</span>'+
+          '<span class="k">DAY</span><b>'+(gi+1)+'</b>'+(isDone?'<span class="ok">'+glyph('check')+'</span>':'')+'</div>'+
         '<div class="tx"><div class="t">'+(d.name||'Workout')+'</div>'+
         '<div class="m">'+(/^Day \d+$/.test(d.name||'')?'':'Day '+(gi+1)+' · ')+(d.ex?d.ex.length:0)+' exercises · '+p.dur+'min</div></div>'+
         '<span class="pdx-chev">›</span></div>';
@@ -590,6 +600,16 @@ function renderProgram(){
   if(rel.length) h+='<div class="fsec"><div class="ft">Related</div></div>'+
     '<div class="hscroll">'+rel.map(x=>flandCard(x)).join('')+'</div>';
   $('pgd-body').innerHTML=h;
+}
+/* a day's focus, from its name, as a glyph */
+function pdxDayGlyph(n){
+  n=String(n||'').toLowerCase();
+  return /mobil|stretch|recover|yoga|pulih|rehat/.test(n)?'leaf'
+    : /core|abs|finisher|plank/.test(n)?'target'
+    : /cardio|condition|hiit|burn|metcon|sweat|interval/.test(n)?'flame'
+    : /upper|push|pull|arm|chest|back|shoulder/.test(n)?'workout'
+    : /lower|leg|glute|squat|lunge/.test(n)?'steps'
+    : /full|power|total/.test(n)?'bolt' : 'workout';
 }
 function markRest(pid,gi){
   if(progDone(pid)===gi){ HF.data.progress[pid]=gi+1; HF.save(); toast('Rest day logged'); renderProgram(); }

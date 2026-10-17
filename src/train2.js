@@ -26,7 +26,7 @@ function metaOf(p){ return p.weeks ? (planLenShort(p)+' · '+p.level) : (p.dur+'
 /* landscape card — image on top, title and meta UNDER it (the sampler pattern) */
 function flandCard(p,badge){
   return '<div class="fland" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="im" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.card):'')+'">'+(badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
+    '<div class="im">'+hpoArt(p,{ar:FA.card})+(badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="t">'+p.name+'</div><div class="m">'+metaOf(p)+'</div></div>';
 }
 /* This Week, without people (16 Oct): a typographic tile in one of the
@@ -202,6 +202,23 @@ function hpoCard(p,o){
     (going?'<div class="hpo-go"><span>Day '+(done+1)+' of '+tot+'</span><i><b style="width:'+Math.round(done/tot*100)+'%"></b></i></div>'
           :'<span class="hpo-lv">'+(fin?'✓ Completed':(p.level||''))+'</span>')+
     (o.start||o.go?'<button class="hpo-play" aria-label="Start '+hesc(p.name)+'" onclick="event.stopPropagation();'+(o.go||'playSingle(\''+p.id+'\')')+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button>':'')+'</div>';
+}
+/* the poster look without its words (18 Oct). Seth: "gambar semua ni tak
+   kemas, tak masuk dengan gambar yang cover". The program's own palette and
+   its athlete cut out with the neon edge, so a row, a Related card and the
+   big picture inside a program all match the cover that was tapped. A
+   program with no studio photo gets its palette and a big faint glyph. */
+const HPO_GLY={'Fat Loss':'flame','Strength':'workout','Core':'target','Recovery':'leaf','Mobility':'leaf'};
+function hpoArt(p,o){
+  o=o||{};
+  const c=hpoPal(p), pic=hpoPic(p), cut=hasPhoto(p) && HPO_MASK.has(pic);
+  const pos=hasPhoto(p)?(imgPos(p,o.ar||FA.row)||'').replace(/;$/,''):'';
+  const mv=(typeof IMG_V!=='undefined'&&IMG_V[pic])?'?v='+IMG_V[pic]:'';
+  const msk=cut?';-webkit-mask-image:url(\'/img/p/mask/'+pic+'.png'+mv+'\');mask-image:url(\'/img/p/mask/'+pic+'.png'+mv+'\')'+
+    (pos?';'+pos.replace(/background-/g,'-webkit-mask-')+';'+pos.replace(/background-/g,'mask-'):''):'';
+  const fig=cut?'<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\''+progImg(p)+'\'),linear-gradient('+c[2]+','+c[2]+')'+(pos?';'+pos:'')+msk+'"></div></div>'
+           :'<span class="hpo-gly">'+glyph(HPO_GLY[p.goal]||'bolt')+'</span>';
+  return '<div class="hpo hpo-art'+(o.cls?' '+o.cls:'')+(cut?'':' hpo-flat')+'" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+fig+'</div>';
 }
 /* any poster that is not a program (16 Oct): a title, a kicker, a foot line,
    a palette, and either a photo cut out by its mask or a big faint glyph */

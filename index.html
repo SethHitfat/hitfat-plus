@@ -7039,6 +7039,42 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .scc-report .scx-wg span{color:rgba(17,17,17,.55);}
 #scc.scc-report .scc-share{background:#E30613 !important;color:#FFFFFF !important;}
 
+/* ── the covers' look inside (18 Oct): rows, Related, the hero, day tiles, Ladies ── */
+.hpo.hpo-art{position:absolute;inset:0;width:auto;max-width:none;aspect-ratio:auto;border-radius:inherit;box-shadow:none;cursor:inherit;scroll-snap-align:none;}
+.frow .th,.fland .im{overflow:hidden;background:none;}
+.frow .th .fnew,.frow .th .lockt,.fland .im .fnew,.fland .im .lockt{z-index:4;}
+.hpo-art .hpo-gly{right:-8%;bottom:-10%;width:70%;}
+.pdx-hero.pdx-hpo{background:none;overflow:hidden;}
+.pdx-hero .hpo-hero{border-radius:0;}
+.pdx-hero .hpo-hero .hpo-ph{-webkit-filter:contrast(1.12) brightness(1.04);filter:contrast(1.12) brightness(1.04);}
+.pdx-hero .hpo-hero .hpo-fig{-webkit-filter:drop-shadow(-8px -3px 0 var(--rim));filter:drop-shadow(-8px -3px 0 var(--rim));}
+.pdx-hpo .pdx-ov,.pdx-hpo .pdx-in{z-index:2;}
+.fwr .th.pdx-dt,.pdx-dt{display:flex;flex-direction:column;justify-content:flex-end;padding:10px 12px;box-sizing:border-box;color:#FFFFFF;overflow:hidden;
+  background:linear-gradient(155deg,var(--a) 0%,var(--b) 100%);}
+.pdx-ep .th.pdx-dt{flex:0 0 38%;width:38%;aspect-ratio:4/3;}
+.pdx-dt::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 15%,rgba(255,255,255,.22),rgba(255,255,255,0) 55%);}
+.pdx-dt .dg{position:absolute;right:-12%;top:-10%;width:66%;opacity:.2;}
+.pdx-dt .dg .gly{width:100%;height:auto;stroke:#FFFFFF;stroke-width:1.4;}
+.pdx-dt .k{position:relative;font-size:11px;font-weight:800;letter-spacing:.16em;opacity:.9;}
+.pdx-dt b{position:relative;font-size:46px;font-weight:900;line-height:.95;letter-spacing:-1.5px;}
+.pdx-dt .ok{position:absolute;right:10px;bottom:10px;width:26px;height:26px;border-radius:50%;background:#FFFFFF;color:#111111;display:grid;place-items:center;}
+.pdx-dt .ok .gly{width:15px;height:15px;stroke:#111111;}
+.pdx-ep.done .th.pdx-dt{opacity:.55;}
+.lb-art{position:relative;overflow:hidden;align-items:flex-start;text-align:left;--rim:#FFC2DA;
+  background:linear-gradient(155deg,#F0509E 0%,#9C1A72 60%,#4A0A36 100%) !important;}
+.lb-art .hpo-fig{left:44%;}
+.lb-art .hpo-ph{background-size:cover;-webkit-mask-size:cover;mask-size:cover;}
+.lb-art .lb-tx{position:relative;z-index:2;width:56%;padding-left:18px;box-sizing:border-box;}
+.lb-art .lb-mark{margin:0 0 6px !important;width:44px !important;height:44px !important;}
+.lb-art .lb-name{padding:0;font-size:30px;color:#FFFFFF;}
+.lb-art .lb-sub{color:#FFE1EE;line-height:1.5;margin-top:6px;}
+.fwr .th.pdx-dt{-webkit-filter:none;filter:none;}   /* the photo thumbs are toned down; the tiles keep the cover colour */
+.hpo-hero.land .hpo-fig{top:30%;bottom:10%;}
+.wl-hero.lb-art{aspect-ratio:4/3;justify-content:flex-end;padding-bottom:24px;}
+.wl-hero.day.lb-art{aspect-ratio:16/9;padding-bottom:16px;}
+.pdx-hero.pdx-hpo:has(.hpo-hero.land){height:360px;}
+.pdx-hero .hpo-hero.land .hpo-fig{top:22%;bottom:12%;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -12093,8 +12129,11 @@ function lbPic(d){ return '/img/p/'+(LB30_PIC[d.k]||'act-beginner')+'.jpg'; }
 var _lbMs=false;
 function lbLang(on){
   if(typeof i18nApply!=='function') return;
-  if(on && !_lbMs){ _lbMs=true; LANG='ms'; i18nApply(document.body); }
-  else if(!on && _lbMs){ _lbMs=false; LANG='en'; i18nRestore(document.body); }
+  /* the tab bar at the bottom stays as the rest of the app has it (18 Oct:
+     it turned into Utama / Makan / Saya on this one program) */
+  var tb=$('tabs');
+  if(on && !_lbMs){ _lbMs=true; if(tb&&tb.setAttribute) tb.setAttribute('data-noi18n','1'); LANG='ms'; i18nApply(document.body); }
+  else if(!on && _lbMs){ _lbMs=false; LANG='en'; i18nRestore(document.body); if(tb&&tb.removeAttribute) tb.removeAttribute('data-noi18n'); }
 }
 
 /* ── the program's home ── */
@@ -12131,8 +12170,13 @@ function renderLB30(){
 /* the poster: the photograph when there is one, the name in type until then */
 function lbPoster(cls){
   if(LB30_POSTER) return '<div class="'+cls+'"><img src="'+LB30_POSTER+'" alt="'+hesc(LB30_NAME)+'"></div>';
-  return '<div class="'+cls+' lb-type"><img class="lb-mark" src="/img/brand/hf-mark.png" alt="HITFAT">'+
-    '<div class="lb-name">'+hesc(LB30_NAME)+'</div><div class="lb-sub">30 HARI · DI RUMAH · TANPA LOMPAT</div></div>';
+  /* until the poster comes (18 Oct): the ladies' studio photo (lad4) cut out
+     on rose, in the look of the covers, with the name beside her */
+  var ph='background-image:url(\'/img/p/lad4.jpg\'),linear-gradient(#4A0A36,#4A0A36);background-position:50% 22%;'+
+    '-webkit-mask-image:url(\'/img/p/mask/lad4.png\');mask-image:url(\'/img/p/mask/lad4.png\');-webkit-mask-position:50% 22%;mask-position:50% 22%';
+  return '<div class="'+cls+' lb-type lb-art"><div class="hpo-fig"><div class="hpo-ph" style="'+ph+'"></div></div>'+
+    '<div class="lb-tx"><img class="lb-mark" src="/img/brand/hf-mark.png" alt="HITFAT">'+
+    '<div class="lb-name">'+hesc(LB30_NAME)+'</div><div class="lb-sub">30 HARI · DI RUMAH · TANPA LOMPAT</div></div></div>';
 }
 function lbHero(kicker,sub,meta,pill){
   return pdxBar(kicker,pill)+lbPoster('wl-hero lb-hero'+(kicker==='day'?' day':''))+
@@ -27912,7 +27956,7 @@ function progImg(p){
 function frow(p,badge){
   const done=progDone(p.id), tot=progDays(p), pct=tot?Math.round(done/tot*100):0;
   return '<div class="frow" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop(p.name,p)+'">'+
+    '<div class="th">'+hpoArt(p,{ar:FA.row})+   /* the cover's look (18 Oct) */
     (badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="tx"><div class="t">'+p.name+'</div>'+
     '<div class="m">'+(p.weeks?(p.oneTime?p.sub:wks(p.weeks.length)+' · '+tot+' days'):(p.level+' · '+p.dur+' min'))+'</div>'+
@@ -28182,10 +28226,17 @@ function pdxBar(kicker,pill){
     (pill?'<button class="pdx-pill" onclick="'+pill.go+'" tabindex="-1">'+glyph(pill.icon)+pill.label+'</button>':'')+
     '<span class="pdx-bar-r"></span></div></div>';
 }
+/* a picture shot lying or wide (glute bridge, plank) sits in a band across
+   the hero, whole, instead of a sliver of it in a tall frame */
+function pdxArt(p){
+  const land=hasPhoto(p) && FOCAL[p.id] && FOCAL[p.id][2]>1.1;
+  return hpoArt(p,{ar:land?FA.poster:FA.hero, cls:'hpo-hero'+(land?' land':'')});
+}
 function pdxHero(p,kicker,title,sub,meta,pill){
   return pdxBar(kicker,pill)+
     /* tall pictures keep the head in frame: crop from near the top */
-    '<div class="pdx-hero" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.hero):'')+'">'+
+    /* the cover, big (18 Oct): its palette, the athlete cut out with the edge */
+    '<div class="pdx-hero pdx-hpo">'+pdxArt(p)+
     '<div class="pdx-ov"></div>'+
     '<div class="pdx-in"><div class="pdx-t">'+title+'</div>'+
     (sub?'<div class="pdx-s">'+sub+'</div>':'')+
@@ -28339,13 +28390,16 @@ function renderProgram(){
         '<button class="chip'+((i+1)===curWeek?' y':'')+'" onclick="curWeek='+(i+1)+';renderProgram()">Week '+(i+1)+'</button>').join('')+'</div>';
     const wk=p.weeks[curWeek-1];
     let offd=0; for(let i=0;i<curWeek-1;i++) offd+=p.weeks[i].days.length;
+    const pc=hpoPal(p);
     h+='<div class="pdx-eps">'+(wk.days||[]).map((d,di)=>{
       const gi=offd+di, isDone=gi<done;
       if(d.rest) return '<div class="pdx-rest" onclick="markRest(\''+p.id+'\','+gi+')">'+glyph('moon')+
         '<span>Day '+(gi+1)+' · Rest &amp; recover</span>'+(isDone?'<b>✓</b>':'')+'</div>';
+      /* a numbered tile in the plan's colour, the day's focus as a faint glyph
+         (18 Oct): one photo repeated down the list read as unfinished */
       return '<div class="fwr pdx-ep'+(isDone?' done':'')+'" onclick="openDay(\''+p.id+'\','+gi+')">'+
-        '<div class="th" style="background-image:url(\''+progImg(p)+'\');'+thumbCrop((d.name||'')+gi,p)+'">'+
-          (isDone?'<span class="fnew">DONE</span>':'')+'</div>'+
+        '<div class="th pdx-dt" style="--a:'+pc[0]+';--b:'+pc[1]+'"><span class="dg">'+glyph(pdxDayGlyph(d.name))+'</span>'+
+          '<span class="k">DAY</span><b>'+(gi+1)+'</b>'+(isDone?'<span class="ok">'+glyph('check')+'</span>':'')+'</div>'+
         '<div class="tx"><div class="t">'+(d.name||'Workout')+'</div>'+
         '<div class="m">'+(/^Day \d+$/.test(d.name||'')?'':'Day '+(gi+1)+' · ')+(d.ex?d.ex.length:0)+' exercises · '+p.dur+'min</div></div>'+
         '<span class="pdx-chev">›</span></div>';
@@ -28364,6 +28418,16 @@ function renderProgram(){
   if(rel.length) h+='<div class="fsec"><div class="ft">Related</div></div>'+
     '<div class="hscroll">'+rel.map(x=>flandCard(x)).join('')+'</div>';
   $('pgd-body').innerHTML=h;
+}
+/* a day's focus, from its name, as a glyph */
+function pdxDayGlyph(n){
+  n=String(n||'').toLowerCase();
+  return /mobil|stretch|recover|yoga|pulih|rehat/.test(n)?'leaf'
+    : /core|abs|finisher|plank/.test(n)?'target'
+    : /cardio|condition|hiit|burn|metcon|sweat|interval/.test(n)?'flame'
+    : /upper|push|pull|arm|chest|back|shoulder/.test(n)?'workout'
+    : /lower|leg|glute|squat|lunge/.test(n)?'steps'
+    : /full|power|total/.test(n)?'bolt' : 'workout';
 }
 function markRest(pid,gi){
   if(progDone(pid)===gi){ HF.data.progress[pid]=gi+1; HF.save(); toast('Rest day logged'); renderProgram(); }
@@ -30400,7 +30464,7 @@ function metaOf(p){ return p.weeks ? (planLenShort(p)+' · '+p.level) : (p.dur+'
 /* landscape card — image on top, title and meta UNDER it (the sampler pattern) */
 function flandCard(p,badge){
   return '<div class="fland" onclick="openProgram(\''+p.id+'\')">'+
-    '<div class="im" style="background-image:url(\''+progImg(p)+'\')'+(hasPhoto(p)?';'+imgPos(p,FA.card):'')+'">'+(badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
+    '<div class="im">'+hpoArt(p,{ar:FA.card})+(badge?'<span class="fnew">'+badge+'</span>':'')+lockTag(p)+'</div>'+
     '<div class="t">'+p.name+'</div><div class="m">'+metaOf(p)+'</div></div>';
 }
 /* This Week, without people (16 Oct): a typographic tile in one of the
@@ -30576,6 +30640,23 @@ function hpoCard(p,o){
     (going?'<div class="hpo-go"><span>Day '+(done+1)+' of '+tot+'</span><i><b style="width:'+Math.round(done/tot*100)+'%"></b></i></div>'
           :'<span class="hpo-lv">'+(fin?'✓ Completed':(p.level||''))+'</span>')+
     (o.start||o.go?'<button class="hpo-play" aria-label="Start '+hesc(p.name)+'" onclick="event.stopPropagation();'+(o.go||'playSingle(\''+p.id+'\')')+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button>':'')+'</div>';
+}
+/* the poster look without its words (18 Oct). Seth: "gambar semua ni tak
+   kemas, tak masuk dengan gambar yang cover". The program's own palette and
+   its athlete cut out with the neon edge, so a row, a Related card and the
+   big picture inside a program all match the cover that was tapped. A
+   program with no studio photo gets its palette and a big faint glyph. */
+const HPO_GLY={'Fat Loss':'flame','Strength':'workout','Core':'target','Recovery':'leaf','Mobility':'leaf'};
+function hpoArt(p,o){
+  o=o||{};
+  const c=hpoPal(p), pic=hpoPic(p), cut=hasPhoto(p) && HPO_MASK.has(pic);
+  const pos=hasPhoto(p)?(imgPos(p,o.ar||FA.row)||'').replace(/;$/,''):'';
+  const mv=(typeof IMG_V!=='undefined'&&IMG_V[pic])?'?v='+IMG_V[pic]:'';
+  const msk=cut?';-webkit-mask-image:url(\'/img/p/mask/'+pic+'.png'+mv+'\');mask-image:url(\'/img/p/mask/'+pic+'.png'+mv+'\')'+
+    (pos?';'+pos.replace(/background-/g,'-webkit-mask-')+';'+pos.replace(/background-/g,'mask-'):''):'';
+  const fig=cut?'<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\''+progImg(p)+'\'),linear-gradient('+c[2]+','+c[2]+')'+(pos?';'+pos:'')+msk+'"></div></div>'
+           :'<span class="hpo-gly">'+glyph(HPO_GLY[p.goal]||'bolt')+'</span>';
+  return '<div class="hpo hpo-art'+(o.cls?' '+o.cls:'')+(cut?'':' hpo-flat')+'" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+fig+'</div>';
 }
 /* any poster that is not a program (16 Oct): a title, a kicker, a foot line,
    a palette, and either a photo cut out by its mask or a big faint glyph */

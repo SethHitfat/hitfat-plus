@@ -4145,6 +4145,20 @@ print("\n── HOME · BUDDY'S BUBBLE ──");
   ok("a strong day: red glow, red lines", scScore()>=50 && scBand()==='#E30613' && (_scSay=null, SC_BUB.red.indexOf(scBubText())>=0 || SC_BUB.full.indexOf(scBubText())>=0));
   _scBubI=0; _scCar=0;
 })();
+print("\n── PICTURES INSIDE MATCH THE COVERS ──");
+(function(){
+  var sig=PROGRAMS.filter(function(p){ return p.id==='sig1'; })[0];
+  ok("a program row shows the cover's look, not a raw photo", frow(sig).indexOf('hpo hpo-art')>0 && frow(sig).indexOf('mask/sig1.png')>0);
+  ok("...and so does a Related card", flandCard(sig).indexOf('hpo hpo-art')>0);
+  ok("the big picture inside is the cover, big", pdxHero(sig,'program','x','','',null).indexOf('pdx-hpo')>0 && pdxHero(sig,'program','x','','',null).indexOf('hpo-hero')>0);
+  ok("a picture shot lying sits in a band", pdxArt({id:'p17',goal:'Strength',name:'Glute Focus'}).indexOf('land')>0);
+  openProgram('sig1'); var h=document.getElementById('pgd-body').innerHTML;
+  ok("the days are numbered tiles in the plan's colour, no repeated photo", h.indexOf('pdx-dt')>0 && h.indexOf('<span class="k">DAY</span><b>1</b>')>0 && h.indexOf("background-image:url('/img/p/sig1.jpg');background-size")<0);
+  ok("each day's focus as a glyph", pdxDayGlyph('Upper Strength')==='workout' && pdxDayGlyph('Conditioning')==='flame' && pdxDayGlyph('Core & Finisher')==='target' && pdxDayGlyph('Lower Strength')==='steps');
+  ok("a program with no studio photo still gets the palette", hpoArt({id:'zz',goal:'Core',name:'x'}).indexOf('hpo-flat')>0 && hpoArt({id:'zz',goal:'Core',name:'x'}).indexOf('hpo-gly')>0);
+  ok("Ladies Burn 30 has a poster with her photo cut out until its own comes", lbPoster('x').indexOf('mask/lad4.png')>0 && lbPoster('x').indexOf('Ladies Burn 30')>0);
+  ok("the tab bar keeps its language on the Ladies program", String(lbLang).indexOf("data-noi18n")>0);
+})();
 print("\n── HOME · YOUR 30-DAY BASE ──");
 (function(){
   var keepSave=HF.save; HF.save=function(){};
