@@ -5082,3 +5082,35 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
     linear-gradient(180deg,rgba(0,0,0,.6) 0,rgba(0,0,0,.25) 90px,rgba(0,0,0,0) 150px) 0 0/100% 160px no-repeat;}
 }
 #play .pl-info .pl-name.long{font-size:19px;letter-spacing:-.3px;-webkit-line-clamp:3;}
+
+/* ── The whole clip, and no waiting (18 Oct, second pass) ──
+   The clip is fitted whole into the space above the panel: nothing of the
+   coach is ever under the numbers, whoever framed the shot low. On a wide
+   phone that leaves a thin black edge either side. The frame behind it
+   (#pl-video2) holds the next move's clip, loading, out of sight. */
+#pl-video2{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;opacity:0;z-index:0;}
+#pl-video{z-index:1;}
+@media (orientation:portrait){
+  #play.nomirror{--vh16:min(calc(100vw*16/9),calc(100vh - 232px - env(safe-area-inset-bottom,0px)));
+    --vh16:min(calc(100vw*16/9),calc(100dvh - 232px - env(safe-area-inset-bottom,0px)));
+    --vtop:0px;--vb:var(--vh16);}
+  #play.nomirror #pl-video,#play.nomirror #pl-video2{inset:auto;top:0;left:50%;width:calc(var(--vh16)*9/16);height:var(--vh16);
+    -webkit-transform:translateX(-50%);transform:translateX(-50%);}
+  /* a slimmer panel, so the clip can be taller */
+  #play.nomirror .pl-bot{padding-top:22px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));}
+  #play.nomirror .pl-stats{margin-bottom:12px;}
+  #play .pl-stat.pl-tm{width:104px;height:104px;}
+  #play.nomirror .pl-stat.pl-tm .pl-clock{font-size:32px;}
+  #play.nomirror .pl-go2{width:64px;height:64px;}
+  #play.nomirror .pl-sm{width:44px;height:44px;}
+}
+/* the clip is on its way: the clock waits, and says so */
+#play .pl-load{position:absolute;left:50%;top:40%;z-index:6;display:none;align-items:center;gap:8px;
+  -webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);padding:9px 15px;border-radius:99px;
+  background:rgba(0,0,0,.62);color:#FFFFFF;font:600 13px/1 'Inter',system-ui,sans-serif;white-space:nowrap;}
+#play .pl-load.on{display:flex;}
+#play .pl-load i{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#FFFFFF;
+  -webkit-animation:plSpin .8s linear infinite;animation:plSpin .8s linear infinite;}
+@-webkit-keyframes plSpin{to{-webkit-transform:rotate(360deg)}}
+@keyframes plSpin{to{transform:rotate(360deg)}}
+#play.resting .pl-load,#play.counting .pl-load{display:none;}

@@ -21,8 +21,62 @@ function vimeoSrc(id,hash){
   return 'https://player.vimeo.com/video/'+id+'?'+(hash?'h='+hash+'&':'')+
          'background=1&autoplay=1&loop=1&muted=1&controls=0&autopause=0';
 }
+/* (18 Oct) Two frames: the one on screen (#pl-video) and the next move's,
+   loading behind it (#pl-video2). A move that was loaded ahead swaps in at
+   once; one that wasn't holds the clock until Vimeo says it is playing
+   ("timer dah gerak, video lambat loading"). Vimeo posts "ready" from its
+   frame; asked, it then posts playProgress as the clip runs. */
+function plFrame(f,ex){
+  if(!f) return;
+  f.src=vimeoSrc(ex.v,ex.h);
+  try{ f.setAttribute('data-v',ex.v); f.setAttribute('data-live',''); }catch(e){}
+}
+function plFrameV(f){ try{ return f&&f.getAttribute?f.getAttribute('data-v'):null; }catch(e){ return null; } }
+function plPreload(ex){
+  const b=$('pl-video2'); if(!b||!ex||!ex.v) return;
+  if(plFrameV(b)===ex.v || plFrameV($('pl-video'))===ex.v) return;
+  plFrame(b,ex);
+}
+/* the move after this one, loading now */
+function plPreloadNext(){ const n=plNextIndex(); if(n && pl) plPreload(pl.exs[n.i]); }
+function plClipLive(){
+  if(!pl || !pl.clip) return true;
+  const f=$('pl-video');
+  try{ return !f || !f.getAttribute || f.getAttribute('data-live')==='1'; }catch(e){ return true; }
+}
+function plVimeoMsg(e){
+  if(!/^https:\/\/player\.vimeo\.com$/.test(String(e.origin||''))) return;
+  let d=e.data; try{ if(typeof d==='string') d=JSON.parse(d); }catch(x){ return; }
+  if(!d || !d.event) return;
+  const f=[$('pl-video'),$('pl-video2')].find(x=>x && x.contentWindow===e.source); if(!f) return;
+  if(d.event==='ready'){ try{ f.contentWindow.postMessage(JSON.stringify({method:'addEventListener',value:'playProgress'}),'*'); }catch(x){} return; }
+  if(d.event==='playProgress' || d.event==='play'){
+    if(f.getAttribute('data-live')!=='1') f.setAttribute('data-live','1');
+    if(f.id==='pl-video' && pl && pl.waiting) plRelease();
+  }
+}
+if(typeof window!=='undefined' && window.addEventListener) window.addEventListener('message',plVimeoMsg);
+/* start the clock once the clip is playing (four seconds at most, so a slow line never stalls the class) */
+function plResumeReady(){
+  if(!pl) return;
+  if(plClipLive()) return plResume();
+  pl.waiting=true; plSetPlayIcon(true);
+  const l=$('pl-load'); if(l && l.classList) l.classList.add('on');
+  clearTimeout(pl.waitT); pl.waitT=setTimeout(plRelease,4000);
+}
+function plRelease(){
+  if(!pl || !pl.waiting) return;
+  pl.waiting=false; clearTimeout(pl.waitT);
+  const l=$('pl-load'); if(l && l.classList) l.classList.remove('on');
+  plResume();
+}
+function plUnwait(){
+  if(!pl || !pl.waiting) return;
+  pl.waiting=false; clearTimeout(pl.waitT);
+  const l=$('pl-load'); if(l && l.classList) l.classList.remove('on');
+}
 function setClip(ex){
-  const f=$('pl-video'); if(!f||!ex) return;
+  let f=$('pl-video'); if(!f||!ex) return;
   const nf=$('pl-nofilm');
   /* No clip is not the same as "keep the previous clip". Leaving the last
      video running under a different exercise name is worse than an empty
@@ -38,7 +92,10 @@ function setClip(ex){
   if(nf) nf.style.display='none';
   if(pl && pl.clip===ex.v) return;        // already playing this one — do not restart it
   if(pl) pl.clip=ex.v;
-  f.src=vimeoSrc(ex.v,ex.h);
+  /* loaded ahead behind this one: swap the two frames, no wait */
+  const b=$('pl-video2');
+  if(b && plFrameV(b)===ex.v){ b.id='pl-video'; f.id='pl-video2'; return; }
+  plFrame(f,ex);
 }
 const PL_ICON_PLAY='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
 const PL_ICON_PAUSE='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="13.5" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg>';
@@ -157,6 +214,8 @@ function exitPlayer(){
   if(typeof coExit==='function') coExit();
   plStopCam();
   const f=$('pl-video'); if(f) f.src='';
+  const f2=$('pl-video2'); if(f2){ f2.src=''; try{ f2.setAttribute('data-v',''); }catch(e){} }
+  plUnwait();
   if(pl) pl.clip=null;
   pl=null;
   $('play').classList.remove('on','idle','rdy','resting','counting');
@@ -204,8 +263,8 @@ function plResume(){
     if(pl.left<=0){ if(!v) plBeep(true); plNext(true); }
   },1000);
 }
-function plPause(){ stopTick(); plSetPlayIcon(false); plTime(); plWake(); if(typeof coPause==='function') coPause(); }
-function plToggle(){ if(!pl) return; pl.running?plPause():plResume(); }
+function plPause(){ plUnwait(); stopTick(); plSetPlayIcon(false); plTime(); plWake(); if(typeof coPause==='function') coPause(); }
+function plToggle(){ if(!pl) return; (pl.running||pl.waiting)?plPause():plResume(); }
 function plAdjust(d){ if(!pl) return; const was=pl.left; pl.left=Math.max(5,pl.left+d); pl.len=(pl.len||was)+(pl.left-was); plTime(); }
 
 function plNextIndex(){
@@ -235,7 +294,8 @@ function plGo(n,after){
   $('pl-rest').classList.remove('on'); $('play').classList.remove('resting');
   renderPl(); setClip(pl.exs[pl.i]);
   if(typeof coSay==='function'){ coDuck(false); coSay([{n:pl.exs[pl.i].n}], after!=='rest'); }
-  plResume();
+  plResumeReady();
+  plPreloadNext();
 }
 /* Rest — and the reason it exists twice over: it is also when the next clip loads. */
 function plRestPaint(){
@@ -553,7 +613,8 @@ function plStart(){
   if(typeof coUnlock==='function'){ coUnlock(); coSession(true); }
   $('pl-ready').classList.remove('on','busy');
   $('play').classList.remove('rdy');
-  plCountdown(()=>plResume());
+  plPreloadNext();
+  plCountdown(()=>plResumeReady());
 }
 /* Landscape, as Simple offers it: full screen and locked sideways where the
    browser allows (Android); an iPhone turns the page itself when the phone

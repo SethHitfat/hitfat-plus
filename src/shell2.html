@@ -1037,6 +1037,9 @@ body:has(#play.on)::before{display:none;}
 <div id="play" onclick="plTap(event)">
   <div class="pl-fill"></div>
   <iframe id="pl-video" allow="autoplay; picture-in-picture" frameborder="0"></iframe>
+  <!-- (18 Oct) the next move's clip, loading out of sight so a skip shows it at once -->
+  <iframe id="pl-video2" allow="autoplay; picture-in-picture" frameborder="0" aria-hidden="true"></iframe>
+  <div class="pl-load" id="pl-load"><i></i>Loading the video…</div>
   <video id="pl-cam" autoplay playsinline muted></video>
   <div class="nofilm" id="pl-nofilm" style="display:none;">
     <div><div class="e"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg></div><div class="t">Clip coming soon</div>
