@@ -563,6 +563,29 @@ function coConfirm(state){
   $('pwm').classList.add('on');
 }
 
+/* ── ?beli=<program> (19 Oct 2026): the landing pages' buy button ──
+   app.hitfat.io/ladies sends a visitor here as ?beli=lad4. Kept through the
+   sign-in (and an OAuth redirect), then, once the account is set up, the
+   program opens with its buy sheet. A new account does onboarding first. */
+const BUY_GO={lad4:function(){ openProgram(LB30_ID); if(typeof lbBuy==='function') lbBuy(); },
+              wl30:function(){ if(typeof wlBuy==='function') wlBuy(); }};
+function captureBuyParam(){
+  try{
+    const q=new URLSearchParams(location.search), b=q.get('beli');
+    if(b && BUY_GO[b]){ localStorage.setItem('hf_buy',b); q.delete('beli'); const s=q.toString();
+      history.replaceState(null,'',location.pathname+(s?'?'+s:'')+location.hash); }
+  }catch(e){}
+}
+function handleBuyParam(){
+  try{
+    const b=localStorage.getItem('hf_buy'); if(!b || !BUY_GO[b]) return false;
+    if(!HF.data.onboarded) return false;           /* finishOb() calls again */
+    localStorage.removeItem('hf_buy');
+    setTimeout(BUY_GO[b],350);
+    return true;
+  }catch(e){ return false; }
+}
+
 /* Runs before auth so the marker survives an OAuth redirect. */
 function capturePaidParam(){
   try{

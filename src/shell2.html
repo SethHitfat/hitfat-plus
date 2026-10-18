@@ -1351,6 +1351,7 @@ async function _onSignedIn(session){
   applyCustom();            // the spec may have arrived from the cloud
   syncProfile(session);
   if(!_started) startApp(); else { switchTab('home'); if(!HF.data.onboarded) startOnboarding(); }
+  if(typeof handleBuyParam==='function') handleBuyParam();   // ?beli= from a landing page
 
   /* Load the Club here as well as in boot(). boot() runs before this session
      exists: on a first sign-in it finds no user, records 'nosetup', and
@@ -1456,6 +1457,7 @@ function boot(){
 
   setTimeout(hideSplash,4500);
   captureKelasParam();
+  if(typeof captureBuyParam==='function') captureBuyParam();
   capturePaidParam();      // before auth — an OAuth redirect would otherwise drop it
   HF.load();
   if(!SUPA_READY){

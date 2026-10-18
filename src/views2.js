@@ -984,7 +984,7 @@ function finishOb(){
   updateAvatar();
   $('ob').classList.remove('on');
   /* The first run lands on Home; an edit stays where it was opened. */
-  if(first) switchTab('home');
+  if(first){ switchTab('home'); if(typeof handleBuyParam==='function') handleBuyParam(); }
   else { try{ renderMe(); renderHome(); }catch(e){} toast('Plan saved'); }
 }
 

@@ -4651,6 +4651,17 @@ print("\n── TODAY'S CHECK-IN + THE DAILY STREAK ──");
   scCelebrateClose();
   HF.data.daily=keepD; HF.save=keepSv; HF.data.prefs=keepP; if(typeof closeProduct==='function') closeProduct();
 })();
+print("\n── LANDING PAGE BUY LINK ──");
+(function(){
+  var keepOb=HF.data.onboarded, opened=0, keepGo=BUY_GO.lad4;
+  BUY_GO.lad4=function(){ opened++; };
+  localStorage.setItem('hf_buy','lad4'); HF.data.onboarded=false;
+  ok("?beli waits for onboarding", handleBuyParam()===false && localStorage.getItem('hf_buy')==='lad4');
+  HF.data.onboarded=true;
+  ok("...then opens the buy sheet once", handleBuyParam()===true && localStorage.getItem('hf_buy')===null && handleBuyParam()===false);
+  localStorage.setItem('hf_buy','nope'); ok("...an unknown program is ignored", handleBuyParam()===false); localStorage.removeItem('hf_buy');
+  BUY_GO.lad4=keepGo; HF.data.onboarded=keepOb;
+})();
 print("\n── COACH VOICE + MUSIC ──");
 (function(){
   var keepP=HF.data.prefs, keepSv=HF.save, keepPl=pl, said=[], keepSay=coSay;
