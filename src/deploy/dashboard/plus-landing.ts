@@ -40,7 +40,7 @@ const CATALOGUE: Record<string, Sku> = {
   "prog_rh2": { price: 29, kind: "program" },       // Shoulder Prehab · 4wk
   "prog_rh3": { price: 29, kind: "program" },       // Hip & Lower Back · 4wk
   "prog_rh6": { price: 19, kind: "program" },       // Post-Workout Recovery · 2wk
-  "prog_lad4": { price: 29, kind: "program" },      // Ladies Beginner
+  "prog_lad4": { price: 39, kind: "program" },      // Ladies Burn 30 (RM39 from 19 Oct 2026)
   "prog_men6": { price: 39, kind: "program" },      // Men's Body Reset
   "prog_f40": { price: 39, kind: "program" },       // Fit After 40
   "prog_bws8": { price: 39, kind: "program" },      // Bodyweight Strength
@@ -145,7 +145,7 @@ function isPaidStatus(s: unknown) {
 
 
 /* the programs sold on their own — the same list as plus_landing_sku() */
-const LANDING_SKUS = ['prog_wl30', 'prog_d6'];
+const LANDING_SKUS = ['prog_wl30', 'prog_d6', 'prog_lad4'];   // prog_lad4: Ladies Burn 30, RM39 (19 Oct 2026)
 
 /* First non-empty value among several possible field names, nested too. */
 function pick(o: Record<string, unknown>, keys: string[]): string {
