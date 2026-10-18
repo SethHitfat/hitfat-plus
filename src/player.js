@@ -288,6 +288,7 @@ function renderPl(){
   if(!pl) return;
   const ex=pl.exs[pl.i];
   $('pl-name').textContent=ex.n;
+  if($('pl-name').classList) $('pl-name').classList.toggle('long', ex.n.length>20);
   $('pl-sub').textContent=ex.m+' · '+ex.eq;
   plTime(); plSetPlayIcon(!!pl.running);
   /* the segments count the movements; the pill says only the round */

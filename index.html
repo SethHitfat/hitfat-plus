@@ -7293,6 +7293,34 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .pl-sndc .seg button.on{background:#DC1A22;color:#FFFFFF;}
 .pl-sndc .s{font-size:12.5px;line-height:1.4;color:rgba(255,255,255,.55);margin-top:6px;}
 
+/* ── The coach uncovered (18 Oct: "video … banyak tertutup") ──
+   The name and what's next move down beside the time, so only the thin
+   WORK row and the move bars sit over the clip. The clip starts at the top
+   of the screen (the coach's head was being cropped) and runs on under the
+   panel at the foot, where only floor is lost. */
+#play .pl-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:5px;padding-left:16px;}
+#play .pl-info .pl-name{font-size:24px;font-weight:900;letter-spacing:-.6px;line-height:1.08;color:#FFFFFF;text-shadow:none;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+#play .pl-info .pl-next{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;color:rgba(255,255,255,.62);margin:0;min-height:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+#play .pl-info .pl-next b{color:#FFFFFF;font-weight:700;}
+#play.nomirror .pl-info .pl-next.soon{align-self:flex-start;display:block;margin:0;padding:4px 10px;border-radius:99px;background:#E30613;color:#FFFFFF;font-weight:600;}
+#play .pl-kc{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:rgba(255,255,255,.55);}
+#play .pl-kc .gly{width:14px;height:14px;}
+#play .pl-kc b{font-size:15px;font-weight:800;color:#FFFFFF;letter-spacing:0;}
+#play.nomirror .pl-stats{align-items:center;}
+#play .pl-bot{background:linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,.82) 34px,#000 64px);padding-top:30px;}
+@media (orientation:portrait){
+  /* the clip from the top; only on a short phone (an SE) does a little ceiling
+     go, at most 12%, once more than 15% would be lost under the panel */
+  #play.nomirror{--vtop:calc(-1 * clamp(0px, var(--vh16)*.85 - (100vh - 240px - env(safe-area-inset-bottom,0px)), var(--vh16)*.12));
+    --vtop:calc(-1 * clamp(0px, var(--vh16)*.85 - (100dvh - 240px - env(safe-area-inset-bottom,0px)), var(--vh16)*.12));}
+  #play.nomirror .pl-scrim{background:
+    linear-gradient(#000,#000) 0 var(--vb)/100% 100% no-repeat,
+    linear-gradient(180deg,rgba(0,0,0,.6) 0,rgba(0,0,0,.25) 90px,rgba(0,0,0,0) 150px) 0 0/100% 160px no-repeat;}
+}
+#play .pl-info .pl-name.long{font-size:19px;letter-spacing:-.3px;-webkit-line-clamp:3;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -7842,15 +7870,18 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
     <!-- FIIT (18 Oct): the phase and what is left of the whole class, above the moves -->
     <div class="pl-hrow"><span class="pl-ph" id="pl-ph">Work</span><span class="pl-mv" id="pl-mv"></span><span class="pl-tot" id="pl-tot"></span></div>
     <div class="pl-segs" id="pl-segs"></div>
-    <div class="pl-name" id="pl-name"></div>
-    <div class="pl-next" id="pl-next"></div>
     <div class="pl-sub" id="pl-sub"></div>
   </div>
 
   <div class="pl-bot">
     <div class="pl-stats">
       <div class="pl-stat pl-tm"><svg class="pl-ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="bg" cx="60" cy="60" r="54"/><circle class="fg" id="pl-ringp" cx="60" cy="60" r="54"/></svg><b class="pl-clock" id="pl-clock">0:45</b></div>
-      <div class="pl-stat r"><span><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 6 6.5 6 10.5A6 6 0 0 1 6 13.5C6 10 8 8 9 6c.5 2 1.5 3 3 3-1-2-.8-4 0-6z"/></svg>kcal</span><b id="pl-kcal">0</b></div>
+      <!-- (18 Oct) the move's name sits down here by the time, not over the coach -->
+      <div class="pl-info">
+        <div class="pl-name" id="pl-name"></div>
+        <div class="pl-next" id="pl-next"></div>
+        <div class="pl-kc"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 6 6.5 6 10.5A6 6 0 0 1 6 13.5C6 10 8 8 9 6c.5 2 1.5 3 3 3-1-2-.8-4 0-6z"/></svg><b id="pl-kcal">0</b> kcal</div>
+      </div>
     </div>
     <div class="pl-tl">
       <button class="pl-sm" onclick="plPrev()" aria-label="Previous exercise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M19 5.5l-9 6.5 9 6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
@@ -19065,6 +19096,7 @@ function renderPl(){
   if(!pl) return;
   const ex=pl.exs[pl.i];
   $('pl-name').textContent=ex.n;
+  if($('pl-name').classList) $('pl-name').classList.toggle('long', ex.n.length>20);
   $('pl-sub').textContent=ex.m+' · '+ex.eq;
   plTime(); plSetPlayIcon(!!pl.running);
   /* the segments count the movements; the pill says only the round */

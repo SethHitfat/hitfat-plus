@@ -1067,15 +1067,18 @@ body:has(#play.on)::before{display:none;}
     <!-- FIIT (18 Oct): the phase and what is left of the whole class, above the moves -->
     <div class="pl-hrow"><span class="pl-ph" id="pl-ph">Work</span><span class="pl-mv" id="pl-mv"></span><span class="pl-tot" id="pl-tot"></span></div>
     <div class="pl-segs" id="pl-segs"></div>
-    <div class="pl-name" id="pl-name"></div>
-    <div class="pl-next" id="pl-next"></div>
     <div class="pl-sub" id="pl-sub"></div>
   </div>
 
   <div class="pl-bot">
     <div class="pl-stats">
       <div class="pl-stat pl-tm"><svg class="pl-ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="bg" cx="60" cy="60" r="54"/><circle class="fg" id="pl-ringp" cx="60" cy="60" r="54"/></svg><b class="pl-clock" id="pl-clock">0:45</b></div>
-      <div class="pl-stat r"><span><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 6 6.5 6 10.5A6 6 0 0 1 6 13.5C6 10 8 8 9 6c.5 2 1.5 3 3 3-1-2-.8-4 0-6z"/></svg>kcal</span><b id="pl-kcal">0</b></div>
+      <!-- (18 Oct) the move's name sits down here by the time, not over the coach -->
+      <div class="pl-info">
+        <div class="pl-name" id="pl-name"></div>
+        <div class="pl-next" id="pl-next"></div>
+        <div class="pl-kc"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 6 6.5 6 10.5A6 6 0 0 1 6 13.5C6 10 8 8 9 6c.5 2 1.5 3 3 3-1-2-.8-4 0-6z"/></svg><b id="pl-kcal">0</b> kcal</div>
+      </div>
     </div>
     <div class="pl-tl">
       <button class="pl-sm" onclick="plPrev()" aria-label="Previous exercise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M19 5.5l-9 6.5 9 6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
