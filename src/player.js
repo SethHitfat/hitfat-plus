@@ -695,6 +695,8 @@ function plStart(){
   $('play').classList.remove('rdy');
   plPreloadNext();
   plCountdown(()=>plResumeReady());
+  /* the first time, say where the buttons went */
+  try{ const pr=HF.data.prefs||(HF.data.prefs={}); if(!pr.plTapHint){ pr.plTapHint=1; HF.save(); setTimeout(()=>{ if(pl && pl.running) toast('Tap the screen for the controls'); },8000); } }catch(e){}
 }
 /* Landscape, as Simple offers it: full screen and locked sideways where the
    browser allows (Android); an iPhone turns the page itself when the phone

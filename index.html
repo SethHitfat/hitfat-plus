@@ -7373,6 +7373,51 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 #pl-rest .rtip{margin-top:10px;font:500 13.5px/1.4 'Inter',system-ui,sans-serif;color:rgba(255,255,255,.85);max-width:360px;}
 #pl-rest .rtip:empty{display:none;}
 
+/* ── The player, polished (18 Oct, "Peloton pun kalah") ──
+   1. The clip big: the transport hides itself after three seconds of no
+      touch (as Peloton and FIIT do; a tap brings it back, and it stays while
+      paused), so the panel is just the time and the move. The clip fits the
+      space above it, zoomed up to a tenth to fill the width, the crop shared
+      top and bottom.
+   2. The chips and the tip over the clip sit on a shadow, not on the bare
+      picture.
+   3. The sound button shows an equalizer that moves with the music. */
+@media (orientation:portrait){
+  #play.nomirror{--avail:calc(100vh - 142px - env(safe-area-inset-bottom,0px));
+    --avail:calc(100dvh - 142px - env(safe-area-inset-bottom,0px));
+    --vw0:min(100vw,calc(var(--avail)*9/16*1.1));
+    --vh16:calc(var(--vw0)*16/9);
+    --vtop:min(0px,calc((var(--avail) - var(--vh16))/2));
+    --vb:calc(var(--vtop) + var(--vh16));}
+  #play.nomirror #pl-video,#play.nomirror #pl-video2{top:var(--vtop);width:var(--vw0);height:var(--vh16);}
+  #play.nomirror .pl-bot{padding-top:16px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+    background:linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,.86) 22px,#000 44px);}
+  #play.nomirror .pl-stats{margin-bottom:0;}
+  #play .pl-stat.pl-tm{width:100px;height:100px;}
+  /* the transport floats over the foot of the clip and tucks away when idle */
+  #play.nomirror .pl-tl{position:absolute;left:16px;right:16px;bottom:calc(100% + 6px);padding:10px 12px;border-radius:26px;
+    background:rgba(18,18,20,.72);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.1);
+    box-shadow:0 10px 30px rgba(0,0,0,.45);transition:opacity .3s,transform .3s;}
+  #play.nomirror.idle .pl-tl{opacity:0;-webkit-transform:translateY(10px);transform:translateY(10px);pointer-events:none;}
+  #play.nomirror .pl-go2{width:58px;height:58px;}
+  #play.nomirror .pl-sm{width:42px;height:42px;}
+  /* a shadow at the top for the chips and the tip */
+  #play.nomirror .pl-scrim{background:
+    linear-gradient(#000,#000) 0 var(--vb)/100% 100% no-repeat,
+    linear-gradient(180deg,rgba(0,0,0,.78) 0,rgba(0,0,0,.5) 120px,rgba(0,0,0,.18) 210px,rgba(0,0,0,0) 280px) 0 0/100% 290px no-repeat;}
+}
+#play .pl-lc span{background:rgba(10,10,12,.62);border-color:rgba(255,255,255,.14);box-shadow:0 4px 14px rgba(0,0,0,.35);}
+#play .pl-cue{background:rgba(10,10,12,.66);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+#play .pl-hrow,#play .pl-lc{text-shadow:0 1px 8px rgba(0,0,0,.45);}
+/* the equalizer */
+#play #pl-sndb{position:relative;}
+#play #pl-sndb .pl-eq{display:none;position:absolute;inset:0;align-items:center;justify-content:center;gap:2.5px;}
+#play #pl-sndb.eq .gly{display:none;}
+#play #pl-sndb.eq .pl-eq{display:flex;}
+#play #pl-sndb .pl-eq i{width:3px;height:16px;border-radius:2px;background:#FF4D55;transform-origin:50% 100%;
+  -webkit-transform:scaleY(.3);transform:scaleY(.3);transition:transform .08s linear;}
+#play #pl-sndb.eq{border-color:rgba(255,77,85,.45);}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -7907,7 +7952,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
     <button class="pl-x" onclick="plClose()">✕</button>
     <div class="pl-hd"><div class="pl-pill" id="pl-pill"></div></div>
     <button class="pl-ic pl-rot" id="pl-rot" onclick="plRotate()" title="Landscape" aria-label="Landscape"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M7 4.5h3M14 19.5h3"/></svg></button>
-    <button class="pl-ic" id="pl-sndb" onclick="coPanel()" title="Sound" aria-label="Coach voice and music"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg></button>
+    <button class="pl-ic" id="pl-sndb" onclick="coPanel()" title="Sound" aria-label="Coach voice and music"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><span class="pl-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
     <button class="pl-ic" id="pl-mode" onclick="plToggleMode()" title="Switch view"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h10v17H7z"/><path d="M10 7l4-2M10 11l5-3"/></svg></button>
     <button class="pl-ic" id="pl-camhide" onclick="plToggleCam()" title="Hide camera"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.5H15L17 8h3v11h-1.5M6.5 19H4V8h2.5"/><path d="M14.3 14.8a3.4 3.4 0 0 1-4.9-4.6"/></svg></button>
   </div>
@@ -19560,6 +19605,8 @@ function plStart(){
   $('play').classList.remove('rdy');
   plPreloadNext();
   plCountdown(()=>plResumeReady());
+  /* the first time, say where the buttons went */
+  try{ const pr=HF.data.prefs||(HF.data.prefs={}); if(!pr.plTapHint){ pr.plTapHint=1; HF.save(); setTimeout(()=>{ if(pl && pl.running) toast('Tap the screen for the controls'); },8000); } }catch(e){}
 }
 /* Landscape, as Simple offers it: full screen and locked sideways where the
    browser allows (Android); an iPhone turns the page itself when the phone
@@ -24155,7 +24202,10 @@ function coAC(){
   const ac=typeof hfAC==='function'?hfAC():null; if(!ac) return null;
   if(ac.state!=='running' && ac.resume){ try{ ac.resume(); }catch(e){} }
   if(!co.vGain){ co.vGain=ac.createGain(); co.vGain.gain.value=1; co.vGain.connect(ac.destination);
-                 co.mGain=ac.createGain(); co.mGain.gain.value=0; co.mGain.connect(ac.destination); }
+                 co.mGain=ac.createGain(); co.mGain.gain.value=0; co.mGain.connect(ac.destination);
+                 /* the equalizer listens to both, music and coach */
+                 try{ co.an=ac.createAnalyser(); co.an.fftSize=64; co.an.smoothingTimeConstant=.72; co.fd=new Uint8Array(co.an.frequencyBinCount);
+                   const z=ac.createGain(); z.gain.value=0; co.mGain.connect(co.an); co.vGain.connect(co.an); co.an.connect(z); z.connect(ac.destination); }catch(e){ co.an=null; } }
   return ac;
 }
 
@@ -24222,9 +24272,28 @@ function coMusicPlay(){
   co.mGain.gain.linearRampToValueAtTime(coLevel()*(co.src||co.speaking?0.3:1),ac.currentTime+0.6);
   const off=co.mKey===u?(co.mOff%L):0;
   s.start(0,off); co.mSrc=s; co.mKey=u; co.mAt=ac.currentTime-off;
+  coEq(true);
+}
+/* ── the equalizer on the sound button: four bars that move with the music and the coach ── */
+const CO_EQ_BINS=[1,3,6,11];
+function coEq(on){
+  const b=$('pl-sndb'); if(b && b.classList) b.classList.toggle('eq',!!on);
+  if(!on){ if(co.raf && typeof cancelAnimationFrame==='function') cancelAnimationFrame(co.raf); co.raf=0; return; }
+  if(!co.raf && typeof requestAnimationFrame==='function') co.raf=requestAnimationFrame(coEqTick);
+}
+function coEqTick(){
+  co.raf=0;
+  if(!co.mSrc || !pl) return coEq(false);
+  const bars=document.querySelectorAll('#pl-sndb .pl-eq i');
+  if(co.an && bars.length){
+    co.an.getByteFrequencyData(co.fd);
+    for(let i=0;i<bars.length;i++){ const v=co.fd[CO_EQ_BINS[i]]||0; bars[i].style.transform='scaleY('+(0.18+0.82*Math.pow(v/255,1.4)).toFixed(3)+')'; }
+  }
+  co.raf=requestAnimationFrame(coEqTick);
 }
 function coMusicStop(){
   const ac=typeof hfAC==='function'?hfAC():null;
+  coEq(false);
   if(!co.mSrc) return;
   if(ac) co.mOff=ac.currentTime-co.mAt;
   try{ co.mSrc.stop(); }catch(e){}

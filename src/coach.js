@@ -69,7 +69,10 @@ function coAC(){
   const ac=typeof hfAC==='function'?hfAC():null; if(!ac) return null;
   if(ac.state!=='running' && ac.resume){ try{ ac.resume(); }catch(e){} }
   if(!co.vGain){ co.vGain=ac.createGain(); co.vGain.gain.value=1; co.vGain.connect(ac.destination);
-                 co.mGain=ac.createGain(); co.mGain.gain.value=0; co.mGain.connect(ac.destination); }
+                 co.mGain=ac.createGain(); co.mGain.gain.value=0; co.mGain.connect(ac.destination);
+                 /* the equalizer listens to both, music and coach */
+                 try{ co.an=ac.createAnalyser(); co.an.fftSize=64; co.an.smoothingTimeConstant=.72; co.fd=new Uint8Array(co.an.frequencyBinCount);
+                   const z=ac.createGain(); z.gain.value=0; co.mGain.connect(co.an); co.vGain.connect(co.an); co.an.connect(z); z.connect(ac.destination); }catch(e){ co.an=null; } }
   return ac;
 }
 
@@ -136,9 +139,28 @@ function coMusicPlay(){
   co.mGain.gain.linearRampToValueAtTime(coLevel()*(co.src||co.speaking?0.3:1),ac.currentTime+0.6);
   const off=co.mKey===u?(co.mOff%L):0;
   s.start(0,off); co.mSrc=s; co.mKey=u; co.mAt=ac.currentTime-off;
+  coEq(true);
+}
+/* ── the equalizer on the sound button: four bars that move with the music and the coach ── */
+const CO_EQ_BINS=[1,3,6,11];
+function coEq(on){
+  const b=$('pl-sndb'); if(b && b.classList) b.classList.toggle('eq',!!on);
+  if(!on){ if(co.raf && typeof cancelAnimationFrame==='function') cancelAnimationFrame(co.raf); co.raf=0; return; }
+  if(!co.raf && typeof requestAnimationFrame==='function') co.raf=requestAnimationFrame(coEqTick);
+}
+function coEqTick(){
+  co.raf=0;
+  if(!co.mSrc || !pl) return coEq(false);
+  const bars=document.querySelectorAll('#pl-sndb .pl-eq i');
+  if(co.an && bars.length){
+    co.an.getByteFrequencyData(co.fd);
+    for(let i=0;i<bars.length;i++){ const v=co.fd[CO_EQ_BINS[i]]||0; bars[i].style.transform='scaleY('+(0.18+0.82*Math.pow(v/255,1.4)).toFixed(3)+')'; }
+  }
+  co.raf=requestAnimationFrame(coEqTick);
 }
 function coMusicStop(){
   const ac=typeof hfAC==='function'?hfAC():null;
+  coEq(false);
   if(!co.mSrc) return;
   if(ac) co.mOff=ac.currentTime-co.mAt;
   try{ co.mSrc.stop(); }catch(e){}
