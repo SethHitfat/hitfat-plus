@@ -1049,6 +1049,7 @@ body:has(#play.on)::before{display:none;}
     <button class="pl-x" onclick="plClose()">✕</button>
     <div class="pl-hd"><div class="pl-pill" id="pl-pill"></div></div>
     <button class="pl-ic pl-rot" id="pl-rot" onclick="plRotate()" title="Landscape" aria-label="Landscape"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M7 4.5h3M14 19.5h3"/></svg></button>
+    <button class="pl-ic" id="pl-sndb" onclick="coPanel()" title="Sound" aria-label="Coach voice and music"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg></button>
     <button class="pl-ic" id="pl-mode" onclick="plToggleMode()" title="Switch view"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h10v17H7z"/><path d="M10 7l4-2M10 11l5-3"/></svg></button>
     <button class="pl-ic" id="pl-camhide" onclick="plToggleCam()" title="Hide camera"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.5H15L17 8h3v11h-1.5M6.5 19H4V8h2.5"/><path d="M14.3 14.8a3.4 3.4 0 0 1-4.9-4.6"/></svg></button>
   </div>
@@ -1098,6 +1099,7 @@ body:has(#play.on)::before{display:none;}
       <div class="rds" id="pl-rds">Choose Your View</div>
       <div class="pl-modes" id="pl-modes"></div>
       <button class="bigbtn" id="pl-rdgo" onclick="plBegin()">Let's Go</button>
+      <button class="pl-rdsnd" id="pl-rdsnd" onclick="coPanel()"></button>
       <div class="pl-busy" id="pl-rdbusy">
         <button class="bigbtn" style="margin:0;" onclick="plRetryCam()">Retry Camera</button>
         <button class="bigbtn sec" style="margin:0;" onclick="plNoCam()">Train Without It</button>
@@ -1304,7 +1306,7 @@ function toast(m){ const t=$('toast'); if(!t) return; t.textContent=m; t.classLi
   clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('on'),1900); }
 
 /*__MASCOT__*//*__MASCOTGLUE__*//*__BELL__*//*__SCORE__*//*__SCORE2__*//*__PUSH__*//*__I18N__*//*__DB__*//*__PROGRAMS_MULTI__*//*__PROGRAMS__*//*__REHABLIB__*//*__BARLIB__*//*__PLANS__*//*__BARPLANS__*//*__REHABPLANS__*//*__WL30__*//*__LB30__*//*__D6DATA__*//*__D6__*//*__IFAST__*//*__MONTHLY__*//*__AICOACH__*//*__ACADEMY__*//*__STORE__*//*__FINDER__*//*__MEALDB__*//*__MEALPLAN__*//*__CUSTOM__*//*__PLAYER__*//*__CHALLENGES__*/
-/*__ICONS__*//*__CLUB__*//*__KELAS__*//*__SOUND__*//*__T42__*//*__T42DEMO__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
+/*__ICONS__*//*__CLUB__*//*__KELAS__*//*__SOUND__*//*__COACH__*//*__T42__*//*__T42DEMO__*//*__VIEWS__*//*__EAT__*//*__PROG__*//*__TRAIN__*//*__AUTHJS__*/
 
 /* The splash plays its whole sequence once (about 1.9 s from the page
    starting) before it lifts, however fast the app is ready. */

@@ -5035,3 +5035,22 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
   #play #pl-rest .rn{font-size:40px;}
 }
 #play .pl-rot{display:none!important;}   /* no landscape (18 Oct, "aku x nk mode landscape"); the app is portrait in its manifest */
+
+/* ── Coach voice + music (18 Oct 2026): the sound sheet in the player, the line on the ready screen ── */
+#play .pl-rdsnd{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px auto 0;padding:9px 14px;border-radius:999px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.86);font:600 13px/1.2 'Inter',system-ui,sans-serif;cursor:pointer;}
+#play .pl-rdsnd .gly{width:17px;height:17px;flex:none;}
+#play .pl-rdsnd:empty{display:none;}
+.pl-snd{position:absolute;inset:0;z-index:40;display:none;align-items:flex-end;background:rgba(0,0,0,.45);}
+.pl-snd.on{display:flex;}
+.pl-sndc{width:100%;box-sizing:border-box;background:#141416;color:#FFFFFF;border-radius:22px 22px 0 0;
+  padding:16px 18px calc(22px + env(safe-area-inset-bottom,0px));font-family:'Inter',system-ui,sans-serif;}
+.pl-sndc .h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.pl-sndc .h b{font-size:17px;font-weight:800;}
+.pl-sndc .h .x{width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.1);color:#FFFFFF;font-size:13px;cursor:pointer;}
+.pl-sndc .r{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;}
+.pl-sndc .r>span{font-size:15px;font-weight:700;}
+.pl-sndc .seg{display:flex;gap:4px;padding:3px;border-radius:999px;background:rgba(255,255,255,.08);}
+.pl-sndc .seg button{border:0;background:none;color:rgba(255,255,255,.7);font:700 13px/1 'Inter',system-ui,sans-serif;padding:8px 13px;border-radius:999px;cursor:pointer;}
+.pl-sndc .seg button.on{background:#DC1A22;color:#FFFFFF;}
+.pl-sndc .s{font-size:12.5px;line-height:1.4;color:rgba(255,255,255,.55);margin-top:6px;}

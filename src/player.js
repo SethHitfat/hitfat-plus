@@ -129,6 +129,7 @@ function startWorkout(exs,meta){
   plCam.off=false; $('play').classList.remove('camoff');
   plSetMode(plCam.mode);
   renderPl(); setClip(exs[0]);
+  if(typeof coPrep==='function') coPrep(exs);
   plReady();
   plSessionStart(pl);
 }
@@ -153,6 +154,7 @@ function plSessionFinish(p){
 }
 function exitPlayer(){
   stopTick();
+  if(typeof coExit==='function') coExit();
   plStopCam();
   const f=$('pl-video'); if(f) f.src='';
   if(pl) pl.clip=null;
@@ -171,33 +173,38 @@ function plCountdown(done){
   const el=$('pl-cd'), n=$('pl-cdn');
   const paint=c=>{
     /* a fresh node each beat so the fade-in plays again */
-    n.textContent=c>0?String(c):'GO';
-    n.className='cdn'+(c>0?'':' go');
+    n.textContent=c>3?'READY':(c>0?String(c):'GO');
+    n.className='cdn'+(c>0&&c<4?'':' go');
+    if(typeof coCountdown==='function') coCountdown(c);
     try{ n.style.animation='none'; void n.offsetWidth; n.style.animation=''; }catch(e){}
-    const a=$('pl-cdarc'), pct=c>0?(4-c)/3*100:100;
+    const a=$('pl-cdarc'), pct=c>3?0:(c>0?(4-c)/3*100:100);
     if(a && typeof ringArc==='function')
       a.innerHTML='<path d="'+ringArc(100,100,88,pct)+'" fill="none" stroke-width="12" stroke-linecap="round"/>';
   };
   if($('pl-cdx') && pl) $('pl-cdx').innerHTML='<span>→ Up next</span><b>'+pl.exs[pl.i].n+'</b>';
-  el.classList.add('on'); $('play').classList.add('counting'); let c=3; paint(c);
+  el.classList.add('on'); $('play').classList.add('counting'); let c=4; paint(c);
   const t=setInterval(()=>{
     c--;
     if(c>=0){ paint(c); }
     else { clearInterval(t); el.classList.remove('on'); $('play').classList.remove('counting'); done&&done(); }
-  },800);
+  },1000);
 }
 function plResume(){
   if(!pl || pl.running) return;
   pl.running=true; plSetPlayIcon(true); plWake();
+  if(typeof coResume==='function') coResume();
   plTick=setInterval(()=>{
     if(!pl) return;
     pl.left--; pl.work=(pl.work||0)+1;
     plTime(); plStats();
-    if(pl.left>0 && pl.left<=3) plBeep(false);
-    if(pl.left<=0){ plBeep(true); plNext(true); }
+    /* the coach counts 5-4-3-2-1 out loud; without the coach, three ticks and a higher one */
+    const v=typeof coPrefs==='function' && coPrefs().voice;
+    if(v) coWorkTick();
+    else if(pl.left>0 && pl.left<=3) plBeep(false);
+    if(pl.left<=0){ if(!v) plBeep(true); plNext(true); }
   },1000);
 }
-function plPause(){ stopTick(); plSetPlayIcon(false); plTime(); plWake(); }
+function plPause(){ stopTick(); plSetPlayIcon(false); plTime(); plWake(); if(typeof coPause==='function') coPause(); }
 function plToggle(){ if(!pl) return; pl.running?plPause():plResume(); }
 function plAdjust(d){ if(!pl) return; const was=pl.left; pl.left=Math.max(5,pl.left+d); pl.len=(pl.len||was)+(pl.left-was); plTime(); }
 
@@ -222,11 +229,12 @@ function plPrev(){
   else if(pl.round>1) plGo({i:pl.exs.length-1, round:pl.round-1});
   else { pl.left=pl.len=pl.exs[0].dur||45; renderPl(); plResume(); }
 }
-function plGo(n){
+function plGo(n,after){
   pl.i=n.i; pl.round=n.round;
   pl.left=pl.len=pl.exs[pl.i].dur||45;
   $('pl-rest').classList.remove('on'); $('play').classList.remove('resting');
   renderPl(); setClip(pl.exs[pl.i]);
+  if(typeof coSay==='function'){ coDuck(false); coSay([{n:pl.exs[pl.i].n}], after!=='rest'); }
   plResume();
 }
 /* Rest — and the reason it exists twice over: it is also when the next clip loads. */
@@ -253,12 +261,15 @@ function plRest(n){
   pl.rest={left:REST_SECS, total:REST_SECS, n};
   if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
   plRestPaint();
+  /* "And rest! Next up: Lunges" — and a new round, or the last move, said so */
+  if(typeof coRestStart==='function') coRestStart(n);
   plTick=setInterval(()=>{
     if(!pl || !pl.rest) return;
     pl.rest.left--; plRestPaint();
-    if(pl.rest.left>0 && pl.rest.left<=3) plBeep(false);
-    if(pl.rest.left<=0) plBeep(true);
-    if(pl.rest.left<=0){ clearInterval(plTick); plTick=null; pl.resting=false; pl.rest=null; plGo(n); }
+    const v=typeof coPrefs==='function' && coPrefs().voice;
+    if(v) coRestTick();
+    else { if(pl.rest.left>0 && pl.rest.left<=3) plBeep(false); if(pl.rest.left<=0) plBeep(true); }
+    if(pl.rest.left<=0){ clearInterval(plTick); plTick=null; pl.resting=false; pl.rest=null; plGo(n,'rest'); }
   },1000);
 }
 /* Twenty more seconds: the ring grows with it, so it still empties at the end. */
@@ -270,7 +281,7 @@ function plRestAdd(d){
 function plSkipRest(){
   if(!pl||!pl.resting) return;
   stopTick(); pl.resting=false; pl.rest=null;
-  const n=plNextIndex(); if(n) plGo(n); else plFinish();
+  const nx=plNextIndex(); if(nx){ if(typeof coSay==='function') coSay(['go'],true); plGo(nx,'rest'); } else plFinish();
 }
 
 function renderPl(){
@@ -293,6 +304,7 @@ function renderPl(){
 }
 function plFinish(){
   stopTick();
+  if(typeof coFinish==='function') coFinish();
   pl.finished=true; $('play').classList.remove('resting');
   const mins=Math.max(1,Math.round((Date.now()-pl.t0)/60000));
   const m=pl.meta||{};
@@ -510,6 +522,7 @@ function plReadyText(){
   $('pl-rdt').textContent=(pl.meta&&pl.meta.name)||pl.exs[0].n;
   if($('pl-rdm')) $('pl-rdm').textContent=n+(n===1?' exercise':' exercises')+(rd>1?' · '+rd+' rounds':'')+' · about '+Math.max(1,Math.round(secs/60))+' min';
   $('pl-rds').textContent=PL_MIRROR?'Choose Your View':'';
+  if(typeof coReadyLine==='function') coReadyLine();
   if(!PL_MIRROR && $('pl-rds')) $('pl-rds').innerHTML='<div class="pl-chips"><span><b>'+Math.max(1,Math.round(secs/60))+'</b> min</span><span><b>'+n+'</b> '+(n===1?'exercise':'exercises')+'</span><span><b>'+rd+'</b> '+(rd===1?'round':'rounds')+'</span></div>';
   if($('pl-rdf')) $('pl-rdf').textContent='Up first: '+pl.exs[0].n;
 }
@@ -536,6 +549,7 @@ function plBegin(){
 }
 function plStart(){
   if(pl) pl.started=true;
+  if(typeof coUnlock==='function'){ coUnlock(); coSession(true); }
   $('pl-ready').classList.remove('on','busy');
   $('play').classList.remove('rdy');
   plCountdown(()=>plResume());

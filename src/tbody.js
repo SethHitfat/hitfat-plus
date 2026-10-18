@@ -599,7 +599,7 @@ ok("ready screen shown, not counting down", document.getElementById('pl-ready').
 ok("ready names the workout and what is in it", document.getElementById('pl-rdt').textContent===(pl.meta.name||pl.exs[0].n) &&
    /exercises?/.test(document.getElementById('pl-rdm').textContent) && /min$/.test(document.getElementById('pl-rdm').textContent));
 noThrow("the count-in starts", function(){ plCountdown(function(){}); });
-ok("the count-in starts at three, with a third of the ring", document.getElementById('pl-cdn').textContent==='3' &&
+ok("the count-in starts at Ready, the ring still empty", document.getElementById('pl-cdn').textContent==='READY' &&
    document.getElementById('pl-cdarc').innerHTML.indexOf('d="M100')>0);
 ok("...and names the first movement", document.getElementById('pl-cdx').innerHTML.indexOf(pl.exs[0].n)>0);
 document.getElementById('pl-cd').classList.remove('on');
@@ -4619,6 +4619,40 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   Kelas.data=null; noThrow("not connected: the phone screen", function(){ openKelas(); });
   ok("...asks for the number", document.getElementById('kelas-body').innerHTML.indexOf('kl-ph')>0 || document.getElementById('kelas-body').innerHTML.indexOf('Sign in first')>0);
   Kelas.data=keep; Kelas.day=null; KELAS_LIVE=keepLive;
+})();
+print("\n── COACH VOICE + MUSIC ──");
+(function(){
+  var keepP=HF.data.prefs, keepSv=HF.save, keepPl=pl, said=[], keepSay=coSay;
+  HF.save=function(){}; HF.data.prefs=JSON.parse(JSON.stringify(keepP||{})); delete HF.data.prefs.coachVoice; delete HF.data.prefs.music;
+  ok("on by default: the coach speaks and Pulse plays", coPrefs().voice===true && coPrefs().music==='pulse' && coTrackUrl()==='/sfx/music/pulse.m4a');
+  ok("a name finds its clip: numbers and brackets dropped", coSlug('Squat Pulse 2')==='squat-pulse' && coNameUrl('Bar Clean and Press')==='/sfx/coach/v1/n/bar-clean-and-press.m4a');
+  ok("...short forms read out in full", coSpoken('ALT Lunges')==='Alternating Lunges' && coSpoken('SLDL')==='Single Leg Deadlift' && coSpoken('Step Up Box or Chair')==='Step Ups');
+  var miss=[], seen={};
+  DB.forEach(function(e){ var u=coNameUrl(e.n); if(seen[u]) return; seen[u]=1; try{ if(!readFile('..'+u,'binary')) miss.push(e.n); }catch(x){ miss.push(e.n); } });
+  ok("every exercise in the library has its spoken name", miss.length===0, miss.slice(0,5).join(', '));
+  var cm=[]; CO_CUES.forEach(function(k){ try{ readFile('..'+coCueUrl(k),'binary'); }catch(x){ cm.push(k); } });
+  ok("...and every cue (ready, 5…1, go, rest, next up, halfway, last move, done)", cm.length===0, cm.join(','));
+  var tm=[]; Object.keys(CO_TRACKS).forEach(function(k){ try{ readFile('..'+CO_TRACKS[k].u,'binary'); }catch(x){ tm.push(k); } });
+  ok("...and both music loops", tm.length===0, tm.join(','));
+  coSay=function(k,cut){ said.push(k.map(function(x){ return typeof x==='string'?x:'name:'+x.n; }).join(' ')+(cut?' |cut':'')); };
+  pl={exs:[{n:'Squat Jump',dur:40},{n:'Push Up',dur:40}], i:0, round:1, rounds:2, len:40, left:40};
+  [20,10,5,4,3,2,1].forEach(function(l){ pl.left=l; coWorkTick(); });
+  ok("a move: halfway, ten to go, then 5-4-3-2-1", /^half[123]\/ten[12]\/c5 \|cut\/c4 \|cut\/c3 \|cut\/c2 \|cut\/c1 \|cut$/.test(said.join('/')), said.join('/'));
+  said=[]; coRestStart({i:1,round:1});
+  ok("rest: 'And rest! Next up: Push Up'", said[0]==='rest next name:Push Up |cut' || said[0]==='rest1 next name:Push Up |cut', said[0]);
+  said=[]; pl.i=1; coRestStart({i:0,round:2});
+  ok("...into the last round, said so", /lastround next name:Squat Jump/.test(said[0]), said[0]);
+  said=[]; pl.i=0; pl.round=2; coRestStart({i:1,round:2});
+  ok("...before the very last move: 'Last move!'", / last \|cut$/.test(said[0]), said[0]);
+  said=[]; pl.rest={left:3,total:20}; coRestTick(); pl.rest.left=0; coRestTick();
+  ok("...the rest ends 3 … Go!", said.join('/')==='c3 |cut/go |cut', said.join('/'));
+  said=[]; coCountdown(4); coCountdown(3); coCountdown(0);
+  ok("the start: Ready, 3 … Go! and the first move's name", said.join('/')==='ready |cut/c3 |cut/go name:Squat Jump |cut', said.join('/'));
+  coSet('coachVoice',false); said=[]; coSay=keepSay; coSay(['go'],true);
+  ok("voice off: nothing queued", co.q.length===0 && coPrefs().voice===false);
+  coSet('music','off'); ok("music off: no track", coTrackUrl()===null);
+  noThrow("the sound sheet opens", function(){ coPanel(); coPanelClose(); });
+  coSay=keepSay; pl=keepPl; HF.data.prefs=keepP; HF.save=keepSv;
 })();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");
