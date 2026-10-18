@@ -439,14 +439,33 @@ function scChip(){
 }
 /* a milestone reached on this run and not yet celebrated */
 function scCheckStreak(){
-  var st=scStreak(), sc=HF.data.sc||(HF.data.sc={}), seen=sc.seen||(sc.seen={}), m=0, i, key;
+  var st=scStreak(), sc=HF.data.sc||(HF.data.sc={}), seen=sc.seen||(sc.seen={}), m=0, i, key, dk='day:'+iso(0);
   if(!st.n || $('scc').style.display==='flex') return;
   for(i=0;i<SC_MILES.length;i++) if(st.n>=SC_MILES[i]) m=SC_MILES[i];
-  if(!m) return;
-  key=st.start+':'+m;
-  if(seen[key]) return;
-  seen[key]=1; HF.save();
-  scCelebrate(m,false);
+  key=m?st.start+':'+m:'';
+  if(key && !seen[key]){ seen[key]=1; if(st.today) seen[dk]=1; HF.save(); scCelebrate(m,false); return; }
+  /* (19 Oct) every other strong day gets its own small moment, the number
+     ticking up (Simple's daily streak); after Bara's turn-red burst */
+  if(st.today && !seen[dk]){
+    seen[dk]=1; HF.save();
+    setTimeout(function(){ if($('scc').style.display!=='flex') scDayStreak(scStreak().n); },1900);
+  }
+}
+/* the daily streak: Bara in front of a fire, the count going up by one */
+function scDayStreak(n){
+  if(!n) return;
+  var next=scNextMile(n);
+  $('scc').className='scc scc-day';
+  $('scc').innerHTML='<div class="sd-fire"><i></i><i></i><i></i></div><div class="scc-in">'+
+    scMomentBell('aktif')+
+    '<div class="sd-num"><span class="o">'+(n-1)+'</span><span class="n">'+n+'</span></div>'+
+    '<div class="scc-t">day streak!</div>'+
+    scWeekPill()+
+    '<div class="scc-s scc-bellsays">'+(n===1?'Hari padu pertama! Bara tunggu awak esok, jom jadikan 2 🔥':'Hari padu ke-'+n+'! Bara tunggu awak esok, jom jadikan '+(n+1)+' 🔥')+'</div>'+
+    (next?'<div class="scc-fz">Next goal: '+next+' days · '+(next-n)+' to go</div>':'')+
+    '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Continue</button></div>';
+  $('scc').style.display='flex'; scMomentPlay('aktif');
+  if(typeof hfSound==='function') setTimeout(function(){ hfSound('cheer'); },650);
 }
 function scStreakInfo(){
   toast('Score '+SC_PADU+' in a day to start a streak 🔥');

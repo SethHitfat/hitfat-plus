@@ -144,13 +144,21 @@ var SC_MOOD_LINES={
   5:'Semangatnya! Jom kejar hari padu 🔥'};
 function scMoodLine(m){ return SC_MOOD_LINES[m]||'Awak rasa macam mana hari ni?'; }
 function scMoodHTML(){
-  var m=scDaily().mood, cur=null, i;
+  var m=scDaily().mood, cur=null, i, ck=(typeof ckToday==='function')?ckToday():null;
+  if(ck){
+    for(i=0;i<SC_MOODS.length;i++) if(SC_MOODS[i][0]===ck.f) cur=SC_MOODS[i];
+    var left=(ck.plan||[]).filter(function(k){ return !(ck.done&&ck.done[k]); }).length;
+    return '<div class="scx-coach scx-mood ck-card" onclick="ckOpen()"><div class="scx-k"><i></i>CHECK-IN ✓</div>'+
+      '<div class="scx-t"><b>'+(cur?cur[1]+' Feeling '+cur[2].toLowerCase()+' today':'Checked in today')+'</b></div>'+
+      '<div class="ck-tagrow">'+(ck.tags||[]).slice(0,3).map(function(t){ var x=ckTagInfo(t); return x?'<span>'+x[1]+' '+x[2]+'</span>':''; }).join('')+'</div>'+
+      '<div class="scx-seth">'+(left?'Bara updated today\'s plan: '+left+' to go below ↓':'Everything from your check-in is done ✓')+' · <u>Change</u></div></div>';
+  }
   for(i=0;i<SC_MOODS.length;i++) if(SC_MOODS[i][0]===m) cur=SC_MOODS[i];
   return '<div class="scx-coach scx-mood"><div class="scx-k"><i></i>CHECK-IN</div>'+
     '<div class="scx-t"><b>'+(cur?'Feeling '+cur[2].toLowerCase()+' today':'How are you feeling today?')+'</b></div>'+
     '<div class="scx-faces'+(m?' has':'')+'">'+SC_MOODS.map(function(x){
-      return '<button class="'+(x[0]===m?'on':'')+'" onclick="scMood('+x[0]+')" aria-label="'+x[2]+'"><span>'+x[1]+'</span><i>'+x[2]+'</i></button>'; }).join('')+'</div>'+
-    '<div class="scx-seth">'+(cur?'Saved for today. Tap another face to change it.':'One tap. It doesn\'t change your score.')+'</div></div>';
+      return '<button class="'+(x[0]===m?'on':'')+'" onclick="'+(typeof ckOpen==='function'?'ckOpen('+x[0]+')':'scMood('+x[0]+')')+'" aria-label="'+x[2]+'"><span>'+x[1]+'</span><i>'+x[2]+'</i></button>'; }).join('')+'</div>'+
+    '<div class="scx-seth">'+(cur?'Saved for today. Tap another face to change it.':'Tap a face: Bara fits today\'s plan to how you feel.')+'</div></div>';
 }
 function scMood(m){
   if(m<1 || m>5) return;
@@ -175,7 +183,8 @@ function scPlanHTML(){
   var rows=[], dy=scDaily(), pn=scPlanNext(), p=pn&&pn.p, gi=pn&&pn.gi, at=pn&&pn.at;
   if(scBurnIsPlan())
     return '<div class="scx-plan">'+fsec("Today's Plan",'')+wlHomeCard()+
-      '<button class="scx-alt" onclick="'+(typeof openFinder==='function'?'openFinder()':"switchTab('train')")+'">Or find a plan matched to your goal →</button></div>';
+      '<button class="scx-alt" onclick="'+(typeof openFinder==='function'?'openFinder()':"switchTab('train')")+'">Or find a plan matched to your goal →</button>'+
+      (typeof ckPlanHTML==='function'?ckPlanHTML():'')+'</div>';
   /* (16 Oct) one way into today's workout: the plan's next day, or finding a
      plan; water and steps live in the rings above, not here again */
   if(pn)
@@ -189,7 +198,8 @@ function scPlanHTML(){
   }
   return '<div class="scx-plan">'+fsec("Today's Plan",'')+'<div class="scx-rows">'+rows.map(function(r){
     return '<div class="scx-row'+(r.done?' done':'')+'" onclick="'+r.go+'"><span class="ic">'+glyph(r.ic)+'</span><div class="tx"><b>'+hesc(r.t)+'</b><span>'+hesc(r.s)+'</span></div>'+
-      (r.done?'<span class="ok">✓</span>':(r.b?'<button onclick="event.stopPropagation();'+r.go+'">'+r.b+'</button>':''))+'</div>'; }).join('')+'</div></div>';
+      (r.done?'<span class="ok">✓</span>':(r.b?'<button onclick="event.stopPropagation();'+r.go+'">'+r.b+'</button>':''))+'</div>'; }).join('')+'</div>'+
+    (typeof ckPlanHTML==='function'?ckPlanHTML():'')+'</div>';
 }
 
 /* ── Kenali Bara: once, the first time the card shows ── */
