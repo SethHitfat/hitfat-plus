@@ -621,8 +621,11 @@ if(!PL_MIRROR){
      document.getElementById('pl-cd').className.indexOf('on')>=0 && pl.started===true);
   document.getElementById('pl-cd').classList.remove('on'); plResume();
   ok("the top names what comes next", /^Next: <b>/.test(document.getElementById('pl-next').innerHTML) || document.getElementById('pl-next').textContent==='Last one!');
-  pl.left-=1; pl.work=120; plStats();
+  pl.left-=1; pl.work=120; delete pl.kc; plStats();
   ok("kcal follows the work done", document.getElementById('pl-kcal').textContent===String(Math.round(2*PL_KCAL_MIN)), document.getElementById('pl-kcal').textContent);
+  ok("learn as you move: muscles, level, kcal and a form tip over the clip", (function(){ plInfoPaint(); var h=document.getElementById('pl-learn').innerHTML; return h.indexOf(PL_LV[plLevel(pl.exs[pl.i])])>0 && h.indexOf('kcal')>0 && h.indexOf('Form tip')>0; })());
+  ok("...a jump is harder than a chair squat, and burns more", plLevel({n:'Squat Jump',t:'squat'})===3 && plLevel({n:'Chair Assist Squat Hold',t:'hold'})===1 && plRate({n:'Squat Jump',t:'squat'})>plRate({n:'Chair Assist Squat Hold',t:'hold'}));
+  ok("...the cue fits the move", /glutes/i.test(plCue({n:'Glute Bridge',t:'hinge'})) && /straight line/.test(plCue({n:'Push Up',t:'push'})));
   var _q0=(HF.data.quits||[]).length;
   plClose();
   ok("closing early asks why first", pl!==null && document.getElementById('pl-why').className.indexOf('on')>=0 && !pl.running);

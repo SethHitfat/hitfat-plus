@@ -1070,6 +1070,8 @@ body:has(#play.on)::before{display:none;}
     <!-- FIIT (18 Oct): the phase and what is left of the whole class, above the moves -->
     <div class="pl-hrow"><span class="pl-ph" id="pl-ph">Work</span><span class="pl-mv" id="pl-mv"></span><span class="pl-tot" id="pl-tot"></span></div>
     <div class="pl-segs" id="pl-segs"></div>
+    <!-- (18 Oct) learn as you move: muscles, level, kcal, a form tip -->
+    <div class="pl-learn" id="pl-learn"></div>
     <div class="pl-sub" id="pl-sub"></div>
   </div>
 
@@ -1130,7 +1132,7 @@ body:has(#play.on)::before{display:none;}
     <div class="rring"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="88" fill="none" stroke-width="12"/><g id="pl-restarc"></g></svg>
       <div class="rin"><div class="rn" id="pl-restn">20</div></div></div>
     <div class="rk">Rest</div>
-    <div class="rnext"><div class="rnk">→ Up next</div><div class="rnn" id="pl-restnext"></div><div class="rnm" id="pl-restmeta"></div></div>
+    <div class="rnext"><div class="rnk">→ Up next</div><div class="rnn" id="pl-restnext"></div><div class="rnm" id="pl-restmeta"></div><div class="rtip" id="pl-resttip"></div></div>
     <div class="rbtns"><button class="rplus" onclick="plRestAdd(20)">+20s</button><button class="rs" onclick="plSkipRest()">Skip</button></div>
   </div>
 

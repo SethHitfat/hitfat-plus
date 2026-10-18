@@ -167,7 +167,84 @@ function plBeep(hi){
 }
 function plKcal(){
   if(!pl) return 0;
+  if(pl.kc!==undefined) return Math.round(pl.kc);
   return Math.round((pl.work||0)/60*PL_KCAL_MIN);
+}
+
+/* ── Learn as you move (18 Oct: "atas tu kosong … educate") ──
+   Over the empty ceiling of the clip: the muscles the move works, how hard
+   it is, about what it burns, and one cue for doing it right. The cue fades
+   after a while so it never sits on the coach for the whole set; a tap on
+   the chips brings it back. kcal now follows the move: an easy one burns
+   less than a jump, and a heavier member burns more (their last weigh-in). */
+const PL_LV=['','Beginner','Intermediate','Advanced'];
+const PL_LV_KCAL=[0,5,7,10];          /* kcal a minute at 70 kg, by level */
+function plLevel(ex){
+  const n=String(ex&&ex.n||''), t=ex&&ex.t||'';
+  if(/chair assist|assisted|wall push|knee push|seated|heel slide|stretch|circles|cat cow|bird dog|dead bug|clamshell|retraction|angel|tibialis|short arc|terminal knee|straight leg raise|neck|child/i.test(n) || t==='mobility' || t==='calf') return 1;
+  if(/burpee|jump|explosive|sprint|clap|tuck|thruster|snatch|clean|swing|pistol|bulgarian|skater|broad|power skip|mountain climber|high knee|fast feet/i.test(n) || t==='jump' || t==='cardio' || t==='full') return 3;
+  return 2;
+}
+function plKg(){ const w=(HF && HF.data && HF.data.weight)||[], l=w.length?w[w.length-1]:null, kg=l&&+l.kg; return kg>30&&kg<250?kg:70; }
+function plRate(ex){ return PL_LV_KCAL[plLevel(ex)]*Math.max(.6,Math.min(1.6,plKg()/70)); }
+function plMoveKcal(ex){ return Math.max(1,Math.round(plRate(ex)*(ex.dur||45)/60)); }
+const PL_ALSO={squat:'Glutes',lunge:'Glutes',hinge:'Hamstrings',calf:'',jump:'Legs',cardio:'Heart',full:'Core'};
+function plMuscles(ex){
+  const a=[ex.m], b=PL_ALSO[ex.t];
+  if(ex.t==='push' && ex.m==='Chest') a.push('Triceps');
+  else if(b && b!==ex.m) a.push(b);
+  return a.filter(Boolean).slice(0,2).join(' · ');
+}
+const PL_CUE={
+  squat:'Chest up, sit back like into a chair, knees follow your toes.',
+  lunge:'A long step, back knee drops straight down, front heel stays down.',
+  hinge:'Push your hips back with a flat back, squeeze your glutes at the top.',
+  push:'Body in one straight line, elbows about 45° from your sides.',
+  pull:'Pull with your back, shoulders down away from your ears.',
+  core:'Lower back pressed down, breathe out as you crunch.',
+  hold:'Brace your core and keep breathing. Don\'t hold your breath.',
+  cardio:'Land soft on the balls of your feet and keep a steady rhythm.',
+  jump:'Land soft with bent knees, then go again.',
+  calf:'Rise all the way up, lower slowly.',
+  mobility:'Move slowly and breathe. Go only as far as feels good.',
+  full:'Control first, then add speed.'};
+const PL_CUE_N=[
+  [/plank jack|mountain climber/i,'Shoulders over your hands, hips level, keep a fast rhythm.'],
+  [/plank|bear hold/i,'Shoulders over elbows, hips level, squeeze your glutes.'],
+  [/burpee/i,'Hands down, jump back, chest to floor if you can, then up and jump.'],
+  [/wall sit/i,'Back flat on the wall, thighs parallel to the floor.'],
+  [/russian twist|woodchop|torso twist/i,'Turn from your ribs, chest tall, follow your hands with your eyes.'],
+  [/glute bridge|hip thrust/i,'Push through your heels, squeeze your glutes hard at the top.'],
+  [/jumping jack|seated jack/i,'Stay light on your feet, arms all the way up.'],
+  [/curl/i,'Elbows tucked in, lift with control, slow on the way down.'],
+  [/shoulder press|overhead press|push press|jerk/i,'Brace your core, press straight up, don\'t arch your lower back.'],
+  [/lateral raise|front raise|fly/i,'Soft elbows, lift to shoulder height, lower slowly.'],
+  [/tricep|skull/i,'Keep your elbows still, move only your forearms.'],
+  [/row|pull/i,'Pull your elbows back, squeeze your shoulder blades together.'],
+  [/deadlift|good morning|rdl|sldl/i,'Hips back, flat back, the weight stays close to your legs.'],
+  [/push ?up|chest press|floor press/i,'Body in one straight line, lower your chest with control.'],
+  [/swing/i,'Snap your hips forward; your arms just guide the weight.'],
+  [/high knee|butt kick|fast feet|sprint/i,'Stay on the balls of your feet, pump your arms.']];
+function plCue(ex){
+  const n=String(ex&&ex.n||'');
+  for(const c of PL_CUE_N) if(c[0].test(n)) return c[1];
+  return PL_CUE[ex&&ex.t]||'Move with control and keep breathing.';
+}
+function plLvBars(lv){ return '<span class="pl-lvb">'+[1,2,3].map(i=>'<i class="'+(i<=lv?'on':'')+'"></i>').join('')+'</span>'; }
+function plInfoPaint(){
+  const el=$('pl-learn'); if(!el || !pl) return;
+  const ex=pl.exs[pl.i], lv=plLevel(ex);
+  el.innerHTML='<div class="pl-lc" onclick="plCueShow()">'+
+      '<span>'+glyph('steps')+plMuscles(ex)+'</span>'+
+      '<span>'+plLvBars(lv)+PL_LV[lv]+'</span>'+
+      '<span>'+glyph('flame')+'≈ '+plMoveKcal(ex)+' kcal</span></div>'+
+    '<div class="pl-cue" id="pl-cue"><b>Form tip</b>'+plCue(ex)+'</div>';
+  plCueShow();
+}
+function plCueShow(){
+  const c=$('pl-cue'); if(!c || !c.classList) return;
+  c.classList.add('on'); clearTimeout(plCueShow._t);
+  plCueShow._t=setTimeout(()=>{ const x=$('pl-cue'); if(x && x.classList) x.classList.remove('on'); },12000);
 }
 function plStats(){ const k=$('pl-kcal'); if(k) k.textContent=String(plKcal()); }
 function fmtT(s){ s=Math.max(0,Math.round(s)); return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
@@ -254,7 +331,7 @@ function plResume(){
   if(typeof coResume==='function') coResume();
   plTick=setInterval(()=>{
     if(!pl) return;
-    pl.left--; pl.work=(pl.work||0)+1;
+    pl.left--; pl.work=(pl.work||0)+1; pl.kc=(pl.kc||0)+plRate(pl.exs[pl.i])/60;
     plTime(); plStats();
     /* the coach counts 5-4-3-2-1 out loud; without the coach, three ticks and a higher one */
     const v=typeof coPrefs==='function' && coPrefs().voice;
@@ -315,8 +392,10 @@ function plRest(n){
   setClip(nx);                                   // buffers behind the rest overlay
   $('pl-restnext').textContent=nx.n;
   $('play').classList.add('resting');
-  if($('pl-restmeta')) $('pl-restmeta').textContent=[nx.m,nx.eq].filter(Boolean).join(' · ')+
+  if($('pl-restmeta')) $('pl-restmeta').textContent=[nx.m,nx.eq,PL_LV[plLevel(nx)]].filter(Boolean).join(' · ')+
     ' · '+(n.i+1)+' of '+pl.exs.length+(pl.rounds>1?', round '+n.round:'');
+  /* the rest is the time to learn the next move */
+  if($('pl-resttip')) $('pl-resttip').innerHTML='<b>Form tip</b>'+plCue(nx);
   $('pl-rest').classList.add('on');
   pl.rest={left:REST_SECS, total:REST_SECS, n};
   if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
@@ -348,6 +427,7 @@ function renderPl(){
   if(!pl) return;
   const ex=pl.exs[pl.i];
   $('pl-name').textContent=ex.n;
+  plInfoPaint();
   if($('pl-name').classList) $('pl-name').classList.toggle('long', ex.n.length>20);
   $('pl-sub').textContent=ex.m+' · '+ex.eq;
   plTime(); plSetPlayIcon(!!pl.running);
