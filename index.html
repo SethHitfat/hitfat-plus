@@ -23858,9 +23858,11 @@ if(typeof document!=='undefined' && document.addEventListener){
    Seth: "aku nak biar ada music … dengan command voice. Ready, 3, 2, 1, go.
    Okay, squat … nak habis 5, 4, 3, 2, 1, rest. Macam coach tengah bercakap."
 
-   Voice: short clips made once with an AI voice (Higgsfield / ElevenLabs,
-   preset "Brooks", not anyone's cloned voice), one per cue and one per
-   exercise name, under /sfx/coach/<voice>/ and /sfx/coach/<voice>/n/<slug>.
+   Voice: short clips made once with an AI voice (Higgsfield / ElevenLabs
+   preset "Marcus", Seth's pick on 18 Oct; not anyone's cloned voice), one per
+   cue and one per exercise name, under /sfx/coach/<voice>/ and
+   /sfx/coach/<voice>/n/<slug>. Each clip is compressed and brought up loud
+   (_projek/workout_music/punch.swift) so the coach cuts through the music.
    A name without a clip is read by the phone's own voice instead.
    Music: two original loops synthesised note by note for HITFAT
    (_projek/workout_music/wmusic.swift), so nothing is licensed or copied.
@@ -23869,7 +23871,7 @@ if(typeof document!=='undefined' && document.addEventListener){
    music dips under the coach. With our music on, the phone plays it like a
    music app (the silent switch doesn't mute it); with it off, the coach
    mixes over the member's own Spotify. */
-const CO_VOICE='v1';
+const CO_VOICE='v2';
 const CO_TRACKS={pulse:{n:'Pulse',u:'/sfx/music/pulse.m4a',loop:60.0},
                  drive:{n:'Drive',u:'/sfx/music/drive.m4a',loop:54.857143}};
 const CO_CUES=['ready','c5','c4','c3','c2','c1','go','rest','rest1','rest2','rest3','next','first',
@@ -23970,7 +23972,7 @@ function coSpeak(t){
 function coLevel(){ return (pl && pl.resting)?0.32:0.5; }
 function coDuck(on){
   const ac=typeof hfAC==='function'?hfAC():null; if(!ac || !co.mGain || !co.mSrc) return;
-  const t=ac.currentTime, g=co.mGain.gain, v=coLevel()*(on?0.4:1);
+  const t=ac.currentTime, g=co.mGain.gain, v=coLevel()*(on?0.3:1);
   try{ g.cancelScheduledValues(t); g.setValueAtTime(g.value,t); g.linearRampToValueAtTime(v,t+(on?0.08:0.45)); }catch(e){ g.value=v; }
 }
 function coMusicPlay(){
@@ -23987,7 +23989,7 @@ function coMusicPlay(){
   s.connect(co.mGain);
   co.mGain.gain.cancelScheduledValues(ac.currentTime);
   co.mGain.gain.setValueAtTime(0,ac.currentTime);
-  co.mGain.gain.linearRampToValueAtTime(coLevel()*(co.src||co.speaking?0.4:1),ac.currentTime+0.6);
+  co.mGain.gain.linearRampToValueAtTime(coLevel()*(co.src||co.speaking?0.3:1),ac.currentTime+0.6);
   const off=co.mKey===u?(co.mOff%L):0;
   s.start(0,off); co.mSrc=s; co.mKey=u; co.mAt=ac.currentTime-off;
 }

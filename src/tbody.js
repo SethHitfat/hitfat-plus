@@ -4625,7 +4625,7 @@ print("\n── COACH VOICE + MUSIC ──");
   var keepP=HF.data.prefs, keepSv=HF.save, keepPl=pl, said=[], keepSay=coSay;
   HF.save=function(){}; HF.data.prefs=JSON.parse(JSON.stringify(keepP||{})); delete HF.data.prefs.coachVoice; delete HF.data.prefs.music;
   ok("on by default: the coach speaks and Pulse plays", coPrefs().voice===true && coPrefs().music==='pulse' && coTrackUrl()==='/sfx/music/pulse.m4a');
-  ok("a name finds its clip: numbers and brackets dropped", coSlug('Squat Pulse 2')==='squat-pulse' && coNameUrl('Bar Clean and Press')==='/sfx/coach/v1/n/bar-clean-and-press.m4a');
+  ok("a name finds its clip: numbers and brackets dropped", coSlug('Squat Pulse 2')==='squat-pulse' && coNameUrl('Bar Clean and Press')==='/sfx/coach/v2/n/bar-clean-and-press.m4a');
   ok("...short forms read out in full", coSpoken('ALT Lunges')==='Alternating Lunges' && coSpoken('SLDL')==='Single Leg Deadlift' && coSpoken('Step Up Box or Chair')==='Step Ups');
   var miss=[], seen={};
   DB.forEach(function(e){ var u=coNameUrl(e.n); if(seen[u]) return; seen[u]=1; try{ if(!readFile('..'+u,'binary')) miss.push(e.n); }catch(x){ miss.push(e.n); } });
