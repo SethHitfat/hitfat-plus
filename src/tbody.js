@@ -3722,6 +3722,8 @@ print("\n── LADIES BURN 30 ──");
   HF.data.lb30={profile:{wt:95,ht:165,age:30}};
   var t=lbTarget(), n=mpNut({goal:'loss',rate:0.5,gender:'female',age:30,wt:95,ht:165,activity:1.375,styles:['hiprotein']});
   ok("...and is BURN30's own sum otherwise", t.cal===n.cal && t.cal>1200);
+  ok("ten dishes a meal, and no 'sample menu' note left", LB30_SLOTS.every(function(s){ return LB30_MENU[s].opts.length>=10; }) && String(lbFood).indexOf('akan dikemas kini')<0);
+  ok("...a day's three don't come back the next day", LB30_SLOTS.every(function(s){ var a=lbMenuFor(s,4).map(function(o){ return o.n; }), b=lbMenuFor(s,5).map(function(o){ return o.n; }); return a.every(function(n){ return b.indexOf(n)<0; }); }));
   ok("three menu options a meal, different each day", LB30_SLOTS.every(function(s){ var a=lbMenuFor(s,0), b=lbMenuFor(s,1);
      return a.length===3 && new Set(a.map(function(o){return o.n;})).size===3 && a[0].n!==b[0].n; }));
   /* the old Ladies Beginner's days do not carry over */

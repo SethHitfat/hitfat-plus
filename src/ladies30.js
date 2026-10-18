@@ -175,8 +175,9 @@ var LB30_MISI=[
 var LB30_CHECKS=[['misi','Misi pemakanan hari ini','food'],['makan','Makan ikut pelan','clipboard'],['tidur','Tidur 7 jam','moon']];
 
 /* ── the menus: Malay home cooking ──
-   PLACEHOLDER until Seth's list arrives. Each meal of the day shows three
-   options; the day decides which three. kcal is for the portion shown. */
+   Ten Malay home dishes for each meal (19 Oct: four added to each, so the
+   30 days don't repeat two sets); each day shows three, picked by the day.
+   kcal is for the portion shown. Seth can still swap in his own list here. */
 var LB30_MENU={
   sarapan:{label:'Sarapan', time:'7:00 pagi', share:0.25, note:'Cepat, untuk ibu yang bekerja', opts:[
     {n:'Telur rebus & roti mil penuh', k:350, it:['2 biji telur rebus','2 keping roti mil penuh','Teh o kurang manis']},
@@ -184,7 +185,11 @@ var LB30_MENU={
     {n:'Nasi lemak separuh',           k:420, it:['Nasi lemak, separuh pinggan','1 biji telur rebus','Timun','Sambal, sedikit']},
     {n:'Roti telur',                   k:330, it:['2 keping roti mil penuh','Telur dadar 1 biji','Kopi o kosong']},
     {n:'Bihun goreng kurang minyak',   k:400, it:['Bihun goreng, 1 genggam','1 biji telur mata','Sayur sawi']},
-    {n:'Lempeng pisang & telur',       k:360, it:['2 keping lempeng pisang kecil','1 biji telur rebus','Teh o kosong']}
+    {n:'Lempeng pisang & telur',       k:360, it:['2 keping lempeng pisang kecil','1 biji telur rebus','Teh o kosong']},
+    {n:'Bubur nasi ayam',              k:340, it:['Bubur nasi ayam, 1 mangkuk','Hirisan halia & daun bawang','Teh o kosong']},
+    {n:'Ubi rebus & telur',            k:320, it:['Ubi kayu rebus, 1 genggam','1 biji telur rebus','Kopi o kosong']},
+    {n:'Tosai & kuah sambar',          k:350, it:['2 keping tosai','Kuah sambar','Teh o kurang manis']},
+    {n:'Roti canai kosong & dal',      k:380, it:['1 keping roti canai kosong','Kuah dal, sedikit','Teh o kosong']}
   ]},
   tengahari:{label:'Bekal Tengah Hari', time:'1:00 petang', share:0.40, note:'Bekal dari rumah', opts:[
     {n:'Ayam masak kicap',             k:500, it:['Nasi putih, 1 genggam','Ayam masak kicap, 1 tapak tangan','Sayur campur, 2 genggam']},
@@ -192,7 +197,11 @@ var LB30_MENU={
     {n:'Mi sup ayam',                  k:430, it:['Mi kuning, 1 genggam','Ayam carik, 1 tapak tangan','Sup sayur']},
     {n:'Telur dadar sayur',            k:450, it:['Nasi putih, 1 genggam','Telur dadar sayur 2 biji','Sambal timun']},
     {n:'Daging masak merah',           k:520, it:['Nasi putih, 1 genggam','Daging masak merah, kuah sedikit','Sawi tumis']},
-    {n:'Nasi goreng kampung',          k:520, it:['Nasi goreng kampung kurang minyak, 1 genggam','1 biji telur mata','Timun']}
+    {n:'Nasi goreng kampung',          k:520, it:['Nasi goreng kampung kurang minyak, 1 genggam','1 biji telur mata','Timun']},
+    {n:'Ayam percik & ulam',           k:510, it:['Nasi putih, 1 genggam','Ayam percik tanpa kulit, 1 tapak tangan','Ulam & timun']},
+    {n:'Sup daging & sayur',           k:480, it:['Nasi putih, 1 genggam','Sup daging, isi 1 tapak tangan','Kobis goreng sedikit minyak']},
+    {n:'Ikan masak lemak cili api',    k:510, it:['Nasi putih, 1 genggam','Ikan masak lemak, kuah sedikit','Kacang buncis goreng']},
+    {n:'Nasi kerabu & ikan bakar',     k:500, it:['Nasi kerabu, 1 genggam','Ikan bakar, 1 tapak tangan','Ulam & kerabu, sambal sedikit']}
   ]},
   malam:{label:'Makan Malam Keluarga', time:'7:30 malam', share:0.35, note:'Makan bersama keluarga', opts:[
     {n:'Asam pedas ikan',              k:480, it:['Nasi putih, 1 genggam','Ikan asam pedas, 1 tapak tangan','Bayam tumis']},
@@ -200,7 +209,11 @@ var LB30_MENU={
     {n:'Ayam panggang & ulam',         k:480, it:['Nasi putih, 1 genggam','Ayam panggang tanpa kulit','Ulam & sambal belacan']},
     {n:'Ikan kukus halia',             k:450, it:['Nasi putih, 1 genggam','Ikan kukus halia','Sawi tumis']},
     {n:'Gulai ayam',                   k:520, it:['Nasi putih, 1 genggam','Gulai ayam, kuah sedikit','Timun & tomato']},
-    {n:'Tauhu sumbat & sup sayur',     k:430, it:['Nasi, separuh genggam','Tauhu sumbat 2 keping','Sup sayur']}
+    {n:'Tauhu sumbat & sup sayur',     k:430, it:['Nasi, separuh genggam','Tauhu sumbat 2 keping','Sup sayur']},
+    {n:'Ayam masak halia',             k:460, it:['Nasi putih, 1 genggam','Ayam masak halia, 1 tapak tangan','Kailan tumis']},
+    {n:'Sotong sambal kurang minyak',  k:470, it:['Nasi putih, 1 genggam','Sotong sambal, 1 tapak tangan','Kacang panjang goreng']},
+    {n:'Telur bistik & sayur',         k:450, it:['Nasi, separuh genggam','Telur bistik 2 biji','Sayur campur']},
+    {n:'Udang masak merah',            k:480, it:['Nasi putih, 1 genggam','Udang masak merah, 1 tapak tangan','Taugeh goreng']}
   ]}
 };
 var LB30_SLOTS=['sarapan','tengahari','malam'];
@@ -530,7 +543,8 @@ function lbForgetNumbers(){ lbData().profile={}; HF.save(); renderLB30(); }
 /* the three options a meal shows on a day: different every day, never twice */
 function lbMenuFor(slot,day){
   var opts=LB30_MENU[slot].opts, n=opts.length, out=[], k;
-  for(k=0;k<3;k++) out.push(opts[(day+k*2)%n]);
+  /* three in a row from day×3, so one day's dishes don't come back the next */
+  for(k=0;k<3;k++) out.push(opts[(day*3+k)%n]);
   return out;
 }
 function lbFood(){
@@ -553,7 +567,7 @@ function lbFood(){
     '<div class="nstage-g">'+[[t.prot+'g','Protein'],[t.carb+'g','Karbo'],[t.fat+'g','Lemak'],[lbWater(lbMenuDay).toFixed(1)+' L','Air']]
       .map(function(x){ return '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'; }).join('')+'</div></div>';
   h+='<div class="lb-misi">'+ic('food')+'<div><div class="k">Misi pemakanan · Hari '+(lbMenuDay+1)+'</div><div class="t">'+LB30_MISI[lbMenuDay]+'</div></div></div>';
-  h+=fsec('Menu','Hari '+(lbMenuDay+1)+' · contoh menu, senarai penuh akan dikemas kini');
+  h+=fsec('Menu','Hari '+(lbMenuDay+1)+' · tiga pilihan untuk setiap waktu makan');
   h+='<div class="hscroll wl-mdays">'+LB30_DAYS.map(function(d,i){
     return '<button class="wl-md'+(i===lbMenuDay?' on':'')+'" onclick="lbMenuDay='+i+';renderLB30()"><small>Hari</small><b>'+(i+1)+'</b></button>'; }).join('')+'</div>';
   h+='<div class="wl-meals">'+LB30_SLOTS.map(function(slot,si){
