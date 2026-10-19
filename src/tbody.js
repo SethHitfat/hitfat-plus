@@ -4324,7 +4324,7 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("...active", kelasActive());
   Kelas.tab='today'; var h=kelasHTML();
   ok("...the QR is the member id", h.indexOf('qrsvg')>0);
-  ok("...start and end of the membership", h.indexOf('Started')>0 && h.indexOf('Ends')>0 && h.indexOf('days left')>0);
+  ok("...start and end of the membership", h.indexOf('This term from')>0 && h.indexOf('Ends')>0 && h.indexOf('days left')>0);
   ok("...the timetable and the next class", h.indexOf('kl-days')>0 && !!kelasNext());
   ok("...four tabs", ['Today','Progress','Body','Points'].every(function(x){ return h.indexOf('>'+x+'<')>0; }));
   Kelas.tab='progress'; var hp=kelasHTML(); Kelas.tab='today';
@@ -4394,7 +4394,7 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   Kelas.cmReply=null; Kelas.cmOpenId=null; Kelas.cmC={};
   Kelas.cmMenu=Kelas.cm.posts[1].id; ok("...⋯ on someone else's post: report", kelasPostMenu(Kelas.cm.posts[1]).indexOf('Report')>0); Kelas.cmMenu=null;
   var keepCm=Kelas.cm; Kelas.cm.admin=false; ok("...no composer for a member", kelasGroupTab().indexOf('Post an announcement')<0); Kelas.cm.admin=true;
-  Kelas.cm=null; Kelas.cmErr=true; ok("...could not load: try again", kelasGroupTab().indexOf('Try again')>0); Kelas.cm=keepCm; Kelas.cmErr=false;
+  Kelas.cm=null; Kelas.cmErr=true; ok("...could not load: try again", kelasGroupTab().indexOf('try again')>0); Kelas.cm=keepCm; Kelas.cmErr=false;
   var f3=kelasF30HTML();
   ok("first 30: day, missions done of seven, the next one marked", f3.indexOf('Day 6 of 30')>0 && f3.indexOf('3<small>/7')>0 && f3.indexOf('f30-m next')>0);
   ok("...the second InBody opens on day 21", f3.indexOf('Opens on day 21')>0);
@@ -4605,6 +4605,15 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   Kelas.data.memberships.push({category:'HYROX',plan:'x',start_date:'2026-10-01',end_date:'2026-12-31',active:true});
   Kelas.data.first30={active:true,day:6,done:3,total:7,complete:false,missions:[]}; Kelas.space='hyrox';
   ok("Bara in HYROX does not talk about FIRST 30 (it is not shown there)", kelasBaraLine()[1]!==kelasF30Line(kelasF30())[1]);
+  /* the loyalty pass (19 Oct): greet, show what they have built, a reward waiting, the next class first */
+  Kelas.space='active'; Kelas.data.points={balance:1450,rewards:[{id:'d',name:'A drink at the counter',points:600},{id:'r',name:'RM20 off',points:2500}]};
+  var Tl=kelasTodayTab();
+  ok("the hero greets the member by the time of day", /Good (morning|afternoon|evening)/.test(Tl));
+  ok("...shows their club and their points, each opening its tab", Tl.indexOf('kl-loy')>0 && Tl.indexOf('1,450 points')>0 && Tl.indexOf("kelasTab('points')")>0 && Tl.indexOf("kelasTab('progress')")>0);
+  ok("...a reward they can take is named on Today", Tl.indexOf('Your reward is ready: A drink at the counter')>0);
+  Kelas.data.points.balance=100;
+  ok("...and nothing when no reward is reached", kelasTodayTab().indexOf('kl-gift')<0);
+  ok("the next class sits above the workout and the timetable", (function(){ var T=kelasTodayTab(), a=T.indexOf('kl-next-top'), w=T.indexOf('Timetable'); return a<0 || (w<0 || a<w); })());
   Kelas.data=keepD4; Kelas.space=keepSp4; Kelas.tab=keepTab4; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
   /* profile photo (17 Oct) */
   var keepPh=HF.data.prefs.photo, keepG=HF.gphoto, keepSv3=HF.save; HF.save=function(){};

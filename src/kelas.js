@@ -304,11 +304,19 @@ function kelasTodayTab(){
   const spc=kelasSpace(), hxs=spc==='hyrox', lxs=spc==='ladies', mxs=spc==='mens', pts=spc==='pt';
   h+='<div class="kl-hero kl-hero2'+(hxs?' hx':lxs?' lx':mxs?' mx':pts?' pt':'')+(act?'':' off')+'">'+
      '<div class="kl-hrow"><div class="kl-hl"><div class="kl-kick">'+(hxs?'HYROX · HQ':lxs?'Ladies2Fit · HQ':mxs?'Mens2Fit · HQ':pts?'Personal Coaching':'HITFAT Class · HQ')+'</div>'+
-     '<div class="kl-name">'+hesc(first)+'</div>'+
+     '<div class="kl-hi">'+kelasGreet()+'</div><div class="kl-name">'+hesc(first)+'</div>'+
      '<div class="kl-cat">'+kelasSpMems().filter(x=>x.active).map(x=>hesc(kelasCat(x.category))).join(' · ')+'</div>'+
      '<button class="kl-ci" onclick="kelasQRFull()">'+glyph('qr')+(act?' Check in':' Renew first')+'</button></div>'+
      '<button class="kl-qr kl-qr2" onclick="kelasQRFull()" aria-label="Show my check-in QR full screen">'+kelasQR(116)+'<small>Tap to enlarge</small></button></div>'+
-     kelasBaraHTML()+'</div>';
+     kelasBaraHTML()+kelasLoyHTML()+'</div>';
+  h+=kelasGiftHTML();
+
+  /* the next class straight under the door: the one thing a regular wants
+     to know after checking in (19 Oct 2026, the loyalty pass) */
+  const cls=kelasClasses(), n=cls.length?kelasNext():null;
+  if(n) h+='<div class="kl-next kl-next-top"><div class="kl-nt">Next class</div>'+
+     '<div class="kl-nw">'+kelasWhen(n)+' · '+kelasClock(n.c.start)+'</div>'+
+     '<div class="kl-nn">'+hesc(n.c.name)+' · '+(n.c.min||60)+' min'+(n.c.coach?' · '+hesc(n.c.coach):'')+'</div></div>';
 
   /* FIRST 30: a new member's first month, mission by mission; then a
      60-day journey for the goal */
@@ -319,15 +327,10 @@ function kelasTodayTab(){
   if(kelasIsHx()) h+=kelasHxTodayHTML();
   h+=kelasWodHTML();
 
-  /* the next class and the timetable, this space's classes only */
-  const cls=kelasClasses();
+  /* the timetable, this space's classes only */
   if(cls.length){
-    const n=kelasNext();
     if(Kelas.day===null||Kelas.day===undefined) Kelas.day=n?n.c.dow:kelasDow(kelasNowMY());
-    h+=fsec('Classes','Your timetable at HITFAT HQ.');
-    if(n) h+='<div class="kl-next"><div class="kl-nt">Next class</div>'+
-       '<div class="kl-nw">'+kelasWhen(n)+' · '+kelasClock(n.c.start)+'</div>'+
-       '<div class="kl-nn">'+hesc(n.c.name)+' · '+(n.c.min||60)+' min'+(n.c.coach?' · '+hesc(n.c.coach):'')+'</div></div>';
+    h+=fsec('Timetable','Every class at HITFAT HQ this week.');
     const today=kelasDow(kelasNowMY());
     h+='<div class="kl-days">'+KELAS_DOW.map((w,i)=>{
       const dd=i+1, has=cls.some(c=>c.dow===dd);
@@ -350,7 +353,7 @@ function kelasTodayTab(){
        '<div class="kl-ms">'+hesc(m.plan||'')+'</div></div>'+
        '<span class="kl-chip">'+(act?(soon?'Ends soon':'Active'):'Ended')+'</span></div>'+
        '<div class="kl-bar"><i style="width:'+(act?pct:100)+'%"></i></div>'+
-       '<div class="kl-dates"><div><small>Started</small><b>'+kelasDate(m.start_date)+'</b></div>'+
+       '<div class="kl-dates"><div><small>This term from</small><b>'+kelasDate(m.start_date)+'</b></div>'+
        '<div class="kl-left">'+(act&&left!==null?'<b>'+(left+1)+'</b><small>day'+(left===0?'':'s')+' left</small>':'')+'</div>'+
        '<div class="r"><small>'+(act?'Ends':'Ended')+'</small><b>'+kelasDate(m.end_date)+'</b></div></div>'+
        (soon||!act?'<button class="kl-renew" onclick="kelasRenew()">'+glyph('repeat')+' Renew with HITFAT</button>':'')+
@@ -363,6 +366,29 @@ function kelasTodayTab(){
   h+='<div class="kl-foot">Your HITFAT+ All Access runs with your HITFAT membership'+(aaEnd?', until '+kelasDate(aaEnd):'')+'.<br>'+
      '<button class="kl-unlink" onclick="kelasUnlink()">'+(Kelas.unlinkAsk?'Tap again to disconnect':'Not you? Disconnect')+'</button></div>';
   return h;
+}
+/* ── the loyalty pass (19 Oct 2026). Class members are HITFAT's longest
+   and most loyal clients: the screen greets them, shows what they have
+   built (their club and their points) at a glance, and says so when a
+   reward is waiting. Nothing here is invented: the count is the kiosk's,
+   the points are OS's. ── */
+function kelasGreet(){ const h=kelasNowMY().getUTCHours(); return h<12?'Good morning':h<18?'Good afternoon':'Good evening'; }
+function kelasLoyHTML(){
+  const n=kelasTotal(), pt=kelasSpace()==='pt', L=kelasLevel(n), P=kelasPts();
+  const club=pt?(n?n+' '+kelasUnit(n):'First session'):(L.cur?L.cur+' Class Club':'Getting started');
+  const csub=pt?'with your coach':(n+' '+kelasUnit(n)+' at HQ');
+  let h='<div class="kl-loy"><button onclick="kelasTab(\'progress\')">'+glyph(pt?'workout':'trophy')+'<span><b>'+club+'</b><small>'+csub+'</small></span></button>';
+  if(P){ const ready=(P.rewards||[]).filter(r=>r.points<=(P.balance||0)).length;
+    h+='<button onclick="kelasTab(\'points\')">'+glyph('star')+'<span><b>'+kelasN(P.balance)+' points</b><small>'+(ready?ready+' reward'+(ready===1?'':'s')+' ready':'HITFAT Points')+'</small></span></button>'; }
+  return h+'</div>';
+}
+function kelasGiftHTML(){
+  const P=kelasPts(); if(!P || !kelasActive()) return '';
+  const r=(P.rewards||[]).filter(x=>x.points<=(P.balance||0)).sort((a,b)=>b.points-a.points);
+  if(!r.length) return '';
+  return '<button class="kl-gift" onclick="kelasTab(\'points\')"><span class="kl-gift-i">'+glyph('star')+'</span>'+
+    '<span class="kl-gift-t"><b>'+(r.length===1?'Your reward is ready: '+hesc(r[0].name):r.length+' rewards ready, up to '+hesc(r[0].name))+'</b>'+
+    '<small>Thank you for training with us. Show your QR at the counter.</small></span><i>›</i></button>';
 }
 /* Progress: the week, the level, the latest class, records, history */
 function kelasProgressTab(){
@@ -1104,7 +1130,7 @@ function kelasBaraLine(){
   if(f30) return kelasF30Line(f30);
   if(days.has(today)) return ['cheer','Bara nampak awak dah datang kelas hari ni! Dikira sebagai workout dalam Skor HITFAT, +100 mata 💪'];
   if(n>=t) return ['gold','Sasaran '+t+' kelas minggu ni dah capai! Bara bangga sangat 🔥'];
-  if(nx && nx.inDays===0) return ['aktif','Kelas seterusnya pukul '+kelasClock(nx.c.start)+'. Bara tunggu awak! '+n+' daripada '+t+' kelas minggu ni.'];
+  if(nx && nx.inDays===0) return ['aktif','Ada kelas hari ni! Bara tunggu awak kat HQ 💪 '+n+' daripada '+t+' kelas minggu ni.'];
   return ['aktif','Datang kelas = workout hari tu siap, +100 mata. '+n+' daripada '+t+' kelas minggu ni.'];
 }
 /* The same Bara as Home (17 Oct): his colour follows today's HITFAT Score,
@@ -1177,7 +1203,7 @@ function kelasAgo(t){
 function kelasGroupTab(){
   const C=Kelas.cm;
   if(!C) return Kelas.cmErr
-    ? '<div class="kl-none">Could not load the group. <button class="kl-unlink" onclick="kelasCmLoad()">Try again</button></div>'
+    ? '<div class="kl-none">The group did not load. Check your connection, then <button class="kl-unlink" onclick="kelasCmLoad()">try again</button>.</div>'
     : '<div class="ib-card ib-busy"><span class="ib-spin"></span><b>Loading your group…</b></div>';
   const sp=kelasSpace(), cats=(C.cats||[]).filter(c=>C.admin||kelasMemSpace({category:c})===sp);
   if(!cats.length) return '<div class="kl-none">The group opens while your class membership is active.</div>';
