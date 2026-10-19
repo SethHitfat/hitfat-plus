@@ -4593,6 +4593,18 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("...points: a PT session is +150", (Kelas.data.points=Kelas.data.points||keepD4.points, kelasPointsHTML().indexOf('PT session')>0));
   Kelas.data.memberships=[{category:'Membership',plan:'x',start_date:'2026-10-01',end_date:'2026-12-31',active:true}];
   ok("PT + a class: a switch with both", kelasSpaces().join()==='active,pt' && kelasHTML().indexOf('kl-space n2')>0);
+  /* the 19 Oct audit: each space in its own words and colour */
+  Kelas.space='pt';
+  var Pp=kelasProgressTab(), Tp2=kelasTodayTab();
+  ok("PT Progress speaks of sessions, not classes", Pp.indexOf('sessions this week')>0 && Pp.indexOf('Latest session')>0 && Pp.indexOf('last session')>0 && Pp.indexOf('Class Club')<0);
+  ok("...the package counts its days as the membership does", Tp2.indexOf('('+(kelasDaysLeft(Kelas.data.pt.end)+1)+' day')>0);
+  ok("...All Access names the longest membership, not this space's", Tp2.indexOf('until '+kelasDate('2026-12-31'))>0);
+  ok("every space wears its own accent", kelasHTML().indexOf('kl-sp kl-sp-pt')>0);
+  Kelas.space='active';
+  ok("the latest class is matched on this space's timetable", (function(){ var L=kelasLatest(); return !L || !L.c || kelasMemSpace(L.c)==='active'; })());
+  Kelas.data.memberships.push({category:'HYROX',plan:'x',start_date:'2026-10-01',end_date:'2026-12-31',active:true});
+  Kelas.data.first30={active:true,day:6,done:3,total:7,complete:false,missions:[]}; Kelas.space='hyrox';
+  ok("Bara in HYROX does not talk about FIRST 30 (it is not shown there)", kelasBaraLine()[1]!==kelasF30Line(kelasF30())[1]);
   Kelas.data=keepD4; Kelas.space=keepSp4; Kelas.tab=keepTab4; try{ localStorage.removeItem('hf_kelas_sp'); }catch(e){}
   /* profile photo (17 Oct) */
   var keepPh=HF.data.prefs.photo, keepG=HF.gphoto, keepSv3=HF.save; HF.save=function(){};

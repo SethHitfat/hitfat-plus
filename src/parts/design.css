@@ -4599,7 +4599,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 
 /* ── HYROX and Active apart (17 Oct): the switch, and HYROX's own look ── */
 .kl-space{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:4px 0 10px;padding:5px;border-radius:16px;background:rgba(127,127,127,.12);}
-.kl-space button{border:0;border-radius:12px;padding:11px 8px;font:900 15px inherit;letter-spacing:.04em;text-transform:uppercase;background:transparent;color:var(--dim);cursor:pointer;}
+.kl-space button{border:0;border-radius:12px;padding:11px 8px;font-family:inherit;font-weight:900;font-size:15px;letter-spacing:.04em;text-transform:uppercase;background:transparent;color:var(--dim);cursor:pointer;}
 .kl-space button.act.on{background:#E30613;color:#FFFFFF;box-shadow:0 6px 18px rgba(227,6,19,.28);}
 .kl-space button.hx.on{background:#16161A;color:#FFD400;box-shadow:0 6px 18px rgba(0,0,0,.28);}
 .kl-hero.hx,.kl-hero.kl-hero2.hx{background:linear-gradient(160deg,#2A2A31 0%,#16161A 55%,#0B0B0D 100%);box-shadow:0 12px 30px rgba(0,0,0,.35);}
@@ -5273,3 +5273,40 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 /* the count-in lets the coach show through, Simple's way (19 Oct) */
 #pl-cd{background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.55));-webkit-backdrop-filter:none;backdrop-filter:none;}
 #pl-cd .cdn{text-shadow:0 4px 30px rgba(0,0,0,.45);}
+
+/* ── Class spaces, one accent each (19 Oct 2026 audit) ──
+   The hero had each space's colour and everything under it stayed HITFAT
+   red; now the next class, the day picker, the week, the streak, the club
+   track, the month and FIRST 30 follow the space. Active keeps red. */
+.kl-sp{--kla:#E30613;--kla2:rgba(227,6,19,.22);--klon:#FFFFFF;}
+.kl-sp-ladies{--kla:#DB2777;--kla2:rgba(219,39,119,.22);}
+.kl-sp-mens{--kla:#1D4ED8;--kla2:rgba(29,78,216,.22);}
+.kl-sp-pt{--kla:#6D28D9;--kla2:rgba(109,40,217,.22);}
+.kl-sp-hyrox{--kla:#16161A;--kla2:rgba(22,22,26,.18);--klon:#FFD400;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .kl-sp-hyrox{--kla:#FFD400;--kla2:rgba(255,212,0,.22);--klon:#16161A;}}
+:root[data-theme="dark"] .kl-sp-hyrox{--kla:#FFD400;--kla2:rgba(255,212,0,.22);--klon:#16161A;}
+.kl-sp .kl-next{border-left-color:var(--kla);}
+.kl-sp .kl-nt{color:var(--kla);}
+.kl-sp .kl-days button.on{background:var(--kla);color:var(--klon);}
+.kl-sp .kl-days button.on.now::after{background:var(--klon);}
+.kl-sp .kl-wd.done span{background:var(--kla);}
+.kl-sp .kl-wd.done span .gly{stroke:var(--klon);}
+.kl-sp .kl-wd.now span{border-color:var(--kla);}
+.kl-sp .kl-tb i,.kl-sp .kl-line i,.kl-sp .kl-stop.on,.kl-sp .kl-wk i.on{background:var(--kla);}
+.kl-sp .kl-stop.on{color:var(--klon);}
+.kl-sp .kl-stop.cur{box-shadow:0 0 0 4px var(--kla2);}
+.kl-sp-ladies .kl-badge,.kl-sp-mens .kl-badge,.kl-sp-pt .kl-badge,.kl-sp-hyrox .kl-badge{background:var(--kla);box-shadow:0 6px 16px var(--kla2);color:var(--klon);}
+.kl-sp .kl-badge .gly{stroke:var(--klon);}
+.kl-sp .kl-share{border-color:var(--kla);color:var(--kla);}
+.kl-sp .kl-share .gly{stroke:var(--kla);}
+.kl-sp .kl-mon-sh{background:var(--kla);color:var(--klon);}
+.kl-sp .kl-mon-sh .gly{stroke:var(--klon);}
+.kl-sp .kl-mon-big b{color:var(--kla);}
+.kl-sp .f30{border-color:var(--kla2);}
+.kl-sp .f30-top .kl-kick{color:var(--kla);}
+.kl-sp .f30-m.next .f30-c{background:var(--kla2);box-shadow:0 0 0 2px var(--kla);}
+.kl-sp .f30-m.next .f30-c .gly{stroke:var(--kla);}
+.kl-sp .kl-add{border-color:var(--kla);color:var(--kla);}
+.kl-sp .kl-add .gly{stroke:var(--kla);}
+.kl-sp .kl-add.kl-add1{background:var(--kla);color:var(--klon);border-color:var(--kla);}
+.kl-sp .kl-add.kl-add1 .gly{stroke:var(--klon);}
