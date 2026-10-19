@@ -187,19 +187,47 @@ function scPlanHTML(){
       (typeof ckPlanHTML==='function'?ckPlanHTML():'')+'</div>';
   /* (16 Oct) one way into today's workout: the plan's next day, or finding a
      plan; water and steps live in the rings above, not here again */
-  if(pn)
+  var strip=pn?scWeekStrip(p,gi):'';
+  if(pn && !strip)
     rows.push({ic:'workout', t:(at.day.name||'Workout'), s:'Day '+(gi+1)+' of '+progDays(p)+' · '+p.name+' · '+p.dur+' min', done:scWorkouts(iso(0))>0, go:"openDay('"+p.id+"',"+gi+")", b:'Start'});
-  else rows.push({ic:'target', t:'Find your first plan', s:'Four questions, matched to your goal and level', done:scWorkouts(iso(0))>0, go:(typeof openFinder==='function'?'openFinder()':"switchTab('train')"), b:'Find'});
+  else if(!pn) rows.push({ic:'target', t:'Find your first plan', s:'Four questions, matched to your goal and level', done:scWorkouts(iso(0))>0, go:(typeof openFinder==='function'?'openFinder()':"switchTab('train')"), b:'Find'});
   if(!SC_FAST_LIVE){}
   else if(scRamadan()) rows.push({ic:'moon', t:dy.ram?'Fasting today ✓':'Ramadan fast', s:'Sahur, iftar, and water in between', done:!!dy.ram, go:'scRamToggle()', b:dy.ram?'':'Mark'});
   else if(scHasIF() && typeof ifWindow==='function'){
     var w=ifWindow(), f=HF.data.ifs||{};
     rows.push({ic:'clock', t:'Eat '+scClock(w.start)+' – '+scClock(w.end), s:f.active?'Fasting now · end it in IF HITFAT':'Then fast for '+ifProto().f+' hours', done:false, go:f.active?'openIF()':'scFastTap()', b:f.active?'View':'Start'});
   }
-  return '<div class="scx-plan">'+fsec("Today's Plan",'')+'<div class="scx-rows">'+rows.map(function(r){
+  return '<div class="scx-plan">'+fsec("Today's Plan",'')+strip+'<div class="scx-rows'+(rows.length?'':' empty')+'">'+rows.map(function(r){
     return '<div class="scx-row'+(r.done?' done':'')+'" onclick="'+r.go+'"><span class="ic">'+glyph(r.ic)+'</span><div class="tx"><b>'+hesc(r.t)+'</b><span>'+hesc(r.s)+'</span></div>'+
       (r.done?'<span class="ok">✓</span>':(r.b?'<button onclick="event.stopPropagation();'+r.go+'">'+r.b+'</button>':''))+'</div>'; }).join('')+'</div>'+
     (typeof ckPlanHTML==='function'?ckPlanHTML():'')+'</div>';
+}
+
+/* ── the week ahead, after Simple's Explore (19 Oct): Today with Start,
+   Tomorrow, then what's coming, as cards to swipe. Today's photo is the
+   plan's own; the days after are its colour with the day's glyph. A day
+   already trained shows done, and the next becomes Tomorrow. */
+function scWeekStrip(p,gi){
+  if(!p || gi<0 || typeof sessionAt!=='function') return '';
+  var tot=progDays(p), done=scWorkouts(iso(0))>0, out='', n=0, i, at, lab, cls, glyphN;
+  if(done && gi>0 && (at=sessionAt(p,gi-1)))
+    out+='<div class="wkc done" onclick="openDay(\''+p.id+'\','+(gi-1)+')"><span class="wkt">Today ✓</span>'+
+      '<div class="wkb"><small>Day '+gi+'</small><b>'+hesc(at.day.name||'Workout')+'</b><em>Done. Well done 💪</em></div></div>';
+  for(i=gi;i<tot && n<5;i++){
+    at=sessionAt(p,i); if(!at) break;
+    lab=n===0?(done?'Tomorrow':'Today'):(n===1&&!done?'Tomorrow':'Upcoming');
+    cls=n===0&&!done?'today':at.day.rest?'rest':'soon';
+    glyphN=(typeof pdxDayGlyph==='function')?pdxDayGlyph(at.day.name||''):'workout';
+    out+='<div class="wkc '+cls+'" onclick="openDay(\''+p.id+'\','+i+')"'+
+      (cls==='today'?' style="background-image:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.75)),url(\''+progImg(p)+'\')"':'')+'>'+
+      '<span class="wkt">'+lab+'</span>'+(cls!=='today'?'<span class="wkg">'+glyph(at.day.rest?'moon':glyphN)+'</span>':'')+
+      '<div class="wkb"><small>Day '+(i+1)+(at.day.rest?'':' · '+p.dur+' min')+'</small><b>'+hesc(at.day.rest?'Rest day':(at.day.name||'Workout'))+'</b>'+
+      (cls==='today'?'<button onclick="event.stopPropagation();openDay(\''+p.id+'\','+i+')">'+glyph('play')+'Start</button>':'')+'</div></div>';
+    n++;
+  }
+  if(!out) return '';
+  return '<div class="wkstrip"><div class="wkh"><b>'+hesc(p.name)+'</b><span>Week '+(sessionAt(p,gi)||{week:1}).week+' · Day '+(gi+1)+' of '+tot+'</span></div>'+
+    '<div class="wkrow">'+out+'</div></div>';
 }
 
 /* ── Kenali Bara: once, the first time the card shows ── */
