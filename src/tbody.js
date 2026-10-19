@@ -3439,6 +3439,16 @@ print("\n── 30-DAY WEIGHT LOSS ──");
   ok("members have it included", ownsProgram(WL30) && wlHomeCard().indexOf('In HITFAT+')>0);
 
   ok("the app claims website purchases when it loads what you own", /claimLandingPurchases/.test(String(loadEntitlement)));
+  /* the quick start (19 Oct): the pass kept per account, used offline and to open at once */
+  (function(){ var u=HF.userId; HF.userId='ent-test';
+    entCacheSet({skus:{prog_lad4:true},credits:0,plusUntil:'2099-01-01',loaded:true});
+    var c=entCacheGet();
+    ok("the pass is kept on the phone per account", !!(c && c.skus.prog_lad4 && c.plusUntil==='2099-01-01'));
+    HF.userId='someone-else'; ok("...and another account never sees it", entCacheGet()===null);
+    try{ localStorage.removeItem('hf_ent_ent-test'); }catch(e){} HF.userId=u; })();
+  ok("...offline, the last pass is used instead of free", /entCacheGet\(\)\|\|ne/.test(String(loadEntitlement)));
+  ok("...built aside, so a screen never sees an empty pass mid-load", /_ent=ne; entCacheSet\(ne\)/.test(String(loadEntitlement)) && !/_ent=\{skus/.test(String(loadEntitlement)));
+  ok("a cloud copy older than something logged meanwhile is not applied", /_savedAt>=t0/.test(String(HF.pull)));
   startWorkout=keepSW; _ent=keepEnt; HF.data.progress[WL30_ID]=keepProg||0; HF.data.wl30=keepWl||{}; HF.data.nutrition=keepNut; _wlPlan=null;
   wlTab='plan'; wlWeek=-1; wlMenuDay=-1; closeProduct();
 })();

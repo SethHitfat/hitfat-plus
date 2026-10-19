@@ -124,7 +124,7 @@ const HF={
     this.data=d;
   },
   load(){ try{ const r=localStorage.getItem(this.cacheKey()); this.apply(r?JSON.parse(r):null); }catch(e){ this.apply(null); } },
-  save(){ try{ localStorage.setItem(this.cacheKey(),JSON.stringify(this.data)); }catch(e){} this.pushCloud(); },
+  save(){ this._savedAt=Date.now(); try{ localStorage.setItem(this.cacheKey(),JSON.stringify(this.data)); }catch(e){} this.pushCloud(); },
   pushCloud(){
     if(!sb||!this.userId) return;
     clearTimeout(this._t);
@@ -135,9 +135,14 @@ const HF={
   },
   async pull(){
     if(!sb||!this.userId){ this.load(); return; }
+    const t0=Date.now();
     try{
       const {data,error}=await sb.from(this.TABLE).select('data').eq('user_id',this.userId).maybeSingle();
       if(error) throw error;
+      /* the app may have opened on this phone's copy while this was asked
+         (a quick start): something the member logged meanwhile is newer
+         than what came back, so keep it and send it up */
+      if(this._savedAt && this._savedAt>=t0){ this.pushCloud(); return; }
       if(data&&data.data){ this.apply(data.data); try{ localStorage.setItem(this.cacheKey(),JSON.stringify(this.data)); }catch(e){} }
       else { this.load(); this.pushCloud(); }
     }catch(e){ console.warn('cloud pull failed — using local cache',e.message||e); this.load(); }

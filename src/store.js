@@ -174,37 +174,49 @@ function scanAccess(){
 function canScan(){ return scanAccess().left>0; }
 
 let _claimedFor=null;
+/* The pass, kept on the phone per account (19 Oct 2026): the app can open on
+   it at once while the server is asked again, and a member offline keeps
+   what they paid for instead of meeting locks. Dates are still checked
+   live (liveDate), so a pass that ran out in the meantime shows as ended. */
+function entCacheKey(){ return 'hf_ent_'+(HF.userId||''); }
+function entCacheGet(){ try{ const o=JSON.parse(localStorage.getItem(entCacheKey())||'null'); return (o&&o.loaded&&o.skus)?o:null; }catch(e){ return null; } }
+function entCacheSet(o){ try{ localStorage.setItem(entCacheKey(), JSON.stringify(o)); }catch(e){} }
 async function loadEntitlement(){
-  _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, scanDaily:0, scanPlanUntil:null, loaded:true};
-  if(!sb || !HF.userId) return _ent;
+  /* built aside and swapped in whole, so a screen drawn meanwhile never sees an empty pass */
+  const ne={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, scanDaily:0, scanPlanUntil:null, loaded:true};
+  if(!sb || !HF.userId){ _ent=ne; return _ent; }
   /* once a session: anything bought on a landing page under this email */
   if(_claimedFor!==HF.userId){ _claimedFor=HF.userId; await claimLandingPurchases(); }
   try{
     const r=await sb.from('plus_entitlements')
                     .select('sku, kind, credits_left, expires_at')
                     .eq('user_id',HF.userId);
+    if(!r || r.error) throw new Error((r&&r.error&&r.error.message)||'entitlements');
     (r&&r.data||[]).forEach(e=>{
       const live = !e.expires_at || new Date(e.expires_at)>new Date();
-      if(e.kind==='credits'){ _ent.credits += (e.credits_left||0); return; }
+      if(e.kind==='credits'){ ne.credits += (e.credits_left||0); return; }
       if(!live) return;
       if(e.kind==='pass'){
-        if(!_ent.passUntil || new Date(e.expires_at)>new Date(_ent.passUntil)) _ent.passUntil=e.expires_at;
+        if(!ne.passUntil || new Date(e.expires_at)>new Date(ne.passUntil)) ne.passUntil=e.expires_at;
         /* the most scans a day any live pass gives */
         const d=scanDailyFor(e.sku);
-        if(d>_ent.scanDaily) _ent.scanDaily=d;
-        if(String(e.sku).indexOf('scan_')===0 && (!_ent.scanPlanUntil || new Date(e.expires_at)>new Date(_ent.scanPlanUntil))) _ent.scanPlanUntil=e.expires_at;
+        if(d>ne.scanDaily) ne.scanDaily=d;
+        if(String(e.sku).indexOf('scan_')===0 && (!ne.scanPlanUntil || new Date(e.expires_at)>new Date(ne.scanPlanUntil))) ne.scanPlanUntil=e.expires_at;
         /* A membership is a pass too — the scan function already treats any
            live pass as unlimited scanning — and its SKU says which tier. */
         if(String(e.sku).indexOf('sub_coach')===0){
-          if(!_ent.coachUntil || new Date(e.expires_at)>new Date(_ent.coachUntil)) _ent.coachUntil=e.expires_at;
+          if(!ne.coachUntil || new Date(e.expires_at)>new Date(ne.coachUntil)) ne.coachUntil=e.expires_at;
         } else if(String(e.sku).indexOf('sub_plus')===0){
-          if(!_ent.plusUntil || new Date(e.expires_at)>new Date(_ent.plusUntil)) _ent.plusUntil=e.expires_at;
+          if(!ne.plusUntil || new Date(e.expires_at)>new Date(ne.plusUntil)) ne.plusUntil=e.expires_at;
         }
         return;
       }
-      _ent.skus[e.sku]=true;         // programs, the bundle, the bar
+      ne.skus[e.sku]=true;         // programs, the bundle, the bar
     });
-  }catch(e){ /* offline, or the table is not deployed yet — stay on free */ }
+    _ent=ne; entCacheSet(ne);
+  }catch(e){ /* offline, or the table is not deployed yet: the last pass this phone saw, else free */
+    _ent=entCacheGet()||ne;
+  }
   return _ent;
 }
 

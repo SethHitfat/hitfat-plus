@@ -1418,16 +1418,13 @@
 /* (16 Oct) the new peek's ground is a blacker black than the splash's: lighten drops it, so no box shows */
 #splash .sp-buddy{mix-blend-mode:lighten;}
 #splash .sp-buddy img{display:block;width:100%;height:auto;}
-/* the address sits under the wordmark, off Bara's fur */
-#splash .sp-url{position:absolute;left:0;right:0;top:calc(16vh + env(safe-area-inset-top,0px) + 150px);text-align:center;
-  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:rgba(255,255,255,.45);opacity:0;animation:spIn .6s ease .9s forwards;}
 @keyframes spPeek{to{transform:translateY(0)}}
 @keyframes spRise{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
 @keyframes spPlus{to{transform:scale(1) rotate(0)}}
 @keyframes spIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){
   #splash *{animation:none!important;}
-  #splash .sp-glow,#splash .sp-logo,#splash .sp-word,#splash .sp-star,#splash .sp-url{opacity:1;transform:none;}
+  #splash .sp-glow,#splash .sp-logo,#splash .sp-word,#splash .sp-star{opacity:1;transform:none;}
   #splash .sp-plus{transform:none;} #splash .sp-buddy{transform:none;}
 }
 #toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(16px);
@@ -7864,7 +7861,6 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
   </div>
   <div class="sp-star"><span>Starring</span><b>Bara</b></div>
   <div class="sp-buddy"><img src="/img/mascot/peek.jpg" alt="Bara"></div>
-  <div class="sp-url">app.hitfat.io</div>
 </div>
 </div>
 
@@ -17838,37 +17834,49 @@ function scanAccess(){
 function canScan(){ return scanAccess().left>0; }
 
 let _claimedFor=null;
+/* The pass, kept on the phone per account (19 Oct 2026): the app can open on
+   it at once while the server is asked again, and a member offline keeps
+   what they paid for instead of meeting locks. Dates are still checked
+   live (liveDate), so a pass that ran out in the meantime shows as ended. */
+function entCacheKey(){ return 'hf_ent_'+(HF.userId||''); }
+function entCacheGet(){ try{ const o=JSON.parse(localStorage.getItem(entCacheKey())||'null'); return (o&&o.loaded&&o.skus)?o:null; }catch(e){ return null; } }
+function entCacheSet(o){ try{ localStorage.setItem(entCacheKey(), JSON.stringify(o)); }catch(e){} }
 async function loadEntitlement(){
-  _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, scanDaily:0, scanPlanUntil:null, loaded:true};
-  if(!sb || !HF.userId) return _ent;
+  /* built aside and swapped in whole, so a screen drawn meanwhile never sees an empty pass */
+  const ne={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, scanDaily:0, scanPlanUntil:null, loaded:true};
+  if(!sb || !HF.userId){ _ent=ne; return _ent; }
   /* once a session: anything bought on a landing page under this email */
   if(_claimedFor!==HF.userId){ _claimedFor=HF.userId; await claimLandingPurchases(); }
   try{
     const r=await sb.from('plus_entitlements')
                     .select('sku, kind, credits_left, expires_at')
                     .eq('user_id',HF.userId);
+    if(!r || r.error) throw new Error((r&&r.error&&r.error.message)||'entitlements');
     (r&&r.data||[]).forEach(e=>{
       const live = !e.expires_at || new Date(e.expires_at)>new Date();
-      if(e.kind==='credits'){ _ent.credits += (e.credits_left||0); return; }
+      if(e.kind==='credits'){ ne.credits += (e.credits_left||0); return; }
       if(!live) return;
       if(e.kind==='pass'){
-        if(!_ent.passUntil || new Date(e.expires_at)>new Date(_ent.passUntil)) _ent.passUntil=e.expires_at;
+        if(!ne.passUntil || new Date(e.expires_at)>new Date(ne.passUntil)) ne.passUntil=e.expires_at;
         /* the most scans a day any live pass gives */
         const d=scanDailyFor(e.sku);
-        if(d>_ent.scanDaily) _ent.scanDaily=d;
-        if(String(e.sku).indexOf('scan_')===0 && (!_ent.scanPlanUntil || new Date(e.expires_at)>new Date(_ent.scanPlanUntil))) _ent.scanPlanUntil=e.expires_at;
+        if(d>ne.scanDaily) ne.scanDaily=d;
+        if(String(e.sku).indexOf('scan_')===0 && (!ne.scanPlanUntil || new Date(e.expires_at)>new Date(ne.scanPlanUntil))) ne.scanPlanUntil=e.expires_at;
         /* A membership is a pass too — the scan function already treats any
            live pass as unlimited scanning — and its SKU says which tier. */
         if(String(e.sku).indexOf('sub_coach')===0){
-          if(!_ent.coachUntil || new Date(e.expires_at)>new Date(_ent.coachUntil)) _ent.coachUntil=e.expires_at;
+          if(!ne.coachUntil || new Date(e.expires_at)>new Date(ne.coachUntil)) ne.coachUntil=e.expires_at;
         } else if(String(e.sku).indexOf('sub_plus')===0){
-          if(!_ent.plusUntil || new Date(e.expires_at)>new Date(_ent.plusUntil)) _ent.plusUntil=e.expires_at;
+          if(!ne.plusUntil || new Date(e.expires_at)>new Date(ne.plusUntil)) ne.plusUntil=e.expires_at;
         }
         return;
       }
-      _ent.skus[e.sku]=true;         // programs, the bundle, the bar
+      ne.skus[e.sku]=true;         // programs, the bundle, the bar
     });
-  }catch(e){ /* offline, or the table is not deployed yet — stay on free */ }
+    _ent=ne; entCacheSet(ne);
+  }catch(e){ /* offline, or the table is not deployed yet: the last pass this phone saw, else free */
+    _ent=entCacheGet()||ne;
+  }
   return _ent;
 }
 
@@ -20225,7 +20233,7 @@ const HF={
     this.data=d;
   },
   load(){ try{ const r=localStorage.getItem(this.cacheKey()); this.apply(r?JSON.parse(r):null); }catch(e){ this.apply(null); } },
-  save(){ try{ localStorage.setItem(this.cacheKey(),JSON.stringify(this.data)); }catch(e){} this.pushCloud(); },
+  save(){ this._savedAt=Date.now(); try{ localStorage.setItem(this.cacheKey(),JSON.stringify(this.data)); }catch(e){} this.pushCloud(); },
   pushCloud(){
     if(!sb||!this.userId) return;
     clearTimeout(this._t);
@@ -20236,9 +20244,14 @@ const HF={
   },
   async pull(){
     if(!sb||!this.userId){ this.load(); return; }
+    const t0=Date.now();
     try{
       const {data,error}=await sb.from(this.TABLE).select('data').eq('user_id',this.userId).maybeSingle();
       if(error) throw error;
+      /* the app may have opened on this phone's copy while this was asked
+         (a quick start): something the member logged meanwhile is newer
+         than what came back, so keep it and send it up */
+      if(this._savedAt && this._savedAt>=t0){ this.pushCloud(); return; }
       if(data&&data.data){ this.apply(data.data); try{ localStorage.setItem(this.cacheKey(),JSON.stringify(this.data)); }catch(e){} }
       else { this.load(); this.pushCloud(); }
     }catch(e){ console.warn('cloud pull failed — using local cache',e.message||e); this.load(); }
@@ -33029,7 +33042,7 @@ async function syncProfile(session){
 
 /* The splash plays its whole sequence once (about 1.9 s from the page
    starting) before it lifts, however fast the app is ready. */
-const SPLASH_MIN=1900;
+const SPLASH_MIN=1400;   // the sequence ends at about 1.3 s (19 Oct: 1.9 felt slow)
 function hideSplash(){
   const s=$('splash'); if(!s || s.classList.contains('gone')) return;
   let left=0;
@@ -33051,17 +33064,36 @@ async function onSignedIn(session){
 }
 async function _onSignedIn(session){
   hideAuth();
+  /* the same account again (the second sign-in event at launch, or an hourly
+     token refresh): refresh the data, never move the member off their screen */
+  const same=_started && HF.userId===session.user.id;
   HF.setUser(session.user.id,session.user.email);
   /* the Google account's picture, the profile photo until one is uploaded */
   { const m=session.user.user_metadata||{}; const g=String(m.avatar_url||m.picture||'');
     HF.gphoto=/^https:\/\/lh3\.googleusercontent\.com\//.test(g)?g:''; }
-  await HF.pull();
-  await loadEntitlement();  // read plus_entitlements before anything renders
+  /* A quick start (19 Oct 2026, "the splash is slow"): a member who has
+     used the app on this phone opens on this phone's copy and their last
+     pass at once, while the server is asked in the background. The splash
+     used to wait for three requests one after another. A first sign-in, or
+     a new phone, still waits, so onboarding and the pass are never guessed. */
+  let quick=false;
+  if(!_started){
+    HF.load();
+    const ce=typeof entCacheGet==='function'?entCacheGet():null;
+    if(HF.data && HF.data.onboarded && ce){
+      _ent=ce; quick=true;
+      if(typeof kelasRestore==='function') kelasRestore();
+      applyCustom(); startApp();
+    }
+  }
+  await Promise.all([HF.pull(), loadEntitlement()]);   // side by side, not one after the other
   handlePaidRedirect();     // pick up a purchase made just before this load
   if(typeof kelasRestore==='function') kelasRestore();   // the class QR, even offline
   applyCustom();            // the spec may have arrived from the cloud
   syncProfile(session);
-  if(!_started) startApp(); else { switchTab('home'); if(!HF.data.onboarded) startOnboarding(); }
+  if(!_started) startApp();
+  else if(quick||same){ try{ updateAvatar(); if($('home') && $('home').style.display!=='none') renderHome(); }catch(e){} }   // fresh data, same screen
+  else { switchTab('home'); if(!HF.data.onboarded) startOnboarding(); }
   if(typeof handleBuyParam==='function') handleBuyParam();   // ?beli= from a landing page
 
   /* Load the Club here as well as in boot(). boot() runs before this session

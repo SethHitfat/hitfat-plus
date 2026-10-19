@@ -66,16 +66,13 @@
 /* (16 Oct) the new peek's ground is a blacker black than the splash's: lighten drops it, so no box shows */
 #splash .sp-buddy{mix-blend-mode:lighten;}
 #splash .sp-buddy img{display:block;width:100%;height:auto;}
-/* the address sits under the wordmark, off Bara's fur */
-#splash .sp-url{position:absolute;left:0;right:0;top:calc(16vh + env(safe-area-inset-top,0px) + 150px);text-align:center;
-  font-family:'Inter',system-ui,sans-serif;font-size:14px;color:rgba(255,255,255,.45);opacity:0;animation:spIn .6s ease .9s forwards;}
 @keyframes spPeek{to{transform:translateY(0)}}
 @keyframes spRise{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
 @keyframes spPlus{to{transform:scale(1) rotate(0)}}
 @keyframes spIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){
   #splash *{animation:none!important;}
-  #splash .sp-glow,#splash .sp-logo,#splash .sp-word,#splash .sp-star,#splash .sp-url{opacity:1;transform:none;}
+  #splash .sp-glow,#splash .sp-logo,#splash .sp-word,#splash .sp-star{opacity:1;transform:none;}
   #splash .sp-plus{transform:none;} #splash .sp-buddy{transform:none;}
 }
 #toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(16px);
@@ -877,7 +874,6 @@ body:has(#play.on)::before{display:none;}
   </div>
   <div class="sp-star"><span>Starring</span><b>Bara</b></div>
   <div class="sp-buddy"><img src="/img/mascot/peek.jpg" alt="Bara"></div>
-  <div class="sp-url">app.hitfat.io</div>
 </div>
 </div>
 
@@ -1318,7 +1314,7 @@ function toast(m){ const t=$('toast'); if(!t) return; t.textContent=m; t.classLi
 
 /* The splash plays its whole sequence once (about 1.9 s from the page
    starting) before it lifts, however fast the app is ready. */
-const SPLASH_MIN=1900;
+const SPLASH_MIN=1400;   // the sequence ends at about 1.3 s (19 Oct: 1.9 felt slow)
 function hideSplash(){
   const s=$('splash'); if(!s || s.classList.contains('gone')) return;
   let left=0;
@@ -1340,17 +1336,36 @@ async function onSignedIn(session){
 }
 async function _onSignedIn(session){
   hideAuth();
+  /* the same account again (the second sign-in event at launch, or an hourly
+     token refresh): refresh the data, never move the member off their screen */
+  const same=_started && HF.userId===session.user.id;
   HF.setUser(session.user.id,session.user.email);
   /* the Google account's picture, the profile photo until one is uploaded */
   { const m=session.user.user_metadata||{}; const g=String(m.avatar_url||m.picture||'');
     HF.gphoto=/^https:\/\/lh3\.googleusercontent\.com\//.test(g)?g:''; }
-  await HF.pull();
-  await loadEntitlement();  // read plus_entitlements before anything renders
+  /* A quick start (19 Oct 2026, "the splash is slow"): a member who has
+     used the app on this phone opens on this phone's copy and their last
+     pass at once, while the server is asked in the background. The splash
+     used to wait for three requests one after another. A first sign-in, or
+     a new phone, still waits, so onboarding and the pass are never guessed. */
+  let quick=false;
+  if(!_started){
+    HF.load();
+    const ce=typeof entCacheGet==='function'?entCacheGet():null;
+    if(HF.data && HF.data.onboarded && ce){
+      _ent=ce; quick=true;
+      if(typeof kelasRestore==='function') kelasRestore();
+      applyCustom(); startApp();
+    }
+  }
+  await Promise.all([HF.pull(), loadEntitlement()]);   // side by side, not one after the other
   handlePaidRedirect();     // pick up a purchase made just before this load
   if(typeof kelasRestore==='function') kelasRestore();   // the class QR, even offline
   applyCustom();            // the spec may have arrived from the cloud
   syncProfile(session);
-  if(!_started) startApp(); else { switchTab('home'); if(!HF.data.onboarded) startOnboarding(); }
+  if(!_started) startApp();
+  else if(quick||same){ try{ updateAvatar(); if($('home') && $('home').style.display!=='none') renderHome(); }catch(e){} }   // fresh data, same screen
+  else { switchTab('home'); if(!HF.data.onboarded) startOnboarding(); }
   if(typeof handleBuyParam==='function') handleBuyParam();   // ?beli= from a landing page
 
   /* Load the Club here as well as in boot(). boot() runs before this session
