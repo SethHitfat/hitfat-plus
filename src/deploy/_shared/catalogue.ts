@@ -41,6 +41,9 @@ export const CATALOGUE: Record<string, Sku> = {
   "prog_m3": { price: 29, kind: "program" },        // 22 Minutes Hardcore
   "prog_wl30": { price: 39, kind: "program" },      // 30-Day Weight Loss · sold on its own, also on its landing page
   "prog_d6": { price: 39, kind: "program" },        // DIET 6 MINGGU 6KG · sold on its own, also on its landing page
+  "prog_hx12": { price: 149, kind: "program" },     // HYROX 12-Week Race Ready (from HITFAT Hybrid, 19 Oct 2026)
+  "prog_hx8": { price: 99, kind: "program" },       // HYROX 8-Week Race Prep
+  "prog_hxft": { price: 19, kind: "program" },      // HYROX First Timer
   /* Meal Scan add-ons (12 Oct 2026): 30 days of a daily allowance, enforced in
      scan-food. The credit packs and old passes below are no longer sold and
      stay so a late callback still grants. */

@@ -325,6 +325,7 @@ function kelasTodayTab(){
   if(pts) h+=kelasPtTodayHTML();
   if(!hxs && !pts){ h+=kelasF30HTML(); h+=kelasJourneyHTML(); }
   if(kelasIsHx()) h+=kelasHxTodayHTML();
+  if(hxs && typeof hxKelasCard==='function') h+=hxKelasCard();   // the HYROX programs, part of the class (19 Oct 2026)
   h+=kelasWodHTML();
 
   /* the timetable, this space's classes only */

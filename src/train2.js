@@ -173,7 +173,7 @@ const HPO_PAL={red:['#FF4A3D','#B3121B','#5E070C','#FFC21A'], orange:['#FF8A2A',
   blue:['#4D78FF','#1B2FA8','#0E1A60','#3EE6CF'], purple:['#8A5CFF','#3A1C9C','#1E0F55','#FF4D8D'],
   teal:['#3FD3C9','#0E7C86','#073F44','#FF4D8D'], green:['#36D884','#0F7A4A','#073F26','#FFE14D'],
   gold:['#F5C042','#B5790A','#5A3A03','#E30613']};
-const HPO_OF={c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
+const HPO_OF={hx12:'charcoal',hx8:'charcoal',hxft:'charcoal',c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
   sig2:'charcoal',men6:'blue',f40:'purple',bws8:'charcoal',min3:'blue',reset12:'purple',mkb:'charcoal',mdb:'blue',m2:'purple',core14:'teal'};
 const HPO_GOAL={'Fat Loss':['red','orange','magenta'],'Strength':['charcoal','blue','purple'],'Core':['teal','green']};
 function hpoPal(p){
@@ -184,7 +184,7 @@ function hpoPal(p){
 /* the pictures that have a mask (img/p/mask/<picture>.png), by file name */
 const HPO_MASK=new Set(('wl30 sig1 sig2 sig3 sig4 fl30 lad4 men6 f40 core14 bws8 hiit4 min3 am21 reset12 mkb mdb mch m1 m2 m3 m4 '+
   'kb1 kb2 kb3 db1 db2 db3 bt1 bt2 ch1 ch2 tw1 tw2 p1 p2 p4 p5 p6 p7 p9 p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 p20 '+
-  'p21 p22 p23 p24 p25 p26 p27 p28 p29 p30 p31 p32 p33 p34 c1 c2 c3').split(' '));
+  'p21 p22 p23 p24 p25 p26 p27 p28 p29 p30 p31 p32 p33 p34 c1 c2 c3 hx12 hx8 hxft').split(' '));
 function hpoPic(p){ return String(progImg(p)).split('/').pop().replace(/\.\w+(\?.*)?$/,''); }
 function hpoLen(p){ return typeof p.days==='number' ? p.days+' days' : p.oneTime ? progDays(p)+' days' : p.weeks ? (p.weeks.length===1?'1 week':p.weeks.length+' weeks') : p.dur+' min'; }
 function hpoCard(p,o){
@@ -504,6 +504,7 @@ function trForYou(){
   if(hero){ h+=fsec("Today's Pick",pickSub); h+=hpoCard(hero,{wide:true,kick:"Today's pick",start:true,cls:'fyh'}); }
   const rest=pick.filter(p=>p!==hero);
   if(rest.length){ h+=fsec('More for You','Picked for your goal and level.'); h+='<div class="hscroll hpo-row fmore">'+rest.map(p=>hpoCard(p,{kick:fyWhy(p,goalKey,lvl)[1],start:true})).join('')+'</div>'; }
+  if(typeof hxTrainRow==='function') h+=hxTrainRow();   // HYROX, from HITFAT Hybrid (19 Oct 2026)
   if(quick.length){
     h+=fsec('Quick Workouts','Twenty minutes or less.');
     h+='<div class="hscroll hpo-row">'+quick.slice(0,6).map(p=>hpoCard(p,{start:true})).join('')+'</div>';

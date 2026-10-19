@@ -380,6 +380,7 @@ function openProduct(sku){
   if(sku==='prog_'+WL30_ID) return wlBuy();
   if(typeof LB30_ID!=='undefined' && sku==='prog_'+LB30_ID) return lbBuy();
   if(typeof D6_ID!=='undefined' && sku==='prog_'+D6_ID) return d6Buy();
+  if(typeof hxDef==='function' && hxDef(String(sku).replace(/^prog_/,''))) return hxBuy(String(sku).replace(/^prog_/,''));
   if(String(sku).indexOf('scan_')===0) return openScanPlans();
   if(sku===BUNDLE_SKU || String(sku).indexOf('prog_')===0){
     const p=String(sku).indexOf('prog_')===0 ? PROGRAMS.filter(x=>'prog_'+x.id===sku)[0] : null;
@@ -753,6 +754,7 @@ function coachUpsell(){
 function lockedProgram(p){
   if(p && p.hub==='lb30' && typeof lbBuy==='function') return lbBuy();
   if(p && p.hub==='d6' && typeof d6Buy==='function') return d6Buy();
+  if(p && p.hub==='hx' && typeof hxBuy==='function') return hxBuy(p.id);
   if(p && p.oneTime && typeof wlBuy==='function') return wlBuy();
   openPaywall(p.name+' is part of HITFAT+.');
 }

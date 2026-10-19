@@ -54,7 +54,7 @@ const PHOTO=new Set([
   'kb2','kb3','lad4','m1','m2','m3','m4','mch','mdb','men6','min3','mkb','p1','p10','p11','p12','p13',
   'p14','p15','p16','p17','p18','p19','p2','p20','p21','p22','p23','p24','p25','p26','p27','p28',
   'p29','p30','p31','p32','p33','p4','p5','p6','p7','p9','reset12','rh1','rh2','rh3','rh4','rh5',
-  'rh6','sig1','sig2','sig3','sig4','tw1','tw2','bt1','bt2','p34','wl30']);
+  'rh6','sig1','sig2','sig3','sig4','tw1','tw2','bt1','bt2','p34','wl30','hx12','hx8','hxft']);
 function hasPhoto(p){ return !!(p && PHOTO.has(p.id)); }
 /* Where the person is in each picture: x is the middle of the body, y the
    face (or the middle of the body when it lies flat), both in %, then the
@@ -67,7 +67,7 @@ function hasPhoto(p){ return !!(p && PHOTO.has(p.id)); }
 const FOCAL={
   am21:[55,17,1], bws8:[55,48,1], c1:[80,25,1.344], c2:[72,57,1.38,1], c3:[78,50,1.344,1],
   ch1:[45,20,1.806,1], ch2:[57,16,0.667], core14:[55,32,1], db1:[45,30,0.593], db2:[50,18,0.593],
-  db3:[47,12,0.593], f40:[45,12,1], fl30:[50,12,1], hiit4:[50,22,1], kb1:[50,15,0.593],
+  db3:[47,12,0.593], f40:[45,12,1], fl30:[50,12,1], hiit4:[50,22,1], kb1:[50,15,0.593], hx8:[50,15,0.593], hx12:[50,10,0.593], hxft:[50,10,0.593],
   kb2:[45,10,0.593], kb3:[50,7,0.593], lad4:[52,15,1], m1:[52,12,1], m2:[40,14,1],
   m3:[55,25,1], m4:[17,55,1.806,1], mch:[57,15,1], mdb:[50,28,1], men6:[50,13,1],
   min3:[48,15,1], mkb:[50,10,1], p1:[72,31,1.881,1], p10:[50,10,0.593], p11:[50,10,0.593],
@@ -529,7 +529,7 @@ function trainingDetails(p,exs){
 }
 function renderProgram(){
   const p=curProg; if(!p) return;
-  if(p.hub) return p.hub==='lb30' ? renderLB30() : p.hub==='d6' ? renderD6() : renderWL30();
+  if(p.hub) return p.hub==='lb30' ? renderLB30() : p.hub==='d6' ? renderD6() : p.hub==='hx' ? renderHX() : renderWL30();
   const tot=progDays(p), done=progDone(p.id), pct=tot?Math.round(done/tot*100):0;
   const owned=ownsProgram(p), multi=!!(p.weeks&&p.weeks.length);
   const meta=[p.level, multi?planPerWeek(p)+' days a week':'', p.dur+' min'+(multi?' a day':'')].filter(Boolean).join(' · ');
@@ -631,6 +631,7 @@ function pdxPlanHTML(exs, rounds){
 let curDay=null;
 function openDay(pid,gi){
   const p=findProg(pid); if(!p) return;
+  if(p.hub==='hx'){ curProg=p; return hxOpenDay(gi); }
   if(p.hub) return p.hub==='lb30' ? lbOpenDay(gi) : p.hub==='d6' ? d6OpenDay(gi) : wlOpenDay(gi);
   if(!ownsProgram(p)) return lockedProgram(p);
   curProg=p;

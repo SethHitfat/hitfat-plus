@@ -316,7 +316,7 @@ print("\n── GENERATED PLANS ──");
 var _multi=PROGRAMS.filter(function(p){return p.weeks;});
 ok("plan catalogue grew",  _multi.length>=17, _multi.length);
 var _bad=0,_empty=0,_days=0;
-_multi.forEach(function(p){ if(p.hub==='lb30'||p.hub==='d6') return; p.weeks.forEach(function(w){ w.days.forEach(function(d){
+_multi.forEach(function(p){ if(p.hub==='lb30'||p.hub==='d6'||p.hub==='hx') return; p.weeks.forEach(function(w){ w.days.forEach(function(d){
   _days++; if(d.rest) return;
   if(!d.ex||!d.ex.length){_empty++;return;}
   d.ex.forEach(function(n){ if(!DB.find(function(e){return e.n===n;})) _bad++; }); }); }); });
@@ -382,7 +382,7 @@ ok("no unverifiable 'Top 10 in Malaysia' claim", _ph.indexOf('Top 10 in Malaysia
 ok("Recovery stays in its own tab, not in Plans", _ph.indexOf('Knee Prehab')<0 && _ph.indexOf('Desk Reset')<0);
 ok("...and the billboard is a training plan", trainingPlans().every(function(p){ return !p.rehab; }));
 /* The minutes on a card are what the player runs. */
-ok("every plan's minutes match its content", trainingPlans().filter(function(p){ return p.id!=='custom' && p.hub!=='lb30' && p.hub!=='d6'; })
+ok("every plan's minutes match its content", trainingPlans().filter(function(p){ return p.id!=='custom' && p.hub!=='lb30' && p.hub!=='d6' && p.hub!=='hx'; })
    .every(function(p){ return p.dur===progMinutes(p); }));
 ok("Morning 10 is about ten minutes", Math.abs(PROGRAMS.filter(function(p){ return p.id==='am21'; })[0].dur-10)<=1);
 ok("names are written one way", PROGRAMS.every(function(p){ return !/^\d+ (Day|Week|Minutes?) /.test(p.name); }));
@@ -821,7 +821,7 @@ ok("filmed:true narrows the pool", (function(){
 })());
 ok("BAR plans still get BAR moves", BAR_PLANS.every(function(p){
     return p.weeks[0].days.some(function(d){ return !d.rest && d.ex.some(isBarExercise); }); }));
-ok("no generic day went empty",  PROGRAMS.filter(function(p){ return p.weeks && p.hub!=='lb30' && p.hub!=='d6'; })
+ok("no generic day went empty",  PROGRAMS.filter(function(p){ return p.weeks && p.hub!=='lb30' && p.hub!=='d6' && p.hub!=='hx'; })
     .every(function(p){ return p.weeks.every(function(w){ return w.days.every(function(d){
       return d.rest || d.ex.length>0; }); }); }));
 
@@ -4726,6 +4726,32 @@ print("\n── COACH VOICE + MUSIC ──");
   coSet('music','off'); ok("music off: no track", coTrackUrl()===null);
   noThrow("the sound sheet opens", function(){ coPanel(); coPanelClose(); });
   coSay=keepSay; pl=keepPl; HF.data.prefs=keepP; HF.save=keepSv;
+})();
+print("\n── HYROX BY HITFAT (from HITFAT Hybrid) ──");
+(function(){
+  var keepE=_ent, keepSv=HF.save, keepP=JSON.parse(JSON.stringify(HF.data.prefs||{})); HF.save=function(){};
+  var P12=hxProg('hx12'), P8=hxProg('hx8'), PF=hxProg('hxft');
+  ok("three HYROX programs, each its own page", !!(P12&&P8&&PF) && [P12,P8,PF].every(function(p){ return p.hub==='hx' && p.oneTime; }));
+  ok("...at Hybrid's prices: RM149, RM99, RM19", programPrice(P12)===149 && programPrice(P8)===99 && programPrice(PF)===19);
+  ok("12 weeks × 5, 8 weeks × 5, 4 weeks × 4", progDays(P12)===60 && progDays(P8)===40 && progDays(PF)===16);
+  ok("...each level of the race build has all its sessions", HX_LEVELS.every(function(l){ return HX_RACE[l].weeks.length===12 && HX_RACE[l].weeks.every(function(w){ return w.days.length===5 && w.days.every(function(d){ return d.workout && d.type; }); }); }));
+  var w8=hxWeeks(hxDef('hx8'),'OPEN'), w12=hxWeeks(hxDef('hx12'),'OPEN');
+  ok("the 8 weeks are Hybrid's pick of the 12 (1,3,5,7,9,10,11,12)", w8.length===8 && w8[1].days[0]===w12[2].days[0] && w8[7].days[4]===w12[11].days[4]);
+  ok("the First Timer: blocks of moves, clips from HITFAT's library", HX_FT.length===4 && HX_FT.every(function(w){ return w.days.length===4 && w.days.every(function(d){ return d.title && d.blocks && d.blocks.length; }); }));
+  var vids=0; HX_FT.forEach(function(w){ w.days.forEach(function(d){ d.blocks.forEach(function(b){ (b.moves||[]).forEach(function(m){ if(m.vimeo) vids++; }); }); }); });
+  ok("...with clips where filmed", vids>20, vids);
+  HF.data.prefs.hxLevel='PRO'; var a=hxWeeks(hxDef('hx12'))[0].days[0].workout; HF.data.prefs.hxLevel='Beginner'; var b=hxWeeks(hxDef('hx12'))[0].days[0].workout;
+  ok("the level changes the sessions, not where you are", a!==b && hxKey('hx12',0,0)==='hx12-w1-d1');
+  _ent={skus:{},credits:0,passUntil:null,plusUntil:null,coachUntil:null,scanDaily:0,loaded:true};
+  ok("locked without HITFAT+ or the purchase", !hxOwned(hxDef('hx8')));
+  _ent.skus.prog_hx8=true; ok("...open once bought on its own", hxOwned(hxDef('hx8')) && !hxOwned(hxDef('hx12')));
+  _ent=keepE; _ent=Object.assign({},keepE,{plusUntil:'2099-01-01'}); ok("...and every one of them with HITFAT+", hxOwned(hxDef('hx12')) && hxOwned(hxDef('hxft')));
+  var bought=null, kb=hxBuy; hxBuy=function(id){ bought=id; }; openProduct('prog_hx12'); hxBuy=kb;
+  ok("a locked HYROX program leads to its own offer", bought==='hx12');
+  ok("a session's preview line reads its first two lines", hxFirstLine('3×\n• Goblet squat × 10\n• Push ups')==='3× · Goblet squat × 10');
+  ok("Train shows the HYROX row", /HYROX/.test(hxTrainRow()) && hxTrainRow().indexOf("openProgram('hx8')")>0);
+  ok("the HYROX class space lists them as part of the class", hxKelasCard().indexOf('Included with your class')>0 && /kelasTodayTab[\s\S]*hxKelasCard/.test(String(kelasTodayTab)));
+  _ent=keepE; HF.save=keepSv; HF.data.prefs=keepP;
 })();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");
