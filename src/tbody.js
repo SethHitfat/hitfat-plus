@@ -4769,5 +4769,15 @@ print("\n── THE MEAL REPORT (after Simple's meal flow) ──");
   noThrow("the report draws", function(){ mrOpen({id:'x',name:'Nasi kukus',kcal:620,p:38,c:72,f:18},20); mrDone(); });
   HF.data.nutrition=keepN; HF.data.meals=keepM; HF.data.favs=keepF; HF.save=keepSv;
 })();
+print("\n── TYPED MEAL (type what you ate) ──");
+(function(){
+  var keepM=JSON.parse(JSON.stringify(HF.data.meals||{})), keepSv=HF.save, ko=mrOpen; HF.save=function(){}; mrOpen=function(){};
+  _typed={food_name:'Nasi lemak',food_name_bm:'Nasi lemak telur',estimated_calories:610,protein_g:16,carbs_g:82,fat_g:24,portion_size:'1 pinggan',breakdown:[{ingredient:'Nasi lemak',calories:450},{ingredient:'Telur',calories:75}]};
+  var h=typedHTML();
+  ok("the estimate shows its items and says it is an estimate", h.indexOf('Nasi lemak telur')>0 && h.indexOf('≈ 610 kcal')>0 && h.indexOf('Telur')>0 && /An estimate/.test(h));
+  ok("the sheet asks to type first", (function(){ openManual(); var x=document.getElementById('man-body').innerHTML; closeManual(); return x.indexOf('Type what you ate')>0 && x.indexOf("typeMeal()")>0; })());
+  ok("the typed request goes to scan-food as text, never a photo", /mode:'text'/.test(String(typeMeal)) && !/image_base64/.test(String(typeMeal)));
+  HF.data.meals={}; mrOpen=ko; HF.save=keepSv; HF.data.meals=keepM; _typed=null;
+})();
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

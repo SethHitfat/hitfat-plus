@@ -516,18 +516,27 @@ function renderBurn(){
 /* ── MANUAL ADD ── */
 let _slot='breakfast';
 function openManualAt(k){ openManual(); _slot=k; renderManual(); }
-function openManual(){ _slot=slotNow(); $('mansheet').classList.add('on'); $('sheetbg').classList.add('on'); renderManual(); }
+function openManual(){ _slot=slotNow(); _typed=null; _mText=''; $('mansheet').classList.add('on'); $('sheetbg').classList.add('on'); renderManual(); }
 function closeManual(){ $('mansheet').classList.remove('on'); $('sheetbg').classList.remove('on'); renderEat(); }
-function setSlot(s){ _slot=s; renderManual(); }
+function setSlot(s){ const keep={n:($('m-name')||{}).value,k:($('m-kcal')||{}).value,p:($('m-p')||{}).value,c:($('m-c')||{}).value,f:($('m-f')||{}).value};
+  _slot=s; renderManual();
+  [['m-name',keep.n],['m-kcal',keep.k],['m-p',keep.p],['m-c',keep.c],['m-f',keep.f]].forEach(x=>{ const e=$(x[0]); if(e&&x[1]) e.value=x[1]; }); }
 function renderManual(){
   const favs=(HF.data.favs||[]).slice(0,8);
   $('man-body').innerHTML=
     '<div style="font-size:17px;font-weight:800;margin-bottom:3px;">Add a meal</div>'+
-    '<div class="sub" style="margin-bottom:14px;">Log anything by hand — always open, no scan used.</div>'+
+    '<div class="sub" style="margin-bottom:14px;">Type it and let AI work it out, or fill it in yourself.</div>'+
+    /* type it, and AI works it out (20 Oct 2026, after Simple's "type what you ate") */
+    '<div class="qh">Type what you ate</div>'+
+    '<div class="m-type"><textarea class="inp" id="m-text" rows="2" maxlength="300" placeholder="e.g. nasi lemak telur + teh tarik kurang manis" oninput="_mText=this.value">'+hesc(_mText)+'</textarea>'+
+    '<button class="m-ai" id="m-ai" onclick="typeMeal()">'+glyph('spark')+'Work it out</button></div>'+
+    '<div id="m-typed">'+typedHTML()+'</div>'+
+
     (favs.length?'<div class="qh">Quick pick</div><div class="filters">'+favs.map((f,i)=>
       '<button class="chip" onclick="fillFav('+i+')">'+f.name+' · '+f.kcal+'</button>').join('')+'</div>':'')+
     '<div class="qh">Meal</div><div class="filters">'+SLOTS.map(s=>
       '<button class="chip'+(_slot===s.k?' y':'')+'" onclick="setSlot(\''+s.k+'\')">'+glyph(s.e)+' '+s.n+'</button>').join('')+'</div>'+
+    '<div class="qh">Or fill it in</div>'+
     '<input class="inp" id="m-name" placeholder="What did you eat? e.g. Nasi lemak">'+
     '<input class="inp" id="m-kcal" type="number" inputmode="numeric" placeholder="Calories (kcal)">'+
     '<div class="qh">Macros (optional)</div>'+
@@ -537,6 +546,39 @@ function renderManual(){
     '<input class="inp" id="m-f" type="number" inputmode="numeric" placeholder="Fat g"></div>'+
     '<button class="bigbtn" onclick="saveManual()">Log meal</button>'+
     '<button class="bigbtn sec" onclick="closeManual()">Cancel</button>';
+}
+/* ── a typed meal: the words go to scan-food (mode 'text', its own daily
+   allowance, never a photo scan), the estimate fills the form, the member
+   checks it, then logs as usual ── */
+let _typed=null, _mText='';
+function typedHTML(){
+  const d=_typed; if(!d) return '';
+  const items=(d.breakdown||[]).map(x=>'<span class="m-it">'+hesc(x.ingredient||x.name||'')+'<b>'+Math.round(x.calories||0)+'</b></span>').join('');
+  return '<div class="m-res"><div class="m-res-h"><b>'+hesc(d.food_name_bm||d.food_name||'')+'</b><span>≈ '+(d.estimated_calories||0).toLocaleString('en-MY')+' kcal</span></div>'+
+    (items?'<div class="m-its">'+items+'</div>':'')+
+    '<div class="m-res-f">'+(d.portion_size?hesc(d.portion_size)+' · ':'')+'An estimate. Change any number below before you log.</div></div>';
+}
+function typedFill(){
+  const d=_typed; if(!d) return;
+  const set=(id,v)=>{ const e=$(id); if(e) e.value=v; };
+  set('m-name', (d.food_name_bm||d.food_name||'').slice(0,80));
+  set('m-kcal', Math.round(d.estimated_calories||0)||'');
+  set('m-p', Math.round(d.protein_g||0)||''); set('m-c', Math.round(d.carbs_g||0)||''); set('m-f', Math.round(d.fat_g||0)||'');
+}
+async function typeMeal(){
+  const t=String((($('m-text')||{}).value)||'').trim(); _mText=t;
+  if(t.length<2){ toast('Type what you ate first'); return; }
+  const b=$('m-ai'); if(b){ b.disabled=true; b.innerHTML=glyph('spark')+'Working it out…'; }
+  try{
+    const tk=await scanToken(); if(!tk) throw new Error('Sign in to use this.');
+    const r=await fetch(SCAN_FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk,'apikey':SUPA_KEY},
+      body:JSON.stringify({mode:'text', text:t})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||'Could not work it out. Log it by hand.');
+    if(!(j.estimated_calories>0) || !String(j.food_name||'').trim()) throw new Error('That does not look like food. Try again, or fill it in.');
+    _typed=j; renderManual(); typedFill();
+  }catch(e){ toast((e&&e.message)||'Could not work it out'); }
+  finally{ const b2=$('m-ai'); if(b2){ b2.disabled=false; b2.innerHTML=glyph('spark')+'Work it out'; } }
 }
 function fillFav(i){
   const f=(HF.data.favs||[])[i]; if(!f) return;
@@ -549,6 +591,8 @@ function saveManual(){
   const b=typeof mrBefore==='function'?mrBefore():0;
   const m={name, bm:name, kcal, slot:_slot,
     p:parseInt(($('m-p')||{}).value,10)||0, c:parseInt(($('m-c')||{}).value,10)||0, f:parseInt(($('m-f')||{}).value,10)||0};
+  if(_typed){ m.src='text'; m.comps=(_typed.breakdown||[]).map(x=>({name:x.ingredient||x.name||'',kcal:Math.round(x.calories||0)})); }
+  _typed=null; _mText='';
   m.id=logMeal(m); closeManual();
   if(typeof mrOpen==='function') mrOpen(m,b); else toast('Meal logged');
 }

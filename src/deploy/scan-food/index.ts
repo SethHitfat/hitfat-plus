@@ -29,6 +29,41 @@ const MODEL = 'claude-sonnet-5-5';
 
 const FREE_SCANS_PER_MONTH = 3;
 
+/* Typed meals (20 Oct 2026, after Simple's "type what you ate"): the member
+   writes "nasi lemak + teh tarik kurang manis" and gets the same estimate a
+   photo would. Text is cheap, so it has its own daily allowance and never
+   spends a photo scan: 30 a day with a live pass (HITFAT+ or a scan add-on),
+   5 a day without. Each one is a row in plus_text_logs. Haiku reads text
+   well enough; photos keep Sonnet. */
+const TEXT_MODEL = 'claude-haiku-5-5';
+const TEXT_DAY_MEMBER = 30, TEXT_DAY_FREE = 5, TEXT_MAX = 300;
+const TEXT_SYSTEM = `You estimate the nutrition of a meal from what a person typed.
+The person is Malaysian and may write in Malay, English or a mix, with local
+dish names, quantities ("2 telur", "separuh pinggan", "1 cawan") and drink
+orders ("teh tarik kurang manis", "kopi o kosong", "milo ais").
+
+Reply with a single JSON object and nothing else. No markdown, no code fence,
+no commentary. Use exactly these keys:
+
+{
+  "food_name": "a short English name for the whole meal",
+  "food_name_bm": "a short Malay name for the whole meal",
+  "portion_size": "what you assumed, e.g. '1 plate nasi lemak + 1 glass teh tarik'",
+  "estimated_calories": number,
+  "protein_g": number,
+  "carbs_g": number,
+  "fat_g": number,
+  "confidence": "high" | "medium" | "low",
+  "breakdown": [ { "ingredient": "each item as the person would name it", "weight_g": number, "calories": number } ]
+}
+
+Rules:
+- One breakdown item per food or drink the person named, with the quantity they gave.
+- No quantity given: assume one normal Malaysian serving and say so in portion_size.
+- Malaysian cooking is oilier and drinks sweeter than most databases assume. Account for that,
+  and for "kurang manis", "kosong", "separuh" when written.
+- If the text is not food or drink, set food_name to "" and estimated_calories to 0.`;
+
 /* Scans a day by what is live on the account (12 Oct 2026). A HITFAT+
    membership gives 3; the Meal Scan add-ons give 3, 6, or "unlimited",
    which is fair use at 15 so one account cannot run up the bill. The old
@@ -147,6 +182,12 @@ Deno.serve(async (req: Request) => {
       return json({ error: 'Sign in to use Meal Scan.' }, 401);
     }
 
+    /* ── A typed meal: its own allowance, its own model, no photo scan spent ── */
+    let body: any;
+    try { body = await req.json(); }
+    catch { return json({ error: 'Bad request body.' }, 400); }
+    if (body?.mode === 'text') return await textMeal(admin, user.id, body);
+
     /* ── 2. Are they entitled? ────────────────────────────────
        Free tier, then a live pass, then credits — the same order the
        client shows, so what the button promises is what happens.      */
@@ -222,9 +263,6 @@ Deno.serve(async (req: Request) => {
     }
 
     /* ── 3. Validate the payload before spending anything ─────  */
-    let body: any;
-    try { body = await req.json(); }
-    catch { return json({ error: 'Bad request body.' }, 400); }
 
     const b64: string = (body?.image_base64 || '').replace(/^data:image\/\w+;base64,/, '');
     if (!b64)                       return json({ error: 'No image received.' }, 400);
@@ -329,3 +367,52 @@ Deno.serve(async (req: Request) => {
     return json({ error: 'Scan failed. Try again, or log the meal by hand.' }, 500);
   }
 });
+
+/* ═══ a typed meal ═══ */
+function parseModelJSON(text: string): any {
+  const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  try { return JSON.parse(cleaned); } catch { /* fall through */ }
+  const m = cleaned.match(/\{[\s\S]*\}/);
+  if (!m) return null;
+  try { return JSON.parse(m[0]); } catch { return null; }
+}
+async function textMeal(admin: any, uid: string, body: any): Promise<Response> {
+  const what = String(body?.text || '').replace(/\s+/g, ' ').trim().slice(0, TEXT_MAX);
+  if (what.length < 2) return json({ error: 'Type what you ate first.' }, 400);
+
+  const { data: ents, error: eErr } = await admin.from('plus_entitlements')
+    .select('kind, expires_at').eq('user_id', uid);
+  if (eErr) return json({ error: 'Could not check your account. Try again shortly.' }, 503);
+  const now = Date.now();
+  const member = (ents || []).some((e: any) => e.kind === 'pass' && e.expires_at && new Date(e.expires_at).getTime() > now);
+  const limit = member ? TEXT_DAY_MEMBER : TEXT_DAY_FREE;
+  const { count, error: cErr } = await admin.from('plus_text_logs')
+    .select('id', { count: 'exact', head: true }).eq('user_id', uid).gte('created_at', dayStartMY());
+  if (cErr) return json({ error: 'Could not check today\'s count. Try again shortly.' }, 503);
+  if ((count ?? 0) >= limit) {
+    return json({ error: `That is ${limit} typed meals today. Log by hand, or try again tomorrow.`, code: 'text_limit', limit }, 402);
+  }
+
+  const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
+  if (!apiKey) return json({ error: 'Not configured yet.' }, 500);
+  const ai = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: TEXT_MODEL, max_tokens: 800, system: TEXT_SYSTEM,
+      messages: [{ role: 'user', content: [{ type: 'text', text: 'What I ate: ' + what }] }] }),
+  });
+  if (!ai.ok) {
+    console.error('anthropic text error', ai.status, (await ai.text()).slice(0, 300));
+    return json({ error: 'Could not work it out. Try again, or log it by hand.' }, 502);
+  }
+  const out = await ai.json();
+  const reply: string = (out?.content || []).filter((c: any) => c.type === 'text').map((c: any) => c.text).join('').trim();
+  const result = parseModelJSON(reply);
+  if (!result) { console.error('unparseable text reply', reply.slice(0, 300)); return json({ error: 'Could not work it out. Try again, or log it by hand.' }, 502); }
+  const kcal = Math.round(Number(result?.estimated_calories ?? 0)) || 0;
+
+  const { error: insErr } = await admin.from('plus_text_logs').insert({ user_id: uid, text: what, kcal });
+  if (insErr) console.error('plus_text_logs insert failed', insErr.message);
+
+  return json({ ...result, estimated_calories: kcal, kind: 'text', model: TEXT_MODEL, typed: { today: (count ?? 0) + 1, limit } });
+}

@@ -5469,3 +5469,17 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mr-set b{display:block;font-size:15.5px;} .mr-set small{display:block;font-size:13px;color:var(--dim);margin-top:2px;}
 .mr-set i{margin-left:auto;font-style:normal;font-size:20px;color:var(--dim);}
 .mr-done{margin-top:18px;}
+
+/* ── typed meal (eat2.js typeMeal, 20 Oct 2026) ── */
+.m-type{display:flex;flex-direction:column;gap:8px;}
+.m-type textarea{resize:none;min-height:64px;font:inherit;line-height:1.4;}
+.m-ai{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border:0;border-radius:14px;background:#E30613;color:#fff;font:inherit;font-weight:800;font-size:15px;cursor:pointer;}
+.m-ai .gly{width:18px;height:18px;stroke:#fff;}
+.m-ai:disabled{opacity:.6;}
+.m-res{margin-top:10px;padding:12px 14px;border-radius:16px;background:var(--surface);border:1.5px solid rgba(227,6,19,.25);}
+.m-res-h{display:flex;justify-content:space-between;gap:10px;align-items:baseline;}
+.m-res-h b{font-size:16px;color:var(--txt);} .m-res-h span{font-weight:900;color:#E30613;white-space:nowrap;}
+.m-its{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.m-it{display:inline-flex;gap:6px;align-items:center;padding:5px 10px;border-radius:99px;background:rgba(127,127,127,.12);font-size:12.5px;color:var(--txt);}
+.m-it b{font-weight:800;color:var(--dim);}
+.m-res-f{font-size:12px;color:var(--dim);margin-top:8px;line-height:1.35;}
