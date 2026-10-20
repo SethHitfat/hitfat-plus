@@ -97,9 +97,9 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
   for (let i = 1; i < 400; i++) { const day = dayBack(i); if (scoreOf(d, day, wdays) >= 50) streak++; else if (!frozen[day]) break; }
 
   if (streak >= 2 && today < 50) return {
-    kind: 'streak', title: '🔥 Your ' + streak + '-day streak is at risk!',
-    body: today ? 'Your score today is only ' + today + '. Reach 50 before bed to save your streak.'
-                : 'Nothing logged yet today. A short workout and a glass of water go a long way.',
+    kind: 'streak', title: '🔥 Streak ' + streak + ' hari awak dalam bahaya!',
+    body: today ? 'Skor awak hari ni baru ' + today + '. Capai 50 sebelum tidur untuk selamatkan streak, Bara tunggu!'
+                : 'Belum ada log hari ni. Workout pendek dan segelas air pun dah banyak membantu.',
   };
   /* Sunday: the week's report, Monday to today, against the week before */
   if (new Date(Date.now() + MYT).getUTCDay() === 0) {
@@ -107,16 +107,16 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
     const now = wk(0), last = wk(7), avg = Math.round(now.reduce((a, b) => a + b, 0) / 7), prev = Math.round(last.reduce((a, b) => a + b, 0) / 7);
     if (now.some(x => x > 0)) {
       const padu = now.filter(x => x >= 50).length, diff = avg - prev;
-      return { kind: 'weekly', title: "📊 Bara's weekly report",
-        body: 'Average HITFAT Score ' + avg + '/100' + (diff ? (diff > 0 ? ', up ' + diff : ', down ' + (-diff)) : '') + ' · ' + padu + ' strong day' + (padu === 1 ? '' : 's') + '. Open the app for the full report.' };
+      return { kind: 'weekly', title: '📊 Laporan mingguan Bara',
+        body: 'Purata HITFAT Score ' + avg + '/100' + (diff ? (diff > 0 ? ', naik ' + diff : ', turun ' + (-diff)) : '') + ' · ' + padu + ' hari padu. Buka app untuk laporan penuh.' };
     }
   }
   if (today >= 50 || today > 0) return null;
   const idle = gap + 1;
-  if (idle === 2) return { kind: 'dust', title: 'Bara is getting dusty 😟', body: "Bara hasn't seen you for two days. Log something today before Bara's fur gets all messy tomorrow." };
-  if (idle === 3) return { kind: 'rust', title: 'Oh no, Bara is all messy 🥲', body: "A glass of water is enough to fluff Bara up again. Let's go!" };
-  if (idle === 7) return { kind: 'rust7', title: 'A week of messy Bara...', body: 'Bara is still waiting for you 🪮 Start again with one small thing today.' };
-  if (idle === 14) return { kind: 'rust14', title: 'Bara misses you 🥺', body: "It's been two weeks. It doesn't have to be perfect, just start again." };
+  if (idle === 2) return { kind: 'dust', title: 'Bara dah berhabuk 😟', body: 'Dah dua hari Bara tak nampak awak. Log satu benda hari ni sebelum bulu Bara kusut esok.' };
+  if (idle === 3) return { kind: 'rust', title: 'Alamak, bulu Bara dah kusut 🥲', body: 'Segelas air pun cukup untuk buat Bara gebu balik. Jom!' };
+  if (idle === 7) return { kind: 'rust7', title: 'Seminggu Bara kusut...', body: 'Bara masih tunggu awak 🪮 Mula balik dengan satu benda kecil hari ni.' };
+  if (idle === 14) return { kind: 'rust14', title: 'Bara rindu awak 🥺', body: 'Dah dua minggu. Tak perlu sempurna, mula je balik.' };
   return null;
 }
 
@@ -150,8 +150,8 @@ async function classList(admin: any): Promise<Record<string, any>> {
   return out;
 }
 const daysBetween = (a: string, b: string) => Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 86400000);
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-function fmtDay(d: string): string { const t = new Date(d + 'T00:00:00Z'); return t.getUTCDate() + ' ' + MONTHS[t.getUTCMonth()].slice(0, 3); }
+const MONTHS = ['Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun', 'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'];
+function fmtDay(d: string): string { const t = new Date(d + 'T00:00:00Z'); return t.getUTCDate() + ' ' + MONTHS[t.getUTCMonth()]; }
 
 /* what Bara says to a class member about their class, if anything */
 export function classMessage(c: any, today: string): Msg | null {
@@ -159,39 +159,39 @@ export function classMessage(c: any, today: string): Msg | null {
   /* personal coaching (098): tomorrow's session, the package nearly used or ending */
   const pt = c.pt;
   if (pt) {
-    const coach = pt.coach ? 'Coach ' + String(pt.coach).split(' ')[0] : 'your coach';
+    const coach = pt.coach ? 'Coach ' + String(pt.coach).split(' ')[0] : 'coach awak';
     if (pt.next && dayOf(pt.next) === dayOf(Date.parse(today + 'T12:00:00+08:00') + 86400000)) {
       const t = new Date(new Date(pt.next).getTime() + MYT), hh = t.getUTCHours(), mm = String(t.getUTCMinutes()).padStart(2, '0');
-      const at = ((hh + 11) % 12 + 1) + ':' + mm + (hh < 12 ? ' AM' : ' PM');
-      const left = typeof pt.left === 'number' && pt.left <= 2 ? ' Only ' + pt.left + ' session' + (pt.left === 1 ? '' : 's') + ' left in your package, talk to ' + coach + ' about renewing.' : '';
-      return { kind: 'pt1', title: 'PT session tomorrow at ' + at, body: 'With ' + coach + '. Sleep well and eat a good meal before.' + left, url: '/?kelas=today' };
+      const at = ((hh + 11) % 12 + 1) + ':' + mm + (hh < 12 ? ' pagi' : hh < 19 ? ' petang' : ' malam');
+      const left = typeof pt.left === 'number' && pt.left <= 2 ? ' Tinggal ' + pt.left + ' sesi dalam pakej awak, cakap dengan ' + coach + ' untuk sambung.' : '';
+      return { kind: 'pt1', title: 'Sesi PT esok pukul ' + at, body: 'Dengan ' + coach + '. Tidur cukup dan makan elok sebelum datang, Bara tunggu! 💪' + left, url: '/?kelas=today' };
     }
     /* phase 2 (099): the coach replied, new homework, the Sunday check-in */
-    if (pt.reply) return { kind: 'ptreply', title: coach + ' replied to your check-in', body: 'Open HITFAT+ to read it. 💬', url: '/?kelas=today' };
-    if (pt.hw_new > 0) return { kind: 'pthw', title: 'New homework from ' + coach, body: pt.hw_new + (pt.hw_new === 1 ? ' task' : ' tasks') + ' to do. Tick each one off for +20 points.', url: '/?kelas=today' };
+    if (pt.reply) return { kind: 'ptreply', title: coach + ' dah balas check-in awak', body: 'Buka HITFAT+ untuk baca. 💬', url: '/?kelas=today' };
+    if (pt.hw_new > 0) return { kind: 'pthw', title: 'Homework baru dari ' + coach, body: pt.hw_new + ' tugasan untuk dibuat. Tanda setiap satu untuk +20 mata.', url: '/?kelas=today' };
     if (!pt.ci_done && new Date(today + 'T12:00:00Z').getUTCDay() === 0)
-      return { kind: 'ptci', title: 'Your weekly check-in with ' + coach, body: 'Two minutes: your weight, energy, sleep and food this week. +50 points.', url: '/?kelas=today' };
+      return { kind: 'ptci', title: 'Check-in mingguan dengan ' + coach, body: 'Dua minit je: berat, tenaga, tidur dan makanan minggu ni. +50 mata.', url: '/?kelas=today' };
     if (pt.end && daysBetween(today, String(pt.end).slice(0, 10)) === 3)
-      return { kind: 'ptend', title: 'Your PT package ends in 3 days', body: 'It ends on ' + fmtDay(String(pt.end).slice(0, 10)) + '. Talk to ' + coach + ' to keep your sessions going.', url: '/?kelas=today' };
+      return { kind: 'ptend', title: 'Pakej PT awak tamat dalam 3 hari', body: 'Tamat pada ' + fmtDay(String(pt.end).slice(0, 10)) + '. Cakap dengan ' + coach + ' untuk teruskan sesi.', url: '/?kelas=today' };
   }
   const end = c.end ? String(c.end).slice(0, 10) : '';
   if (end) {
     const left = daysBetween(today, end);
-    const renew = 'Renew at the HITFAT counter to keep your classes, points and streak going.';
-    if (c.active && left === 7) return { kind: 'end7', title: 'Your class membership ends in 7 days', body: 'It ends on ' + fmtDay(end) + '. ' + renew, url: '/?kelas=today' };
-    if (c.active && left === 3) return { kind: 'end3', title: '3 days left on your class membership', body: 'It ends on ' + fmtDay(end) + '. ' + renew, url: '/?kelas=today' };
-    if (c.active && left === 1) return { kind: 'end1', title: 'Your class membership ends tomorrow', body: 'Tomorrow is your last day. ' + renew, url: '/?kelas=today' };
-    if (!c.active && left === -1) return { kind: 'ended', title: 'Your class membership has ended 😢', body: 'Bara will miss you at class. Renew at the counter and the kiosk lets you in again.', url: '/?kelas=today' };
+    const renew = 'Renew di kaunter HITFAT supaya kelas, mata dan streak awak berterusan.';
+    if (c.active && left === 7) return { kind: 'end7', title: 'Membership kelas awak tamat dalam 7 hari', body: 'Tamat pada ' + fmtDay(end) + '. ' + renew, url: '/?kelas=today' };
+    if (c.active && left === 3) return { kind: 'end3', title: 'Tinggal 3 hari membership kelas awak', body: 'Tamat pada ' + fmtDay(end) + '. ' + renew, url: '/?kelas=today' };
+    if (c.active && left === 1) return { kind: 'end1', title: 'Membership kelas awak tamat esok', body: 'Esok hari terakhir. ' + renew, url: '/?kelas=today' };
+    if (!c.active && left === -1) return { kind: 'ended', title: 'Membership kelas awak dah tamat 😢', body: 'Bara rindu awak kat kelas. Renew di kaunter dan kiosk akan benarkan awak masuk semula.', url: '/?kelas=today' };
   }
   if (c.active && c.last) {
     const gap = daysBetween(String(c.last).slice(0, 10), today);
-    if (gap === 7) return { kind: 'class7', title: 'Bara misses you at class 🥺', body: "It's been a week since your last class. Your class group is waiting, come back this week!", url: '/?kelas=today' };
-    if (gap === 14) return { kind: 'class14', title: 'Two weeks without class...', body: "Bara is still saving your spot. One class this week is all it takes to start again.", url: '/?kelas=today' };
+    if (gap === 7) return { kind: 'class7', title: 'Bara rindu awak kat kelas 🥺', body: 'Dah seminggu sejak kelas terakhir. Group kelas awak tunggu, datang minggu ni ya!', url: '/?kelas=today' };
+    if (gap === 14) return { kind: 'class14', title: 'Dua minggu tak datang kelas...', body: 'Bara masih simpan tempat awak. Satu kelas minggu ni dah cukup untuk mula balik.', url: '/?kelas=today' };
   }
   /* the 1st: last month's recap, for a member who came to class last month */
   if (today.slice(8, 10) === '01' && c.last) {
     const lm = new Date(Date.parse(today + 'T00:00:00Z') - 86400000), name = MONTHS[lm.getUTCMonth()];
-    if (daysBetween(String(c.last).slice(0, 10), today) <= 31) return { kind: 'recap', title: '📅 Your ' + name + ' recap is ready', body: 'Your classes, PRs and streak for ' + name + '. Have a look, then share it!', url: '/?kelas=progress' };
+    if (daysBetween(String(c.last).slice(0, 10), today) <= 31) return { kind: 'recap', title: '📅 Rekap ' + name + ' awak dah siap', body: 'Kelas, PR dan streak awak untuk bulan ' + name + '. Tengok, lepas tu share!', url: '/?kelas=progress' };
   }
   return null;
 }
@@ -231,7 +231,7 @@ Deno.serve(async (req: Request) => {
     const user = ud && ud.user;
     if (!user || !user.id || user.role === 'anon') return json({ error: 'Sign in' }, 401);
     const { data: subs } = await admin.from('plus_push_subs').select('*').eq('user_id', user.id);
-    const n = await sendTo(admin, subs || [], { kind: 'test', title: "Hi, it's Bara! 👋", body: 'Reminders are on. Bara will nudge you at 8 pm when there is something to say.' });
+    const n = await sendTo(admin, subs || [], { kind: 'test', title: 'Hai, Bara ni! 👋', body: 'Peringatan dah on. Bara akan ingatkan awak pukul 8 malam bila ada sesuatu nak cakap.' });
     return json({ ok: true, sent: n });
   }
 

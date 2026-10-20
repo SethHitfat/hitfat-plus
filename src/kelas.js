@@ -1171,6 +1171,15 @@ function kelasBaraLive(){
 }
 var KL_POKE=['Hehe, gelilah! 😆','Jumpa kat kelas nanti ya! 💪','Bara tunggu awak kat HQ 😄','Hehe, lagi? 🙈'];
 function kelasBaraPoke(){
+  /* (20 Oct) a messy Bara (an ended membership or package, or days with
+     nothing logged) does not giggle: he says what would cheer him up */
+  const ended=Kelas.baraPose==='kusut', rust=typeof scState==='function' && scState().k==='rust';
+  if(ended || rust){
+    const s=document.querySelector('#kelas-body .kl-bub span');
+    if(s) s.textContent=ended?(kelasSpace()==='pt'?'Bara rindu sesi PT awak 🥺 Sambung pakej dengan coach ya.':'Bara rindu awak kat kelas 🥺 Renew di kaunter ya.')
+                             :'Bulu Bara kusut 🥲 Log satu benda je, Bara terus gebu balik.';
+    return;
+  }
   if(typeof scReact==='function') scReact('giggle');
   if(typeof hfSound==='function') hfSound('giggle');
   const b=document.querySelector('#kelas-body .kl-bub span');

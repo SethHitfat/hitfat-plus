@@ -28,6 +28,6 @@ function mascotRender(){
 function mascotDone(){
   var M=hfm(); if(!M) return;
   M.logActivity(); if(typeof scEvent==='function'){ _scSay='workout'; _scSayAt=Date.now(); }
-  if(typeof scBanner==='function') scBanner('Workout done 💪','Bara did every rep with you (in spirit) 😅');
+  if(typeof scBanner==='function') scBanner('Workout siap 💪','Bara buat setiap rep dengan awak (dalam hati) 😅');
   mascotRender();
 }

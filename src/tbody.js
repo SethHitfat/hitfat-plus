@@ -4071,7 +4071,11 @@ print("\n── SKOR HITFAT · FREEZE, SCREENS, POSES ──");
 print("\n── BELL'S POSES, MOVING ──");
 (function(){
   ok("every moment has its clip and a poster from its first frame", ['gold','frozen','halo','water','meal','calendar'].every(function(k){ return SC_POSE[k].indexOf('/img/mascot/anim/'+k)===0; }));
-  ok("the streak, freeze and halo screens play their clip", String(scCelebrate).indexOf('scMomentPlay(pose)')>0 && String(scFreezeScreen).indexOf("scMomentPlay('frozen')")>0 && String(scShine).indexOf("scMomentPlay('halo')")>0);
+  ok("the streak, freeze and halo screens play their clip", String(scCelebrate).indexOf('scMomentPlay(pose)')>0 && String(scFreezeScreen).indexOf("scMomentPlay('frozen')")>0 && String(scShine).indexOf("scTone('halo'")>0);
+  ok("Bara's picture follows today's colour: red from 50, cream under, messy when rusty", scTone('cheer','w_cheer')===(scState().k==='rust'?'kusut':scRed()?'cheer':'w_cheer') &&
+    String(ckDoneHTML).indexOf("scTone('cheer','w_cheer')")>0 && String(scDayStreak).indexOf("scTone('cheer','w_cheer')")>0 && String(scWeekly).indexOf("scTone('calendar','aktif')")>0 &&
+    String(scBanner).indexOf('scLevel(scScore())')>0 && scPoseSrc('w_water')==='/img/mascot/anim/w_water.png');
+  ok("the milestones and the banners speak Malay", SC_MILE_LINES[7].indexOf('Seminggu')===0 && String(scMealLogged).indexOf('Makanan dah dilog')>0 && String(scWaterTap).indexOf('gelas air')>0);
   ok("Bell in ice plays as it is, on the white screen", BELL_PLAIN.frozen===true);
   ok("water and meals play Bell's own clip", String(scRender).indexOf("water:'water', meal:'meal'")>0);
   ok("no canvas, no clip: the poster stays", bellMini(null,'gold')===false);
@@ -4094,13 +4098,17 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
 /* a member with BURN30 and no plan of their own: BURN30 is today's plan, finding one is the quiet line under it, and Home does not show the card twice */
 ok("BURN30 is today's plan for a member with no other plan", !scBurnIsPlan() || (h.indexOf('Or find a plan')>0 && (typeof renderHome!=='function' || true)));
   scTap('water');
-  ok("one tap on water adds a glass, and Bell's banner offers an undo", HF.data.daily[iso(0)].water===1 && document.getElementById('scb').className.indexOf('on')>0 && document.getElementById('scb').innerHTML.indexOf('Undo')>0);
+  ok("one tap on water adds a glass, and Bell's banner offers an undo", HF.data.daily[iso(0)].water===1 && document.getElementById('scb').className.indexOf('on')>0 && document.getElementById('scb').innerHTML.indexOf('Batal')>0);
   HF.data.ifs={plan:{start:iso(0),endMin:1200},log:[]};
   SC_FAST_LIVE=true;
   scTap('fast');
   ok("one tap on the fast starts it", HF.data.ifs.active && HF.data.ifs.active.target===12);
   scMealLogged({name:'Kek coklat',kcal:450});
-  ok("junk food: Bell confiscates it", _scSay==='junk' && scLine().indexOf('Kek coklat')>=0 && document.getElementById('scb').innerHTML.indexOf('Confiscated')>0);
+  ok("junk food: Bell confiscates it", _scSay==='junk' && scLine().indexOf('Kek coklat')>=0 && document.getElementById('scb').innerHTML.indexOf('rampas')>0);
+  ok("...a plate with a junk item: Bara names that item only", scJunkItem({name:'Nasi lemak telur + teh tarik',kcal:700})==='teh tarik');
+  ok("...a sweet drink made kosong or kurang manis is not junk", !scJunk({name:'Nasi lemak telur + teh tarik kurang manis',kcal:650}) && !scJunk({name:'Milo kosong',kcal:90}) &&
+    !scJunk({name:'nasi lemak + teh tarik kurang manis',kcal:600,comps:[{name:'Nasi lemak',kcal:500},{name:'Teh tarik',kcal:100}]}));
+  ok("...the typed meal's items are checked too", scJunkItem({name:'Sarapan',kcal:500,comps:[{name:'Roti bakar',kcal:200},{name:'Kuih seri muka',kcal:300}]})==='Kuih seri muka');
   scMealLogged({name:'Nasi ayam',kcal:600});
   ok("...a proper meal is just a meal", _scSay==='meal');
   scBannerHide(); scMealLogged({name:'Teh tarik kosong · 250 ml',kcal:45,src:'drink'});
@@ -4639,6 +4647,7 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("class faces: a member's photo over their initial", kelasAv('https://x/p.jpg','Siti N.','sm',false).indexOf('>S<img src="https://x/p.jpg"')>0 && kelasAv(null,'Siti','',false).indexOf('<img')<0);
   Kelas.cm.week.top[0].ph='https://x/top.jpg'; ok("...on the leaderboard", kelasBoardHTML(Kelas.cm).indexOf('https://x/top.jpg')>0); delete Kelas.cm.week.top[0].ph;
   HF.data.prefs.photo=keepPh; if(keepPh===undefined) delete HF.data.prefs.photo; HF.gphoto=keepG; HF.save=keepSv3;
+  ok("...a messy Bara on the Class screen does not giggle", String(kelasBaraPoke).indexOf('Bara rindu awak kat kelas')>0 && String(kelasBaraPoke).indexOf('return;')>0 && String(scPoke).indexOf('Bulu Bara kusut')>0);
   ok("Bara on the Class screen is live and tappable", kelasBaraHTML().indexOf('kelasBaraPoke()')>0 && kelasBaraHTML().indexOf('sc-poster')>0);
   ok("Bara speaks on the Class screen, in Malay, as Bara", kelasBaraHTML().indexOf('Bara')>0 && /awak/.test(kelasBaraLine()[1]));
   var keepKD=HF.data.kelas, keepS2=HF.save; HF.save=function(){};

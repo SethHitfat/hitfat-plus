@@ -17,7 +17,7 @@ function mrBefore(){ try{ return typeof scScore==='function' ? scScore() : 0; }c
 /* what Bara says about this plate: the most useful one thing */
 function mrLine(m, over){
   var kcal=+m.kcal||0, p=+m.p||0, c=+m.c||0, f=+m.f||0;
-  if(typeof scJunk==='function' && scJunk(m)) return scJunkLine(m.name);
+  if(typeof scJunkItem==='function' && scJunkItem(m)) return scJunkLine(scJunkItem(m));
   if(over) return 'Hari ni dah lebih sikit dari sasaran. Tak apa, jalan kaki sekejap dan esok kita sambung 🤍';
   if(p>=25) return 'Protein padu! Awak akan kenyang lebih lama, Bara suka 💪';
   if(kcal && c*4>kcal*0.6) return 'Karbo agak tinggi. Jalan 10 minit lepas makan, Bara teman 🚶';

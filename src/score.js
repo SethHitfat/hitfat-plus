@@ -24,7 +24,11 @@ var SC_FAST_LIVE=false;
 var SC_POSE={hitam:'/img/mascot/anim/hitam.png', aktif:'/img/mascot/anim/aktif.png', gold:'/img/mascot/anim/gold.png', frozen:'/img/mascot/anim/frozen.jpg', halo:'/img/mascot/anim/halo.png',
   water:'/img/mascot/anim/water.png', meal:'/img/mascot/anim/meal.png', calendar:'/img/mascot/anim/calendar.png', kusut:'/img/mascot/anim/kusut.png'};
 /* the moment's slot: the pose's poster now, its clip once it plays */
-function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+SC_POSE[name]+'" alt="Bara"></div>'; }
+function scPoseSrc(name){ return SC_POSE[name]||'/img/mascot/anim/'+name+'.png'; }
+/* (20 Oct, the Bara audit) every picture of Bara in today's colour: the red
+   pose from a strong day (50+), the cream one under it, messy when rusty */
+function scTone(red,cream){ return scState().k==='rust'?'kusut':scRed()?red:cream; }
+function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+scPoseSrc(name)+'" alt="Bara"></div>'; }
 function scMomentPlay(name){ if(typeof bellMini==='function') bellMini($('scc-bell'),name); }
 var _scSay=null, _scSayAt=0;
 
@@ -348,7 +352,7 @@ function scBounce(){
   setTimeout(function(){ b.className=b.className.replace(/ ?sc-boing/g,''); },700);
 }
 function scPoke(){
-  if(scState().k==='rust'){ toast('Bara is all messy 🥲 Log one thing to fluff Bara up again'); return; }
+  if(scState().k==='rust'){ scBubSet('Bulu Bara kusut 🥲 Log satu benda je, Bara terus gebu balik.'); return; }
   scReact('giggle');
   if(typeof hfSound==='function') hfSound('giggle');
   scBubSet(SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]);
@@ -383,7 +387,7 @@ function scSheet(k){
 function scClose(){ closeProduct(); scRender(); }
 function scWater(n){ scSet('water',scDaily().water+n); if(n>0){ _scSay='water'; _scSayAt=Date.now(); } scSheet('water'); scRender(); }
 function scSteps(n){ scSet('steps',scDaily().steps+n); _scSay='steps'; _scSayAt=Date.now(); scSheet('steps'); scRender();
-  if(typeof scBanner==='function') scBanner('+'+n.toLocaleString('en-MY')+' steps 👟',scDaily().steps.toLocaleString('en-MY')+'/'+SC_STEPS.toLocaleString('en-MY')+' today · Busy feet!'); }
+  if(typeof scBanner==='function') scBanner('+'+n.toLocaleString('en-MY')+' langkah 👟',scDaily().steps.toLocaleString('en-MY')+'/'+SC_STEPS.toLocaleString('en-MY')+' hari ni · Kaki awak rajin!'); }
 function scStepsSet(){
   var v=parseInt(($('sc-steps')||{}).value,10);
   if(!(v>=0) || v>100000){ toast('Enter your steps'); return; }
@@ -397,9 +401,9 @@ function scStepsSet(){
    being earned. Reaching 3, 7, 14, 30, 60 or 100 days opens a celebration
    once per run, with a card the member can share to an IG Story. */
 var SC_PADU=50, SC_MILES=[3,7,14,30,60,100];
-var SC_MILE_LINES={3:'A strong start! Bara can see your potential 🔥',
-  7:'A full week! Bara is so proud 💪',14:'Two weeks! This is a habit now, not an effort.',
-  30:'30 days! You are a real champion 🏆',60:'60 days! Your body feels different, right? 😎',100:'100 days! Bara salutes you 🫡'};
+var SC_MILE_LINES={3:'Permulaan yang padu! Bara nampak potensi awak 🔥',
+  7:'Seminggu penuh! Bara bangga sangat 💪',14:'Dua minggu! Ini dah jadi tabiat, bukan usaha lagi.',
+  30:'30 hari! Awak memang juara sebenar 🏆',60:'60 hari! Badan rasa lain kan? 😎',100:'100 hari! Bara tabik awak 🫡'};
 
 var SC_FREEZES=2;
 function scFrozen(){ var sc=HF.data.sc||(HF.data.sc={}); return sc.frozen||(sc.frozen={}); }
@@ -455,17 +459,17 @@ function scCheckStreak(){
 /* the daily streak: Bara in front of a fire, the count going up by one */
 function scDayStreak(n){
   if(!n) return;
-  var next=scNextMile(n);
+  var next=scNextMile(n), pose=scTone('cheer','w_cheer');
   $('scc').className='scc scc-day';
   $('scc').innerHTML='<div class="sd-fire"><i></i><i></i><i></i></div><div class="scc-in">'+
-    scMomentBell('aktif')+
+    scMomentBell(pose)+
     '<div class="sd-num"><span class="o">'+(n-1)+'</span><span class="n">'+n+'</span></div>'+
     '<div class="scc-t">day streak!</div>'+
     scWeekPill()+
     '<div class="scc-s scc-bellsays">'+(n===1?'Hari padu pertama! Bara tunggu awak esok, jom jadikan 2 🔥':'Hari padu ke-'+n+'! Bara tunggu awak esok, jom jadikan '+(n+1)+' 🔥')+'</div>'+
     (next?'<div class="scc-fz">Next goal: '+next+' days · '+(next-n)+' to go</div>':'')+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Continue</button></div>';
-  $('scc').style.display='flex'; scMomentPlay('aktif');
+  $('scc').style.display='flex'; scMomentPlay(pose);
   if(typeof hfSound==='function') setTimeout(function(){ hfSound('cheer'); },650);
 }
 function scStreakInfo(){
@@ -485,10 +489,10 @@ function scWeekPill(){
   return '<div class="scc-week">'+out+'</div>';
 }
 function scCelebrate(n,mine){
-  var black=n>=30, gold=n>=7&&!black, pose=black?'hitam':gold?'gold':'calendar', next=scNextMile(n), conf='', i;
+  var black=n>=30, gold=n>=7&&!black, pose=black?'hitam':gold?'gold':scTone('calendar','aktif'), next=scNextMile(n), conf='', i;
   var cols=['#E30613','#FFC20E','#FFFFFF','#111111'];
   if(!mine) for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%cols.length]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
-  var line=SC_MILE_LINES[n]||(next?(next-n)+' more '+(next-n===1?'day':'days')+' to your '+next+'-day goal. Don\'t break it! 🔥':'Keep going, champion 🔥');
+  var line=SC_MILE_LINES[n]||(next?(next-n)+' hari lagi ke matlamat '+next+' hari. Jangan putus! 🔥':'Teruskan, juara 🔥');
   $('scc').className='scc '+(black?'scc-black':gold?'scc-gold':'scc-red');
   $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
     scMomentBell(pose)+
@@ -603,13 +607,13 @@ function scCheckShine(){
   seen[key]=1; HF.save(); scShine(); return true;
 }
 function scShine(){
-  var sp='', i;
+  var sp='', i, pose=scTone('halo','w_cheer');
   for(i=0;i<14;i++) sp+='<i style="left:'+((i*29+7)%92)+'%;top:'+(6+(i*41+11)%34)+'%;-webkit-animation-delay:'+(i%7)*0.2+'s;animation-delay:'+(i%7)*0.2+'s">✦</i>';
   $('scc').className='scc scc-red';
   $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
-    scMomentBell('halo','scc-shine')+
+    scMomentBell(pose,'scc-shine')+
     '<div class="scc-t">You saved Bara!</div>'+
     '<div class="scc-s scc-bellsays">Yeay! Bara gebu balik ✨ Okay okay, Bara maafkan awak. Jangan tinggal Bara lama-lama lagi ya 😇</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Let\'s go!</button></div>';
-  $('scc').style.display='flex'; scMomentPlay('halo');
+  $('scc').style.display='flex'; scMomentPlay(pose);
 }

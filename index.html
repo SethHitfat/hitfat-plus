@@ -8834,7 +8834,7 @@ function mascotRender(){
 function mascotDone(){
   var M=hfm(); if(!M) return;
   M.logActivity(); if(typeof scEvent==='function'){ _scSay='workout'; _scSayAt=Date.now(); }
-  if(typeof scBanner==='function') scBanner('Workout done 💪','Bara did every rep with you (in spirit) 😅');
+  if(typeof scBanner==='function') scBanner('Workout siap 💪','Bara buat setiap rep dengan awak (dalam hati) 😅');
   mascotRender();
 }
 /* ═══════════════ BELL, ALIVE ═══════════════
@@ -9006,7 +9006,11 @@ var SC_FAST_LIVE=false;
 var SC_POSE={hitam:'/img/mascot/anim/hitam.png', aktif:'/img/mascot/anim/aktif.png', gold:'/img/mascot/anim/gold.png', frozen:'/img/mascot/anim/frozen.jpg', halo:'/img/mascot/anim/halo.png',
   water:'/img/mascot/anim/water.png', meal:'/img/mascot/anim/meal.png', calendar:'/img/mascot/anim/calendar.png', kusut:'/img/mascot/anim/kusut.png'};
 /* the moment's slot: the pose's poster now, its clip once it plays */
-function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+SC_POSE[name]+'" alt="Bara"></div>'; }
+function scPoseSrc(name){ return SC_POSE[name]||'/img/mascot/anim/'+name+'.png'; }
+/* (20 Oct, the Bara audit) every picture of Bara in today's colour: the red
+   pose from a strong day (50+), the cream one under it, messy when rusty */
+function scTone(red,cream){ return scState().k==='rust'?'kusut':scRed()?red:cream; }
+function scMomentBell(name,extra){ return '<div class="scc-bell scc-live'+(extra?' '+extra:'')+'" id="scc-bell"><img src="'+scPoseSrc(name)+'" alt="Bara"></div>'; }
 function scMomentPlay(name){ if(typeof bellMini==='function') bellMini($('scc-bell'),name); }
 var _scSay=null, _scSayAt=0;
 
@@ -9330,7 +9334,7 @@ function scBounce(){
   setTimeout(function(){ b.className=b.className.replace(/ ?sc-boing/g,''); },700);
 }
 function scPoke(){
-  if(scState().k==='rust'){ toast('Bara is all messy 🥲 Log one thing to fluff Bara up again'); return; }
+  if(scState().k==='rust'){ scBubSet('Bulu Bara kusut 🥲 Log satu benda je, Bara terus gebu balik.'); return; }
   scReact('giggle');
   if(typeof hfSound==='function') hfSound('giggle');
   scBubSet(SC_LINES.poke[(_scPokes++)%SC_LINES.poke.length]);
@@ -9365,7 +9369,7 @@ function scSheet(k){
 function scClose(){ closeProduct(); scRender(); }
 function scWater(n){ scSet('water',scDaily().water+n); if(n>0){ _scSay='water'; _scSayAt=Date.now(); } scSheet('water'); scRender(); }
 function scSteps(n){ scSet('steps',scDaily().steps+n); _scSay='steps'; _scSayAt=Date.now(); scSheet('steps'); scRender();
-  if(typeof scBanner==='function') scBanner('+'+n.toLocaleString('en-MY')+' steps 👟',scDaily().steps.toLocaleString('en-MY')+'/'+SC_STEPS.toLocaleString('en-MY')+' today · Busy feet!'); }
+  if(typeof scBanner==='function') scBanner('+'+n.toLocaleString('en-MY')+' langkah 👟',scDaily().steps.toLocaleString('en-MY')+'/'+SC_STEPS.toLocaleString('en-MY')+' hari ni · Kaki awak rajin!'); }
 function scStepsSet(){
   var v=parseInt(($('sc-steps')||{}).value,10);
   if(!(v>=0) || v>100000){ toast('Enter your steps'); return; }
@@ -9379,9 +9383,9 @@ function scStepsSet(){
    being earned. Reaching 3, 7, 14, 30, 60 or 100 days opens a celebration
    once per run, with a card the member can share to an IG Story. */
 var SC_PADU=50, SC_MILES=[3,7,14,30,60,100];
-var SC_MILE_LINES={3:'A strong start! Bara can see your potential 🔥',
-  7:'A full week! Bara is so proud 💪',14:'Two weeks! This is a habit now, not an effort.',
-  30:'30 days! You are a real champion 🏆',60:'60 days! Your body feels different, right? 😎',100:'100 days! Bara salutes you 🫡'};
+var SC_MILE_LINES={3:'Permulaan yang padu! Bara nampak potensi awak 🔥',
+  7:'Seminggu penuh! Bara bangga sangat 💪',14:'Dua minggu! Ini dah jadi tabiat, bukan usaha lagi.',
+  30:'30 hari! Awak memang juara sebenar 🏆',60:'60 hari! Badan rasa lain kan? 😎',100:'100 hari! Bara tabik awak 🫡'};
 
 var SC_FREEZES=2;
 function scFrozen(){ var sc=HF.data.sc||(HF.data.sc={}); return sc.frozen||(sc.frozen={}); }
@@ -9437,17 +9441,17 @@ function scCheckStreak(){
 /* the daily streak: Bara in front of a fire, the count going up by one */
 function scDayStreak(n){
   if(!n) return;
-  var next=scNextMile(n);
+  var next=scNextMile(n), pose=scTone('cheer','w_cheer');
   $('scc').className='scc scc-day';
   $('scc').innerHTML='<div class="sd-fire"><i></i><i></i><i></i></div><div class="scc-in">'+
-    scMomentBell('aktif')+
+    scMomentBell(pose)+
     '<div class="sd-num"><span class="o">'+(n-1)+'</span><span class="n">'+n+'</span></div>'+
     '<div class="scc-t">day streak!</div>'+
     scWeekPill()+
     '<div class="scc-s scc-bellsays">'+(n===1?'Hari padu pertama! Bara tunggu awak esok, jom jadikan 2 🔥':'Hari padu ke-'+n+'! Bara tunggu awak esok, jom jadikan '+(n+1)+' 🔥')+'</div>'+
     (next?'<div class="scc-fz">Next goal: '+next+' days · '+(next-n)+' to go</div>':'')+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Continue</button></div>';
-  $('scc').style.display='flex'; scMomentPlay('aktif');
+  $('scc').style.display='flex'; scMomentPlay(pose);
   if(typeof hfSound==='function') setTimeout(function(){ hfSound('cheer'); },650);
 }
 function scStreakInfo(){
@@ -9467,10 +9471,10 @@ function scWeekPill(){
   return '<div class="scc-week">'+out+'</div>';
 }
 function scCelebrate(n,mine){
-  var black=n>=30, gold=n>=7&&!black, pose=black?'hitam':gold?'gold':'calendar', next=scNextMile(n), conf='', i;
+  var black=n>=30, gold=n>=7&&!black, pose=black?'hitam':gold?'gold':scTone('calendar','aktif'), next=scNextMile(n), conf='', i;
   var cols=['#E30613','#FFC20E','#FFFFFF','#111111'];
   if(!mine) for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%cols.length]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
-  var line=SC_MILE_LINES[n]||(next?(next-n)+' more '+(next-n===1?'day':'days')+' to your '+next+'-day goal. Don\'t break it! 🔥':'Keep going, champion 🔥');
+  var line=SC_MILE_LINES[n]||(next?(next-n)+' hari lagi ke matlamat '+next+' hari. Jangan putus! 🔥':'Teruskan, juara 🔥');
   $('scc').className='scc '+(black?'scc-black':gold?'scc-gold':'scc-red');
   $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
     scMomentBell(pose)+
@@ -9585,15 +9589,15 @@ function scCheckShine(){
   seen[key]=1; HF.save(); scShine(); return true;
 }
 function scShine(){
-  var sp='', i;
+  var sp='', i, pose=scTone('halo','w_cheer');
   for(i=0;i<14;i++) sp+='<i style="left:'+((i*29+7)%92)+'%;top:'+(6+(i*41+11)%34)+'%;-webkit-animation-delay:'+(i%7)*0.2+'s;animation-delay:'+(i%7)*0.2+'s">✦</i>';
   $('scc').className='scc scc-red';
   $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
-    scMomentBell('halo','scc-shine')+
+    scMomentBell(pose,'scc-shine')+
     '<div class="scc-t">You saved Bara!</div>'+
     '<div class="scc-s scc-bellsays">Yeay! Bara gebu balik ✨ Okay okay, Bara maafkan awak. Jangan tinggal Bara lama-lama lagi ya 😇</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Let\'s go!</button></div>';
-  $('scc').style.display='flex'; scMomentPlay('halo');
+  $('scc').style.display='flex'; scMomentPlay(pose);
 }
 /* ═══════════════ SKOR HITFAT · the rest of Simple, and ours ═══════════════
    What Simple has that the score card did not, and what we said we would add:
@@ -9633,7 +9637,7 @@ function scRamRow(){
 function scRamToggle(){
   var all=HF.data.daily||(HF.data.daily={}), d=iso(0), o=all[d]||(all[d]={water:0,steps:0});
   o.ram=o.ram?0:1; HF.save();
-  if(o.ram){ _scSay='ram'; _scSayAt=Date.now(); scBanner('Fasting today 🌙','Bara is fasting too… from oil 😅 See you at iftar.'); }
+  if(o.ram){ _scSay='ram'; _scSayAt=Date.now(); scBanner('Puasa hari ni 🌙','Bara pun puasa… dari minyak 😅 Jumpa waktu berbuka.'); }
   scRender();
 }
 
@@ -9641,7 +9645,7 @@ function scRamToggle(){
 var _scbT=0;
 function scBanner(title,body,act,actFn){
   var el=$('scb'); if(!el) return;
-  var face=(typeof bellPoster==='function')?bellPoster(2):'';
+  var st=scState(), face=(typeof bellPoster==='function')?bellPoster(st.k==='rust'?'kusut':scLevel(scScore())):'';
   el.innerHTML='<div class="scb-in" onclick="scBannerHide()">'+(face?'<img src="'+face+'" alt="">':'')+
     '<div class="scb-tx"><b>'+hesc(title)+'</b>'+(body?'<span>'+hesc(body)+'</span>':'')+'</div>'+
     (act?'<button onclick="event.stopPropagation();scBannerHide();'+actFn+'">'+act+'</button>':'')+'</div>';
@@ -9651,11 +9655,26 @@ function scBanner(title,body,act,actFn){
 function scBannerHide(){ var el=$('scb'); if(el) el.className='scb'; }
 
 /* ── junk food: Bara confiscates it ── */
-var SC_JUNK=/\b(kek|cake|donut|doughnut|kuih|biskut|cookies?|coklat|chocolate|aiskrim|ais krim|ice ?cream|teh tarik|milo|kopi ais|bubble tea|boba|coke|cola|soda|pepsi|sirap|bandung|cendol|ais kacang|keropok|chips|kerepek|pisang goreng|goreng pisang|burger|pizza|fries|kentang goreng|nugget|roti canai|maggi|mee segera|candy|gula-gula|waffle|pancake|brownies?|cheesecake)\b/i;
-function scJunk(m){
-  var n=String((m&&m.name)||'');
-  return SC_JUNK.test(n) || (m && m.kcal>=900);
+/* (20 Oct, the Bara audit) junk food, and sweet drinks apart: a drink made
+   kosong, kurang manis or zero is a good choice, never confiscated, and in a
+   plate of several things Bara names only the junk one ("nasi lemak + teh
+   tarik": the teh tarik, not the nasi lemak) */
+var SC_JUNK=/\b(kek|cake|donut|doughnut|kuih|biskut|cookies?|coklat|chocolate|aiskrim|ais krim|ice ?cream|cendol|ais kacang|keropok|chips|kerepek|pisang goreng|goreng pisang|burger|pizza|fries|kentang goreng|nugget|roti canai|maggi|mee segera|candy|gula-gula|waffle|pancake|brownies?|cheesecake)\b/i;
+var SC_SWEET=/\b(teh tarik|milo|kopi ais|bubble tea|boba|coke|cola|soda|pepsi|sirap|bandung)\b/i;
+var SC_LESS=/\b(kosong|kurang manis|less sugar|zero|diet|tanpa gula|no sugar|sugar ?free)\b/i;
+function scJunkPart(t,ctx){ t=String(t||''); return SC_JUNK.test(t) || (SC_SWEET.test(t) && !SC_LESS.test(t) && !SC_LESS.test(ctx||'')); }
+/* the junk thing on this plate, by name, or '' */
+function scJunkItem(m){
+  if(!m) return '';
+  /* the items a scan or the typed box found, then the name's own parts; an
+     item "Teh tarik" from "teh tarik kurang manis" keeps the member's word */
+  var comps=(m.comps||[]).map(function(c){ return c&&c.name; }).filter(Boolean), i;
+  var parts=String(m.name||'').split(/\s*(?:\+|,|&|\/|\bdan\b|\band\b|\bwith\b)\s*/i);
+  for(i=0;i<comps.length;i++) if(scJunkPart(comps[i], m.name)) return String(comps[i]).trim();
+  for(i=0;i<parts.length;i++) if(parts[i] && scJunkPart(parts[i])) return String(parts[i]).trim();
+  return (+m.kcal||0)>=900 ? String(m.name||'') : '';
 }
+function scJunk(m){ return !!scJunkItem(m); }
 SC_LINES.junk=['Bara simpan {x} tu dulu ya 😇 Esok kita tukar dengan buah.',
   'Bara tak marah… cuma {x} tu Bara "simpan" 😏 Minum air kosong sekali ya.',
   'Sekali-sekala tak apa. Tapi Bara nampak {x} tu 👀'];
@@ -9671,15 +9690,15 @@ function scMealLogged(m){
      word on sugar; here it is water, never "confiscated" (a teh tarik
      kosong was taken away while the report praised it) */
   if(m && m.src==='drink'){ _scSay='water'; _scSayAt=Date.now(); return; }
-  if(scJunk(m)){ _scSay='junk'; _scSayAt=Date.now(); _scJunkName=m&&m.name; scBanner('Confiscated 😇',scJunkLine(m&&m.name)); }
-  else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Meal logged 🍽️','Bara likes honest people. Protein first, rice by the portion.'); }
+  if(scJunk(m)){ _scSay='junk'; _scSayAt=Date.now(); _scJunkName=scJunkItem(m); scBanner('Bara rampas 😇',scJunkLine(_scJunkName)); }
+  else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Makanan dah dilog 🍽️','Bara suka orang jujur. Protein dulu, nasi secukupnya.'); }
 }
 var _scJunkName='';
 
 /* ── one tap: water and the fast ── */
 function scWaterTap(){
   var dy=scDaily(); scSet('water',dy.water+1); _scSay='water'; _scSayAt=Date.now();
-  scBanner('+1 glass of water 💧',(dy.water+1)+'/'+SC_WATER+' today · Glug glug!','Undo','scSet(\'water\',scDaily().water-1);scRender()');
+  scBanner('+1 gelas air 💧',(dy.water+1)+'/'+SC_WATER+' hari ni · Glug glug!','Batal','scSet(\'water\',scDaily().water-1);scRender()');
   scRender();
 }
 function scFastTap(){
@@ -9690,7 +9709,7 @@ function scFastTap(){
   if(f.active) return openIF();
   f.active={at:Date.now(), target:(typeof ifProto==='function'?ifProto().f:16)}; HF.save();
   _scSay='fast'; _scSayAt=Date.now();
-  scBanner('Fast started ⏱️',f.active.target+'-hour goal. Tap the Fast ring to end it.');
+  scBanner('Puasa dah mula ⏱️','Sasaran '+f.active.target+' jam. Tekan bulatan Fast untuk tamatkan.');
   scRender();
 }
 
@@ -9834,7 +9853,7 @@ function scWeekStrip(p,gi){
 /* ── Kenali Bara: once, the first time the card shows ── */
 var SC_MEET=[
   {pose:'aktif', t:'Hai! Ini Bara 👋', s:'Kawan HITFAT awak. Bara jadi merah bila awak aktif, dan bulu Bara kusut bila awak lama menghilang 🥲'},
-  {pose:'water', t:'Penuhkan 4 bulatan setiap hari', s:'Workout, makan, air dan langkah. Semuanya jadi HITFAT Score awak, 0 hingga 100.'},
+  {pose:'w_water', t:'Penuhkan 4 bulatan setiap hari', s:'Workout, makan, air dan langkah. Semuanya jadi HITFAT Score awak, 0 hingga 100.'},
   {pose:'gold',  t:'Skor 50+ = hari padu 🔥', s:'Hari padu berturut-turut jadi streak. Cukup 7 hari, Bara jadi emas. Terlepas sehari? Awak ada 2 freeze sebulan ❄️'}];
 function scCheckMeet(){
   var sc=HF.data.sc||(HF.data.sc={});
@@ -9869,7 +9888,7 @@ function scCheckWeekly(){
   seen[key]=1; HF.save(); scWeekly(dow===1?1:0); return true;
 }
 function scWeekly(off){
-  var w=scWeekStats(off), p=scWeekStats(off+1), diff=w.avg-p.avg, st=scStreak().n;
+  var w=scWeekStats(off), p=scWeekStats(off+1), diff=w.avg-p.avg, st=scStreak().n, pose=w.avg>=SC_PADU?'gold':scTone('calendar','aktif');
   var line=diff>0?'Naik '+diff+' mata dari minggu lepas 👏 Bara bangga dengan awak!':diff<0?'Turun '+(-diff)+' mata. Tak apa, minggu depan kita kejar balik 💪':'Sama macam minggu lepas. Konsisten pun satu kemenangan 🤍';
   var bd=w.best.iso?new Date(w.best.iso+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long'}):'–';
   /* its own light look (18 Oct): it used to borrow Beast Mode's red, where the
@@ -9877,13 +9896,13 @@ function scWeekly(off){
      Now white to soft pink, so a red or gold Bara stands out; the number is
      ink, red on a strong week */
   $('scc').className='scc scc-report';
-  $('scc').innerHTML='<div class="scc-in">'+scMomentBell(w.avg>=SC_PADU?'gold':'calendar')+
+  $('scc').innerHTML='<div class="scc-in">'+scMomentBell(pose)+
     '<div class="scx-wk">This week\'s report</div>'+
     '<div class="scx-wn'+(w.avg>=SC_PADU?' strong':'')+'">'+w.avg+'<span>/100 average</span></div>'+
     '<div class="scc-s scc-bellsays">'+line+'</div>'+
     '<div class="scx-wg"><div><b>'+w.padu+'</b><span>strong days</span></div><div><b>🔥 '+st+'</b><span>streak</span></div><div><b>'+(w.best.v||'–')+'</b><span>'+bd+'</span></div></div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">New week, let\'s go!</button></div>';
-  $('scc').style.display='flex'; scMomentPlay(w.avg>=SC_PADU?'gold':'calendar');
+  $('scc').style.display='flex'; scMomentPlay(pose);
 }
 
 
@@ -9892,7 +9911,7 @@ function scWeekly(off){
    the score pill. ── */
 function scInsights(){
   var s=scScore(), hs=scHabits(), share=100/hs.length, c=scColor(s), st=scStreak(), lv=scLevel(s), i;
-  var poster=(typeof bellPoster==='function')?bellPoster(lv):'';
+  var poster=(typeof bellPoster==='function')?bellPoster(scState().k==='rust'?'kusut':lv):'';
   var status=s>=100?'Full score 🏆 Bara couldn\'t be prouder.':s>=SC_PADU?'Strong day ✓ Bara is red.':(SC_PADU-s)+' points to a strong day, when Bara turns red.';
   var h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="scClose()">✕</button></div>'+
     '<div class="sci"><div class="sc-sh-k">Score insights</div>'+
@@ -10149,9 +10168,9 @@ function ckSave(){
 }
 function ckDoneHTML(){
   var c=ckToday(); if(!c) return '';
-  var n=ckName(), pose=c.f>=4?'aktif':c.f<=2?'calendar':'water';
+  var n=ckName(), pose=c.f>=4?scTone('cheer','w_cheer'):c.f<=2?scTone('calendar','comel'):scTone('water','w_water');
   return '<div class="ck ck-done">'+
-    '<div class="ck-bara"><img src="'+SC_POSE[pose]+'" alt="Bara"></div>'+
+    '<div class="ck-bara"><img src="'+scPoseSrc(pose)+'" alt="Bara"></div>'+
     '<div class="ck-h">Thanks for checking in'+(n?', '+hesc(n):'')+'</div>'+
     '<div class="ck-say"><b>Bara</b>'+hesc(ckSummary(c.f,c.tags||[]))+'</div>'+
     '<div class="ck-cal"><span>Calibrated with your check-in</span><i><em style="width:'+Math.min(100,30+10*ckDays())+'%"></em></i></div>'+
@@ -10178,7 +10197,7 @@ function ckDo(k){
   ckMark(k);
   var go=function(){ if($('pwm') && $('pwm').classList.contains('on')) ckClose(); };
   if(k==='water2'){ go(); scSet('water',scDaily().water+2); _scSay='water'; _scSayAt=Date.now();
-    if(typeof scBanner==='function') scBanner('+2 glasses of water 💧',scDaily().water+'/'+SC_WATER+' today'); scRender(); return; }
+    if(typeof scBanner==='function') scBanner('+2 gelas air 💧',scDaily().water+'/'+SC_WATER+' hari ni'); scRender(); return; }
   if(k==='stretch' || k==='mobility'){ go(); ckPlay(k==='stretch'?CK_STRETCH:CK_MOBILITY, k==='stretch'?'4-minute stretch with Bara':'Easy mobility'); return; }
   if(k==='protein' || k==='snack' || k==='fibre'){ go(); switchTab('eat'); return; }
   if(k==='fullwo' || k==='lightwo'){ go(); if(typeof scTap==='function') scTap('workout'); else switchTab('train'); return; }
@@ -10218,7 +10237,7 @@ function mrBefore(){ try{ return typeof scScore==='function' ? scScore() : 0; }c
 /* what Bara says about this plate: the most useful one thing */
 function mrLine(m, over){
   var kcal=+m.kcal||0, p=+m.p||0, c=+m.c||0, f=+m.f||0;
-  if(typeof scJunk==='function' && scJunk(m)) return scJunkLine(m.name);
+  if(typeof scJunkItem==='function' && scJunkItem(m)) return scJunkLine(scJunkItem(m));
   if(over) return 'Hari ni dah lebih sikit dari sasaran. Tak apa, jalan kaki sekejap dan esok kita sambung 🤍';
   if(p>=25) return 'Protein padu! Awak akan kenyang lebih lama, Bara suka 💪';
   if(kcal && c*4>kcal*0.6) return 'Karbo agak tinggi. Jalan 10 minit lepas makan, Bara teman 🚶';
@@ -23760,6 +23779,15 @@ function kelasBaraLive(){
 }
 var KL_POKE=['Hehe, gelilah! 😆','Jumpa kat kelas nanti ya! 💪','Bara tunggu awak kat HQ 😄','Hehe, lagi? 🙈'];
 function kelasBaraPoke(){
+  /* (20 Oct) a messy Bara (an ended membership or package, or days with
+     nothing logged) does not giggle: he says what would cheer him up */
+  const ended=Kelas.baraPose==='kusut', rust=typeof scState==='function' && scState().k==='rust';
+  if(ended || rust){
+    const s=document.querySelector('#kelas-body .kl-bub span');
+    if(s) s.textContent=ended?(kelasSpace()==='pt'?'Bara rindu sesi PT awak 🥺 Sambung pakej dengan coach ya.':'Bara rindu awak kat kelas 🥺 Renew di kaunter ya.')
+                             :'Bulu Bara kusut 🥲 Log satu benda je, Bara terus gebu balik.';
+    return;
+  }
   if(typeof scReact==='function') scReact('giggle');
   if(typeof hfSound==='function') hfSound('giggle');
   const b=document.querySelector('#kelas-body .kl-bub span');

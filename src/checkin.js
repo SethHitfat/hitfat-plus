@@ -140,9 +140,9 @@ function ckSave(){
 }
 function ckDoneHTML(){
   var c=ckToday(); if(!c) return '';
-  var n=ckName(), pose=c.f>=4?'aktif':c.f<=2?'calendar':'water';
+  var n=ckName(), pose=c.f>=4?scTone('cheer','w_cheer'):c.f<=2?scTone('calendar','comel'):scTone('water','w_water');
   return '<div class="ck ck-done">'+
-    '<div class="ck-bara"><img src="'+SC_POSE[pose]+'" alt="Bara"></div>'+
+    '<div class="ck-bara"><img src="'+scPoseSrc(pose)+'" alt="Bara"></div>'+
     '<div class="ck-h">Thanks for checking in'+(n?', '+hesc(n):'')+'</div>'+
     '<div class="ck-say"><b>Bara</b>'+hesc(ckSummary(c.f,c.tags||[]))+'</div>'+
     '<div class="ck-cal"><span>Calibrated with your check-in</span><i><em style="width:'+Math.min(100,30+10*ckDays())+'%"></em></i></div>'+
@@ -169,7 +169,7 @@ function ckDo(k){
   ckMark(k);
   var go=function(){ if($('pwm') && $('pwm').classList.contains('on')) ckClose(); };
   if(k==='water2'){ go(); scSet('water',scDaily().water+2); _scSay='water'; _scSayAt=Date.now();
-    if(typeof scBanner==='function') scBanner('+2 glasses of water 💧',scDaily().water+'/'+SC_WATER+' today'); scRender(); return; }
+    if(typeof scBanner==='function') scBanner('+2 gelas air 💧',scDaily().water+'/'+SC_WATER+' hari ni'); scRender(); return; }
   if(k==='stretch' || k==='mobility'){ go(); ckPlay(k==='stretch'?CK_STRETCH:CK_MOBILITY, k==='stretch'?'4-minute stretch with Bara':'Easy mobility'); return; }
   if(k==='protein' || k==='snack' || k==='fibre'){ go(); switchTab('eat'); return; }
   if(k==='fullwo' || k==='lightwo'){ go(); if(typeof scTap==='function') scTap('workout'); else switchTab('train'); return; }
