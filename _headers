@@ -6,3 +6,10 @@
 /sw.js
   Cache-Control: no-cache
   Service-Worker-Allowed: /
+
+# The old Movement app's workers: retired (see service-worker.js). Always
+# fetched fresh, so every phone that still has one picks up the retirement.
+/service-worker.js
+  Cache-Control: no-cache
+/firebase-messaging-sw.js
+  Cache-Control: no-cache
