@@ -1385,6 +1385,8 @@ async function _onSignedIn(session){
   try{
     if(typeof kelasLoad==='function'){ await kelasLoad(); handleKelasParam(); }
   }catch(e){}
+  /* a tapped reminder: the check-in, Eat or Home (push.js) */
+  try{ if(typeof pushHandleGo==='function') pushHandleGo(); }catch(e){}
 
   /* T42 the same way, and for the same reason. Its only door is the card on
      Home, and that card only draws once T42 has loaded — which used to happen
@@ -1472,6 +1474,7 @@ function boot(){
 
   setTimeout(hideSplash,4500);
   captureKelasParam();
+  if(typeof pushCaptureGo==='function') pushCaptureGo();
   if(typeof captureBuyParam==='function') captureBuyParam();
   capturePaidParam();      // before auth — an OAuth redirect would otherwise drop it
   HF.load();

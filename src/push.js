@@ -81,7 +81,7 @@ function pushInstallHelp(){
 }
 /* the Settings row */
 function pushRow(){
-  var st=pushState(), sub={on:'At 8 pm, when Bara has something to say',off:'Bara nudges you when a streak is at risk',denied:'Blocked in your phone settings',install:'Add HITFAT+ to your Home Screen first',none:'Not supported in this browser'}[st];
+  var st=pushState(), sub={on:'Morning, lunch, 8 pm and bedtime, only with a reason. 3 a day at most',off:'Bara nudges you to check in, log meals and keep your streak',denied:'Blocked in your phone settings',install:'Add HITFAT+ to your Home Screen first',none:'Not supported in this browser'}[st];
   var ctl=(st==='on'||st==='off')?
     '<div class="obseg meseg"><button class="'+(st==='on'?'on':'')+'" onclick="pushEnable()">On</button><button class="'+(st==='off'?'on':'')+'" onclick="pushDisable()">Off</button></div>':
     st==='install'?'<button class="pu-how" onclick="pushInstallHelp()">How</button>':'';
@@ -107,5 +107,25 @@ if(typeof navigator!=='undefined' && navigator.serviceWorker && navigator.servic
   navigator.serviceWorker.addEventListener('message',function(e){
     var d=e&&e.data; if(!d||d.hf!=='open'||typeof d.url!=='string') return;
     if(typeof kelasOpenUrl==='function') kelasOpenUrl(d.url);
+    pushGoUrl(d.url);
   });
 }
+/* (20 Oct) Bara's daily reminders open where they point: ?go=checkin (the
+   9 am one), ?go=eat (1 pm), ?go=home (10 pm). Kept until the app has
+   started, like ?kelas, then handled once. */
+function pushGo(v){
+  try{
+    if(v==='checkin'){ if(typeof switchTab==='function') switchTab('home'); if(typeof ckOpen==='function') ckOpen(); }
+    else if(v==='eat'){ if(typeof switchTab==='function') switchTab('eat'); }
+    else if(v==='home'){ if(typeof switchTab==='function') switchTab('home'); }
+  }catch(e){}
+}
+function pushGoUrl(u){ var m=String(u||'').match(/[?&]go=([a-z]+)/); if(m) pushGo(m[1]); }
+function pushCaptureGo(){
+  try{
+    var q=new URLSearchParams(location.search);
+    if(q.has('go')){ localStorage.setItem('hf_push_go',q.get('go')||''); q.delete('go'); var s=q.toString();
+      history.replaceState(null,'',location.pathname+(s?'?'+s:'')+location.hash); }
+  }catch(e){}
+}
+function pushHandleGo(){ try{ var v=localStorage.getItem('hf_push_go'); if(v){ localStorage.removeItem('hf_push_go'); pushGo(v); } }catch(e){} }

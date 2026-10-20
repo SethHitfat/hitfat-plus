@@ -4025,6 +4025,9 @@ print("\n── BELL'S REMINDERS ──");
   ok("permission is asked from a tap, never on load", String(pushEnable).indexOf('Notification.requestPermission')>0 && String(scRender).indexOf('requestPermission')<0);
   ok("an iPhone outside the Home Screen is told how", String(pushInstallHelp).indexOf('Add to Home Screen')>0 && String(pushState).indexOf("'install'")>0);
   ok("Settings carries the row", String(renderMe).indexOf('pushRow()')>0);
+  ok("a tapped reminder opens where it points: check-in, Eat, Home", typeof pushGo==='function' && String(pushGo).indexOf('ckOpen()')>0 && String(pushGo).indexOf("switchTab('eat')")>0 &&
+    String(pushGoUrl).indexOf('go=')>0 && String(_onSignedIn).indexOf('pushHandleGo()')>0);
+  noThrow("...?go=home from a reminder", function(){ pushGo('home'); pushGo('nothing'); });
   ok("the server's key and functions, not a URL typed twice", pushFn().indexOf('/functions/v1/plus-push')>0);
 })();
 print("\n── SKOR HITFAT · FREEZE, SCREENS, POSES ──");

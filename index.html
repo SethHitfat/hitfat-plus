@@ -9215,7 +9215,7 @@ function scHTML(){
   if(typeof scMoodHTML==='function') slides.push(scMoodHTML());
   var inv=(typeof pushInvite==='function')?pushInvite():'';
   if(inv) slides.push('<div class="scx-coach scx-push"><div class="scx-k"><i></i>REMINDERS</div><div class="scx-t"><b>Let Bara nudge you</b></div>'+
-    '<div class="scx-seth">At 8 pm, only when a streak is at risk or Bara misses you. One a day at most.</div>'+inv+'</div>');
+    '<div class="scx-seth">Morning check-in, lunch, 8 pm and bedtime, only when there is a reason. 3 a day at most.</div>'+inv+'</div>');
   slides.unshift(scBellCard(st));
   var base=(typeof scBaseHTML==='function')?scBaseHTML():'';   /* the first 30 days, second after the score card */
   if(base) slides.splice(1,0,base);
@@ -10554,7 +10554,7 @@ function pushInstallHelp(){
 }
 /* the Settings row */
 function pushRow(){
-  var st=pushState(), sub={on:'At 8 pm, when Bara has something to say',off:'Bara nudges you when a streak is at risk',denied:'Blocked in your phone settings',install:'Add HITFAT+ to your Home Screen first',none:'Not supported in this browser'}[st];
+  var st=pushState(), sub={on:'Morning, lunch, 8 pm and bedtime, only with a reason. 3 a day at most',off:'Bara nudges you to check in, log meals and keep your streak',denied:'Blocked in your phone settings',install:'Add HITFAT+ to your Home Screen first',none:'Not supported in this browser'}[st];
   var ctl=(st==='on'||st==='off')?
     '<div class="obseg meseg"><button class="'+(st==='on'?'on':'')+'" onclick="pushEnable()">On</button><button class="'+(st==='off'?'on':'')+'" onclick="pushDisable()">Off</button></div>':
     st==='install'?'<button class="pu-how" onclick="pushInstallHelp()">How</button>':'';
@@ -10580,8 +10580,28 @@ if(typeof navigator!=='undefined' && navigator.serviceWorker && navigator.servic
   navigator.serviceWorker.addEventListener('message',function(e){
     var d=e&&e.data; if(!d||d.hf!=='open'||typeof d.url!=='string') return;
     if(typeof kelasOpenUrl==='function') kelasOpenUrl(d.url);
+    pushGoUrl(d.url);
   });
 }
+/* (20 Oct) Bara's daily reminders open where they point: ?go=checkin (the
+   9 am one), ?go=eat (1 pm), ?go=home (10 pm). Kept until the app has
+   started, like ?kelas, then handled once. */
+function pushGo(v){
+  try{
+    if(v==='checkin'){ if(typeof switchTab==='function') switchTab('home'); if(typeof ckOpen==='function') ckOpen(); }
+    else if(v==='eat'){ if(typeof switchTab==='function') switchTab('eat'); }
+    else if(v==='home'){ if(typeof switchTab==='function') switchTab('home'); }
+  }catch(e){}
+}
+function pushGoUrl(u){ var m=String(u||'').match(/[?&]go=([a-z]+)/); if(m) pushGo(m[1]); }
+function pushCaptureGo(){
+  try{
+    var q=new URLSearchParams(location.search);
+    if(q.has('go')){ localStorage.setItem('hf_push_go',q.get('go')||''); q.delete('go'); var s=q.toString();
+      history.replaceState(null,'',location.pathname+(s?'?'+s:'')+location.hash); }
+  }catch(e){}
+}
+function pushHandleGo(){ try{ var v=localStorage.getItem('hf_push_go'); if(v){ localStorage.removeItem('hf_push_go'); pushGo(v); } }catch(e){} }
 /* ═══════════════ LANGUAGE: BM / EN ═══════════════
    The app is written in English. Bahasa Melayu is laid over it on screen:
    every text node, placeholder, aria-label and title that matches the
@@ -33883,6 +33903,8 @@ async function _onSignedIn(session){
   try{
     if(typeof kelasLoad==='function'){ await kelasLoad(); handleKelasParam(); }
   }catch(e){}
+  /* a tapped reminder: the check-in, Eat or Home (push.js) */
+  try{ if(typeof pushHandleGo==='function') pushHandleGo(); }catch(e){}
 
   /* T42 the same way, and for the same reason. Its only door is the card on
      Home, and that card only draws once T42 has loaded — which used to happen
@@ -33970,6 +33992,7 @@ function boot(){
 
   setTimeout(hideSplash,4500);
   captureKelasParam();
+  if(typeof pushCaptureGo==='function') pushCaptureGo();
   if(typeof captureBuyParam==='function') captureBuyParam();
   capturePaidParam();      // before auth — an OAuth redirect would otherwise drop it
   HF.load();

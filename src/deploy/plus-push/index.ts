@@ -21,6 +21,16 @@
    a session tomorrow, the package ending in 3 days. One message an
    evening, these before the habits.
 
+   Four times a day (20 Oct 2026, after Simple's reminders; the user chose
+   these, no IF one: HITFAT+ is training and diet), each only when there is
+   a reason, and at most PUSH_MAX a day for a member:
+     ?slot=pagi    9 am   no check-in yet today        → the check-in
+     ?slot=siang   1 pm   no meal logged yet today     → Eat
+     (no slot)     8 pm   class first, then the habits below
+     ?slot=tidur  10 pm   a score of 25–49: what is left to turn Bara red
+   Each kind has its own Bara picture (icon; Android and desktop show it,
+   an iPhone shows the app's own icon) and calls the member by first name.
+
    What Bara says follows the HITFAT Score in the app (score.js): a day's
    score is the share of its habits done (workout, meals /3, water /8,
    steps /8,000, and the fast for a member with an IF plan); a "hari padu"
@@ -82,6 +92,55 @@ function scoreOf(d: Data, day: string, wdays: Record<string, number>): number {
   return Math.round(hs.reduce((a, b) => a + b, 0) / hs.length * 100);
 }
 
+const PUSH_MAX = 3;
+/* each kind's Bara (img/mascot/push/, 192 px on its own colour) */
+const ICON: Record<string, string> = { pagi: 'pagi', siang: 'makan', tidur: 'tidur', streak: 'streak', weekly: 'minggu',
+  dust: 'kusut', rust: 'kusut', rust7: 'kusut', rust14: 'kusut', ended: 'kusut', class7: 'kusut', class14: 'kusut' };
+function iconFor(kind: string): string { return '/img/mascot/push/' + (ICON[kind] || 'kelas') + '.png'; }
+/* the member's first name, as the app's check-in says it */
+function firstName(d: Data): string {
+  const n = String((d && d.prefs && d.prefs.name) || '').trim().split(/\s+/)[0] || '';
+  return n.length > 20 ? '' : n.replace(/[<>]/g, '');
+}
+function workoutDays(d: Data): Record<string, number> {
+  const wdays: Record<string, number> = {};
+  for (const k in (d.sessions || {})) { const s = d.sessions[k]; if (s && s.date) { const dd = dayOf(s.date); wdays[dd] = (wdays[dd] || 0) + 1; } }
+  for (const dd of ((d as any).kelas?.days || [])) if (typeof dd === 'string') wdays[dd] = (wdays[dd] || 0) + 1;
+  return wdays;
+}
+/* anything logged in the last 7 days: a member who has gone quiet hears from
+   the 8 pm "Bara misses you" messages, not from these daily ones */
+function activeLately(d: Data, wdays: Record<string, number>): boolean {
+  for (let i = 0; i < 7; i++) if (scoreOf(d, dayBack(i), wdays) > 0) return true;
+  return false;
+}
+/* 9 am, 1 pm and 10 pm */
+export function slotMessage(d: Data, slot: string): Msg | null {
+  const wdays = workoutDays(d), today = dayBack(0), name = firstName(d);
+  if (!activeLately(d, wdays)) return null;
+  const dy = (d.daily && d.daily[today]) || {};
+  if (slot === 'pagi') {
+    if (dy.ck) return null;
+    return { kind: 'pagi', title: 'Selamat pagi' + (name ? ', ' + name : '') + '! ☀️',
+      body: 'Jom check-in sekejap. Bara susun plan hari ni ikut mood dan badan awak.', url: '/?go=checkin' };
+  }
+  if (slot === 'siang') {
+    if (((d.meals && d.meals[today]) || []).length) return null;
+    return { kind: 'siang', title: (name ? name + ', dah' : 'Dah') + ' makan tengah hari? 🍽️',
+      body: 'Taip je apa awak makan. Bara kira kalori dan protein untuk awak.', url: '/?go=eat' };
+  }
+  if (slot === 'tidur') {
+    const sc = scoreOf(d, today, wdays);
+    if (sc < 25 || sc >= 50) return null;
+    const need = 50 - sc, glass = 100 / 4 / 8, left = Math.max(0, 8 - (dy.water || 0)), g = Math.ceil(need / glass);
+    const body = g <= left ? 'Skor awak ' + sc + '. Lagi ' + g + ' gelas air je, Bara jadi merah! 🔥'
+      : !wdays[today] ? 'Skor awak ' + sc + '. Workout 10 minit pun dah +25 mata, Bara tunggu! 💪'
+      : 'Skor awak ' + sc + ', lagi ' + need + ' mata untuk hari padu. Log makan malam dan minum air sebelum tidur.';
+    return { kind: 'tidur', title: 'Sebelum tidur' + (name ? ', ' + name : '') + ' 😴', body, url: '/?go=home' };
+  }
+  return null;
+}
+
 /* what, if anything, Bara says to this member this evening */
 export function messageFor(d: Data): { kind: string; title: string; body: string } | null {
   const wdays: Record<string, number> = {};
@@ -96,8 +155,9 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
   const frozen = (d.sc && d.sc.frozen) || {};
   for (let i = 1; i < 400; i++) { const day = dayBack(i); if (scoreOf(d, day, wdays) >= 50) streak++; else if (!frozen[day]) break; }
 
+  const name = firstName(d);
   if (streak >= 2 && today < 50) return {
-    kind: 'streak', title: '🔥 Streak ' + streak + ' hari awak dalam bahaya!',
+    kind: 'streak', title: '🔥 ' + (name ? name + ', s' : 'S') + 'treak ' + streak + ' hari awak dalam bahaya!',
     body: today ? 'Skor awak hari ni baru ' + today + '. Capai 50 sebelum tidur untuk selamatkan streak, Bara tunggu!'
                 : 'Belum ada log hari ni. Workout pendek dan segelas air pun dah banyak membantu.',
   };
@@ -116,7 +176,7 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
   if (idle === 2) return { kind: 'dust', title: 'Bara dah berhabuk 😟', body: 'Dah dua hari Bara tak nampak awak. Log satu benda hari ni sebelum bulu Bara kusut esok.' };
   if (idle === 3) return { kind: 'rust', title: 'Alamak, bulu Bara dah kusut 🥲', body: 'Segelas air pun cukup untuk buat Bara gebu balik. Jom!' };
   if (idle === 7) return { kind: 'rust7', title: 'Seminggu Bara kusut...', body: 'Bara masih tunggu awak 🪮 Mula balik dengan satu benda kecil hari ni.' };
-  if (idle === 14) return { kind: 'rust14', title: 'Bara rindu awak 🥺', body: 'Dah dua minggu. Tak perlu sempurna, mula je balik.' };
+  if (idle === 14) return { kind: 'rust14', title: 'Bara rindu awak' + (name ? ', ' + name : '') + ' 🥺', body: 'Dah dua minggu. Tak perlu sempurna, mula je balik.' };
   return null;
 }
 
@@ -131,7 +191,7 @@ async function vapid(admin: any): Promise<{ pub: string; priv: string }> {
   return vapid(admin);
 }
 
-type Msg = { kind: string; title: string; body: string; url?: string; tag?: string };
+type Msg = { kind: string; title: string; body: string; url?: string; tag?: string; icon?: string };
 
 /* HITFAT OS, for the class members' end dates and last class */
 const OS_URL = 'https://ddcmfbaidkrqpeckmzou.supabase.co';
@@ -196,14 +256,19 @@ export function classMessage(c: any, today: string): Msg | null {
   return null;
 }
 
-async function sendTo(admin: any, subs: any[], msg: Msg, daily = true) {
+/* daily: true (8 pm), a slot name, or false (a group notice, not counted) */
+async function sendTo(admin: any, subs: any[], msg: Msg, daily: boolean | string = true) {
   let sent = 0;
   for (const s of subs) {
     try {
       await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
-        JSON.stringify({ title: msg.title, body: msg.body, tag: msg.tag || 'bell-' + msg.kind, url: msg.url || '/' }), { TTL: 6 * 3600 });
+        JSON.stringify({ title: msg.title, body: msg.body, tag: msg.tag || 'bell-' + msg.kind, url: msg.url || '/', icon: msg.icon || iconFor(msg.kind) }), { TTL: 6 * 3600 });
       sent++;
-      if (daily) await admin.from('plus_push_subs').update({ last_sent: dayBack(0), last_kind: msg.kind }).eq('endpoint', s.endpoint);
+      if (daily) {
+        const t = dayBack(0), same = s.sent_day === t;
+        await admin.from('plus_push_subs').update({ last_sent: t, last_kind: msg.kind, sent_day: t,
+          sent_n: (same ? (s.sent_n || 0) : 0) + 1, sent_slots: (same ? (s.sent_slots || '') : '') + ',' + (daily === true ? 'malam' : daily) }).eq('endpoint', s.endpoint);
+      }
     } catch (e: any) {
       /* gone: the member removed it, or reinstalled */
       if (e && (e.statusCode === 404 || e.statusCode === 410)) await admin.from('plus_push_subs').delete().eq('endpoint', s.endpoint);
@@ -231,27 +296,34 @@ Deno.serve(async (req: Request) => {
     const user = ud && ud.user;
     if (!user || !user.id || user.role === 'anon') return json({ error: 'Sign in' }, 401);
     const { data: subs } = await admin.from('plus_push_subs').select('*').eq('user_id', user.id);
-    const n = await sendTo(admin, subs || [], { kind: 'test', title: 'Hai, Bara ni! 👋', body: 'Peringatan dah on. Bara akan ingatkan awak pukul 8 malam bila ada sesuatu nak cakap.' });
+    const n = await sendTo(admin, subs || [], { kind: 'pagi', title: 'Hai, Bara ni! 👋', body: 'Peringatan dah on. Bara akan ingatkan awak pagi, tengah hari dan malam, bila ada sebab je.' }, false);
     return json({ ok: true, sent: n });
   }
 
   if (action === 'send') {
     const { data: ck } = await admin.from('plus_settings').select('value').eq('key', 'push_cron_key').maybeSingle();
     if (!ck || url.searchParams.get('key') !== ck.value) return json({ error: 'unauthorised' }, 401);
-    const today = dayBack(0);
+    const today = dayBack(0), slot = ['pagi', 'siang', 'tidur'].includes(url.searchParams.get('slot') || '') ? url.searchParams.get('slot')! : 'malam';
     const { data: subs } = await admin.from('plus_push_subs').select('*');
-    const byUser: Record<string, any[]> = {};
-    for (const s of (subs || [])) { if (s.last_sent === today) continue; (byUser[s.user_id] = byUser[s.user_id] || []).push(s); }
-    const cls = await classList(admin);
+    /* a member's count today is the most any of their devices was sent */
+    const byUser: Record<string, any[]> = {}, nUser: Record<string, number> = {}, done: Record<string, boolean> = {};
+    for (const s of (subs || [])) {
+      const same = s.sent_day === today, n = same ? (s.sent_n || 0) : (s.last_sent === today ? 1 : 0);
+      nUser[s.user_id] = Math.max(nUser[s.user_id] || 0, n);
+      if ((same && String(s.sent_slots || '').split(',').includes(slot)) || (slot === 'malam' && s.last_sent === today && !same)) done[s.user_id] = true;
+      (byUser[s.user_id] = byUser[s.user_id] || []).push(s);
+    }
+    const cls = slot === 'malam' ? await classList(admin) : {};
     let users = 0, sent = 0;
     for (const uid of Object.keys(byUser)) {
-      let msg: Msg | null = classMessage(cls[uid], today);
+      if (done[uid] || (nUser[uid] || 0) >= PUSH_MAX) continue;
+      let msg: Msg | null = slot === 'malam' ? classMessage(cls[uid], today) : null;
       if (!msg) {
         const { data: row } = await admin.from('plus_data').select('data').eq('user_id', uid).maybeSingle();
-        msg = row && row.data ? messageFor(row.data) : null;
+        msg = row && row.data ? (slot === 'malam' ? messageFor(row.data) : slotMessage(row.data, slot)) : null;
       }
       if (!msg) continue;
-      users++; sent += await sendTo(admin, byUser[uid], msg);
+      users++; sent += await sendTo(admin, byUser[uid], msg, slot === 'malam' ? true : slot);
     }
     return json({ ok: true, users, sent });
   }

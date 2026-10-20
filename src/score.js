@@ -233,7 +233,7 @@ function scHTML(){
   if(typeof scMoodHTML==='function') slides.push(scMoodHTML());
   var inv=(typeof pushInvite==='function')?pushInvite():'';
   if(inv) slides.push('<div class="scx-coach scx-push"><div class="scx-k"><i></i>REMINDERS</div><div class="scx-t"><b>Let Bara nudge you</b></div>'+
-    '<div class="scx-seth">At 8 pm, only when a streak is at risk or Bara misses you. One a day at most.</div>'+inv+'</div>');
+    '<div class="scx-seth">Morning check-in, lunch, 8 pm and bedtime, only when there is a reason. 3 a day at most.</div>'+inv+'</div>');
   slides.unshift(scBellCard(st));
   var base=(typeof scBaseHTML==='function')?scBaseHTML():'';   /* the first 30 days, second after the score card */
   if(base) slides.splice(1,0,base);

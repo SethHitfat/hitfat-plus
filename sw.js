@@ -10,7 +10,8 @@ self.addEventListener('push', function (e) {
   try { d = e.data ? e.data.json() : {}; } catch (x) { d = { body: e.data ? e.data.text() : '' }; }
   e.waitUntil(self.registration.showNotification(d.title || 'HITFAT+', {
     body: d.body || '',
-    icon: '/img/mascot/push-icon.png',
+    /* each reminder its own Bara (Android, desktop); an iPhone shows the app icon */
+    icon: (typeof d.icon === 'string' && /^\/img\/mascot\/[a-z0-9_\/-]+\.png$/.test(d.icon)) ? d.icon : '/img/mascot/push-icon.png',
     badge: '/img/mascot/push-badge.png',
     tag: d.tag || 'bell',
     renotify: false,
