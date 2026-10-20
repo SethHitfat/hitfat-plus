@@ -367,7 +367,8 @@ function scSheet(k){
   if(k==='water'){
     h+='<div class="sc-sh"><div class="sc-sh-k">Water today</div><div class="sc-sh-n">'+dy.water+'<span> / '+SC_WATER+' glasses</span></div>'+
       '<div class="sc-sh-ctl"><button onclick="scWater(-1)" aria-label="One glass less">−</button><button class="on" onclick="scWater(1)" aria-label="One glass more">+ 1 glass</button></div>'+
-      '<div class="sc-sh-f">A glass is about 250 ml.</div></div>';
+      '<div class="sc-sh-f">A glass is about 250 ml.</div>'+
+      (typeof drOpen==='function'?'<button class="sc-sh-dr" onclick="scClose();drOpen()">Teh tarik, kopi, Milo or another drink?</button>':'')+'</div>';
   } else {
     h+='<div class="sc-sh"><div class="sc-sh-k">Steps today</div><div class="sc-sh-n">'+dy.steps.toLocaleString('en-MY')+'<span> / '+SC_STEPS.toLocaleString('en-MY')+'</span></div>'+
       '<div class="sc-sh-ctl"><button onclick="scSteps(1000)">+1,000</button><button onclick="scSteps(2000)">+2,000</button><button onclick="scSteps(5000)">+5,000</button></div>'+

@@ -183,6 +183,9 @@ function eatToday(){
       '<div class="etile"><span class="ic" style="--c:#C9962E">'+glyph('target')+'</span><div><b>'+(logged?score:'—')+'</b><span>Meal balance</span></div></div>'+
     '</div>';
 
+  /* drinks (20 Oct 2026): teh tarik, kopi, Milo… to water, and their sugar to food */
+  if(typeof drRowHTML==='function') h+=drRowHTML();
+
   // meals: one grouped list, the slot to fill next marked, + to add
   h+=fsec('Meals', 'Tap a meal to log into it.');
   h+='<div class="nlist">'+SLOTS.map(s=>{
@@ -525,7 +528,7 @@ function renderManual(){
   const favs=(HF.data.favs||[]).slice(0,8);
   $('man-body').innerHTML=
     '<div style="font-size:17px;font-weight:800;margin-bottom:3px;">Add a meal</div>'+
-    '<div class="sub" style="margin-bottom:14px;">Type it and let AI work it out, or fill it in yourself.</div>'+
+    '<div class="sub" style="margin-bottom:14px;">Type it and let AI work it out, or fill it in yourself. A drink? <button class="m-drink" onclick="closeManual();drOpen()">Log a drink</button></div>'+
     /* type it, and AI works it out (20 Oct 2026, after Simple's "type what you ate") */
     '<div class="qh">Type what you ate</div>'+
     '<div class="m-type"><textarea class="inp" id="m-text" rows="2" maxlength="300" placeholder="e.g. nasi lemak telur + teh tarik kurang manis" oninput="_mText=this.value">'+hesc(_mText)+'</textarea>'+

@@ -5483,3 +5483,36 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .m-it{display:inline-flex;gap:6px;align-items:center;padding:5px 10px;border-radius:99px;background:rgba(127,127,127,.12);font-size:12.5px;color:var(--txt);}
 .m-it b{font-weight:800;color:var(--dim);}
 .m-res-f{font-size:12px;color:var(--dim);margin-top:8px;line-height:1.35;}
+
+/* ── drinks (drinks.js, 20 Oct 2026) ── */
+.dr-row{display:flex;align-items:center;gap:12px;width:100%;margin-top:10px;padding:13px 14px;border:0;border-radius:18px;background:var(--surface);font:inherit;text-align:left;color:var(--txt);cursor:pointer;}
+.dr-ic{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:rgba(59,130,246,.14);}
+.dr-t{flex:1;min-width:0;} .dr-t b{display:block;font-size:15.5px;} .dr-t small{display:block;font-size:13px;color:var(--dim);margin-top:2px;}
+.dr-row>i{font-style:normal;flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#E30613;color:#fff;font-size:20px;font-weight:700;}
+.dr-h{font-size:22px;font-weight:900;color:var(--txt);margin:2px 0 12px;}
+.dr-quick{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border:0;border-radius:18px;background:rgba(59,130,246,.12);font:inherit;text-align:left;color:var(--txt);cursor:pointer;}
+.dr-quick .gly{width:24px;height:24px;stroke:#3B82F6;flex:none;}
+.dr-quick b{display:block;font-size:16px;} .dr-quick small{display:block;font-size:12.5px;color:var(--dim);}
+.dr-k{margin:16px 2px 8px;font-size:12.5px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--dim);}
+.dr-types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.dr-types button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border:1.5px solid transparent;border-radius:16px;background:var(--surface);font:inherit;font-size:12.5px;font-weight:700;color:var(--txt);cursor:pointer;}
+.dr-types button span{font-size:26px;line-height:1;}
+.dr-types button.on{border-color:#E30613;background:rgba(227,6,19,.08);}
+.dr-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.dr-chips button{display:flex;flex-direction:column;align-items:center;padding:9px 14px;border:1.5px solid var(--sep);border-radius:14px;background:none;font:inherit;font-size:14px;font-weight:800;color:var(--txt);cursor:pointer;}
+.dr-chips button small{font-size:11px;font-weight:600;color:var(--dim);}
+.dr-chips button.on{border-color:#E30613;background:#E30613;color:#fff;} .dr-chips button.on small{color:rgba(255,255,255,.85);}
+.dr-n{display:flex;align-items:center;gap:12px;margin-top:14px;font-weight:800;color:var(--txt);}
+.dr-n span{flex:1;font-size:14px;color:var(--dim);}
+.dr-n button{width:38px;height:38px;border-radius:50%;border:0;background:var(--surface);font:inherit;font-size:20px;font-weight:800;color:var(--txt);cursor:pointer;}
+.dr-n b{min-width:20px;text-align:center;font-size:18px;}
+.dr-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 14px;}
+.dr-sum>div{padding:12px 8px;border-radius:16px;background:var(--surface);text-align:center;}
+.dr-sum b{display:block;font-size:20px;font-weight:900;color:var(--txt);} .dr-sum small{font-size:11.5px;color:var(--dim);}
+.dr-sum .hi b{color:#C2410C;}
+.dr-sug{display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:18px;background:var(--surface);}
+.dr-tsp{display:grid;grid-template-columns:repeat(4,16px);gap:5px;flex:none;}
+.dr-tsp i{width:16px;height:16px;border-radius:50%;background:#F5E6C8;box-shadow:inset 0 -2px 0 rgba(0,0,0,.08);}
+.dr-sug-t b{display:block;font-size:16px;color:var(--txt);} .dr-sug-t small{display:block;font-size:12.5px;color:var(--dim);margin-top:2px;line-height:1.35;}
+.m-drink{border:0;background:none;padding:0;font:inherit;font-weight:800;color:#E30613;cursor:pointer;text-decoration:underline;}
+.sc-sh-dr{margin-top:14px;width:100%;padding:12px;border:1.5px solid var(--sep);border-radius:14px;background:none;font:inherit;font-weight:800;color:var(--txt);cursor:pointer;}
