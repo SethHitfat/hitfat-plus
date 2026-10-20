@@ -7658,6 +7658,53 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .hx-kl-t small{display:block;font-size:12.5px;color:#FFD400;margin-top:2px;}
 .hx-kl-r i{font-style:normal;font-size:20px;color:rgba(255,255,255,.5);}
 
+/* ── the meal report (mealreport.js, 20 Oct 2026) ── */
+.mr{padding-bottom:10px;}
+.mr-top{position:relative;margin:-6px -18px 0;padding:6px 18px 22px;text-align:center;overflow:hidden;
+  background:radial-gradient(120% 80% at 50% 30%,rgba(227,6,19,.22),rgba(227,6,19,0) 70%);}
+.mr.hot .mr-top{background:radial-gradient(120% 80% at 50% 30%,rgba(227,6,19,.38),rgba(255,194,14,.10) 60%,rgba(227,6,19,0) 80%);}
+.mr-arc{width:260px;margin:0 auto;}
+.mr-bara{display:block;width:150px;height:150px;object-fit:contain;margin:-150px auto 0;position:relative;animation:mrPop .6s cubic-bezier(.3,1.6,.5,1) both;}
+@keyframes mrPop{from{transform:scale(.6) translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.mr-score{margin-top:4px;}
+.mr-score b{display:block;font-size:46px;font-weight:900;line-height:1;color:var(--txt);font-variant-numeric:tabular-nums;}
+.mr-score small{font-size:12.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--dim);}
+.mr-chip{display:inline-block;margin-top:10px;padding:7px 14px;border-radius:99px;background:var(--surface);font-size:13.5px;font-weight:800;color:var(--txt);}
+.mr-chip.over{background:rgba(255,138,61,.18);color:#C2410C;}
+.mr-conf{position:absolute;inset:0;pointer-events:none;}
+.mr-conf i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:mrFall 1.6s ease-in both;}
+@keyframes mrFall{from{top:-14px;opacity:1}to{top:110%;opacity:0}}
+.mr-say{display:flex;flex-direction:column;gap:3px;margin-top:14px;padding:14px 16px;border-radius:18px 18px 18px 6px;background:var(--surface);}
+.mr-say b{font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#E30613;}
+.mr-say span{font-size:15.5px;line-height:1.45;color:var(--txt);}
+.mr-meal{margin-top:12px;padding:12px 16px;border-radius:16px;border:1.5px solid var(--sep);}
+.mr-mn{font-size:16px;font-weight:800;color:var(--txt);}
+.mr-mk{font-size:13px;color:var(--dim);margin-top:3px;font-variant-numeric:tabular-nums;}
+.mr-h{margin:18px 2px 8px;font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--dim);}
+.mr-rows{display:flex;flex-direction:column;gap:14px;padding:14px 16px;border-radius:18px;background:var(--surface);}
+.mr-rh{display:flex;align-items:baseline;gap:8px;}
+.mr-rh b{font-size:15.5px;font-weight:800;color:var(--txt);}
+.mr-add{font-size:13px;font-weight:800;color:#E30613;font-variant-numeric:tabular-nums;}
+.mr-st{margin-left:auto;font-style:normal;font-size:11.5px;font-weight:900;padding:4px 9px;border-radius:99px;}
+.mr-st.room,.mr-st.low{background:rgba(59,130,246,.14);color:#2563EB;}
+.mr-st.ok{background:rgba(34,197,94,.15);color:#15803D;}
+.mr-st.over{background:rgba(255,138,61,.18);color:#C2410C;}
+.mr-bar{position:relative;height:10px;margin-top:8px;border-radius:99px;background:rgba(127,127,127,.16);overflow:hidden;}
+.mr-bar i{position:absolute;top:0;bottom:0;border-radius:99px;}
+.mr-bar i.b{left:0;background:rgba(127,127,127,.45);}
+.mr-bar i.a{background:#3B82F6;transition:width .8s cubic-bezier(.2,.8,.2,1);}
+.mr-bar i.a.ok{background:#22C55E;} .mr-bar i.a.over{background:#FF8A3D;} .mr-bar i.a.low{background:#3B82F6;}
+.mr-bar s{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--txt);opacity:.55;}
+.mr-rf{display:flex;justify-content:space-between;margin-top:5px;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;}
+.mr-acts{display:flex;flex-direction:column;gap:8px;}
+.mr-acts button{display:flex;align-items:center;gap:12px;padding:13px 14px;border:0;border-radius:16px;background:var(--surface);font:inherit;font-size:15px;font-weight:700;color:var(--txt);text-align:left;cursor:pointer;}
+.mr-acts .gly{width:20px;height:20px;stroke:#E30613;flex:none;}
+.mr-set{display:flex;align-items:center;gap:12px;width:100%;margin-top:16px;padding:14px 16px;border:0;border-radius:18px;background:var(--surface);font:inherit;text-align:left;color:var(--txt);cursor:pointer;}
+.mr-set .gly{width:22px;height:22px;stroke:#E30613;flex:none;}
+.mr-set b{display:block;font-size:15.5px;} .mr-set small{display:block;font-size:13px;color:var(--dim);margin-top:2px;}
+.mr-set i{margin-left:auto;font-style:normal;font-size:20px;color:var(--dim);}
+.mr-done{margin-top:18px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -10100,6 +10147,132 @@ function ckPlanHTML(){
   var left=c.plan.filter(function(k){ return !(c.done&&c.done[k]); }).length;
   return '<div class="ck-plan"><div class="ck-pk"><span>From your check-in</span><b>'+(left?left+' to go':'All done ✓')+'</b></div>'+ckRowsHTML(c,false)+'</div>';
 }
+/* ═══════════════ the meal report (20 Oct 2026) ═══════════════
+   After Simple's meal flow (Seth: "try cek apa blh tiru dan upgrade"): a
+   meal that is logged gets its own moment instead of a toast that vanishes.
+   Bara takes the meal in, the HITFAT Score climbs to its new number, Bara
+   says one thing about this plate (in Malay, as Bara and awak), and today's
+   calories, protein, carbs and fat show against the member's own target with
+   what this meal added. Then one useful next step: a glass of water, a short
+   walk, or undo. Ideas only; the words, the art and the layout are HITFAT's.
+
+   Called from the three places a member logs by hand: a scan (logScanned),
+   the manual sheet (saveManual) and a quick pick (logFav). mrBefore() is
+   read before the meal is saved, so the score can move from where it was. */
+
+var _mr=null;
+function mrBefore(){ try{ return typeof scScore==='function' ? scScore() : 0; }catch(e){ return 0; } }
+
+/* what Bara says about this plate: the most useful one thing */
+function mrLine(m, over){
+  var kcal=+m.kcal||0, p=+m.p||0, c=+m.c||0, f=+m.f||0;
+  if(typeof scJunk==='function' && scJunk(m)) return scJunkLine(m.name);
+  if(over) return 'Hari ni dah lebih sikit dari sasaran. Tak apa, jalan kaki sekejap dan esok kita sambung 🤍';
+  if(p>=25) return 'Protein padu! Awak akan kenyang lebih lama, Bara suka 💪';
+  if(kcal && c*4>kcal*0.6) return 'Karbo agak tinggi. Jalan 10 minit lepas makan, Bara teman 🚶';
+  if(kcal && f*9>kcal*0.45) return 'Berminyak sikit. Waktu makan seterusnya, tambah sayur ya 🥗';
+  if(kcal && kcal<250) return 'Snek ringan, pandai awak pilih 👍';
+  return 'Dah log, Bara bangga! Jujur macam ni yang buat badan berubah ✨';
+}
+/* one bar: today's total against the target, this meal's part marked.
+   kind 'max' (calories, carbs, fat: up to the target) or 'min' (protein: at least) */
+function mrStatus(total, target, kind){
+  if(!target) return null;
+  var r=total/target;
+  if(kind==='min') return r>=0.85 ? ['ok','On target'] : ['low','Need more'];
+  return r>1.05 ? ['over','Over'] : r>=0.85 ? ['ok','On target'] : ['room','Room left'];
+}
+function mrRow(label, unit, added, total, target, kind){
+  var st=mrStatus(total, target, kind), cap=target?Math.max(target, total)*1.0:Math.max(total,1);
+  var before=Math.max(0,total-added), pb=Math.min(100,before/cap*100), pa=Math.min(100-pb,added/cap*100);
+  var mark=target?Math.min(100,target/cap*100):null;
+  return '<div class="mr-row"><div class="mr-rh"><b>'+label+'</b><span class="mr-add">+'+Math.round(added).toLocaleString('en-MY')+unit+'</span>'+
+    (st?'<em class="mr-st '+st[0]+'">'+st[1]+'</em>':'')+'</div>'+
+    '<div class="mr-bar"><i class="b" style="width:'+pb.toFixed(1)+'%"></i><i class="a '+(st?st[0]:'')+'" style="left:'+pb.toFixed(1)+'%;width:0%" data-w="'+pa.toFixed(1)+'"></i>'+
+    (mark!==null&&mark<100?'<s style="left:'+mark.toFixed(1)+'%"></s>':'')+'</div>'+
+    '<div class="mr-rf"><span>Today '+Math.round(total).toLocaleString('en-MY')+unit+'</span>'+
+    (target?'<span>'+(kind==='min'?'Aim':'Target')+' '+Math.round(target).toLocaleString('en-MY')+unit+'</span>':'')+'</div></div>';
+}
+function mrOpen(m, before){
+  if(!m || !$('pwm') || !$('pw-body')) return;
+  var after=mrBefore(), n=HF.data.nutrition||{}, t=typeof mealTotals==='function'?mealTotals(iso(0)):{kcal:0,p:0,c:0,f:0};
+  var burned=typeof burnTotal==='function'?burnTotal():0, left=n.cal?Math.round(n.cal+burned-t.kcal):null, over=left!==null&&left<-Math.max(50,n.cal*0.05);
+  var lv=typeof scLevel==='function'?scLevel(after):1, up=typeof scLevel==='function' && scLevel(after)>scLevel(before);
+  _mr={from:before, to:after, m:m};
+  var pose=typeof bellPoster==='function'?bellPoster(lv):'/img/mascot/anim/aktif.png';
+  var chip=left===null?'Set your daily target to see what is left':
+    over?Math.abs(left).toLocaleString('en-MY')+' kcal over today':left.toLocaleString('en-MY')+' kcal left today';
+  var h='<div class="mr'+(after>=50?' hot':'')+'">'+
+    '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="mrDone()">✕</button></div>'+
+    '<div class="mr-top">'+(up?'<div class="mr-conf" aria-hidden="true">'+mrConfetti()+'</div>':'')+
+      '<div class="mr-arc">'+scArc(before)+'</div>'+
+      '<img class="mr-bara" src="'+pose+'" alt="Bara">'+
+      '<div class="mr-score"><b id="mr-n">'+before+'</b><small>HITFAT Score'+(after>before?' · +'+(after-before):'')+'</small></div>'+
+      '<span class="mr-chip'+(over?' over':'')+'">'+chip+'</span></div>'+
+    '<div class="mr-say"><b>Bara</b><span>'+hesc(mrLine(m, over))+'</span></div>'+
+    '<div class="mr-meal"><div class="mr-mn">'+hesc(m.name||'Meal')+'</div><div class="mr-mk">'+(+m.kcal||0).toLocaleString('en-MY')+' kcal'+
+      ' · P '+(+m.p||0)+' g · C '+(+m.c||0)+' g · F '+(+m.f||0)+' g</div></div>';
+  if(n.cal){
+    h+='<div class="mr-h">Today against your target</div><div class="mr-rows">'+
+      mrRow('Calories',' kcal',+m.kcal||0,t.kcal,n.cal+burned,'max')+
+      mrRow('Protein',' g',+m.p||0,t.p,n.pt,'min')+
+      mrRow('Carbs',' g',+m.c||0,t.c,n.ct,'max')+
+      mrRow('Fat',' g',+m.f||0,t.f,n.ft,'max')+'</div>';
+  } else {
+    h+='<button class="mr-set" onclick="mrDone();switchTab(\'eat\')">'+glyph('target')+'<span><b>Set your daily target</b><small>Weight, height and goal: then every meal shows what is left</small></span><i>›</i></button>';
+  }
+  /* the next step */
+  h+='<div class="mr-h">What next</div><div class="mr-acts">'+
+    '<button onclick="mrWater()">'+glyph('water')+'<span>+1 glass of water</span></button>'+
+    ((+m.kcal||0)>=300?'<button onclick="mrWalk()">'+glyph('steps')+'<span>A 10-min walk after</span></button>':'')+
+    '<button onclick="mrUndo()">'+glyph('repeat')+'<span>Undo this log</span></button></div>'+
+    '<button class="bigbtn mr-done" onclick="mrDone()">Done</button></div>';
+  if(typeof scBannerHide==='function') scBannerHide();   // the report says it; no banner behind it
+  $('pw-body').innerHTML=h;
+  $('pwm').classList.add('on'); try{ $('pwm').scrollTop=0; }catch(e){}
+  if(typeof hfSound==='function') try{ hfSound(up?'cheer':'giggle'); }catch(e){}
+  mrAnimate();
+}
+function mrConfetti(){
+  var cols=['#E30613','#FFC20E','#FFFFFF','#FF8A3D'], s='';
+  for(var i=0;i<18;i++) s+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%4]+';animation-delay:'+((i%6)*0.06).toFixed(2)+'s;transform:rotate('+(i*29)+'deg)"></i>';
+  return s;
+}
+/* the score climbs, the arc follows, the bars fill */
+function mrAnimate(){
+  if(!_mr) return;
+  var from=_mr.from, to=_mr.to, t0=Date.now(), dur=900;
+  setTimeout(function(){
+    var p=document.querySelector('.mr-arc .sc-arc-v'); if(p) p.setAttribute('stroke-dasharray', to+' 100');
+    if(!p && to>0){ var a=document.querySelector('.mr-arc'); if(a) a.innerHTML=scArc(to); }
+    document.querySelectorAll('.mr-bar .a').forEach(function(b){ b.style.width=b.getAttribute('data-w')+'%'; });
+  },120);
+  (function tick(){
+    var el=$('mr-n'); if(!el || !_mr) return;
+    var k=Math.min(1,(Date.now()-t0)/dur), v=Math.round(from+(to-from)*(1-Math.pow(1-k,3)));
+    el.textContent=v; if(k<1) setTimeout(tick,30);
+  })();
+}
+function mrWater(){
+  if(typeof scSet==='function'){ scSet('water',scDaily().water+1); }
+  toast('+1 glass of water 💧'); mrRefresh();
+}
+function mrWalk(){
+  if(typeof addBurn==='function'){ toast('Enjoy the walk. Log it from Eat → Exercise when you are back 👟'); }
+  else toast('Enjoy the walk 👟');
+}
+function mrUndo(){
+  var d=iso(0), L=HF.data.meals[d]||[], m=_mr&&_mr.m;
+  for(var i=L.length-1;i>=0;i--){ if(m && L[i].id===m.id){ L.splice(i,1); break; } }
+  HF.save(); toast('Log undone'); _mr=null; mrClose();
+}
+function mrRefresh(){ var m=_mr&&_mr.m; if(m) mrOpen(m,_mr.to); }
+function mrClose(){
+  if(typeof closeProduct==='function') closeProduct(); else $('pwm').classList.remove('on');
+  if($('eat') && $('eat').style.display!=='none' && typeof renderEat==='function') renderEat();
+  if(typeof scRender==='function') try{ scRender(); }catch(e){}
+}
+function mrDone(){ _mr=null; mrClose(); }
 /* ═══════════════ BELL'S REMINDERS · Web Push ═══════════════
    A member turns them on once (it must be a tap: the browser asks then);
    the phone's subscription goes to plus_push_subs through plus_push_save,
@@ -31095,8 +31268,10 @@ function eatLog(){
 }
 function logFav(i){
   const f=(HF.data.favs||[])[i]; if(!f) return;
-  logMeal({name:f.name,bm:f.bm||f.name,kcal:f.kcal,p:f.p||0,c:f.c||0,f:f.f||0,slot:slotNow()});
-  toast('Logged '+f.name); renderEat();
+  const b=typeof mrBefore==='function'?mrBefore():0;
+  const m={name:f.name,bm:f.bm||f.name,kcal:f.kcal,p:f.p||0,c:f.c||0,f:f.f||0,slot:slotNow()};
+  m.id=logMeal(m); renderEat();
+  if(typeof mrOpen==='function') mrOpen(m,b); else toast('Logged '+f.name);
 }
 
 let _eg='male', _egoal='lose';
@@ -31208,9 +31383,11 @@ function saveManual(){
   const name=(($('m-name')||{}).value||'').trim(), kcal=parseInt(($('m-kcal')||{}).value,10);
   if(!name){ toast('Enter the food name'); return; }
   if(!kcal||kcal<=0){ toast('Enter the calories'); return; }
-  logMeal({name, bm:name, kcal, slot:_slot,
-    p:parseInt(($('m-p')||{}).value,10)||0, c:parseInt(($('m-c')||{}).value,10)||0, f:parseInt(($('m-f')||{}).value,10)||0});
-  toast('Meal logged'); closeManual();
+  const b=typeof mrBefore==='function'?mrBefore():0;
+  const m={name, bm:name, kcal, slot:_slot,
+    p:parseInt(($('m-p')||{}).value,10)||0, c:parseInt(($('m-c')||{}).value,10)||0, f:parseInt(($('m-f')||{}).value,10)||0};
+  m.id=logMeal(m); closeManual();
+  if(typeof mrOpen==='function') mrOpen(m,b); else toast('Meal logged');
 }
 
 /* ── SCAN ──
@@ -31611,9 +31788,11 @@ function logScanned(){
   /* a product's picture is a link and travels with the meal; a photo taken
      here stays on this phone, as a small thumbnail */
   if(/^https?:/.test(_scanImg)) m.img=_scanImg;
-  const id=logMeal(m);
+  const b=typeof mrBefore==='function'?mrBefore():0;
+  const id=logMeal(m); m.id=id;
   if(/^data:image/.test(_scanImg)) saveMealPhoto(id,_scanImg);
-  _scanData=null; toast('Meal logged'); closeScan();
+  _scanData=null; closeScan();
+  if(typeof mrOpen==='function') mrOpen(m,b); else toast('Meal logged');
 }
 function saveFav(){
   const m=scanToMeal(); if(!m) return;

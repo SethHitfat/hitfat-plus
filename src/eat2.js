@@ -431,8 +431,10 @@ function eatLog(){
 }
 function logFav(i){
   const f=(HF.data.favs||[])[i]; if(!f) return;
-  logMeal({name:f.name,bm:f.bm||f.name,kcal:f.kcal,p:f.p||0,c:f.c||0,f:f.f||0,slot:slotNow()});
-  toast('Logged '+f.name); renderEat();
+  const b=typeof mrBefore==='function'?mrBefore():0;
+  const m={name:f.name,bm:f.bm||f.name,kcal:f.kcal,p:f.p||0,c:f.c||0,f:f.f||0,slot:slotNow()};
+  m.id=logMeal(m); renderEat();
+  if(typeof mrOpen==='function') mrOpen(m,b); else toast('Logged '+f.name);
 }
 
 let _eg='male', _egoal='lose';
@@ -544,9 +546,11 @@ function saveManual(){
   const name=(($('m-name')||{}).value||'').trim(), kcal=parseInt(($('m-kcal')||{}).value,10);
   if(!name){ toast('Enter the food name'); return; }
   if(!kcal||kcal<=0){ toast('Enter the calories'); return; }
-  logMeal({name, bm:name, kcal, slot:_slot,
-    p:parseInt(($('m-p')||{}).value,10)||0, c:parseInt(($('m-c')||{}).value,10)||0, f:parseInt(($('m-f')||{}).value,10)||0});
-  toast('Meal logged'); closeManual();
+  const b=typeof mrBefore==='function'?mrBefore():0;
+  const m={name, bm:name, kcal, slot:_slot,
+    p:parseInt(($('m-p')||{}).value,10)||0, c:parseInt(($('m-c')||{}).value,10)||0, f:parseInt(($('m-f')||{}).value,10)||0};
+  m.id=logMeal(m); closeManual();
+  if(typeof mrOpen==='function') mrOpen(m,b); else toast('Meal logged');
 }
 
 /* ── SCAN ──
@@ -947,9 +951,11 @@ function logScanned(){
   /* a product's picture is a link and travels with the meal; a photo taken
      here stays on this phone, as a small thumbnail */
   if(/^https?:/.test(_scanImg)) m.img=_scanImg;
-  const id=logMeal(m);
+  const b=typeof mrBefore==='function'?mrBefore():0;
+  const id=logMeal(m); m.id=id;
   if(/^data:image/.test(_scanImg)) saveMealPhoto(id,_scanImg);
-  _scanData=null; toast('Meal logged'); closeScan();
+  _scanData=null; closeScan();
+  if(typeof mrOpen==='function') mrOpen(m,b); else toast('Meal logged');
 }
 function saveFav(){
   const m=scanToMeal(); if(!m) return;
