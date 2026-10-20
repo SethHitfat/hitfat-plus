@@ -4103,6 +4103,8 @@ ok("BURN30 is today's plan for a member with no other plan", !scBurnIsPlan() || 
   ok("junk food: Bell confiscates it", _scSay==='junk' && scLine().indexOf('Kek coklat')>=0 && document.getElementById('scb').innerHTML.indexOf('Confiscated')>0);
   scMealLogged({name:'Nasi ayam',kcal:600});
   ok("...a proper meal is just a meal", _scSay==='meal');
+  scBannerHide(); scMealLogged({name:'Teh tarik kosong · 250 ml',kcal:45,src:'drink'});
+  ok("...a drink from the Drinks sheet is water, never confiscated", _scSay==='water' && document.getElementById('scb').className.indexOf('on')<0);
   ok("the meal hook is in logMeal", String(logMeal).indexOf('scMealLogged(m)')>0);
   HF.data.sc.ram='on';
   ok("Mod Ramadan: the fast ring follows the month", scHabits().filter(function(x){ return x.k==='fast'; })[0].ic==='moon');

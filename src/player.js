@@ -481,7 +481,7 @@ function plFinish(){
 /* the finish's top: Bara cheering, the HITFAT Score the workout moved, how it felt */
 function plFinishExtras(m){
   try{
-    const b=$('pl-dn-bara'); if(b) b.innerHTML='<img src="/img/mascot/anim/cheer.png" alt="Bara cheering">';
+    const b=$('pl-dn-bara'); if(b) b.innerHTML='<img src="/img/mascot/anim/'+(typeof scRed==='function'&&!scRed()?'w_cheer':'cheer')+'.png" alt="Bara cheering">';
     const sc=$('pl-dn-score');
     if(sc && typeof scScore==='function'){
       const a=pl.score0, z=scScore(), red=a!==null && a<SC_PADU && z>=SC_PADU;

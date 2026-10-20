@@ -70,6 +70,10 @@ function scJunkLine(name){
 }
 /* a meal was logged (eat2.js logMeal) */
 function scMealLogged(m){
+  /* (20 Oct) a drink from the Drinks sheet has its own report and its own
+     word on sugar; here it is water, never "confiscated" (a teh tarik
+     kosong was taken away while the report praised it) */
+  if(m && m.src==='drink'){ _scSay='water'; _scSayAt=Date.now(); return; }
   if(scJunk(m)){ _scSay='junk'; _scSayAt=Date.now(); _scJunkName=m&&m.name; scBanner('Confiscated 😇',scJunkLine(m&&m.name)); }
   else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Meal logged 🍽️','Bara likes honest people. Protein first, rice by the portion.'); }
 }
@@ -269,7 +273,7 @@ function scCheckWeekly(){
 }
 function scWeekly(off){
   var w=scWeekStats(off), p=scWeekStats(off+1), diff=w.avg-p.avg, st=scStreak().n;
-  var line=diff>0?'Up '+diff+' points on last week 👏 Bara is proud!':diff<0?'Down '+(-diff)+' points. That\'s okay, we\'ll win it back next week 💪':'Same as last week. Staying consistent is a win too.';
+  var line=diff>0?'Naik '+diff+' mata dari minggu lepas 👏 Bara bangga dengan awak!':diff<0?'Turun '+(-diff)+' mata. Tak apa, minggu depan kita kejar balik 💪':'Sama macam minggu lepas. Konsisten pun satu kemenangan 🤍';
   var bd=w.best.iso?new Date(w.best.iso+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long'}):'–';
   /* its own light look (18 Oct): it used to borrow Beast Mode's red, where the
      red Bara vanished, the score went grey on red and the tiles were black.

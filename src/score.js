@@ -509,7 +509,7 @@ function scFreezeScreen(frozen){
     scMomentBell('frozen','scc-still')+
     '<div class="scc-t">Streak saved ❄️</div>'+
     '<div class="scc-s">Your <b>'+st.n+'-day</b> streak is safe: '+frozen.length+(frozen.length>1?' freezes':' freeze')+' used for '+(frozen.length>1?'the days':'the day')+' you missed, '+scFreezeLeft()+'/'+SC_FREEZES+' left this month.</div>'+
-    '<div class="scc-s scc-bellsays">Bara froze for a moment to save you 🥶 Let\'s make today 50 or more.</div>'+
+    '<div class="scc-s scc-bellsays">Bara beku sekejap untuk selamatkan streak awak 🥶 Jom jadikan hari ni 50 ke atas!</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Continue</button></div>';
   $('scc').style.display='flex'; scMomentPlay('frozen');
 }
@@ -519,7 +519,7 @@ function scRustScreen(st){
   $('scc').innerHTML='<div class="scc-in">'+
     scMomentBell('kusut')+
     '<div class="scc-t">Bara is all messy</div>'+
-    '<div class="scc-s">'+st.idle+' days with nothing logged.</div><div class="scc-s scc-bellsays">Bara is sitting alone, fur all tangled 🥲 One log is enough to fluff Bara up again.</div>'+
+    '<div class="scc-s">'+st.idle+' days with nothing logged.</div><div class="scc-s scc-bellsays">Bara duduk sorang-sorang, bulu dah kusut 🥲 Satu log je, Bara terus gebu balik.</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose();scSheet(\'water\')">Fluff Bara up: log a glass of water</button>'+
     '<button class="scc-x" onclick="scCelebrateClose()">Later</button></div>';
   $('scc').style.display='flex'; scMomentPlay('kusut');
@@ -609,7 +609,7 @@ function scShine(){
   $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
     scMomentBell('halo','scc-shine')+
     '<div class="scc-t">You saved Bara!</div>'+
-    '<div class="scc-s scc-bellsays">Yay! Fluffy again ✨ Okay okay, Bara forgives you. Don\'t leave Bara alone that long again 😇</div>'+
+    '<div class="scc-s scc-bellsays">Yeay! Bara gebu balik ✨ Okay okay, Bara maafkan awak. Jangan tinggal Bara lama-lama lagi ya 😇</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Let\'s go!</button></div>';
   $('scc').style.display='flex'; scMomentPlay('halo');
 }

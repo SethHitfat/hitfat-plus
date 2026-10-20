@@ -9491,7 +9491,7 @@ function scFreezeScreen(frozen){
     scMomentBell('frozen','scc-still')+
     '<div class="scc-t">Streak saved ❄️</div>'+
     '<div class="scc-s">Your <b>'+st.n+'-day</b> streak is safe: '+frozen.length+(frozen.length>1?' freezes':' freeze')+' used for '+(frozen.length>1?'the days':'the day')+' you missed, '+scFreezeLeft()+'/'+SC_FREEZES+' left this month.</div>'+
-    '<div class="scc-s scc-bellsays">Bara froze for a moment to save you 🥶 Let\'s make today 50 or more.</div>'+
+    '<div class="scc-s scc-bellsays">Bara beku sekejap untuk selamatkan streak awak 🥶 Jom jadikan hari ni 50 ke atas!</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Continue</button></div>';
   $('scc').style.display='flex'; scMomentPlay('frozen');
 }
@@ -9501,7 +9501,7 @@ function scRustScreen(st){
   $('scc').innerHTML='<div class="scc-in">'+
     scMomentBell('kusut')+
     '<div class="scc-t">Bara is all messy</div>'+
-    '<div class="scc-s">'+st.idle+' days with nothing logged.</div><div class="scc-s scc-bellsays">Bara is sitting alone, fur all tangled 🥲 One log is enough to fluff Bara up again.</div>'+
+    '<div class="scc-s">'+st.idle+' days with nothing logged.</div><div class="scc-s scc-bellsays">Bara duduk sorang-sorang, bulu dah kusut 🥲 Satu log je, Bara terus gebu balik.</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose();scSheet(\'water\')">Fluff Bara up: log a glass of water</button>'+
     '<button class="scc-x" onclick="scCelebrateClose()">Later</button></div>';
   $('scc').style.display='flex'; scMomentPlay('kusut');
@@ -9591,7 +9591,7 @@ function scShine(){
   $('scc').innerHTML='<div class="scc-spark">'+sp+'</div><div class="scc-in">'+
     scMomentBell('halo','scc-shine')+
     '<div class="scc-t">You saved Bara!</div>'+
-    '<div class="scc-s scc-bellsays">Yay! Fluffy again ✨ Okay okay, Bara forgives you. Don\'t leave Bara alone that long again 😇</div>'+
+    '<div class="scc-s scc-bellsays">Yeay! Bara gebu balik ✨ Okay okay, Bara maafkan awak. Jangan tinggal Bara lama-lama lagi ya 😇</div>'+
     '<button class="bigbtn scc-share" onclick="scCelebrateClose()">Let\'s go!</button></div>';
   $('scc').style.display='flex'; scMomentPlay('halo');
 }
@@ -9667,6 +9667,10 @@ function scJunkLine(name){
 }
 /* a meal was logged (eat2.js logMeal) */
 function scMealLogged(m){
+  /* (20 Oct) a drink from the Drinks sheet has its own report and its own
+     word on sugar; here it is water, never "confiscated" (a teh tarik
+     kosong was taken away while the report praised it) */
+  if(m && m.src==='drink'){ _scSay='water'; _scSayAt=Date.now(); return; }
   if(scJunk(m)){ _scSay='junk'; _scSayAt=Date.now(); _scJunkName=m&&m.name; scBanner('Confiscated 😇',scJunkLine(m&&m.name)); }
   else { _scSay='meal'; _scSayAt=Date.now(); scBanner('Meal logged 🍽️','Bara likes honest people. Protein first, rice by the portion.'); }
 }
@@ -9866,7 +9870,7 @@ function scCheckWeekly(){
 }
 function scWeekly(off){
   var w=scWeekStats(off), p=scWeekStats(off+1), diff=w.avg-p.avg, st=scStreak().n;
-  var line=diff>0?'Up '+diff+' points on last week 👏 Bara is proud!':diff<0?'Down '+(-diff)+' points. That\'s okay, we\'ll win it back next week 💪':'Same as last week. Staying consistent is a win too.';
+  var line=diff>0?'Naik '+diff+' mata dari minggu lepas 👏 Bara bangga dengan awak!':diff<0?'Turun '+(-diff)+' mata. Tak apa, minggu depan kita kejar balik 💪':'Sama macam minggu lepas. Konsisten pun satu kemenangan 🤍';
   var bd=w.best.iso?new Date(w.best.iso+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long'}):'–';
   /* its own light look (18 Oct): it used to borrow Beast Mode's red, where the
      red Bara vanished, the score went grey on red and the tiles were black.
@@ -20521,7 +20525,7 @@ function plFinish(){
 /* the finish's top: Bara cheering, the HITFAT Score the workout moved, how it felt */
 function plFinishExtras(m){
   try{
-    const b=$('pl-dn-bara'); if(b) b.innerHTML='<img src="/img/mascot/anim/cheer.png" alt="Bara cheering">';
+    const b=$('pl-dn-bara'); if(b) b.innerHTML='<img src="/img/mascot/anim/'+(typeof scRed==='function'&&!scRed()?'w_cheer':'cheer')+'.png" alt="Bara cheering">';
     const sc=$('pl-dn-score');
     if(sc && typeof scScore==='function'){
       const a=pl.score0, z=scScore(), red=a!==null && a<SC_PADU && z>=SC_PADU;
