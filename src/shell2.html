@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="sp-on"><head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>HITFAT+</title>
@@ -54,19 +54,11 @@
 #splash{position:fixed;inset:0;z-index:99999;overflow:hidden;transition:opacity .5s ease;
   background:linear-gradient(180deg,#1B1B1F 0%,#141417 34%,#0B0B0D 54%,#0B0B0D 100%);}
 #splash.gone{opacity:0;pointer-events:none;}
-/* (21 Oct 2026) where iOS gives the app a view shorter than the screen, the
-   strip under it shows the page's own background: while the splash is up
-   that is the splash's dark, not the light page behind it */
-html.sp-on{background:#0B0B0D !important;}
-/* (21 Oct 2026, Seth's second recording) the iOS dead strip: on some iPhones
-   the Home Screen app is given a view a status bar shorter than the screen
-   while its content still starts under the status bar, so everything that
-   reaches for the bottom stopped ~59pt short and a bare band sat under the
-   tab bar. The band is still drawn by the page, so the app, the splash and
-   every full-screen layer are stretched down into it by --dead (measured in
-   setNavOffset), and what scrolls runs on under the tab bar into it. */
-html.dead .app,html.dead #player{height:calc(100dvh + var(--dead,0px)) !important;}
-html.dead :is(#splash,#auth,#play,#cpm,#sheetbg,#scan,#mpm,#pwm,#fqm,.lfs,.chrec,.klpr,#klzoom,#tplay,.ovl,.modal,.scc,.sheet,.obfoot){bottom:calc(-1 * var(--dead,0px)) !important;}
+/* (21 Oct 2026) the iOS dead strip under the app (a Home Screen app given a
+   view a status bar shorter than the screen) is drawn by iOS outside the
+   page: Seth's recordings showed it stays light under the dark splash, so
+   neither a page background nor layers stretched into it can reach it.
+   Tried both that day and took them out. */
 #splash .sp-glow{position:absolute;left:50%;top:calc(22vh + env(safe-area-inset-top,0px) - 200px);width:400px;height:400px;margin-left:-200px;border-radius:50%;
   background:radial-gradient(circle,rgba(227,6,19,.28) 0%,rgba(227,6,19,.08) 35%,rgba(227,6,19,0) 58%);
   opacity:0;animation:spIn 1s ease .05s forwards;}
@@ -1218,7 +1210,7 @@ body:has(#play.on)::before{display:none;}
           'padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;max-height:60%;overflow:auto;';
         (document.body||document.documentElement).appendChild(d); }
       d.innerHTML='<b style="color:#ff6b8a;">'+title+'</b><br>'+body+'<br><br><span style="color:#888;">Screenshot this and send it over.</span>';
-      var s=document.getElementById('splash'); if(s) s.style.display='none'; document.documentElement.classList.remove('sp-on');
+      var s=document.getElementById('splash'); if(s) s.style.display='none';
     }catch(e){}
   }
   /* An error is not the same thing as a broken app. This panel exists for the
@@ -1341,7 +1333,7 @@ function hideSplash(){
   try{ const calm=window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
        if(!calm && typeof performance!=='undefined' && performance.now) left=SPLASH_MIN-performance.now(); }catch(e){}
   if(left>0){ if(!s._wait) s._wait=setTimeout(()=>{ s._wait=null; hideSplash(); },left); return; }
-  s.classList.add('gone'); setTimeout(()=>{s.style.display='none'; document.documentElement.classList.remove('sp-on');},500);
+  s.classList.add('gone'); setTimeout(()=>{s.style.display='none';},500);
 }
 let _started=false, _signingIn=false;
 function startApp(){
@@ -1464,19 +1456,12 @@ function setNavOffset(){ try{
   /* Seth wants the bar low, right down on the home indicator (12 Oct 2026):
      it sat about 17pt off the bottom of an iPhone 15 Pro, and "lower" twice
      after that. NAV_DROP takes it to the bottom edge. */
-  /* a dead strip at the bottom, as tall as the status bar: the layers are
-     stretched into it (html.dead, --dead above). Only a gap the size of the
-     top inset counts, so a keyboard or a half-settled launch never stretches
-     anything */
-  var dead=_standaloneVH() && sat>0 && gap>20 && Math.abs(gap-sat)<=12;
-  try{ var de=document.documentElement;
-    if(dead){ de.style.setProperty('--dead', gap+'px'); de.classList.add('dead'); }
-    else if(!(gap>20 && sat>0 && _standaloneVH())){ de.classList.remove('dead'); de.style.removeProperty('--dead'); }
-  }catch(e){}
-  /* the bar itself is placed from the edge iOS reports as visible, just on
-     it, so it can never end up inside the strip should a phone not draw
-     there; the content behind it runs on down into the strip */
-  navb = dead ? gap+4 : Math.max(-6, navb-NAV_DROP);
+  var dead=_standaloneVH() && gap>20 && sat>0;
+
+  /* a dead strip at the bottom: the app already ends above the home
+     indicator, so the bar sits just on the app's own edge (it used to go 6px
+     past it, where the edge cut its rounded foot off flat) */
+  navb = dead ? 4 : Math.max(-6, navb-NAV_DROP);
   document.documentElement.style.setProperty('--navb', navb+'px');
   window._navDiag={sat:sat, sab:sab, gap:gap, navb:navb, dead:dead};
 }catch(e){} }
