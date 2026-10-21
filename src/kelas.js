@@ -120,7 +120,9 @@ async function kelasLoad(){
     if(was || kelasLinked()) await loadEntitlement();
   }catch(e){ Kelas.state='error'; }
   kelasRepaint();
-  setTimeout(function(){ if(!$('splash') || $('splash').style.display==='none') kelasRewardMoment(); },1500);
+  setTimeout(function(){ if($('splash') && $('splash').style.display!=='none') return;
+    if(typeof kbCheck==='function' && kbCheck()) return;      /* a new badge first, the reward moment another time */
+    kelasRewardMoment(); },1500);
 }
 /* back to the app after a while (a check-in at the kiosk, the phone in a
    pocket): read the class again, at most every five minutes, so Bara on
@@ -474,6 +476,7 @@ function kelasProgressTab(){
   h+=kelasGlanceHTML();
   const pt=kelasSpace()==='pt';
   h+=kelasStreakHTML()+(pt?'':kelasLevelHTML());
+  if(!pt && typeof kbHTML==='function') h+=kbHTML();    /* badges (badges.js, 21 Oct 2026) */
   h+=kelasLatestHTML();
   h+=kelasPRHTML();
   const month=kelasThisMonth(), last=kelasLastIn();

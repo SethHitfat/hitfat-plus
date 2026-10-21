@@ -309,6 +309,7 @@ function scRender(){
      allows them, else Bara asks once, after the moments above */
   if(typeof pushAuto==='function' && !scRender._pa){ scRender._pa=true; pushAuto(); }
   if(typeof pushAsk==='function' && pushAsk()) return;
+  if(typeof kbCheck==='function' && kbCheck()) return;
   if(typeof kelasRewardMoment==='function' && kelasRewardMoment()) return;
   scCheckStreak();
 }
