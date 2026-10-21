@@ -4377,7 +4377,7 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("...logged, not a PR", Kelas.pr.rung && Kelas.pr.rung.pr===false && Kelas.pr.rung.best.v===40);
   kelasPRClose(); HF.data.kelas=keepK; HF.save=keepSave; Kelas.data.prs=[];
   var ph=kelasPointsHTML();
-  ok("points: the balance, lifetime and what it came from", ph.indexOf('1,450')>0 && ph.indexOf('lifetime earned')>0 && ph.indexOf('Weekly bonus')>0);
+  ok("points: the balance, lifetime and what it came from", ph.indexOf('2,750')>0 && ph.indexOf('lifetime earned')>0 && ph.indexOf('Weekly bonus')>0);
   ok("...a reward ready to redeem, and one still to go", ph.indexOf('Show your QR at the counter')>0 && ph.indexOf('to go')>0);
   ok("...12 weeks of bars", (kelasPtsChart(Kelas.data.points.weeks).match(/<i /g)||[]).length===12);
   var keepP=Kelas.data.points; Kelas.data.points=null;

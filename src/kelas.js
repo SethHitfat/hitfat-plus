@@ -745,10 +745,10 @@ function kelasPointsHTML(){
   const linked=(P.history||[]).some(x=>x.t==='link');
   h+='<div class="kl-earn">'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('calendar')+'</span><div><b>Class at HQ</b><small>Once a day, from the kiosk</small></div><em>+100</em></div>'+
-     '<div class="kl-er"><span class="kl-eic">'+glyph('chart')+'</span><div><b>Weekly bonus</b><small>3+ classes in a week: +25, then +50, +75… up to +200 a week in a row</small></div><em>+25↑</em></div>'+
+     '<div class="kl-er"><span class="kl-eic">'+glyph('chart')+'</span><div><b>Weekly bonus</b><small>3+ classes in a week: +25, then +50, +75, up to +100 a week in a row</small></div><em>+25↑</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('repeat')+'</span><div><b>Second class, same day</b><small>3 hours or more after the first</small></div><em>+50</em></div>'+
      (kelasPt()?'<div class="kl-er"><span class="kl-eic">'+glyph('workout')+'</span><div><b>PT session</b><small>Each session with your coach, once it is logged</small></div><em>+150</em></div>':'')+
-     '<div class="kl-er"><span class="kl-eic">'+glyph('people')+'</span><div><b>Bring a friend</b><small>When they join, tell the counter you brought them</small></div><em>+500</em></div>'+
+     '<div class="kl-er"><span class="kl-eic">'+glyph('people')+'</span><div><b>Bring a friend</b><small>When they join, tell the counter you brought them</small></div><em>+2,500</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('trophy')+'</span><div><b>Connect HITFAT+</b><small>'+(linked?'Done':'Once')+'</small></div><em>'+(linked?glyph('check'):'+300')+'</em></div></div>';
 
   /* rewards */
@@ -2469,7 +2469,7 @@ function kelasWodSave(day,val){
 }
 
 /* ═══════════════ Bring a friend (17 Oct 2026) ═══════════════
-   +500 points when a friend joins a class and the counter records who
+   +2,500 points (was +500 until 21 Oct, OS 100) when a friend joins a class and the counter records who
    brought them (OS: Member → Brought in by member, 072/084). The member
    sends the invitation from here; the friend gives the member's name at
    the counter. Nothing is promised to the friend. */
@@ -2479,11 +2479,11 @@ function kelasReferText(){
     (nm?'\n\nBila daftar di kaunter, sebut nama aku: '+nm+' 😄':'');
 }
 function kelasReferHTML(P){
-  const n=((P&&P.history)||[]).filter(x=>x.t==='referral').length;
-  return '<div class="kl-ref"><div class="kl-ref-t"><span class="kl-ref-ic">'+glyph('people')+'</span><div><b>Bring a friend, get 500 points</b>'+
+  const R=((P&&P.history)||[]).filter(x=>x.t==='referral'), n=R.length, got=R.reduce((a,x)=>a+(+x.p||0),0);
+  return '<div class="kl-ref"><div class="kl-ref-t"><span class="kl-ref-ic">'+glyph('people')+'</span><div><b>Bring a friend, get 2,500 points</b>'+
     '<small>When your friend joins a class, they tell the counter your name. The points land here.</small></div></div>'+
     '<div class="kl-ref-b"><button class="bigbtn kl-go" onclick="kelasRefer()">'+glyph('share')+' Invite a friend</button>'+
-    (n?'<span class="kl-ref-n">'+n+' friend'+(n===1?'':'s')+' brought · +'+kelasN(n*500)+'</span>':'')+'</div></div>';
+    (n?'<span class="kl-ref-n">'+n+' friend'+(n===1?'':'s')+' brought · +'+kelasN(got)+'</span>':'')+'</div></div>';
 }
 async function kelasRefer(){
   const t=kelasReferText();
@@ -2569,13 +2569,13 @@ function kelasDemo(){
   Kelas.data={linked:true, member_id:'5b0f2c1e-8d3a-4c7e-9f21-3a6d0b9e4c11', name:'Aina Rahman',
     memberships:[{category:'Membership',plan:'1 Month',start_date:iso(s),end_date:iso(e),active:true}],
     classes:cls, checkins:ins, total:61,
-    points:{balance:1450, lifetime:2250, 'class':1600, bonus:350, missions:300, redeemed:800, since:'2026-10-17',
+    points:{balance:2750, lifetime:5250, 'class':4600, bonus:350, missions:300, redeemed:2500, since:'2026-10-17',
       weeks:(function(){ const w=[], m=new Date(now.getTime()); m.setUTCDate(m.getUTCDate()-(kelasDow(now)-1));
         [300,425,400,550,0,325,450].forEach((p,i)=>{ const d=new Date(m.getTime()); d.setUTCDate(d.getUTCDate()-7*(6-i)); w.push({w:kelasDayKey(d),p:p}); }); return w; })(),
-      rewards:[{id:'drink',name:'A drink at the counter',points:600,note:'Any drink on the counter menu'},
-        {id:'renew20',name:'RM20 off your next renewal',points:2500,note:'Used at the counter when you renew'},
-        {id:'inbody',name:'InBody body analysis',points:3500,note:'Book a time with the counter'}],
-      history:[{t:'redeem',name:'A drink at the counter',p:-600,at:new Date(Date.now()-2*864e5).toISOString()},
+      rewards:[{id:'drink',name:'A drink at the counter',points:2500,note:'Any drink on the counter menu'},
+        {id:'renew20',name:'RM20 off your next renewal',points:5000,note:'Once a renewal, used at the counter when you renew'},
+        {id:'inbody',name:'InBody body analysis',points:6000,note:'Book a time with the counter'}],
+      history:[{t:'redeem',name:'A drink at the counter',p:-2500,at:new Date(Date.now()-2*864e5).toISOString()},
         {t:'link',name:'Connected HITFAT+',p:300,at:new Date(Date.now()-20*864e5).toISOString()}]},
     journey:{active:false, eligible:false, suggest:'fat60', done:0},
     wods:[{date:iso(now), cat:'Membership', title:'HITFAT 21-15-9', body:'21-15-9 reps, for time:\nKettlebell swings\nBurpees\nAir squats\n\nCap 15 min.', type:'time'}],
