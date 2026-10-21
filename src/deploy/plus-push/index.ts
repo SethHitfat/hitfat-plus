@@ -94,7 +94,7 @@ function scoreOf(d: Data, day: string, wdays: Record<string, number>): number {
 
 const PUSH_MAX = 3;
 /* each kind's Bara (img/mascot/push/, 192 px on its own colour) */
-const ICON: Record<string, string> = { pagi: 'pagi', siang: 'makan', tidur: 'tidur', streak: 'streak', weekly: 'minggu',
+const ICON: Record<string, string> = { pagi: 'pagi', siang: 'makan', tidur: 'tidur', streak: 'streak', weekly: 'minggu', reward: 'minggu',
   dust: 'kusut', rust: 'kusut', rust7: 'kusut', rust14: 'kusut', ended: 'kusut', class7: 'kusut', class14: 'kusut' };
 function iconFor(kind: string): string { return '/img/mascot/push/' + (ICON[kind] || 'kelas') + '.png'; }
 /* the member's first name, as the app's check-in says it */
@@ -216,6 +216,9 @@ function fmtDay(d: string): string { const t = new Date(d + 'T00:00:00Z'); retur
 /* what Bara says to a class member about their class, if anything */
 export function classMessage(c: any, today: string): Msg | null {
   if (!c) return null;
+  /* (21 Oct 2026, OS 104) a reward that became theirs today: once, the day it happens */
+  if (c.rw && c.active !== false) return { kind: 'reward', title: '🎁 Ganjaran awak dah sedia!',
+    body: String(c.rw).slice(0, 60) + ' menunggu di kaunter. Tunjuk QR awak, Bara tumpang gembira! 🎉', url: '/?kelas=points' };
   /* personal coaching (098): tomorrow's session, the package nearly used or ending */
   const pt = c.pt;
   if (pt) {
