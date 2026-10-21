@@ -432,7 +432,7 @@ function openProduct(sku){
     '<div class="pwfine">No subscription. Manual logging, your daily target, all single sessions'+(BAR_ENABLED?' and the HITFAT BAR programs':'')+' stay free.</div>';
   $('pwm').classList.add('on');
 }
-function closeProduct(){ $('pwm').classList.remove('on'); }
+function closeProduct(){ $('pwm').classList.remove('on','kbm'); }   /* kbm: a badge's dark sheet (badges.js) */
 
 /* ── checkout ─────────────────────────────────────────────
    The browser sends a SKU and never an amount. pay-create looks the price up

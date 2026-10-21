@@ -88,19 +88,26 @@ function kbProg(b,S){
 }
 function kbEarned(){ var K=HF.data.kelas||(HF.data.kelas={}); return K.badges||(K.badges={}); }
 
-/* ── the badge itself (v2, 21 Oct 2026: Seth wanted it "wow", HITFAT first) ──
-   The shield of the HF mark, its V notch on top, in a metal for its tier:
-   bronze, silver, gold, HITFAT red, and HITFAT Black at the very top; a red
-   ribbon carries the category, the HF+ mark crowns it, stars count the tier,
-   and an earned badge has a sheen that sweeps across it. */
+/* ── the badge itself (v3, 21 Oct 2026: "premium, Apple Fitness style,
+   the HITFAT version") ──
+   A medal, not a sticker: a thick metal rim with its bevel, a face a shade
+   deeper, the number struck into it (a light edge above, a dark one below),
+   a soft gloss on the upper half, nothing else. The shape says the kind:
+   the HF shield for the Class Club, a circle for streaks, a hexagon for
+   Bulan Padu, an octagon for PRs, a rounded square for the squad, a circle
+   with its icon for the specials. The metal says the tier: bronze, silver,
+   gold, HITFAT red, and HITFAT Black with gold figures at the top. Locked
+   ones are dark graphite, the shape only. */
 var KB_METAL={
-  bronze:['#FFD3A1','#D08A4A','#8A4B1C','#5A2E0E'],
-  silver:['#FFFFFF','#D9DDE3','#9AA1AB','#5E6570'],
-  gold:  ['#FFF6B8','#FFD23F','#D49A00','#7A5300'],
-  red:   ['#FF8A80','#FF2A2A','#C20510','#6E0309'],
-  black: ['#5A5A62','#2A2A2F','#141416','#000000']
+  /* rim light, rim mid, rim dark, face top, face bottom, figure, engrave-dark, engrave-light */
+  bronze:['#FFD9B0','#C77E3E','#6B3510','#E2A066','#A4602B','#FFF1E2','rgba(70,30,5,.65)','rgba(255,235,210,.55)'],
+  silver:['#FFFFFF','#C9CED6','#6E7580','#F4F6F9','#B8BEC7','#2E333A','rgba(255,255,255,.9)','rgba(0,0,0,.25)'],
+  gold:  ['#FFF7C2','#F2BE22','#8A5D00','#FFE680','#D9A100','#5A3B00','rgba(255,250,215,.85)','rgba(90,55,0,.35)'],
+  red:   ['#FF9A8F','#E30613','#5E0207','#FF4A3D','#B4040E','#FFFFFF','rgba(80,0,5,.6)','rgba(255,190,185,.45)'],
+  black: ['#8A8A93','#2B2B30','#000000','#34343A','#0B0B0D','#FFC20E','rgba(0,0,0,.85)','rgba(255,230,150,.35)'],
+  lock:  ['#5A5A60','#3A3A3F','#1C1C1F','#3B3B40','#2A2A2E','#55555C','rgba(0,0,0,.6)','rgba(255,255,255,.08)']
 };
-var KB_TIERN={bronze:1, silver:2, gold:3, red:4, black:5};
+var KB_SHAPE={cls:'shield', week:'circle', month:'hex', pr:'oct', frd:'squircle', spc:'circle'};
 /* each badge's tier: low steps bronze, the long road black */
 function kbTier(b){
   var T={cls:{10:'bronze',25:'bronze',50:'silver',100:'silver',150:'gold',200:'gold',250:'gold',300:'red',400:'red',500:'red',750:'black',1000:'black'},
@@ -110,42 +117,46 @@ function kbTier(b){
          frd:{1:'silver',3:'gold',5:'red'}};
   return (T[b.cat] && T[b.cat][b.v]) || 'red';
 }
+function kbPoly(n,r,rot){ var p=[], i, a; for(i=0;i<n;i++){ a=(rot+i*360/n)*Math.PI/180; p.push((100+r*Math.cos(a)).toFixed(1)+' '+(100+r*Math.sin(a)).toFixed(1)); } return 'M'+p.join(' L')+' Z'; }
+function kbShapeD(sh){
+  if(sh==='circle') return 'M100 6 A94 94 0 1 1 99.9 6 Z';
+  if(sh==='hex') return kbPoly(6,96,30);
+  if(sh==='oct') return kbPoly(8,96,22.5);
+  if(sh==='squircle') return 'M44 8 L156 8 C178 8 192 22 192 44 L192 156 C192 178 178 192 156 192 L44 192 C22 192 8 178 8 156 L8 44 C8 22 22 8 44 8 Z';
+  /* the HF shield, its V notch on top */
+  return 'M100 22 L84 6 L18 6 L18 104 C18 150 54 180 100 196 C146 180 182 150 182 104 L182 6 L116 6 Z';
+}
 var _kbN=0;
 function kbSVG(b, on, size){
-  var id='kb'+(++_kbN), s=size||96, tier=kbTier(b), M=KB_METAL[tier], dark=(tier==='black'||tier==='red'||tier==='bronze');
-  var num=b.v!=null?String(b.v):'', fs=num.length>=4?46:num.length===3?56:66;
-  var ink=tier==='silver'||tier==='gold'?'#1A1A1C':'#FFFFFF', ribbon=tier==='red'?'#141416':'#E30613';
-  var stars='', n=KB_TIERN[tier], k;
-  for(k=0;k<n;k++){ var sx=100+(k-(n-1)/2)*15; stars+='<path transform="translate('+sx.toFixed(1)+',86) scale(.55)" d="M0,-10 L2.9,-3.1 10,-3.1 4.3,1.2 6.5,8.1 0,4 -6.5,8.1 -4.3,1.2 -10,-3.1 -2.9,-3.1Z" fill="'+(tier==='gold'||tier==='silver'?'#1A1A1C':'#FFC20E')+'"/>'; }
-  var shield='M100 30 L84 14 L16 14 L16 112 C16 162 56 194 100 214 C144 194 184 162 184 112 L184 14 L116 14 Z';
-  var inner ='M100 46 L88 28 L30 28 L30 112 C30 154 64 182 100 198 C136 182 170 154 170 112 L170 28 L112 28 Z';
-  var mid=b.ic && typeof ICON_PATH!=='undefined'
-    ? '<svg x="70" y="94" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="'+ink+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ICON_PATH[iconKind(b.ic)]+'</svg>'
-    : '<text x="100" y="'+(num.length>=4?146:150)+'" text-anchor="middle" font-size="'+fs+'" font-weight="900" fill="'+ink+'" letter-spacing="-2" font-family="-apple-system,Inter,Helvetica,Arial,sans-serif" style="paint-order:stroke" stroke="rgba(0,0,0,'+(dark?'.25':'0')+')" stroke-width="3">'+num+'</text>';
-  var lab=(b.v!=null?(KB_CATS[b.cat].rib||KB_CATS[b.cat].top):b.lab);
-  return '<svg class="kb-svg'+(on?' on':' off')+' t-'+tier+'" width="'+s+'" height="'+Math.round(s*1.1)+'" viewBox="0 0 200 220" role="img" aria-label="'+hesc(b.t)+'">'+
+  var id='kb'+(++_kbN), s=size||96, tier=on?kbTier(b):'lock', M=KB_METAL[tier], d=kbShapeD(KB_SHAPE[b.cat]);
+  var num=b.v!=null?String(b.v):'', fs=num.length>=4?50:num.length===3?60:72, y=b.cat==='cls'?112:118;
+  var fig=function(dx,dy,col){ return '<text x="'+(100+dx)+'" y="'+(y+dy)+'" text-anchor="middle" font-size="'+fs+'" font-weight="800" fill="'+col+'" letter-spacing="-2.5" font-family="-apple-system,SF Pro Display,Inter,Helvetica,Arial,sans-serif">'+num+'</text>'; };
+  var face=b.ic && typeof ICON_PATH!=='undefined'
+    ? '<svg x="62" y="'+(y-62)+'" width="76" height="76" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke="'+M[6]+'" transform="translate(0,1.5)">'+ICON_PATH[iconKind(b.ic)]+'</svg>'+
+      '<svg x="62" y="'+(y-62)+'" width="76" height="76" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke="'+M[5]+'">'+ICON_PATH[iconKind(b.ic)]+'</svg>'
+    : fig(0,2,M[6])+fig(0,-1,M[7])+fig(0,0,M[5]);
+  var cap=(b.v!=null?(KB_CATS[b.cat].rib||KB_CATS[b.cat].top):b.lab);
+  var T='translate(100 100) scale(%) translate(-100 -100)';
+  return '<svg class="kb-svg'+(on?' on':' off')+' t-'+tier+'" width="'+s+'" height="'+s+'" viewBox="0 0 200 200" role="img" aria-label="'+hesc(b.t)+'">'+
     '<defs>'+
-      '<linearGradient id="'+id+'m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+M[0]+'"/><stop offset=".35" stop-color="'+M[1]+'"/><stop offset=".7" stop-color="'+M[2]+'"/><stop offset="1" stop-color="'+M[3]+'"/></linearGradient>'+
-      '<linearGradient id="'+id+'i" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+M[1]+'"/><stop offset="1" stop-color="'+M[2]+'"/></linearGradient>'+
-      '<linearGradient id="'+id+'s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/><stop offset=".5" stop-color="#FFFFFF" stop-opacity=".55"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
-      '<clipPath id="'+id+'c"><path d="'+shield+'"/></clipPath>'+
+      '<linearGradient id="'+id+'r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+M[0]+'"/><stop offset=".42" stop-color="'+M[1]+'"/><stop offset=".78" stop-color="'+M[2]+'"/><stop offset="1" stop-color="'+M[1]+'"/></linearGradient>'+
+      '<linearGradient id="'+id+'r2" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="'+M[0]+'"/><stop offset=".5" stop-color="'+M[1]+'"/><stop offset="1" stop-color="'+M[2]+'"/></linearGradient>'+
+      '<radialGradient id="'+id+'f" cx="50%" cy="30%" r="75%"><stop offset="0" stop-color="'+M[3]+'"/><stop offset="1" stop-color="'+M[4]+'"/></radialGradient>'+
+      '<linearGradient id="'+id+'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".42"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
+      '<linearGradient id="'+id+'s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/><stop offset=".5" stop-color="#FFFFFF" stop-opacity=".5"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
+      '<clipPath id="'+id+'c"><path d="'+d+'" transform="'+T.replace('%','.8')+'"/></clipPath>'+
     '</defs>'+
-    /* the shield, its bevel, its face */
-    '<path d="'+shield+'" fill="url(#'+id+'m)"/>'+
-    '<path d="'+inner+'" fill="url(#'+id+'i)" stroke="rgba(255,255,255,.45)" stroke-width="2"/>'+
-    '<path d="'+inner+'" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1" transform="translate(0,2)"/>'+
-    /* a glint on the top left, the sheen that sweeps (earned only) */
-    '<path d="M30 28 L88 28 L60 70 L30 92 Z" fill="#FFFFFF" opacity=".16"/>'+
-    (on?'<g clip-path="url(#'+id+'c)"><rect class="kb-sheen" x="-120" y="-10" width="70" height="240" fill="url(#'+id+'s)" transform="skewX(-18)"/></g>':'')+
-    /* HF+ on top, the tier's stars */
-    '<image href="/img/brand/hfplus-mark.png" x="84" y="40" width="32" height="34" opacity="'+(ink==='#FFFFFF'?'.95':'.85')+'" style="'+(ink==='#FFFFFF'?'':'filter:invert(1)')+'"/>'+
-    stars+
-    mid+
-    /* the ribbon */
-    '<path d="M4 160 L196 160 L186 175 L196 190 L4 190 L14 175 Z" fill="rgba(0,0,0,.25)" transform="translate(0,3)"/>'+
-    '<path d="M4 160 L196 160 L186 175 L196 190 L4 190 L14 175 Z" fill="'+ribbon+'"/>'+
-    '<path d="M4 160 L196 160 L196 164 L4 164 Z" fill="rgba(255,255,255,.22)"/>'+
-    '<text x="100" y="180" text-anchor="middle" font-size="'+(lab.length>12?12:14)+'" font-weight="900" fill="#FFFFFF" letter-spacing="2" font-family="-apple-system,Inter,Helvetica,Arial,sans-serif">'+hesc(lab)+'</text>'+
+    /* rim: two bevels, the outer catching light top-left, the inner bottom-right */
+    '<path d="'+d+'" fill="url(#'+id+'r)"/>'+
+    '<path d="'+d+'" transform="'+T.replace('%','.9')+'" fill="url(#'+id+'r2)"/>'+
+    '<path d="'+d+'" transform="'+T.replace('%','.84')+'" fill="'+M[2]+'" opacity=".55"/>'+
+    /* the face */
+    '<path d="'+d+'" transform="'+T.replace('%','.8')+'" fill="url(#'+id+'f)"/>'+
+    '<g clip-path="url(#'+id+'c)"><ellipse cx="100" cy="40" rx="120" ry="70" fill="url(#'+id+'g)"/>'+
+      (on?'<rect class="kb-sheen" x="-120" y="-10" width="60" height="230" fill="url(#'+id+'s)" transform="skewX(-18)"/>':'')+'</g>'+
+    face+
+    '<text x="100" y="'+(y+26)+'" text-anchor="middle" font-size="'+(cap.length>11?10.5:12)+'" font-weight="700" fill="'+M[5]+'" opacity=".85" letter-spacing="2.6" font-family="-apple-system,SF Pro Text,Inter,Helvetica,Arial,sans-serif">'+hesc(cap)+'</text>'+
+    (b.cat==='cls'?'<image href="/img/brand/hfplus-mark.png" x="92" y="42" width="16" height="17" opacity="'+(tier==='silver'||tier==='gold'?'.55':'.8')+'" style="'+(tier==='silver'||tier==='gold'?'filter:invert(1)':'')+'"/>':'')+
     '</svg>';
 }
 
@@ -171,14 +182,15 @@ function kbTab(t){ Kelas.kbTab=t; if(typeof renderKelas==='function') renderKela
 function kbOpen(id){
   var b=KB_LIST.filter(function(x){ return x.id===id; })[0]; if(!b) return;
   var S=kbStats(), E=kbEarned(), on=!!(E[b.id]||kbHave(b,S)), p=kbProg(b,S);
-  var h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
-    '<div class="kb-sh">'+kbSVG(b,on,190)+'<div class="kb-sh-k">'+KB_CATS[b.cat].n+'</div><div class="kb-sh-t">'+hesc(b.t)+'</div>'+
+  var h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="kbClose()">✕</button></div>'+
+    '<div class="kb-sh"><div class="kb-spin">'+kbSVG(b,on,210)+'</div><div class="kb-sh-k">'+KB_CATS[b.cat].n+'</div><div class="kb-sh-t">'+hesc(b.t)+'</div>'+
     '<div class="kb-sh-d">'+hesc(b.d)+'</div>'+
     (on?'<div class="kb-sh-on">Earned'+(E[b.id]?' on '+kbDate(E[b.id]):'')+' ✓</div>'
        :'<div class="kb-sh-p"><span class="kl-tb"><i style="width:'+Math.round(p[0]/p[1]*100)+'%"></i></span><small>'+p[0]+' of '+p[1]+'</small></div>')+
     '</div>';
-  $('pw-body').innerHTML=h; $('pwm').classList.add('on'); try{ $('pwm').scrollTop=0; }catch(e){}
+  $('pw-body').innerHTML=h; $('pwm').classList.add('on','kbm'); try{ $('pwm').scrollTop=0; }catch(e){}
 }
+function kbClose(){ $('pwm').classList.remove('kbm'); closeProduct(); }
 function kbDate(k){ try{ return new Date(k+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }catch(e){ return k; } }
 
 /* ── newly earned: kept, and shown once ── */
