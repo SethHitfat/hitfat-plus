@@ -114,6 +114,10 @@ function activeLately(d: Data, wdays: Record<string, number>): boolean {
   for (let i = 0; i < 7; i++) if (scoreOf(d, dayBack(i), wdays) > 0) return true;
   return false;
 }
+/* (21 Oct 2026, Seth: "kemaskan mcm Simple") every message fits the iPhone
+   lock screen whole: a short title with no name (one line, about 26
+   characters), a body of two lines (under about 70); the name, when used,
+   opens the body */
 /* 9 am, 1 pm and 10 pm */
 export function slotMessage(d: Data, slot: string): Msg | null {
   const wdays = workoutDays(d), today = dayBack(0), name = firstName(d);
@@ -121,22 +125,22 @@ export function slotMessage(d: Data, slot: string): Msg | null {
   const dy = (d.daily && d.daily[today]) || {};
   if (slot === 'pagi') {
     if (dy.ck) return null;
-    return { kind: 'pagi', title: 'Selamat pagi' + (name ? ', ' + name : '') + '! ☀️',
-      body: 'Jom check-in sekejap. Bara susun plan hari ni ikut mood dan badan awak.', url: '/?go=checkin' };
+    return { kind: 'pagi', title: 'Selamat pagi ☀️',
+      body: (name ? name + ', c' : 'C') + 'heck-in 10 saat. Bara susun plan hari ni untuk awak.', url: '/?go=checkin' };
   }
   if (slot === 'siang') {
     if (((d.meals && d.meals[today]) || []).length) return null;
-    return { kind: 'siang', title: (name ? name + ', dah' : 'Dah') + ' makan tengah hari? 🍽️',
-      body: 'Taip je apa awak makan. Bara kira kalori dan protein untuk awak.', url: '/?go=eat' };
+    return { kind: 'siang', title: 'Masa makan 🍽️',
+      body: 'Dah makan tengah hari? Taip je, Bara kira kalori dan protein.', url: '/?go=eat' };
   }
   if (slot === 'tidur') {
     const sc = scoreOf(d, today, wdays);
     if (sc < 25 || sc >= 50) return null;
     const need = 50 - sc, glass = 100 / 4 / 8, left = Math.max(0, 8 - (dy.water || 0)), g = Math.ceil(need / glass);
-    const body = g <= left ? 'Skor awak ' + sc + '. Lagi ' + g + ' gelas air je, Bara jadi merah! 🔥'
-      : !wdays[today] ? 'Skor awak ' + sc + '. Workout 10 minit pun dah +25 mata, Bara tunggu! 💪'
-      : 'Skor awak ' + sc + ', lagi ' + need + ' mata untuk hari padu. Log makan malam dan minum air sebelum tidur.';
-    return { kind: 'tidur', title: 'Sebelum tidur' + (name ? ', ' + name : '') + ' 😴', body, url: '/?go=home' };
+    const body = g <= left ? 'Skor ' + sc + '. Lagi ' + g + ' gelas air, Bara jadi merah 🔥'
+      : !wdays[today] ? 'Skor ' + sc + '. Workout 10 minit pun dah +25 mata 💪'
+      : 'Skor ' + sc + ', lagi ' + need + ' mata. Log makan malam dan air.';
+    return { kind: 'tidur', title: 'Sebelum tidur 😴', body, url: '/?go=home' };
   }
   return null;
 }
@@ -157,9 +161,9 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
 
   const name = firstName(d);
   if (streak >= 2 && today < 50) return {
-    kind: 'streak', title: '🔥 ' + (name ? name + ', s' : 'S') + 'treak ' + streak + ' hari awak dalam bahaya!',
-    body: today ? 'Skor awak hari ni baru ' + today + '. Capai 50 sebelum tidur untuk selamatkan streak, Bara tunggu!'
-                : 'Belum ada log hari ni. Workout pendek dan segelas air pun dah banyak membantu.',
+    kind: 'streak', title: '🔥 Streak ' + streak + ' hari dalam bahaya',
+    body: today ? (name ? name + ', s' : 'S') + 'kor hari ni ' + today + '. Capai 50 sebelum tidur!'
+                : 'Belum ada log hari ni. Segelas air pun dah kira.',
   };
   /* Sunday: the week's report, Monday to today, against the week before */
   if (new Date(Date.now() + MYT).getUTCDay() === 0) {
@@ -167,16 +171,16 @@ export function messageFor(d: Data): { kind: string; title: string; body: string
     const now = wk(0), last = wk(7), avg = Math.round(now.reduce((a, b) => a + b, 0) / 7), prev = Math.round(last.reduce((a, b) => a + b, 0) / 7);
     if (now.some(x => x > 0)) {
       const padu = now.filter(x => x >= 50).length, diff = avg - prev;
-      return { kind: 'weekly', title: '📊 Laporan mingguan Bara',
-        body: 'Purata HITFAT Score ' + avg + '/100' + (diff ? (diff > 0 ? ', naik ' + diff : ', turun ' + (-diff)) : '') + ' · ' + padu + ' hari padu. Buka app untuk laporan penuh.' };
+      return { kind: 'weekly', title: '📊 Laporan minggu ni',
+        body: 'Purata skor ' + avg + (diff ? (diff > 0 ? ' (naik ' + diff + ')' : ' (turun ' + (-diff) + ')') : '') + ' · ' + padu + ' hari padu. Tekan untuk tengok.' };
     }
   }
   if (today >= 50 || today > 0) return null;
   const idle = gap + 1;
-  if (idle === 2) return { kind: 'dust', title: 'Bara dah berhabuk 😟', body: 'Dah dua hari Bara tak nampak awak. Log satu benda hari ni sebelum bulu Bara kusut esok.' };
-  if (idle === 3) return { kind: 'rust', title: 'Alamak, bulu Bara dah kusut 🥲', body: 'Segelas air pun cukup untuk buat Bara gebu balik. Jom!' };
-  if (idle === 7) return { kind: 'rust7', title: 'Seminggu Bara kusut...', body: 'Bara masih tunggu awak 🪮 Mula balik dengan satu benda kecil hari ni.' };
-  if (idle === 14) return { kind: 'rust14', title: 'Bara rindu awak' + (name ? ', ' + name : '') + ' 🥺', body: 'Dah dua minggu. Tak perlu sempurna, mula je balik.' };
+  if (idle === 2) return { kind: 'dust', title: 'Bara berhabuk 😟', body: 'Dua hari tak jumpa. Log satu benda hari ni.' };
+  if (idle === 3) return { kind: 'rust', title: 'Bulu Bara kusut 🥲', body: 'Segelas air pun cukup buat Bara gebu balik.' };
+  if (idle === 7) return { kind: 'rust7', title: 'Seminggu Bara kusut', body: 'Bara masih tunggu. Mula dengan satu benda kecil.' };
+  if (idle === 14) return { kind: 'rust14', title: 'Bara rindu awak 🥺', body: (name ? name + ', d' : 'D') + 'ah dua minggu. Mula je balik.' };
   return null;
 }
 
@@ -217,8 +221,8 @@ function fmtDay(d: string): string { const t = new Date(d + 'T00:00:00Z'); retur
 export function classMessage(c: any, today: string): Msg | null {
   if (!c) return null;
   /* (21 Oct 2026, OS 104) a reward that became theirs today: once, the day it happens */
-  if (c.rw && c.active !== false) return { kind: 'reward', title: '🎁 Ganjaran awak dah sedia!',
-    body: String(c.rw).slice(0, 60) + ' menunggu di kaunter. Tunjuk QR awak, Bara tumpang gembira! 🎉', url: '/?kelas=points' };
+  if (c.rw && c.active !== false) return { kind: 'reward', title: '🎁 Ganjaran dah sedia',
+    body: String(c.rw).slice(0, 40) + ' menunggu di kaunter. Tunjuk QR awak 🎉', url: '/?kelas=points' };
   /* personal coaching (098): tomorrow's session, the package nearly used or ending */
   const pt = c.pt;
   if (pt) {
@@ -226,35 +230,35 @@ export function classMessage(c: any, today: string): Msg | null {
     if (pt.next && dayOf(pt.next) === dayOf(Date.parse(today + 'T12:00:00+08:00') + 86400000)) {
       const t = new Date(new Date(pt.next).getTime() + MYT), hh = t.getUTCHours(), mm = String(t.getUTCMinutes()).padStart(2, '0');
       const at = ((hh + 11) % 12 + 1) + ':' + mm + (hh < 12 ? ' pagi' : hh < 19 ? ' petang' : ' malam');
-      const left = typeof pt.left === 'number' && pt.left <= 2 ? ' Tinggal ' + pt.left + ' sesi dalam pakej awak, cakap dengan ' + coach + ' untuk sambung.' : '';
-      return { kind: 'pt1', title: 'Sesi PT esok pukul ' + at, body: 'Dengan ' + coach + '. Tidur cukup dan makan elok sebelum datang, Bara tunggu! 💪' + left, url: '/?kelas=today' };
+      const left = typeof pt.left === 'number' && pt.left <= 2 ? ' Tinggal ' + pt.left + ' sesi.' : '';
+      return { kind: 'pt1', title: 'PT esok, ' + at, body: 'Dengan ' + coach + '. Tidur cukup, makan elok 💪' + left, url: '/?kelas=today' };
     }
     /* phase 2 (099): the coach replied, new homework, the Sunday check-in */
-    if (pt.reply) return { kind: 'ptreply', title: coach + ' dah balas check-in awak', body: 'Buka HITFAT+ untuk baca. 💬', url: '/?kelas=today' };
-    if (pt.hw_new > 0) return { kind: 'pthw', title: 'Homework baru dari ' + coach, body: pt.hw_new + ' tugasan untuk dibuat. Tanda setiap satu untuk +20 mata.', url: '/?kelas=today' };
+    if (pt.reply) return { kind: 'ptreply', title: coach + ' dah balas 💬', body: 'Tekan untuk baca balasan check-in awak.', url: '/?kelas=today' };
+    if (pt.hw_new > 0) return { kind: 'pthw', title: 'Homework baru 📝', body: pt.hw_new + ' tugasan dari ' + coach + '. +20 mata setiap satu.', url: '/?kelas=today' };
     if (!pt.ci_done && new Date(today + 'T12:00:00Z').getUTCDay() === 0)
-      return { kind: 'ptci', title: 'Check-in mingguan dengan ' + coach, body: 'Dua minit je: berat, tenaga, tidur dan makanan minggu ni. +50 mata.', url: '/?kelas=today' };
+      return { kind: 'ptci', title: 'Check-in mingguan PT', body: '2 minit: berat, tenaga, tidur, makan. +50 mata.', url: '/?kelas=today' };
     if (pt.end && daysBetween(today, String(pt.end).slice(0, 10)) === 3)
-      return { kind: 'ptend', title: 'Pakej PT awak tamat dalam 3 hari', body: 'Tamat pada ' + fmtDay(String(pt.end).slice(0, 10)) + '. Cakap dengan ' + coach + ' untuk teruskan sesi.', url: '/?kelas=today' };
+      return { kind: 'ptend', title: 'PT tamat dalam 3 hari', body: 'Tamat ' + fmtDay(String(pt.end).slice(0, 10)) + '. Cakap dengan ' + coach + ' untuk sambung.', url: '/?kelas=today' };
   }
   const end = c.end ? String(c.end).slice(0, 10) : '';
   if (end) {
     const left = daysBetween(today, end);
-    const renew = 'Renew di kaunter HITFAT supaya kelas, mata dan streak awak berterusan.';
-    if (c.active && left === 7) return { kind: 'end7', title: 'Membership kelas awak tamat dalam 7 hari', body: 'Tamat pada ' + fmtDay(end) + '. ' + renew, url: '/?kelas=today' };
-    if (c.active && left === 3) return { kind: 'end3', title: 'Tinggal 3 hari membership kelas awak', body: 'Tamat pada ' + fmtDay(end) + '. ' + renew, url: '/?kelas=today' };
-    if (c.active && left === 1) return { kind: 'end1', title: 'Membership kelas awak tamat esok', body: 'Esok hari terakhir. ' + renew, url: '/?kelas=today' };
-    if (!c.active && left === -1) return { kind: 'ended', title: 'Membership kelas awak dah tamat 😢', body: 'Bara rindu awak kat kelas. Renew di kaunter dan kiosk akan benarkan awak masuk semula.', url: '/?kelas=today' };
+    const renew = 'Renew di kaunter, streak terus jalan.';
+    if (c.active && left === 7) return { kind: 'end7', title: 'Membership: 7 hari lagi', body: 'Tamat ' + fmtDay(end) + '. ' + renew, url: '/?kelas=today' };
+    if (c.active && left === 3) return { kind: 'end3', title: 'Membership: 3 hari lagi', body: 'Tamat ' + fmtDay(end) + '. ' + renew, url: '/?kelas=today' };
+    if (c.active && left === 1) return { kind: 'end1', title: 'Membership tamat esok', body: 'Hari terakhir esok. ' + renew, url: '/?kelas=today' };
+    if (!c.active && left === -1) return { kind: 'ended', title: 'Membership dah tamat 😢', body: 'Renew di kaunter untuk masuk kelas semula.', url: '/?kelas=today' };
   }
   if (c.active && c.last) {
     const gap = daysBetween(String(c.last).slice(0, 10), today);
-    if (gap === 7) return { kind: 'class7', title: 'Bara rindu awak kat kelas 🥺', body: 'Dah seminggu sejak kelas terakhir. Group kelas awak tunggu, datang minggu ni ya!', url: '/?kelas=today' };
-    if (gap === 14) return { kind: 'class14', title: 'Dua minggu tak datang kelas...', body: 'Bara masih simpan tempat awak. Satu kelas minggu ni dah cukup untuk mula balik.', url: '/?kelas=today' };
+    if (gap === 7) return { kind: 'class7', title: 'Rindu awak kat kelas 🥺', body: 'Seminggu tak datang. Jumpa minggu ni ya!', url: '/?kelas=today' };
+    if (gap === 14) return { kind: 'class14', title: 'Dua minggu tak datang', body: 'Satu kelas minggu ni dah cukup untuk mula balik.', url: '/?kelas=today' };
   }
   /* the 1st: last month's recap, for a member who came to class last month */
   if (today.slice(8, 10) === '01' && c.last) {
     const lm = new Date(Date.parse(today + 'T00:00:00Z') - 86400000), name = MONTHS[lm.getUTCMonth()];
-    if (daysBetween(String(c.last).slice(0, 10), today) <= 31) return { kind: 'recap', title: '📅 Rekap ' + name + ' awak dah siap', body: 'Kelas, PR dan streak awak untuk bulan ' + name + '. Tengok, lepas tu share!', url: '/?kelas=progress' };
+    if (daysBetween(String(c.last).slice(0, 10), today) <= 31) return { kind: 'recap', title: '📅 Rekap ' + name + ' dah siap', body: 'Kelas, PR dan streak bulan lepas. Tengok dan share!', url: '/?kelas=progress' };
   }
   return null;
 }
@@ -299,7 +303,7 @@ Deno.serve(async (req: Request) => {
     const user = ud && ud.user;
     if (!user || !user.id || user.role === 'anon') return json({ error: 'Sign in' }, 401);
     const { data: subs } = await admin.from('plus_push_subs').select('*').eq('user_id', user.id);
-    const n = await sendTo(admin, subs || [], { kind: 'pagi', title: 'Hai, Bara ni! 👋', body: 'Peringatan dah on. Bara akan ingatkan awak pagi, tengah hari dan malam, bila ada sebab je.' }, false);
+    const n = await sendTo(admin, subs || [], { kind: 'pagi', title: 'Hai, Bara ni 👋', body: 'Peringatan dah on. Bara ingatkan bila perlu je.' }, false);
     return json({ ok: true, sent: n });
   }
 
