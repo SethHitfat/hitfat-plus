@@ -3,7 +3,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>HITFAT+</title>
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#F2F2F7">
 <!-- the link preview (WhatsApp, Facebook, iMessage): the HITFAT+ logo on red (21 Oct 2026) -->
 <meta property="og:title" content="HITFAT+">
 <meta property="og:description" content="Train, eat and track with HITFAT: workouts, meal plans and your progress in one app.">
@@ -13,11 +13,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <script>
 /* Theme, set before anything paints so there is no black-to-white flash.
-   Dark is the default — the HITFAT ONE look, the same as hitfat.io: warm
-   black, cream, one red. Anyone who prefers light switches it in Me, and
-   that choice is kept on the device. */
+   Light is the default (Seth, 21 Oct 2026; it was dark, the HITFAT ONE look,
+   until then). Anyone who prefers dark switches it in Me, and that choice is
+   kept on the device, so a member who picked dark keeps it. */
 (function(){
-  var t='dark';
+  var t='light';
   try{ var k=localStorage.getItem('hitfat_theme'); if(k==='dark'||k==='light') t=k; }catch(e){}
   document.documentElement.setAttribute('data-theme',t);
   var m=document.querySelector('meta[name="theme-color"]');
