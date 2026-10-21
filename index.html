@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en" class="sp-on"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>HITFAT+</title>
@@ -1406,6 +1406,10 @@
 #splash{position:fixed;inset:0;z-index:99999;overflow:hidden;transition:opacity .5s ease;
   background:linear-gradient(180deg,#1B1B1F 0%,#141417 34%,#0B0B0D 54%,#0B0B0D 100%);}
 #splash.gone{opacity:0;pointer-events:none;}
+/* (21 Oct 2026) where iOS gives the app a view shorter than the screen, the
+   strip under it shows the page's own background: while the splash is up
+   that is the splash's dark, not the light page behind it */
+html.sp-on{background:#0B0B0D !important;}
 #splash .sp-glow{position:absolute;left:50%;top:calc(22vh + env(safe-area-inset-top,0px) - 200px);width:400px;height:400px;margin-left:-200px;border-radius:50%;
   background:radial-gradient(circle,rgba(227,6,19,.28) 0%,rgba(227,6,19,.08) 35%,rgba(227,6,19,0) 58%);
   opacity:0;animation:spIn 1s ease .05s forwards;}
@@ -8442,7 +8446,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
           'padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;max-height:60%;overflow:auto;';
         (document.body||document.documentElement).appendChild(d); }
       d.innerHTML='<b style="color:#ff6b8a;">'+title+'</b><br>'+body+'<br><br><span style="color:#888;">Screenshot this and send it over.</span>';
-      var s=document.getElementById('splash'); if(s) s.style.display='none';
+      var s=document.getElementById('splash'); if(s) s.style.display='none'; document.documentElement.classList.remove('sp-on');
     }catch(e){}
   }
   /* An error is not the same thing as a broken app. This panel exists for the
@@ -33846,7 +33850,7 @@ function hideSplash(){
   try{ const calm=window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
        if(!calm && typeof performance!=='undefined' && performance.now) left=SPLASH_MIN-performance.now(); }catch(e){}
   if(left>0){ if(!s._wait) s._wait=setTimeout(()=>{ s._wait=null; hideSplash(); },left); return; }
-  s.classList.add('gone'); setTimeout(()=>{s.style.display='none';},500);
+  s.classList.add('gone'); setTimeout(()=>{s.style.display='none'; document.documentElement.classList.remove('sp-on');},500);
 }
 let _started=false, _signingIn=false;
 function startApp(){
@@ -33966,12 +33970,15 @@ function setNavOffset(){ try{
   var ih=window.innerHeight||0;
   var gap=(sh&&ih)?(sh-ih):0;
   var navb=Math.max(14,sab);                        // default: clear the home indicator
-  if(_standaloneVH() && gap>20 && sat>0) navb=2;    // dead strip at the bottom → hug the edge
   /* Seth wants the bar low, right down on the home indicator (12 Oct 2026):
      it sat about 17pt off the bottom of an iPhone 15 Pro, and "lower" twice
-     after that. NAV_DROP takes it to the bottom edge; the floor lets it go
-     slightly past the computed edge where that was already low. */
-  navb=Math.max(-6, navb-NAV_DROP);
+     after that. NAV_DROP takes it to the bottom edge. */
+  var dead=_standaloneVH() && gap>20 && sat>0;
+  /* a dead strip at the bottom: the app already ends above the home
+     indicator, so the bar sits just on the app's own edge. It used to go 6px
+     past it, where the app's edge cut the bar's rounded foot off flat (Seth's
+     screen recording, 21 Oct 2026) */
+  navb = dead ? 4 : Math.max(-6, navb-NAV_DROP);
   document.documentElement.style.setProperty('--navb', navb+'px');
   window._navDiag={sat:sat, sab:sab, gap:gap, navb:navb};
 }catch(e){} }
