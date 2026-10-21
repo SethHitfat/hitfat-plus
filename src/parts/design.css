@@ -4107,6 +4107,9 @@ html,body{overscroll-behavior:none;}
 .kl-rwm small{display:block;font-size:12px;color:var(--dim);margin-top:2px;}
 .kl-rwm .kl-tb{margin-top:8px;}
 .kl-rw em{flex:none;font-style:normal;font-size:16px;font-weight:900;color:var(--txt);font-variant-numeric:tabular-nums;}
+/* the reward's picture (21 Oct): the product on white, a rounded tile */
+.kl-rwimg{flex:none;width:64px;height:64px;border-radius:14px;object-fit:cover;background:#FFFFFF;box-shadow:0 0 0 1px var(--sep);}
+.kl-gift-img{flex:none;width:44px;height:44px;border-radius:12px;object-fit:cover;background:#FFFFFF;}
 .kl-rw.ok em{color:#1F9D4C;}
 .kl-rwok{display:inline-block;margin-top:6px;padding:4px 9px;border-radius:99px;background:rgba(52,193,95,.16);color:#1F9D4C;font-size:12px;font-weight:800;}
 .kl-hist>div{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;font-size:14px;color:var(--txt);}

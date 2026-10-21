@@ -383,11 +383,16 @@ function kelasLoyHTML(){
     h+='<button onclick="kelasTab(\'points\')">'+glyph('star')+'<span><b>'+kelasN(P.balance)+' points</b><small>'+(ready?ready+' reward'+(ready===1?'':'s')+' ready':'HITFAT Points')+'</small></span></button>'; }
   return h+'</div>';
 }
+/* each reward's picture (21 Oct 2026): Seth's product shots on white
+   (img/rewards/<id>.jpg); RM20 off is a drawn ticket. A reward with no
+   picture of its own keeps the plain row */
+var KL_RW_IMG={drink:1, renew20:1, inbody:1, tee:1, knee:1};
+function kelasRwImg(r,cls){ return r && KL_RW_IMG[r.id] ? '<img class="'+(cls||'kl-rwimg')+'" src="/img/rewards/'+r.id+'.jpg" alt="" loading="lazy">' : ''; }
 function kelasGiftHTML(){
   const P=kelasPts(); if(!P || !kelasActive()) return '';
   const r=(P.rewards||[]).filter(x=>x.points<=(P.balance||0)).sort((a,b)=>b.points-a.points);
   if(!r.length) return '';
-  return '<button class="kl-gift" onclick="kelasTab(\'points\')"><span class="kl-gift-i">'+glyph('star')+'</span>'+
+  return '<button class="kl-gift" onclick="kelasTab(\'points\')">'+(KL_RW_IMG[r[0].id]?kelasRwImg(r[0],'kl-gift-img'):'<span class="kl-gift-i">'+glyph('star')+'</span>')+
     '<span class="kl-gift-t"><b>'+(r.length===1?'Your reward is ready: '+hesc(r[0].name):r.length+' rewards ready, up to '+hesc(r[0].name))+'</b>'+
     '<small>Thank you for training with us. Show your QR at the counter.</small></span><i>›</i></button>';
 }
@@ -754,7 +759,7 @@ function kelasPointsHTML(){
   /* rewards */
   h+='<div class="kl-rwh">Rewards</div><div class="kl-rws">'+(P.rewards||[]).map(r=>{
     const ok=(P.balance||0)>=r.points, pct=Math.min(100,Math.round((P.balance||0)/r.points*100));
-    return '<div class="kl-rw'+(ok?' ok':'')+'"><div class="kl-rwm"><b>'+hesc(r.name)+'</b><small>'+hesc(r.note||'')+'</small>'+
+    return '<div class="kl-rw'+(ok?' ok':'')+'">'+kelasRwImg(r)+'<div class="kl-rwm"><b>'+hesc(r.name)+'</b><small>'+hesc(r.note||'')+'</small>'+
       (ok?'<span class="kl-rwok">Ready. Show your QR at the counter</span>'
          :'<span class="kl-tb"><i style="width:'+pct+'%"></i></span><small>'+kelasN(r.points-(P.balance||0))+' to go</small>')+
       '</div><em>'+kelasN(r.points)+'</em></div>';
