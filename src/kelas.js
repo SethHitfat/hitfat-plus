@@ -386,7 +386,7 @@ function kelasLoyHTML(){
 /* each reward's picture (21 Oct 2026): Seth's product shots on white
    (img/rewards/<id>.jpg); RM20 off is a drawn ticket. A reward with no
    picture of its own keeps the plain row */
-var KL_RW_IMG={drink:1, renew20:1, inbody:1, tee:1, knee:1};
+var KL_RW_IMG={drink:1, renew20:1, inbody:1, tee:1, tee_sub:1, knee:1};   /* tee_sub: a mock-up of the Signature Tee's sublimation print on the Core Tee photo, until the real one */
 function kelasRwImg(r,cls){ return r && KL_RW_IMG[r.id] ? '<img class="'+(cls||'kl-rwimg')+'" src="/img/rewards/'+r.id+'.jpg" alt="" loading="lazy">' : ''; }
 function kelasGiftHTML(){
   const P=kelasPts(); if(!P || !kelasActive()) return '';
