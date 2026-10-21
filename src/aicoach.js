@@ -194,7 +194,7 @@ function aicHome(p){
   return h;
 }
 function aicRedo(){ aicData().redo=true; aicView=null; _aicForm=null; renderAICoach(); $('screen').scrollTop=0; }
-function aicMark(){ return '<span class="aic-av" aria-hidden="true"><img src="/img/brand/hf-mark.png" alt=""></span>'; }
+function aicMark(){ return '<span class="aic-av" aria-hidden="true"><img src="/img/brand/hfplus-mark.png" alt=""></span>'; }
 
 /* a day: its moves, each with its video */
 function aicOpenDay(w,d){ aicView={w,d}; renderAICoach(); $('screen').scrollTop=0; }

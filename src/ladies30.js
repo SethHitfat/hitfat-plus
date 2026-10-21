@@ -331,7 +331,7 @@ function lbPoster(cls){
   var ph='background-image:url(\'/img/p/lad4.jpg\'),linear-gradient(#4A0A36,#4A0A36);background-position:50% 22%;'+
     '-webkit-mask-image:url(\'/img/p/mask/lad4.png\');mask-image:url(\'/img/p/mask/lad4.png\');-webkit-mask-position:50% 22%;mask-position:50% 22%';
   return '<div class="'+cls+' lb-type lb-art"><div class="hpo-fig"><div class="hpo-ph" style="'+ph+'"></div></div>'+
-    '<div class="lb-tx"><img class="lb-mark" src="/img/brand/hf-mark.png" alt="HITFAT">'+
+    '<div class="lb-tx"><img class="lb-mark" src="/img/brand/hfplus-mark.png" alt="HITFAT+">'+
     '<div class="lb-name">'+hesc(LB30_NAME)+'</div><div class="lb-sub">30 HARI · DI RUMAH · TANPA LOMPAT</div></div></div>';
 }
 function lbHero(kicker,sub,meta,pill){

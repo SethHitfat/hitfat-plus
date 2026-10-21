@@ -708,15 +708,15 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 /* ═══════════════════════════════════════════════════════════════
    The centre tab: the HF mark, white, on a red disc
    The mark is the HF of the new HITFAT+ logo (21 Oct 2026, the user's own
-   redraw; img/brand/hf-mark.png, white on clear) used as a mask, so its
+   redraw; img/brand/hfplus-mark.png, white on clear, with its +) used as a mask, so its
    colour is set here rather than baked into an image. A red disc reads as the one button that starts training — the
    old near-black plate sat on the white bar like a hole.
    ═══════════════════════════════════════════════════════════════ */
-:root{ --hf-mark:url("/img/brand/hf-mark.png"); }
+:root{ --hf-mark:url("/img/brand/hfplus-mark.png"); }
 .tabmid .tlogo{position:relative;padding:0 !important;border:none !important;
   background-image:linear-gradient(150deg,#FF5B47 0%,#E3291F 55%,#B8170F 100%) !important;
   box-shadow:0 6px 16px rgba(215,38,30,.38), 0 0 0 3px var(--tabring,rgba(255,255,255,.9)) !important;}
-.tabmid .tlogo::before{content:'';position:absolute;inset:0;margin:auto;width:23px;height:28px;background:#FFFFFF;
+.tabmid .tlogo::before{content:'';position:absolute;inset:0;margin:auto;width:28px;height:30px;background:#FFFFFF;
   -webkit-mask:var(--hf-mark) center/contain no-repeat;mask:var(--hf-mark) center/contain no-repeat;}
 .tab.active.tabmid .tlogo{box-shadow:0 8px 22px rgba(215,38,30,.5), 0 0 0 3px var(--tabring,rgba(255,255,255,.9)) !important;}
 :root:not([data-theme="light"]){ --tabring:rgba(28,28,30,.95); }
@@ -923,7 +923,7 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 /* the HF mark on a red disc, as on the centre tab */
 .sub-mark{display:inline-block;flex:0 0 auto;width:52px;height:52px;border-radius:50%;position:relative;
   background:linear-gradient(150deg,#FF5B47 0%,#E3291F 55%,#B8170F 100%);box-shadow:0 8px 20px rgba(215,38,30,.35);}
-.sub-mark::before{content:'';position:absolute;inset:0;margin:auto;width:23px;height:28px;background:#FFFFFF;
+.sub-mark::before{content:'';position:absolute;inset:0;margin:auto;width:28px;height:30px;background:#FFFFFF;
   -webkit-mask:var(--hf-mark) center/contain no-repeat;mask:var(--hf-mark) center/contain no-repeat;}
 
 .sub-hero{text-align:center;padding:4px 6px 4px;}
