@@ -5743,8 +5743,10 @@ body::before{content:'';position:fixed;left:0;right:0;top:0;height:env(safe-area
 body:has(.screen > #home:not([style*="none"])):not(:has(.ovl.on)):not(:has(#player[style*="block"]))::before{display:none;}
 
 /* ── Home, eight fixes from the user's light-mode screenshot (16 Oct) ── */
-/* 1 the date reads on red */
-:root[data-theme="light"] #home-hdr .hsum .k{color:rgba(17,17,19,.62);}
+/* 1 the date and the greeting on the red (21 Oct, Seth: "Hi, Seth tu better
+   putih"): white, as the wordmark above them, not black on red */
+:root[data-theme="light"] #home-hdr .hsum .k{color:rgba(255,255,255,.86);}
+:root[data-theme="light"] #home-hdr .hsum .t{color:#FFFFFF;}
 /* 2 the arc's track is white on the red, so the whole half ring shows; the arc sits a little lower, clear of the bubble */
 :root[data-theme="light"] #mascot-home .sc-page .sc-arc-t{stroke:rgba(255,255,255,.62);}
 #mascot-home .sc-page .sc-arc{-webkit-transform:translateY(16px);transform:translateY(16px);}
