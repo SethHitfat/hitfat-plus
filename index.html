@@ -25563,98 +25563,122 @@ function kbProg(b,S){
 }
 function kbEarned(){ var K=HF.data.kelas||(HF.data.kelas={}); return K.badges||(K.badges={}); }
 
-/* ── the badge itself (v5, 21 Oct 2026: "more wow, more sporty"; Seth chose
-   direction A, the jersey) ──
-   A round medal in the category's colour: a bevelled rim, a dark ring,
-   speed slashes across the face, a chevron on top, the number in italic
-   Oswald with a thick black outline like a jersey, its word in a black tab
-   under it, a stitched ring round the edge. Gloss and a sheen on earned
-   ones; graphite when locked. The same drawing goes on the IG Story card
-   (kbDraw, canvas). */
+/* ── the badge itself (v6, 21 Oct 2026: after the badge Seth made with
+   ChatGPT, "100 CLASSES", which he liked) ──
+   A glass medal: a thick glossy rim in the category's colour with a black
+   band across its upper right, a thin bright ring, a dark face with
+   diagonal light panels, a flare on the left, the number huge in heavy
+   italic (white to a tint, a dark edge, a glow), its word spaced out
+   under it. A sheen on earned ones; graphite when locked. kbDraw draws the
+   same on a canvas for the IG Story card. */
 var KB_COL={
-  /* light, mid, dark, and the number's colour */
-  cls:  ['#FF8A80','#E30613','#6E0309','#FFFFFF'],
-  week: ['#8E8E96','#2B2B30','#050506','#FFFFFF'],
-  month:['#FFC78A','#FF6A1A','#7A2800','#FFFFFF'],
-  pr:   ['#FFF0A0','#E8A800','#6E4A00','#FFFFFF'],
-  frd:  ['#A9CBFF','#2563EB','#0A2570','#FFFFFF'],
-  spc:  ['#9BF2E3','#14B8A6','#064E47','#FFFFFF'],
-  pts:  ['#6A6A72','#1C1C1F','#000000','#FFC20E'],
-  lock: ['#6E6E74','#3A3A3F','#18181B','rgba(255,255,255,.55)']
+  /* light, mid, dark, face, the number's tint */
+  cls:  ['#FF6B6B','#E30613','#7A030A','#1E0003','#FFD9D9'],
+  week: ['#A4A4AC','#3A3A40','#0A0A0C','#0B0B0D','#E6E6EA'],
+  month:['#FFB37A','#FF6A1A','#7A2800','#1E0900','#FFE2CC'],
+  pr:   ['#FFE680','#E8A800','#6E4A00','#1C1300','#FFF1B8'],
+  frd:  ['#8FB8FF','#2563EB','#0A2570','#030B24','#DCE8FF'],
+  spc:  ['#7FEADB','#14B8A6','#064E47','#011C19','#D6FFF8'],
+  pts:  ['#FFE07A','#C99A00','#3A2A00','#09090A','#FFD45E'],
+  lock: ['#77777D','#3A3A3F','#18181B','#121214','#8A8A90']
 };
-var KB_FONT="Oswald,'Arial Narrow',Impact,sans-serif";
+var KB_FONT="'Inter',-apple-system,'Helvetica Neue',Arial,sans-serif";
 var _kbN=0;
+/* the number's size and baseline: as big as the face allows */
+function kbNumSize(n){
+  var w=n.length+(/[KMW]/.test(n)?0.6:0);
+  return w>=4.5?[56,124]:w>=4?[64,126]:w>=3.5?[70,127]:w>=3?[86,130]:w>=2?[100,134]:[110,136];
+}
 function kbSVG(b, on, size){
   var id='kb'+(++_kbN), s=size||96, C=KB_COL[on?b.cat:'lock'];
-  var n=b.disp||(b.v!=null?String(b.v):''), fs=n.length>=4?66:n.length===3?78:92, ny=n.length>=3?132:138;
+  var n=b.disp||(b.v!=null?String(b.v):''), m=kbNumSize(n), fs=m[0], ny=m[1], nx=100+ny*0.2126-3;
+  var band=on?(b.cat==='week'?'#6A6A72':'#0E0E10'):'#2A2A2E';
+  var arc=function(r1,r2,a1,a2){ var R=Math.PI/180, p=function(r,a){ return (100+r*Math.cos(a*R)).toFixed(2)+' '+(100+r*Math.sin(a*R)).toFixed(2); };
+    return 'M'+p(r2,a1)+' A'+r2+' '+r2+' 0 0 1 '+p(r2,a2)+' L'+p(r1,a2)+' A'+r1+' '+r1+' 0 0 0 '+p(r1,a1)+' Z'; };
+  var panel=function(cx,cy,w,h,col,op){ return '<rect x="'+(cx-w/2)+'" y="'+(cy-h/2)+'" width="'+w+'" height="'+h+'" rx="6" fill="'+col+'" opacity="'+(op||1)+'" transform="rotate(42 '+cx+' '+cy+')"/>'; };
   var mid=b.ic && typeof ICON_PATH!=='undefined'
-    ? '<svg x="58" y="44" width="84" height="84" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">'+ICON_PATH[iconKind(b.ic)]+'</svg>'+
-      '<svg x="58" y="44" width="84" height="84" viewBox="0 0 24 24" fill="none" stroke="'+C[3]+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ICON_PATH[iconKind(b.ic)]+'</svg>'
-    : '<text x="104" y="'+ny+'" text-anchor="middle" font-size="'+fs+'" font-weight="700" font-style="italic" transform="skewX(-8)" fill="'+C[3]+'" stroke="#111" stroke-width="7" paint-order="stroke" stroke-linejoin="round" letter-spacing="-1" font-family="'+KB_FONT+'">'+n+'</text>';
+    ? '<svg x="56" y="38" width="88" height="88" viewBox="0 0 24 24" fill="none" stroke="url(#'+id+'n)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" filter="url(#'+id+'w)">'+ICON_PATH[iconKind(b.ic)]+'</svg>'
+    : '<g transform="skewX(-12)" filter="url(#'+id+'w)" font-family="'+KB_FONT+'" font-size="'+fs+'" font-weight="900" font-style="italic" letter-spacing="-4" text-anchor="middle">'+
+        '<text x="'+nx.toFixed(1)+'" y="'+ny+'" fill="'+C[2]+'" stroke="'+C[3]+'" stroke-width="9" stroke-linejoin="round">'+n+'</text>'+
+        '<text x="'+nx.toFixed(1)+'" y="'+ny+'" fill="url(#'+id+'n)" stroke="url(#'+id+'n)" stroke-width="3.2" stroke-linejoin="round">'+n+'</text></g>';
   return '<svg class="kb-svg'+(on?' on':' off')+' c-'+b.cat+'" width="'+s+'" height="'+s+'" viewBox="0 0 200 200" role="img" aria-label="'+hesc(b.t)+'">'+
     '<defs>'+
-      '<linearGradient id="'+id+'r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+C[0]+'"/><stop offset=".45" stop-color="'+C[1]+'"/><stop offset=".85" stop-color="'+C[2]+'"/><stop offset="1" stop-color="'+C[1]+'"/></linearGradient>'+
-      '<radialGradient id="'+id+'f" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="'+C[0]+'"/><stop offset=".55" stop-color="'+C[1]+'"/><stop offset="1" stop-color="'+C[2]+'"/></radialGradient>'+
-      '<linearGradient id="'+id+'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".36"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
-      '<linearGradient id="'+id+'s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/><stop offset=".5" stop-color="#FFFFFF" stop-opacity=".45"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
-      '<clipPath id="'+id+'c"><circle cx="100" cy="100" r="84"/></clipPath>'+
+      '<linearGradient id="'+id+'r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+C[0]+'"/><stop offset=".4" stop-color="'+C[1]+'"/><stop offset=".8" stop-color="'+C[2]+'"/><stop offset="1" stop-color="'+C[1]+'"/></linearGradient>'+
+      '<radialGradient id="'+id+'f" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="'+C[2]+'"/><stop offset=".6" stop-color="'+C[3]+'"/><stop offset="1" stop-color="#000000"/></radialGradient>'+
+      '<linearGradient id="'+id+'p" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+C[0]+'" stop-opacity=".95"/><stop offset=".5" stop-color="'+C[1]+'" stop-opacity=".9"/><stop offset="1" stop-color="'+C[2]+'" stop-opacity=".6"/></linearGradient>'+
+      '<linearGradient id="'+id+'n" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#FFFFFF"/><stop offset="1" stop-color="'+C[4]+'"/></linearGradient>'+
+      '<linearGradient id="'+id+'g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".55"/><stop offset=".35" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
+      '<radialGradient id="'+id+'x" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".95"/><stop offset=".3" stop-color="'+C[0]+'" stop-opacity=".55"/><stop offset="1" stop-color="'+C[0]+'" stop-opacity="0"/></radialGradient>'+
+      '<linearGradient id="'+id+'s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/><stop offset=".5" stop-color="#FFFFFF" stop-opacity=".4"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
+      '<filter id="'+id+'w" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="2" stdDeviation="1.2" flood-color="#000" flood-opacity=".55"/><feDropShadow dx="0" dy="0" stdDeviation="'+(on?4:0)+'" flood-color="'+C[1]+'" flood-opacity="'+(on?.9:0)+'"/></filter>'+
+      '<clipPath id="'+id+'c"><circle cx="100" cy="100" r="82"/></clipPath>'+
     '</defs>'+
+    /* the rim, its black band, its gloss */
     '<circle cx="100" cy="100" r="97" fill="url(#'+id+'r)"/>'+
-    '<circle cx="100" cy="100" r="86" fill="#0E0E10"/>'+
+    '<path d="'+arc(84,97,-62,28)+'" fill="'+band+'"/>'+
+    '<path d="'+arc(84,97,148,182)+'" fill="'+band+'" opacity=".85"/>'+
+    '<circle cx="100" cy="100" r="97" fill="url(#'+id+'g)"/>'+
+    '<circle cx="100" cy="100" r="96" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>'+
+    /* the face: dark, with diagonal panels of light */
+    '<circle cx="100" cy="100" r="84" fill="'+C[1]+'"/>'+
     '<g clip-path="url(#'+id+'c)">'+
-      '<circle cx="100" cy="100" r="84" fill="url(#'+id+'f)"/>'+
-      '<path d="M-20 170 L120 -20 L150 -20 L10 170Z" fill="rgba(255,255,255,'+(on?'.16':'.06')+')"/>'+
-      '<path d="M20 190 L160 0 L172 0 L32 190Z" fill="rgba(255,255,255,'+(on?'.24':'.08')+')"/>'+
-      '<path d="M60 210 L200 20 L230 20 L90 210Z" fill="rgba(0,0,0,.18)"/>'+
-      '<ellipse cx="100" cy="40" rx="110" ry="60" fill="url(#'+id+'g)"/>'+
+      '<circle cx="100" cy="100" r="82" fill="url(#'+id+'f)"/>'+
+      panel(132,58,26,150,'url(#'+id+'p)',.95)+panel(160,92,12,150,'url(#'+id+'p)',.75)+panel(74,108,18,170,'url(#'+id+'p)',.55)+panel(46,140,30,120,'url(#'+id+'p)',.9)+panel(108,160,10,120,C[1],.6)+
+      '<rect x="-40" y="-40" width="280" height="140" fill="url(#'+id+'g)" opacity=".5"/>'+
       (on?'<rect class="kb-sheen" x="-120" y="-10" width="60" height="230" fill="url(#'+id+'s)" transform="skewX(-18)"/>':'')+
     '</g>'+
-    '<path d="M70 26 L100 40 L130 26" fill="none" stroke="'+(on?'#FFFFFF':'rgba(255,255,255,.4)')+'" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" opacity=".92"/>'+
-    '<path d="M78 36 L100 46 L122 36" fill="none" stroke="'+(on?'#FFFFFF':'rgba(255,255,255,.4)')+'" stroke-width="3" stroke-linecap="round" opacity=".55"/>'+
+    '<circle cx="100" cy="100" r="83" fill="none" stroke="'+C[0]+'" stroke-width="1.6" opacity=".9"/>'+
     mid+
-    '<rect x="'+(b.lab.length>9?40:52)+'" y="146" width="'+(b.lab.length>9?120:96)+'" height="22" rx="4" fill="#111" opacity=".88"/>'+
-    '<text x="100" y="162" text-anchor="middle" font-size="14" font-weight="600" fill="'+(on?'#FFFFFF':'rgba(255,255,255,.55)')+'" letter-spacing="2.5" font-family="'+KB_FONT+'">'+hesc(b.lab)+'</text>'+
-    '<circle cx="100" cy="100" r="92" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5" stroke-dasharray="3 9"/>'+
+    '<text x="100" y="'+(b.v!=null?158:150)+'" text-anchor="middle" font-size="'+(b.lab.length>9?12:14)+'" font-weight="800" letter-spacing="'+(b.lab.length>9?3:5)+'" fill="#FFFFFF" fill-opacity="'+(on?1:.6)+'" font-family="'+KB_FONT+'">'+hesc(b.lab)+'</text>'+
+    (on?'<circle cx="24" cy="64" r="16" fill="url(#'+id+'x)"/>':'')+
     '</svg>';
 }
 /* the same medal on a canvas (the IG Story card): centre cx,cy, radius R */
 function kbDraw(x, b, cx, cy, R){
-  var C=KB_COL[b.cat], k=R/100, P=function(v){ return (v-100)*k; };
+  var C=KB_COL[b.cat], k=R/100, P=function(v){ return (v-100)*k; }, D=Math.PI/180;
   x.save(); x.translate(cx,cy);
-  var g=x.createLinearGradient(-R,-R,R,R); g.addColorStop(0,C[0]); g.addColorStop(.45,C[1]); g.addColorStop(.85,C[2]); g.addColorStop(1,C[1]);
+  var g=x.createLinearGradient(-R,-R,R,R); g.addColorStop(0,C[0]); g.addColorStop(.4,C[1]); g.addColorStop(.8,C[2]); g.addColorStop(1,C[1]);
   x.fillStyle=g; x.beginPath(); x.arc(0,0,97*k,0,Math.PI*2); x.fill();
-  x.fillStyle='#0E0E10'; x.beginPath(); x.arc(0,0,86*k,0,Math.PI*2); x.fill();
-  x.save(); x.beginPath(); x.arc(0,0,84*k,0,Math.PI*2); x.clip();
-  var f=x.createRadialGradient(P(76),P(60),0,P(76),P(60),160*k); f.addColorStop(0,C[0]); f.addColorStop(.55,C[1]); f.addColorStop(1,C[2]);
+  var band=function(a1,a2,al){ x.globalAlpha=al; x.fillStyle=b.cat==='week'?'#6A6A72':'#0E0E10'; x.beginPath(); x.arc(0,0,97*k,a1*D,a2*D); x.arc(0,0,84*k,a2*D,a1*D,true); x.closePath(); x.fill(); x.globalAlpha=1; };
+  band(-62,28,1); band(148,182,.85);
+  var gl=x.createLinearGradient(-R,-R,R,R); gl.addColorStop(0,'rgba(255,255,255,.55)'); gl.addColorStop(.35,'rgba(255,255,255,0)');
+  x.fillStyle=gl; x.beginPath(); x.arc(0,0,97*k,0,Math.PI*2); x.fill();
+  x.fillStyle=C[1]; x.beginPath(); x.arc(0,0,84*k,0,Math.PI*2); x.fill();
+  x.save(); x.beginPath(); x.arc(0,0,82*k,0,Math.PI*2); x.clip();
+  var f=x.createRadialGradient(P(83.6),P(75.4),0,P(83.6),P(75.4),123*k); f.addColorStop(0,C[2]); f.addColorStop(.6,C[3]); f.addColorStop(1,'#000000');
   x.fillStyle=f; x.fillRect(-R,-R,2*R,2*R);
-  var poly=function(pts,col){ x.fillStyle=col; x.beginPath(); pts.forEach(function(p,i){ if(i) x.lineTo(P(p[0]),P(p[1])); else x.moveTo(P(p[0]),P(p[1])); }); x.closePath(); x.fill(); };
-  poly([[-20,170],[120,-20],[150,-20],[10,170]],'rgba(255,255,255,.16)');
-  poly([[20,190],[160,0],[172,0],[32,190]],'rgba(255,255,255,.24)');
-  poly([[60,210],[200,20],[230,20],[90,210]],'rgba(0,0,0,.18)');
-  var gl=x.createLinearGradient(0,P(-20),0,P(100)); gl.addColorStop(0,'rgba(255,255,255,.36)'); gl.addColorStop(1,'rgba(255,255,255,0)');
-  x.fillStyle=gl; x.beginPath(); x.ellipse(0,P(40),110*k,60*k,0,0,Math.PI*2); x.fill();
+  /* the panels as kbSVG's: centred at px,py, turned 42°, light at the top */
+  var panel=function(px,py,w,h,op,flat){ x.save(); x.translate(P(px),P(py)); x.rotate(42*D); x.globalAlpha=op;
+    if(flat) x.fillStyle=C[1];
+    else { var pg=x.createLinearGradient(0,-h*k/2,0,h*k/2); pg.addColorStop(0,C[0]); pg.addColorStop(.5,C[1]); pg.addColorStop(1,C[2]); x.fillStyle=pg; }
+    x.beginPath(); if(x.roundRect) x.roundRect(-w*k/2,-h*k/2,w*k,h*k,6*k); else x.rect(-w*k/2,-h*k/2,w*k,h*k); x.fill(); x.restore(); };
+  panel(132,58,26,150,.9); panel(160,92,12,150,.7); panel(74,108,18,170,.5); panel(46,140,30,120,.85); panel(108,160,10,120,.6,true);
+  var tg=x.createLinearGradient(P(-40),P(-40),P(240),P(100)); tg.addColorStop(0,'rgba(255,255,255,.28)'); tg.addColorStop(.35,'rgba(255,255,255,0)');
+  x.fillStyle=tg; x.fillRect(P(-40),P(-40),280*k,140*k);
   x.restore();
-  x.strokeStyle='#FFFFFF'; x.lineCap='round'; x.lineJoin='round';
-  x.lineWidth=5*k; x.globalAlpha=.92; x.beginPath(); x.moveTo(P(70),P(26)); x.lineTo(0,P(40)); x.lineTo(P(130),P(26)); x.stroke();
-  x.lineWidth=3*k; x.globalAlpha=.55; x.beginPath(); x.moveTo(P(78),P(36)); x.lineTo(0,P(46)); x.lineTo(P(122),P(36)); x.stroke();
-  x.globalAlpha=1;
+  x.strokeStyle=C[0]; x.lineWidth=1.6*k; x.beginPath(); x.arc(0,0,83*k,0,Math.PI*2); x.stroke();
   var n=b.disp||(b.v!=null?String(b.v):'');
   if(n){
-    var fs=(n.length>=4?66:n.length===3?78:92)*k, ny=P(n.length>=3?132:138);
-    x.save(); x.transform(1,0,-0.14,1,0,0);
-    x.font='italic 700 '+fs+'px '+KB_FONT; x.textAlign='center'; x.textBaseline='alphabetic';
-    x.lineWidth=7*k; x.strokeStyle='#111'; x.lineJoin='round'; x.strokeText(n,P(104)+ny*0.14,ny);
-    x.fillStyle=C[3]; x.fillText(n,P(104)+ny*0.14,ny); x.restore();
+    /* the skew turns about the centre here (the SVG's turns about its corner) */
+    var m=kbNumSize(n), fs=m[0]*k, ny=P(m[1]), nx=ny*0.2126-3*k;
+    x.save(); x.transform(1,0,-0.2126,1,0,0);
+    x.font='italic 900 '+fs+'px '+KB_FONT; x.textAlign='center'; x.textBaseline='alphabetic';
+    if('letterSpacing' in x) x.letterSpacing=(-4*k)+'px';
+    var ng=x.createLinearGradient(0,ny-fs*.8,0,ny); ng.addColorStop(0,'#FFFFFF'); ng.addColorStop(.55,'#FFFFFF'); ng.addColorStop(1,C[4]);
+    x.lineJoin='round'; x.shadowColor=C[1]; x.shadowBlur=14*k;
+    x.lineWidth=9*k; x.strokeStyle=C[3]; x.strokeText(n,nx,ny);
+    x.shadowBlur=0; x.fillStyle=C[2]; x.fillText(n,nx,ny);
+    x.lineWidth=3.2*k; x.strokeStyle=ng; x.strokeText(n,nx,ny);
+    x.fillStyle=ng; x.fillText(n,nx,ny);
+    if('letterSpacing' in x) x.letterSpacing='0px';
+    x.restore();
   }
-  var wide=b.lab.length>9;
-  x.globalAlpha=.88; x.fillStyle='#111'; x.beginPath();
-  if(x.roundRect) x.roundRect(P(wide?40:52),P(146),(wide?120:96)*k,22*k,4*k); else x.rect(P(wide?40:52),P(146),(wide?120:96)*k,22*k);
-  x.fill(); x.globalAlpha=1;
-  x.fillStyle='#FFFFFF'; x.font='600 '+(14*k)+'px '+KB_FONT; x.textAlign='center';
-  if('letterSpacing' in x) x.letterSpacing=(2.5*k)+'px';
-  x.fillText(b.lab,0,P(162));
+  x.fillStyle='#FFFFFF'; x.font='800 '+((b.lab.length>9?12:14)*k)+'px '+KB_FONT; x.textAlign='center';
+  if('letterSpacing' in x) x.letterSpacing=((b.lab.length>9?3:5)*k)+'px';
+  x.fillText(b.lab,0,P(b.v!=null?158:150));
   if('letterSpacing' in x) x.letterSpacing='0px';
-  x.strokeStyle='rgba(255,255,255,.35)'; x.lineWidth=1.5*k; x.setLineDash([3*k,9*k]); x.beginPath(); x.arc(0,0,92*k,0,Math.PI*2); x.stroke(); x.setLineDash([]);
+  var fl=x.createRadialGradient(P(24),P(64),0,P(24),P(64),16*k); fl.addColorStop(0,'rgba(255,255,255,.95)'); fl.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle=fl; x.beginPath(); x.arc(P(24),P(64),16*k,0,Math.PI*2); x.fill();
   x.restore();
 }
 /* the IG Story card: black, a red glow, the medal, its name, the member */
