@@ -25,9 +25,14 @@
 })();
 </script>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<!-- (16 Oct) translucent: Home's red top runs up behind the clock; every
-     other screen keeps a black strip there (body::before), as it had -->
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- (21 Oct) back to default. black-translucent (16 Oct, so Home's red ran up
+     behind the clock) is read by iOS when the app is added to the Home Screen,
+     and an install made with it got a view a status bar shorter than the
+     screen: a bare strip under the tab bar (Seth's recordings after he re-added
+     the app for the new icon; his older install, made with default, never had
+     it). With default the view starts under the status bar and runs to the
+     bottom. body::before (design.css) is then 0 tall and does nothing. -->
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <!-- the name under the icon on a home screen: written the way it is said -->
 <meta name="apple-mobile-web-app-title" content="Hitfat+">
 <link rel="preconnect" href="https://fonts.googleapis.com">
