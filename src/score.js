@@ -204,7 +204,10 @@ function scBubLines(){
   var st=scState(), s=scScore();
   if(st.k) return SC_BUB[st.k==='rust'?'rust':'dust'];
   if(_scSay && _scSay!=='poke' && Date.now()-_scSayAt<60000) return [scLine()];
-  return SC_BUB[s>=100?'full':s>=SC_PADU?'red':s>0?'low':'zero'];
+  var L=SC_BUB[s>=100?'full':s>=SC_PADU?'red':s>0?'low':'zero'];
+  /* (21 Oct) a class member's reward goal, in Bara's words, among the rest */
+  var gl=(typeof kelasGoalLine==='function')?kelasGoalLine():'';
+  return gl?L.concat([gl]):L;
 }
 function scBubText(){ var l=scBubLines(); return l[_scBubI%l.length]; }
 /* (16 Oct, after Simple) the bubble only speaks when there is a reason — a
@@ -306,6 +309,7 @@ function scRender(){
      allows them, else Bara asks once, after the moments above */
   if(typeof pushAuto==='function' && !scRender._pa){ scRender._pa=true; pushAuto(); }
   if(typeof pushAsk==='function' && pushAsk()) return;
+  if(typeof kelasRewardMoment==='function' && kelasRewardMoment()) return;
   scCheckStreak();
 }
 function scTurnRed(){

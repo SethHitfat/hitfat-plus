@@ -120,6 +120,7 @@ async function kelasLoad(){
     if(was || kelasLinked()) await loadEntitlement();
   }catch(e){ Kelas.state='error'; }
   kelasRepaint();
+  setTimeout(function(){ if(!$('splash') || $('splash').style.display==='none') kelasRewardMoment(); },1500);
 }
 /* back to the app after a while (a check-in at the kiosk, the phone in a
    pocket): read the class again, at most every five minutes, so Bara on
@@ -388,6 +389,73 @@ function kelasLoyHTML(){
    picture of its own keeps the plain row */
 var KL_RW_IMG={drink:1, renew20:1, inbody:1, tee:1, tee_sub:1, knee:1};   /* tee_sub: a mock-up of the Signature Tee's sublimation print on the Core Tee photo, until the real one */
 function kelasRwImg(r,cls){ return r && KL_RW_IMG[r.id] ? '<img class="'+(cls||'kl-rwimg')+'" src="/img/rewards/'+r.id+'.jpg" alt="" loading="lazy">' : ''; }
+/* ═══ the next reward, my goal, the ready moment (21 Oct 2026) ═══
+   Seth: make Points more inviting. The reward nearest (or the one the
+   member picked as their goal) sits at the top in classes, not points;
+   Bara speaks of the goal on the class Today and in Home's bubble; the day
+   a reward can be taken it gets a full-screen moment (once a reward, again
+   only after the balance has dropped below it), and an 8 pm push (OS 104). */
+var KL_CLASS_PTS=100, KL_WEEK_PTS=350;    /* a class; 3 classes a week with the bonus */
+function kelasGoalId(){ const k=HF.data&&HF.data.kelas; return (k&&k.goal)||''; }
+function kelasGoalR(P){
+  P=P||kelasPts(); if(!P) return null;
+  const R=P.rewards||[], b=P.balance||0, g=kelasGoalId();
+  return R.filter(r=>r.id===g)[0] || R.filter(r=>r.points>b).sort((a,c)=>a.points-c.points)[0] || R.slice().sort((a,c)=>c.points-a.points)[0] || null;
+}
+function kelasClassesTo(r,P){ return Math.max(0,Math.ceil((r.points-((P&&P.balance)||0))/KL_CLASS_PTS)); }
+function kelasSetGoal(id){
+  const k=HF.data.kelas||(HF.data.kelas={}); k.goal=(k.goal===id?'':id); HF.save();
+  toast(k.goal?'Goal set 🎯 Bara will cheer you on':'Goal cleared'); renderKelas();
+}
+function kelasGoalHTML(P){
+  const r=kelasGoalR(P); if(!r) return '';
+  const b=P.balance||0, ok=b>=r.points, pct=Math.min(100,Math.round(b/r.points*100)), mine=kelasGoalId()===r.id;
+  const n=kelasClassesTo(r,P), wk=Math.max(1,Math.ceil((r.points-b)/KL_WEEK_PTS)), C=2*Math.PI*44;
+  return '<div class="kl-goal'+(ok?' ok':'')+'">'+
+    '<div class="kl-goal-ring"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" class="t"/>'+
+      '<circle cx="50" cy="50" r="44" class="v" stroke-dasharray="'+(C*pct/100).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 50 50)"/></svg>'+
+      (KL_RW_IMG[r.id]?'<img src="/img/rewards/'+r.id+'.jpg" alt="">':'<span>'+glyph('star')+'</span>')+'</div>'+
+    '<div class="kl-goal-t"><small>'+(mine?'🎯 Your goal':ok?'Ready for you':'Next reward')+' · '+pct+'%</small><b>'+hesc(r.name)+'</b>'+
+      (ok?'<span>Ready. Show your QR at the counter</span>'
+         :'<span><em>'+n+' more '+(n===1?'class':'classes')+'</em> · about '+wk+' '+(wk===1?'week':'weeks')+' at 3 a week</span>')+
+      '<div class="kl-goal-b">'+(ok?'<button class="kl-goal-qr" onclick="kelasQRFull()">Show my QR</button>':'')+
+      '<button class="kl-goal-set'+(mine?' on':'')+'" onclick="kelasSetGoal(\''+r.id+'\')">'+(mine?'Goal ✓':'Make it my goal')+'</button></div></div></div>';
+}
+/* Bara on the goal, in his Malay: the class Today and Home's bubble */
+function kelasGoalLine(){
+  try{
+    const P=kelasPts(), g=kelasGoalId(); if(!P || !g || !kelasActive()) return '';
+    const r=(P.rewards||[]).filter(x=>x.id===g)[0]; if(!r) return '';
+    if((P.balance||0)>=r.points) return r.name+' dah sedia untuk awak! Tunjuk QR di kaunter 🎁';
+    const n=kelasClassesTo(r,P);
+    return 'Lagi '+n+' kelas, '+r.name+' jadi milik awak! Bara teman 💪';
+  }catch(e){ return ''; }
+}
+/* the moment a reward can be taken: once a reward; a reward the balance has
+   fallen below (redeemed, say) may have its moment again later */
+function kelasRewardMoment(){
+  try{
+    const P=kelasPts(); if(!P || !kelasActive() || !$('scc') || $('scc').style.display==='flex') return false;
+    const k=HF.data.kelas||(HF.data.kelas={}), seen=k.rwSeen||(k.rwSeen={}), b=P.balance||0;
+    (P.rewards||[]).forEach(x=>{ if(x.points>b && seen[x.id]) delete seen[x.id]; });
+    const r=(P.rewards||[]).filter(x=>x.points<=b && !seen[x.id]).sort((a,c)=>c.points-a.points)[0];
+    if(!r){ return false; }
+    (P.rewards||[]).forEach(x=>{ if(x.points<=b) seen[x.id]=iso(0); }); HF.save();
+    const cols=['#E30613','#FFC20E','#FFFFFF','#FF8A3D']; let conf='';
+    for(let i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%4]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
+    $('scc').className='scc scc-meet';
+    $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in">'+
+      (KL_RW_IMG[r.id]?'<img class="kl-rwm-img" src="/img/rewards/'+r.id+'.jpg" alt="">':'')+
+      '<div class="scc-t">Your reward is ready! 🎁</div>'+
+      '<div class="scc-s"><b>'+hesc(r.name)+'</b></div>'+
+      '<div class="scc-s scc-bellsays">Yeay! Bara tumpang gembira 🎉 Tunjuk QR awak di kaunter untuk tebus.</div>'+
+      '<button class="bigbtn scc-share" onclick="scCelebrateClose();kelasQRFull()">Show my QR</button>'+
+      '<button class="scc-x" onclick="scCelebrateClose()">Later</button></div>';
+    $('scc').style.display='flex';
+    if(typeof hfSound==='function') try{ hfSound('cheer'); }catch(e){}
+    return true;
+  }catch(e){ return false; }
+}
 function kelasGiftHTML(){
   const P=kelasPts(); if(!P || !kelasActive()) return '';
   const r=(P.rewards||[]).filter(x=>x.points<=(P.balance||0)).sort((a,b)=>b.points-a.points);
@@ -738,6 +806,7 @@ function kelasPointsHTML(){
   const P=kelasPts(); if(!P) return '';
   const life=P.lifetime||0, seg=[['Classes',P['class']||0,'c'],['Weekly bonus',P.bonus||0,'b'],['Missions',P.missions||0,'m']];
   let h=fsec('HITFAT Points','Earned at HQ, spent at the counter.');
+  h+=kelasGoalHTML(P);
   h+='<div class="kl-pts"><div class="kl-pts-top"><div><b>'+kelasN(P.balance)+'</b><small>Current balance</small></div>'+
      '<span class="kl-pts-mark">'+glyph('star')+'</span></div>'+
      '<div class="kl-pts-life"><b>'+kelasN(life)+'</b> lifetime earned</div>'+
@@ -753,13 +822,13 @@ function kelasPointsHTML(){
      '<div class="kl-er"><span class="kl-eic">'+glyph('chart')+'</span><div><b>Weekly bonus</b><small>3+ classes in a week: +25, then +50, +75, up to +100 a week in a row</small></div><em>+25↑</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('repeat')+'</span><div><b>Second class, same day</b><small>3 hours or more after the first</small></div><em>+50</em></div>'+
      (kelasPt()?'<div class="kl-er"><span class="kl-eic">'+glyph('workout')+'</span><div><b>PT session</b><small>Each session with your coach, once it is logged</small></div><em>+150</em></div>':'')+
-     '<div class="kl-er"><span class="kl-eic">'+glyph('people')+'</span><div><b>Bring a friend</b><small>When they join, tell the counter you brought them</small></div><em>+2,500</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('trophy')+'</span><div><b>Connect HITFAT+</b><small>'+(linked?'Done':'Once')+'</small></div><em>'+(linked?glyph('check'):'+300')+'</em></div></div>';
 
   /* rewards */
   h+='<div class="kl-rwh">Rewards</div><div class="kl-rws">'+(P.rewards||[]).map(r=>{
     const ok=(P.balance||0)>=r.points, pct=Math.min(100,Math.round((P.balance||0)/r.points*100));
-    return '<div class="kl-rw'+(ok?' ok':'')+'">'+kelasRwImg(r)+'<div class="kl-rwm"><b>'+hesc(r.name)+'</b><small>'+hesc(r.note||'')+'</small>'+
+    const mine=kelasGoalId()===r.id;
+    return '<div class="kl-rw'+(ok?' ok':'')+(mine?' goal':'')+'" role="button" onclick="kelasSetGoal(\''+r.id+'\')">'+kelasRwImg(r)+'<div class="kl-rwm">'+(mine?'<span class="kl-rwgoal">🎯 Your goal</span>':'')+'<b>'+hesc(r.name)+'</b><small>'+hesc(r.note||'')+'</small>'+
       (ok?'<span class="kl-rwok">Ready. Show your QR at the counter</span>'
          :'<span class="kl-tb"><i style="width:'+pct+'%"></i></span><small>'+kelasN(r.points-(P.balance||0))+' to go</small>')+
       '</div><em>'+kelasN(r.points)+'</em></div>';
@@ -1137,6 +1206,7 @@ function kelasBaraLine(){
   if(days.has(today)) return ['cheer','Bara nampak awak dah datang kelas hari ni! Dikira sebagai workout dalam Skor HITFAT, +100 mata 💪'];
   if(n>=t) return ['gold','Sasaran '+t+' kelas minggu ni dah capai! Bara bangga sangat 🔥'];
   if(nx && nx.inDays===0) return ['aktif','Ada kelas hari ni! Bara tunggu awak kat HQ 💪 '+n+' daripada '+t+' kelas minggu ni.'];
+  const gl=kelasGoalLine(); if(gl) return ['aktif',gl];
   return ['aktif','Datang kelas = workout hari tu siap, +100 mata. '+n+' daripada '+t+' kelas minggu ni.'];
 }
 /* The same Bara as Home (17 Oct): his colour follows today's HITFAT Score,

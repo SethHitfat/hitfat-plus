@@ -5521,3 +5521,27 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .dr-sug-t b{display:block;font-size:16px;color:var(--txt);} .dr-sug-t small{display:block;font-size:12.5px;color:var(--dim);margin-top:2px;line-height:1.35;}
 .m-drink{border:0;background:none;padding:0;font:inherit;font-weight:800;color:#E30613;cursor:pointer;text-decoration:underline;}
 .sc-sh-dr{margin-top:14px;width:100%;padding:12px;border:1.5px solid var(--sep);border-radius:14px;background:none;font:inherit;font-weight:800;color:var(--txt);cursor:pointer;}
+
+/* ── Points: the next reward / my goal, and the reward moment (21 Oct 2026) ── */
+.kl-goal{display:flex;align-items:center;gap:14px;margin:0 0 14px;padding:16px;border-radius:20px;background:var(--surface);box-shadow:var(--lift-1,0 2px 10px rgba(0,0,0,.06));}
+.kl-goal.ok{background:linear-gradient(135deg,#FFF6D8,#FFE7A8);}
+.kl-goal-ring{position:relative;flex:none;width:104px;height:104px;}
+.kl-goal-ring svg{position:absolute;inset:0;width:100%;height:100%;}
+.kl-goal-ring .t{fill:none;stroke:var(--sep,#E5E5EA);stroke-width:7;}
+.kl-goal-ring .v{fill:none;stroke:#E30613;stroke-width:7;stroke-linecap:round;transition:stroke-dasharray .8s ease;}
+.kl-goal.ok .kl-goal-ring .v{stroke:#E8A400;}
+.kl-goal-ring img,.kl-goal-ring>span{position:absolute;inset:12px;width:80px;height:80px;border-radius:50%;object-fit:cover;background:#FFFFFF;display:grid;place-items:center;}
+.kl-goal-t{flex:1;min-width:0;}
+.kl-goal-t small{display:block;font-size:12px;font-weight:700;color:var(--dim);letter-spacing:.2px;}
+.kl-goal-t b{display:block;font-size:17px;font-weight:900;color:var(--txt);line-height:1.2;margin-top:2px;}
+.kl-goal-t>span{display:block;font-size:13px;color:var(--dim);margin-top:4px;line-height:1.35;}
+.kl-goal-t em{font-style:normal;font-weight:900;color:#E30613;}
+.kl-goal-b{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.kl-goal-b button{border:0;border-radius:99px;padding:8px 14px;font-size:13px;font-weight:800;cursor:pointer;}
+.kl-goal-qr{background:#E30613;color:#FFFFFF;}
+.kl-goal-set{background:var(--surface2,#F2F2F7);color:var(--txt);}
+.kl-goal-set.on{background:#111113;color:#FFFFFF;}
+.kl-rw{cursor:pointer;}
+.kl-rw.goal{background:rgba(227,6,19,.05);}
+.kl-rwgoal{display:inline-block;font-size:11px;font-weight:800;color:#E30613;margin-bottom:2px;}
+.kl-rwm-img{display:block;width:170px;height:170px;margin:0 auto 14px;border-radius:28px;object-fit:cover;background:#FFFFFF;box-shadow:0 10px 30px rgba(0,0,0,.15);}

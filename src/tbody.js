@@ -4379,6 +4379,18 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   var ph=kelasPointsHTML();
   ok("points: the balance, lifetime and what it came from", ph.indexOf('2,750')>0 && ph.indexOf('lifetime earned')>0 && ph.indexOf('Weekly bonus')>0);
   ok("...a reward ready to redeem, and one still to go", ph.indexOf('Show your QR at the counter')>0 && ph.indexOf('to go')>0);
+  (function(){
+    var P={balance:1800,rewards:[{id:'drink',name:'Whey protein recovery',points:2500},{id:'renew20',name:'RM20 off',points:5000},{id:'knee',name:'Recovery knee sleeve',points:15000}]};
+    var keepG=(HF.data.kelas||{}).goal; HF.data.kelas=HF.data.kelas||{}; HF.data.kelas.goal='';
+    var g=kelasGoalHTML(P);
+    ok("Points: the next reward at the top, in classes not points", g.indexOf('Whey protein recovery')>0 && g.indexOf('7 more classes')>0 && g.indexOf('Make it my goal')>0);
+    HF.data.kelas.goal='knee';
+    ok("...a goal picked by the member leads, and Bara speaks of it", kelasGoalHTML(P).indexOf('Your goal')>0 && kelasGoalHTML(P).indexOf('Recovery knee sleeve')>0 &&
+      String(kelasGoalLine).indexOf("'Lagi '+n+' kelas, '")>0 && String(scBubLines).indexOf('kelasGoalLine')>0 && String(kelasBaraLine).indexOf('kelasGoalLine()')>0);
+    HF.data.kelas.goal=keepG||'';
+    ok("...the ready moment, once a reward, from Home and after the class loads", String(kelasRewardMoment).indexOf('rwSeen')>0 && String(scRender).indexOf('kelasRewardMoment()')>0 && String(kelasLoad).indexOf('kelasRewardMoment()')>0);
+    ok("...Bring a friend is listed once (the card with the invite)", kelasPointsHTML().split('Bring a friend').length===2);
+  })();
   ok("...12 weeks of bars", (kelasPtsChart(Kelas.data.points.weeks).match(/<i /g)||[]).length===12);
   var keepP=Kelas.data.points; Kelas.data.points=null;
   ok("...nothing when OS has not sent points", kelasPointsHTML()===''); Kelas.data.points=keepP;
