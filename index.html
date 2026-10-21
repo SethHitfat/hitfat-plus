@@ -25274,10 +25274,10 @@ function kelasDemo(){
     points:{balance:2750, lifetime:5250, 'class':4600, bonus:350, missions:300, redeemed:2500, since:'2026-10-17',
       weeks:(function(){ const w=[], m=new Date(now.getTime()); m.setUTCDate(m.getUTCDate()-(kelasDow(now)-1));
         [300,425,400,550,0,325,450].forEach((p,i)=>{ const d=new Date(m.getTime()); d.setUTCDate(d.getUTCDate()-7*(6-i)); w.push({w:kelasDayKey(d),p:p}); }); return w; })(),
-      rewards:[{id:'drink',name:'A drink at the counter',points:2500,note:'Any drink on the counter menu'},
+      rewards:[{id:'drink',name:'Whey protein recovery',points:2500,note:'One recovery shake at the counter'},
         {id:'renew20',name:'RM20 off your next renewal',points:5000,note:'Once a renewal, used at the counter when you renew'},
         {id:'inbody',name:'InBody body analysis',points:6000,note:'Book a time with the counter'}],
-      history:[{t:'redeem',name:'A drink at the counter',p:-2500,at:new Date(Date.now()-2*864e5).toISOString()},
+      history:[{t:'redeem',name:'Whey protein recovery',p:-2500,at:new Date(Date.now()-2*864e5).toISOString()},
         {t:'link',name:'Connected HITFAT+',p:300,at:new Date(Date.now()-20*864e5).toISOString()}]},
     journey:{active:false, eligible:false, suggest:'fat60', done:0},
     wods:[{date:iso(now), cat:'Membership', title:'HITFAT 21-15-9', body:'21-15-9 reps, for time:\nKettlebell swings\nBurpees\nAir squats\n\nCap 15 min.', type:'time'}],
