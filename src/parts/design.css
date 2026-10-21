@@ -5586,3 +5586,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kb-pop{margin-bottom:14px;perspective:800px;}
 .kb-pop .kb-svg{margin:0 auto;animation:kbSpin 1.6s cubic-bezier(.15,.8,.25,1) both;filter:drop-shadow(0 18px 30px rgba(0,0,0,.35));}
 @media (prefers-reduced-motion:reduce){.kb-sheen{animation:none;display:none}.kb-spin .kb-svg,.kb-pop .kb-svg{animation:none}}
+
+/* badges: the share button on the sheet; the jersey number's font is Oswald */
+.kb-share{margin-top:18px;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:99px;padding:12px 20px;background:#E30613;color:#FFFFFF;font-size:15px;font-weight:800;cursor:pointer;}
+.kb-share .gly{width:18px;height:18px;}

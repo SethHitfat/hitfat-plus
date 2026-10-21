@@ -4398,6 +4398,9 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
     var w=kbHTML();
     ok("...the wall: earned and available, each badge an SVG", w.indexOf('Earned · ')>0 && w.indexOf('Available · ')>0 && w.indexOf('50 Class Club')>0 && w.indexOf('<svg class="kb-svg')>=0);
     ok("...a badge once earned is kept, and the proudest new one leads the moment", typeof kbCheck==='function' && String(kbCheck).indexOf("rank=['cls'")>0 && String(kbCheck).indexOf('E[b.id]=today')>0);
+    ok("...First Class (F45's 1st Workout) and the Points Club (lifetime points), and a share to IG Story", KB_LIST.some(function(x){ return x.id==='cls1'; }) &&
+      KB_LIST.filter(function(x){ return x.cat==='pts'; }).length===5 && kbHave(KB_LIST.filter(function(x){ return x.id==='pts5000'; })[0],{pts:5200}) &&
+      String(kelasDraw).indexOf("S.kind==='badge'")>0 && typeof kbDrawShare==='function' && String(kbOpen).indexOf('kbShare(')>0);
     ok("...on the class Progress tab, and checked after the class loads and from Home", String(kelasProgressTab).indexOf('kbHTML()')>0 && String(kelasLoad).indexOf('kbCheck()')>0 && String(scRender).indexOf('kbCheck()')>0);
     Kelas.data=keepD; HF.data.kelas.badges=keepB||{}; Kelas.kbTab=keepTab;
   })();

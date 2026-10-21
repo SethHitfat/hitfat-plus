@@ -769,6 +769,7 @@ function kelasDraw(){
   if(S.kind==='ib') return kelasDrawIB(x,W,H,cx,F,S);
   if(S.kind==='month') return kelasDrawMonth(x,W,H,cx,F,S);
   if(S.kind==='lx') return kelasDrawLx(x,W,H,cx,F,S);
+  if(S.kind==='badge' && typeof kbDrawShare==='function') return kbDrawShare(x,W,H,cx,F,S);
   // big faint mark behind
   x.fillStyle='rgba(255,255,255,.10)'; x.font=F(900,S.kind==='pr'?560:420);
   x.fillText(S.kind==='pr'?'PR':'#'+(S.n||0),cx,H-260);
