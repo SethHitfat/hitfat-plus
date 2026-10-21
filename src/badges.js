@@ -93,8 +93,12 @@ function kbProg(b,S){
 }
 function kbEarned(){ var K=HF.data.kelas||(HF.data.kelas={}); return K.badges||(K.badges={}); }
 
-/* ── the badge itself (v6, 21 Oct 2026: after the badge Seth made with
-   ChatGPT, "100 CLASSES", which he liked) ──
+/* ── the badge itself (v7, 21 Oct 2026: Seth liked ChatGPT's "100 CLASSES"
+   better than v6 drawn in code, so the medal is now a picture, one blank
+   one per category made with GPT Image in that style (img/badges/<cat>.jpg,
+   sources in _projek/lencana), with the number and its word laid on it in
+   code so every number is exact; graphite when locked. v6 below is the
+   fallback, when a picture has not loaded) ──
    A glass medal: a thick glossy rim in the category's colour with a black
    band across its upper right, a thin bright ring, a dark face with
    diagonal light panels, a flare on the left, the number huge in heavy
@@ -113,7 +117,19 @@ var KB_COL={
   lock: ['#77777D','#3A3A3F','#18181B','#121214','#8A8A90']
 };
 var KB_FONT="'Inter',-apple-system,'Helvetica Neue',Arial,sans-serif";
-var _kbN=0;
+var _kbN=0, KB_IMG={};
+function kbImgSrc(cat){ return '/img/badges/'+cat+'.jpg?v=1'; }
+/* the picture for a canvas: loaded once, cb when ready (or failed) */
+function kbImg(cat, cb){
+  var o=KB_IMG[cat];
+  if(o && o.done){ if(cb) cb(o.ok?o.im:null); return o.ok?o.im:null; }
+  if(!o){ o=KB_IMG[cat]={im:new Image(), cbs:[]};
+    o.im.onload=function(){ o.done=o.ok=true; o.cbs.forEach(function(f){ f(o.im); }); o.cbs=[]; };
+    o.im.onerror=function(){ o.done=true; o.cbs.forEach(function(f){ f(null); }); o.cbs=[]; };
+    o.im.src=kbImgSrc(cat); }
+  if(cb) o.cbs.push(cb);
+  return null;
+}
 /* the number's size and baseline: as big as the face allows */
 function kbNumSize(n){
   var w=n.length+(/[KMW]/.test(n)?0.6:0);
@@ -136,13 +152,16 @@ function kbSVG(b, on, size){
       '<linearGradient id="'+id+'r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+C[0]+'"/><stop offset=".4" stop-color="'+C[1]+'"/><stop offset=".8" stop-color="'+C[2]+'"/><stop offset="1" stop-color="'+C[1]+'"/></linearGradient>'+
       '<radialGradient id="'+id+'f" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="'+C[2]+'"/><stop offset=".6" stop-color="'+C[3]+'"/><stop offset="1" stop-color="#000000"/></radialGradient>'+
       '<linearGradient id="'+id+'p" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+C[0]+'" stop-opacity=".95"/><stop offset=".5" stop-color="'+C[1]+'" stop-opacity=".9"/><stop offset="1" stop-color="'+C[2]+'" stop-opacity=".6"/></linearGradient>'+
-      '<linearGradient id="'+id+'n" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#FFFFFF"/><stop offset="1" stop-color="'+C[4]+'"/></linearGradient>'+
+      '<linearGradient id="'+id+'n" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+(on?'#FFFFFF':'#9A9AA0')+'"/><stop offset=".55" stop-color="'+(on?'#FFFFFF':'#8A8A90')+'"/><stop offset="1" stop-color="'+C[4]+'"/></linearGradient>'+
       '<linearGradient id="'+id+'g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".55"/><stop offset=".35" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
       '<radialGradient id="'+id+'x" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".95"/><stop offset=".3" stop-color="'+C[0]+'" stop-opacity=".55"/><stop offset="1" stop-color="'+C[0]+'" stop-opacity="0"/></radialGradient>'+
       '<linearGradient id="'+id+'s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/><stop offset=".5" stop-color="#FFFFFF" stop-opacity=".4"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
       '<filter id="'+id+'w" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="2" stdDeviation="1.2" flood-color="#000" flood-opacity=".55"/><feDropShadow dx="0" dy="0" stdDeviation="'+(on?4:0)+'" flood-color="'+C[1]+'" flood-opacity="'+(on?.9:0)+'"/></filter>'+
       '<clipPath id="'+id+'c"><circle cx="100" cy="100" r="82"/></clipPath>'+
+      '<clipPath id="'+id+'o"><circle cx="99" cy="99" r="96.5"/></clipPath>'+
+      '<filter id="'+id+'k"><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncR type="linear" slope=".36"/><feFuncG type="linear" slope=".36"/><feFuncB type="linear" slope=".38"/></feComponentTransfer></filter>'+
     '</defs>'+
+    /* the picture, over the drawn medal (the fallback) */
     /* the rim, its black band, its gloss */
     '<circle cx="100" cy="100" r="97" fill="url(#'+id+'r)"/>'+
     '<path d="'+arc(84,97,-62,28)+'" fill="'+band+'"/>'+
@@ -158,9 +177,11 @@ function kbSVG(b, on, size){
       (on?'<rect class="kb-sheen" x="-120" y="-10" width="60" height="230" fill="url(#'+id+'s)" transform="skewX(-18)"/>':'')+
     '</g>'+
     '<circle cx="100" cy="100" r="83" fill="none" stroke="'+C[0]+'" stroke-width="1.6" opacity=".9"/>'+
+    '<image href="'+kbImgSrc(b.cat)+'" x="0" y="0" width="200" height="200" clip-path="url(#'+id+'o)"'+(on?'':' filter="url(#'+id+'k)"')+'/>'+
+    (on?'':'<circle cx="99" cy="99" r="96.5" fill="#000000" opacity=".5"/>')+
+    (on?'<g clip-path="url(#'+id+'o)"><rect class="kb-sheen" x="-120" y="-10" width="60" height="230" fill="url(#'+id+'s)" transform="skewX(-18)"/></g>':'')+
     mid+
     '<text x="100" y="'+(b.v!=null?158:150)+'" text-anchor="middle" font-size="'+(b.lab.length>9?12:14)+'" font-weight="800" letter-spacing="'+(b.lab.length>9?3:5)+'" fill="#FFFFFF" fill-opacity="'+(on?1:.6)+'" font-family="'+KB_FONT+'">'+hesc(b.lab)+'</text>'+
-    (on?'<circle cx="24" cy="64" r="16" fill="url(#'+id+'x)"/>':'')+
     '</svg>';
 }
 /* the same medal on a canvas (the IG Story card): centre cx,cy, radius R */
@@ -187,6 +208,8 @@ function kbDraw(x, b, cx, cy, R){
   x.fillStyle=tg; x.fillRect(P(-40),P(-40),280*k,140*k);
   x.restore();
   x.strokeStyle=C[0]; x.lineWidth=1.6*k; x.beginPath(); x.arc(0,0,83*k,0,Math.PI*2); x.stroke();
+  var pic=kbImg(b.cat);
+  if(pic){ x.save(); x.beginPath(); x.arc(P(99),P(99),96.5*k,0,Math.PI*2); x.clip(); x.drawImage(pic,P(0),P(0),200*k,200*k); x.restore(); }
   var n=b.disp||(b.v!=null?String(b.v):'');
   if(n){
     /* the skew turns about the centre here (the SVG's turns about its corner) */
@@ -207,8 +230,8 @@ function kbDraw(x, b, cx, cy, R){
   if('letterSpacing' in x) x.letterSpacing=((b.lab.length>9?3:5)*k)+'px';
   x.fillText(b.lab,0,P(b.v!=null?158:150));
   if('letterSpacing' in x) x.letterSpacing='0px';
-  var fl=x.createRadialGradient(P(24),P(64),0,P(24),P(64),16*k); fl.addColorStop(0,'rgba(255,255,255,.95)'); fl.addColorStop(1,'rgba(255,255,255,0)');
-  x.fillStyle=fl; x.beginPath(); x.arc(P(24),P(64),16*k,0,Math.PI*2); x.fill();
+  if(!pic){ var fl=x.createRadialGradient(P(24),P(64),0,P(24),P(64),16*k); fl.addColorStop(0,'rgba(255,255,255,.95)'); fl.addColorStop(1,'rgba(255,255,255,0)');
+    x.fillStyle=fl; x.beginPath(); x.arc(P(24),P(64),16*k,0,Math.PI*2); x.fill(); }
   x.restore();
 }
 /* the IG Story card: black, a red glow, the medal, its name, the member */
@@ -229,7 +252,11 @@ function kbDrawShare(x,W,H,cx,F,S){
   x.fillStyle='rgba(255,255,255,.7)'; x.font=F(700,34); x.fillText('HITFAT HQ'+(when?' · '+when:''),cx,H-245);
   x.fillStyle='rgba(255,255,255,.75)'; x.font=F(700,34); x.fillText('app.hitfat.io',cx,H-110);
 }
-function kbShare(id){ Kelas.share={kind:'badge', id:id}; if(typeof openShare==='function') openShare('kelas'); }
+function kbShare(id){
+  var b=KB_LIST.filter(function(z){ return z.id===id; })[0];
+  var go=function(){ Kelas.share={kind:'badge', id:id}; if(typeof openShare==='function') openShare('kelas'); };
+  if(b) kbImg(b.cat, go); else go();
+}
 
 /* ── the wall, on the class Progress tab ── */
 function kbHTML(){
