@@ -4021,13 +4021,17 @@ print("\n── BELL'S REMINDERS ──");
 (function(){
   ok("a browser without push: the row says so, no toggle", pushState()==='none' && pushRow().indexOf('reminders')>0 && pushRow().indexOf('pushEnable()')<0);
   ok("the VAPID key, url-safe base64 to bytes", pushKeyBytes('AQID').length===3 && pushKeyBytes('AQID')[2]===3 && pushKeyBytes('AQ').length===1 && pushB64(new Uint8Array([1,2,3]).buffer)==='AQID');
-  ok("the subscription is saved through the database's own function", String(pushEnable).indexOf("sb.rpc('plus_push_save'")>0 && String(pushDisable).indexOf("plus_push_remove")>0);
+  ok("the subscription is saved through the database's own function", String(pushSubscribe).indexOf("sb.rpc('plus_push_save'")>0 && String(pushEnable).indexOf('pushSubscribe(false)')>0 && String(pushDisable).indexOf("plus_push_remove")>0);
   ok("permission is asked from a tap, never on load", String(pushEnable).indexOf('Notification.requestPermission')>0 && String(scRender).indexOf('requestPermission')<0);
   ok("an iPhone outside the Home Screen is told how", String(pushInstallHelp).indexOf('Add to Home Screen')>0 && String(pushState).indexOf("'install'")>0);
   ok("Settings carries the row", String(renderMe).indexOf('pushRow()')>0);
   ok("a tapped reminder opens where it points: check-in, Eat, Home", typeof pushGo==='function' && String(pushGo).indexOf('ckOpen()')>0 && String(pushGo).indexOf("switchTab('eat')")>0 &&
     String(pushGoUrl).indexOf('go=')>0 && String(_onSignedIn).indexOf('pushHandleGo()')>0);
   noThrow("...?go=home from a reminder", function(){ pushGo('home'); pushGo('nothing'); });
+  ok("reminders on by default as far as a phone allows: switched on quietly when already allowed, else Bara asks once with one tap to Allow",
+    typeof pushAuto==='function' && String(pushAuto).indexOf("permission==='granted'")>0 && String(pushAuto).indexOf('pushSubscribe(true)')>0 &&
+    String(pushAsk).indexOf('pushAskYes()')>0 && String(pushAskYes).indexOf('pushEnable()')>0 && String(scRender).indexOf('pushAsk()')>0);
+  ok("...never asked where it cannot work or was refused", String(pushAskDue).indexOf("hf_push_no")>0 && String(pushAskDue).indexOf("Notification.permission!=='default'")>0 && String(pushAskDue).indexOf('a.n>=3')>0 && pushAskDue()===false);
   ok("the server's key and functions, not a URL typed twice", pushFn().indexOf('/functions/v1/plus-push')>0);
 })();
 print("\n── SKOR HITFAT · FREEZE, SCREENS, POSES ──");

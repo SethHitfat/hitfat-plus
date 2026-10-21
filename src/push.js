@@ -37,6 +37,12 @@ function pushEnable(){
   if(!sb || !HF.userId){ toast('Sign in first'); return; }
   Notification.requestPermission().then(function(p){
     if(p!=='granted'){ toast('Reminders not turned on'); pushRefresh(); return null; }
+    return pushSubscribe(false);
+  }).catch(function(e){ console.warn('push enable failed',e); toast('Couldn\'t turn reminders on. Try again.'); pushRefresh(); });
+}
+/* the phone's subscription, saved for this member; quiet: no toast, no test
+   (the automatic switch-on when permission is already there) */
+function pushSubscribe(quiet){
     return Promise.all([pushReg(), fetch(pushFn()+'?action=key').then(function(r){ return r.json(); })]).then(function(a){
       var reg=a[0], key=a[1] && a[1].key;
       if(!key) throw new Error('no key');
@@ -48,10 +54,55 @@ function pushEnable(){
     }).then(function(r){
       if(r && r.error) throw r.error;
       try{ localStorage.setItem('hf_push_on','1'); }catch(e){}
-      toast('Bara\'s reminders are on 🔔'); pushRefresh(); pushTest();
+      if(!quiet){ toast('Bara\'s reminders are on 🔔'); pushTest(); }
+      pushRefresh();
     });
-  }).catch(function(e){ console.warn('push enable failed',e); toast('Couldn\'t turn reminders on. Try again.'); pushRefresh(); });
 }
+
+/* ── on by default, as far as a phone allows (21 Oct 2026) ──
+   Seth: "bara remind tu terus on". A web app cannot switch notifications on
+   by itself; the member has to tap Allow once. So: where permission is
+   already there (an app added again to the Home Screen keeps no
+   subscription), Bara's reminders switch on with no question; where it has
+   not been asked, Bara asks once on Home, full screen, one tap to the
+   phone's Allow. "Nanti dulu" asks again in 3 days, 3 times at most; the ✕
+   on the invite card, or a phone that blocked them, is never asked again. */
+function pushAuto(){
+  try{
+    if(!pushSupported() || !pushStandalone() || !sb || !HF.userId) return;
+    if(Notification.permission==='granted' && localStorage.getItem('hf_push_on')!=='1' && !pushAuto._busy){
+      pushAuto._busy=true; pushSubscribe(true).catch(function(){}).then(function(){ pushAuto._busy=false; });
+    }
+  }catch(e){}
+}
+function pushAskDue(){
+  try{
+    if(pushState()!=='off' || !pushStandalone() || Notification.permission!=='default') return false;
+    if(!sb || !HF.userId || !HF.data.onboarded) return false;
+    if(!(HF.data.sc && HF.data.sc.met)) return false;              // Kenali Bara first
+    if(localStorage.getItem('hf_push_no')==='1') return false;
+    var a=JSON.parse(localStorage.getItem('hf_push_ask')||'null');
+    if(a && (a.n>=3 || Date.now()-a.t<3*864e5)) return false;
+    return true;
+  }catch(e){ return false; }
+}
+function pushAsk(){
+  if(!pushAskDue() || !$('scc') || $('scc').style.display==='flex') return false;
+  var a=null; try{ a=JSON.parse(localStorage.getItem('hf_push_ask')||'null'); }catch(e){}
+  try{ localStorage.setItem('hf_push_ask', JSON.stringify({n:((a&&a.n)||0)+1, t:Date.now()})); }catch(e){}
+  var pose=typeof scTone==='function'?scTone('cheer','w_cheer'):'aktif';
+  $('scc').className='scc scc-meet';
+  $('scc').innerHTML='<div class="scc-in">'+(typeof scMomentBell==='function'?scMomentBell(pose):'')+
+    '<div class="scc-t">Boleh Bara ingatkan awak? 🔔</div>'+
+    '<div class="scc-s">Pagi untuk check-in, tengah hari untuk log makan, malam bila streak awak dalam bahaya. Paling banyak 3 sehari, bila ada sebab je.</div>'+
+    '<div class="scc-s" style="font-size:13px;opacity:.7;margin-top:6px">Lepas tekan, telefon akan tanya. Pilih <b>Allow</b>.</div>'+
+    '<button class="bigbtn scc-share" onclick="pushAskYes()">Hidupkan peringatan</button>'+
+    '<button class="scc-x" onclick="scCelebrateClose()">Nanti dulu</button></div>';
+  $('scc').style.display='flex';
+  if(typeof scMomentPlay==='function') scMomentPlay(pose);
+  return true;
+}
+function pushAskYes(){ if(typeof scCelebrateClose==='function') scCelebrateClose(); pushEnable(); }
 function pushDisable(){
   try{ localStorage.removeItem('hf_push_on'); }catch(e){}
   if(!pushSupported()){ pushRefresh(); return; }

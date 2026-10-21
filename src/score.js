@@ -302,6 +302,10 @@ function scRender(){
   if(scCheckFreeze()) return;
   if(scCheckRust()) return;
   if(typeof scCheckWeekly==='function' && scCheckWeekly()) return;
+  /* (21 Oct) Bara's reminders: on by themselves where the phone already
+     allows them, else Bara asks once, after the moments above */
+  if(typeof pushAuto==='function' && !scRender._pa){ scRender._pa=true; pushAuto(); }
+  if(typeof pushAsk==='function' && pushAsk()) return;
   scCheckStreak();
 }
 function scTurnRed(){
