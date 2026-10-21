@@ -5561,9 +5561,9 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kb-i b{font-size:12.5px;font-weight:700;color:#FFFFFF;text-align:center;line-height:1.2;}
 .kb-i small{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);}
 .kb-svg{display:block;max-width:100%;height:auto;filter:drop-shadow(0 8px 12px rgba(0,0,0,.55));}
-.kb-svg.on.t-gold{filter:drop-shadow(0 8px 12px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(255,194,14,.35));}
-.kb-svg.on.t-red{filter:drop-shadow(0 8px 12px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(227,6,19,.45));}
-.kb-svg.on.t-black{filter:drop-shadow(0 8px 12px rgba(0,0,0,.6)) drop-shadow(0 0 12px rgba(255,194,14,.25));}
+.kb-svg.on.c-cls{filter:drop-shadow(0 8px 12px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(227,6,19,.4));}
+.kb-svg.on.c-pr{filter:drop-shadow(0 8px 12px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(255,194,14,.35));}
+.kb-svg.on.c-month{filter:drop-shadow(0 8px 12px rgba(0,0,0,.55)) drop-shadow(0 0 12px rgba(255,106,26,.32));}
 .kb-sheen{animation:kbSheen 4.2s ease-in-out infinite;}
 .kb-i:nth-child(3n+2) .kb-sheen{animation-delay:.7s}.kb-i:nth-child(3n) .kb-sheen{animation-delay:1.4s}
 @keyframes kbSheen{0%{transform:skewX(-18deg) translateX(0)}55%,100%{transform:skewX(-18deg) translateX(380px)}}

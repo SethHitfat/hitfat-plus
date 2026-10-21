@@ -7813,9 +7813,9 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kb-i b{font-size:12.5px;font-weight:700;color:#FFFFFF;text-align:center;line-height:1.2;}
 .kb-i small{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);}
 .kb-svg{display:block;max-width:100%;height:auto;filter:drop-shadow(0 8px 12px rgba(0,0,0,.55));}
-.kb-svg.on.t-gold{filter:drop-shadow(0 8px 12px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(255,194,14,.35));}
-.kb-svg.on.t-red{filter:drop-shadow(0 8px 12px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(227,6,19,.45));}
-.kb-svg.on.t-black{filter:drop-shadow(0 8px 12px rgba(0,0,0,.6)) drop-shadow(0 0 12px rgba(255,194,14,.25));}
+.kb-svg.on.c-cls{filter:drop-shadow(0 8px 12px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(227,6,19,.4));}
+.kb-svg.on.c-pr{filter:drop-shadow(0 8px 12px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(255,194,14,.35));}
+.kb-svg.on.c-month{filter:drop-shadow(0 8px 12px rgba(0,0,0,.55)) drop-shadow(0 0 12px rgba(255,106,26,.32));}
 .kb-sheen{animation:kbSheen 4.2s ease-in-out infinite;}
 .kb-i:nth-child(3n+2) .kb-sheen{animation-delay:.7s}.kb-i:nth-child(3n) .kb-sheen{animation-delay:1.4s}
 @keyframes kbSheen{0%{transform:skewX(-18deg) translateX(0)}55%,100%{transform:skewX(-18deg) translateX(380px)}}
@@ -25553,75 +25553,62 @@ function kbProg(b,S){
 }
 function kbEarned(){ var K=HF.data.kelas||(HF.data.kelas={}); return K.badges||(K.badges={}); }
 
-/* ── the badge itself (v3, 21 Oct 2026: "premium, Apple Fitness style,
-   the HITFAT version") ──
-   A medal, not a sticker: a thick metal rim with its bevel, a face a shade
-   deeper, the number struck into it (a light edge above, a dark one below),
-   a soft gloss on the upper half, nothing else. The shape says the kind:
-   the HF shield for the Class Club, a circle for streaks, a hexagon for
-   Bulan Padu, an octagon for PRs, a rounded square for the squad, a circle
-   with its icon for the specials. The metal says the tier: bronze, silver,
-   gold, HITFAT red, and HITFAT Black with gold figures at the top. Locked
-   ones are dark graphite, the shape only. */
-var KB_METAL={
-  /* rim light, rim mid, rim dark, face top, face bottom, figure, engrave-dark, engrave-light */
-  bronze:['#FFD9B0','#C77E3E','#6B3510','#E2A066','#A4602B','#FFF1E2','rgba(70,30,5,.65)','rgba(255,235,210,.55)'],
-  silver:['#FFFFFF','#C9CED6','#6E7580','#F4F6F9','#B8BEC7','#2E333A','rgba(255,255,255,.9)','rgba(0,0,0,.25)'],
-  gold:  ['#FFF7C2','#F2BE22','#8A5D00','#FFE680','#D9A100','#5A3B00','rgba(255,250,215,.85)','rgba(90,55,0,.35)'],
-  red:   ['#FF9A8F','#E30613','#5E0207','#FF4A3D','#B4040E','#FFFFFF','rgba(80,0,5,.6)','rgba(255,190,185,.45)'],
-  black: ['#8A8A93','#2B2B30','#000000','#34343A','#0B0B0D','#FFC20E','rgba(0,0,0,.85)','rgba(255,230,150,.35)'],
-  lock:  ['#5A5A60','#3A3A3F','#1C1C1F','#3B3B40','#2A2A2E','#55555C','rgba(0,0,0,.6)','rgba(255,255,255,.08)']
+/* ── the badge itself (v4, 21 Oct 2026) ──
+   Seth liked the round one best ("rasa cantik ni"): the category's colour,
+   its name curved over the top and a line curved under, ≡ either side, the
+   number big in the middle. Kept, with the premium of v3 on it: a bevelled
+   metal rim, a gloss, the number struck in (a dark edge below, a light one
+   above), a sheen on earned ones, the black trophy case and the 3D spin.
+   Locked badges are graphite. */
+var KB_COL={
+  /* light, mid, dark */
+  cls:  ['#FF8A80','#E30613','#6E0309'],
+  week: ['#8E8E96','#2B2B30','#050506'],
+  month:['#FFC78A','#FF6A1A','#7A2800'],
+  pr:   ['#FFF0A0','#E8A800','#6E4A00'],
+  frd:  ['#A9CBFF','#2563EB','#0A2570'],
+  spc:  ['#9BF2E3','#14B8A6','#064E47'],
+  lock: ['#6E6E74','#3A3A3F','#18181B']
 };
-var KB_SHAPE={cls:'shield', week:'circle', month:'hex', pr:'oct', frd:'squircle', spc:'circle'};
-/* each badge's tier: low steps bronze, the long road black */
-function kbTier(b){
-  var T={cls:{10:'bronze',25:'bronze',50:'silver',100:'silver',150:'gold',200:'gold',250:'gold',300:'red',400:'red',500:'red',750:'black',1000:'black'},
-         week:{4:'bronze',8:'bronze',12:'silver',26:'gold',52:'black'},
-         month:{1:'bronze',3:'silver',6:'gold',12:'black'},
-         pr:{1:'bronze',5:'silver',10:'gold',25:'black'},
-         frd:{1:'silver',3:'gold',5:'red'}};
-  return (T[b.cat] && T[b.cat][b.v]) || 'red';
-}
-function kbPoly(n,r,rot){ var p=[], i, a; for(i=0;i<n;i++){ a=(rot+i*360/n)*Math.PI/180; p.push((100+r*Math.cos(a)).toFixed(1)+' '+(100+r*Math.sin(a)).toFixed(1)); } return 'M'+p.join(' L')+' Z'; }
-function kbShapeD(sh){
-  if(sh==='circle') return 'M100 6 A94 94 0 1 1 99.9 6 Z';
-  if(sh==='hex') return kbPoly(6,96,30);
-  if(sh==='oct') return kbPoly(8,96,22.5);
-  if(sh==='squircle') return 'M44 8 L156 8 C178 8 192 22 192 44 L192 156 C192 178 178 192 156 192 L44 192 C22 192 8 178 8 156 L8 44 C8 22 22 8 44 8 Z';
-  /* the HF shield, its V notch on top */
-  return 'M100 22 L84 6 L18 6 L18 104 C18 150 54 180 100 196 C146 180 182 150 182 104 L182 6 L116 6 Z';
-}
 var _kbN=0;
 function kbSVG(b, on, size){
-  var id='kb'+(++_kbN), s=size||96, tier=on?kbTier(b):'lock', M=KB_METAL[tier], d=kbShapeD(KB_SHAPE[b.cat]);
-  var num=b.v!=null?String(b.v):'', fs=num.length>=4?50:num.length===3?60:72, y=b.cat==='cls'?112:118;
-  var fig=function(dx,dy,col){ return '<text x="'+(100+dx)+'" y="'+(y+dy)+'" text-anchor="middle" font-size="'+fs+'" font-weight="800" fill="'+col+'" letter-spacing="-2.5" font-family="-apple-system,SF Pro Display,Inter,Helvetica,Arial,sans-serif">'+num+'</text>'; };
-  var face=b.ic && typeof ICON_PATH!=='undefined'
-    ? '<svg x="62" y="'+(y-62)+'" width="76" height="76" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke="'+M[6]+'" transform="translate(0,1.5)">'+ICON_PATH[iconKind(b.ic)]+'</svg>'+
-      '<svg x="62" y="'+(y-62)+'" width="76" height="76" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke="'+M[5]+'">'+ICON_PATH[iconKind(b.ic)]+'</svg>'
-    : fig(0,2,M[6])+fig(0,-1,M[7])+fig(0,0,M[5]);
-  var cap=(b.v!=null?(KB_CATS[b.cat].rib||KB_CATS[b.cat].top):b.lab);
-  var T='translate(100 100) scale(%) translate(-100 -100)';
-  return '<svg class="kb-svg'+(on?' on':' off')+' t-'+tier+'" width="'+s+'" height="'+s+'" viewBox="0 0 200 200" role="img" aria-label="'+hesc(b.t)+'">'+
+  var id='kb'+(++_kbN), s=size||96, C=KB_COL[on?b.cat:'lock'], c=KB_CATS[b.cat];
+  var num=b.v!=null?String(b.v):'', fs=num.length>=4?44:num.length===3?54:64, ny=num.length>=4?118:124;
+  var F='font-family="-apple-system,SF Pro Display,Inter,Helvetica,Arial,sans-serif"';
+  var tc=on?'#FFFFFF':'rgba(255,255,255,.55)';
+  var fig=function(dy,col){ return '<text x="100" y="'+(ny+dy)+'" text-anchor="middle" font-size="'+fs+'" font-weight="900" fill="'+col+'" letter-spacing="-2" '+F+'>'+num+'</text>'; };
+  var icon=function(dy,col){ return '<svg x="62" y="'+(50+dy)+'" width="76" height="76" viewBox="0 0 24 24" fill="none" stroke="'+col+'" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+ICON_PATH[iconKind(b.ic)]+'</svg>'; };
+  var mid=b.ic && typeof ICON_PATH!=='undefined'
+    ? icon(2,'rgba(0,0,0,.35)')+icon(0,tc)
+    : fig(2.5,'rgba(0,0,0,.38)')+fig(-1,'rgba(255,255,255,.28)')+fig(0,tc);
+  return '<svg class="kb-svg'+(on?' on':' off')+' c-'+b.cat+'" width="'+s+'" height="'+s+'" viewBox="0 0 200 200" role="img" aria-label="'+hesc(b.t)+'">'+
     '<defs>'+
-      '<linearGradient id="'+id+'r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+M[0]+'"/><stop offset=".42" stop-color="'+M[1]+'"/><stop offset=".78" stop-color="'+M[2]+'"/><stop offset="1" stop-color="'+M[1]+'"/></linearGradient>'+
-      '<linearGradient id="'+id+'r2" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="'+M[0]+'"/><stop offset=".5" stop-color="'+M[1]+'"/><stop offset="1" stop-color="'+M[2]+'"/></linearGradient>'+
-      '<radialGradient id="'+id+'f" cx="50%" cy="30%" r="75%"><stop offset="0" stop-color="'+M[3]+'"/><stop offset="1" stop-color="'+M[4]+'"/></radialGradient>'+
-      '<linearGradient id="'+id+'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".42"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
-      '<linearGradient id="'+id+'s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/><stop offset=".5" stop-color="#FFFFFF" stop-opacity=".5"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
-      '<clipPath id="'+id+'c"><path d="'+d+'" transform="'+T.replace('%','.8')+'"/></clipPath>'+
+      '<linearGradient id="'+id+'r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+C[0]+'"/><stop offset=".45" stop-color="'+C[1]+'"/><stop offset=".85" stop-color="'+C[2]+'"/><stop offset="1" stop-color="'+C[1]+'"/></linearGradient>'+
+      '<linearGradient id="'+id+'r2" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="'+C[0]+'"/><stop offset=".55" stop-color="'+C[1]+'"/><stop offset="1" stop-color="'+C[2]+'"/></linearGradient>'+
+      '<radialGradient id="'+id+'f" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="'+C[0]+'"/><stop offset=".55" stop-color="'+C[1]+'"/><stop offset="1" stop-color="'+C[2]+'"/></radialGradient>'+
+      '<linearGradient id="'+id+'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".38"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
+      '<linearGradient id="'+id+'s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/><stop offset=".5" stop-color="#FFFFFF" stop-opacity=".45"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'+
+      '<clipPath id="'+id+'c"><circle cx="100" cy="100" r="84"/></clipPath>'+
+      '<path id="'+id+'t" d="M 30 100 A 70 70 0 0 1 170 100"/><path id="'+id+'b" d="M 21 100 A 79 79 0 0 0 179 100"/>'+
     '</defs>'+
-    /* rim: two bevels, the outer catching light top-left, the inner bottom-right */
-    '<path d="'+d+'" fill="url(#'+id+'r)"/>'+
-    '<path d="'+d+'" transform="'+T.replace('%','.9')+'" fill="url(#'+id+'r2)"/>'+
-    '<path d="'+d+'" transform="'+T.replace('%','.84')+'" fill="'+M[2]+'" opacity=".55"/>'+
+    /* the rim: bevel out, bevel in, a groove */
+    '<circle cx="100" cy="100" r="97" fill="url(#'+id+'r)"/>'+
+    '<circle cx="100" cy="100" r="90" fill="url(#'+id+'r2)"/>'+
+    '<circle cx="100" cy="100" r="86" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="1.5"/>'+
     /* the face */
-    '<path d="'+d+'" transform="'+T.replace('%','.8')+'" fill="url(#'+id+'f)"/>'+
-    '<g clip-path="url(#'+id+'c)"><ellipse cx="100" cy="40" rx="120" ry="70" fill="url(#'+id+'g)"/>'+
+    '<circle cx="100" cy="100" r="84" fill="url(#'+id+'f)"/>'+
+    '<circle cx="100" cy="100" r="84" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/>'+
+    '<circle cx="100" cy="100" r="56" fill="rgba(0,0,0,.16)"/>'+
+    '<circle cx="100" cy="100" r="56" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1"/>'+
+    /* the words round it, the bars either side */
+    '<text font-size="15" font-weight="800" fill="'+tc+'" letter-spacing="3" '+F+'><textPath href="#'+id+'t" startOffset="50%" text-anchor="middle">'+c.top+'</textPath></text>'+
+    '<text font-size="13" font-weight="800" fill="'+tc+'" opacity=".88" letter-spacing="3" '+F+'><textPath href="#'+id+'b" startOffset="50%" text-anchor="middle">'+c.bot+'</textPath></text>'+
+    '<text x="34" y="106" text-anchor="middle" font-size="16" fill="'+tc+'" opacity=".75">≡</text><text x="166" y="106" text-anchor="middle" font-size="16" fill="'+tc+'" opacity=".75">≡</text>'+
+    mid+
+    '<text x="100" y="'+(b.v!=null?146:148)+'" text-anchor="middle" font-size="'+(b.v!=null?13:12)+'" font-weight="800" fill="'+tc+'" opacity=".95" letter-spacing="2" '+F+'>'+b.lab+'</text>'+
+    /* gloss, and the sheen on an earned one */
+    '<g clip-path="url(#'+id+'c)"><ellipse cx="100" cy="42" rx="110" ry="62" fill="url(#'+id+'g)"/>'+
       (on?'<rect class="kb-sheen" x="-120" y="-10" width="60" height="230" fill="url(#'+id+'s)" transform="skewX(-18)"/>':'')+'</g>'+
-    face+
-    '<text x="100" y="'+(y+26)+'" text-anchor="middle" font-size="'+(cap.length>11?10.5:12)+'" font-weight="700" fill="'+M[5]+'" opacity=".85" letter-spacing="2.6" font-family="-apple-system,SF Pro Text,Inter,Helvetica,Arial,sans-serif">'+hesc(cap)+'</text>'+
-    (b.cat==='cls'?'<image href="/img/brand/hfplus-mark.png" x="92" y="42" width="16" height="17" opacity="'+(tier==='silver'||tier==='gold'?'.55':'.8')+'" style="'+(tier==='silver'||tier==='gold'?'filter:invert(1)':'')+'"/>':'')+
     '</svg>';
 }
 
