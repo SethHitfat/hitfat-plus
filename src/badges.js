@@ -31,6 +31,13 @@
    (first, Doubles, Pro, under 90, 75 and 60 minutes, a full simulation
    counting for the times).
 
+   Season 1 (22 Oct 2026, Seth: "semua tu ibarat baru … barulah semangat"):
+   every badge counts from 1 November 2026 for everyone, old members too,
+   so all start level. What was earned before is cleared once (kbS1). The
+   years before are honoured by one badge, HITFAT OG, for anyone with a
+   class before the season, which says how many (K.s1base: OS's all-time
+   total, less the season's classes, taken once the season is on).
+
    OS gives every class only for the last 120 days (plus all-time totals and
    weeks), so a badge, once earned, is kept on the account
    (HF.data.kelas.badges, id → the day it was earned) and never taken back.
@@ -56,6 +63,9 @@ var KB_SECT=[['Class Club',['cls']],['HYROX',['hxc','hxp'],1],['HYROX stations',
 /* the HYROX stations, as kelas.js HX_ST: key, name, the distance */
 var KB_HXST=[['ski','SkiErg','1000 m'],['push','Sled Push','50 m'],['pull','Sled Pull','50 m'],['bbj','Burpee Broad Jumps','80 m'],['row','Rowing','1000 m'],
   ['carry','Farmers Carry','200 m'],['lunge','Sandbag Lunges','100 m'],['wb','Wall Balls','100 reps'],['run','1 km run','1 km']];
+var KB_SEASON='2026-11-01';
+function kbToday(){ return new Date(Date.now()+8*3600e3).toISOString().slice(0,10); }
+function kbLive(){ return kbToday()>=KB_SEASON; }
 /* Ramadan in Malaysia, approximately (as score2.js) */
 var KB_RAMADAN=[['2026-02-18','2026-03-19'],['2027-02-08','2027-03-09'],['2028-01-28','2028-02-26'],['2029-01-16','2029-02-14']];
 /* each badge: id (its picture), category, the stat it counts (k) and how many (v, or need) */
@@ -75,6 +85,7 @@ var KB_LIST=(function(){
   for(i=0;i<fr.length;i++) L.push({id:'fr'+fr[i], cat:'frd', k:'frd', v:fr[i], t:fr[i]===1?'Brought a friend':fr[i]+' friends brought', d:fr[i]===1?'A friend joined because of you':fr[i]+' friends joined because of you'});
   var pts=[[5000,'5K'],[10000,'10K'],[25000,'25K'],[50000,'50K'],[100000,'100K']];
   for(i=0;i<pts.length;i++) L.push({id:'pts'+pts[i][0], cat:'pts', k:'pts', v:pts[i][0], t:pts[i][1]+' Club', d:pts[i][0].toLocaleString('en-MY')+' HITFAT Points earned, all-time'});
+  L.push({id:'og',      cat:'spc', k:'og',      need:1,  hide:1, t:'HITFAT OG', d:'Here before Season 1. Thank you for being with us from the start'});
   L.push({id:'early',   cat:'spc', k:'early',   need:10, t:'Early Bird',      d:'10 classes that started before 8 am'});
   L.push({id:'owl',     cat:'spc', k:'owl',     need:10, t:'Night Owl',       d:'10 classes at 8 pm or later'});
   L.push({id:'wknd',    cat:'spc', k:'wknd',    need:10, t:'Weekend Warrior', d:'10 classes on a Saturday or Sunday'});
@@ -105,10 +116,20 @@ var KB_LIST=(function(){
 /* ── the numbers, from what OS sends ── */
 function kbStats(){
   var d=(typeof Kelas!=='undefined' && Kelas.data)||{}, P=d.points||{};
-  var ins=(d.checkins||[]).map(function(t){ return new Date(Date.parse(t)+8*3600e3); });   /* Malaysian time */
   var K=(typeof HF!=='undefined' && HF.data && (HF.data.kelas||(HF.data.kelas={})))||{};
-  /* weeks in a row, and a gap of 5 weeks or more (a comeback), from every week OS has */
-  var w=(d.weeks||[]).map(function(x){ return Date.parse(String(x).slice(0,10)+'T00:00:00Z'); }).filter(function(x){ return x; }).sort(function(a,b){ return a-b; });
+  /* Season 1: what was earned before is cleared, once (OG kept) */
+  if(!K.kbS1){ var og=(K.badges||{}).og; K.badges=og?{og:og}:{}; K.padu=[]; K.hxSeen=[]; K.kbS1=1; try{ HF.save(); }catch(e){} }
+  var SEA=Date.parse(KB_SEASON+'T00:00:00+08:00'), inS=function(t){ return (Date.parse(t)||0)>=SEA; };
+  /* the season's classes, Malaysian time */
+  var ins=(d.checkins||[]).filter(inS).map(function(t){ return new Date(Date.parse(t)+8*3600e3); });
+  /* the classes before the season, taken once it is on */
+  var total=+d.total||0;
+  if(kbLive() && K.s1base==null && d.total!=null){ K.s1base=Math.max(0,total-ins.length); try{ HF.save(); }catch(e){} }
+  var pre=kbLive()?(K.s1base||0):total;
+  /* weeks in a row, and a gap of 5 weeks or more (a comeback): the season's weeks (the one with 1 Nov if it had a class) */
+  var w0=new Date(SEA+8*3600e3-((new Date(SEA+8*3600e3).getUTCDay()+6)%7)*864e5).toISOString().slice(0,10);
+  var w=(d.weeks||[]).map(function(x){ return String(x).slice(0,10); }).filter(function(x){ return x>w0 || (x===w0 && ins.length); })
+    .map(function(x){ return Date.parse(x+'T00:00:00Z'); }).filter(function(x){ return x; }).sort(function(a,b){ return a-b; });
   var best=0, run=0, prev=null, back=0;
   w.forEach(function(t){ if(prev!==null && t-prev>=35*864e5) back=1; run=(prev!==null && t-prev===7*864e5)?run+1:1; if(run>best) best=run; prev=t; });
   /* per day, per month, per week (Monday) */
@@ -134,30 +155,34 @@ function kbStats(){
   Object.keys(byWeek).forEach(function(m){ if(byWeek[m]>wkx) wkx=byWeek[m]; });
   var ramBest=0; Object.keys(ram).forEach(function(r){ if(ram[r]>ramBest) ramBest=ram[r]; });
   /* months with 10+ class days: the ones seen now, and every one seen before */
-  var pm=K.padu||(K.padu=[]);
+  var pm=(K.padu||[]).filter(function(m){ return m>=KB_SEASON.slice(0,7); }); K.padu=pm;
   Object.keys(byMonth).forEach(function(m){ if(byMonth[m]>=10 && pm.indexOf(m)<0) pm.push(m); });
-  var refs=(P.history||[]).filter(function(x){ return x.t==='referral'; }).length;
-  var H=kbHxStats(d,K);
-  return {cls:+d.total||0, hx:H.hx, hxft:H.ft, hx8:H.p8, hx12:H.p12, hxall:H.all, race:H.race, rdbl:H.dbl, rpro:H.pro, sub90:H.s90, sub75:H.s75, sub60:H.s60,
-          st_ski:H.st.ski, st_push:H.st.push, st_pull:H.st.pull, st_bbj:H.st.bbj, st_row:H.st.row, st_carry:H.st.carry, st_lunge:H.st.lunge, st_wb:H.st.wb, st_run:H.st.run, pts:+P.lifetime||0, week:best, wkx:wkx, month:pm.length, pr:(d.prs||[]).length, frd:refs,
-          early:early, owl:owl, wknd:wknd, beast:beast, back:back, dbl:dbl, ib:(d.inbody||[]).length,
+  var refs=(P.history||[]).filter(function(x){ return x.t==='referral' && inS(x.at); }).length;
+  var H=kbHxStats(d,K,inS);
+  var S={og:pre>0?1:0, ogN:pre, cls:kbLive()?Math.max(0,total-(K.s1base||0)):0, hx:H.hx, hxft:H.ft, hx8:H.p8, hx12:H.p12, hxall:H.all, race:H.race, rdbl:H.dbl, rpro:H.pro, sub90:H.s90, sub75:H.s75, sub60:H.s60,
+          st_ski:H.st.ski, st_push:H.st.push, st_pull:H.st.pull, st_bbj:H.st.bbj, st_row:H.st.row, st_carry:H.st.carry, st_lunge:H.st.lunge, st_wb:H.st.wb, st_run:H.st.run, pts:+P.lifetime||0, week:best, wkx:wkx, month:pm.length, pr:(d.prs||[]).filter(function(e){ return inS(e.at); }).length, frd:refs,
+          early:early, owl:owl, wknd:wknd, beast:beast, back:back, dbl:dbl, ib:(d.inbody||[]).filter(function(e){ return String(e.scan_date||'')>=KB_SEASON; }).length,
           ny:ny, merdeka:mer, ramadan:ramBest, bday:bd};
+  /* before the season nothing is earned, but OG */
+  if(!kbLive()) Object.keys(S).forEach(function(k){ if(k!=='og' && k!=='ogN') S[k]=0; });
+  return S;
 }
 /* HYROX: classes kept as they are seen (OS sends 120 days of them), the
    programs, the stations and races the member has logged */
-function kbHxStats(d,K){
+function kbHxStats(d,K,inS){
+  inS=inS||function(){ return true; };
   var seen=K.hxSeen||(K.hxSeen=[]), known={};
   seen.forEach(function(t){ known[t]=1; });
-  (Array.isArray(d.hx_ins)?d.hx_ins:[]).forEach(function(t){ t=String(t); if(!known[t]){ known[t]=1; seen.push(t); } });
+  (Array.isArray(d.hx_ins)?d.hx_ins:[]).forEach(function(t){ t=String(t); if(!known[t] && inS(t)){ known[t]=1; seen.push(t); } });
   if(seen.length>3000) K.hxSeen=seen.slice(-3000);
   var prog=function(id){
     if(typeof HX_DEFS==='undefined' || typeof hxDoneN!=='function' || typeof hxFlat!=='function') return 0;
     var def=HX_DEFS.filter(function(x){ return x.id===id; })[0];
     try{ return def && hxDoneN(def)>=hxFlat(def).length ? 1 : 0; }catch(e){ return 0; }
   };
-  var st={}, all=0, res=Array.isArray(d.hyrox)?d.hyrox:[];
+  var st={}, all=0, res=(Array.isArray(d.hyrox)?d.hyrox:[]).filter(function(r){ return inS(String(r.d||'')+'T12:00:00+08:00'); });
   KB_HXST.forEach(function(x){ st[x[0]]=res.some(function(r){ return r.st===x[0]; })?1:0; all+=st[x[0]]; });
-  var hp=K.hx||{}, races=Array.isArray(hp.races)?hp.races:[];
+  var hp=K.hx||{}, races=(Array.isArray(hp.races)?hp.races:[]).filter(function(r){ return inS(String(r.d||'')+'T12:00:00+08:00'); });
   var times=races.map(function(r){ return +r.s; }).concat(res.filter(function(r){ return r.st==='sim'; }).map(function(r){ return +r.s; })).filter(function(x){ return x>0; });
   var best=times.length?Math.min.apply(null,times):0;
   return {hx:seen.length, ft:prog('hxft'), p8:prog('hx8'), p12:prog('hx12'), st:st, all:all, race:races.length,
@@ -224,16 +249,18 @@ function kbHTML(){
   if(typeof Kelas==='undefined' || !Kelas.data) return '';
   var S=kbStats(), E=kbEarned();
   var has=function(b){ return !!(E[b.id] || kbHave(b,S)); };
-  var have=KB_LIST.filter(has);
+  var hxOn=kbHxOn(S,E);
+  var shown=function(b){ return !(b.hide && !has(b)) && (hxOn || !/^hx/.test(b.cat)); };
+  var have=KB_LIST.filter(function(b){ return shown(b) && has(b); }), all=KB_LIST.filter(shown).length;
   /* the latest five earned, fanned across the top */
   var last=have.slice().sort(function(a,c){ return String(E[c.id]||'').localeCompare(String(E[a.id]||'')) || (c.v||0)-(a.v||0); }).slice(0,5);
   var h='<div class="kb"><div class="kb-hero">'+
       (last.length?'<div class="kb-fan">'+last.map(function(b){ return kbPic(b,true,64,!/^hx/.test(b.cat)); }).join('')+'</div>':'')+
-      '<b>TRAIN &amp; COLLECT</b><small>'+have.length+' of '+KB_LIST.length+' badges earned</small></div>';
-  var hxOn=kbHxOn(S,E);
+      (kbLive()?'<b>TRAIN &amp; COLLECT</b><small>Season 1 · '+have.length+' of '+all+' badges earned</small>'
+        :'<b>SEASON 1</b><small>Starts 1 November. Every badge starts from zero for everyone: every class from 1 Nov counts.</small>')+'</div>';
   KB_SECT.forEach(function(sc){
     if(sc[2] && !hxOn) return;
-    var list=KB_LIST.filter(function(b){ return sc[1].indexOf(b.cat)>=0; }), n=list.filter(has).length;
+    var list=KB_LIST.filter(function(b){ return sc[1].indexOf(b.cat)>=0 && shown(b); }), n=list.filter(has).length;
     /* HYROX on its own black panel, its badges on black as they were made */
     h+='<div class="kb-sec'+(sc[2]?' hx':'')+'"><div class="kb-sec-h"><b>'+sc[0]+'</b><small>'+n+' of '+list.length+'</small></div><div class="kb-grid">'+
       list.map(function(b){
@@ -270,7 +297,7 @@ function kbOpen(id){
   }
   var h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="kbClose()">✕</button></div>'+
     '<div class="kb-sh"><div class="kb-spin">'+kbPic(b,on,240)+'</div><div class="kb-sh-k">'+KB_CATS[b.cat].n+'</div><div class="kb-sh-t">'+hesc(b.t)+'</div>'+
-    '<div class="kb-sh-d">'+hesc(b.d)+'</div>'+foot+'</div>';
+    '<div class="kb-sh-d">'+hesc(b.d)+'</div>'+(b.id==='og'&&S.ogN?'<div class="kb-sh-og"><b>'+S.ogN.toLocaleString('en-MY')+'</b> classes before Season 1</div>':'')+foot+'</div>';
   $('pw-body').innerHTML=h; $('pwm').classList.add('on','kbm'); try{ $('pwm').scrollTop=0; }catch(e){}
 }
 function kbSetBday(){
@@ -304,7 +331,7 @@ function kbCheck(){
     HF.save();
     if(!$('scc') || $('scc').style.display==='flex') return false;
     /* the proudest one leads: the biggest Class Club, then the longest streak, … */
-    var rank=['cls','hxr','hxc','hxp','hxs','week','month','wkx','pr','frd','pts','spc'];
+    var rank=['og','cls','hxr','hxc','hxp','hxs','week','month','wkx','pr','frd','pts','spc'];
     var top=fresh.slice().sort(function(a,c){ var r=rank.indexOf(a.cat)-rank.indexOf(c.cat); return r||((c.v||0)-(a.v||0)); })[0], more=fresh.length-1;
     var cols=['#E30613','#FFC20E','#FFFFFF','#FF8A3D'], conf='', i;
     for(i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%4]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
@@ -312,7 +339,7 @@ function kbCheck(){
     $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in"><div class="kb-pop">'+kbPic(top,true,220)+'</div>'+
       '<div class="scc-t">'+(more?'New badges! 🏅':'New badge! 🏅')+'</div>'+
       '<div class="scc-s"><b>'+hesc(top.t)+'</b>'+(more?' and '+more+' more':'')+'</div>'+
-      '<div class="scc-s scc-bellsays">'+(top.cat==='cls'?'Wah, '+top.v+' kelas! Bara bangga sangat dengan awak 🔥':'Lencana baru untuk awak! Bara tumpang gembira 🎉')+'</div>'+
+      '<div class="scc-s scc-bellsays">'+(top.id==='og'?'Terima kasih sebab bersama HITFAT dari awal! Season 1 bermula 1 Nov 🔥':top.cat==='cls'?'Wah, '+top.v+' kelas! Bara bangga sangat dengan awak 🔥':'Lencana baru untuk awak! Bara tumpang gembira 🎉')+'</div>'+
       '<button class="bigbtn scc-share" onclick="scCelebrateClose();if(typeof openKelas===\'function\'){openKelas();kelasTab(\'progress\');}">See my badges</button>'+
       '<button class="scc-x" onclick="scCelebrateClose()">Later</button></div>';
     $('scc').style.display='flex';
