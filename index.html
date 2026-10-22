@@ -7799,32 +7799,31 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-rwm-img{display:block;width:170px;height:170px;margin:0 auto 14px;border-radius:28px;object-fit:cover;background:#FFFFFF;box-shadow:0 10px 30px rgba(0,0,0,.15);}
 
 /* ── badges (badges.js; v8 22 Oct 2026, after Nike Training Club's
-   achievements): one dark case in both themes, the pictures on black, the
-   ones not yet earned dim grey silhouettes ── */
-.kb{margin:16px 0;padding:0 14px 18px;border-radius:24px;color:#FFFFFF;background:#000000;overflow:hidden;
-  box-shadow:0 12px 30px rgba(0,0,0,.18);}
-.kb-hero{margin:0 -14px;padding:20px 16px 18px;text-align:center;
+   achievements): a dark banner, then plain and light like NTC, the badges
+   cut out, the ones not yet earned a faint grey ── */
+.kb{margin:16px 0;border-radius:24px;color:var(--txt);background:var(--surface);overflow:hidden;}
+.kb-hero{padding:22px 16px 20px;text-align:center;color:#FFFFFF;
   background:radial-gradient(90% 90% at 50% 0%,rgba(227,6,19,.30) 0%,rgba(227,6,19,0) 70%),#000000;}
-.kb-fan{display:flex;justify-content:center;margin-bottom:6px;}
-.kb-fan .kb-pic{margin:0 -6px;}
+.kb-fan{display:flex;justify-content:center;margin-bottom:8px;}
+.kb-fan .kb-pic{margin:0 -5px;}
 .kb-fan .kb-pic:nth-child(2),.kb-fan .kb-pic:nth-child(4){transform:translateY(8px);}
 .kb-hero b{display:block;font-size:24px;font-weight:900;letter-spacing:.5px;color:#FFFFFF;}
 .kb-hero small{display:block;font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;}
-.kb-sec{padding-top:18px;}
-.kb-sec+.kb-sec{border-top:1px solid rgba(255,255,255,.08);margin-top:8px;}
+.kb-sec{padding:24px 16px 26px;}
+.kb-sec+.kb-sec{border-top:1px solid var(--hairline);}
 .kb-sec-h{display:flex;align-items:baseline;justify-content:space-between;}
-.kb-sec-h b{font-size:17px;font-weight:800;color:#FFFFFF;}
-.kb-sec-h small{font-size:12px;font-weight:700;color:rgba(255,255,255,.45);}
-.kb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 6px;margin-top:10px;}
-.kb-i{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0;cursor:pointer;min-width:0;color:inherit;}
-.kb-i b{font-size:12.5px;font-weight:700;color:#FFFFFF;text-align:center;line-height:1.2;}
-.kb-i.off b{color:rgba(255,255,255,.55);}
-.kb-i small{font-size:11px;font-weight:600;color:rgba(255,255,255,.4);}
+.kb-sec-h b{font-size:20px;font-weight:600;letter-spacing:-.3px;color:var(--txt);}
+.kb-sec-h small{font-size:13px;font-weight:500;color:var(--dim2);}
+.kb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px 6px;margin-top:22px;}
+.kb-i{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0;cursor:pointer;min-width:0;color:inherit;}
+.kb-i span{font-size:14px;font-weight:400;color:var(--txt);text-align:center;line-height:1.3;}
 .kb-pic{display:block;max-width:100%;}
 .kb-pic img{display:block;width:100%;height:100%;object-fit:contain;mix-blend-mode:screen;
   -webkit-mask-image:radial-gradient(closest-side,#000 86%,transparent 100%);mask-image:radial-gradient(closest-side,#000 86%,transparent 100%);}
-/* the pictures are on (near) black: screened, and their square corners faded, so only the badge shows on a glow */
-.kb-pic.off img{filter:grayscale(1) brightness(.75);opacity:.28;}
+/* the pictures on black: screened, their square corners faded; a cut-out one needs neither */
+.kb-pic.cut img{mix-blend-mode:normal;-webkit-mask-image:none;mask-image:none;}
+.kb-pic.off img{filter:grayscale(1);opacity:.2;}
+:root:not([data-theme="light"]) .kb-pic.cut.off img{opacity:.3;}
 /* the sheet: the badge spins in on black */
 #pwm.kbm{background:radial-gradient(90% 50% at 50% 0%,rgba(227,6,19,.30) 0%,rgba(227,6,19,0) 65%),#000000 !important;}
 #pwm.kbm #pw-body{background:transparent !important;}
@@ -25487,8 +25486,11 @@ function kelasDemo(){
    engraved number, the HF mark), on black: img/badges/<id>.jpg, cut from the
    sheets in _projek/lencana/ntc. As in NTC the object grows heavier with the
    count (medicine ball 1–7, kettlebell 10–25, dumbbell 50–150, plate 200+),
-   and the wall is NTC's: one dark case, a section per kind, the ones not yet
-   earned as dim grey silhouettes of the same picture.
+   and the wall is NTC's: plain and light, a section per kind, each badge cut
+   out of its black (img/badges/c/<id>.png, with the subject lift of macOS
+   Vision) and the ones not yet earned a faint grey of the same picture. The
+   badge's sheet, the new-badge moment and the IG card keep the picture on
+   black.
 
      Class Club      all-time classes at HQ (1, 3, 5, 7, 10 … 1,000)
      Streaks         weeks in a row, class days in one week, Bulan Padu
@@ -25596,8 +25598,9 @@ function kbEarned(){ var K=HF.data.kelas||(HF.data.kelas={}); return K.badges||(
 /* ── the badge: its picture, dim and grey until earned ── */
 var KB_V=2, KB_IMG={};
 function kbImgSrc(id){ return '/img/badges/'+id+'.jpg?v='+KB_V; }
-function kbPic(b, on, size){
-  return '<span class="kb-pic'+(on?' on':' off')+'" style="width:'+size+'px;height:'+size+'px"><img src="'+kbImgSrc(b.id)+'" alt="" decoding="async"'+(size<150?' loading="lazy"':'')+'></span>';
+/* cut: the badge cut out of its black, for the light wall */
+function kbPic(b, on, size, cut){
+  return '<span class="kb-pic'+(on?' on':' off')+(cut?' cut':'')+'" style="width:'+size+'px;height:'+size+'px"><img src="'+(cut?'/img/badges/c/'+b.id+'.png?v='+KB_V:kbImgSrc(b.id))+'" alt="" decoding="async"'+(size<150?' loading="lazy"':'')+'></span>';
 }
 /* the picture for a canvas: loaded once, cb when ready (or failed) */
 function kbImg(id, cb){
@@ -25645,15 +25648,14 @@ function kbHTML(){
   /* the latest five earned, fanned across the top */
   var last=have.slice().sort(function(a,c){ return String(E[c.id]||'').localeCompare(String(E[a.id]||'')) || (c.v||0)-(a.v||0); }).slice(0,5);
   var h='<div class="kb"><div class="kb-hero">'+
-      (last.length?'<div class="kb-fan">'+last.map(function(b){ return kbPic(b,true,64); }).join('')+'</div>':'')+
+      (last.length?'<div class="kb-fan">'+last.map(function(b){ return kbPic(b,true,64,true); }).join('')+'</div>':'')+
       '<b>TRAIN &amp; COLLECT</b><small>'+have.length+' of '+KB_LIST.length+' badges earned</small></div>';
   KB_SECT.forEach(function(sc){
     var list=KB_LIST.filter(function(b){ return sc[1].indexOf(b.cat)>=0; }), n=list.filter(has).length;
-    h+='<div class="kb-sec"><div class="kb-sec-h"><b>'+sc[0]+'</b><small>'+n+' / '+list.length+'</small></div><div class="kb-grid">'+
+    h+='<div class="kb-sec"><div class="kb-sec-h"><b>'+sc[0]+'</b><small>'+n+' of '+list.length+'</small></div><div class="kb-grid">'+
       list.map(function(b){
-        var on=has(b), p=kbProg(b,S);
-        return '<button class="kb-i'+(on?'':' off')+'" onclick="kbOpen(\''+b.id+'\')">'+kbPic(b,on,96)+'<b>'+hesc(b.t)+'</b>'+
-          (on?'':'<small>'+(b.k==='bday'&&!(HF.data.kelas||{}).bday?'Set your birthday':p[0].toLocaleString('en-MY')+' / '+p[1].toLocaleString('en-MY'))+'</small>')+'</button>';
+        var on=has(b);
+        return '<button class="kb-i'+(on?'':' off')+'" onclick="kbOpen(\''+b.id+'\')">'+kbPic(b,on,92,true)+'<span>'+hesc(b.t)+'</span></button>';
       }).join('')+'</div></div>';
   });
   return h+'</div>';

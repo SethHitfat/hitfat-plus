@@ -8,8 +8,11 @@
    engraved number, the HF mark), on black: img/badges/<id>.jpg, cut from the
    sheets in _projek/lencana/ntc. As in NTC the object grows heavier with the
    count (medicine ball 1–7, kettlebell 10–25, dumbbell 50–150, plate 200+),
-   and the wall is NTC's: one dark case, a section per kind, the ones not yet
-   earned as dim grey silhouettes of the same picture.
+   and the wall is NTC's: plain and light, a section per kind, each badge cut
+   out of its black (img/badges/c/<id>.png, with the subject lift of macOS
+   Vision) and the ones not yet earned a faint grey of the same picture. The
+   badge's sheet, the new-badge moment and the IG card keep the picture on
+   black.
 
      Class Club      all-time classes at HQ (1, 3, 5, 7, 10 … 1,000)
      Streaks         weeks in a row, class days in one week, Bulan Padu
@@ -117,8 +120,9 @@ function kbEarned(){ var K=HF.data.kelas||(HF.data.kelas={}); return K.badges||(
 /* ── the badge: its picture, dim and grey until earned ── */
 var KB_V=2, KB_IMG={};
 function kbImgSrc(id){ return '/img/badges/'+id+'.jpg?v='+KB_V; }
-function kbPic(b, on, size){
-  return '<span class="kb-pic'+(on?' on':' off')+'" style="width:'+size+'px;height:'+size+'px"><img src="'+kbImgSrc(b.id)+'" alt="" decoding="async"'+(size<150?' loading="lazy"':'')+'></span>';
+/* cut: the badge cut out of its black, for the light wall */
+function kbPic(b, on, size, cut){
+  return '<span class="kb-pic'+(on?' on':' off')+(cut?' cut':'')+'" style="width:'+size+'px;height:'+size+'px"><img src="'+(cut?'/img/badges/c/'+b.id+'.png?v='+KB_V:kbImgSrc(b.id))+'" alt="" decoding="async"'+(size<150?' loading="lazy"':'')+'></span>';
 }
 /* the picture for a canvas: loaded once, cb when ready (or failed) */
 function kbImg(id, cb){
@@ -166,15 +170,14 @@ function kbHTML(){
   /* the latest five earned, fanned across the top */
   var last=have.slice().sort(function(a,c){ return String(E[c.id]||'').localeCompare(String(E[a.id]||'')) || (c.v||0)-(a.v||0); }).slice(0,5);
   var h='<div class="kb"><div class="kb-hero">'+
-      (last.length?'<div class="kb-fan">'+last.map(function(b){ return kbPic(b,true,64); }).join('')+'</div>':'')+
+      (last.length?'<div class="kb-fan">'+last.map(function(b){ return kbPic(b,true,64,true); }).join('')+'</div>':'')+
       '<b>TRAIN &amp; COLLECT</b><small>'+have.length+' of '+KB_LIST.length+' badges earned</small></div>';
   KB_SECT.forEach(function(sc){
     var list=KB_LIST.filter(function(b){ return sc[1].indexOf(b.cat)>=0; }), n=list.filter(has).length;
-    h+='<div class="kb-sec"><div class="kb-sec-h"><b>'+sc[0]+'</b><small>'+n+' / '+list.length+'</small></div><div class="kb-grid">'+
+    h+='<div class="kb-sec"><div class="kb-sec-h"><b>'+sc[0]+'</b><small>'+n+' of '+list.length+'</small></div><div class="kb-grid">'+
       list.map(function(b){
-        var on=has(b), p=kbProg(b,S);
-        return '<button class="kb-i'+(on?'':' off')+'" onclick="kbOpen(\''+b.id+'\')">'+kbPic(b,on,96)+'<b>'+hesc(b.t)+'</b>'+
-          (on?'':'<small>'+(b.k==='bday'&&!(HF.data.kelas||{}).bday?'Set your birthday':p[0].toLocaleString('en-MY')+' / '+p[1].toLocaleString('en-MY'))+'</small>')+'</button>';
+        var on=has(b);
+        return '<button class="kb-i'+(on?'':' off')+'" onclick="kbOpen(\''+b.id+'\')">'+kbPic(b,on,92,true)+'<span>'+hesc(b.t)+'</span></button>';
       }).join('')+'</div></div>';
   });
   return h+'</div>';

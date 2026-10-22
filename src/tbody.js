@@ -4402,9 +4402,9 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
       KB_LIST.every(function(b){ return b.k && (b.v||b.need); }) && kbPic(KB_LIST[0],true,96).indexOf('/img/badges/cls1.jpg')>0);
     var w=kbHTML();
     ok("...the wall: NTC's, a section per kind, the ones not yet earned dim", w.indexOf('TRAIN &amp; COLLECT')>0 && w.indexOf('Records &amp; squad')<0 && w.indexOf('Records & squad')>0 &&
-      w.indexOf('50 Class Club')>0 && w.indexOf('kb-pic off')>0 && w.indexOf('kb-pic on')>0);
+      w.indexOf('50 Class Club')>0 && w.indexOf('kb-pic off cut')>0 && w.indexOf('kb-pic on cut')>0 && w.indexOf('/img/badges/c/cls50.png')>0);
     HF.data.kelas.bday='';
-    ok("...the birthday asked for, OS has none", kbHTML().indexOf('Set your birthday')>0 && String(kbOpen).indexOf('kbSetBday()')>0);
+    ok("...the birthday asked for on its sheet, OS has none", String(kbOpen).indexOf('When is your birthday?')>0 && String(kbOpen).indexOf('kbSetBday()')>0);
     ok("...a badge once earned is kept, and the proudest new one leads the moment", typeof kbCheck==='function' && String(kbCheck).indexOf("rank=['cls'")>0 && String(kbCheck).indexOf('E[b.id]=today')>0);
     ok("...First Class (F45's 1st Workout) and the Points Club (lifetime points), and a share to IG Story", KB_LIST.some(function(x){ return x.id==='cls1'; }) &&
       KB_LIST.filter(function(x){ return x.cat==='pts'; }).length===5 && kbHave(KB_LIST.filter(function(x){ return x.id==='pts5000'; })[0],{pts:5200}) &&
