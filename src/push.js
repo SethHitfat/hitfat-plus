@@ -136,17 +136,7 @@ function pushRow(){
   var ctl=(st==='on'||st==='off')?
     '<div class="obseg meseg"><button class="'+(st==='on'?'on':'')+'" onclick="pushEnable()">On</button><button class="'+(st==='off'?'on':'')+'" onclick="pushDisable()">Off</button></div>':
     st==='install'?'<button class="pu-how" onclick="pushInstallHelp()">How</button>':'';
-  return '<div class="grow grow-ctl" id="push-row">'+ic('bell')+'<div class="grow-l">Bara\'s reminders<div class="pu-sub">'+sub+
-    (st==='on'?' · <button class="pu-look" onclick="pushLook()">Send a sample</button>':'')+'</div></div>'+ctl+'</div>';
-}
-/* (22 Oct 2026) a sample shown by the phone itself, with no title: an
-   iPhone puts "from Hitfat+" under a web app's title, and Seth wants it
-   gone or level ("jangan letak bawah"); with no title it may stand alone */
-function pushLook(){
-  if(!('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.ready.then(function(r){
-    return r.showNotification('', {body:'Masa makan 🍽️  Dah makan tengah hari? Taip je, Bara kira kalori dan protein.', tag:'look', icon:'/img/mascot/push-icon.png'});
-  }).then(function(){ toast('Sample sent. Lock your phone to see it'); }).catch(function(){ toast('Could not show a sample here'); });
+  return '<div class="grow grow-ctl" id="push-row">'+ic('bell')+'<div class="grow-l">Bara\'s reminders<div class="pu-sub">'+sub+'</div></div>'+ctl+'</div>';
 }
 /* the invitation under the score, once, until it is answered */
 function pushInvite(){
