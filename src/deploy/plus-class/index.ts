@@ -4,7 +4,7 @@
 
    A member of a physical class (HITFAT Active Class, Ladies Only, Mens
    Only, HYROX; RM250 a month at HITFAT HQ) gets All Access in HITFAT+ for
-   as long as that membership runs. They connect with their phone number
+   as long as that membership runs. They connect with their phone
    number, the one the counter already has, and a six-digit code the
    counter gives them in person: a phone number alone is not proof, since
    anyone who knows a member's number could take their link.
