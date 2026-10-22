@@ -287,6 +287,12 @@ const I18N_MS={
 'Completed months stay on your shelf':'Bulan yang selesai kekal di rak anda','Challenges with a finish line':'Cabaran dengan garisan penamat','It changes by itself on the first':'Ia bertukar sendiri pada hari pertama',
 'The year ahead':'Tahun mendatang','One for every week you finish.':'Satu untuk setiap minggu anda habiskan.','Rewards':'Ganjaran','Check in':'Daftar masuk','Classes':'Kelas',
 
+/* ── HITFAT Class: connecting with the code from the counter ── */
+'6-digit code from the counter':'Kod 6 digit dari kaunter','Ask for your 6-digit code at the HITFAT HQ counter.':'Minta kod 6 digit di kaunter HITFAT HQ.',
+'That code is wrong or has expired. Ask at the counter for a new one.':'Kod itu salah atau sudah tamat tempoh. Minta kod baharu di kaunter.',
+'Enter the 6-digit code from the counter.':'Masukkan kod 6 digit dari kaunter.',
+'Too many tries. Please wait an hour, or ask at the counter.':'Terlalu banyak cubaan. Sila tunggu sejam, atau tanya di kaunter.',
+
 /* ── Nutrition Academy chrome ── */
 'Nutrition Academy':'Nutrition Academy','Buat sekarang':'Buat sekarang',
 

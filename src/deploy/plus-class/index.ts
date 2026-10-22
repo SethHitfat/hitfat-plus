@@ -5,11 +5,20 @@
    A member of a physical class (HITFAT Active Class, Ladies Only, Mens
    Only, HYROX; RM250 a month at HITFAT HQ) gets All Access in HITFAT+ for
    as long as that membership runs. They connect with their phone number
-   only, the number the counter already has.
+   number, the one the counter already has, and a six-digit code the
+   counter gives them in person: a phone number alone is not proof, since
+   anyone who knows a member's number could take their link.
 
    POST { action:'lookup', phone }   is this number a class member?
                                      a masked name, the class, the end date
-   POST { action:'claim',  phone }   connect it to this account, grant access
+   POST { action:'claim',  phone, code }
+                                     connect it to this account, grant access;
+                                     code = the six digits the counter gave
+                                     (47-os-plus-claim-kod.sql)
+   POST { action:'issue_code', phone }   STAFF ONLY (club_members coach,
+                                     staff or admin, as coach.html): a
+                                     six-digit code for the member standing
+                                     at the counter, good for 30 minutes
    POST { action:'status' }          the Class screen: membership, schedule,
                                      check-ins; and keeps access in step
                                      with the end date
@@ -72,6 +81,12 @@ const OS_ANON = '__OS_ANON__';
 
 const SKU = 'sub_plus_class';
 const LOOKUPS_PER_HOUR = 8;
+/* Claims, right or wrong: with the 5 wrong codes OS allows against a live
+   code, a guess at six digits is not worth making. */
+const CLAIMS_PER_HOUR = 5;
+/* Codes a staff account may issue in an hour: a busy evening at the
+   counter, not a way to walk through members. */
+const ISSUES_PER_HOUR = 40;
 
 /* InBody: dense small print where every digit matters, so the strongest
    model. Four sheets a day is more than any member needs; every attempt
@@ -255,12 +270,37 @@ Deno.serve(async (req: Request) => {
     }
 
     if (action === 'claim') {
-      const r = await os('plus_claim', { p_key: key, p_phone: phone, p_user: uid });
+      const since = new Date(Date.now() - 3600e3).toISOString();
+      const { count } = await admin.from('plus_class_tries').select('*', { count: 'exact', head: true })
+        .eq('user_id', uid).eq('kind', 'claim').gt('at', since);
+      if ((count || 0) >= CLAIMS_PER_HOUR) return json({ error: 'too_many' }, 429);
+      await admin.from('plus_class_tries').insert({ user_id: uid, kind: 'claim' });
+      /* no code is fine only for a number already connected to this account;
+         OS decides that and answers anything else with 'bad_code' */
+      const code = /^\d{6}$/.test(String(body.code || '').trim()) ? String(body.code).trim() : null;
+      const r = await os('plus_claim', { p_key: key, p_phone: phone, p_user: uid, p_code: code });
       if (!r || !r.ok) return json({ ok: false, error: (r && r.error) || 'failed' });
       const st = await os('plus_status', { p_key: key, p_user: uid });
       try { Object.assign(st, await os('plus_status_spaces', { p_key: key, p_user: uid })); } catch (_) { /* below */ }
       const until = await syncAccess(admin, uid, st);
       return json({ ok: true, until, status: st });
+    }
+
+    /* The counter: a code for the member in front of it. Staff standing is
+       club_members.role here, in HITFAT+, read with the service role, the
+       same rule coach.html and club-checkin use. */
+    if (action === 'issue_code') {
+      const { data: me } = await admin.from('club_members').select('role').eq('user_id', uid).maybeSingle();
+      if (!me || !['coach', 'staff', 'admin'].includes(me.role)) return json({ error: 'staff only' }, 403);
+      const since = new Date(Date.now() - 3600e3).toISOString();
+      const { count } = await admin.from('plus_class_tries').select('*', { count: 'exact', head: true })
+        .eq('user_id', uid).eq('kind', 'issue').gt('at', since);
+      if ((count || 0) >= ISSUES_PER_HOUR) return json({ error: 'too_many' }, 429);
+      await admin.from('plus_class_tries').insert({ user_id: uid, kind: 'issue' });
+      if (phone.replace(/\D/g, '').length < 9) return json({ ok: false, error: 'not_found' });
+      const r = await os('plus_claim_code_issue', { p_key: key, p_phone: phone, p_staff: u.user.email || uid });
+      if (!r || !r.ok) return json({ ok: false, error: (r && r.error) || 'failed' });
+      return json({ ok: true, code: r.code, name: r.name, category: r.category, expires_at: r.expires_at, linked: !!r.linked });
     }
 
     if (action === 'status') {

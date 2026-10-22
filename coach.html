@@ -102,6 +102,14 @@
     font-size:13.5px;opacity:0;transition:.22s;pointer-events:none;z-index:99;}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
   .hide{display:none !important;}
+
+  /* HITFAT+ connect code */
+  .kod{background:var(--gold-wash);border:1px solid rgba(201,162,39,.35);border-radius:18px;
+    padding:18px;margin-bottom:12px;text-align:center;}
+  .kod .big{font-family:'Oswald';font-size:46px;font-weight:700;letter-spacing:10px;line-height:1.1;
+    color:var(--gold);user-select:all;}
+  .kod .nm{font-size:18px;font-weight:800;margin-top:8px;}
+  .kod .mt{font-size:13px;color:var(--dim);margin-top:4px;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -136,6 +144,17 @@
       <input id="code" placeholder="e.g. K7M2QX" autocapitalize="characters" autocomplete="off"
              maxlength="6" style="text-align:center;letter-spacing:6px;font-family:'Oswald';font-size:20px;">
       <button class="btn sec" onclick="submitCode()">Check in by code</button>
+    </div>
+
+    <div class="sechead">Kod sambung HITFAT+</div>
+    <div id="kodres"></div>
+    <div class="card">
+      <div class="sub" style="margin:0 0 12px;">A member connecting their class membership in the HITFAT+ app needs a
+        six-digit code from you. Check it is really them, then give it to them in person &mdash;
+        never over WhatsApp or the phone.</div>
+      <input id="kodph" type="tel" inputmode="tel" autocomplete="off" placeholder="Member's phone, e.g. 012-345 6789"
+             onkeydown="if(event.key==='Enter')issueKod()">
+      <button class="btn sec" id="kodbtn" onclick="issueKod()">Get code</button>
     </div>
 
     <div class="sechead">Register</div>
@@ -188,7 +207,7 @@ async function signIn(){
 async function signOut(){
   stopScan();
   try{ await sb.auth.signOut(); }catch(e){}
-  me=null; picked=null;
+  me=null; picked=null; $('kodres').innerHTML='';
   $('app').classList.add('hide'); $('gate').classList.remove('hide');
   $('who').textContent=''; $('lead').textContent='Sign in with your coach account.';
   $('gbtn').disabled=false; $('gbtn').textContent='Sign in';
@@ -384,6 +403,47 @@ async function redeem(payload){
     await loadRoster();
   }catch(e){
     $('result').innerHTML='<div class="bad">'+esc((e&&e.message)||'Check-in failed.')+'</div>';
+  }
+}
+
+/* ── HITFAT+ connect code ──
+   plus-class checks club_members.role again on the server; this page
+   showing the panel is a courtesy, not the check. The code is shown once
+   and kept nowhere here. */
+const KOD_ERR={
+  not_found:'No active class membership or PT package on that number.',
+  expired:'That membership has ended. Renew it before connecting HITFAT+.',
+  too_many:'Too many codes this hour. Try again later.',
+  'staff only':'This account is not staff.',
+  not_ready:'The HITFAT OS bridge is not set up.',
+  failed:'Could not get a code. Check the connection and try again.'
+};
+async function issueKod(){
+  const ph=$('kodph').value.trim();
+  if(ph.replace(/\D/g,'').length<9){ toast('Enter the full phone number'); return; }
+  const btn=$('kodbtn'); btn.disabled=true; btn.textContent='Getting code…';
+  try{
+    const s=await sb.auth.getSession();
+    const jwt=s&&s.data&&s.data.session&&s.data.session.access_token;
+    if(!jwt){ toast('Sign in again'); return; }
+    const res=await fetch(SUPA_URL+'/functions/v1/plus-class',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+jwt,'apikey':SUPA_KEY},
+      body:JSON.stringify({action:'issue_code', phone:ph})
+    });
+    const j=await res.json().catch(()=>({}));
+    const err=res.status===429?'too_many':(!res.ok||!j.ok)?(j.error||'failed'):'';
+    if(err){ $('kodres').innerHTML='<div class="bad">'+esc(KOD_ERR[err]||KOD_ERR.failed)+'</div>'; return; }
+    $('kodph').value='';
+    $('kodres').innerHTML='<div class="kod"><div class="big">'+esc(j.code)+'</div>'+
+      '<div class="nm">'+esc(j.name||'—')+'</div>'+
+      '<div class="mt">'+(j.category?esc(j.category)+' · ':'')+'valid until '+esc(timeOf(j.expires_at))+', once</div>'+
+      (j.linked?'<div class="mt" style="color:var(--red);">Already connected to a HITFAT+ account. Release it in HITFAT OS first, or the code will be refused.</div>':'')+
+      '</div>';
+  }catch(e){
+    $('kodres').innerHTML='<div class="bad">'+esc(KOD_ERR.failed)+'</div>';
+  }finally{
+    btn.disabled=false; btn.textContent='Get code';
   }
 }
 

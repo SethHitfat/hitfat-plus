@@ -4342,6 +4342,13 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("...one way in from Me", kelasMeRow().indexOf('openKelasLink()')>0);
   ok("...and one line under the paywall", paywallHTML(true).indexOf('Connect with your phone number')>0);
   ok("...not active", !kelasActive());
+  /* a phone number is not proof: connecting needs the counter's code (47-os-plus-claim-kod.sql) */
+  Kelas.step='confirm'; Kelas.found={name:'S*** M***', category:'Membership', end_date:'2026-12-31', mine:false};
+  ok("connecting asks for the 6-digit code from the counter", kelasLinkHTML().indexOf('id="kl-kod"')>0 && kelasLinkHTML().indexOf('HITFAT HQ counter')>0);
+  Kelas.found.mine=true;
+  ok("...but not when the number is already this account's", kelasLinkHTML().indexOf('id="kl-kod"')<0);
+  ok("...and a wrong code says so", !!KELAS_ERR.bad_code && !!KELAS_ERR.too_many);
+  Kelas.step='phone'; Kelas.found=null; Kelas.code='';
   ok("times read as a clock", kelasClock('18:00')==='6:00 PM' && kelasClock('08:15')==='8:15 AM' && kelasClock('00:30')==='12:30 AM');
   ok("a member id fits a QR", qrSVG('5b0f2c1e-8d3a-4c7e-9f21-3a6d0b9e4c11',120).indexOf('<path')>0);
   kelasDemo();

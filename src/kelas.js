@@ -28,7 +28,7 @@ var KELAS_LIVE=true;
 var KELAS_CATS={Membership:'HITFAT Active Class', Ladies:'Ladies Only', Mens:'Mens Only', HYROX:'HYROX Class', PT:'Personal Coaching'};
 var KELAS_DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
-var Kelas={state:'idle', data:null, step:'phone', phone:'', found:null, err:'', busy:false, day:null, unlinkAsk:false};
+var Kelas={state:'idle', data:null, step:'phone', phone:'', code:'', found:null, err:'', busy:false, day:null, unlinkAsk:false};
 
 function kelasKey(){ return 'hf_kelas_'+(HF&&HF.userId||''); }
 function kelasSave(){ try{ if(HF.userId) localStorage.setItem(kelasKey(), JSON.stringify(Kelas.data)); }catch(e){} }
@@ -1705,6 +1705,12 @@ function kelasLinkHTML(){
     h+='<div class="kl-found"><div class="kl-fq">Is this you?</div>'+
        '<div class="kl-fn">'+hesc(f.name)+'</div>'+
        '<div class="kl-fc">'+hesc(kelasCat(f.category))+' · until '+kelasDate(f.end_date)+'</div></div>'+
+       /* the code from the counter: a phone number alone is not proof it is
+          you (47-os-plus-claim-kod.sql). Already yours: no code needed. */
+       (f.mine?'':'<label class="kl-lab kl-kodlab" for="kl-kod">6-digit code from the counter</label>'+
+        '<input id="kl-kod" class="kl-in kl-kod" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" value="'+hesc(Kelas.code)+'" '+
+        'oninput="Kelas.code=this.value" onkeydown="if(event.key===\'Enter\')kelasClaim()">'+
+        '<div class="kl-kodhint">Ask for your 6-digit code at the HITFAT HQ counter.</div>')+
        '<button class="bigbtn kl-go" onclick="kelasClaim()"'+(Kelas.busy?' disabled':'')+'>'+(Kelas.busy?'Connecting…':'Yes, this is me')+'</button>'+
        '<button class="kl-alt" onclick="kelasBack()">No, use another number</button>';
   } else {
@@ -1717,13 +1723,15 @@ function kelasLinkHTML(){
   h+='<div class="kl-fine">Not a class member yet? <a href="https://hitfat.io/one" target="_blank" rel="noopener">See the classes at HITFAT HQ</a></div></div>';
   return h;
 }
-function kelasBack(){ Kelas.step='phone'; Kelas.found=null; Kelas.err=''; renderKelas(); }
+function kelasBack(){ Kelas.step='phone'; Kelas.found=null; Kelas.code=''; Kelas.err=''; renderKelas(); }
 function kelasDigits(p){ return String(p||'').replace(/\D/g,''); }
 const KELAS_ERR={
   not_found:'This number is not on our class list. Use the number you gave at the counter, or <a href="https://wa.me/60176132170" target="_blank" rel="noopener">WhatsApp HITFAT</a>.',
   expired:'Your class membership has ended. Renew at the counter and connect again.',
   taken:'This number is already connected to another HITFAT+ account. Ask at the counter and we will release it.',
   too_many:'Too many tries. Please wait an hour, or ask at the counter.',
+  bad_code:'That code is wrong or has expired. Ask at the counter for a new one.',
+  no_code:'Enter the 6-digit code from the counter.',
   signin:'Sign in to HITFAT+ first.',
   failed:'Could not check right now. Check your connection and try again.'
 };
@@ -1742,13 +1750,19 @@ async function kelasFind(){
   Kelas.busy=false; renderKelas();
 }
 async function kelasClaim(){
+  const inp=$('kl-kod'); if(inp) Kelas.code=inp.value;
+  const code=kelasDigits(Kelas.code);
+  const mine=!!(Kelas.found&&Kelas.found.mine);
+  if(!mine && code.length!==6){ Kelas.err=KELAS_ERR.no_code; renderKelas(); return; }
   Kelas.busy=true; Kelas.err=''; renderKelas();
   try{
-    const r=await kelasCall('claim',{phone:Kelas.phone});
-    if(!r.ok){ Kelas.err=KELAS_ERR[r.error]||KELAS_ERR.failed; Kelas.step='phone'; }
+    const r=await kelasCall('claim',{phone:Kelas.phone, code:mine?'':code});
+    /* a wrong code: stay here, with the number, to type it again */
+    if(!r.ok){ Kelas.err=KELAS_ERR[r.error]||KELAS_ERR.failed; Kelas.code='';
+      if(r.error!=='bad_code') Kelas.step='phone'; }
     else {
       Kelas.data=Object.assign({}, r.status, {until:r.until}); kelasSave(); Kelas.state='ready'; kelasSyncDays();
-      Kelas.step='phone'; Kelas.found=null; Kelas.phone='';
+      Kelas.step='phone'; Kelas.found=null; Kelas.phone=''; Kelas.code='';
       await loadEntitlement();
       toast('Connected. HITFAT+ All Access is yours with your class.');
     }
