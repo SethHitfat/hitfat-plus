@@ -4,12 +4,24 @@
 
    A member of a physical class (HITFAT Active Class, Ladies Only, Mens
    Only, HYROX; RM250 a month at HITFAT HQ) gets All Access in HITFAT+ for
-   as long as that membership runs. They connect with their phone number
-   only, the number the counter already has.
+   as long as that membership runs. They connect with their phone
+   number, the one the counter already has, and the counter approves it
+   in person: a phone number alone is not proof, since anyone who knows a
+   member's number could take their link (48-os-plus-claim-lulus.sql).
 
    POST { action:'lookup', phone }   is this number a class member?
                                      a masked name, the class, the end date
-   POST { action:'claim',  phone }   connect it to this account, grant access
+   POST { action:'claim',  phone }   ask to connect it to this account.
+                                     Already this account's: ok, access
+                                     granted. Otherwise { ok:false,
+                                     error:'pending' } until the counter
+                                     approves; the next status sees it
+   POST { action:'claim_pending' }   STAFF ONLY (club_members coach, staff
+                                     or admin, as coach.html): the pending
+                                     requests, with the asking account's
+                                     email, for the counter to check
+   POST { action:'claim_decide', id, approve }   STAFF ONLY: approve (the
+                                     link, as plus_claim made it) or reject
    POST { action:'status' }          the Class screen: membership, schedule,
                                      check-ins; and keeps access in step
                                      with the end date
@@ -47,7 +59,7 @@
                                      HITFAT+ user ids in plus_settings
                                      'cm_admin_ids' (086_community.sql)
 
-   HITFAT OS is another Supabase project. Its four plus_* functions refuse
+   HITFAT OS is another Supabase project. Its plus_* functions refuse
    anything without the bridge key, which lives here in plus_settings
    (39-plus-class.sql); OS keeps only its sha256 (080_plus_bridge.sql).
 
@@ -72,6 +84,13 @@ const OS_ANON = '__OS_ANON__';
 
 const SKU = 'sub_plus_class';
 const LOOKUPS_PER_HOUR = 8;
+/* Requests to connect: asking again only refreshes the one pending
+   request, so five an hour is plenty for a member and little for anyone
+   trying numbers. */
+const CLAIMS_PER_HOUR = 5;
+/* Approvals and rejections a staff account may make in an hour: a busy
+   evening at the counter, not a way to walk through requests. */
+const DECIDES_PER_HOUR = 60;
 
 /* InBody: dense small print where every digit matters, so the strongest
    model. Four sheets a day is more than any member needs; every attempt
@@ -255,12 +274,66 @@ Deno.serve(async (req: Request) => {
     }
 
     if (action === 'claim') {
-      const r = await os('plus_claim', { p_key: key, p_phone: phone, p_user: uid });
+      const since = new Date(Date.now() - 3600e3).toISOString();
+      const { count } = await admin.from('plus_class_tries').select('*', { count: 'exact', head: true })
+        .eq('user_id', uid).eq('kind', 'claim').gt('at', since);
+      if ((count || 0) >= CLAIMS_PER_HOUR) return json({ error: 'too_many' }, 429);
+      await admin.from('plus_class_tries').insert({ user_id: uid, kind: 'claim' });
+      /* ok only for a number already connected to this account; otherwise
+         OS files a request for the counter and answers 'pending' */
+      const r = await os('plus_claim_request', { p_key: key, p_phone: phone, p_user: uid });
       if (!r || !r.ok) return json({ ok: false, error: (r && r.error) || 'failed' });
       const st = await os('plus_status', { p_key: key, p_user: uid });
       try { Object.assign(st, await os('plus_status_spaces', { p_key: key, p_user: uid })); } catch (_) { /* below */ }
       const until = await syncAccess(admin, uid, st);
       return json({ ok: true, until, status: st });
+    }
+
+    /* The counter: the requests waiting, and the decision on one. Staff
+       standing is club_members.role here, in HITFAT+, read with the
+       service role, the same rule coach.html and club-checkin use. */
+    if (action === 'claim_pending' || action === 'claim_decide') {
+      const { data: me } = await admin.from('club_members').select('role').eq('user_id', uid).maybeSingle();
+      if (!me || !['coach', 'staff', 'admin'].includes(me.role)) return json({ error: 'staff only' }, 403);
+
+      if (action === 'claim_pending') {
+        const rows = await os('plus_claim_pending', { p_key: key });
+        const list = Array.isArray(rows) ? rows : [];
+        /* the asking account's email: what staff check against the phone
+           in the member's hand. OS knows only the HITFAT+ user id. */
+        const mail: Record<string, string> = {};
+        await Promise.all([...new Set(list.map((x: any) => String(x.plus_user)))].map(async (id) => {
+          try { const { data } = await admin.auth.admin.getUserById(id); mail[id] = (data && data.user && data.user.email) || ''; }
+          catch (_) { mail[id] = ''; }
+        }));
+        return json({ ok: true, requests: list.map((x: any) => ({
+          id: x.id, name: x.name || '', phone: x.phone || '', email: mail[String(x.plus_user)] || '',
+          created_at: x.created_at, linked_other: !!x.linked_other,
+        })) });
+      }
+
+      const since = new Date(Date.now() - 3600e3).toISOString();
+      const { count } = await admin.from('plus_class_tries').select('*', { count: 'exact', head: true })
+        .eq('user_id', uid).eq('kind', 'decide').gt('at', since);
+      if ((count || 0) >= DECIDES_PER_HOUR) return json({ error: 'too_many' }, 429);
+      await admin.from('plus_class_tries').insert({ user_id: uid, kind: 'decide' });
+      const id = Number(body.id);
+      if (!Number.isSafeInteger(id) || id <= 0) return json({ ok: false, error: 'not_found' });
+      const approve = body.approve === true;
+      const r = await os('plus_claim_decide', { p_key: key, p_id: id, p_approve: approve, p_staff: u.user.email || uid });
+      if (!r || !r.ok) return json({ ok: false, error: (r && r.error) || 'failed' });
+      /* approved: open the member's access now and tell their phone, so it
+         is on before they put it away. Their next status call would do the
+         same; a failure here is not the counter's problem. */
+      if (approve && r.plus_user) {
+        try {
+          const st = await os('plus_status', { p_key: key, p_user: r.plus_user });
+          try { Object.assign(st, await os('plus_status_spaces', { p_key: key, p_user: r.plus_user })); } catch (_) { /* syncAccess reads memberships */ }
+          await syncAccess(admin, r.plus_user, st);
+          await notify(admin, [r.plus_user], 'Class connected', 'HITFAT+ All Access is yours with your class.', '/?kelas=today', 'kelas-link');
+        } catch (e) { console.warn('claim_decide', e && (e as Error).message); }
+      }
+      return json({ ok: true });
     }
 
     if (action === 'status') {

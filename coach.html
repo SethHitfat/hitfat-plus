@@ -102,6 +102,16 @@
     font-size:13.5px;opacity:0;transition:.22s;pointer-events:none;z-index:99;}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
   .hide{display:none !important;}
+
+  /* HITFAT+ connect requests */
+  .req{padding:14px 0;border-top:1px solid var(--line);}
+  .req:first-child{border-top:none;padding-top:2px;}
+  .req .nm{font-size:16px;font-weight:800;}
+  .req .mt{font-size:13px;color:var(--dim);margin-top:3px;line-height:1.5;word-break:break-all;}
+  .req .mt b{color:var(--txt);font-weight:700;}
+  .req .warn{font-size:13px;color:var(--red);margin-top:6px;line-height:1.5;}
+  .req .acts{display:flex;gap:9px;margin-top:11px;}
+  .req .acts .btn{padding:11px;font-size:14px;}
 </style>
 </head>
 <body>
@@ -136,6 +146,16 @@
       <input id="code" placeholder="e.g. K7M2QX" autocapitalize="characters" autocomplete="off"
              maxlength="6" style="text-align:center;letter-spacing:6px;font-family:'Oswald';font-size:20px;">
       <button class="btn sec" onclick="submitCode()">Check in by code</button>
+    </div>
+
+    <div class="sechead">Permintaan sambung HITFAT+</div>
+    <div class="card">
+      <div class="sub" style="margin:0 0 12px;">A member connecting their class membership in the HITFAT+ app asks
+        here. Approve only when the person in front of you is that member <b>and</b> shows you the HITFAT+
+        account below signed in on their own phone &mdash; never on a call or a WhatsApp message.</div>
+      <div id="reqres"></div>
+      <div id="reqs"></div>
+      <button class="btn sec" id="reqbtn" onclick="loadReqs()" style="margin-top:12px;">Refresh</button>
     </div>
 
     <div class="sechead">Register</div>
@@ -188,7 +208,7 @@ async function signIn(){
 async function signOut(){
   stopScan();
   try{ await sb.auth.signOut(); }catch(e){}
-  me=null; picked=null;
+  me=null; picked=null; reqs=[]; $('reqs').innerHTML=''; $('reqres').innerHTML='';
   $('app').classList.add('hide'); $('gate').classList.remove('hide');
   $('who').textContent=''; $('lead').textContent='Sign in with your coach account.';
   $('gbtn').disabled=false; $('gbtn').textContent='Sign in';
@@ -219,6 +239,7 @@ async function afterAuth(){
   $('gate').classList.add('hide'); $('app').classList.remove('hide');
   $('who').textContent=role.toUpperCase();
   $('lead').textContent='Pick the class you are teaching, then scan.';
+  loadReqs();
   await loadClasses();
 }
 
@@ -385,6 +406,80 @@ async function redeem(payload){
   }catch(e){
     $('result').innerHTML='<div class="bad">'+esc((e&&e.message)||'Check-in failed.')+'</div>';
   }
+}
+
+/* ── HITFAT+ connect requests ──
+   A member asks from the app with their phone number; the counter checks
+   it is them and approves (48-os-plus-claim-lulus.sql). plus-class checks
+   club_members.role again on the server; this page showing the panel is a
+   courtesy, not the check. */
+let reqs=[];
+const REQ_ERR={
+  not_found:'That request is gone. Refresh the list.',
+  decided:'Someone has already decided that request.',
+  stale:'That request is more than a day old. Ask the member to send it again.',
+  expired:'That membership has ended. Renew it before connecting HITFAT+.',
+  taken:'That member is already connected to another HITFAT+ account. Release it in HITFAT OS first.',
+  too_many:'Too many decisions this hour. Try again later.',
+  'staff only':'This account is not staff.',
+  not_ready:'The HITFAT OS bridge is not set up.',
+  failed:'Could not reach HITFAT+. Check the connection and try again.'
+};
+async function plusClass(body){
+  const s=await sb.auth.getSession();
+  const jwt=s&&s.data&&s.data.session&&s.data.session.access_token;
+  if(!jwt) return {err:'staff only'};
+  const res=await fetch(SUPA_URL+'/functions/v1/plus-class',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+jwt,'apikey':SUPA_KEY},
+    body:JSON.stringify(body)
+  });
+  const j=await res.json().catch(()=>({}));
+  const err=res.status===429?'too_many':(!res.ok||!j.ok)?(j.error||'failed'):'';
+  return {err:err, j:j};
+}
+function ago(iso){
+  const m=Math.round((Date.now()-new Date(iso))/60e3);
+  return m<1?'just now':m<60?m+' min ago':Math.floor(m/60)+' h ago';
+}
+function paintReqs(){
+  if(!reqs.length){ $('reqs').innerHTML='<div class="sub">No requests waiting.</div>'; return; }
+  $('reqs').innerHTML=reqs.map(r=>
+    '<div class="req"><div class="nm">'+esc(r.name||'—')+'</div>'+
+    '<div class="mt">Phone <b>'+esc(r.phone||'—')+'</b></div>'+
+    '<div class="mt">HITFAT+ account <b>'+esc(r.email||'(no email)')+'</b></div>'+
+    '<div class="mt">Asked '+esc(timeOf(r.created_at))+' · '+esc(ago(r.created_at))+'</div>'+
+    (r.linked_other?'<div class="warn">Already connected to another HITFAT+ account. Release it in HITFAT OS first, or approval will be refused.</div>':'')+
+    '<div class="acts"><button class="btn" onclick="decideReq('+Number(r.id)+',true)">Approve</button>'+
+    '<button class="btn sec" onclick="decideReq('+Number(r.id)+',false)">Reject</button></div></div>').join('');
+}
+async function loadReqs(){
+  const btn=$('reqbtn'); btn.disabled=true; btn.textContent='Loading…';
+  try{
+    const r=await plusClass({action:'claim_pending'});
+    if(r.err){ $('reqs').innerHTML='<div class="bad">'+esc(REQ_ERR[r.err]||REQ_ERR.failed)+'</div>'; return; }
+    reqs=Array.isArray(r.j.requests)?r.j.requests:[];
+    paintReqs();
+  }catch(e){
+    $('reqs').innerHTML='<div class="bad">'+esc(REQ_ERR.failed)+'</div>';
+  }finally{
+    btn.disabled=false; btn.textContent='Refresh';
+  }
+}
+async function decideReq(id,approve){
+  const r0=reqs.filter(x=>Number(x.id)===id)[0];
+  if(!r0) return;
+  if(approve && !confirm('Approve '+(r0.name||'this member')+' for '+(r0.email||'this account')+'?\n\n'+
+     'Only if they are in front of you and showed you that account on their own phone.')) return;
+  document.querySelectorAll('.req .btn').forEach(b=>b.disabled=true);
+  try{
+    const r=await plusClass({action:'claim_decide', id:id, approve:!!approve});
+    if(r.err){ $('reqres').innerHTML='<div class="bad">'+esc(REQ_ERR[r.err]||REQ_ERR.failed)+'</div>'; }
+    else { $('reqres').innerHTML=''; toast(approve?'Approved. Their HITFAT+ is connected.':'Rejected.'); }
+  }catch(e){
+    $('reqres').innerHTML='<div class="bad">'+esc(REQ_ERR.failed)+'</div>';
+  }
+  await loadReqs();
 }
 
 /* A coach who reloads mid-class should land back in the console, not at

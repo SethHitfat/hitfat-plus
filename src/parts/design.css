@@ -3932,6 +3932,9 @@ html,body{overscroll-behavior:none;}
 .kl-fq{font-size:13px;font-weight:700;color:var(--dim);}
 .kl-fn{font-size:24px;font-weight:900;color:var(--txt);margin-top:6px;letter-spacing:-.4px;}
 .kl-fc{font-size:14px;color:var(--dim);margin-top:4px;}
+.kl-hint{font-size:13px;color:var(--dim);margin:12px 0 0 2px;line-height:1.5;}
+.kl-found.kl-wait{border-color:rgba(201,162,39,.45);}
+.kl-waitp{font-size:14px;line-height:1.5;color:var(--txt);margin-top:12px;}
 .kl-err{margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(227,6,19,.1);color:var(--txt);font-size:14px;line-height:1.5;}
 .kl-err a,.kl-fine a{color:#E30613;font-weight:700;}
 .kl-fine{margin-top:22px;font-size:13px;color:var(--dim);text-align:center;}

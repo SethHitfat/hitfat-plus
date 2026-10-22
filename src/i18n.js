@@ -287,6 +287,14 @@ const I18N_MS={
 'Completed months stay on your shelf':'Bulan yang selesai kekal di rak anda','Challenges with a finish line':'Cabaran dengan garisan penamat','It changes by itself on the first':'Ia bertukar sendiri pada hari pertama',
 'The year ahead':'Tahun mendatang','One for every week you finish.':'Satu untuk setiap minggu anda habiskan.','Rewards':'Ganjaran','Check in':'Daftar masuk','Classes':'Kelas',
 
+/* ── HITFAT Class: connecting, approved at the counter ── */
+'Staff at the HITFAT HQ counter will approve it in person.':'Staf di kaunter HITFAT HQ akan meluluskannya secara bersemuka.',
+'Waiting for the counter':'Menunggu kelulusan kaunter','Check again':'Semak semula','Use another number':'Guna nombor lain',
+'Request sent. Show yourself at the HITFAT HQ counter and staff will approve it.':'Permintaan dihantar. Tunjukkan diri di kaunter HITFAT HQ — staf akan luluskan.',
+'Request sent. Show yourself at the HITFAT HQ counter.':'Permintaan dihantar. Tunjukkan diri di kaunter HITFAT HQ.',
+'Not approved yet. Ask at the counter.':'Belum diluluskan. Tanya di kaunter.',
+'Too many tries. Please wait an hour, or ask at the counter.':'Terlalu banyak cubaan. Sila tunggu sejam, atau tanya di kaunter.',
+
 /* ── Nutrition Academy chrome ── */
 'Nutrition Academy':'Nutrition Academy','Buat sekarang':'Buat sekarang',
 

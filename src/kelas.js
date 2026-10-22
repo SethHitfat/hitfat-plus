@@ -28,13 +28,23 @@ var KELAS_LIVE=true;
 var KELAS_CATS={Membership:'HITFAT Active Class', Ladies:'Ladies Only', Mens:'Mens Only', HYROX:'HYROX Class', PT:'Personal Coaching'};
 var KELAS_DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
-var Kelas={state:'idle', data:null, step:'phone', phone:'', found:null, err:'', busy:false, day:null, unlinkAsk:false};
+var Kelas={state:'idle', data:null, step:'phone', phone:'', wait:null, found:null, err:'', busy:false, day:null, unlinkAsk:false};
 
 function kelasKey(){ return 'hf_kelas_'+(HF&&HF.userId||''); }
 function kelasSave(){ try{ if(HF.userId) localStorage.setItem(kelasKey(), JSON.stringify(Kelas.data)); }catch(e){} }
 function kelasRestore(){
   try{ const s=HF.userId&&localStorage.getItem(kelasKey()); Kelas.data=s?JSON.parse(s):null; }catch(e){ Kelas.data=null; }
 }
+/* A request the counter has yet to approve (48-os-plus-claim-lulus.sql):
+   who it was for, kept on the phone per account so the Class screen opens
+   on "waiting" and checks again, rather than asking for the number twice.
+   OS forgets a request after a day; so does this. */
+function kelasWaitKey(){ return 'hf_kelas_wait_'+(HF&&HF.userId||''); }
+function kelasWaitGet(){
+  try{ const s=HF.userId&&localStorage.getItem(kelasWaitKey()); const w=s?JSON.parse(s):null;
+    return w&&w.at&&Date.now()-w.at<24*3600e3?w:null; }catch(e){ return null; }
+}
+function kelasWaitSet(w){ try{ if(!HF.userId) return; if(w) localStorage.setItem(kelasWaitKey(), JSON.stringify(w)); else localStorage.removeItem(kelasWaitKey()); }catch(e){} }
 function kelasLinked(){ return !!(KELAS_LIVE && Kelas.data && Kelas.data.linked); }
 function kelasMems(){ return (Kelas.data&&Kelas.data.memberships)||[]; }
 /* HYROX and Active, apart (17 Oct 2026, 095). Seth: "aku nk hyrox dan
@@ -113,6 +123,9 @@ async function kelasLoad(){
     const was=kelasLinked();
     const st=await kelasCall('status');
     Kelas.data=st&&st.linked?st:null; kelasSave(); Kelas.state='ready';
+    /* waiting for the counter, and now approved: the request is done */
+    if(kelasLinked() && kelasWaitGet()){ kelasWaitSet(null); Kelas.step='phone'; Kelas.found=null; Kelas.phone='';
+      toast('Connected. HITFAT+ All Access is yours with your class.'); }
     kelasSyncDays();
     kelasPhotoSync();
     /* the pass may have moved (renewed, ended, released at the counter):
@@ -129,8 +142,11 @@ async function kelasLoad(){
    Home counts this morning's class without a restart */
 var _kelasAt=0;
 if(typeof document!=='undefined' && document.addEventListener) document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState!=='visible' || !kelasLinked() || Kelas.state==='loading') return;
-  if(Date.now()-_kelasAt<5*60e3) return;
+  if(document.visibilityState!=='visible' || Kelas.state==='loading') return;
+  /* waiting for the counter: back from the counter, look again sooner */
+  const waiting=!kelasLinked() && !!kelasWaitGet();
+  if(!kelasLinked() && !waiting) return;
+  if(Date.now()-_kelasAt<(waiting?20e3:5*60e3)) return;
   kelasLoad();
 });
 /* the profile photo (Me), to HITFAT OS for the boards, posts and comments:
@@ -180,10 +196,11 @@ function kelasOpenUrl(u){
 /* ── open ── */
 function openKelas(){
   hidePanels(); $('kelas').style.display='block'; $('screen').scrollTop=0; Kelas.tab='today'; Kelas.ibIdx=0;
-  if(!kelasLinked()){ Kelas.step='phone'; Kelas.err=''; Kelas.found=null; }
+  if(!kelasLinked()){ Kelas.wait=kelasWaitGet(); Kelas.step=Kelas.wait?'wait':'phone'; Kelas.err=''; Kelas.found=null; }
   Kelas.unlinkAsk=false;
   renderKelas();
-  if(kelasLinked()) kelasLoad();
+  /* connected: fresh numbers; waiting: has the counter approved it yet? */
+  if(kelasLinked() || Kelas.step==='wait') kelasLoad();
 }
 function openKelasLink(){
   if(typeof closeProduct==='function' && $('pwm') && $('pwm').classList.contains('on')) closeProduct();
@@ -1700,11 +1717,24 @@ function kelasLinkHTML(){
     '<h2 class="kl-h">Connect your class membership</h2>'+
     '<p class="kl-p">For members of HITFAT Active Class, Ladies Only, Mens Only and HYROX at HITFAT HQ. '+
     'HITFAT+ All Access is included with your class.</p>';
-  if(Kelas.step==='confirm' && Kelas.found){
+  if(Kelas.step==='wait' && Kelas.wait){
+    /* asked, and waiting for the counter to approve it in person */
+    const w=Kelas.wait;
+    h+='<div class="kl-found kl-wait"><div class="kl-fq">Waiting for the counter</div>'+
+       '<div class="kl-fn">'+hesc(w.name||'')+'</div>'+
+       (w.category?'<div class="kl-fc">'+hesc(kelasCat(w.category))+(w.end_date?' · until '+kelasDate(w.end_date):'')+'</div>':'')+
+       '<div class="kl-waitp">Request sent. Show yourself at the HITFAT HQ counter and staff will approve it.</div></div>'+
+       '<button class="bigbtn kl-go" onclick="kelasRecheck()"'+(Kelas.busy?' disabled':'')+'>'+(Kelas.busy?'Checking…':'Check again')+'</button>'+
+       '<button class="kl-alt" onclick="kelasWaitCancel()">Use another number</button>';
+  } else if(Kelas.step==='confirm' && Kelas.found){
     const f=Kelas.found;
     h+='<div class="kl-found"><div class="kl-fq">Is this you?</div>'+
        '<div class="kl-fn">'+hesc(f.name)+'</div>'+
        '<div class="kl-fc">'+hesc(kelasCat(f.category))+' · until '+kelasDate(f.end_date)+'</div></div>'+
+       /* a phone number alone is not proof it is you: the counter approves
+          the request in person (48-os-plus-claim-lulus.sql). Already
+          yours: connected at once. */
+       (f.mine?'':'<div class="kl-hint">Staff at the HITFAT HQ counter will approve it in person.</div>')+
        '<button class="bigbtn kl-go" onclick="kelasClaim()"'+(Kelas.busy?' disabled':'')+'>'+(Kelas.busy?'Connecting…':'Yes, this is me')+'</button>'+
        '<button class="kl-alt" onclick="kelasBack()">No, use another number</button>';
   } else {
@@ -1718,6 +1748,21 @@ function kelasLinkHTML(){
   return h;
 }
 function kelasBack(){ Kelas.step='phone'; Kelas.found=null; Kelas.err=''; renderKelas(); }
+/* waiting: ask OS again (status), nothing to type */
+async function kelasRecheck(){
+  if(Kelas.busy || Kelas.state==='loading') return;
+  Kelas.busy=true; Kelas.err=''; renderKelas();
+  await kelasLoad();
+  Kelas.busy=false;
+  if(!kelasLinked()){
+    if(Kelas.state==='error') Kelas.err=KELAS_ERR.failed;
+    else toast('Not approved yet. Ask at the counter.');
+  }
+  renderKelas();
+}
+/* the request stays at the counter for the day; this only stops waiting
+   here (a new request for another number ends it in OS) */
+function kelasWaitCancel(){ kelasWaitSet(null); Kelas.wait=null; Kelas.step='phone'; Kelas.found=null; Kelas.err=''; renderKelas(); }
 function kelasDigits(p){ return String(p||'').replace(/\D/g,''); }
 const KELAS_ERR={
   not_found:'This number is not on our class list. Use the number you gave at the counter, or <a href="https://wa.me/60176132170" target="_blank" rel="noopener">WhatsApp HITFAT</a>.',
@@ -1745,9 +1790,17 @@ async function kelasClaim(){
   Kelas.busy=true; Kelas.err=''; renderKelas();
   try{
     const r=await kelasCall('claim',{phone:Kelas.phone});
-    if(!r.ok){ Kelas.err=KELAS_ERR[r.error]||KELAS_ERR.failed; Kelas.step='phone'; }
+    /* asked: the counter approves it in person, then status sees the link */
+    if(!r.ok && r.error==='pending'){
+      const f=Kelas.found||{};
+      Kelas.wait={name:f.name||'', category:f.category||'', end_date:f.end_date||'', at:Date.now()};
+      kelasWaitSet(Kelas.wait); Kelas.step='wait'; Kelas.found=null; Kelas.phone='';
+      toast('Request sent. Show yourself at the HITFAT HQ counter.');
+    }
+    else if(!r.ok){ Kelas.err=KELAS_ERR[r.error]||KELAS_ERR.failed; Kelas.step='phone'; }
     else {
       Kelas.data=Object.assign({}, r.status, {until:r.until}); kelasSave(); Kelas.state='ready'; kelasSyncDays();
+      kelasWaitSet(null); Kelas.wait=null;
       Kelas.step='phone'; Kelas.found=null; Kelas.phone='';
       await loadEntitlement();
       toast('Connected. HITFAT+ All Access is yours with your class.');
