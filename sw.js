@@ -8,7 +8,8 @@ self.addEventListener('activate', function (e) { e.waitUntil(self.clients.claim(
 self.addEventListener('push', function (e) {
   var d = {};
   try { d = e.data ? e.data.json() : {}; } catch (x) { d = { body: e.data ? e.data.text() : '' }; }
-  e.waitUntil(self.registration.showNotification(d.title || 'HITFAT+', {
+  /* a title of '' is kept: with none, an iPhone shows just "from Hitfat+" and the body */
+  e.waitUntil(self.registration.showNotification(typeof d.title === 'string' ? d.title : 'HITFAT+', {
     body: d.body || '',
     /* each reminder its own Bara (Android, desktop); an iPhone shows the app icon */
     icon: (typeof d.icon === 'string' && /^\/img\/mascot\/[a-z0-9_\/-]+\.png$/.test(d.icon)) ? d.icon : '/img/mascot/push-icon.png',
