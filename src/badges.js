@@ -23,9 +23,10 @@
                      Ramadan, Birthday
 
    HYROX (22 Oct 2026, Seth: "jenis lain, sesuai khas untuk hyrox dan
-   hybrid"): 25 more in their own look (a thin hexagon, black, steel and
-   hi-vis yellow), on a black panel of the wall, for members of the HYROX
-   class or anyone with HYROX on record: HYROX classes (wall ball, sandbag,
+   hybrid", then "HYROX fokus pada HYROX saja"): 25 more in their own look
+   (a thin hexagon, black, steel and hi-vis yellow), the wall of the HYROX
+   class space, black, which shows only these (and OG); the other spaces
+   show the rest, and HYROX classes count only here: HYROX classes (wall ball, sandbag,
    sled), the three HYROX programs finished, a time logged for each station
    and the 1 km run, Complete Athlete (all nine), and races the member logs
    (first, Doubles, Pro, under 90, 75 and 60 minutes, a full simulation
@@ -118,18 +119,23 @@ function kbStats(){
   var d=(typeof Kelas!=='undefined' && Kelas.data)||{}, P=d.points||{};
   var K=(typeof HF!=='undefined' && HF.data && (HF.data.kelas||(HF.data.kelas={})))||{};
   /* Season 1: what was earned before is cleared, once (OG kept) */
-  if(!K.kbS1){ var og=(K.badges||{}).og; K.badges=og?{og:og}:{}; K.padu=[]; K.hxSeen=[]; K.kbS1=1; try{ HF.save(); }catch(e){} }
+  if(!K.kbS1){ var og=(K.badges||{}).og; K.badges=og?{og:og}:{}; K.padu=[]; K.hxSeen=[]; K.s1ins=[]; K.kbS1=1; try{ HF.save(); }catch(e){} }
   var SEA=Date.parse(KB_SEASON+'T00:00:00+08:00'), inS=function(t){ return (Date.parse(t)||0)>=SEA; };
-  /* the season's classes, Malaysian time */
-  var ins=(d.checkins||[]).filter(inS).map(function(t){ return new Date(Date.parse(t)+8*3600e3); });
-  /* the classes before the season, taken once it is on */
-  var total=+d.total||0;
-  if(kbLive() && K.s1base==null && d.total!=null){ K.s1base=Math.max(0,total-ins.length); try{ HF.save(); }catch(e){} }
+  /* the classes before the season, taken once it is on (all of them, HYROX too) */
+  var all=(d.checkins||[]).filter(inS), total=+d.total||0;
+  if(kbLive() && K.s1base==null && d.total!=null){ K.s1base=Math.max(0,total-all.length); try{ HF.save(); }catch(e){} }
   var pre=kbLive()?(K.s1base||0):total;
-  /* weeks in a row, and a gap of 5 weeks or more (a comeback): the season's weeks (the one with 1 Nov if it had a class) */
-  var w0=new Date(SEA+8*3600e3-((new Date(SEA+8*3600e3).getUTCDay()+6)%7)*864e5).toISOString().slice(0,10);
-  var w=(d.weeks||[]).map(function(x){ return String(x).slice(0,10); }).filter(function(x){ return x>w0 || (x===w0 && ins.length); })
-    .map(function(x){ return Date.parse(x+'T00:00:00Z'); }).filter(function(x){ return x; }).sort(function(a,b){ return a-b; });
+  /* the season's classes but HYROX (those count on HYROX's own badges, Seth:
+     "HYROX fokus pada HYROX saja"), kept as they are seen: OS sends 120 days */
+  var hxT={}; (Array.isArray(d.hx_ins)?d.hx_ins:[]).forEach(function(t){ hxT[Date.parse(t)]=1; });
+  var seen=K.s1ins||(K.s1ins=[]), known={};
+  seen.forEach(function(t){ known[t]=1; });
+  all.forEach(function(t){ t=String(t); if(!known[t] && !hxT[Date.parse(t)]){ known[t]=1; seen.push(t); } });
+  if(seen.length>3000) K.s1ins=seen=seen.slice(-3000);
+  var ins=seen.filter(function(t){ return !hxT[Date.parse(t)]; }).map(function(t){ return new Date(Date.parse(t)+8*3600e3); });   /* Malaysian time */
+  /* weeks in a row with a class, and a gap of 5 weeks or more (a comeback) */
+  var wk={}; ins.forEach(function(x){ var t=Date.parse(x.toISOString().slice(0,10)+'T00:00:00Z'); wk[t-((new Date(t).getUTCDay()+6)%7)*864e5]=1; });
+  var w=Object.keys(wk).map(Number).sort(function(a,b){ return a-b; });
   var best=0, run=0, prev=null, back=0;
   w.forEach(function(t){ if(prev!==null && t-prev>=35*864e5) back=1; run=(prev!==null && t-prev===7*864e5)?run+1:1; if(run>best) best=run; prev=t; });
   /* per day, per month, per week (Monday) */
@@ -159,7 +165,7 @@ function kbStats(){
   Object.keys(byMonth).forEach(function(m){ if(byMonth[m]>=10 && pm.indexOf(m)<0) pm.push(m); });
   var refs=(P.history||[]).filter(function(x){ return x.t==='referral' && inS(x.at); }).length;
   var H=kbHxStats(d,K,inS);
-  var S={og:pre>0?1:0, ogN:pre, cls:kbLive()?Math.max(0,total-(K.s1base||0)):0, hx:H.hx, hxft:H.ft, hx8:H.p8, hx12:H.p12, hxall:H.all, race:H.race, rdbl:H.dbl, rpro:H.pro, sub90:H.s90, sub75:H.s75, sub60:H.s60,
+  var S={og:pre>0?1:0, ogN:pre, cls:kbLive()?Math.max(0,total-(K.s1base||0)-H.hx):0, hx:H.hx, hxft:H.ft, hx8:H.p8, hx12:H.p12, hxall:H.all, race:H.race, rdbl:H.dbl, rpro:H.pro, sub90:H.s90, sub75:H.s75, sub60:H.s60,
           st_ski:H.st.ski, st_push:H.st.push, st_pull:H.st.pull, st_bbj:H.st.bbj, st_row:H.st.row, st_carry:H.st.carry, st_lunge:H.st.lunge, st_wb:H.st.wb, st_run:H.st.run, pts:+P.lifetime||0, week:best, wkx:wkx, month:pm.length, pr:(d.prs||[]).filter(function(e){ return inS(e.at); }).length, frd:refs,
           early:early, owl:owl, wknd:wknd, beast:beast, back:back, dbl:dbl, ib:(d.inbody||[]).filter(function(e){ return String(e.scan_date||'')>=KB_SEASON; }).length,
           ny:ny, merdeka:mer, ramadan:ramBest, bday:bd};
@@ -188,12 +194,6 @@ function kbHxStats(d,K,inS){
   return {hx:seen.length, ft:prog('hxft'), p8:prog('hx8'), p12:prog('hx12'), st:st, all:all, race:races.length,
     dbl:races.some(function(r){ return /^Doubles/.test(r.div||''); })?1:0, pro:races.some(function(r){ return /^Pro/.test(r.div||''); })?1:0,
     s90:best&&best<90*60?1:0, s75:best&&best<75*60?1:0, s60:best&&best<60*60?1:0};
-}
-/* the HYROX part of the wall: for the HYROX class, or anyone with HYROX on record */
-function kbHxOn(S,E){
-  if(typeof kelasHasSpace==='function' && kelasHasSpace('hyrox')) return true;
-  if(S.hx || S.race || S.hxall || S.hxft || S.hx8 || S.hx12) return true;
-  return KB_LIST.some(function(b){ return /^hx[cpsr]$/.test(b.cat) && E[b.id]; });
 }
 function kbHave(b,S){ return (S[b.k]||0)>=(b.v||b.need); }
 /* where the member is on the way to a badge: [now, needed] */
@@ -249,23 +249,25 @@ function kbHTML(){
   if(typeof Kelas==='undefined' || !Kelas.data) return '';
   var S=kbStats(), E=kbEarned();
   var has=function(b){ return !!(E[b.id] || kbHave(b,S)); };
-  var hxOn=kbHxOn(S,E);
-  var shown=function(b){ return !(b.hide && !has(b)) && (hxOn || !/^hx/.test(b.cat)); };
+  /* the HYROX space shows HYROX's badges only (and OG), the others the rest */
+  var hxOn=typeof kelasSpace==='function' && kelasSpace()==='hyrox';
+  var shown=function(b){ return !(b.hide && !has(b)) && (b.id==='og' || (hxOn ? /^hx/.test(b.cat) : !/^hx/.test(b.cat))); };
   var have=KB_LIST.filter(function(b){ return shown(b) && has(b); }), all=KB_LIST.filter(shown).length;
   /* the latest five earned, fanned across the top */
   var last=have.slice().sort(function(a,c){ return String(E[c.id]||'').localeCompare(String(E[a.id]||'')) || (c.v||0)-(a.v||0); }).slice(0,5);
-  var h='<div class="kb"><div class="kb-hero">'+
+  var h='<div class="kb'+(hxOn?' hxw':'')+'"><div class="kb-hero">'+
       (last.length?'<div class="kb-fan">'+last.map(function(b){ return kbPic(b,true,64,!/^hx/.test(b.cat)); }).join('')+'</div>':'')+
-      (kbLive()?'<b>TRAIN &amp; COLLECT</b><small>Season 1 · '+have.length+' of '+all+' badges earned</small>'
+      (kbLive()?'<b>'+(hxOn?'TRAIN &amp; RACE':'TRAIN &amp; COLLECT')+'</b><small>Season 1 · '+have.length+' of '+all+' badges earned</small>'
         :'<b>SEASON 1</b><small>Starts 1 November. Every badge starts from zero for everyone: every class from 1 Nov counts.</small>')+'</div>';
   KB_SECT.forEach(function(sc){
-    if(sc[2] && !hxOn) return;
+    if(!!sc[2]!==hxOn && !(hxOn && sc[0]==='Specials')) return;
     var list=KB_LIST.filter(function(b){ return sc[1].indexOf(b.cat)>=0 && shown(b); }), n=list.filter(has).length;
-    /* HYROX on its own black panel, its badges on black as they were made */
-    h+='<div class="kb-sec'+(sc[2]?' hx':'')+'"><div class="kb-sec-h"><b>'+sc[0]+'</b><small>'+n+' of '+list.length+'</small></div><div class="kb-grid">'+
+    if(!list.length) return;
+    /* HYROX black, its badges on black as they were made */
+    h+='<div class="kb-sec'+(hxOn?' hx':'')+'"><div class="kb-sec-h"><b>'+(hxOn&&!sc[2]?'HITFAT':sc[0])+'</b><small>'+n+' of '+list.length+'</small></div><div class="kb-grid">'+
       list.map(function(b){
         var on=has(b);
-        return '<button class="kb-i'+(on?'':' off')+'" onclick="kbOpen(\''+b.id+'\')">'+kbPic(b,on,92,!sc[2])+'<span>'+hesc(b.t)+'</span></button>';
+        return '<button class="kb-i'+(on?'':' off')+'" onclick="kbOpen(\''+b.id+'\')">'+kbPic(b,on,92,!hxOn)+'<span>'+hesc(b.t)+'</span></button>';
       }).join('')+'</div></div>';
   });
   return h+'</div>';

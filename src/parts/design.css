@@ -5573,6 +5573,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kb-pic.off img{filter:grayscale(1);opacity:.2;}
 :root:not([data-theme="light"]) .kb-pic.cut.off img{opacity:.3;}
 /* HYROX: its own black panel, the badges on black as they were made */
+.kb.hxw{background:#000000;}
 .kb-sec.hx{background:#000000;color:#FFFFFF;border-top:0;}
 .kb-sec.hx+.kb-sec.hx{border-top:1px solid rgba(255,255,255,.10);}
 .kb-sec.hx .kb-sec-h b,.kb-sec.hx .kb-i span{color:#FFFFFF;}

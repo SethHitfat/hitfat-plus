@@ -4397,14 +4397,14 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
       weeks:['2026-09-28','2026-10-05','2026-10-12','2026-10-19'], prs:[{at:'2026-10-01'}], inbody:[{scan_date:'2026-10-17'}], points:{history:[]}};
     HF.data.kelas.badges={}; HF.data.kelas.bday='10-14';
     var S=kbStats();
-    ok("badges: the numbers come from OS (63 classes, 4 weeks in a row, 1 PR, 1 InBody)", S.cls===63 && S.week===4 && S.pr===1 && S.ib===1);
-    ok("...after NTC: 4 class days in one week, 4 days in a row, a night class, a comeback, New Year, a birthday", S.wkx===4 && S.beast===4 && S.owl===1 && S.back===1 && S.ny===1 && S.bday===1 && S.merdeka===0);
+    ok("badges: the numbers come from OS (63 classes, 1 PR, 1 InBody)", S.cls===63 && S.pr===1 && S.ib===1);
+    ok("...after NTC: 4 class days in one week, 4 days in a row, a night class, a comeback, New Year, a birthday", S.wkx===4 && S.week===1 && S.beast===4 && S.owl===1 && S.back===1 && S.ny===1 && S.bday===1 && S.merdeka===0);
     ok("...78 badges (25 for HYROX, and HITFAT OG), each its own picture", KB_LIST.length===78 && KB_LIST.filter(function(b){ return /^hx/.test(b.cat); }).length===25 && KB_LIST.filter(function(b){ return b.cat==='cls'; }).length===16 &&
       KB_LIST.every(function(b){ return b.k && (b.v||b.need); }) && kbPic(KB_LIST[0],true,96).indexOf('/img/badges/cls1.jpg')>0);
     var w=kbHTML();
     ok("...the wall: NTC's, a section per kind, the ones not yet earned dim", w.indexOf('TRAIN &amp; COLLECT')>0 && w.indexOf('Records &amp; squad')<0 && w.indexOf('Records & squad')>0 &&
       w.indexOf('50 Class Club')>0 && w.indexOf('kb-pic off cut')>0 && w.indexOf('kb-pic on cut')>0 && w.indexOf('/img/badges/c/cls50.png')>0);
-    ok("...HYROX only for HYROX (none here), its stations and races from what the member logs", w.indexOf('HYROX stations')<0 &&
+    ok("...HYROX only on the HYROX space's wall (not this one), its stations and races from what the member logs", w.indexOf('HYROX stations')<0 && String(kbHTML).indexOf("kelasSpace()==='hyrox'")>0 &&
       kbHxStats({hyrox:[{st:'ski',s:250},{st:'sim',s:85*60}]},{hx:{races:[{d:'2026-10-01',div:'Doubles Mixed',s:95*60}]}}).st.ski===1 &&
       kbHxStats({hyrox:[{st:'sim',s:85*60}]},{hx:{races:[{div:'Doubles Mixed',s:95*60}]}}).s90===1 && kbHxStats({},{hx:{races:[{div:'Doubles Mixed',s:95*60}]}}).dbl===1);
     HF.data.kelas.s1base=40;
