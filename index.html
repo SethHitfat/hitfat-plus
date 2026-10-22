@@ -7802,13 +7802,17 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
    achievements): a dark banner, then plain and light like NTC, the badges
    cut out, the ones not yet earned a faint grey ── */
 .kb{margin:16px 0;border-radius:24px;color:var(--txt);background:var(--surface);overflow:hidden;}
-.kb-hero{padding:22px 16px 20px;text-align:center;color:#FFFFFF;
+.kb-hero{padding:22px 16px 20px;text-align:center;color:var(--txt);border-bottom:1px solid var(--hairline);
+  background:radial-gradient(90% 90% at 50% 0%,rgba(227,6,19,.12) 0%,rgba(227,6,19,0) 70%),var(--surface);}
+/* black in the dark theme, and on HYROX's wall */
+:root:not([data-theme="light"]) .kb-hero,.kb.hxw .kb-hero{color:#FFFFFF;border-bottom:0;
   background:radial-gradient(90% 90% at 50% 0%,rgba(227,6,19,.30) 0%,rgba(227,6,19,0) 70%),#000000;}
 .kb-fan{display:flex;justify-content:center;margin-bottom:8px;}
 .kb-fan .kb-pic{margin:0 -5px;}
 .kb-fan .kb-pic:nth-child(2),.kb-fan .kb-pic:nth-child(4){transform:translateY(8px);}
-.kb-hero b{display:block;font-size:24px;font-weight:900;letter-spacing:.5px;color:#FFFFFF;}
-.kb-hero small{display:block;font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;}
+.kb-hero b{display:block;font-size:24px;font-weight:900;letter-spacing:.5px;color:inherit;}
+.kb-hero small{display:block;font-size:13px;color:var(--dim);margin-top:4px;}
+:root:not([data-theme="light"]) .kb-hero small,.kb.hxw .kb-hero small{color:rgba(255,255,255,.6);}
 .kb-sec{padding:24px 16px 26px;}
 .kb-sec+.kb-sec{border-top:1px solid var(--hairline);}
 .kb-sec-h{display:flex;align-items:baseline;justify-content:space-between;}
