@@ -282,7 +282,7 @@ function renderKelas(){
     return;
   }
   el.innerHTML=kelasLinked()?kelasHTML():kelasLinkHTML();
-  if(kelasLinked() && (Kelas.tab||'today')==='today') kelasBaraLive();
+  if(kelasLinked() && (Kelas.tab||'today')==='today'){ kelasBaraLive(); setTimeout(kelasCardMoment,700); }
 }
 
 function kelasQR(px){ return typeof qrSVG==='function' ? qrSVG(String(Kelas.data.member_id), px) : ''; }
@@ -322,13 +322,12 @@ function kelasTodayTab(){
   /* a shorter hero: the name and the class on the left, the QR on the
      right (tap for full screen at the kiosk), Bara underneath */
   const spc=kelasSpace(), hxs=spc==='hyrox', lxs=spc==='ladies', mxs=spc==='mens', pts=spc==='pt';
-  h+='<div class="kl-hero kl-hero2'+(hxs?' hx':lxs?' lx':mxs?' mx':pts?' pt':'')+(act?'':' off')+'">'+
-     '<div class="kl-hrow"><div class="kl-hl"><div class="kl-kick">'+(hxs?'HYROX · HQ':lxs?'Ladies2Fit · HQ':mxs?'Mens2Fit · HQ':pts?'Personal Coaching':'HITFAT Class · HQ')+'</div>'+
-     '<div class="kl-hi">'+kelasGreet()+'</div><div class="kl-name">'+hesc(first)+'</div>'+
-     '<div class="kl-cat">'+kelasSpMems().filter(x=>x.active).map(x=>hesc(kelasCat(x.category))).join(' · ')+'</div>'+
-     '<button class="kl-ci" onclick="kelasQRFull()">'+glyph('qr')+(act?' Check in':' Renew first')+'</button></div>'+
-     '<button class="kl-qr kl-qr2" onclick="kelasQRFull()" aria-label="Show my check-in QR full screen">'+kelasQR(116)+'<small>Tap to enlarge</small></button></div>'+
-     kelasBaraHTML()+kelasLoyHTML()+'</div>';
+  /* (22 Oct 2026) the member card leads: Seth wants access to feel "wow",
+     something a member wants to share; all they do is come to class */
+  h+='<div class="kl-greet">'+kelasGreet()+(first?', '+hesc(first):'')+'</div>'+kelasCardHTML()+
+     '<div class="kl-card-act"><button class="kl-card-ci" onclick="kelasQRFull()">'+glyph('qr')+(act?' Check in':' Renew first')+'</button>'+
+     '<button class="kl-card-sh" onclick="kelasShareCard()">'+glyph('share')+' Share my card</button></div>'+
+     '<div class="kl-hero kl-hero2'+(hxs?' hx':lxs?' lx':mxs?' mx':pts?' pt':'')+' kl-bara-only'+(act?'':' off')+'">'+kelasBaraHTML()+'</div>';
   h+=kelasGiftHTML();
 
   /* the next class straight under the door: the one thing a regular wants
@@ -393,6 +392,94 @@ function kelasTodayTab(){
    built (their club and their points) at a glance, and says so when a
    reward is waiting. Nothing here is invented: the count is the kiosk's,
    the points are OS's. ── */
+/* ═══ the member card (22 Oct 2026) ═══
+   A card to be proud of, like a premium wallet card, in the space's own
+   colours (Active's red, as the hero was: Seth, "ikut tema yang sekarang
+   ni merah cantik ni … tak nak yang dark sangat"), the member's name, their club, classes, streak and points, the
+   QR in its corner. Shared to an IG Story as it is; and the first time a
+   member has access, it arrives with what All Access opens for them. */
+/* each space: its accent, its name, its card's gradient (as its hero) */
+var KL_CARD={active:['#FFFFFF','ACTIVE',['#FF3B3B','#E30613','#8E0410']], hyrox:['#FFD400','HYROX',['#2A2A31','#16161A','#0B0B0D']],
+  ladies:['#FFFFFF','LADIES2FIT',['#F9A8D4','#EC4899','#9D174D']], mens:['#FFFFFF','MENS2FIT',['#60A5FA','#1D4ED8','#172554']],
+  pt:['#FFFFFF','PERSONAL COACHING',['#A78BFA','#6D28D9','#2E1065']]};
+function kelasCardInfo(){
+  const d=Kelas.data||{}, sp=kelasSpace(), C=KL_CARD[sp]||KL_CARD.active, m=kelasMain(), n=kelasTotal(), L=kelasLevel(n), P=kelasPts();
+  return {sp:sp, acc:C[0], lbl:C[1], g:C[2], act:kelasActive(), name:String(d.name||'').trim(), n:n, wk:kelasWeekStreak(), pts:P?P.balance||0:null,
+    lvl:sp==='pt'?(n?n+' sessions with your coach':'Your first session'):(L.cur?L.cur+' Class Club':'Getting started'),
+    no:String(d.member_id||'').replace(/-/g,'').slice(0,8).toUpperCase().replace(/^(.{4})/,'$1 '), end:m&&m.end_date?kelasDate(m.end_date):''};
+}
+function kelasCardHTML(big){
+  const c=kelasCardInfo();
+  return '<div class="kl-card sp-'+c.sp+(c.act?'':' off')+(big?' big':'')+'" style="--acc:'+c.acc+';--g:linear-gradient(155deg,'+c.g[0]+' 0%,'+c.g[1]+' 45%,'+c.g[2]+' 100%)">'+
+    '<i class="kl-card-glow"></i><i class="kl-card-mark"></i><i class="kl-card-sheen"></i>'+
+    '<div class="kl-card-top"><span class="kl-card-logo"><i></i>HITFAT<b>+</b></span><span class="kl-card-chip">'+(c.act?c.lbl+' MEMBER':'RENEW TO RETURN')+'</span></div>'+
+    '<div class="kl-card-mid"><div class="kl-card-name">'+hesc(c.name||'HITFAT Member')+'</div><div class="kl-card-lvl">'+hesc(c.lvl)+' · Season 1</div></div>'+
+    '<div class="kl-card-bot"><div class="kl-card-st"><span><b>'+c.n+'</b><small>'+(c.sp==='pt'?'sessions':'classes')+'</small></span>'+
+      '<span><b>'+c.wk+'</b><small>week streak</small></span>'+(c.pts!==null?'<span><b>'+kelasN(c.pts)+'</b><small>points</small></span>':'')+'</div>'+
+      (big?'':'<button class="kl-card-qr" onclick="kelasQRFull()" aria-label="Show my check-in QR">'+kelasQR(58)+'</button>')+'</div>'+
+    '<div class="kl-card-no">No. '+c.no+(c.end?' · Valid to '+hesc(c.end):'')+'</div></div>';
+}
+function kelasShareCard(){ Kelas.share={kind:'card'}; openShare('kelas'); }
+/* the first time a member has access: the card arrives, with what it opens */
+function kelasCardMoment(){
+  try{
+    const k=HF.data.kelas||(HF.data.kelas={});
+    if(k.cardSeen || !kelasActive() || !$('scc') || $('scc').style.display==='flex') return false;
+    k.cardSeen=iso(0); HF.save();
+    const c=kelasCardInfo(), cols=['#E30613','#FFC20E','#FFFFFF',c.acc]; let conf='';
+    for(let i=0;i<24;i++) conf+='<i style="left:'+((i*37)%100)+'%;background:'+cols[i%4]+';-webkit-animation-delay:'+(i%8)*0.18+'s;animation-delay:'+(i%8)*0.18+'s"></i>';
+    const U=[['workout','Every HITFAT+ program, free'],['flame','Bara, your coach, every day'],['star','HITFAT Points for every class'],['trophy','Badges: Season 1 starts 1 Nov']];
+    $('scc').className='scc scc-meet scc-card';
+    $('scc').innerHTML='<div class="scc-conf">'+conf+'</div><div class="scc-in"><div class="kl-card-in">'+kelasCardHTML(true)+'</div>'+
+      '<div class="scc-t">Welcome to All Access</div>'+
+      '<div class="scc-s">Your HITFAT membership now opens all of HITFAT+. Just come to class.</div>'+
+      '<div class="kl-unl">'+U.map(u=>'<div>'+glyph(u[0])+'<span>'+u[1]+'</span></div>').join('')+'</div>'+
+      '<button class="bigbtn scc-share" onclick="scCelebrateClose();kelasShareCard()">'+glyph('share')+' Share my card</button>'+
+      '<button class="scc-x" onclick="scCelebrateClose()">Let\'s go</button></div>';
+    $('scc').style.display='flex';
+    if(typeof hfSound==='function') try{ hfSound('cheer'); }catch(e){}
+    return true;
+  }catch(e){ return false; }
+}
+/* the card on a Story: black, the space's glow, the card, the member */
+function kelasDrawCard(x,W,H,cx,F){
+  const c=kelasCardInfo();
+  /* the space's deepest shade into black, so the bright card stands out */
+  const bg=x.createLinearGradient(0,0,0,H); bg.addColorStop(0,c.g[2]); bg.addColorStop(.6,'#1A0306'); bg.addColorStop(1,'#070708');
+  x.fillStyle=bg; x.fillRect(0,0,W,H);
+  const g=x.createRadialGradient(W*.85,H*.08,0,W*.85,H*.08,W*.9); g.addColorStop(0,'rgba(255,255,255,.26)'); g.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.textAlign='center';
+  x.fillStyle='#FFFFFF'; x.font=F(900,64); x.fillText('HITFAT+',cx,220);
+  x.fillStyle='rgba(255,255,255,.75)'; x.font=F(800,30); _spaced(x,'MEMBER · ALL ACCESS',cx,280,6);
+  /* the card, 940 × 593 */
+  const cw=940, ch=593, l=cx-cw/2, t=H*.42-ch/2;
+  x.save(); x.shadowColor='rgba(0,0,0,.6)'; x.shadowBlur=80; x.shadowOffsetY=36;
+  const cg=x.createLinearGradient(l,t,l+cw*.6,t+ch); cg.addColorStop(0,c.g[0]); cg.addColorStop(.45,c.g[1]); cg.addColorStop(1,c.g[2]);
+  x.fillStyle=cg; _rr(x,l,t,cw,ch,52); x.fill(); x.restore();
+  x.save(); _rr(x,l,t,cw,ch,52); x.clip();
+  const ag=x.createRadialGradient(l+cw*.88,t+ch*.08,0,l+cw*.88,t+ch*.08,cw*.6); ag.addColorStop(0,'rgba(255,255,255,.30)'); ag.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle=ag; x.fillRect(l,t,cw,ch);
+  x.strokeStyle='rgba(255,255,255,.35)'; x.lineWidth=3; _rr(x,l+1.5,t+1.5,cw-3,ch-3,51); x.stroke();
+  x.textAlign='left';
+  x.fillStyle='#FFFFFF'; x.font=F(900,40); x.fillText('HITFAT',l+60,t+92); const lw=x.measureText('HITFAT').width;
+  x.fillStyle=c.acc; x.fillText('+',l+60+lw+2,t+92);
+  x.textAlign='right'; x.fillStyle=c.acc; x.font=F(800,26); x.fillText((c.act?c.lbl+' MEMBER':'MEMBER'),l+cw-60,t+88);
+  x.textAlign='left'; x.fillStyle='#FFFFFF';
+  let nm=(c.name||'HITFAT Member').toUpperCase(), fs=78; x.font=F(900,fs);
+  while(x.measureText(nm).width>cw-120 && fs>44){ fs-=4; x.font=F(900,fs); }
+  x.fillText(nm,l+60,t+290);
+  x.fillStyle='rgba(255,255,255,.7)'; x.font=F(700,34); x.fillText(c.lvl+' · Season 1',l+60,t+345);
+  const st=[[String(c.n),c.sp==='pt'?'sessions':'classes'],[String(c.wk),'week streak']].concat(c.pts!==null?[[kelasN(c.pts),'points']]:[]);
+  st.forEach((v,i)=>{ const sx=l+60+i*260; x.fillStyle='#FFFFFF'; x.font=F(900,64); x.fillText(v[0],sx,t+ch-110); x.fillStyle='rgba(255,255,255,.6)'; x.font=F(700,26); x.fillText(v[1],sx,t+ch-70); });
+  x.fillStyle='rgba(255,255,255,.55)'; x.font=F(700,22); x.fillText('No. '+c.no,l+60,t+ch-28);
+  x.restore();
+  x.textAlign='center';
+  const first=(c.name||'').split(/\s+/)[0]||'';
+  x.fillStyle='#FFFFFF'; x.font=F(900,70); x.fillText(first?first.toUpperCase()+' IS IN.':'I\'M IN.',cx,t+ch+170);
+  x.fillStyle='rgba(255,255,255,.8)'; x.font=F(700,38); x.fillText('Every class counts. HITFAT HQ',cx,t+ch+235);
+  x.fillStyle='rgba(255,255,255,.75)'; x.font=F(700,34); x.fillText('app.hitfat.io',cx,H-110);
+}
 function kelasGreet(){ const h=kelasNowMY().getUTCHours(); return h<12?'Good morning':h<18?'Good afternoon':'Good evening'; }
 function kelasLoyHTML(){
   const n=kelasTotal(), pt=kelasSpace()==='pt', L=kelasLevel(n), P=kelasPts();
@@ -787,6 +874,7 @@ function kelasDraw(){
   if(S.kind==='month') return kelasDrawMonth(x,W,H,cx,F,S);
   if(S.kind==='lx') return kelasDrawLx(x,W,H,cx,F,S);
   if(S.kind==='badge' && typeof kbDrawShare==='function') return kbDrawShare(x,W,H,cx,F,S);
+  if(S.kind==='card') return kelasDrawCard(x,W,H,cx,F);
   // big faint mark behind
   x.fillStyle='rgba(255,255,255,.10)'; x.font=F(900,S.kind==='pr'?560:420);
   x.fillText(S.kind==='pr'?'PR':'#'+(S.n||0),cx,H-260);
