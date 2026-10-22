@@ -4342,13 +4342,19 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("...one way in from Me", kelasMeRow().indexOf('openKelasLink()')>0);
   ok("...and one line under the paywall", paywallHTML(true).indexOf('Connect with your phone number')>0);
   ok("...not active", !kelasActive());
-  /* a phone number is not proof: connecting needs the counter's code (47-os-plus-claim-kod.sql) */
+  /* a phone number is not proof: the counter approves the request in person (48-os-plus-claim-lulus.sql) */
   Kelas.step='confirm'; Kelas.found={name:'S*** M***', category:'Membership', end_date:'2026-12-31', mine:false};
-  ok("connecting asks for the 6-digit code from the counter", kelasLinkHTML().indexOf('id="kl-kod"')>0 && kelasLinkHTML().indexOf('HITFAT HQ counter')>0);
+  ok("connecting asks for no code, and says the counter approves it", kelasLinkHTML().indexOf('kl-kod')<0 && kelasLinkHTML().indexOf('approve it in person')>0 && kelasLinkHTML().indexOf('kelasClaim()')>0);
   Kelas.found.mine=true;
-  ok("...but not when the number is already this account's", kelasLinkHTML().indexOf('id="kl-kod"')<0);
-  ok("...and a wrong code says so", !!KELAS_ERR.bad_code && !!KELAS_ERR.too_many);
-  Kelas.step='phone'; Kelas.found=null; Kelas.code='';
+  ok("...not said when the number is already this account's", kelasLinkHTML().indexOf('approve it in person')<0);
+  var keepU=HF.userId; HF.userId='u-wait';
+  Kelas.wait={name:'S*** M***', category:'Membership', end_date:'2026-12-31', at:Date.now()}; kelasWaitSet(Kelas.wait); Kelas.step='wait';
+  ok("asked: waiting for the counter, checked again without typing anything", kelasLinkHTML().indexOf('Waiting for the counter')>0 && kelasLinkHTML().indexOf('kelasRecheck()')>0 && kelasLinkHTML().indexOf('id="kl-ph"')<0 && !!kelasWaitGet());
+  kelasWaitSet({name:'x', at:Date.now()-25*3600e3});
+  ok("...a day on, no longer waiting (OS forgets it too)", kelasWaitGet()===null);
+  ok("...and the refusals still say why", !!KELAS_ERR.taken && !!KELAS_ERR.not_found && !!KELAS_ERR.expired && !!KELAS_ERR.too_many && !KELAS_ERR.bad_code);
+  kelasWaitSet(null); HF.userId=keepU; Kelas.wait=null;
+  Kelas.step='phone'; Kelas.found=null;
   ok("times read as a clock", kelasClock('18:00')==='6:00 PM' && kelasClock('08:15')==='8:15 AM' && kelasClock('00:30')==='12:30 AM');
   ok("a member id fits a QR", qrSVG('5b0f2c1e-8d3a-4c7e-9f21-3a6d0b9e4c11',120).indexOf('<path')>0);
   kelasDemo();
