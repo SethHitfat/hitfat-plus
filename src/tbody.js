@@ -4390,19 +4390,27 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
     HF.data.kelas.goal=keepG||'';
     ok("...the ready moment, once a reward, from Home and after the class loads", String(kelasRewardMoment).indexOf('rwSeen')>0 && String(scRender).indexOf('kelasRewardMoment()')>0 && String(kelasLoad).indexOf('kelasRewardMoment()')>0);
     ok("...Bring a friend is listed once (the card with the invite)", kelasPointsHTML().split('Bring a friend').length===2);
-    var keepD=Kelas.data, keepB=(HF.data.kelas||{}).badges, keepTab=Kelas.kbTab;
-    Kelas.data={total:63, checkins:[], weeks:['2026-09-28','2026-10-05','2026-10-12','2026-10-19'], prs:[{at:'2026-10-01'}], inbody:[{scan_date:'2026-10-17'}], points:{history:[]}};
-    HF.data.kelas.badges={}; Kelas.kbTab='earned';
+    var keepD=Kelas.data, keepB=(HF.data.kelas||{}).badges, keepBd=(HF.data.kelas||{}).bday;
+    /* Malaysian times: Tue 13 to Fri 16 Oct (one at 8.10 pm) after months away; New Year's Day */
+    Kelas.data={total:63, checkins:['2026-01-01T00:30:00Z','2026-02-20T23:30:00Z','2026-10-12T23:30:00Z','2026-10-13T23:30:00Z','2026-10-14T12:10:00Z','2026-10-14T23:30:00Z','2026-10-15T23:30:00Z'],
+      weeks:['2026-09-28','2026-10-05','2026-10-12','2026-10-19'], prs:[{at:'2026-10-01'}], inbody:[{scan_date:'2026-10-17'}], points:{history:[]}};
+    HF.data.kelas.badges={}; HF.data.kelas.bday='10-14';
     var S=kbStats();
     ok("badges: the numbers come from OS (63 classes, 4 weeks in a row, 1 PR, 1 InBody)", S.cls===63 && S.week===4 && S.pr===1 && S.ib===1);
+    ok("...after NTC: 4 class days in one week, 4 days in a row, a night class, a comeback, New Year, a birthday", S.wkx===4 && S.beast===4 && S.owl===1 && S.back===1 && S.ny===1 && S.bday===1 && S.merdeka===0);
+    ok("...52 badges, each its own picture", KB_LIST.length===52 && KB_LIST.filter(function(b){ return b.cat==='cls'; }).length===16 &&
+      KB_LIST.every(function(b){ return b.k && (b.v||b.need); }) && kbPic(KB_LIST[0],true,96).indexOf('/img/badges/cls1.jpg')>0);
     var w=kbHTML();
-    ok("...the wall: earned and available, each badge an SVG", w.indexOf('Earned · ')>0 && w.indexOf('Available · ')>0 && w.indexOf('50 Class Club')>0 && w.indexOf('<svg class="kb-svg')>=0);
+    ok("...the wall: NTC's, a section per kind, the ones not yet earned dim", w.indexOf('TRAIN &amp; COLLECT')>0 && w.indexOf('Records &amp; squad')<0 && w.indexOf('Records & squad')>0 &&
+      w.indexOf('50 Class Club')>0 && w.indexOf('kb-pic off')>0 && w.indexOf('kb-pic on')>0);
+    HF.data.kelas.bday='';
+    ok("...the birthday asked for, OS has none", kbHTML().indexOf('Set your birthday')>0 && String(kbOpen).indexOf('kbSetBday()')>0);
     ok("...a badge once earned is kept, and the proudest new one leads the moment", typeof kbCheck==='function' && String(kbCheck).indexOf("rank=['cls'")>0 && String(kbCheck).indexOf('E[b.id]=today')>0);
     ok("...First Class (F45's 1st Workout) and the Points Club (lifetime points), and a share to IG Story", KB_LIST.some(function(x){ return x.id==='cls1'; }) &&
       KB_LIST.filter(function(x){ return x.cat==='pts'; }).length===5 && kbHave(KB_LIST.filter(function(x){ return x.id==='pts5000'; })[0],{pts:5200}) &&
       String(kelasDraw).indexOf("S.kind==='badge'")>0 && typeof kbDrawShare==='function' && String(kbOpen).indexOf('kbShare(')>0);
     ok("...on the class Progress tab, and checked after the class loads and from Home", String(kelasProgressTab).indexOf('kbHTML()')>0 && String(kelasLoad).indexOf('kbCheck()')>0 && String(scRender).indexOf('kbCheck()')>0);
-    Kelas.data=keepD; HF.data.kelas.badges=keepB||{}; Kelas.kbTab=keepTab;
+    Kelas.data=keepD; HF.data.kelas.badges=keepB||{}; HF.data.kelas.bday=keepBd||'';
   })();
   ok("...12 weeks of bars", (kelasPtsChart(Kelas.data.points.weeks).match(/<i /g)||[]).length===12);
   var keepP=Kelas.data.points; Kelas.data.points=null;
