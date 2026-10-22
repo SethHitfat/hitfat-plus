@@ -5572,6 +5572,17 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kb-pic.cut img{mix-blend-mode:normal;-webkit-mask-image:none;mask-image:none;}
 .kb-pic.off img{filter:grayscale(1);opacity:.2;}
 :root:not([data-theme="light"]) .kb-pic.cut.off img{opacity:.3;}
+/* HYROX: its own black panel, the badges on black as they were made */
+.kb-sec.hx{background:#000000;color:#FFFFFF;border-top:0;}
+.kb-sec.hx+.kb-sec.hx{border-top:1px solid rgba(255,255,255,.10);}
+.kb-sec.hx .kb-sec-h b,.kb-sec.hx .kb-i span{color:#FFFFFF;}
+.kb-sec.hx .kb-sec-h small{color:rgba(255,255,255,.45);}
+.kb-sec.hx .kb-sec-h b::before{content:'';display:inline-block;width:10px;height:10px;margin-right:8px;background:#FFD400;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);}
+.kb-sec.hx .kb-pic.off img{opacity:.3;}
+.kb-race{margin:18px auto 0;max-width:280px;display:flex;flex-direction:column;gap:8px;}
+.kb-race small{font-size:13px;font-weight:600;color:rgba(255,255,255,.6);}
+.kb-race input,.kb-race select{padding:11px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:#141416;color:#FFFFFF;font-size:15px;font-weight:600;}
+.kb-race .kb-share{justify-content:center;}
 /* the sheet: the badge spins in on black */
 #pwm.kbm{background:radial-gradient(90% 50% at 50% 0%,rgba(227,6,19,.30) 0%,rgba(227,6,19,0) 65%),#000000 !important;}
 #pwm.kbm #pw-body{background:transparent !important;}

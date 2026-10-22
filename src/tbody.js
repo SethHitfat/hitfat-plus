@@ -4398,11 +4398,14 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
     var S=kbStats();
     ok("badges: the numbers come from OS (63 classes, 4 weeks in a row, 1 PR, 1 InBody)", S.cls===63 && S.week===4 && S.pr===1 && S.ib===1);
     ok("...after NTC: 4 class days in one week, 4 days in a row, a night class, a comeback, New Year, a birthday", S.wkx===4 && S.beast===4 && S.owl===1 && S.back===1 && S.ny===1 && S.bday===1 && S.merdeka===0);
-    ok("...52 badges, each its own picture", KB_LIST.length===52 && KB_LIST.filter(function(b){ return b.cat==='cls'; }).length===16 &&
+    ok("...77 badges (25 for HYROX), each its own picture", KB_LIST.length===77 && KB_LIST.filter(function(b){ return /^hx/.test(b.cat); }).length===25 && KB_LIST.filter(function(b){ return b.cat==='cls'; }).length===16 &&
       KB_LIST.every(function(b){ return b.k && (b.v||b.need); }) && kbPic(KB_LIST[0],true,96).indexOf('/img/badges/cls1.jpg')>0);
     var w=kbHTML();
     ok("...the wall: NTC's, a section per kind, the ones not yet earned dim", w.indexOf('TRAIN &amp; COLLECT')>0 && w.indexOf('Records &amp; squad')<0 && w.indexOf('Records & squad')>0 &&
       w.indexOf('50 Class Club')>0 && w.indexOf('kb-pic off cut')>0 && w.indexOf('kb-pic on cut')>0 && w.indexOf('/img/badges/c/cls50.png')>0);
+    ok("...HYROX only for HYROX (none here), its stations and races from what the member logs", w.indexOf('HYROX stations')<0 &&
+      kbHxStats({hyrox:[{st:'ski',s:250},{st:'sim',s:85*60}]},{hx:{races:[{d:'2026-10-01',div:'Doubles Mixed',s:95*60}]}}).st.ski===1 &&
+      kbHxStats({hyrox:[{st:'sim',s:85*60}]},{hx:{races:[{div:'Doubles Mixed',s:95*60}]}}).s90===1 && kbHxStats({},{hx:{races:[{div:'Doubles Mixed',s:95*60}]}}).dbl===1);
     HF.data.kelas.bday='';
     ok("...the birthday asked for on its sheet, OS has none", String(kbOpen).indexOf('When is your birthday?')>0 && String(kbOpen).indexOf('kbSetBday()')>0);
     ok("...a badge once earned is kept, and the proudest new one leads the moment", typeof kbCheck==='function' && String(kbCheck).indexOf("rank=['cls'")>0 && String(kbCheck).indexOf('E[b.id]=today')>0);
