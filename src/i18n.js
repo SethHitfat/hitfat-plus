@@ -38,7 +38,6 @@ const I18N_MS={
 'Sign In':'Log Masuk','Email':'Emel','Password':'Kata laluan','Create an account':'Buat akaun','New here?':'Baru di sini?',
 'Forgot your password?':'Lupa kata laluan?','Continue with Google':'Teruskan dengan Google',
 'Log in to sync your plan and progress across devices.':'Log masuk untuk simpan pelan dan progress anda di semua peranti.',
-'HITFAT+ uses its own account, separate from HITFAT Hybrid.':'HITFAT+ guna akaun sendiri, berasingan daripada HITFAT Hybrid.',
 'Enter your email and password.':'Masukkan emel dan kata laluan.','Password needs at least 6 characters.':'Kata laluan perlu sekurang-kurangnya 6 aksara.',
 'Enter your email first, then tap reset.':'Masukkan emel dulu, kemudian tekan reset.','Check your email to confirm your account.':'Semak emel anda untuk sahkan akaun.',
 'Sign-in is not available offline.':'Log masuk tidak boleh dibuat tanpa internet.','Sign in first':'Log masuk dulu','Sign in first.':'Log masuk dulu.',
