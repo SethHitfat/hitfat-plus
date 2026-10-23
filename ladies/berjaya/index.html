@@ -31,6 +31,8 @@ body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.6 'Plus Jakar
 .tick{width:84px;height:84px;margin:30px auto 18px;border-radius:50%;background:#fff;color:var(--ok);display:grid;place-items:center;box-shadow:0 14px 34px rgba(0,0,0,.25)}
 .tick svg{width:44px;height:44px}
 .bad .tick{color:#C42A63}
+.spin{width:38px;height:38px;border-radius:50%;border:4px solid var(--blush);border-top-color:var(--rose);animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
 h1{margin:0;font-size:34px;line-height:1.1;letter-spacing:-.02em}
 .lead{margin:12px auto 0;max-width:420px;color:rgba(255,255,255,.85)}
 .card{background:#fff;border-radius:22px;box-shadow:0 12px 34px rgba(74,10,54,.12);padding:22px;margin-top:-40px;position:relative}
@@ -85,18 +87,27 @@ var failed = /fail|cancel|unsuccess|reject|declin|expire/.test(status);
 
 document.getElementById('wa').href = 'https://wa.me/'+WA+'?text='+encodeURIComponent('Hai HITFAT, saya dah bayar Ladies Burn 30'+(order?' (no. pesanan '+order+')':'')+' dan perlukan bantuan.');
 
-if(failed){
+var PAY_FN = 'https://ercvaagznsndvrewlvgt.supabase.co/functions/v1/landing-pay';
+var card = document.getElementById('card'), cardHTML = card.innerHTML;
+
+function showFailed(){
   /* the bank said no: nothing was charged, back to the page to try again */
   document.body.className='bad';
   document.getElementById('tick').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg>';
   document.getElementById('h').textContent='Pembayaran tidak berjaya';
   document.getElementById('lead').textContent='Tiada caj dibuat. Anda boleh cuba sekali lagi.';
-  document.getElementById('card').innerHTML='<a class="cta" href="/ladies/">Cuba lagi</a><div class="note">Masih bermasalah? WhatsApp kami di bawah.</div>';
-} else {
+  card.innerHTML='<a class="cta" href="/ladies/">Cuba lagi</a><div class="note">Masih bermasalah? WhatsApp kami di bawah.</div>';
+}
+function showPaid(sure){
+  document.body.className='';
+  if(typeof okTick!=='undefined') document.getElementById('tick').innerHTML=okTick;
+  document.getElementById('h').textContent='Pembayaran berjaya! 🎉';
+  document.getElementById('lead').textContent='Terima kasih. Ladies Burn 30 milik anda selamanya. Resit dihantar ke emel anda.';
+  card.innerHTML=cardHTML;
   if(order){ document.getElementById('ord').hidden=false; document.getElementById('ordno').textContent=order; }
   document.getElementById('go').href = '/?tebus=lad4'+(order?'&o='+encodeURIComponent(order):'');
-  /* the Purchase, once an order on this phone */
-  if(PIXEL_ID){
+  /* the Purchase, once an order on this phone, and only once the payment is confirmed */
+  if(PIXEL_ID && sure!==false){
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
     if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;
     s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
@@ -106,6 +117,31 @@ if(failed){
     if(!seen) fbq('track','Purchase',{value:39,currency:'MYR',content_ids:['prog_lad4'],content_type:'product'}, order?{eventID:'lad4-'+order}:undefined);
   }
 }
+/* still settling after a minute: it opens by itself once the bank tells us */
+function showSlow(){
+  showPaid(false);
+  document.getElementById('h').textContent='Pembayaran sedang diproses';
+  document.getElementById('lead').textContent='Bank anda belum sahkan lagi. Biasanya beberapa minit. Ladies Burn 30 terbuka sendiri sebaik disahkan.';
+}
+
+if(failed) showFailed();
+else if(/^HL[A-Z0-9]+$/.test(order)){
+  /* paid through landing-pay: ask what Bayarcash says before saying "berjaya" */
+  var okTick=document.getElementById('tick').innerHTML; document.getElementById('tick').innerHTML='<div class="spin"></div>';
+  document.getElementById('h').textContent='Menyemak pembayaran anda…';
+  document.getElementById('lead').textContent='Sebentar sahaja. Jangan tutup halaman ini.';
+  card.innerHTML='<div class="note" style="margin:6px 0">Menunggu pengesahan dari bank…</div>';
+  var tries=0;
+  (function ask(){
+    fetch(PAY_FN+'?action=status&order='+encodeURIComponent(order)).then(function(r){ return r.json(); }).then(function(d){
+      if(d && d.status==='paid') return showPaid();
+      if(d && d.status==='failed') return showFailed();
+      if(++tries<20) return setTimeout(ask,3000);
+      showSlow();
+    })['catch'](function(){ if(++tries<20) setTimeout(ask,3000); else showSlow(); });
+  })();
+}
+else showPaid();
 </script>
 </body>
 </html>

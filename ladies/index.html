@@ -159,6 +159,25 @@ footer a{color:var(--ink2);margin:0 6px}
 .reveal.in{opacity:1;transform:none}
 @media (min-width:700px){ .hero h1{font-size:46px} .hero-fig{height:380px} h2{font-size:34px} }
 @media (prefers-reduced-motion:reduce){ .reveal{opacity:1;transform:none;transition:none} html{scroll-behavior:auto} }
+
+/* ── the checkout sheet (24 Oct 2026): pay straight on Bayarcash from here ── */
+.ck{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end;justify-content:center;background:rgba(43,6,32,.55)}
+.ck.on{display:flex}
+.ck-in{width:100%;max-width:520px;background:#fff;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.2);max-height:92vh;overflow:auto}
+.ck-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.ck-hd b{font-size:20px;font-weight:800}
+.ck-x{border:0;background:var(--blush);color:var(--plum);width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer}
+.ck-p{font-size:14px;color:var(--ink2);margin:0 0 14px}
+.ck label{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin:12px 0 6px}
+.ck input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font:600 16px 'Plus Jakarta Sans',sans-serif;color:var(--ink);background:#fff}
+.ck input:focus{outline:none;border-color:var(--rose)}
+.ck-ch{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ck-ch button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px 8px;font:700 14px 'Plus Jakarta Sans',sans-serif;color:var(--ink);cursor:pointer}
+.ck-ch button.on{border-color:var(--rose);background:var(--blush);color:var(--plum)}
+.ck-err{color:#C42A63;font-size:14px;font-weight:700;margin-top:12px;min-height:20px}
+.ck .cta{margin-top:10px}
+.ck .cta[disabled]{opacity:.6}
+.ck-note{font-size:12.5px;color:var(--ink2);text-align:center;margin-top:10px}
 </style>
 </head>
 <body>
@@ -318,9 +337,27 @@ footer a{color:var(--ink2);margin:0 6px}
   <a class="cta" href="#" data-buy="bar">Mula</a>
 </div></div>
 
+
+<!-- the checkout sheet: name, email, phone, FPX or DuitNow, then Bayarcash -->
+<div class="ck" id="ck" role="dialog" aria-modal="true" aria-labelledby="ck-t">
+  <form class="ck-in" id="ck-f" novalidate>
+    <div class="ck-hd"><b id="ck-t">Ladies Burn 30 · RM39</b><button type="button" class="ck-x" aria-label="Tutup" onclick="ckClose()">✕</button></div>
+    <p class="ck-p">Bayar sekali, milik anda selamanya. Lepas bayar, anda terus masuk app.</p>
+    <label for="ck-n">Nama</label><input id="ck-n" autocomplete="name" placeholder="Nama penuh">
+    <label for="ck-e">Emel</label><input id="ck-e" type="email" autocomplete="email" inputmode="email" placeholder="nama@gmail.com">
+    <label for="ck-ph">No. telefon</label><input id="ck-ph" type="tel" autocomplete="tel" inputmode="tel" placeholder="012-345 6789">
+    <label>Cara bayar</label>
+    <div class="ck-ch"><button type="button" class="on" data-ch="1">FPX Online Banking</button><button type="button" data-ch="6">DuitNow QR</button></div>
+    <div class="ck-err" id="ck-err"></div>
+    <button class="cta" id="ck-go" type="submit">Bayar RM39</button>
+    <div class="ck-note">Pembayaran selamat melalui Bayarcash. Guna emel Google yang anda akan log masuk app.</div>
+  </form>
+</div>
 <script>
 /* ── CONFIG ── */
 var CHECKOUT_URL = '';                                  /* Bayarcash Link RM39, when it exists */
+var PAY_MODE = 'app';                                   /* 'api': the sheet here pays on Bayarcash (landing-pay); 'app': the app's checkout */
+var PAY_FN = 'https://ercvaagznsndvrewlvgt.supabase.co/functions/v1/landing-pay';
 var APP_URL = 'https://app.hitfat.io/?beli=lad4';      /* the app's own checkout */
 var PIXEL_ID = '';                                      /* Meta Pixel ID */
 var WA = '60189174656';
@@ -345,9 +382,36 @@ function buyHref(){
 }
 document.querySelectorAll('[data-buy]').forEach(function(a){
   a.href = buyHref();
-  a.addEventListener('click', function(){
+  a.addEventListener('click', function(ev){
     track('InitiateCheckout',{content_name:'Ladies Burn 30',content_ids:['prog_lad4'],value:39,currency:'MYR'});
+    if(PAY_MODE==='api'){ ev.preventDefault(); ckOpen(); }
   });
+});
+
+/* the checkout sheet: who is paying, then Bayarcash's own page (landing-pay) */
+var ck=document.getElementById('ck'), ckCh=1;
+function ckOpen(){ ck.classList.add('on'); setTimeout(function(){ try{ document.getElementById('ck-n').focus(); }catch(e){} },150); }
+function ckClose(){ ck.classList.remove('on'); }
+ck.addEventListener('click', function(e){ if(e.target===ck) ckClose(); });
+document.querySelectorAll('.ck-ch button').forEach(function(b){
+  b.addEventListener('click', function(){ ckCh=+b.getAttribute('data-ch'); document.querySelectorAll('.ck-ch button').forEach(function(x){ x.classList.toggle('on', x===b); }); });
+});
+document.getElementById('ck-f').addEventListener('submit', function(e){
+  e.preventDefault();
+  var n=document.getElementById('ck-n').value.trim(), em=document.getElementById('ck-e').value.trim(), ph=document.getElementById('ck-ph').value.trim(),
+      er=document.getElementById('ck-err'), go=document.getElementById('ck-go');
+  if(n.length<2){ er.textContent='Masukkan nama anda.'; return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){ er.textContent='Semak emel anda.'; return; }
+  if(ph.replace(/\D/g,'').length<9){ er.textContent='Masukkan no. telefon penuh.'; return; }
+  er.textContent=''; go.disabled=true; go.textContent='Membuka halaman bayaran…';
+  track('AddPaymentInfo',{content_ids:['prog_lad4'],value:39,currency:'MYR'});
+  fetch(PAY_FN+'?action=create',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({sku:'prog_lad4',name:n,email:em,phone:ph,channel:ckCh})})
+    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+    .then(function(x){
+      if(x.ok && x.d && x.d.url){ location.href=x.d.url; return; }
+      er.textContent=(x.d&&x.d.error)||'Tidak dapat membuka halaman bayaran. Cuba lagi.'; go.disabled=false; go.textContent='Bayar RM39';
+    })['catch'](function(){ er.textContent='Sambungan terputus. Cuba lagi.'; go.disabled=false; go.textContent='Bayar RM39'; });
 });
 document.querySelectorAll('[data-wa]').forEach(function(a){
   a.href = 'https://wa.me/'+WA+'?text='+encodeURIComponent(WA_TEXT);
