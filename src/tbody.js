@@ -4022,13 +4022,32 @@ print("\n── BELL, ALIVE ──");
   ok("the card takes the score's colour", scHTML().indexOf('--scc:')>0 && scTint('#22C55E')==='rgba(34,197,94,.16)' && scRGB('#E30613')==='227,6,19');
   ok("the clip is drawn with its mask as alpha", String(bellDraw).indexOf('t[i+3]=b[i]')>0);
 })();
+print("\n── ON THE HOME SCREEN ──");
+(function(){
+  var IG='Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 350.0.0.0',
+      FB='Mozilla/5.0 (Linux; Android 14; SM-S918B Build/UP1A; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/129.0 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/480.0.0]',
+      SAF='Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1',
+      CRI='Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/130.0 Mobile/15E148 Safari/604.1',
+      CHR='Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Mobile Safari/537.36',
+      SAM='Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/26.0 Chrome/122.0 Mobile Safari/537.36',
+      WV='Mozilla/5.0 (Linux; Android 14; Pixel 8; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/130.0 Mobile Safari/537.36',
+      MAC='Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15';
+  ok("inside Instagram, Facebook or an Android web view: known", hfInApp(IG)==='Instagram' && hfInApp(FB)==='Facebook' && hfInApp(WV)==='this app');
+  ok("...Safari, Chrome and Samsung Internet are not", hfInApp(SAF)==='' && hfInApp(CRI)==='' && hfInApp(CHR)==='' && hfInApp(SAM)==='');
+  ok("the browser decides the steps", hfBrowser(SAF)==='safari' && hfBrowser(CRI)==='ios-other' && hfBrowser(CHR)==='chrome' && hfBrowser(SAM)==='samsung' && hfBrowser(MAC)==='');
+  ok("...each with its own way in", hfInstallSteps('chrome').join(' ').indexOf('Install')>0 && hfInstallSteps('samsung').join(' ').indexOf('Add page to')>0 && hfInstallSteps('ios-other').join(' ').indexOf('address bar')>0);
+  ok("Google is not tried where it refuses (disallowed_useragent)", String(signInGoogle).indexOf('hfInApp()')>0 && String(showAuth).indexOf('hfInAppNote()')>0);
+  ok("Home's card only on a phone's browser, and a dismissal holds 3 weeks", String(hfInstallCard).indexOf('pushStandalone()')>0 && String(hfInstallCard).indexOf('21*864e5')>0 && hfInstallCard()==='');
+  ok("...and on an iPhone it stands in for the reminders' card", String(scHTML).indexOf("inst && pushState()==='install'")>0);
+  noThrow("the sign-in note outside an in-app browser", function(){ hfInAppNote(); });
+})();
 print("\n── BELL'S REMINDERS ──");
 (function(){
   ok("a browser without push: the row says so, no toggle", pushState()==='none' && pushRow().indexOf('reminders')>0 && pushRow().indexOf('pushEnable()')<0);
   ok("the VAPID key, url-safe base64 to bytes", pushKeyBytes('AQID').length===3 && pushKeyBytes('AQID')[2]===3 && pushKeyBytes('AQ').length===1 && pushB64(new Uint8Array([1,2,3]).buffer)==='AQID');
   ok("the subscription is saved through the database's own function", String(pushSubscribe).indexOf("sb.rpc('plus_push_save'")>0 && String(pushEnable).indexOf('pushSubscribe(false)')>0 && String(pushDisable).indexOf("plus_push_remove")>0);
   ok("permission is asked from a tap, never on load", String(pushEnable).indexOf('Notification.requestPermission')>0 && String(scRender).indexOf('requestPermission')<0);
-  ok("an iPhone outside the Home Screen is told how", String(pushInstallHelp).indexOf('Add to Home Screen')>0 && String(pushState).indexOf("'install'")>0);
+  ok("an iPhone outside the Home Screen is told how", String(pushInstallHelp).indexOf('hfInstallSteps(')>0 && hfInstallSteps('safari').join(' ').indexOf('Add to Home Screen')>0 && String(pushState).indexOf("'install'")>0);
   ok("Settings carries the row", String(renderMe).indexOf('pushRow()')>0);
   ok("a tapped reminder opens where it points: check-in, Eat, Home", typeof pushGo==='function' && String(pushGo).indexOf('ckOpen()')>0 && String(pushGo).indexOf("switchTab('eat')")>0 &&
     String(pushGoUrl).indexOf('go=')>0 && String(_onSignedIn).indexOf('pushHandleGo()')>0);

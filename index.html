@@ -4891,7 +4891,8 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
 .pu-inv-x{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:var(--surface2);color:var(--dim);font-size:14px;cursor:pointer;}
 .pu-steps{display:flex;flex-direction:column;gap:10px;margin:14px 0 4px;text-align:left;}
 .pu-steps div{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.4;}
-.pu-steps b{flex:none;width:24px;height:24px;border-radius:50%;background:#E30613;color:#fff;font-size:13px;display:grid;place-items:center;}
+.pu-steps div>b{flex:none;width:24px;height:24px;border-radius:50%;background:#E30613;color:#fff;font-size:13px;display:grid;place-items:center;}
+.pu-steps span b{font-weight:800;}
 
 /* HITFAT Score in both themes. The score's colour comes in as --scc (r,g,b).
    Light: a soft wash, as before. Dark: a near-black stage, the colour as a
@@ -7935,6 +7936,16 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kl-unl .gly{width:20px;height:20px;flex:none;stroke:#E30613;}
 @media (prefers-reduced-motion:reduce){.kl-card-sheen{animation:none;display:none}.scc-card .kl-card-in{animation:none}}
 
+/* ── On the Home Screen (24 Oct 2026): the steps sheet, and the sign-in note
+   inside Instagram's / Facebook's own browser ── */
+.hi-icon{display:block;width:64px;height:64px;border-radius:15px;margin:2px auto 12px;box-shadow:0 6px 16px rgba(0,0,0,.18);}
+.sc-sh .hi-icon + .sc-sh-k{text-align:center;}
+.hi-t{font-size:14px;color:var(--dim);text-align:center;margin-top:4px;line-height:1.4;}
+.auth-inapp{background:#FFF4CC;color:#3A2E00;border-radius:16px;padding:12px 14px;margin:0 0 14px;font-size:14px;line-height:1.45;box-shadow:inset 0 0 0 2px #FFC20E;}
+.auth-inapp b{color:#111;}
+.auth-inapp .ai-b{display:flex;gap:8px;margin-top:10px;}
+.auth-inapp .ai-b button{flex:1;border:0;border-radius:12px;padding:11px 10px;font-size:14px;font-weight:800;background:#111;color:#fff;cursor:pointer;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -9398,12 +9409,16 @@ function scHTML(){
   var slides=[];
   if(typeof scCoachHTML==='function') slides.push(scCoachHTML());
   if(typeof scMoodHTML==='function') slides.push(scMoodHTML());
+  /* not on the Home Screen yet: that card, and not the reminders' (an iPhone gets them only from there) */
+  var inst=(typeof hfInstallCard==='function')?hfInstallCard():'';
   var inv=(typeof pushInvite==='function')?pushInvite():'';
+  if(inst && pushState()==='install') inv='';
   if(inv) slides.push('<div class="scx-coach scx-push"><div class="scx-k"><i></i>REMINDERS</div><div class="scx-t"><b>Let Bara nudge you</b></div>'+
     '<div class="scx-seth">Morning check-in, lunch, 8 pm and bedtime, only when there is a reason. 3 a day at most.</div>'+inv+'</div>');
   slides.unshift(scBellCard(st));
   var base=(typeof scBaseHTML==='function')?scBaseHTML():'';   /* the first 30 days, second after the score card */
   if(base) slides.splice(1,0,base);
+  if(inst) slides.splice(base?2:1,0,inst);
   return '<div class="sc sc-page" style="--scc:'+scRGB(c)+'">'+
     '<div class="sc-stage"><div class="sc-bub" id="sc-bub">'+hesc(scBubText())+'</div>'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Bara">'+img+'</div></div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>'+
@@ -10786,13 +10801,92 @@ function pushTest(){
     return fetch(pushFn()+'?action=test',{method:'POST', headers:{Authorization:'Bearer '+t}});
   }).catch(function(){});
 }
+/* ═══════════════ ON THE HOME SCREEN (24 Oct 2026) ═══════════════
+   Seth: the install tutorial in the app too. Members open HITFAT+ from the
+   gym's QR, WhatsApp or Instagram. Inside Instagram's or Facebook's own
+   browser Google refuses to sign in (disallowed_useragent) and there is no
+   Add to Home Screen, so the sign-in screen says so before anything else.
+   Signed in, in a phone browser rather than the Home Screen app, Home has a
+   card with the steps for that phone and that browser. */
+function hfUA(ua){ return ua!=null ? String(ua) : String(navigator.userAgent||''); }
+/* the app whose own browser this is, or '' */
+function hfInApp(ua){
+  ua=hfUA(ua);
+  if(/Instagram/i.test(ua)) return 'Instagram';
+  if(/FBAN|FBAV|FB_IAB|FBIOS|FB4A/.test(ua)) return 'Facebook';
+  if(/musical_ly|BytedanceWebview|TikTok/i.test(ua)) return 'TikTok';
+  if(/Barcelona/.test(ua)) return 'Threads';
+  if(/ Line\//.test(ua)) return 'LINE';
+  if(/Snapchat/i.test(ua)) return 'Snapchat';
+  if(/LinkedInApp/.test(ua)) return 'LinkedIn';
+  if(/\bGSA\//.test(ua) && /iPhone|iPad/.test(ua)) return 'the Google app';
+  if(/Android/.test(ua) && /; wv\)/.test(ua)) return 'this app';
+  return '';
+}
+function hfPhone(ua){
+  if(ua==null && typeof pushIOS==='function' && pushIOS()) return 'ios';
+  ua=hfUA(ua); return /iPhone|iPad|iPod/.test(ua)?'ios':/Android/.test(ua)?'android':'';
+}
+/* which browser: the steps differ */
+function hfBrowser(ua){
+  var ph=hfPhone(ua); ua=hfUA(ua);
+  if(ph==='ios') return /CriOS|FxiOS|EdgiOS|OPiOS/.test(ua) ? 'ios-other' : 'safari';
+  if(ph!=='android') return '';
+  if(/SamsungBrowser/.test(ua)) return 'samsung';
+  if(/Chrome\//.test(ua) && !/EdgA|OPR|Firefox|HuaweiBrowser|MiuiBrowser|HeyTap|VivoBrowser/.test(ua)) return 'chrome';
+  return 'android-other';
+}
+function hfInstallSteps(br){
+  var S={
+    safari:['Tap <b>Share</b> at the bottom (the square with the arrow up). Don\'t see it? Tap <b>···</b> first',
+            'Scroll down and choose <b>Add to Home Screen</b>','Keep <b>Open as Web App</b> on, then tap <b>Add</b>',
+            'Open HITFAT+ from its icon and sign in once more'],
+    'ios-other':['Tap <b>Share</b> in the address bar','Choose <b>Add to Home Screen</b>','Tap <b>Add</b>',
+            'Open HITFAT+ from its icon and sign in once more'],
+    chrome:['Tap <b>⋮</b> at the top right','Choose <b>Add to Home screen</b> or <b>Install app</b>','Tap <b>Install</b>','Open HITFAT+ from its icon'],
+    samsung:['Tap <b>≡</b> at the bottom right','Choose <b>Add page to</b>, then <b>Home screen</b>','Tap <b>Add</b>','Open HITFAT+ from its icon'],
+    'android-other':['Open <b>app.hitfat.io</b> in <b>Google Chrome</b>','Tap <b>⋮</b> and choose <b>Add to Home screen</b>','Tap <b>Install</b>','Open HITFAT+ from its icon']
+  };
+  return S[br]||S.safari;
+}
+/* the steps, for this phone (Home's card, the reminders row, Settings) */
 function pushInstallHelp(){
+  var br=hfBrowser()||'safari', ios=hfPhone()==='ios';
   $('pw-body').innerHTML='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>'+
-    '<div class="sc-sh"><div class="sc-sh-k">Bara\'s reminders on iPhone</div>'+
-    '<div class="pu-steps"><div><b>1</b>Open app.hitfat.io in Safari</div><div><b>2</b>Tap Share (the square with the arrow up)</div>'+
-    '<div><b>3</b>Choose <i>Add to Home Screen</i>, then <i>Add</i></div><div><b>4</b>Open HITFAT+ from its Home Screen icon and turn reminders on here</div></div>'+
-    '<div class="sc-sh-f">Apple allows web notifications only for apps added to the Home Screen (iOS 16.4 or later).</div></div>';
+    '<div class="sc-sh"><img class="hi-icon" src="/img/icon/icon-192.png?v=3" alt=""><div class="sc-sh-k">HITFAT+ on your Home Screen</div>'+
+    '<div class="hi-t">Opens like an app, full screen, and lets Bara send you reminders</div>'+
+    '<div class="pu-steps">'+hfInstallSteps(br).map(function(t,i){ return '<div><b>'+(i+1)+'</b><span>'+t+'</span></div>'; }).join('')+'</div>'+
+    '<div class="sc-sh-f">'+(ios?'Apple allows web notifications only for apps added to the Home Screen (iOS 16.4 or later).':'No Play Store needed. It takes a few seconds.')+'</div></div>';
   $('pwm').classList.add('on');
+}
+/* Home's card: a phone, in its browser, not dismissed in the last 3 weeks */
+function hfInstallCard(){
+  if(!hfPhone() || pushStandalone() || hfInApp()) return '';
+  var no=0; try{ no=+localStorage.getItem('hf_inst_no')||0; }catch(e){}
+  if(no && Date.now()-no<21*864e5) return '';
+  return '<div class="scx-coach scx-push scx-inst"><div class="scx-k"><i></i>HOME SCREEN</div><div class="scx-t"><b>Put HITFAT+ on your phone</b></div>'+
+    '<div class="scx-seth">One tap to open, full screen, with Bara\'s reminders. No '+(hfPhone()==='ios'?'App':'Play')+' Store needed.</div>'+
+    '<div class="pu-inv"><button class="pu-inv-b" onclick="pushInstallHelp()">📲 Show me how</button>'+
+    '<button class="pu-inv-x" aria-label="Tutup" onclick="hfInstallNo()">✕</button></div></div>';
+}
+function hfInstallNo(){ try{ localStorage.setItem('hf_inst_no',String(Date.now())); }catch(e){} if(typeof scRender==='function') scRender(); }
+/* the sign-in screen inside Instagram & co: open it in the phone's browser */
+function hfInAppNote(){
+  var app=hfInApp(), box=$('auth-inapp');
+  if(!app){ if(box && box.parentNode) box.parentNode.removeChild(box); return; }
+  if(!box){
+    var g=document.querySelector('#auth .gbtn'); if(!g) return;
+    box=document.createElement('div'); box.id='auth-inapp'; box.className='auth-inapp'; g.parentNode.insertBefore(box,g);
+  }
+  var and=hfPhone()==='android';
+  box.innerHTML='<b>You\'re inside '+hesc(app)+'.</b> Google sign-in and adding HITFAT+ to your Home Screen don\'t work here. '+
+    'Tap <b>'+(and?'⋮':'···')+'</b> and choose <b>Open in '+(and?'Chrome':'Safari')+'</b> (or Open in browser).'+
+    '<div class="ai-b">'+(and?'<button onclick="hfOpenChrome()">Open in Chrome</button>':'')+'<button onclick="hfCopyLink()">Copy link</button></div>';
+}
+function hfOpenChrome(){ location.href='intent://'+location.host+location.pathname+location.search+'#Intent;scheme=https;package=com.android.chrome;end'; }
+function hfCopyLink(){
+  var u=location.href, done=function(){ toast('Link copied. Paste it in '+(hfPhone()==='android'?'Chrome':'Safari')); };
+  try{ navigator.clipboard.writeText(u).then(done,function(){ window.prompt('Copy this link',u); }); }catch(e){ window.prompt('Copy this link',u); }
 }
 /* the Settings row */
 function pushRow(){
@@ -34632,7 +34726,7 @@ function openJoint(k){
    Same flow as HITFAT HYBRID against the same Supabase project, so an athlete
    who already has a Hybrid account signs straight in — no second sign-up. ── */
 let authMode='in';
-function showAuth(){ authCollage(); $('auth').classList.add('on'); hideSplash(); }
+function showAuth(){ authCollage(); if(typeof hfInAppNote==='function') hfInAppNote(); $('auth').classList.add('on'); hideSplash(); }
 /* The Fitness+ way in: a collage of the training it opens, fading into
    the page. Drawn when shown, from the same photographs the app uses. */
 function authCollage(){
@@ -34654,7 +34748,12 @@ function authToggle(){
   authMsg('');
 }
 function redirectURL(){ return location.origin + location.pathname; }
-function signInGoogle(){ signInOAuth('google'); }
+/* inside Instagram's or Facebook's browser Google answers "disallowed_useragent":
+   point at the way out instead of sending them to that error */
+function signInGoogle(){
+  if(typeof hfInApp==='function' && hfInApp()){ hfInAppNote(); authMsg('Open HITFAT+ in '+(hfPhone()==='android'?'Chrome':'Safari')+' to sign in with Google.','err'); return; }
+  signInOAuth('google');
+}
 function signInOAuth(provider){
   if(!sb){ authMsg('Sign-in is not available offline.','err'); return; }
   authMsg('Opening '+provider+'…');

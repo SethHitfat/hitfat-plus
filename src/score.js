@@ -234,12 +234,16 @@ function scHTML(){
   var slides=[];
   if(typeof scCoachHTML==='function') slides.push(scCoachHTML());
   if(typeof scMoodHTML==='function') slides.push(scMoodHTML());
+  /* not on the Home Screen yet: that card, and not the reminders' (an iPhone gets them only from there) */
+  var inst=(typeof hfInstallCard==='function')?hfInstallCard():'';
   var inv=(typeof pushInvite==='function')?pushInvite():'';
+  if(inst && pushState()==='install') inv='';
   if(inv) slides.push('<div class="scx-coach scx-push"><div class="scx-k"><i></i>REMINDERS</div><div class="scx-t"><b>Let Bara nudge you</b></div>'+
     '<div class="scx-seth">Morning check-in, lunch, 8 pm and bedtime, only when there is a reason. 3 a day at most.</div>'+inv+'</div>');
   slides.unshift(scBellCard(st));
   var base=(typeof scBaseHTML==='function')?scBaseHTML():'';   /* the first 30 days, second after the score card */
   if(base) slides.splice(1,0,base);
+  if(inst) slides.splice(base?2:1,0,inst);
   return '<div class="sc sc-page" style="--scc:'+scRGB(c)+'">'+
     '<div class="sc-stage"><div class="sc-bub" id="sc-bub">'+hesc(scBubText())+'</div>'+scArc(s)+'<div class="sc-bell '+(st.k?'sc-'+st.k:'sc-lv'+lv)+'" id="sc-bell" onclick="scPoke()" role="button" aria-label="Touch Bara">'+img+'</div></div>'+
     '<div class="sc-hs">'+scHabits().map(scRing).join('')+'</div></div>'+

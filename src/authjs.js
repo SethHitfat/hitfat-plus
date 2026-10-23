@@ -2,7 +2,7 @@
    Same flow as HITFAT HYBRID against the same Supabase project, so an athlete
    who already has a Hybrid account signs straight in — no second sign-up. ── */
 let authMode='in';
-function showAuth(){ authCollage(); $('auth').classList.add('on'); hideSplash(); }
+function showAuth(){ authCollage(); if(typeof hfInAppNote==='function') hfInAppNote(); $('auth').classList.add('on'); hideSplash(); }
 /* The Fitness+ way in: a collage of the training it opens, fading into
    the page. Drawn when shown, from the same photographs the app uses. */
 function authCollage(){
@@ -24,7 +24,12 @@ function authToggle(){
   authMsg('');
 }
 function redirectURL(){ return location.origin + location.pathname; }
-function signInGoogle(){ signInOAuth('google'); }
+/* inside Instagram's or Facebook's browser Google answers "disallowed_useragent":
+   point at the way out instead of sending them to that error */
+function signInGoogle(){
+  if(typeof hfInApp==='function' && hfInApp()){ hfInAppNote(); authMsg('Open HITFAT+ in '+(hfPhone()==='android'?'Chrome':'Safari')+' to sign in with Google.','err'); return; }
+  signInOAuth('google');
+}
 function signInOAuth(provider){
   if(!sb){ authMsg('Sign-in is not available offline.','err'); return; }
   authMsg('Opening '+provider+'…');
