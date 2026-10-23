@@ -619,6 +619,11 @@ const BUY_GO={lad4:function(){ openProgram(LB30_ID); if(typeof lbBuy==='function
               tebus_lad4:function(){ if(typeof lbTebus==='function') lbTebus(0); }};
 function captureBuyParam(){
   try{
+    /* (24 Oct 2026) the first real landing payment came back to the app
+       itself, not to ladies/berjaya: an order from a landing page (HL…) on
+       the app's address goes on to its "Pembayaran berjaya" page */
+    const lo=String(new URLSearchParams(location.search).get('order_number')||'');
+    if(/^HL[A-Z0-9]+$/.test(lo) && location.pathname==='/'){ location.replace('/ladies/berjaya/'+location.search); return; }
     const q=new URLSearchParams(location.search), b=q.get('beli'), t=q.get('tebus');
     let k='';
     if(b && BUY_GO[b]){ k=b; q.delete('beli'); }
