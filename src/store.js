@@ -628,6 +628,13 @@ function handlePaidRedirect(){
    default and says why. Prices are real prices — nothing is struck through
    against a "regular" price nobody was ever charged. */
 let pwTier='plus', pwSku='sub_plus_12m', pwReason='';
+/* HITFAT+ Coach is not sold for now (23 Oct 2026, Seth: "A dlu"): in the
+   app it opens the same as HITFAT+, and what it adds is people (a monthly
+   review by a coach, a members' group) with no group yet and nothing to
+   run the reviews. A member who already has it keeps it and can extend it.
+   true to sell it again. */
+var COACH_LIVE=false;
+function coachSold(){ return COACH_LIVE || hasCoach(); }
 
 const TIER_INFO={
   plus:{name:'HITFAT+', line:'Everything in the app, for as long as you are a member.',
@@ -651,7 +658,7 @@ function openPaywall(reason){
   $('pw-body').innerHTML=paywallHTML(true);
   $('pwm').classList.add('on');
 }
-function pwSetTier(t){ pwTier=t; pwSku='sub_'+t+'_12m'; repaintPaywall(); }
+function pwSetTier(t){ if(t==='coach' && !coachSold()) t='plus'; pwTier=t; pwSku='sub_'+t+'_12m'; repaintPaywall(); }
 function pwSetPlan(sku){ pwSku=sku; repaintPaywall(); }
 function repaintPaywall(){
   if($('pwm').classList.contains('on')) $('pw-body').innerHTML=paywallHTML(true);
@@ -666,6 +673,7 @@ function pwBuy(){
 
 /* The membership offer, as a sheet (sheet=true) or inside the Store page. */
 function paywallHTML(sheet){
+  if(pwTier==='coach' && !coachSold()){ pwTier='plus'; pwSku='sub_plus_12m'; }
   const info=TIER_INFO[pwTier], plans=SUB_PLANS.filter(x=>x.tier===pwTier);
   const chosen=subPlan(pwSku)||plans[0];
   let h='';
@@ -686,7 +694,7 @@ function paywallHTML(sheet){
        '<div class="sub-h">'+(pwTier==='coach'?'Train with a coach':'Train with everything')+'</div>'+
        '<div class="sub-s">'+hesc(info.line)+'</div></div></div>';
   }
-  h+='<div class="obseg pwseg">'+
+  if(coachSold()) h+='<div class="obseg pwseg">'+
      '<button class="'+(pwTier==='plus'?'on':'')+'" onclick="pwSetTier(\'plus\')">HITFAT+</button>'+
      '<button class="'+(pwTier==='coach'?'on':'')+'" onclick="pwSetTier(\'coach\')">HITFAT+ Coach</button></div>';
   h+='<div class="pwq">What you get</div>';
@@ -728,9 +736,9 @@ function storeMembership(){
        '<div class="sub-status-t">'+(t==='coach'?'HITFAT+ Coach':'HITFAT+')+' member</div>'+
        '<div class="sub-status-s">'+(until?'Active until '+fmtDate(until):'All Access — yours for good')+'</div></div></div>';
     /* All Access never ends, so the only thing left to offer is the coach. */
-    if(!until){ $('store-body').innerHTML=h+coachUpsell(); return; }
+    if(!until){ $('store-body').innerHTML=h+(coachSold()?coachUpsell():''); return; }
     if(t==='coach' && pwTier!=='coach'){ pwTier='coach'; pwSku='sub_coach_12m'; }
-    h+='<div class="nhead"><div class="nhead-t">'+(t==='coach'?'Extend':'Extend, or add a coach')+'</div>'+
+    h+='<div class="nhead"><div class="nhead-t">'+(t==='coach'||!coachSold()?'Extend':'Extend, or add a coach')+'</div>'+
        '<div class="nhead-s">Added on to your current end date — nothing is lost by renewing early.</div></div>';
     $('store-body').innerHTML=h+paywallHTML(false);
     return;
