@@ -173,9 +173,20 @@ function same(x: string, y: string): boolean {
   const e = new TextEncoder(), a = e.encode(x), b = e.encode(y);
   return a.length === b.length && timingSafeEqual(a, b);
 }
+/* What Bayarcash's transaction callback really signs (24 Oct 2026, found on
+   the first real payment, which the two checks below refused): these
+   thirteen, sorted by key, a missing one as an empty value, joined with
+   "|", untrimmed — bayarcash-php-sdk verifyTransactionCallbackData. */
+const TX_SIGNED = ['record_type', 'transaction_id', 'exchange_reference_number', 'exchange_transaction_id', 'order_number',
+  'currency', 'amount', 'payer_name', 'payer_email', 'payer_bank_name', 'status', 'status_description', 'datetime'];
+function hmacExact(p: Record<string, unknown>, keys: string[], secret: string): string {
+  const body = keys.slice().sort().map((k) => (p[k] === undefined || p[k] === null) ? '' : String(p[k])).join('|');
+  return createHmac('sha256', secret).update(body).digest('hex');
+}
 function verify(p: Record<string, unknown>, secret: string): boolean {
   const given = String(p.checksum || '').toLowerCase();
   if (!given) return false;
+  if (same(hmacExact(p, TX_SIGNED, secret), given)) return true;
   const every = Object.keys(p).filter((k) => k !== 'checksum');
   return same(hmacOf(p, SIGNED, secret), given) || same(hmacOf(p, every, secret), given);
 }
@@ -259,7 +270,7 @@ Deno.serve(async (req: Request) => {
       const ct = req.headers.get('content-type') || '';
       if (ct.includes('application/json')) p = await req.json();
       else { const f = await req.formData(); f.forEach((v, k) => { p[k] = typeof v === 'string' ? v : String(v); }); }
-      if (!verify(p, SECRET)) { console.warn('landing-pay: bad checksum', String(p.order_number || '')); return json({ ok: false, error: 'bad_checksum' }, 401); }
+      if (!verify(p, SECRET)) { console.warn('landing-pay: bad checksum', String(p.order_number || ''), 'fields', Object.keys(p).sort().join(',')); return json({ ok: false, error: 'bad_checksum' }, 401); }
       const db = admin();
       const { data: o } = await db.from('plus_landing_orders').select('*').eq('order_number', String(p.order_number || '')).maybeSingle();
       if (!o) return json({ ok: false }, 404);                        // not an order we made
