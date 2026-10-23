@@ -832,7 +832,26 @@ function confirmReset(){
 let _ob={};
 const OB_DAYS=['M','T','W','T','F','S','S'];
 function obDefaultDays(n){ return ({2:[0,3],3:[0,2,4],4:[0,1,3,4],5:[0,1,2,3,4],6:[0,1,2,3,4,5]})[n]||[0,2,4]; }
+/* (23 Oct 2026) someone who came from a program's landing page (?beli=, an
+   ad) goes straight to buying it after signing in: no plan questions in
+   English first. Sensible plan defaults are set (changed any time in Me);
+   the program has its own safety note before Day 1. */
+function obFromLanding(){
+  let b=''; try{ b=localStorage.getItem('hf_buy')||''; }catch(e){}
+  if(!b || typeof BUY_GO==='undefined' || !BUY_GO[b]) return false;
+  const p=HF.data.prefs||{};
+  HF.data.prefs=Object.assign({},p,{goal:p.goal||'Lose fat', level:p.level||'Beginner', days:p.days||3,
+    dayList:(Array.isArray(p.dayList)&&p.dayList.length)?p.dayList:obDefaultDays(3), equip:p.equip||'Bodyweight only', name:p.name||''});
+  HF.data.onboarded=true; HF.save();
+  /* the first name Google gave, for Bara and the class card */
+  try{ sb && sb.auth.getSession().then(r=>{ const u=r&&r.data&&r.data.session&&r.data.session.user, m=(u&&u.user_metadata)||{};
+    const nm=String(m.full_name||m.name||'').trim().split(/\s+/)[0]||'';
+    if(nm && !HF.data.prefs.name){ HF.data.prefs.name=nm.slice(0,24); HF.save(); try{ updateAvatar(); }catch(e){} } }); }catch(e){}
+  switchTab('home'); if(typeof handleBuyParam==='function') handleBuyParam();
+  return true;
+}
 function startOnboarding(){
+  if(!HF.data.onboarded && obFromLanding()) return;
   const p=HF.data.prefs||{};
   _ob={goal:p.goal||null, level:p.level||'Beginner', days:p.days||3,
        dayList:(Array.isArray(p.dayList)&&p.dayList.length)?p.dayList.slice():obDefaultDays(p.days||3),

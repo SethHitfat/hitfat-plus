@@ -555,15 +555,40 @@ function awaitPayment(){
     if(got || tries>=8){
       clearInterval(t);
       coConfirm(got?'ok':'late');
-      if(got){ try{ renderStore(storeSeg); renderHome(); }catch(e){} }
+      if(got){ try{ renderStore(storeSeg); renderHome(); }catch(e){} try{ if(owns(_paySku)) pixelPurchase(_paySku); }catch(e){} }
     }
   }, 3000);
+}
+
+/* ── Meta Pixel for the ad funnels (23 Oct 2026, Seth: Ladies Burn 30 first) ──
+   The landing page counts the visit and the tap on Mula; the app counts the
+   Purchase, once the payment is confirmed, so Meta learns who buys and not
+   only who clicks. Only for what is sold through ads (PIXEL_SKUS), once per
+   purchase on a phone, and nothing loads while PIXEL_ID is empty. Never any
+   health, meal or body data: the item and its price only. */
+var PIXEL_ID='';
+var PIXEL_SKUS={prog_lad4:39};
+function pixelLoad(){
+  if(window.fbq) return;
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;
+  s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', PIXEL_ID);
+}
+function pixelPurchase(sku){
+  try{
+    if(!PIXEL_ID || !PIXEL_SKUS[sku]) return false;
+    const k='hf_px_'+sku; if(localStorage.getItem(k)) return false; localStorage.setItem(k, iso(0));
+    pixelLoad();
+    fbq('track','Purchase',{value:PIXEL_SKUS[sku], currency:'MYR', content_ids:[sku], content_type:'product'});
+    return true;
+  }catch(e){ return false; }
 }
 
 /* The sheet the buyer comes back to: waiting, confirmed, or not yet. */
 function coConfirm(state){
   const t=memberTier(), until=memberUntil();
-  const v={
+  let v={
     wait:['co-wait','Confirming your payment','This usually takes a few seconds. You can keep this open.','',''],
     ok:['co-ok',(t==='coach'?'Welcome to HITFAT+ Coach':t?'Welcome to HITFAT+':'Payment confirmed'),
         (until?'Everything is open until '+fmtDate(until)+'.':'Your purchase is unlocked.'),
@@ -571,6 +596,9 @@ function coConfirm(state){
     late:['co-late','Not confirmed yet','Your bank has not told us yet. It unlocks by itself once it does — nothing to do but wait.',
         'OK','closeProduct()']
   }[state];
+  /* Ladies Burn 30 is sold in Malay, so its confirmation is too */
+  if(state==='ok' && typeof LB30_ID!=='undefined' && _paySku==='prog_'+LB30_ID)
+    v=['co-ok','Pembayaran berjaya 🎉','Ladies Burn 30 dah terbuka. Jom mula Hari 1, cuma 20 minit.','Mula Hari 1','closeProduct();openProgram(LB30_ID)'];
   if(!v || !$('pw-body')) return;
   $('pw-body').innerHTML='<div class="co co-done">'+
     (state==='wait'?'':'<div class="pwtop cotop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>')+

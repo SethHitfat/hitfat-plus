@@ -4770,6 +4770,13 @@ print("\n── LANDING PAGE BUY LINK ──");
   HF.data.onboarded=true;
   ok("...then opens the buy sheet once", handleBuyParam()===true && localStorage.getItem('hf_buy')===null && handleBuyParam()===false);
   localStorage.setItem('hf_buy','nope'); ok("...an unknown program is ignored", handleBuyParam()===false); localStorage.removeItem('hf_buy');
+  /* (23 Oct 2026) from an ad, no plan questions first: straight to buying */
+  var keepPr=HF.data.prefs; localStorage.setItem('hf_buy','lad4'); HF.data.onboarded=false; opened=0;
+  ok("...from an ad: no onboarding, plan defaults set, straight to the buy sheet", obFromLanding()===true && HF.data.onboarded===true &&
+    HF.data.prefs.goal && HF.data.prefs.equip==='Bodyweight only' && String(startOnboarding).indexOf('obFromLanding()')>0);
+  HF.data.prefs=keepPr; localStorage.removeItem('hf_buy');
+  ok("...the Pixel counts the purchase only with an ID, only what ads sell", PIXEL_ID==='' && pixelPurchase('prog_lad4')===false && PIXEL_SKUS.prog_lad4===39 &&
+    String(awaitPayment).indexOf('pixelPurchase(_paySku)')>0 && String(coConfirm).indexOf('Pembayaran berjaya')>0);
   BUY_GO.lad4=keepGo; HF.data.onboarded=keepOb;
 })();
 print("\n── COACH VOICE + MUSIC ──");
