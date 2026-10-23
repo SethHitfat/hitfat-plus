@@ -72,7 +72,7 @@ const CATALOGUE: Record<string, Sku> = {
      function already treats a live pass as unlimited scanning. The SKU
      prefix is the tier. Programs, All Access and scan packs stay listed so
      an order made before the membership still grants on a late callback. */
-  "sub_plus_6m":   { price: 149, kind: "pass", days: 183 },
+  "sub_plus_6m":   { price: 179, kind: "pass", days: 183 },
   "sub_plus_12m":  { price: 249, kind: "pass", days: 365 },
   "sub_coach_6m":  { price: 349, kind: "pass", days: 183 },
   "sub_coach_12m": { price: 599, kind: "pass", days: 365 },

@@ -18733,9 +18733,11 @@ let _ent={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, s
 /* ── the membership ──
    Prices are the server's too (deploy/_shared/catalogue.ts); build.py
    refuses to ship if the two disagree. Change a price in both. */
+/* (23 Oct 2026, Seth) 6 months RM179 (was 149), 12 months RM249; no
+   single month, so the choice is 6 or 12 and the year is RM70 more */
 const SUB_PLANS=[
   {sku:'sub_plus_12m',  tier:'plus',  months:12, days:365, price:249},
-  {sku:'sub_plus_6m',   tier:'plus',  months:6,  days:183, price:149},
+  {sku:'sub_plus_6m',   tier:'plus',  months:6,  days:183, price:179},
   {sku:'sub_coach_12m', tier:'coach', months:12, days:365, price:599},
   {sku:'sub_coach_6m',  tier:'coach', months:6,  days:183, price:349}
 ];
@@ -18893,13 +18895,15 @@ function storePrograms(){
   const mine=paid.filter(ownsProgram), rest=paid.filter(p=>!ownsProgram(p));
   let h=fqCard();
 
-  if(!ownsAll()){
+  /* All Access, one payment for good, is not sold while the membership is:
+     its card said RM199 and opened the membership */
+  if(!ownsAll() && !MEMBERSHIP_LIVE){
     h+='<div class="ecta" style="background:'+egrad('#2a1016','#0b0b0d','#EF4444')+';" onclick="openProduct(\''+BUNDLE_SKU+'\')">'+
        '<div class="ic">'+glyph('spark')+'</div><div class="t">Every program, one payment</div>'+
        '<div class="s">All '+paid.length+' paid programs, and every one added later. No subscription — buy it once, it is yours.</div>'+
        '<div class="go">RM'+BUNDLE_PRICE+' · Get all access</div>'+
        '<div class="lock">WORTH RM'+paid.reduce((s,p)=>s+programPrice(p),0)+' BOUGHT SEPARATELY</div></div>';
-  } else {
+  } else if(ownsAll()){
     h+='<div class="mpnote" style="border-color:rgba(46,194,126,.35);color:var(--ok);">You own All Access — every program here is unlocked, including anything added later.</div>';
   }
 
@@ -19091,7 +19095,7 @@ function checkoutItem(sku){
     const cur=sp.tier==='coach' ? _ent.coachUntil : _ent.plusUntil;
     const from=liveDate(cur) ? new Date(cur) : new Date(), to=new Date(from);
     to.setDate(to.getDate()+sp.days);
-    return {name:TIER_INFO[sp.tier].name, line:sp.months+' months · RM'+perMonth(sp)+' a month',
+    return {name:TIER_INFO[sp.tier].name, line:monthsLabel(sp.months)+' · RM'+perMonth(sp)+' a month',
             price:sp.price, sub:true, from:liveDate(cur)?fmtDate(from):'Today', to:fmtDate(to)};
   }
   const sc=SCAN_PRODUCTS.filter(x=>x.sku===sku)[0];
@@ -19283,6 +19287,7 @@ const TIER_INFO={
 };
 function subPlan(sku){ return SUB_PLANS.filter(x=>x.sku===sku)[0]; }
 function perMonth(p){ return (p.price/p.months).toFixed(2).replace(/\.00$/,''); }
+function monthsLabel(n){ return n+' month'+(n===1?'':'s'); }
 
 function openPaywall(reason){
   pwReason=reason||'';
@@ -19335,16 +19340,18 @@ function paywallHTML(sheet){
   h+='<div class="pwq">Choose your plan</div>';
   h+='<div class="sub-plans">'+plans.map(p=>{
        const on=p.sku===chosen.sku, best=p.months===12;
-       const save=best ? Math.round((1-(p.price/12)/(plans.filter(x=>x.months===6)[0].price/6))*100) : 0;
+       /* the saving against paying month by month (or the 6-month rate, where there is no month) */
+       const base=plans.filter(x=>x.months===1)[0]||plans.filter(x=>x.months===6)[0];
+       const save=best && base ? Math.round((1-(p.price/12)/(base.price/base.months))*100) : 0;
        return '<button class="sub-plan'+(on?' on':'')+'" onclick="pwSetPlan(\''+p.sku+'\')">'+
          (best?'<span class="sub-best">Best value'+(save>0?' · save '+save+'%':'')+'</span>':'')+
          '<span class="sub-radio"></span>'+
-         '<span class="sub-pl"><b>'+p.months+' months</b><small>RM'+perMonth(p)+' a month</small></span>'+
+         '<span class="sub-pl"><b>'+monthsLabel(p.months)+'</b><small>RM'+perMonth(p)+' a month</small></span>'+
          '<span class="sub-pr">RM'+p.price+'</span></button>';
      }).join('')+'</div>';
   h+='<button class="bigbtn sub-cta" onclick="pwBuy()">Continue · RM'+chosen.price+'</button>';
   if(typeof kelasPaywallLine==='function') h+=kelasPaywallLine();
-  h+='<div class="sub-fine">One payment for '+chosen.months+' months — FPX or DuitNow. It does not renew by itself; '+
+  h+='<div class="sub-fine">One payment for '+monthsLabel(chosen.months)+' — FPX or DuitNow. It does not renew by itself; '+
      'we remind you before it ends. '+(T42_LIVE?(pwTier==='coach'?'Includes one T42 edition during your membership.':'T42 challenges are sold separately.'):'')+
      ' All purchases are final. <a href="/terms" target="_blank" rel="noopener">Terms</a> · <a href="/refund" target="_blank" rel="noopener">Refunds</a></div>';
   return h;
