@@ -1,0 +1,199 @@
+<!doctype html><html lang="ms"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>HITFAT+ · Skrin reception</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* app.hitfat.io/tv · the TV at HITFAT HQ's reception (23 Oct 2026, Seth: make
+   the reception feel like HITFAT+ and Bara). Open it in the TV's browser and
+   tap once for full screen. Six slides turn by themselves; nothing here reads
+   member data. Laid out at 1920 x 1080 and scaled to the screen. */
+:root{ --red:#E30613; --deep:#A50C14; --ink:#111113; --dim:#6B6B72; --bg:#F2F2F7; --pink:#FDECEC }
+*{ box-sizing:border-box; margin:0; padding:0 }
+html,body{ height:100%; background:#EC3437; overflow:hidden; font-family:Inter,-apple-system,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; color:var(--ink); cursor:none }
+#stage{ position:absolute; left:50%; top:50%; width:1920px; height:1080px; transform-origin:50% 50%;
+  background:linear-gradient(180deg,#EC3437 0,#F04A4A 42%,#F4706C 62%,#F9AFA9 78%,#FDE6E3 90%,var(--bg) 100%) }
+.sl{ position:absolute; inset:0; opacity:0; transition:opacity .9s ease; pointer-events:none }
+.sl.on{ opacity:1 }
+.spot{ position:absolute; border-radius:50%; background:radial-gradient(closest-side,#fff 0%,rgba(255,255,255,.92) 32%,rgba(255,255,255,.45) 62%,rgba(255,255,255,0) 100%) }
+.bara{ position:absolute; filter:drop-shadow(0 30px 34px rgba(120,0,10,.32)) }
+.on .bara{ animation:bob 3.2s ease-in-out infinite }
+@keyframes bob{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-16px) } }
+.kk{ font-size:30px; font-weight:900; letter-spacing:7px; color:rgba(255,255,255,.92); text-transform:uppercase }
+h1{ font-size:128px; font-weight:900; line-height:.95; letter-spacing:-5px; color:#fff }
+h1 small{ display:block; font-size:64px; letter-spacing:-2px; margin-top:14px }
+.lead{ font-size:38px; font-weight:600; color:rgba(255,255,255,.95); line-height:1.35; margin-top:26px }
+.txt{ position:absolute; left:110px; top:190px; width:1000px }
+.card{ background:#fff; border-radius:40px; box-shadow:0 20px 50px rgba(150,20,20,.14) }
+.bub{ position:absolute; background:#fff; font-weight:800; font-size:38px; padding:20px 30px; border-radius:30px; box-shadow:0 18px 40px rgba(150,0,10,.22); white-space:nowrap }
+.bub:after{ content:''; position:absolute; left:var(--tx,60px); bottom:-20px; border:20px solid transparent; border-top-color:#fff; border-bottom:0 }
+
+/* top bar and the ticker, on every slide */
+.bar{ position:absolute; top:46px; left:110px; right:110px; display:flex; align-items:center; justify-content:space-between; z-index:5 }
+.logo{ display:flex; align-items:center; gap:16px; font-size:48px; font-weight:900; letter-spacing:-1px; color:#fff }
+.logo img{ height:62px } .logo i{ font-style:normal; color:var(--deep) }
+.clock{ display:flex; align-items:center; gap:18px; background:#fff; border-radius:99px; padding:12px 30px; font-size:34px; font-weight:900; color:var(--ink); box-shadow:0 10px 24px rgba(150,0,10,.18) }
+.clock span{ font-size:24px; font-weight:700; color:var(--dim) }
+.tick{ position:absolute; left:0; right:0; bottom:0; height:84px; background:var(--red); color:#fff; display:flex; align-items:center; overflow:hidden; z-index:5 }
+.tick div{ white-space:nowrap; font-size:32px; font-weight:800; padding-left:100%; animation:tick 40s linear infinite }
+@keyframes tick{ to{ transform:translateX(-100%) } }
+.dots{ position:absolute; bottom:112px; left:50%; transform:translateX(-50%); display:flex; gap:12px; z-index:5 }
+.dots i{ width:14px; height:14px; border-radius:99px; background:rgba(17,17,19,.18); transition:all .4s }
+.dots i.on{ width:44px; background:var(--red) }
+
+/* 3 · connect */
+.qr{ position:absolute; right:110px; top:200px; width:640px; padding:40px; text-align:center }
+.qr .qrw{ width:420px; height:420px; margin:0 auto; border-radius:28px; padding:14px; box-shadow:0 0 0 6px var(--red) }
+.qr .qrw img{ width:100%; height:100%; display:block }
+.qr b{ display:block; font-size:44px; font-weight:900; letter-spacing:-1px; margin-top:28px }
+.qr span{ display:block; font-size:28px; font-weight:600; color:var(--dim); margin-top:6px }
+.steps{ display:flex; flex-direction:column; gap:18px; margin-top:40px; background:#fff; border-radius:36px; padding:30px 40px; box-shadow:0 20px 50px rgba(150,20,20,.14); width:820px }
+.steps div{ display:flex; align-items:center; gap:22px; font-size:40px; font-weight:800; color:var(--ink) }
+.steps b{ width:66px; height:66px; flex:none; border-radius:50%; background:var(--red); color:#fff; display:grid; place-items:center; font-size:38px; font-weight:900 }
+.free{ display:inline-block; margin-top:28px; background:var(--red); color:#fff; font-size:40px; font-weight:900; padding:16px 34px; border-radius:99px; box-shadow:0 12px 26px rgba(150,0,10,.2) }
+
+/* 4 · points */
+.rw{ position:absolute; left:110px; right:110px; top:600px; display:grid; grid-template-columns:repeat(5,1fr); gap:26px }
+.rw .card{ padding:20px; text-align:center; border-radius:32px }
+.rw .th{ height:190px; background:#F4F2F2; border-radius:22px; display:grid; place-items:center; overflow:hidden }
+.rw .th img{ height:176px; mix-blend-mode:multiply }
+.rw b{ display:block; font-size:30px; font-weight:800; letter-spacing:-.5px; margin-top:16px }
+.rw .pt{ display:inline-block; margin-top:10px; background:var(--pink); color:var(--red); font-size:34px; font-weight:900; padding:6px 22px; border-radius:99px }
+.coin{ position:absolute; right:170px; top:150px; width:380px; height:380px; border-radius:50%; color:#fff; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 32% 26%,#FF6B6B 0%,#E30613 52%,#A50C14 100%); box-shadow:0 30px 60px rgba(140,0,10,.38), inset 0 0 0 12px #fff, inset 0 0 0 24px rgba(165,12,20,.3) }
+.coin b{ font-size:128px; font-weight:900; letter-spacing:-5px; line-height:.9 } .coin span{ font-size:26px; font-weight:900; letter-spacing:4px; margin-top:10px; line-height:1.25 }
+
+/* 5 · habits */
+.hab{ position:absolute; left:110px; right:110px; top:560px; display:grid; grid-template-columns:repeat(4,1fr); gap:30px }
+.hab .card{ padding:26px 20px 30px; text-align:center }
+.hab img{ height:230px; display:block; margin:0 auto 8px; filter:drop-shadow(0 12px 14px rgba(120,0,10,.22)) }
+.hab b{ display:block; font-size:44px; font-weight:900; letter-spacing:-1px } .hab span{ display:block; font-size:28px; font-weight:600; color:var(--dim); margin-top:4px }
+
+/* 6 · the member card */
+.mc{ position:absolute; right:150px; top:250px; width:720px; height:454px; border-radius:44px; padding:40px 44px 34px; color:#fff; transform:rotate(-5deg);
+  background:linear-gradient(155deg,#FF3B3B 0%,#E30613 45%,#8E0410 100%); box-shadow:0 40px 80px rgba(80,0,0,.4),inset 0 0 0 3px rgba(255,255,255,.28); display:flex; flex-direction:column; overflow:hidden }
+.mc:before{ content:''; position:absolute; inset:0; background:radial-gradient(circle at 88% 8%,rgba(255,255,255,.34),rgba(255,255,255,0) 52%) }
+.mc>*{ position:relative }
+.mc .t{ display:flex; justify-content:space-between; align-items:center; font-size:32px; font-weight:900 }
+.mc .t span{ display:flex; align-items:center; gap:12px } .mc .t img{ height:42px }
+.mc .t em{ font-style:normal; font-size:18px; font-weight:800; letter-spacing:2.5px; border:2.5px solid #fff; border-radius:99px; padding:7px 16px }
+.mc .n{ margin-top:auto; font-size:60px; font-weight:900; text-transform:uppercase; line-height:1 }
+.mc .l{ font-size:24px; font-weight:600; opacity:.85; margin-top:10px }
+.mc .s{ display:flex; gap:44px; margin-top:24px } .mc .s b{ display:block; font-size:46px; font-weight:900; line-height:1 } .mc .s small{ font-size:20px; font-weight:600; opacity:.75 }
+/* 2 · season */
+.bg8{ position:absolute; left:110px; right:110px; top:640px; display:flex; justify-content:space-between; padding:26px 40px }
+.bg8 img{ width:170px; height:170px; object-fit:contain; filter:drop-shadow(0 8px 10px rgba(0,0,0,.2)) }
+.count{ display:inline-flex; align-items:baseline; gap:18px; margin-top:34px; background:#fff; color:var(--red); border-radius:30px; padding:14px 34px; box-shadow:0 12px 26px rgba(150,0,10,.2) }
+.count b{ font-size:96px; font-weight:900; letter-spacing:-3px; line-height:1 } .count span{ font-size:36px; font-weight:800; color:var(--ink) }
+#fs{ position:fixed; inset:0; z-index:9; background:transparent }
+</style></head><body>
+<div id="stage">
+  <div class="bar"><div class="logo"><img src="img/mark.png" alt=""><span>HITFAT<i>+</i></span></div><div class="clock"><b id="hm">--:--</b><span id="dt"></span></div></div>
+
+  <!-- 1 · welcome -->
+  <section class="sl">
+    <div class="spot" style="right:80px;top:120px;width:900px;height:860px"></div>
+    <img class="bara" src="img/bara_cheer.png" style="right:200px;top:240px;width:660px" alt="">
+    <div class="bub" style="right:760px;top:210px;--tx:330px">Hai! Saya Bara 👋</div>
+    <div class="txt" style="top:300px"><div class="kk" id="greet">Selamat datang</div><h1>Jom, Bara<br>tunggu awak!</h1>
+      <p class="lead">Kawan workout anda dalam app HITFAT+.<br>Bara hidup ikut tabiat anda setiap hari.</p></div>
+  </section>
+
+  <!-- 2 · season 1 -->
+  <section class="sl">
+    <div class="spot" style="right:60px;top:80px;width:760px;height:620px"></div>
+    <img class="bara" src="img/bara_gold.png" style="right:200px;top:150px;width:470px" alt="">
+    <div class="txt" style="top:180px"><div class="kk">Season 1</div><h1>78 lencana<br>untuk dikumpul.</h1>
+      <div class="count"><b id="sN">0</b><span id="sT">hari lagi</span></div></div>
+    <div class="bg8 card"><img src="../img/badges/c/cls1.png" alt=""><img src="../img/badges/c/cls10.png" alt=""><img src="../img/badges/c/cls100.png" alt=""><img src="../img/badges/c/wk52.png" alt=""><img src="../img/badges/c/mo3.png" alt=""><img src="../img/badges/c/beast.png" alt=""><img src="../img/badges/c/cls1000.png" alt=""><img src="../img/badges/c/og.png" alt=""></div>
+  </section>
+
+  <!-- 3 · connect -->
+  <section class="sl">
+    <div class="txt" style="top:160px"><div class="kk">Ahli kelas</div><h1>Sambung<br>HITFAT+.</h1>
+      <div class="steps"><div><b>1</b>Scan QR</div><div><b>2</b>Log masuk dengan Google</div><div><b>3</b>Masukkan no. telefon anda</div><div><b>4</b>Staf di kaunter luluskan</div></div>
+      <div class="free">PERCUMA untuk ahli kelas</div></div>
+    <div class="qr card"><div class="qrw"><img src="img/qr_kelas.svg" alt=""></div><b>Scan dengan telefon</b><span>Siap dalam 1 minit</span></div>
+  </section>
+
+  <!-- 4 · points -->
+  <section class="sl">
+    <div class="txt" style="top:190px"><div class="kk">Mata HITFAT</div><h1>Setiap kelas<br>ada nilainya.</h1>
+      <p class="lead">Kumpul mata setiap kali anda datang.<br>Tukar dengan hadiah di kaunter.</p></div>
+    <div class="coin"><b>+100</b><span>MATA SETIAP<br>KELAS</span></div>
+    <div class="rw">
+      <div class="card"><div class="th"><img src="../img/rewards/drink.jpg" alt=""></div><b>Whey protein</b><div class="pt">2,500</div></div>
+      <div class="card"><div class="th"><img src="../img/rewards/renew20.jpg" alt=""></div><b>RM20 off renew</b><div class="pt">5,000</div></div>
+      <div class="card"><div class="th"><img src="../img/rewards/tee.jpg" alt=""></div><b>Core Tee</b><div class="pt">6,500</div></div>
+      <div class="card"><div class="th"><img src="../img/rewards/tee_sub.jpg" alt=""></div><b>Signature Tee</b><div class="pt">9,500</div></div>
+      <div class="card"><div class="th"><img src="../img/rewards/knee.jpg" alt=""></div><b>Knee sleeve</b><div class="pt">15,000</div></div>
+    </div>
+  </section>
+
+  <!-- 5 · habits -->
+  <section class="sl">
+    <div class="txt" style="top:190px;width:1700px"><div class="kk">HITFAT Score</div><h1>Bara kira 4 tabiat.</h1>
+      <p class="lead">Lengkapkan, dan Bara jadi merah menyala. Streak 7 hari, Bara jadi emas!</p></div>
+    <div class="hab">
+      <div class="card"><img src="img/bara_juara.png" alt=""><b>Workout</b><span>sesi atau kelas</span></div>
+      <div class="card"><img src="img/bara_meal.png" alt=""><b>Makan</b><span>3 kali sehari</span></div>
+      <div class="card"><img src="img/bara_water.png" alt=""><b>Air</b><span>8 gelas</span></div>
+      <div class="card"><img src="img/bara_comel.png" alt=""><b>Langkah</b><span>8,000 sehari</span></div>
+    </div>
+  </section>
+
+  <!-- 6 · the member card -->
+  <section class="sl">
+    <div class="spot" style="right:20px;top:120px;width:1000px;height:760px"></div>
+    <div class="txt" style="top:230px;width:860px"><div class="kk">Kad ahli anda</div><h1>Tunjuk.<br>Check in.<br>Kongsi.</h1>
+      <p class="lead">Kad ahli dalam app HITFAT+, dengan QR untuk check in. Kongsi terus ke IG Story.</p></div>
+    <div class="mc"><div class="t"><span><img src="img/mark.png" alt="">HITFAT+</span><em>ACTIVE MEMBER</em></div>
+      <div class="n">Nama Anda</div><div class="l">Kad ahli anda · Season 1</div>
+      <div class="s"><span><b>10</b><small>kelas</small></span><span><b>4</b><small>minggu streak</small></span><span><b>2,750</b><small>mata</small></span></div></div>
+    <img class="bara" src="img/bara_juara.png" style="right:60px;top:600px;width:330px" alt="">
+  </section>
+
+  <div class="dots" id="dots"></div>
+  <div class="tick"><div>💪 Dah check in? Bara tunggu awak! &nbsp;·&nbsp; 💧 Jangan lupa minum air &nbsp;·&nbsp; 🎁 +100 Mata HITFAT setiap kelas &nbsp;·&nbsp; 🏅 Season 1 bermula 1 November &nbsp;·&nbsp; 📱 Ahli kelas: HITFAT+ PERCUMA, tanya kaunter &nbsp;·&nbsp; 🔥 Jangan putus streak!</div></div>
+</div>
+<div id="fs"></div>
+<script>
+(function(){
+  var st=document.getElementById('stage');
+  function fit(){ var s=Math.min(innerWidth/1920, innerHeight/1080); st.style.transform='translate(-50%,-50%) scale('+s+')'; }
+  addEventListener('resize',fit); fit();
+
+  /* the time in Malaysia, whatever the TV's own zone */
+  var HARI=['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'], BLN=['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
+  function my(){ return new Date(Date.now()+8*3600e3); }
+  function tick(){
+    var d=my(), h=d.getUTCHours(), m=d.getUTCMinutes();
+    document.getElementById('hm').textContent=(h%12||12)+':'+('0'+m).slice(-2)+(h<12?' pg':' ptg');
+    document.getElementById('dt').textContent=HARI[d.getUTCDay()]+', '+d.getUTCDate()+' '+BLN[d.getUTCMonth()];
+    document.getElementById('greet').textContent=h<12?'Selamat pagi':h<14?'Selamat tengah hari':h<19?'Selamat petang':'Selamat malam';
+    /* Season 1: days to go, then the week it is in */
+    var S=Date.parse('2026-11-01T00:00:00+08:00'), now=Date.now();
+    if(now<S){ var n=Math.ceil((S-now)/864e5); document.getElementById('sN').textContent=n; document.getElementById('sT').textContent=n===1?'hari lagi: esok!':'hari lagi · mula 1 November'; }
+    else { document.getElementById('sN').textContent='Minggu '+(Math.floor((now-S)/(7*864e5))+1); document.getElementById('sT').textContent='Season 1 sedang berjalan'; }
+  }
+  tick(); setInterval(tick,15000);
+
+  var sl=[].slice.call(document.querySelectorAll('.sl')), dots=document.getElementById('dots'), i=0;
+  sl.forEach(function(){ dots.appendChild(document.createElement('i')); });
+  function show(k){ sl.forEach(function(s,j){ s.classList.toggle('on',j===k); dots.children[j].classList.toggle('on',j===k); }); }
+  /* #s3 holds one slide, for checking it */
+  var hold=/#s(\d)/.exec(location.hash);
+  if(hold) show(+hold[1]-1);
+  else { show(0); setInterval(function(){ i=(i+1)%sl.length; show(i); }, 12000); }
+
+  /* one tap: full screen, and keep the screen awake */
+  document.getElementById('fs').addEventListener('click',function(){
+    var e=document.documentElement; try{ (e.requestFullscreen||e.webkitRequestFullscreen).call(e); }catch(x){}
+    try{ navigator.wakeLock && navigator.wakeLock.request('screen').catch(function(){}); }catch(x){}
+  });
+  /* reload at 4 am so the TV picks up changes */
+  setInterval(function(){ var d=my(); if(d.getUTCHours()===4 && d.getUTCMinutes()<1) location.reload(); }, 60000);
+})();
+</script>
+</body></html>
