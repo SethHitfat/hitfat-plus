@@ -228,9 +228,21 @@ function same(x: string, y: string): boolean {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
+/* What Bayarcash's transaction callback really signs (24 Oct 2026, found on
+   the first real payment, which the two checks below refused): these
+   thirteen, sorted by key, a missing one as an empty value, joined with
+   "|", untrimmed — bayarcash-php-sdk verifyTransactionCallbackData. */
+const TX_SIGNED = ['record_type', 'transaction_id', 'exchange_reference_number', 'exchange_transaction_id', 'order_number',
+  'currency', 'amount', 'payer_name', 'payer_email', 'payer_bank_name', 'status', 'status_description', 'datetime'];
+function hmacExact(payload: Record<string, unknown>, keys: string[], secret: string): string {
+  const body = keys.slice().sort().map((k) => (payload[k] === undefined || payload[k] === null) ? '' : String(payload[k])).join('|');
+  return createHmac('sha256', secret).update(body).digest('hex');
+}
+
 function verify(payload: Record<string, unknown>, secret: string): boolean {
   const given = String(payload.checksum || '').toLowerCase();
   if (!given) return false;
+  if (same(hmacExact(payload, TX_SIGNED, secret), given)) return true;
   const every = Object.keys(payload).filter((k) => k !== 'checksum');
   return same(hmacOf(payload, SIGNED, secret), given) || same(hmacOf(payload, every, secret), given);
 }
@@ -254,7 +266,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!verify(p, SECRET)) {
-      console.warn('callback rejected: bad checksum', String(p.order_number || ''));
+      console.warn('callback rejected: bad checksum', String(p.order_number || ''), 'fields', Object.keys(p).sort().join(','));
       return json({ ok: false, error: 'bad_checksum' }, 401);
     }
 
