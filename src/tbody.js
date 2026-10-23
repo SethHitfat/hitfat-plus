@@ -4796,6 +4796,15 @@ print("\n── LANDING PAGE BUY LINK ──");
   HF.data.prefs=keepPr; localStorage.removeItem('hf_buy');
   ok("...the Pixel counts the purchase only with an ID, only what ads sell", PIXEL_ID==='' && pixelPurchase('prog_lad4')===false && PIXEL_SKUS.prog_lad4===39 &&
     String(awaitPayment).indexOf('pixelPurchase(_paySku)')>0 && String(coConfirm).indexOf('Pembayaran berjaya')>0);
+  /* (24 Oct 2026) paid on the landing page, back through ladies/berjaya: ?tebus=lad4 */
+  var keepT=BUY_GO.tebus_lad4, tb=0; BUY_GO.tebus_lad4=function(){ tb++; };
+  localStorage.setItem('hf_buy','tebus_lad4'); HF.data.onboarded=true;
+  ok("?tebus=lad4 opens what was bought, after sign-in, once", handleBuyParam()===true && localStorage.getItem('hf_buy')===null && String(keepT).indexOf('lbTebus(')>0);
+  ok("...the order number rides along and is claimed on any account", String(captureBuyParam).indexOf("'hf_tebus_o'")>0 && String(lbTebus).indexOf("plus_claim_landing")>0 && String(lbTebus).indexOf("{p_order:o}")>0);
+  ok("...a webhook a few seconds late: two more looks, then the order-number box", String(lbTebus).indexOf('tries<2')>0 && String(lbTebusSheet).indexOf('lb-order')>0 && String(lbTebusSheet).indexOf('lbClaim()')>0);
+  ok("...and it skips the English onboarding like ?beli", (function(){ localStorage.setItem('hf_buy','tebus_lad4'); HF.data.onboarded=false; var kp=HF.data.prefs, r=obFromLanding(); HF.data.prefs=kp; localStorage.removeItem('hf_buy'); return r===true; })());
+  ok("...opened, it is the Malay confirmation and Day 1", String(lbTebus).indexOf("coConfirm('ok')")>0 && String(lbTebus).indexOf("_paySku='prog_'+LB30_ID")>0);
+  BUY_GO.tebus_lad4=keepT; tb=0;
   BUY_GO.lad4=keepGo; HF.data.onboarded=keepOb;
 })();
 print("\n── COACH VOICE + MUSIC ──");

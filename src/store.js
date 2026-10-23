@@ -613,11 +613,21 @@ function coConfirm(state){
    sign-in (and an OAuth redirect), then, once the account is set up, the
    program opens with its buy sheet. A new account does onboarding first. */
 const BUY_GO={lad4:function(){ openProgram(LB30_ID); if(typeof lbBuy==='function') lbBuy(); },
-              wl30:function(){ if(typeof wlBuy==='function') wlBuy(); }};
+              wl30:function(){ if(typeof wlBuy==='function') wlBuy(); },
+              /* ?tebus=lad4 (24 Oct 2026): paid on the landing page already, back
+                 through ladies/berjaya: open what she bought (ladies30.js lbTebus) */
+              tebus_lad4:function(){ if(typeof lbTebus==='function') lbTebus(0); }};
 function captureBuyParam(){
   try{
-    const q=new URLSearchParams(location.search), b=q.get('beli');
-    if(b && BUY_GO[b]){ localStorage.setItem('hf_buy',b); q.delete('beli'); const s=q.toString();
+    const q=new URLSearchParams(location.search), b=q.get('beli'), t=q.get('tebus');
+    let k='';
+    if(b && BUY_GO[b]){ k=b; q.delete('beli'); }
+    else if(t && BUY_GO['tebus_'+t]){
+      k='tebus_'+t; const o=String(q.get('o')||'').trim().slice(0,64);
+      if(o) localStorage.setItem('hf_tebus_o',o);
+      q.delete('tebus'); q.delete('o');
+    }
+    if(k){ localStorage.setItem('hf_buy',k); const s=q.toString();
       history.replaceState(null,'',location.pathname+(s?'?'+s:'')+location.hash); }
   }catch(e){}
 }

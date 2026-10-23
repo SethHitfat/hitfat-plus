@@ -722,6 +722,39 @@ function lbClaim(){
   })['catch'](function(){ toast('Pesanan itu tidak dapat disemak — cuba lagi sebentar.'); });
 }
 
+/* ── ?tebus=lad4 (24 Oct 2026): she paid on the landing page (Bayarcash) and
+   came back through "Pembayaran berjaya". Signed in, it opens: by the order
+   number when that page had one (any account), else by the email she paid
+   with. The webhook can land a few seconds after her, so two more looks
+   before asking for the order number. ── */
+function lbTebus(tries){
+  tries=tries||0;
+  var o=''; try{ o=localStorage.getItem('hf_tebus_o')||''; }catch(e){}
+  var claim=(sb && HF.userId) ? sb.rpc('plus_claim_landing', o?{p_order:o}:{}) : Promise.resolve(null);
+  var after=function(){
+    if(lbOwned()){
+      try{ localStorage.removeItem('hf_tebus_o'); }catch(e){}
+      _paySku='prog_'+LB30_ID; openProgram(LB30_ID); coConfirm('ok');
+      return;
+    }
+    if(tries<2){ if(!tries) lbTebusSheet('wait',o); setTimeout(function(){ lbTebus(tries+1); },4000); return; }
+    lbTebusSheet('miss',o);
+  };
+  Promise.resolve(claim).then(function(){ return loadEntitlement(); }, function(){ return loadEntitlement(); }).then(after, after);
+}
+function lbTebusSheet(state,o){
+  var h='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>';
+  if(state==='wait') h+='<div class="co co-done"><div class="co-badge co-wait"><span class="co-dot"></span><span class="co-dot"></span><span class="co-dot"></span></div>'+
+    '<div class="coh">Menyemak pembayaran anda</div><div class="co-s">Biasanya beberapa saat sahaja.</div></div>';
+  else h+='<div class="co co-done"><div class="co-badge co-late">'+glyph('clock')+'</div>'+
+    '<div class="coh">Kami belum jumpa pembayaran anda</div>'+
+    '<div class="co-s">Kalau anda bayar guna emel lain, masukkan nombor pesanan dari resit Bayarcash.</div></div>'+
+    '<div class="wl-claim"><div class="wl-claim-f"><input id="lb-order" placeholder="Nombor pesanan" autocomplete="off" value="'+hesc(o||'')+'"><button onclick="lbClaim()">Buka</button></div></div>'+
+    '<button class="bigbtn lb-btn" onclick="lbTebus(1)">Cuba lagi</button>'+
+    '<button class="authalt" onclick="window.open(\'https://wa.me/60189174656?text='+encodeURIComponent('Hai HITFAT, saya dah bayar Ladies Burn 30 tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">Masih tak terbuka? <b>WhatsApp kami</b></button>';
+  $('pw-body').innerHTML=h; $('pwm').classList.add('on');
+}
+
 /* ── Home: the full card once she has started it or bought it on its own;
    until then a tile in the programs row (hubRow, diet6.js) ── */
 function lbFull(){ return lbOwned() && lbNext()<LB30_DAYS.length && (owns('prog_'+LB30_ID) || lbDone()>0); }
