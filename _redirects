@@ -7,3 +7,7 @@
 /privacy  /privacy.html  200
 /terms    /terms.html    200
 /refund   /refund.html   200
+
+# The gym's bunting QR (23 Oct 2026): straight to connecting a class
+# membership, kept through sign-in (kelas.js captureKelasParam)
+/kelas    /?kelas=today  302
