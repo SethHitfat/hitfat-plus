@@ -7,7 +7,7 @@
 import os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FUNCS = ['pay-create', 'pay-callback', 'pay-status', 'scan-food', 'plus-landing']
+FUNCS = ['pay-create', 'pay-callback', 'pay-status', 'scan-food', 'plus-landing', 'landing-pay']
 
 HEADER = '''/* ═══════════════════════════════════════════════════════════════
    Single-file build for the Supabase dashboard editor, which takes one
