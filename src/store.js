@@ -566,7 +566,7 @@ function awaitPayment(){
    only who clicks. Only for what is sold through ads (PIXEL_SKUS), once per
    purchase on a phone, and nothing loads while PIXEL_ID is empty. Never any
    health, meal or body data: the item and its price only. */
-var PIXEL_ID='';
+var PIXEL_ID='1860516742038949';   /* HITFAT+ Pixel (Events Manager, 23 Oct 2026) */
 var PIXEL_SKUS={prog_lad4:39};
 function pixelLoad(){
   if(window.fbq) return;

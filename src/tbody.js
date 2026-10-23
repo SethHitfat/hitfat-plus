@@ -4794,7 +4794,7 @@ print("\n── LANDING PAGE BUY LINK ──");
   ok("...from an ad: no onboarding, plan defaults set, straight to the buy sheet", obFromLanding()===true && HF.data.onboarded===true &&
     HF.data.prefs.goal && HF.data.prefs.equip==='Bodyweight only' && String(startOnboarding).indexOf('obFromLanding()')>0);
   HF.data.prefs=keepPr; localStorage.removeItem('hf_buy');
-  ok("...the Pixel counts the purchase only with an ID, only what ads sell", PIXEL_ID==='' && pixelPurchase('prog_lad4')===false && PIXEL_SKUS.prog_lad4===39 &&
+  ok("...the Pixel counts the purchase only with an ID, only what ads sell", /^\d{15,16}$/.test(PIXEL_ID) && pixelPurchase('prog_x')===false && String(pixelPurchase).indexOf('!PIXEL_ID')>0 && PIXEL_SKUS.prog_lad4===39 &&
     String(awaitPayment).indexOf('pixelPurchase(_paySku)')>0 && String(coConfirm).indexOf('Pembayaran berjaya')>0);
   /* (24 Oct 2026) paid on the landing page, back through ladies/berjaya: ?tebus=lad4 */
   var keepT=BUY_GO.tebus_lad4, tb=0; BUY_GO.tebus_lad4=function(){ tb++; };
