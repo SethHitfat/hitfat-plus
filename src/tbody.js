@@ -3767,11 +3767,13 @@ print("\n── LADIES BURN 30 ──");
   var html=''; var keepBody=$('pgd-body');
   ['plan','food','progress','guide'].forEach(function(tb){ lbTab=tb; renderLB30(); html+=$('pgd-body').innerHTML; });
   lbOpenDay(0); var d1=$('dd-body').innerHTML;
-  ok("the pages are in Malay", ["Today's Checklist","Start Day","Nutrition<","Start Here","Your 30 Days","Day 1 of","Coach's note"].every(function(w){ return html.indexOf(w)<0 && d1.indexOf(w)<0; }) &&
-     html.indexOf('Senarai Semak Hari Ini')>0 && html.indexOf('Mula Di Sini')>0 && html.indexOf('Pemakanan')>0);
+  ok("the labels are English, the notes Malay (25 Oct)", ["Senarai Semak Hari Ini","Mula Di Sini",">Pemakanan<","Perjalanan 30 Hari","<small>Minggu 1<","Hari 1 daripada","Nota coach"].every(function(w){ return html.indexOf(w)<0 && d1.indexOf(w)<0; }) &&
+     html.indexOf('Checklist')>0 && html.indexOf('Start Here')>0 && html.indexOf('Nutrition')>0 && html.indexOf('Week 1')>0 && d1.indexOf('Day 1 of 30')>0 &&
+     LB30_WEEKS.map(function(w){ return w.n; }).join()==='Begin,Build,Glow,Strong');
+  ok("...and the shared screens stay in English", (lbLang(true), LANG!=='ms'));
   ok("Start Here carries the safety note", html.indexOf('baru bersalin (kurang 6 minggu)')>0 && html.indexOf('caesarean')>0 && html.indexOf('hamil')>0);
-  ok("day 1: the check-in first, then the fit test, which may be skipped", d1.indexOf('Body Check-in')>0 && d1.indexOf('Body Check-in')<d1.indexOf('Fit Test impak rendah') &&
-     d1.indexOf('Pinggul')>0 && d1.indexOf('lbSkipTest(0)')>0);
+  ok("day 1: the check-in first, then the fit test, which may be skipped", d1.indexOf('Body Check-in')>0 && d1.indexOf('Body Check-in')<d1.indexOf('Low-Impact Fit Test') &&
+     d1.indexOf('Hips')>0 && d1.indexOf('lbSkipTest(0)')>0);
   /* BURN30 is as it was */
   ok("BURN30 is untouched", WL30.hub===true && findProg('wl30')===WL30 && WL30_DAYS.length===30 && WL30.price===39);
   var wbuy=0, keepWB=wlBuy, keepLB=lbBuy; wlBuy=function(){ wbuy++; }; lbBuy=function(){ wbuy+=10; };
