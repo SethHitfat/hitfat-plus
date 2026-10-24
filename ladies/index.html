@@ -198,6 +198,80 @@ footer a{color:var(--ink2);margin:0 6px}
 }
 @media (prefers-reduced-motion:reduce){ .reveal{opacity:1;transform:none;transition:none} html{scroll-behavior:auto} }
 
+/* ── the sales-page sections (25 Oct 2026): problem, agitation, solution,
+      demonstration, benefits, credibility, proof, education, offer, price ── */
+.story{margin:14px 0 0;font-size:16.5px;line-height:1.65}
+.icons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 22px}
+.icons div{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:12.5px;font-weight:700;line-height:1.3}
+.icons i,.sol i,.out .ic{flex:none;display:grid;place-items:center;border-radius:50%;background:#fff;border:1.5px solid #F6CFCB}
+.icons i{width:50px;height:50px}
+.icons svg,.sol svg,.out .ic svg{width:24px;height:24px;fill:none;stroke:var(--red);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.bubbles{display:grid;gap:10px;margin-top:22px}
+.bubbles div{position:relative;max-width:86%;padding:12px 16px;border-radius:18px 18px 18px 4px;background:#fff;border:1px solid var(--line);font-size:15px;font-weight:600;box-shadow:0 4px 14px rgba(28,21,21,.05)}
+.bubbles div:nth-child(even){justify-self:end;border-radius:18px 18px 4px 18px;background:var(--peach)}
+.nope{display:grid;gap:10px;margin-top:20px}
+.nope div{position:relative;padding:14px 16px 14px 52px;border-radius:14px;background:var(--cream);border:1px solid var(--line)}
+.nope div:before{content:'✕';position:absolute;left:16px;top:15px;width:24px;height:24px;border-radius:50%;background:#FDE2E0;color:var(--red);font-size:12px;font-weight:800;display:grid;place-items:center}
+.nope b{display:block;font-size:15.5px}
+.nope span{font-size:14px;color:var(--ink2)}
+.sol{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.sol div{display:flex;gap:12px;align-items:center;padding:14px;border-radius:14px;background:#fff;border:1px solid var(--line)}
+.sol i{width:44px;height:44px}
+.sol b{font-size:14.5px;line-height:1.3}
+.cta.mid{margin-top:26px}
+.pcards{display:grid;gap:14px;margin-top:22px}
+.pcard2 .ph{position:relative;border-radius:14px 14px 30px 14px;overflow:hidden;aspect-ratio:16/9;background:#2a2020}
+.pcard2 .ph img{width:100%;height:100%;object-fit:cover}
+.pcard2 .ph:after{content:'';position:absolute;inset:0;background:linear-gradient(20deg,rgba(20,16,16,.82) 0%,rgba(20,16,16,.35) 38%,rgba(20,16,16,0) 60%)}
+.pcard2 .ph b{position:absolute;z-index:1;left:16px;bottom:14px;right:40%;color:#fff;font-size:22px;font-weight:800;line-height:1.05;letter-spacing:-.01em;text-shadow:0 2px 12px rgba(0,0,0,.4)}
+.pcard2 .ph b:first-line{color:#FFD23F}
+.pcard2 p{margin:10px 2px 0;font-size:15px;color:var(--ink2)}
+h2 em{font-style:normal;color:var(--red)}
+.cred h2 em,.price h2 em{color:#FF5A63}
+.ticks{display:grid;gap:8px;margin-top:16px}
+.ticks div{display:flex;gap:10px;align-items:center;font-weight:700;font-size:16px}
+.ticks div:before{content:'✓';flex:none;width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;font-size:13px;font-weight:800;display:grid;place-items:center}
+.kaji{background:#FFF4F2}
+.edu .src{display:inline-block;margin-top:8px;font-size:13.5px;font-weight:700;color:var(--red);text-decoration:none}
+@media (min-width:700px){ .pcards{grid-template-columns:1fr 1fr} }
+
+.pic{margin-top:22px;border-radius:16px 16px 40px 16px;overflow:hidden;aspect-ratio:3/2;background:var(--peach)}
+.pic img{width:100%;height:100%;object-fit:cover}
+.out .ic{width:44px;height:44px;border-radius:50%}
+.cred{background:var(--black);color:#fff}
+.cred .k{color:#FF5A63}
+.cred .story{color:rgba(255,255,255,.8)}
+.cred .tr{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+.cred .tr b{color:#FF5A63}
+.cred .tr span{color:rgba(255,255,255,.72)}
+.testi{display:grid;gap:12px;margin-top:22px}
+.tcard{padding:18px;border-radius:16px 16px 30px 16px;background:var(--cream);border:1px solid var(--line)}
+.tcard p{margin:0;font-size:15.5px;line-height:1.55}
+.tcard .who-t{display:flex;align-items:center;gap:10px;margin-top:12px}
+.tcard img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+.tcard b{display:block;font-size:14px}
+.tcard small{font-size:12.5px;color:var(--ink2)}
+.edu{display:grid;gap:12px;margin-top:22px}
+.edu>div{display:grid;grid-template-columns:40px 1fr;gap:14px;padding:16px;border-radius:14px;background:#fff;border:1px solid var(--line)}
+.edu>div>b{width:40px;height:40px;border-radius:12px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:18px}
+.edu h3{font-size:16.5px;font-weight:800}
+.edu p{margin:4px 0 0;font-size:14.5px;color:var(--ink2)}
+.fine{margin:14px 0 0;font-size:13px;color:var(--ink2)}
+.stack{display:grid;gap:8px;margin-top:22px}
+.stack div{display:grid;grid-template-columns:40px 1fr;column-gap:12px;align-items:start;padding:12px 14px;border-radius:12px;background:var(--cream);border:1px solid var(--line)}
+.stack i{grid-row:span 2;width:40px;height:40px;border-radius:12px;background:#fff;display:grid;place-items:center;font-style:normal;font-size:19px}
+.stack b{font-size:15px;line-height:1.35}
+.stack span{font-size:13.5px;color:var(--ink2)}
+.anchor{max-width:460px;margin:12px auto 0;color:rgba(255,255,255,.8);font-size:15.5px}
+.after div{align-items:flex-start}
+.after span b{display:block;color:#fff;font-size:15px}
+@media (min-width:900px){
+  .faqw{max-width:980px}
+  .faq{display:grid;grid-template-columns:1fr 1fr;column-gap:36px;align-items:start}
+}
+.faq{margin-top:14px}
+@media (max-width:380px){ .icons{grid-template-columns:1fr 1fr} .sol{grid-template-columns:1fr} }
+
 /* ── the checkout sheet (24 Oct 2026): pay straight on Bayarcash from here ── */
 .ck{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end;justify-content:center;background:rgba(20,16,16,.55)}
 .ck.on{display:flex}
@@ -233,51 +307,76 @@ footer a{color:var(--ink2);margin:0 6px}
         <h1>Nak Kurus, Tapi Sibuk Urus <em>Kerja, Rumah &amp; Keluarga?</em></h1>
         <p class="hsub">Program Workout 30 Hari Khas Untuk Wanita — Dari Rumah, Tanpa Lompat &amp; Hanya 20 Minit Sehari.</p>
         <p class="lede">Tak perlu pergi gym. Tak perlu peralatan mahal. Tak perlu diet ekstrem. Mulakan perjalanan fitness anda dengan panduan yang mudah diikuti, walaupun anda seorang beginner.</p>
-        <div class="chips"><span>⏱ 20 min sehari</span><span>🤫 Tanpa lompat</span><span>🏠 Tanpa alat</span><span>🍛 Makanan Malaysia</span></div>
+        <div class="icons"><div><i><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></i>Workout dari rumah</div><div><i><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l4 6M21 9l-4 6"/></svg></i>Tanpa lompat, senyap</div><div><i><svg viewBox="0 0 24 24"><path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M8 7c0-2 2-2 2-4M13 7c0-2 2-2 2-4"/></svg></i>Panduan makan Malaysia</div><div><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i>Hanya 20 minit sehari</div></div>
         <a class="cta" href="#" data-buy="hero">Saya Nak Mula — RM39</a>
-        <div class="sub"><b>Bayar sekali</b> · tiada langganan · FPX atau DuitNow</div>
+        <div class="sub"><b>Bayar sekali sahaja</b> · tiada langganan · akses terus dalam app HITFAT+</div>
       </div>
     </div>
   </div>
 </header>
 
+<!-- 2 · PROBLEM (HitfatBAR style: picture cards with a bold caption over each) -->
 <section>
   <div class="w reveal">
-    <span class="k">Kami faham</span>
-    <h2>Kalau anda rasa macam ni, anda tak keseorangan.</h2>
-    <div class="pains">
-      <div class="pain"><i>1</i><div>Susah nak cari masa untuk diri sendiri.</div></div>
-      <div class="pain"><i>2</i><div>Nak kurus, tapi tak tahu nak mula dari mana.</div></div>
-      <div class="pain"><i>3</i><div>Dah cuba diet berkali-kali, tapi susah nak konsisten.</div></div>
-      <div class="pain"><i>4</i><div>Kurang yakin dengan bentuk badan sendiri.</div></div>
-      <div class="pain"><i>5</i><div>Tak selesa bersenam di gym, depan orang lain.</div></div>
-      <div class="pain"><i>6</i><div>Takut senaman terlalu susah, atau banyak melompat.</div></div>
-      <div class="pain"><i>7</i><div>Nak jaga berat badan, tapi masih nak makan nasi dan makanan biasa.</div></div>
+    <span class="k">Masalah sebenar</span>
+    <h2><em>Penat</em> asyik plan nak <em>start workout</em>, tapi….</h2>
+    <p class="story">Dah cakap “Isnin ni aku nak start”. Dah simpan video workout. Dah beli baju sukan. Tapi bila Isnin tiba, ada saja yang menghalang.</p>
+    <div class="pcards">
+      <div class="pcard2"><div class="ph"><img src="img/lb-p1.webp" alt="" loading="lazy" width="1672" height="941"><b>TAKDE MASA LANGSUNG</b></div><p>Kerja, anak, rumah. Bila masa nak fikir pasal diri sendiri?</p></div>
+      <div class="pcard2"><div class="ph"><img src="img/lb-p2.webp" alt="" loading="lazy" width="1672" height="941"><b>TAK TAHU NAK MULA</b></div><p>Beratus video workout dalam telefon, tapi tak tahu mana satu yang sesuai.</p></div>
+      <div class="pcard2"><div class="ph"><img src="img/lb-p3.webp" alt="" loading="lazy" width="1672" height="941"><b>SEGAN NAK KE GYM</b></div><p>Rasa diperhati, badan belum fit. Sampai depan pintu, terus tak jadi masuk.</p></div>
+      <div class="pcard2"><div class="ph"><img src="img/lb-p4.webp" alt="" loading="lazy" width="1672" height="941"><b>DIET TAK PERNAH TAHAN</b></div><p>Makan salad seorang diri, keluarga makan nasi. Seminggu je, lepas tu putus.</p></div>
     </div>
-    <div class="turn">Semua ini perkara biasa, dan bukan sebab anda malas. Ladies Burn 30 dibina untuk mula dari tempat anda sekarang: <b>di rumah sendiri, dalam masa yang pendek, dengan makanan yang memang anda makan.</b></div>
   </div>
 </section>
 
+<!-- 3 · AGITATION -->
 <section class="bg-w">
   <div class="w reveal">
-    <span class="k">Apa yang berubah</span>
-    <h2>30 hari untuk bina rutin yang anda mampu teruskan.</h2>
-    <div class="outs">
-      <div class="out"><div class="ic">🌱</div><b>Mudah mula, walaupun beginner</b><span>Minggu 1 sesi pendek, dan setiap gerakan ada video.</span></div>
-      <div class="out"><div class="ic">🏠</div><b>Privasi rumah sendiri</b><span>Tiada orang tengok. Cukup ruang sebesar tikar.</span></div>
-      <div class="out"><div class="ic">⏱</div><b>Muat dalam jadual harian</b><span>20 minit atau kurang, atau pecah jadi 2 × 10 minit.</span></div>
-      <div class="out"><div class="ic">🍛</div><b>Kekal dengan makanan Malaysia</b><span>Nasi, lauk kampung dan bekal, ikut sasaran kalori anda.</span></div>
-      <div class="out"><div class="ic">🗓</div><b>Program tersusun 30 hari</b><span>Setiap hari anda tahu apa nak buat, minggu demi minggu.</span></div>
-      <div class="out"><div class="ic">✅</div><b>Lebih konsisten</b><span>Senarai semak harian, check-in Hari 1, 15 dan 30, dan lencana mingguan.</span></div>
+    <span class="k">Kenapa jadi macam ni</span>
+    <h2>Bukan sebab anda <em>malas</em>.</h2>
+    <div class="pic"><img src="img/lb-masalah.webp" alt="Seorang wanita bertudung duduk di sofa, termenung, dengan bakul kain dan tikar yoga yang belum digunakan" loading="lazy" width="1536" height="1024"></div>
+    <p class="story">Mula, berhenti, mula semula. Setiap kali berhenti, rasa macam gagal sikit, dan makin susah nak mula balik. Selalunya puncanya sama:</p>
+    <div class="nope">
+      <div><b>Workout terlalu lama atau terlalu susah</b><span>Dibuat untuk orang yang dah biasa, bukan untuk yang baru mula.</span></div>
+      <div><b>Banyak lompat</b><span>Tak sesuai untuk lutut, dan bising untuk rumah teres atau apartmen.</span></div>
+      <div><b>Diet yang suruh tinggal semua</b><span>Tiada nasi, tiada makanan keluarga. Tahan seminggu, kemudian putus.</span></div>
+      <div><b>Tiada pelan</b><span>Setiap hari kena fikir sendiri nak buat apa. Hari sibuk, terus tak buat.</span></div>
     </div>
+    <div class="turn">Anda tak perlukan lebih motivasi. Anda perlukan <b>pelan yang cukup mudah untuk diikuti, walaupun pada hari yang paling sibuk.</b></div>
   </div>
 </section>
 
+<!-- 4 · SOLUTION -->
 <section>
   <div class="w reveal">
-    <span class="k">Dalam app</span>
-    <h2>Apa anda dapat dengan RM39.</h2>
-    <p class="intro">Semua dalam telefon anda, di app.hitfat.io. Tiada muat turun dari App Store.</p>
+    <span class="k">Jangan risau….</span>
+    <h2>Ladies Burn 30 memang direka untuk wanita yang <em>SIBUK</em> macam anda!</h2>
+    <div class="ticks"><div>Hanya 20 minit sehari, di rumah sendiri</div><div>Tanpa lompat, tanpa alat</div><div>Makan makanan biasa, termasuk nasi</div></div>
+    <p class="story">Program workout 30 hari khas untuk wanita, dalam app HITFAT+. Setiap hari anda buka telefon dan terus tahu apa nak buat: satu workout pendek, satu misi pemakanan, dan senarai semak yang ringkas.</p>
+    <div class="pic"><img src="img/lb-penyelesaian.webp" alt="Wanita bertudung duduk di atas tikar selepas workout, tersenyum melihat telefon" loading="lazy" width="1536" height="1024"></div>
+    <div class="sol">
+      <div><i><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></i><b>Workout tersusun 30 hari</b></div>
+      <div><i><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l4 6M21 9l-4 6"/></svg></i><b>Mesra beginner, tanpa lompat</b></div>
+      <div><i><svg viewBox="0 0 24 24"><path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M8 7c0-2 2-2 2-4M13 7c0-2 2-2 2-4"/></svg></i><b>Panduan makan Malaysia</b></div>
+      <div><i><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></i><b>Dalam HITFAT+, di telefon anda</b></div>
+    </div>
+    <div class="weeks">
+      <div class="wk"><small>MINGGU 1</small><b>Mula</b><span>Sesi pendek. Tugas minggu ini cuma satu: hadir.</span></div>
+      <div class="wk"><small>MINGGU 2</small><b>Bina</b><span>Sedikit lebih lama, lebih variasi.</span></div>
+      <div class="wk"><small>MINGGU 3</small><b>Bakar</b><span>Minggu bakar lemak. Tetap tanpa lompat.</span></div>
+      <div class="wk"><small>MINGGU 4</small><b>Kuat</b><span>Hari-hari terakhir. Anda lebih kuat dari Hari 1.</span></div>
+    </div>
+    <a class="cta mid" href="#" data-buy="solution">Nak Ladies Burn 30 — RM39</a>
+  </div>
+</section>
+
+<!-- 5 · DEMONSTRATION -->
+<section class="bg-w">
+  <div class="w reveal">
+    <span class="k">Tengok sendiri</span>
+    <h2>Macam ini rupanya <em>dalam app</em>.</h2>
+    <p class="intro">Skrin sebenar Ladies Burn 30 dalam HITFAT+, di app.hitfat.io. Tiada muat turun dari App Store.</p>
     <div class="feat">
       <div class="f">
         <div class="phone"><img src="img/app-hero.jpg" alt="Skrin utama Ladies Burn 30" loading="lazy" width="541" height="1000"></div>
@@ -289,32 +388,70 @@ footer a{color:var(--ink2);margin:0 6px}
       </div>
       <div class="f">
         <div class="phone"><img src="img/app-plan.jpg" alt="Pelan 30 hari" loading="lazy" width="541" height="1000"></div>
-        <div><h3>30 workout, satu hari satu</h3><p>10 hingga 20 minit sehari, tanpa lompat dan tanpa alat. Ikut video, dengan suara yang mengira untuk anda, dan muzik.</p></div>
+        <div><h3>30 workout, satu hari satu</h3><p>10 hingga 20 minit sehari, tanpa lompat dan tanpa alat. Ikut video setiap gerakan, dengan suara yang mengira untuk anda, dan muzik.</p></div>
       </div>
     </div>
-    <div class="not"><b>Supaya jelas:</b> Ladies Burn 30 ialah program kendiri dalam app. Ia tidak termasuk coach peribadi atau sesi 1-ke-1. Untuk soalan tentang akses atau bayaran, kami bantu melalui WhatsApp.</div>
   </div>
 </section>
 
-<section class="bg-w">
+<!-- 6 · BENEFITS, in daily life -->
+<section>
   <div class="w reveal">
-    <span class="k">Cara ia berjalan</span>
-    <h2>Mudah. Boleh mula hari ini.</h2>
-    <div class="steps">
-      <div class="step"><b>Tekan "Saya Nak Mula" dan bayar RM39</b><span>Isi nama, emel dan no. telefon, kemudian bayar dengan FPX Online Banking atau DuitNow QR.</span></div>
-      <div class="step"><b>Log masuk dengan emel yang sama</b><span>Selepas bayar, buka app.hitfat.io dan log masuk dengan Google atau emel yang anda guna tadi. Program terus terbuka.</span></div>
-      <div class="step"><b>Hari 1: check-in dan fit test ringan</b><span>Rekod berat, pinggang dan pinggul, hanya untuk anda. Fit test impak rendah, boleh dilangkau.</span></div>
-      <div class="step"><b>Satu workout sehari</b><span>Ikut video, 20 minit atau kurang. Tertinggal sehari? Sambung esok, pelan menunggu anda.</span></div>
+    <span class="k">Dalam hidup sebenar</span>
+    <h2>Muat dalam hari anda yang <em>sibuk</em>.</h2>
+    <div class="pic"><img src="img/lb-ibu-anak.webp" alt="Seorang ibu buat glute bridge di atas tikar sambil anaknya bermain blok di sebelah" loading="lazy" width="1536" height="1024"></div>
+    <div class="outs">
+      <div class="out"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/></svg></div><b>Pagi, sebelum rumah bising</b><span>10 minit pertama, sebelum anak bangun.</span></div>
+      <div class="out"><div class="ic"><svg viewBox="0 0 24 24"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></div><b>Malam, lepas anak tidur</b><span>10 minit lagi, dan hari ini dah siap.</span></div>
+      <div class="out"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M8 7c0-2 2-2 2-4M13 7c0-2 2-2 2-4"/></svg></div><b>Makan malam dengan keluarga</b><span>Nasi dan lauk yang sama, cuma sukatan yang sesuai.</span></div>
+      <div class="out"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></div><b>Tiada siapa tengok</b><span>Privasi rumah sendiri. Pakai apa yang selesa.</span></div>
+      <div class="out"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 12a8 8 0 0 1-14 5l-2-2"/><path d="M20 4v5h-5M4 20v-5h5"/></svg></div><b>Tertinggal sehari?</b><span>Tak apa. Pelan menunggu, sambung esok.</span></div>
+      <div class="out"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 19l5-6 4 3 7-9"/><path d="M15 7h5v5"/></svg></div><b>Nampak kemajuan sendiri</b><span>Check-in Hari 1, 15 dan 30: pinggang, pinggul, gambar progres untuk anda sahaja.</span></div>
     </div>
-    <div class="weeks">
-      <div class="wk"><small>MINGGU 1</small><b>Mula</b><span>Sesi pendek. Tugas minggu ini cuma satu: hadir.</span></div>
-      <div class="wk"><small>MINGGU 2</small><b>Bina</b><span>Sedikit lebih lama, lebih variasi.</span></div>
-      <div class="wk"><small>MINGGU 3</small><b>Bakar</b><span>Minggu bakar lemak. Tetap tanpa lompat.</span></div>
-      <div class="wk"><small>MINGGU 4</small><b>Kuat</b><span>Hari-hari terakhir. Anda lebih kuat dari Hari 1.</span></div>
+    <a class="cta mid" href="#" data-buy="benefits">Nak Ladies Burn 30 — RM39</a>
+  </div>
+</section>
+
+<!-- 7 · CREDIBILITY -->
+<section class="cred">
+  <div class="w reveal">
+    <span class="k">Dibangunkan oleh</span>
+    <h2>HITFAT, <em>gym sebenar</em> di Kota Bharu.</h2>
+    <p class="story">Ladies Burn 30 bukan dari syarikat yang anda tak kenal. Ia dibina oleh HITFAT, yang menjalankan program kecergasan dan event weight loss sejak 2015, dan HITFAT Functional Gym di Kota Bharu sejak 2020, termasuk kelas khas wanita, Ladies2Fit.</p>
+    <div class="trust">
+      <div class="tr"><b>Sejak 2015</b><span>Program kecergasan dan event weight loss</span></div>
+      <div class="tr"><b>Sejak 2020</b><span>HITFAT Functional Gym, Kota Bharu</span></div>
+      <div class="tr"><b>Ladies2Fit</b><span>Kelas khas wanita di gym kami, setiap minggu</span></div>
+      <div class="tr"><b>SSM</b><span>Seth Hitfat Ventures, 201703222681</span></div>
     </div>
   </div>
 </section>
 
+<!-- 8 · SOCIAL PROOF: shown only when TESTI (script below) holds real reviews, given with permission -->
+<section class="bg-w" id="testi" hidden>
+  <div class="w reveal">
+    <span class="k">⭐ Testimoni pelanggan kami</span>
+    <h2>Daripada program HITFAT.</h2>
+    <div class="testi" id="testi-list"></div>
+  </div>
+</section>
+
+<!-- 9 · EDUCATION (HitfatBAR's "Kajian Buktikan", sourced claims only) -->
+<section class="kaji">
+  <div class="w reveal">
+    <span class="k">📚 Apa kata kajian</span>
+    <h2>Kenapa 20 minit sehari <em>berbaloi</em>.</h2>
+    <div class="pic"><img src="img/lb-makanan.webp" alt="Sepinggan nasi, ayam masak kicap, kangkung, timun dan sambal di atas meja kayu" loading="lazy" width="1536" height="1024"></div>
+    <div class="edu">
+      <div><b>1</b><div><h3>Bergerak setiap hari</h3><p>Pertubuhan Kesihatan Sedunia (WHO) menyarankan orang dewasa melakukan <strong>150 hingga 300 minit aktiviti sederhana seminggu</strong>. 20 minit sehari, ditambah langkah harian, membawa anda ke situ.</p><a class="src" href="https://www.who.int/news-room/fact-sheets/detail/physical-activity" target="_blank" rel="noopener">👉 Lihat sumber (WHO)</a></div></div>
+      <div><b>2</b><div><h3>Kuatkan otot, bukan kardio sahaja</h3><p>WHO juga menyarankan latihan menguatkan otot <strong>sekurang-kurangnya 2 hari seminggu</strong>. Ladies Burn 30 menggabungkan gerakan kekuatan badan dengan latihan bakar lemak impak rendah.</p><a class="src" href="https://www.who.int/news-room/fact-sheets/detail/physical-activity" target="_blank" rel="noopener">👉 Lihat sumber (WHO)</a></div></div>
+      <div><b>3</b><div><h3>Makan yang boleh diteruskan</h3><p>Dari pengalaman kami sejak 2015: diet yang mengharamkan makanan kegemaran jarang bertahan. Sukatan yang sesuai, dengan makanan yang anda kenal, lebih mudah dijadikan tabiat.</p></div></div>
+    </div>
+    <p class="fine">Setiap badan berbeza. Hasil bergantung pada konsistensi, pemakanan, tidur dan kesihatan anda.</p>
+  </div>
+</section>
+
+<!-- fit check -->
 <section>
   <div class="w reveal">
     <span class="k">Untuk siapa</span>
@@ -324,7 +461,6 @@ footer a{color:var(--ink2);margin:0 6px}
       <div>Baru nak mula bersenam, atau dah lama berhenti</div>
       <div>Ibu yang bekerja, suri rumah, atau wanita yang sibuk</div>
       <div>Lebih selesa bersenam di rumah, dalam privasi sendiri</div>
-      <div>Tinggal di rumah teres atau apartmen, dan perlu senyap</div>
       <div>Lutut tak suka lompat-lompat</div>
       <div>Nak makan makanan biasa, bukan diet pelik</div>
     </div>
@@ -338,76 +474,80 @@ footer a{color:var(--ink2);margin:0 6px}
   </div>
 </section>
 
-<section class="bg-p">
+<!-- 10 · OFFER STACK -->
+<section class="bg-w">
   <div class="w reveal">
-    <span class="k">Siapa kami</span>
-    <h2>Dibina oleh HITFAT, gym di Kota Bharu.</h2>
-    <div class="trust">
-      <div class="tr"><b>Sejak 2015</b><span>Program kecergasan dan event weight loss</span></div>
-      <div class="tr"><b>Sejak 2020</b><span>HITFAT Functional Gym, Kota Bharu</span></div>
-      <div class="tr"><b>Ladies2Fit</b><span>Kelas khas wanita di gym kami, setiap minggu</span></div>
-      <div class="tr"><b>SSM</b><span>Seth Hitfat Ventures, 201703222681</span></div>
+    <span class="k">Apa yang anda dapat</span>
+    <h2>Semua ini dalam Ladies Burn 30.</h2>
+    <div class="stack">
+      <div><i>🎥</i><b>30 workout dengan video setiap gerakan</b><span>10 hingga 20 minit sehari, tanpa lompat, tanpa alat.</span></div>
+      <div><i>🔊</i><b>Suara yang mengira, dan muzik</b><span>Nama gerakan, kiraan 5-4-3-2-1, dan bila masa rehat.</span></div>
+      <div><i>🎯</i><b>Sasaran kalori dan makro anda sendiri</b><span>Dikira dari berat, tinggi dan umur. Tidak pernah bawah 1,200 kcal.</span></div>
+      <div><i>🍛</i><b>Menu makanan Malaysia untuk 30 hari</b><span>Sarapan, bekal tengah hari, makan malam keluarga. Tiga pilihan setiap waktu.</span></div>
+      <div><i>✅</i><b>30 misi pemakanan dan senarai semak harian</b><span>Satu langkah kecil setiap hari.</span></div>
+      <div><i>📏</i><b>Check-in Hari 1, 15 dan 30</b><span>Ukuran, gambar progres (dalam telefon anda sahaja) dan fit test.</span></div>
+      <div><i>🏅</i><b>Lencana setiap minggu</b><span>Mula, Bina, Bakar, Kuat.</span></div>
+      <div><i>📱</i><b>Akses selamanya</b><span>Di telefon, tablet atau komputer. Bayar sekali sahaja.</span></div>
     </div>
-    <div class="maker"><img src="img/hfplus-mark.png" alt="HITFAT+"><p><b>Dari pasukan yang sama yang mengendalikan kelas Ladies2Fit.</b> Ladies Burn 30 dibina untuk wanita yang mahu mula di rumah: gerakan mesra beginner, tanpa lompat, dan menu yang anda kenal.</p></div>
+    <div class="not"><b>Supaya jelas:</b> Ladies Burn 30 ialah program kendiri dalam app. Ia tidak termasuk coach peribadi atau sesi 1-ke-1. Untuk soalan tentang akses atau bayaran, kami bantu melalui WhatsApp.</div>
   </div>
 </section>
 
+<!-- 11 · PRICE REVEAL -->
 <section class="price dark" id="harga">
   <div class="w reveal">
     <span class="k">Harga</span>
-    <h2>RM39. Sekali bayar. Milik anda selamanya.</h2>
+    <h2>Berapa untuk semua ini?</h2>
+    <p class="anchor">Satu kelas walk-in di gym HITFAT ialah RM40. Ladies Burn 30 memberi anda 30 hari workout, pelan dan menu, untuk harga yang lebih rendah dari satu kelas itu.</p>
     <div class="pcard">
-      <div class="amt"><b>RM39</b><span>sahaja</span></div>
-      <div class="per">Kurang dari RM1.30 sehari untuk 30 hari. Tiada langganan, tiada caj bulanan.</div>
-      <ul class="inc">
-        <li>30 workout tanpa lompat dan tanpa alat, dengan video setiap gerakan</li>
-        <li>10 hingga 20 minit sehari, boleh pecah 2 × 10 minit</li>
-        <li>Sasaran kalori peribadi dan makro (protein, karbo, lemak)</li>
-        <li>Menu makanan Malaysia untuk 30 hari, tiga pilihan setiap waktu makan</li>
-        <li>30 misi pemakanan harian dan senarai semak</li>
-        <li>Check-in badan Hari 1, 15 dan 30, gambar progres (dalam telefon anda sahaja) dan lencana</li>
-      </ul>
-      <a class="cta" href="#" data-buy="price">Saya Nak Mula — RM39</a>
+      <div class="amt"><b>RM39</b><span>sekali bayar</span></div>
+      <div class="per">Kurang dari RM1.30 sehari untuk 30 hari. Tiada langganan, tiada caj bulanan. Milik anda selamanya.</div>
+      <a class="cta" href="#" data-buy="price">Ya, Saya Nak Mula — RM39</a>
       <div class="sub"><b>Bayaran selamat</b> melalui Bayarcash</div>
       <div class="pay"><span>FPX Online Banking</span><span>DuitNow QR</span></div>
     </div>
     <div class="after">
-      <div><i>1</i>Selepas bayar, anda nampak halaman pengesahan pembayaran.</div>
-      <div><i>2</i>Log masuk app.hitfat.io dengan emel yang sama, dan Hari 1 terbuka.</div>
-      <div><i>3</i>Ada masalah? WhatsApp kami dengan nombor pesanan, kami bantu bukakan.</div>
+      <div><i>1</i><span><b>Isi maklumat</b>Nama, emel dan no. telefon.</span></div>
+      <div><i>2</i><span><b>Bayar dengan selamat</b>FPX atau DuitNow, melalui Bayarcash.</span></div>
+      <div><i>3</i><span><b>Log masuk dan mula</b>Buka app.hitfat.io dengan emel yang sama. Hari 1 terus terbuka.</span></div>
     </div>
   </div>
 </section>
 
+<!-- 12 · FAQ -->
 <section>
-  <div class="w reveal">
+  <div class="w faqw reveal">
     <span class="k">Soalan lazim</span>
     <h2>Ada soalan?</h2>
-    <div style="margin-top:14px">
-      <details><summary>Saya tak pernah bersenam langsung. Boleh ke?</summary><p>Boleh. Minggu 1 memang sesi pendek, dan setiap gerakan ada video. Mula dengan apa yang anda mampu. Jika terasa sakit pada sendi, berhenti.</p></details>
-      <details><summary>Perlu beli alat?</summary><p>Tak perlu. Cukup tikar atau tuala, sedikit ruang, dinding, dan botol air minum.</p></details>
-      <details><summary>Boleh makan nasi?</summary><p>Boleh. Menu dalam app termasuk nasi putih, nasi lemak separuh, nasi goreng kampung dan lauk biasa, dengan sukatan yang ikut sasaran kalori anda. Sasaran itu tidak pernah bawah 1,200 kcal sehari.</p></details>
-      <details><summary>Ada coach peribadi?</summary><p>Tidak. Ladies Burn 30 ialah program kendiri dalam app: video workout, pelan harian, sasaran kalori dan menu. Untuk masalah akses atau bayaran, WhatsApp kami.</p></details>
-      <details><summary>Lepas bayar, macam mana nak buka?</summary><p>Buka app.hitfat.io dan log masuk dengan Google atau emel yang sama seperti semasa bayar. Program terus terbuka. Guna di pelayar telefon, atau tekan "Add to Home Screen" supaya ia jadi macam app. Boleh guna di iPhone dan Android.</p></details>
+    <div class="faq">
+      <details><summary>Saya beginner. Sesuai ke?</summary><p>Sesuai. Minggu 1 memang sesi pendek, dan setiap gerakan ada video. Mula dengan apa yang anda mampu. Jika terasa sakit pada sendi, berhenti.</p></details>
+      <details><summary>Perlu pergi gym?</summary><p>Tak perlu. Semua workout dibuat di rumah, cukup ruang sebesar tikar.</p></details>
+      <details><summary>Perlu beli peralatan?</summary><p>Tak perlu. Cukup tikar atau tuala, dinding, dan botol air minum.</p></details>
+      <details><summary>RM39 ni bayar sekali atau bulanan?</summary><p>Sekali sahaja. Tiada langganan, dan program milik anda selamanya.</p></details>
+      <details><summary>Kalau saya sibuk, boleh ikut?</summary><p>Boleh. Pecahkan kepada 2 × 10 minit, pagi dan petang. Tertinggal sehari? Sambung esok, pelan menunggu anda.</p></details>
+      <details><summary>Kalau ada masalah lutut, sesuai ke?</summary><p>Semua workout tanpa lompat dan impak rendah. Jika anda ada kecederaan atau sakit lutut, dapatkan nasihat doktor atau fisioterapi dahulu, dan berhenti jika terasa sakit.</p></details>
+      <details><summary>Perlu ikut diet ketat?</summary><p>Tidak. Menu dalam app termasuk nasi putih, nasi lemak separuh, nasi goreng kampung dan lauk biasa, dengan sukatan yang ikut sasaran kalori anda. Sasaran itu tidak pernah bawah 1,200 kcal sehari.</p></details>
+      <details><summary>Ada coach personal yang pantau saya?</summary><p>Tidak. Ladies Burn 30 ialah program kendiri dalam app: video workout, pelan harian, sasaran kalori dan menu. Untuk masalah akses atau bayaran, WhatsApp kami.</p></details>
+      <details><summary>Macam mana nak akses program?</summary><p>Buka app.hitfat.io dan log masuk dengan Google atau emel yang sama seperti semasa bayar. Program terus terbuka. Boleh guna di iPhone, Android, tablet atau komputer, dan boleh "Add to Home Screen" supaya ia jadi macam app.</p></details>
       <details><summary>Berapa kilo boleh turun?</summary><p>Kami tak janji nombor ajaib. Sasaran yang sihat dalam app ialah lebih kurang 0.5 kg seminggu, dan hasil bergantung pada pemakanan dan konsistensi anda. Ukur pinggang dan pinggul juga, kerana itu selalunya berubah dahulu.</p></details>
-      <details><summary>Saya sibuk. Tak sempat 20 minit.</summary><p>Pecahkan kepada 2 × 10 minit, pagi dan petang. Tertinggal sehari? Sambung esok, pelan menunggu anda.</p></details>
       <details><summary>Waktu period macam mana?</summary><p>Dengar badan anda. Gerak ringan pun dah dikira. Anda boleh sambung bila sedia.</p></details>
-      <details><summary>Ada bayaran balik?</summary><p>Semua pembelian adalah muktamad dan tiada bayaran balik (<a href="/refund">polisi bayaran balik</a>). Jika bayaran anda berjaya tetapi program tidak terbuka, WhatsApp kami dengan nombor pesanan dan kami akan bukakan.</p></details>
+      <details><summary>Apa berlaku selepas pembayaran?</summary><p>Anda nampak halaman pengesahan pembayaran, kemudian log masuk app.hitfat.io dengan emel yang sama dan Hari 1 terbuka. Jika bayaran berjaya tetapi program tidak terbuka, WhatsApp kami dengan nombor pesanan dan kami akan bukakan.</p></details>
+      <details><summary>Ada bayaran balik?</summary><p>Semua pembelian adalah muktamad dan tiada bayaran balik (<a href="/refund">polisi bayaran balik</a>).</p></details>
       <details><summary>Saya dah ada HITFAT+. Perlu beli lagi?</summary><p>Tak perlu. Ladies Burn 30 termasuk dalam membership HITFAT+.</p></details>
     </div>
   </div>
 </section>
 
+<!-- 13 · FINAL CLOSE -->
 <section class="final bg-w">
   <div class="w reveal">
-    <span class="k">Langkah pertama</span>
-    <h2>Mula dengan 20 minit hari ini.</h2>
-    <p>Bukan untuk jadi sempurna, cuma untuk mula. Di rumah, tanpa lompat, RM39 sekali bayar.</p>
+    <span class="k">Untuk anda</span>
+    <h2>Anda dah jaga semua orang. 20 minit ini untuk anda.</h2>
+    <p>Tak perlu tunggu Isnin. Tak perlu jadi sempurna. Mula dengan satu workout pendek hari ini, dan biar pelan bawa anda, hari demi hari.</p>
     <a class="cta" href="#" data-buy="final">Saya Nak Mula — RM39</a>
     <a class="wa" href="#" data-wa>💬 Ada soalan? WhatsApp kami</a>
   </div>
 </section>
-
 <footer>
   <div class="w">
     <div>Seth Hitfat Ventures (SSM 201703222681)</div>
@@ -513,6 +653,23 @@ if('IntersectionObserver' in window){
   var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); },{threshold:.12});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 } else { bar.classList.add('on'); document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
+</script>
+<script>
+/* Real reviews only, each given with the writer's permission (her own
+   words; a first name and age or role she agreed to; a photo only if she
+   sent it). While this list is empty the section stays hidden. Never
+   write one here that a real buyer did not give.
+   { q:'…', n:'Nama', r:'34, ibu 2 anak', img:'img/t-nama.jpg' } */
+var TESTI = [];
+(function(){
+  if(!TESTI.length) return;
+  var esc=function(t){ return String(t||'').replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  document.getElementById('testi-list').innerHTML = TESTI.map(function(t){
+    return '<div class="tcard"><p>“'+esc(t.q)+'”</p><div class="who-t">'+(t.img?'<img src="'+esc(t.img)+'" alt="">':'')+
+      '<div><b>'+esc(t.n)+'</b><small>'+esc(t.r)+'</small></div></div></div>';
+  }).join('');
+  document.getElementById('testi').hidden = false;
+})();
 </script>
 </body>
 </html>
