@@ -100,13 +100,22 @@ section{padding:56px 0}
 @media (max-width:380px){ .outs{grid-template-columns:1fr} }
 
 /* the app */
-.feat{display:grid;gap:26px;margin-top:26px}
-.f{display:grid;grid-template-columns:42% 1fr;gap:18px;align-items:center}
-.f:nth-child(even){grid-template-columns:1fr 42%}
-.f:nth-child(even) .phone{order:2}
-.phone{border-radius:26px;overflow:hidden;border:6px solid var(--black);box-shadow:0 20px 40px rgba(20,16,16,.18);background:#fff}
-.f h3{font-size:18.5px;font-weight:800}
-.f p{margin:6px 0 0;color:var(--ink2);font-size:15px}
+/* the app's screens: one row of phones, the same size, captions under them;
+   on a phone the row slides sideways */
+.feat{display:grid;grid-auto-flow:column;grid-auto-columns:72%;gap:16px;margin:24px -20px 0;padding:6px 20px 14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.feat::-webkit-scrollbar{display:none}
+.f{scroll-snap-align:center;display:flex;flex-direction:column;gap:14px}
+.f .n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-size:13px;font-weight:800;margin-bottom:6px}
+.phone{border-radius:28px;overflow:hidden;border:7px solid var(--black);box-shadow:0 18px 36px rgba(20,16,16,.16);background:#fff;aspect-ratio:541/1000}
+.phone img{width:100%;height:100%;object-fit:cover;object-position:top}
+.f h3{font-size:17px;font-weight:800;line-height:1.3}
+.f p{margin:6px 0 0;color:var(--ink2);font-size:14.5px;line-height:1.5}
+.swipe{margin:2px 0 0;font-size:13px;font-weight:700;color:var(--ink2);text-align:right}
+@media (min-width:760px){
+  .demo .w{max-width:980px}
+  .feat{grid-auto-flow:row;grid-template-columns:repeat(3,1fr);grid-auto-columns:auto;gap:28px;margin:28px 0 0;padding:0;overflow:visible}
+  .swipe{display:none}
+}
 .not{margin-top:22px;padding:16px 18px;border-radius:14px;background:var(--cream);border:1.5px dashed #D9C5BC;font-size:14.5px;color:var(--ink2)}
 .not b{color:var(--ink)}
 
@@ -373,7 +382,7 @@ h2 em{font-style:normal;color:var(--red)}
 </section>
 
 <!-- 5 · DEMONSTRATION -->
-<section class="bg-w">
+<section class="bg-w demo">
   <div class="w reveal">
     <span class="k">Tengok sendiri</span>
     <h2>Macam ini rupanya <em>dalam app</em>.</h2>
@@ -381,17 +390,18 @@ h2 em{font-style:normal;color:var(--red)}
     <div class="feat">
       <div class="f">
         <div class="phone"><img src="img/app-hero.jpg" alt="Skrin utama Ladies Burn 30" loading="lazy" width="541" height="1000"></div>
-        <div><h3>Buka telefon, tahu apa nak buat hari ni</h3><p>Senarai semak harian: workout, langkah, air, misi pemakanan, makan ikut pelan, tidur. Tanda satu-satu.</p></div>
+        <div><span class="n">1</span><h3>Buka telefon, tahu apa nak buat hari ni</h3><p>Senarai semak harian: workout, langkah, air, misi pemakanan dan tidur.</p></div>
       </div>
       <div class="f">
         <div class="phone"><img src="img/app-menu.jpg" alt="Sasaran kalori dan menu makanan Malaysia" loading="lazy" width="541" height="1000"></div>
-        <div><h3>Sasaran kalori anda, dan menu yang anda kenal</h3><p>Masukkan berat, tinggi dan umur, dan app kira sasaran harian anda (tidak pernah bawah 1,200 kcal). Tiga pilihan setiap waktu makan: nasi lemak separuh, ayam masak kicap, ikan bakar dan kangkung…</p></div>
+        <div><span class="n">2</span><h3>Sasaran kalori anda, menu yang anda kenal</h3><p>Dikira dari berat, tinggi dan umur (tidak pernah bawah 1,200 kcal). Tiga pilihan setiap waktu makan.</p></div>
       </div>
       <div class="f">
         <div class="phone"><img src="img/app-plan.jpg" alt="Pelan 30 hari" loading="lazy" width="541" height="1000"></div>
-        <div><h3>30 workout, satu hari satu</h3><p>10 hingga 20 minit sehari, tanpa lompat dan tanpa alat. Ikut video setiap gerakan, dengan suara yang mengira untuk anda, dan muzik.</p></div>
+        <div><span class="n">3</span><h3>30 workout, satu hari satu</h3><p>10 hingga 20 minit, tanpa lompat dan tanpa alat. Ikut video, dengan suara yang mengira dan muzik.</p></div>
       </div>
     </div>
+    <p class="swipe">Leret untuk lihat →</p>
   </div>
 </section>
 
