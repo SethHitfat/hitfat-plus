@@ -40,7 +40,7 @@ var LB30_ID='lad4';                             /* the SKU is prog_lad4 */
 var LB30_KEY='lb30';                            /* its data, its session keys */
 var LB30_PRICE=39;
 var LB30_POSTER='';                             /* gambar poster: model berhijab, akan datang */
-var LB30_ACCENT='#E8457A';
+var LB30_ACCENT='#E30613';             /* HITFAT red, as the page she bought it from (25 Oct) */
 var LB30_REST=20;                               /* the player's rest between moves (REST_SECS) */
 
 /* ── videos ── */
@@ -292,35 +292,74 @@ function lbLang(on){
   else if(!on && _lbMs){ _lbMs=false; LANG='en'; i18nRestore(document.body); if(tb&&tb.removeAttribute) tb.removeAttribute('data-noi18n'); }
 }
 
-/* ── the program's home ── */
+/* ── the program's home (25 Oct 2026, Seth: "nampak premium macam BODi dan
+   Sweat … kene wow sangat untuk orang sanggup beli") ──
+   A big photograph, then one card that says where she is (a ring for the
+   month, today's workout with its picture and one button), the day's routine
+   as tiles, and the month as day tiles she can swipe through. Warm cream and
+   HITFAT red, like the page she bought it from. The photographs are the ones
+   the landing page uses (/ladies/img), one per kind of day. */
+var LB30_IMG={hero:'/ladies/img/lb-penyelesaian.webp', work:'/ladies/img/hero-rumah.webp',
+  test:'/ladies/img/hero-rumah.webp', recover:'/ladies/img/lb-ibu-anak.webp', food:'/ladies/img/lb-makanan.webp'};
+function lbImg(k){ return LB30_IMG[k]||LB30_IMG.work; }
 var lbTab='plan', lbWeek=-1, lbMenuDay=-1;
 function lbSetTab(t){ lbTab=t; renderLB30(); try{ var s=$('screen'), a=$('lb-tabs'); if(s&&a&&a.offsetTop) s.scrollTop=Math.max(0,a.offsetTop-70); }catch(e){} }
+/* a ring: pct 0–1, its number and a word in the middle */
+function lbRing(pct,size,label,sub){
+  var sw=size>80?9:6, r=(size-sw)/2, c=2*Math.PI*r, off=c*(1-Math.max(0,Math.min(1,pct)));
+  return '<div class="lbx-ring" style="width:'+size+'px;height:'+size+'px">'+
+    '<svg viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'" aria-hidden="true">'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" stroke-width="'+sw+'" class="bg"/>'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" stroke-width="'+sw+'" class="fg" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 '+size/2+' '+size/2+')"/></svg>'+
+    '<div class="in"><b>'+label+'</b>'+(sub?'<span>'+sub+'</span>':'')+'</div></div>';
+}
+function lbHello(){
+  var h=new Date().getHours(), w=h<12?'Selamat pagi':h<15?'Selamat tengah hari':h<19?'Selamat petang':'Selamat malam';
+  var n=((HF.data.prefs&&HF.data.prefs.name)||'').trim().split(/\s+/)[0];
+  return w+(n?', '+hesc(n):'');
+}
 function renderLB30(){
   lbLang(true);
   var owned=lbOwned(), done=lbDone(), tot=LB30_DAYS.length, nx=lbNext();
-  var pct=Math.round(done/tot*100);
   if(lbWeek<0) lbWeek=lbWeekOf(Math.min(nx,tot-1));
   var pill=!owned ? {icon:'lock',label:'RM'+LB30_PRICE,go:'lbBuy()'}
          : nx<tot ? {icon:'play',label:'Hari '+(nx+1),go:'lbOpenDay('+nx+')'} : null;
-  var status=!owned ? LB30_SUB : nx<tot ? 'Hari '+(nx+1)+' daripada '+tot+' · Minggu '+(lbWeekOf(nx)+1)+': '+LB30_WEEKS[lbWeekOf(nx)].n : 'Program selesai';
-  var h=lbHero('program', status, owned ? '' : 'Bayar sekali · milik anda selamanya', pill);
-  if(owned) h+='<div class="lb-head"><div class="pbar lb-bar"><i style="width:'+pct+'%"></i></div><span>'+pct+'%</span></div>';
-  h+='<div class="pdx-btns">';
+  var h=pdxBar('program',pill)+
+    '<div class="lbx-hero" style="background-image:url(\''+lbImg('hero')+'\')"><div class="lbx-hero-ov"></div>'+
+    '<div class="lbx-hero-tx"><img class="lbx-mark" src="/img/brand/hfplus-mark.png" alt="HITFAT+">'+
+    '<div class="lbx-name">'+hesc(LB30_NAME)+'</div>'+
+    '<div class="lbx-tags"><span>30 hari</span><span>20 min sehari</span><span>Tanpa lompat</span><span>Di rumah</span></div></div></div>';
+  h+='<div class="lbx">';
   if(!owned){
-    h+='<button class="bigbtn lb-btn" onclick="lbBuy()">Dapatkan Program · RM'+LB30_PRICE+'</button>'+
-       '<button class="pdx-prev" onclick="openPaywall(\'\')">'+glyph('star')+'Termasuk dalam HITFAT+</button>';
+    h+='<div class="lbx-card lbx-sell"><div class="lbx-k">Khas untuk wanita</div>'+
+      '<div class="lbx-h">30 hari bakar lemak, dari rumah anda.</div>'+
+      '<div class="lbx-p">Workout tanpa lompat 20 minit sehari, sasaran kalori, menu makanan Malaysia, dan progres anda direkod.</div>'+
+      '<button class="lbx-go" onclick="lbBuy()">'+glyph('lock')+'Dapatkan Program · RM'+LB30_PRICE+'</button>'+
+      '<button class="lbx-ghost" onclick="openPaywall(\'\')">'+glyph('star')+'Termasuk dalam HITFAT+</button></div>';
   } else if(nx<tot){
-    h+='<button class="bigbtn lb-btn" onclick="lbOpenDay('+nx+')">'+glyph('play')+(done?'Teruskan · Hari '+(nx+1):'Mula Hari 1')+'</button>';
+    var d=LB30_DAYS[nx], wi=lbWeekOf(nx);
+    h+='<div class="lbx-card lbx-now">'+
+      '<div class="lbx-now-top">'+lbRing(done/tot,84,done+'<i>/'+tot+'</i>','hari')+
+        '<div class="lbx-now-tx"><div class="lbx-hello">'+lbHello()+'</div>'+
+        '<div class="lbx-h">Hari '+(nx+1)+' · Minggu '+(wi+1)+'</div>'+
+        '<div class="lbx-p">'+LB30_WEEKS[wi].n+'. '+(liveStreak()>1?liveStreak()+' hari berturut 🔥':'Satu hari pada satu masa.')+'</div></div></div>'+
+      '<div class="lbx-today" onclick="lbOpenDay('+nx+')">'+
+        '<div class="lbx-today-ph" style="background-image:url(\''+lbImg(d.k)+'\')"><span class="lbx-badge">Hari ini</span></div>'+
+        '<div class="lbx-today-b"><div class="lbx-k">'+(d.k==='test'?'Check-in & fit test':d.k==='recover'?'Pulih':'Workout')+' · '+lbMinutes(d)+' min · '+d.ex.length+' gerakan</div>'+
+        '<div class="lbx-t">'+d.n+'</div></div></div>'+
+      '<button class="lbx-go" onclick="lbOpenDay('+nx+')">'+glyph('play')+(done?'Teruskan Hari '+(nx+1):'Mula Hari 1')+'</button></div>';
   } else {
-    h+='<button class="bigbtn lb-btn" onclick="lbSetTab(\'progress\')">'+glyph('trophy')+'Lihat Keputusan Anda</button>';
+    h+='<div class="lbx-card lbx-now lbx-fin">'+lbRing(1,84,'30','hari')+
+      '<div class="lbx-h">30 hari selesai</div><div class="lbx-p">Lihat sejauh mana anda sudah pergi.</div>'+
+      '<button class="lbx-go" onclick="lbSetTab(\'progress\')">'+glyph('trophy')+'Lihat Keputusan Anda</button></div>';
   }
-  h+='</div>';
-  h+='<div class="filters wl-tabs lb-tabs" id="lb-tabs">'+[['plan','Pelan'],['food','Pemakanan'],['progress','Progres'],['guide','Mula Di Sini']]
-    .map(function(t){ return '<button class="chip'+(lbTab===t[0]?' y':'')+'" onclick="lbSetTab(\''+t[0]+'\')">'+t[1]+'</button>'; }).join('')+'</div>';
+  h+='<div class="lbx-seg" id="lb-tabs">'+[['plan','Pelan'],['food','Pemakanan'],['progress','Progres'],['guide','Mula Di Sini']]
+    .map(function(t){ return '<button class="'+(lbTab===t[0]?'on':'')+'" onclick="lbSetTab(\''+t[0]+'\')">'+t[1]+'</button>'; }).join('')+'</div>';
   if(lbTab==='food') h+=lbFood();
   else if(lbTab==='progress') h+=lbProgress();
   else if(lbTab==='guide') h+=lbGuide();
   else h+=lbPlan();
+  h+='</div>';
   $('pgd-body').innerHTML=h;
 }
 /* the poster: the photograph when there is one, the name in type until then */
@@ -339,29 +378,31 @@ function lbHero(kicker,sub,meta,pill){
     '<div class="wl-hero-tx"><div class="s">'+sub+'</div>'+(meta?'<div class="m">'+meta+'</div>':'')+'</div>';
 }
 
-/* ── Plan: today's list, then the week and its days ── */
+/* ── Plan: today's routine, then the month as day tiles ── */
 function lbPlan(){
   var owned=lbOwned(), done=lbDone(), tot=LB30_DAYS.length, nx=lbNext(), h='';
   if(owned && nx<tot) h+=lbChecklist();
   var w=LB30_WEEKS[lbWeek]||LB30_WEEKS[0];
-  h+=fsec('30 Hari','');
-  h+='<div class="filters pdx-weeks">'+LB30_WEEKS.map(function(x,i){
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Perjalanan 30 Hari</div><div class="lbx-ss">'+done+' daripada '+tot+' hari siap</div></div></div>';
+  h+='<div class="lbx-dots">'+LB30_DAYS.map(function(d,i){ return '<i class="'+(i<done?'d':i===nx&&owned?'n':'')+(LB30_WEEKS.some(function(x){ return x.from===i+1&&i>0; })?' gap':'')+'"></i>'; }).join('')+'</div>';
+  h+='<div class="lbx-weeks">'+LB30_WEEKS.map(function(x,i){
     var all=done>=x.to;
-    return '<button class="chip'+(i===lbWeek?' y':'')+'" onclick="lbWeek='+i+';renderLB30()">'+(all?'✓ ':'')+'Minggu '+(i+1)+'</button>'; }).join('')+'</div>';
-  h+='<div class="lb-week"><div class="t">Minggu '+(lbWeek+1)+' · '+w.n+'</div><div class="s">'+w.s+'</div></div>';
+    return '<button class="'+(i===lbWeek?'on':'')+'" onclick="lbWeek='+i+';renderLB30()"><small>Minggu '+(i+1)+'</small><b>'+(all?'✓ ':'')+x.n+'</b></button>'; }).join('')+'</div>';
+  h+='<div class="lbx-wk">'+w.s+'</div>';
   if(LB30_SETH.weeks[lbWeek]) h+=lbVideoCard(LB30_SETH.weeks[lbWeek],'Intro Minggu '+(lbWeek+1)+' bersama Coach Seth');
-  h+='<div class="lb-days">'+LB30_DAYS.slice(w.from-1,w.to).map(function(d,j){
+  h+='<div class="lbx-days">'+LB30_DAYS.slice(w.from-1,w.to).map(function(d,j){
     var gi=w.from-1+j, isDone=gi<done, now=gi===nx&&owned;
-    return '<div class="lb-dayrow'+(isDone?' done':'')+(now?' now':'')+'" onclick="lbOpenDay('+gi+')">'+
-      '<span class="n">'+(isDone?glyph('check'):(gi+1))+'</span>'+
-      '<div class="tx"><div class="t">'+d.n+'</div><div class="m">'+(d.k==='test'?'Check-in & fit test':d.k==='recover'?'Pulih · '+lbMinutes(d)+' min':lbMinutes(d)+' min · '+d.ex.length+' gerakan')+'</div></div>'+
-      (now?'<span class="lb-now">Hari ini</span>':'<span class="pdx-chev">›</span>')+'</div>';
+    return '<div class="lbx-day'+(isDone?' done':'')+(now?' now':'')+' k-'+d.k+'" onclick="lbOpenDay('+gi+')">'+
+      '<div class="lbx-day-n"><small>HARI</small><b>'+(gi+1)+'</b>'+(isDone?'<span class="ck">'+glyph('check')+'</span>':'')+'</div>'+
+      '<div class="lbx-day-t">'+d.n+'</div>'+
+      '<div class="lbx-day-m">'+(d.k==='test'?'Check-in':d.k==='recover'?'Pulih · '+lbMinutes(d)+' min':lbMinutes(d)+' min')+'</div>'+
+      (now?'<span class="lbx-day-now">Hari ini</span>':'')+'</div>';
   }).join('')+'</div>';
   return h;
 }
 
-/* today's list, one row each: the workout ticks itself, walking and water
-   count up, and the day's nutrition mission is written out in its row */
+/* today's routine: the steps and the water as two tiles that fill, the
+   day's nutrition mission written out, and the rest as ticks */
 function lbChecklist(){
   var lb=lbData(), t=iso(0), gi=Math.min(lbNext(),LB30_DAYS.length-1);
   var c=lb.check[t]||{}, trained=doneToday();
@@ -370,21 +411,27 @@ function lbChecklist(){
   var n=(trained?1:0)+(stepOk?1:0)+(waterOk?1:0);
   LB30_CHECKS.forEach(function(x){ if(c[x[0]]) n++; });
   var total=3+LB30_CHECKS.length;
-  var box=function(on){ return '<span class="b">'+(on?glyph('check'):'')+'</span>'; };
-  var row=function(on,title,sub,right,go){
-    return '<div class="lb-chk'+(on?' on':'')+'"'+(go?' onclick="'+go+'"':'')+'>'+box(on)+
-      '<div class="tx"><div class="t">'+title+'</div>'+(sub?'<div class="m">'+sub+'</div>':'')+'</div>'+(right||'')+'</div>';
+  var tile=function(on,icon,title,val,goal,pct,minus,plus,lm,lp,go){
+    return '<div class="lbx-tile'+(on?' on':'')+'"'+(go?' onclick="'+go+'"':'')+'>'+
+      '<div class="lbx-tile-h"><span class="ic">'+glyph(icon)+'</span><span>'+title+'</span>'+(on?'<span class="ok">'+glyph('check')+'</span>':'')+'</div>'+
+      '<div class="lbx-tile-v"><b>'+val+'</b><span>/ '+goal+'</span></div>'+
+      '<div class="lbx-tile-bar"><i style="width:'+Math.round(Math.min(1,pct)*100)+'%"></i></div>'+
+      '<div class="lbx-tile-c" onclick="event.stopPropagation()"><button onclick="'+minus+'" aria-label="'+lm+'">−</button><button onclick="'+plus+'" aria-label="'+lp+'">+</button></div></div>';
   };
-  var ctl=function(minus,val,plus,lm,lp){ return '<span class="lb-ctl" onclick="event.stopPropagation()"><button onclick="'+minus+'" aria-label="'+lm+'">−</button><b>'+val+'</b><button onclick="'+plus+'" aria-label="'+lp+'">+</button></span>'; };
   var d=LB30_DAYS[gi];
-  var h=fsec('Senarai Semak Hari Ini',n+' daripada '+total+' siap')+'<div class="lb-chks">';
-  h+=row(trained,'Workout · '+d.n, lbMinutes(d)+' min', '<span class="pdx-chev">›</span>', 'lbOpenDay('+gi+')');
-  h+=row(!!c.misi,'Misi pemakanan',LB30_MISI[gi],'', 'lbTick(\'misi\')');
-  h+=row(stepOk,'Langkah','Sasaran '+stepT.toLocaleString(), ctl('lbSteps(-500)',st.toLocaleString(),'lbSteps(500)','Kurang 500 langkah','Tambah 500 langkah'), 'lbSteps(\'goal\')');
-  h+=row(waterOk,'Air','Sasaran '+waterT.toFixed(1)+' L', ctl('lbWaterAdd(-0.25)',wt.toFixed(2).replace(/0$/,'')+' L','lbWaterAdd(0.25)','Kurang 250 ml','Tambah 250 ml'), '');
-  h+=row(!!c.makan,'Makan ikut pelan','','', 'lbTick(\'makan\')');
-  h+=row(!!c.tidur,'Tidur 7 jam','','', 'lbTick(\'tidur\')');
-  return h+'</div>';
+  var h='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Senarai Semak Hari Ini</div><div class="lbx-ss">'+n+' daripada '+total+' siap</div></div>'+
+    lbRing(n/total,44,n,'')+'</div>';
+  h+='<div class="lbx-row'+(trained?' on':'')+'" onclick="lbOpenDay('+gi+')"><span class="b">'+(trained?glyph('check'):glyph('play'))+'</span>'+
+     '<div class="tx"><div class="t">Workout · '+d.n+'</div><div class="m">'+lbMinutes(d)+' min · tanpa lompat</div></div><span class="pdx-chev">›</span></div>';
+  h+='<div class="lbx-tiles">'+
+    tile(stepOk,'steps','Langkah',st.toLocaleString(),stepT.toLocaleString(),st/stepT,'lbSteps(-500)','lbSteps(500)','Kurang 500 langkah','Tambah 500 langkah','lbSteps(\'goal\')')+
+    tile(waterOk,'bottle','Air',wt.toFixed(2).replace(/0$/,'')+' L',waterT.toFixed(1)+' L',wt/waterT,'lbWaterAdd(-0.25)','lbWaterAdd(0.25)','Kurang 250 ml','Tambah 250 ml','')+'</div>';
+  h+='<div class="lbx-misi'+(c.misi?' on':'')+'" onclick="lbTick(\'misi\')"><span class="b">'+(c.misi?glyph('check'):'')+'</span>'+
+     '<div><div class="k">Misi pemakanan · Hari '+(gi+1)+'</div><div class="t">'+LB30_MISI[gi]+'</div></div></div>';
+  h+='<div class="lbx-ticks">'+
+     '<button class="'+(c.makan?'on':'')+'" onclick="lbTick(\'makan\')"><span class="b">'+(c.makan?glyph('check'):'')+'</span>Makan ikut pelan</button>'+
+     '<button class="'+(c.tidur?'on':'')+'" onclick="lbTick(\'tidur\')"><span class="b">'+(c.tidur?glyph('check'):'')+'</span>Tidur 7 jam</button></div>';
+  return h;
 }
 function lbTick(k){ var d=lbData(), t=iso(0); d.check[t]=d.check[t]||{}; d.check[t][k]=!d.check[t][k]; HF.save(); renderLB30(); }
 function lbSteps(n){
@@ -402,50 +449,57 @@ function lbVideoCard(v,title){
     '<div class="t">'+title+'</div></div>';
 }
 
-/* ── a day ── */
+/* ── a day: the photograph, what it is, one big button, the moves ── */
 function lbOpenDay(gi){
   var d=LB30_DAYS[gi]; if(!d) return;
   var owned=lbOwned(), exs=lbExercises(d), lb=lbData();
   curProg=LB30; curDay={p:LB30, day:LB30.weeks[lbWeekOf(gi)].days[gi-LB30_WEEKS[lbWeekOf(gi)].from+1], gi:gi};
-  var h=lbHero('day','Hari '+(gi+1)+' daripada 30 · '+d.n, lbMinutes(d)+' min · '+exs.length+' gerakan · '+d.r+' pusingan',
-    owned?{icon:'play',label:'Mula',go:'lbPlay('+gi+')'}:{icon:'lock',label:'RM'+LB30_PRICE,go:'lbBuy()'});
+  var wi=lbWeekOf(gi), done=gi<lbDone();
+  var h=pdxBar('day', owned?{icon:'play',label:'Mula',go:'lbPlay('+gi+')'}:{icon:'lock',label:'RM'+LB30_PRICE,go:'lbBuy()'})+
+    '<div class="lbx-hero day" style="background-image:url(\''+lbImg(d.k)+'\')"><div class="lbx-hero-ov"></div>'+
+    '<div class="lbx-hero-tx"><div class="lbx-kick">Hari '+(gi+1)+' daripada 30 · Minggu '+(wi+1)+': '+LB30_WEEKS[wi].n+(done?' · ✓ Siap':'')+'</div>'+
+    '<div class="lbx-name">'+d.n+'</div></div></div>';
+  h+='<div class="lbx">';
+  h+='<div class="lbx-facts">'+[[lbMinutes(d)+'','minit'],[exs.length+'','gerakan'],[d.r+'','pusingan'],['0','lompatan']]
+    .map(function(x){ return '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'; }).join('')+'</div>';
   var isCheck=LB30_CHECKINS.indexOf(gi+1)>=0;
   if(!owned){
-    h+='<div class="pdx-btns"><button class="bigbtn lb-btn" onclick="lbBuy()">'+glyph('lock')+'Buka · RM'+LB30_PRICE+'</button></div>';
+    h+='<button class="lbx-go" onclick="lbBuy()">'+glyph('lock')+'Buka · RM'+LB30_PRICE+'</button>';
   } else if(d.k==='test'){
     /* day 1 and day 30: the body first, then the fit test, which may be skipped */
-    h+='<div class="lb-steps"><div class="lb-step"><span class="n">1</span><div class="tx"><div class="t">Body Check-in</div>'+
+    h+='<div class="lbx-card lbx-steps"><div class="lbx-step"><span class="n">1</span><div class="tx"><div class="t">Body Check-in</div>'+
        '<div class="s">Berat, pinggang dan pinggul — pagi, sebelum sarapan. Gambar jika anda mahu.</div></div></div>'+
        lbBodyForm(gi+1)+
-       '<div class="lb-step"><span class="n">2</span><div class="tx"><div class="t">Fit Test impak rendah</div>'+
+       '<div class="lbx-step"><span class="n">2</span><div class="tx"><div class="t">Fit Test impak rendah</div>'+
        '<div class="s">Lima gerakan, satu pusingan, tanpa lompat. Kira ulangan setiap satu — untuk plank, saat anda tahan.</div></div></div></div>'+
-       '<div class="pdx-btns"><button class="bigbtn lb-btn" onclick="lbPlay('+gi+')">'+glyph('play')+'Mula Fit Test</button>'+
-       '<button class="pdx-prev" onclick="lbSkipTest('+gi+')">Langkau fit test, tandakan hari siap</button></div>'+
+       '<button class="lbx-go" onclick="lbPlay('+gi+')">'+glyph('play')+'Mula Fit Test</button>'+
+       '<button class="lbx-ghost" onclick="lbSkipTest('+gi+')">Langkau fit test, tandakan hari siap</button>'+
        lbFitForm(gi===0?'d1':'d30');
   } else {
-    if(isCheck) h+='<div class="lb-steps"><div class="lb-step"><span class="n">'+glyph('flag')+'</span><div class="tx"><div class="t">Body Check-in Hari '+(gi+1)+'</div>'+
+    if(isCheck) h+='<div class="lbx-card lbx-steps"><div class="lbx-step"><span class="n">'+glyph('flag')+'</span><div class="tx"><div class="t">Body Check-in Hari '+(gi+1)+'</div>'+
        '<div class="s">Rekod sebelum latihan: pagi, sebelum sarapan.</div></div></div>'+lbBodyForm(gi+1)+'</div>';
     var hv=lbHalves(d), parts=lb.half[gi]||{}, split=!!lb.split && d.k!=='recover';
-    h+='<div class="lb-split"><span>Pecah kepada 2 × 10 minit (pagi & petang)</span>'+
-       '<button class="lb-sw'+(lb.split?' on':'')+'" role="switch" aria-checked="'+(lb.split?'true':'false')+'" onclick="lbToggleSplit('+gi+')"><i></i></button></div>';
+    if(d.k!=='recover') h+='<div class="lbx-split" role="radiogroup" aria-label="Cara buat">'+
+       '<button class="'+(split?'':'on')+'" role="radio" aria-checked="'+(split?'false':'true')+'" onclick="'+(split?'lbToggleSplit('+gi+')':'')+'">Sekali gus<small>'+lbMinutes(d)+' min</small></button>'+
+       '<button class="'+(split?'on':'')+'" role="radio" aria-checked="'+(split?'true':'false')+'" onclick="'+(split?'':'lbToggleSplit('+gi+')')+'">2 × 10 minit<small>pagi & petang</small></button></div>';
     if(split){
-      h+='<div class="pdx-btns">'+
-        '<button class="bigbtn lb-btn'+(parts.a?' sec':'')+'" onclick="lbPlay('+gi+',\'a\')">'+glyph(parts.a?'check':'sun')+'Sesi Pagi · '+Math.round(lbSecs(hv[0],d.r)/60)+' min</button>'+
-        '<button class="bigbtn lb-btn'+(parts.b?' sec':'')+'" onclick="lbPlay('+gi+',\'b\')">'+glyph(parts.b?'check':'moon')+'Sesi Petang · '+Math.round(lbSecs(hv[1],d.r)/60)+' min</button></div>';
+      h+='<button class="lbx-go'+(parts.a?' sec':'')+'" onclick="lbPlay('+gi+',\'a\')">'+glyph(parts.a?'check':'sun')+'Sesi Pagi · '+Math.round(lbSecs(hv[0],d.r)/60)+' min</button>'+
+        '<button class="lbx-go'+(parts.b?' sec':'')+'" onclick="lbPlay('+gi+',\'b\')">'+glyph(parts.b?'check':'moon')+'Sesi Petang · '+Math.round(lbSecs(hv[1],d.r)/60)+' min</button>';
     } else {
-      h+='<div class="pdx-btns"><button class="bigbtn lb-btn" onclick="lbPlay('+gi+')">'+glyph('play')+'Mula Workout</button>'+
-         '<button class="pdx-prev" onclick="lbComplete('+gi+')">'+glyph('check')+'Tanda siap tanpa main</button></div>';
+      h+='<button class="lbx-go" onclick="lbPlay('+gi+')">'+glyph('play')+'Mula Workout</button>'+
+         '<button class="lbx-ghost" onclick="lbComplete('+gi+')">'+glyph('check')+'Tanda siap tanpa main</button>';
     }
   }
-  h+='<div class="wl-tip">'+ic('spark')+'<div><div class="k">Nota coach</div><div class="t">'+LB30_TIPS[gi]+'</div></div></div>';
-  if(d.k==='recover') h+='<div class="wl-tip">'+ic('leaf')+'<div><div class="k">Hari pulih</div>'+
+  h+='<div class="lbx-note"><div class="q">“</div><div><div class="k">Nota coach</div><div class="t">'+LB30_TIPS[gi]+'</div></div></div>';
+  if(d.k==='recover') h+='<div class="lbx-note leaf"><div class="q">'+glyph('leaf')+'</div><div><div class="k">Hari pulih</div>'+
     '<div class="t">Bergerak perlahan dan bernafas. Hari ini badan anda menjadi lebih kuat.</div></div></div>';
-  h+='<div class="fsec"><div class="ft">Dalam Workout Ini</div><div class="fs">Tekan gerakan untuk tonton.</div></div>'+
-    '<div class="pdx-eps">'+exs.map(function(e,i){
-      return '<div class="pdx-ex" onclick="'+(owned?'lbPlayOne(\''+e.n.replace(/'/g,"\\'")+'\')':'lbBuy()')+'">'+
-      '<span class="n">'+(i+1)+'</span><div class="tx"><div class="t">'+e.n+'</div><div class="m">'+e.dur+'s · tanpa lompat</div></div>'+
-      '<span class="pdx-play">'+glyph(owned?'play':'lock')+'</span></div>'; }).join('')+'</div>';
-  h+='<div class="wl-need"><span class="wl-kic">'+glyph('mat')+'</span><span>Anda perlukan: tikar atau tuala'+(d.ex.join(' ').indexOf('Wall')>=0?', dinding':'')+'</span></div>';
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Dalam Workout Ini</div><div class="lbx-ss">Tekan gerakan untuk tonton.</div></div></div>'+
+    '<div class="lbx-moves">'+exs.map(function(e,i){
+      return '<div class="lbx-move" onclick="'+(owned?'lbPlayOne(\''+e.n.replace(/'/g,"\\'")+'\')':'lbBuy()')+'">'+
+      '<span class="n">'+(i+1)+'</span><div class="tx"><div class="t">'+e.n+'</div><div class="m">'+e.dur+' saat · '+(e.m||'Seluruh badan')+' · tanpa lompat</div></div>'+
+      '<span class="pl">'+glyph(owned?'play':'lock')+'</span></div>'; }).join('')+'</div>';
+  h+='<div class="lbx-need"><span>'+glyph('mat')+'</span>Anda perlukan: tikar atau tuala'+(d.ex.join(' ').indexOf('Wall')>=0?', dinding':'')+'</div>';
+  h+='</div>';
   $('dd-body').innerHTML=h;
   hidePanels(); $('daydetail').style.display='block'; $('screen').scrollTop=0;
   lbLang(true);
@@ -561,6 +615,7 @@ function lbFood(){
   }
   var tot=LB30_DAYS.length;
   if(lbMenuDay<0) lbMenuDay=Math.min(lbNext(),tot-1);
+  h+='<div class="lbx-foodph" style="background-image:url(\''+lbImg('food')+'\')"><div><b>Makan biasa, sukatan yang betul.</b><span>Nasi dan lauk yang anda kenal — tiga pilihan setiap waktu makan.</span></div></div>';
   h+='<div class="nstage wl-stage lb-stage"><span class="wl-st-gly">'+glyph('flame')+'</span><div class="nstage-k">Sasaran harian anda</div>'+
     '<div class="nstage-n">'+t.cal.toLocaleString()+'<span> kcal</span></div>'+
     '<div class="nstage-s">Lebih kurang 0.5 kg seminggu · tidak pernah bawah 1,200 kcal</div>'+
