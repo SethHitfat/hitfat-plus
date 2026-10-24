@@ -60,7 +60,7 @@ var LB30_DEMO={};
 var LB30_TEST=['Bodyweight Squat','Knee Push Ups','Hip Thrust','Crunch','Plank'];
 var LB30_RECOVER=['IC Warm','Bird Dog','Dead Bug','Hip Thrust','Calf Raises'];
 var LB30_WEEKS=[
-  {n:'Begin', s:'Sesi pendek, tiada lompatan. Tugas minggu ini cuma satu: hadir.',              from:1,  to:7},
+  {n:'Start', s:'Sesi pendek, tiada lompatan. Tugas minggu ini cuma satu: hadir.',              from:1,  to:7},
   {n:'Build', s:'Tiga pusingan sekarang. Sedikit lebih lama, sedikit lebih variasi.',            from:8,  to:14},
   {n:'Glow',  s:'Minggu paling bertenaga. Enam gerakan sehari, tetap tanpa lompat.',              from:15, to:21},
   {n:'Strong',s:'Sembilan hari terakhir. Anda lebih kuat daripada wanita yang mula pada Hari 1.', from:22, to:30}

@@ -3769,7 +3769,7 @@ print("\n── LADIES BURN 30 ──");
   lbOpenDay(0); var d1=$('dd-body').innerHTML;
   ok("the labels are English, the notes Malay (25 Oct)", ["Senarai Semak Hari Ini","Mula Di Sini",">Pemakanan<","Perjalanan 30 Hari","<small>Minggu 1<","Hari 1 daripada","Nota coach"].every(function(w){ return html.indexOf(w)<0 && d1.indexOf(w)<0; }) &&
      html.indexOf('Checklist')>0 && html.indexOf('Start Here')>0 && html.indexOf('Nutrition')>0 && html.indexOf('Week 1')>0 && d1.indexOf('Day 1 of 30')>0 &&
-     LB30_WEEKS.map(function(w){ return w.n; }).join()==='Begin,Build,Glow,Strong');
+     LB30_WEEKS.map(function(w){ return w.n; }).join()==='Start,Build,Glow,Strong');
   ok("...and the shared screens stay in English", (lbLang(true), LANG!=='ms'));
   ok("Start Here carries the safety note", html.indexOf('baru bersalin (kurang 6 minggu)')>0 && html.indexOf('caesarean')>0 && html.indexOf('hamil')>0);
   ok("day 1: the check-in first, then the fit test, which may be skipped", d1.indexOf('Body Check-in')>0 && d1.indexOf('Body Check-in')<d1.indexOf('Low-Impact Fit Test') &&
