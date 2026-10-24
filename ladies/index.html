@@ -396,6 +396,9 @@ ck.addEventListener('click', function(e){ if(e.target===ck) ckClose(); });
 document.querySelectorAll('.ck-ch button').forEach(function(b){
   b.addEventListener('click', function(){ ckCh=+b.getAttribute('data-ch'); document.querySelectorAll('.ck-ch button').forEach(function(x){ x.classList.toggle('on', x===b); }); });
 });
+/* Meta's own cookies, so the order's server-side Purchase (Conversions API) matches the ad */
+function fbCookie(k){ var m=document.cookie.match(new RegExp('(?:^|; )'+k+'=([^;]*)')); return m?decodeURIComponent(m[1]):''; }
+function fbcFromUrl(){ var c=(location.search.match(/[?&]fbclid=([^&]+)/)||[])[1]; return c?'fb.1.'+Date.now()+'.'+decodeURIComponent(c):''; }
 document.getElementById('ck-f').addEventListener('submit', function(e){
   e.preventDefault();
   var n=document.getElementById('ck-n').value.trim(), em=document.getElementById('ck-e').value.trim(), ph=document.getElementById('ck-ph').value.trim(),
@@ -406,7 +409,7 @@ document.getElementById('ck-f').addEventListener('submit', function(e){
   er.textContent=''; go.disabled=true; go.textContent='Membuka halaman bayaran…';
   track('AddPaymentInfo',{content_ids:['prog_lad4'],value:39,currency:'MYR'});
   fetch(PAY_FN+'?action=create',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({sku:'prog_lad4',name:n,email:em,phone:ph,channel:ckCh})})
+    body:JSON.stringify({sku:'prog_lad4',name:n,email:em,phone:ph,channel:ckCh,fbp:fbCookie('_fbp'),fbc:fbCookie('_fbc')||fbcFromUrl()})})
     .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
     .then(function(x){
       if(x.ok && x.d && x.d.url){ location.href=x.d.url; return; }

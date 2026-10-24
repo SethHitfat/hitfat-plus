@@ -20,6 +20,9 @@
 
    Deploy:  supabase functions deploy landing-pay --no-verify-jwt
    Secrets: BAYARCASH_TOKEN · BAYARCASH_PORTAL_KEY · BAYARCASH_SECRET (as pay-create)
+            META_CAPI_TOKEN (Events Manager, Conversions API; optional)
+   GET  ?action=capi-test&order=HL…&code=TEST…  a paid order's Purchase to
+        Events Manager's Test events only, to check the Conversions API.
    ═══════════════════════════════════════════════════════════════ */
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
@@ -64,8 +67,66 @@ function verify(p: Record<string, unknown>, secret: string): boolean {
   return same(hmacOf(p, SIGNED, secret), given) || same(hmacOf(p, every, secret), given);
 }
 
+/* Meta Conversions API (24 Oct 2026, Seth: "ok teruskan"). The Purchase the
+   berjaya page sends from the browser, sent again from here once Bayarcash
+   has confirmed it, under the same event id (lad4-<order>), so Meta counts
+   it once and still sees it when the browser's Pixel was blocked. Email and
+   phone go hashed (SHA-256); no health, meal or body data. Without the
+   META_CAPI_TOKEN secret this does nothing. */
+const PIXEL_ID = '1860516742038949';                  // HITFAT+ Pixel, as ladies/index.html
+const EVENT_ID: Record<string, string> = { prog_lad4: 'lad4-' };   // as ladies/berjaya's eventID
+const LANDING_PAGE: Record<string, string> = { prog_lad4: '/ladies/' };
+async function sha256(s: string): Promise<string> {
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(d), (x) => x.toString(16).padStart(2, '0')).join('');
+}
+/* Meta wants the phone with its country code, digits only: 012… → 6012… */
+function phoneIntl(p: string): string {
+  const d = String(p || '').replace(/\D/g, '');
+  return d.startsWith('0') ? '6' + d : d;
+}
+async function sendCapi(o: any, testCode = ''): Promise<{ ok: boolean; detail: string }> {
+  const TOKEN = Deno.env.get('META_CAPI_TOKEN');
+  if (!TOKEN) return { ok: false, detail: 'no token' };
+  const m = (o.meta && typeof o.meta === 'object') ? o.meta : {};
+  const user: Record<string, unknown> = { country: [await sha256('my')] };
+  if (o.email) user.em = [await sha256(String(o.email).trim().toLowerCase())];
+  if (o.phone && phoneIntl(o.phone).length >= 9) user.ph = [await sha256(phoneIntl(o.phone))];
+  if (m.fbp) user.fbp = m.fbp;
+  if (m.fbc) user.fbc = m.fbc;
+  if (m.ip) user.client_ip_address = m.ip;
+  if (m.ua) user.client_user_agent = m.ua;
+  const body: Record<string, unknown> = {
+    access_token: TOKEN,
+    data: [{
+      event_name: 'Purchase', event_time: Math.floor(Date.now() / 1000),
+      event_id: (EVENT_ID[o.sku] || o.sku + '-') + o.order_number,
+      action_source: 'website', event_source_url: SITE + (LANDING_PAGE[o.sku] || '/'),
+      user_data: user,
+      custom_data: { value: Number(o.amount), currency: 'MYR', content_ids: [o.sku], content_type: 'product', order_id: o.order_number },
+    }],
+  };
+  if (testCode) body.test_event_code = testCode;
+  try {
+    const r = await fetch('https://graph.facebook.com/v21.0/' + PIXEL_ID + '/events', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+    });
+    const d = await r.json().catch(() => null);
+    if (!r.ok) {
+      console.error('landing-pay: capi refused', r.status, d?.error?.message || '');
+      return { ok: false, detail: String(d?.error?.message || r.status) };
+    }
+    return { ok: true, detail: 'events_received ' + String(d?.events_received ?? '?') };
+  } catch (e) {
+    console.error('landing-pay: capi failed', String(e));
+    return { ok: false, detail: 'network' };
+  }
+}
+
 /* An order Bayarcash says is paid, for at least its price: record it once.
-   The purchase row is what the app claims; upsert so a retry is a no-op. */
+   The purchase row is what the app claims; upsert so a retry is a no-op.
+   Only the call that turns it paid tells Meta, so a callback and the
+   berjaya page's status check arriving together send one Purchase. */
 async function markPaid(db: any, o: any, tx: string, paid: number): Promise<boolean> {
   if (!(paid >= Number(o.amount))) {
     await db.from('plus_landing_orders').update({ status: 'failed', note: 'amount ' + paid + ' < ' + o.amount })
@@ -77,8 +138,12 @@ async function markPaid(db: any, o: any, tx: string, paid: number): Promise<bool
     amount: o.amount, source: 'landing', raw: { via: 'landing-pay', transaction_id: tx || null },
   }, { onConflict: 'order_number', ignoreDuplicates: true });
   if (error) { console.error('landing-pay: purchase insert failed', error.message); return false; }
-  await db.from('plus_landing_orders').update({ status: 'paid', transaction_id: tx || null, paid_at: new Date().toISOString() })
-    .eq('order_number', o.order_number).neq('status', 'paid');
+  const { data: turned } = await db.from('plus_landing_orders').update({ status: 'paid', transaction_id: tx || null, paid_at: new Date().toISOString() })
+    .eq('order_number', o.order_number).neq('status', 'paid').select('order_number');
+  if (turned && turned.length) {
+    const c = await sendCapi(o);
+    if (c.ok) await db.from('plus_landing_orders').update({ capi_sent_at: new Date().toISOString() }).eq('order_number', o.order_number);
+  }
   return true;
 }
 
@@ -106,7 +171,14 @@ Deno.serve(async (req: Request) => {
       const rnd = crypto.getRandomValues(new Uint8Array(6)), tail = Array.from(rnd, (x) => (x % 36).toString(36)).join('').toUpperCase();
       const order_number = 'HL' + Date.now().toString(36).toUpperCase() + tail;
       const db = admin();
-      const { error: oErr } = await db.from('plus_landing_orders').insert({ order_number, sku, email, name, phone, amount: price, channel });
+      /* what Meta needs to match the Purchase to the ad later (sendCapi) */
+      const fb = (v: unknown) => { const s = String(v || '').trim(); return /^fb\.\d\.\d+\.[\w.-]{1,200}$/.test(s) ? s : ''; };
+      const meta = {
+        fbp: fb(b?.fbp), fbc: fb(b?.fbc),
+        ip: (req.headers.get('x-forwarded-for') || '').split(',')[0].trim().slice(0, 64),
+        ua: (req.headers.get('user-agent') || '').slice(0, 400),
+      };
+      const { error: oErr } = await db.from('plus_landing_orders').insert({ order_number, sku, email, name, phone, amount: price, channel, meta });
       if (oErr) return json({ error: 'Pesanan tidak dapat dimulakan.', detail: oErr.message }, 500);
 
       const amount = Number(price).toFixed(2);
@@ -185,6 +257,17 @@ Deno.serve(async (req: Request) => {
         } catch { /* stays pending; the callback may still come */ }
       }
       return json({ status: 'pending', sku: o.sku });
+    }
+
+    /* ── capi-test: a paid order's Purchase again, to Events Manager's Test
+          events tab only (test_event_code is required, so it never counts) ── */
+    if (action === 'capi-test') {
+      const q = new URL(req.url).searchParams;
+      const order = (q.get('order') || '').trim().slice(0, 40), code = (q.get('code') || '').trim().slice(0, 40);
+      if (!/^HL[A-Z0-9]+$/.test(order) || !/^TEST\w+$/.test(code)) return json({ ok: false, error: 'order and code' }, 400);
+      const { data: o } = await admin().from('plus_landing_orders').select('*').eq('order_number', order).eq('status', 'paid').maybeSingle();
+      if (!o) return json({ ok: false, error: 'not a paid order' }, 404);
+      return json(await sendCapi(o, code));
     }
 
     return json({ error: 'Unknown action' }, 400);
