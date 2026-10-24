@@ -3,108 +3,121 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ladies Burn 30 · 30 Hari Bakar Lemak di Rumah</title>
-<meta name="description" content="Program 30 hari khas wanita: 20 minit sehari di rumah, tanpa lompat, dengan video setiap gerakan, sasaran kalori dan menu masakan Melayu. RM39 sekali bayar.">
-<meta property="og:title" content="Ladies Burn 30 · 30 Hari Bakar Lemak di Rumah">
-<meta property="og:description" content="20 minit sehari. Tanpa lompat. Menu masakan Melayu. RM39 sekali bayar, milik anda selamanya.">
+<title>Ladies Burn 30 · Program 30 Hari Khas Wanita, di Rumah</title>
+<meta name="description" content="Program workout 30 hari khas untuk wanita: dari rumah, tanpa lompat, 20 minit sehari, dengan menu makanan Malaysia. RM39 sekali bayar.">
+<meta property="og:title" content="Ladies Burn 30 · Program 30 Hari Khas Wanita, di Rumah">
+<meta property="og:description" content="Dari rumah, tanpa lompat, 20 minit sehari. Menu makanan Malaysia. RM39 sekali bayar.">
 <meta property="og:image" content="https://app.hitfat.io/ladies/img/hero.jpg">
 <meta property="og:url" content="https://app.hitfat.io/ladies/">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#4A0A36">
+<meta name="theme-color" content="#E30613">
 <link rel="icon" href="/img/icon/favicon-64.png?v=3">
 <link rel="preload" as="image" href="img/hero.jpg">
-<link rel="preload" as="image" href="img/hero-mask.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <!--
   Ladies Burn 30 · landing page for paid Facebook / Instagram ads (19 Oct 2026)
 
-  The one setting to change lives in CONFIG below:
-    CHECKOUT_URL  a Bayarcash Link form for RM39 (pay first, sign in after).
-                  Empty: the button opens the app at ?beli=lad4, where the
-                  buyer signs in (Google, one tap) and pays RM39 by FPX or
-                  DuitNow in the app's own checkout.
-    PIXEL_ID      the Meta Pixel. Empty: no tracking script loads at all.
+  25 Oct 2026: rewritten for Malaysian women aged about 25–45 (the brief
+  Seth pasted): working mothers, housewives, busy professionals, beginners,
+  women who would rather not exercise in a public gym. HITFAT's red, black
+  and white, made warmer with cream and a soft peach, never all pink. The
+  page answers four questions in order: is this for me, can I trust HITFAT,
+  what exactly do I get for RM39, and am I sure enough to pay.
+
   Honest by rule: no made-up reviews, member counts, countdowns or weight
-  promises; purchases are final (the refund page says so, and so does this).
+  promises, no before/after; no coach is included and the page says so;
+  purchases are final (the refund page says so, and so does the FAQ).
+
+  CONFIG lives at the top of the script:
+    PAY_MODE   'api': the sheet below pays on Bayarcash (landing-pay)
+    PIXEL_ID   the HITFAT+ Pixel; the server's Purchase (Conversions API)
+               matches it by the _fbp/_fbc cookies the sheet sends
 -->
 <style>
 :root{
-  --plum:#4A0A36; --plum2:#2B0620; --rose:#E0457B; --rose2:#F06A98; --blush:#FFE6EF; --cream:#FFF8FA;
-  --ink:#241019; --ink2:#5C4552; --line:#F1D9E3; --gold:#FFC83D; --ok:#16A34A; --white:#FFFFFF;
+  --red:#E30613; --red2:#B8040F; --black:#141010; --ink:#1C1515; --ink2:#5E504D; --cream:#FFF9F5; --peach:#FBEDE5;
+  --line:#EFE1DA; --white:#FFFFFF; --ok:#15803D; --gold:#FFC83D;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.6 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 img{max-width:100%;height:auto;display:block}
 a{color:inherit}
-.w{max-width:560px;margin:0 auto;padding:0 20px}
-h1,h2,h3{margin:0;letter-spacing:-.02em;line-height:1.12;text-wrap:balance}
+.w{max-width:580px;margin:0 auto;padding:0 20px}
+h1,h2,h3{margin:0;letter-spacing:-.02em;line-height:1.14;text-wrap:balance}
 h2{font-size:28px;font-weight:800}
-.k{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--rose)}
+.k{display:inline-block;margin-bottom:8px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+.intro{margin:10px 0 0;color:var(--ink2);font-size:16px}
 section{padding:56px 0}
+.bg-w{background:var(--white)}
+.bg-p{background:var(--peach)}
 
 /* buttons */
-.cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:18px 22px;border:0;border-radius:16px;
-  background:linear-gradient(135deg,var(--rose2),var(--rose) 55%,#C42A63);color:#fff;font:800 18px/1.2 'Plus Jakarta Sans',sans-serif;
-  text-decoration:none;cursor:pointer;box-shadow:0 12px 30px rgba(224,69,123,.38);transition:transform .15s}
+.cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:18px 22px;border:0;border-radius:14px;
+  background:var(--red);color:#fff;font:800 17px/1.2 'Plus Jakarta Sans',sans-serif;letter-spacing:.02em;text-transform:uppercase;
+  text-decoration:none;cursor:pointer;box-shadow:0 12px 28px rgba(227,6,19,.32);transition:transform .15s,background .2s}
+.cta:hover{background:var(--red2)}
 .cta:active{transform:scale(.98)}
-.cta small{font-weight:600;opacity:.9;font-size:14px}
 .sub{margin-top:10px;text-align:center;font-size:13px;color:var(--ink2)}
 .sub b{color:var(--ink)}
-.dark .sub,.hero .sub{color:rgba(255,255,255,.75)}.dark .sub b,.hero .sub b{color:#fff}
+.dark .sub{color:rgba(255,255,255,.72)}.dark .sub b{color:#fff}
 
 /* hero */
-.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 75% 30%,#8E1B5E 0%,var(--plum) 45%,var(--plum2) 100%);color:#fff;padding:22px 0 34px}
+.hero{padding:16px 0 40px;background:linear-gradient(180deg,var(--peach) 0%,var(--cream) 62%)}
 .top{display:flex;align-items:center;justify-content:space-between}
 .brand{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:-.01em}
-.brand img{width:26px;height:26px}
-.brand b{color:var(--rose2)}
-.wa-top{font-size:13px;font-weight:700;color:#fff;text-decoration:none;padding:7px 12px;border:1px solid rgba(255,255,255,.3);border-radius:99px}
-.hero-fig{position:relative;height:270px;margin:4px -20px 0}
-.hero-ph{position:absolute;inset:0;background:url('img/hero.jpg') 50% 50%/contain no-repeat;
-  -webkit-mask-image:url('img/hero-mask.png');mask-image:url('img/hero-mask.png');-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
-  -webkit-mask-size:contain;mask-size:contain;-webkit-mask-position:50% 50%;mask-position:50% 50%;
-  filter:drop-shadow(0 0 12px rgba(255,140,190,.55))}
-.hero-glow{position:absolute;left:50%;top:55%;width:340px;height:340px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(240,106,152,.55),rgba(240,106,152,0) 70%)}
-.eyebrow{display:inline-block;margin-top:6px;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.12);font-size:12px;font-weight:800;letter-spacing:.12em}
-.hero h1{margin-top:12px;font-size:34px;font-weight:800}
-.hero h1 em{font-style:normal;color:var(--gold)}
-.lede{margin:10px 0 16px;font-size:16px;color:rgba(255,255,255,.88)}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
-.chips span{padding:6px 11px;border-radius:99px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);font-size:13.5px;font-weight:700}
+.brand img{width:28px;height:28px;border-radius:7px;background:var(--red);padding:4px}
+.brand b{color:var(--red)}
+.wa-top{font-size:13px;font-weight:700;text-decoration:none;padding:7px 13px;border:1.5px solid var(--line);border-radius:99px;background:#fff}
+.hero-ph{position:relative;margin:16px 0 0;border-radius:18px 18px 46px 18px;overflow:hidden;background:#B97F76;aspect-ratio:16/11}
+.hero-ph img{width:100%;height:100%;object-fit:cover;object-position:50% 30%}
+.hero-ph .tag{position:absolute;left:14px;bottom:14px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.94);font-size:13px;font-weight:800;line-height:1.3}
+.hero-ph .tag span{display:block;font-size:11.5px;font-weight:700;color:var(--red);letter-spacing:.08em;text-transform:uppercase}
+.eyebrow{display:inline-block;margin-top:22px;padding:6px 12px;border-radius:99px;background:var(--red);color:#fff;font-size:11.5px;font-weight:800;letter-spacing:.12em}
+.hero h1{margin-top:12px;font-size:32px;font-weight:800}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hsub{margin:12px 0 0;font-size:18px;font-weight:700;line-height:1.45}
+.lede{margin:10px 0 18px;font-size:16px;color:var(--ink2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px}
+.chips span{padding:7px 12px;border-radius:99px;background:#fff;border:1px solid var(--line);font-size:13.5px;font-weight:700}
 
-/* pains */
+/* feelings */
 .pains{display:grid;gap:10px;margin-top:22px}
-.pain{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:16px;background:#fff;border:1px solid var(--line)}
-.pain i{flex:none;width:26px;height:26px;border-radius:50%;background:var(--blush);color:var(--rose);display:grid;place-items:center;font-style:normal;font-weight:800}
-.turn{margin-top:22px;padding:18px 20px;border-radius:18px;background:var(--plum);color:#fff;font-size:17px;font-weight:700}
-.turn b{color:var(--gold)}
+.pain{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:14px;background:#fff;border:1px solid var(--line);font-weight:600}
+.pain i{flex:none;width:26px;height:26px;border-radius:50%;background:var(--peach);color:var(--red);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:13px}
+.turn{margin-top:22px;padding:20px;border-radius:16px 16px 34px 16px;background:var(--black);color:#fff;font-size:16.5px;font-weight:600;line-height:1.55}
+.turn b{color:#fff;background:var(--red);padding:0 4px;border-radius:4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 
-/* features with the app's own screens */
+/* outcomes */
+.outs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.out{padding:16px;border-radius:14px 14px 28px 14px;background:#fff;border:1px solid var(--line)}
+.out .ic{width:40px;height:40px;border-radius:12px;background:var(--peach);display:grid;place-items:center;font-size:20px}
+.out b{display:block;margin-top:10px;font-size:15.5px;line-height:1.3}
+.out span{display:block;margin-top:4px;font-size:13.5px;color:var(--ink2);line-height:1.45}
+@media (max-width:380px){ .outs{grid-template-columns:1fr} }
+
+/* the app */
 .feat{display:grid;gap:26px;margin-top:26px}
-.f{display:grid;grid-template-columns:44% 1fr;gap:18px;align-items:center}
-.f:nth-child(even){grid-template-columns:1fr 44%}
+.f{display:grid;grid-template-columns:42% 1fr;gap:18px;align-items:center}
+.f:nth-child(even){grid-template-columns:1fr 42%}
 .f:nth-child(even) .phone{order:2}
-.phone{border-radius:26px;overflow:hidden;border:6px solid #1B0B14;box-shadow:0 20px 40px rgba(74,10,54,.25);background:#fff}
-.f h3{font-size:19px;font-weight:800}
+.phone{border-radius:26px;overflow:hidden;border:6px solid var(--black);box-shadow:0 20px 40px rgba(20,16,16,.18);background:#fff}
+.f h3{font-size:18.5px;font-weight:800}
 .f p{margin:6px 0 0;color:var(--ink2);font-size:15px}
-.list{display:grid;gap:12px;margin-top:22px}
-.li{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:16px;background:#fff;border:1px solid var(--line)}
-.li .ic{flex:none;width:36px;height:36px;border-radius:12px;background:var(--blush);display:grid;place-items:center;font-size:18px}
-.li b{display:block;font-size:15.5px}
-.li span{font-size:14px;color:var(--ink2)}
+.not{margin-top:22px;padding:16px 18px;border-radius:14px;background:var(--cream);border:1.5px dashed #D9C5BC;font-size:14.5px;color:var(--ink2)}
+.not b{color:var(--ink)}
 
 /* steps and weeks */
 .steps{counter-reset:s;display:grid;gap:12px;margin-top:22px}
-.step{position:relative;padding:16px 16px 16px 60px;border-radius:16px;background:#fff;border:1px solid var(--line)}
-.step:before{counter-increment:s;content:counter(s);position:absolute;left:16px;top:16px;width:30px;height:30px;border-radius:50%;background:var(--rose);color:#fff;font-weight:800;display:grid;place-items:center}
+.step{position:relative;padding:16px 16px 16px 60px;border-radius:14px;background:#fff;border:1px solid var(--line)}
+.step:before{counter-increment:s;content:counter(s);position:absolute;left:16px;top:16px;width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;display:grid;place-items:center}
 .step b{display:block}
 .step span{font-size:14px;color:var(--ink2)}
 .weeks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
-.wk{padding:16px;border-radius:16px;background:linear-gradient(160deg,#fff,var(--blush));border:1px solid var(--line)}
-.wk small{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--rose)}
+.wk{padding:16px;border-radius:14px 14px 28px 14px;background:#fff;border:1px solid var(--line)}
+.wk small{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--red)}
 .wk b{display:block;font-size:20px;margin:2px 0 4px}
 .wk span{font-size:13.5px;color:var(--ink2);line-height:1.45;display:block}
 
@@ -112,30 +125,44 @@ section{padding:56px 0}
 .who{display:grid;gap:10px;margin-top:22px}
 .who div{display:flex;gap:10px;align-items:flex-start;font-weight:600}
 .who div:before{content:'✓';flex:none;width:24px;height:24px;border-radius:50%;background:#DCFCE7;color:var(--ok);display:grid;place-items:center;font-size:13px;font-weight:800}
-.care{margin-top:18px;padding:14px 16px;border-radius:14px;background:#FFF4E5;border:1px solid #FFE0B3;font-size:14px;color:#7A4A00}
+.who.no div{font-weight:500;color:var(--ink2)}
+.who.no div:before{content:'–';background:#F3ECE8;color:var(--ink2)}
+.h3s{margin-top:30px;font-size:17px;font-weight:800}
+.care{margin-top:22px;padding:14px 16px;border-radius:14px;background:#FFF4E5;border:1px solid #FFE0B3;font-size:14px;color:#7A4A00}
+
+/* trust */
+.trust{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.tr{padding:16px;border-radius:14px;background:#fff;border:1px solid var(--line)}
+.tr b{display:block;font-size:22px;font-weight:800;color:var(--red);letter-spacing:-.02em;line-height:1.1}
+.tr span{display:block;margin-top:4px;font-size:13.5px;color:var(--ink2);line-height:1.4}
+.maker{display:flex;gap:16px;align-items:center;margin-top:16px;padding:18px;border-radius:16px 16px 34px 16px;background:var(--black);color:#fff}
+.maker img{flex:none;width:54px;height:54px;padding:10px;border-radius:14px;background:var(--red)}
+.maker p{margin:0;font-size:15px;color:rgba(255,255,255,.82)}
+.maker b{color:#fff}
 
 /* price */
-.price{background:radial-gradient(circle at 50% 0,#8E1B5E 0,var(--plum) 55%,var(--plum2) 100%);color:#fff;text-align:center}
-.pcard{margin-top:22px;padding:26px 22px;border-radius:24px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);text-align:left}
+.price{background:var(--black);color:#fff;text-align:center}
+.price .k{color:#FF5A63}
+.pcard{margin-top:22px;padding:26px 22px;border-radius:20px 20px 40px 20px;background:#fff;color:var(--ink);text-align:left}
 .amt{display:flex;align-items:flex-end;justify-content:center;gap:8px}
-.amt b{font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1}
-.amt span{font-size:16px;font-weight:700;opacity:.85;margin-bottom:10px}
-.per{text-align:center;margin:6px 0 20px;font-size:15px;color:rgba(255,255,255,.8)}
+.amt b{font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--red)}
+.amt span{font-size:16px;font-weight:700;color:var(--ink2);margin-bottom:10px}
+.per{text-align:center;margin:6px 0 20px;font-size:15px;color:var(--ink2)}
 .inc{display:grid;gap:9px;margin:0 0 22px;padding:0;list-style:none}
 .inc li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
-.inc li:before{content:'✓';flex:none;color:var(--gold);font-weight:800}
-.pay{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap}
-.pay span{padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.12);font-size:12px;font-weight:700}
+.inc li:before{content:'✓';flex:none;width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;margin-top:1px}
+.pcard .sub{color:var(--ink2)} .pcard .sub b{color:var(--ink)}
+.pay{display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.pay span{padding:6px 10px;border-radius:8px;background:var(--peach);font-size:12px;font-weight:700;color:var(--ink)}
+.after{margin-top:20px;display:grid;gap:8px;text-align:left}
+.after div{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;color:rgba(255,255,255,.85)}
+.after i{flex:none;font-style:normal;width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.4);display:grid;place-items:center;font-size:11.5px;font-weight:800}
 
-/* maker, FAQ */
-.maker{display:flex;gap:16px;align-items:center;margin-top:22px;padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line)}
-.maker img{width:54px;height:54px;padding:10px;border-radius:16px;background:var(--plum)}
-.maker p{margin:0;font-size:15px;color:var(--ink2)}
-.maker b{color:var(--ink)}
+/* FAQ */
 details{border-bottom:1px solid var(--line);padding:4px 0}
 summary{list-style:none;cursor:pointer;padding:14px 32px 14px 0;font-weight:700;position:relative}
 summary::-webkit-details-marker{display:none}
-summary:after{content:'+';position:absolute;right:4px;top:10px;font-size:22px;color:var(--rose);font-weight:700}
+summary:after{content:'+';position:absolute;right:4px;top:10px;font-size:22px;color:var(--red);font-weight:700}
 details[open] summary:after{content:'–'}
 details p{margin:0 0 14px;color:var(--ink2);font-size:15px}
 
@@ -147,34 +174,44 @@ details p{margin:0 0 14px;color:var(--ink2);font-size:15px}
 footer{padding:30px 0 120px;background:#fff;border-top:1px solid var(--line);font-size:13px;color:var(--ink2);text-align:center}
 footer a{color:var(--ink2);margin:0 6px}
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
-  background:rgba(255,248,250,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  background:rgba(255,249,245,.95);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);
   transform:translateY(110%);transition:transform .3s}
 .bar.on{transform:none}
 .bar .w{display:flex;align-items:center;gap:12px;padding:0}
 .bar .t{flex:1;min-width:0;line-height:1.25}
 .bar .t b{display:block;font-size:15px}
 .bar .t span{font-size:12.5px;color:var(--ink2)}
-.bar .cta{width:auto;padding:13px 18px;font-size:15.5px;border-radius:14px;box-shadow:none}
+.bar .cta{width:auto;padding:13px 18px;font-size:14.5px;border-radius:12px;box-shadow:none}
 .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s}
 .reveal.in{opacity:1;transform:none}
-@media (min-width:700px){ .hero h1{font-size:46px} .hero-fig{height:380px} h2{font-size:34px} }
+
+/* wider screens: the hero side by side */
+@media (min-width:900px){
+  .hero .w{max-width:1080px}
+  .hero-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:52px;align-items:center;margin-top:18px}
+  .hero-ph{margin:0;order:2;aspect-ratio:1/1}
+  .hero h1{font-size:46px}
+  .hero .cta{max-width:420px}
+  .hero .sub{text-align:left}
+  h2{font-size:34px}
+}
 @media (prefers-reduced-motion:reduce){ .reveal{opacity:1;transform:none;transition:none} html{scroll-behavior:auto} }
 
 /* ── the checkout sheet (24 Oct 2026): pay straight on Bayarcash from here ── */
-.ck{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end;justify-content:center;background:rgba(43,6,32,.55)}
+.ck{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end;justify-content:center;background:rgba(20,16,16,.55)}
 .ck.on{display:flex}
 .ck-in{width:100%;max-width:520px;background:#fff;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.2);max-height:92vh;overflow:auto}
 .ck-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .ck-hd b{font-size:20px;font-weight:800}
-.ck-x{border:0;background:var(--blush);color:var(--plum);width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer}
+.ck-x{border:0;background:var(--peach);color:var(--ink);width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer}
 .ck-p{font-size:14px;color:var(--ink2);margin:0 0 14px}
 .ck label{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin:12px 0 6px}
 .ck input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font:600 16px 'Plus Jakarta Sans',sans-serif;color:var(--ink);background:#fff}
-.ck input:focus{outline:none;border-color:var(--rose)}
+.ck input:focus{outline:none;border-color:var(--red)}
 .ck-ch{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ck-ch button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px 8px;font:700 14px 'Plus Jakarta Sans',sans-serif;color:var(--ink);cursor:pointer}
-.ck-ch button.on{border-color:var(--rose);background:var(--blush);color:var(--plum)}
-.ck-err{color:#C42A63;font-size:14px;font-weight:700;margin-top:12px;min-height:20px}
+.ck-ch button.on{border-color:var(--red);background:#FFF0EF;color:var(--red2)}
+.ck-err{color:var(--red2);font-size:14px;font-weight:700;margin-top:12px;min-height:20px}
 .ck .cta{margin-top:10px}
 .ck .cta[disabled]{opacity:.6}
 .ck-note{font-size:12.5px;color:var(--ink2);text-align:center;margin-top:10px}
@@ -188,111 +225,155 @@ footer a{color:var(--ink2);margin:0 6px}
       <div class="brand"><img src="img/hfplus-mark.png" alt="">HITFAT<b>+</b></div>
       <a class="wa-top" href="#" data-wa>WhatsApp kami</a>
     </div>
-    <div class="hero-fig" aria-hidden="true"><div class="hero-glow"></div><div class="hero-ph"></div></div>
-    <span class="eyebrow">KHAS WANITA · 30 HARI · DI RUMAH</span>
-    <h1>Bakar lemak di rumah. <em>20 minit sehari.</em> Tanpa lompat.</h1>
-    <p class="lede">Program 30 hari dengan video setiap gerakan, sasaran kalori anda sendiri dan menu masakan Melayu. Untuk yang baru mula, yang sibuk, dan yang tinggal di apartmen.</p>
-    <div class="chips"><span>⏱ 20 min sehari</span><span>🤫 Tiada lompatan</span><span>🏠 Tiada alat</span><span>🍛 Menu Melayu</span></div>
-    <a class="cta" href="#" data-buy="hero">Mula 30 Hari Saya · RM39</a>
-    <div class="sub"><b>Bayar sekali</b> · milik anda selamanya · FPX atau DuitNow</div>
+    <div class="hero-grid">
+      <div class="hero-ph"><img src="img/hero.jpg" alt="Wanita bertudung melakukan lunge di rumah" width="900" height="900"><div class="tag"><span>Ladies Burn 30</span>20 minit sehari · tanpa lompat</div></div>
+      <div>
+        <span class="eyebrow">KHAS UNTUK WANITA · 30 HARI · DI RUMAH</span>
+        <h1>Nak Kurus, Tapi Sibuk Urus <em>Kerja, Rumah &amp; Keluarga?</em></h1>
+        <p class="hsub">Program Workout 30 Hari Khas Untuk Wanita — Dari Rumah, Tanpa Lompat &amp; Hanya 20 Minit Sehari.</p>
+        <p class="lede">Tak perlu pergi gym. Tak perlu peralatan mahal. Tak perlu diet ekstrem. Mulakan perjalanan fitness anda dengan panduan yang mudah diikuti, walaupun anda seorang beginner.</p>
+        <div class="chips"><span>⏱ 20 min sehari</span><span>🤫 Tanpa lompat</span><span>🏠 Tanpa alat</span><span>🍛 Makanan Malaysia</span></div>
+        <a class="cta" href="#" data-buy="hero">Saya Nak Mula — RM39</a>
+        <div class="sub"><b>Bayar sekali</b> · tiada langganan · FPX atau DuitNow</div>
+      </div>
+    </div>
   </div>
 </header>
 
 <section>
   <div class="w reveal">
-    <span class="k">Kenal tak perasaan ni?</span>
-    <h2>Bukan salah anda. Program yang ada memang bukan untuk anda.</h2>
+    <span class="k">Kami faham</span>
+    <h2>Kalau anda rasa macam ni, anda tak keseorangan.</h2>
     <div class="pains">
-      <div class="pain"><i>1</i><div>Dah cuba diet, turun sikit, lepas tu naik balik.</div></div>
-      <div class="pain"><i>2</i><div>Tak ada masa ke gym. Kerja, anak, rumah, semua nak kena urus.</div></div>
-      <div class="pain"><i>3</i><div>Workout dalam YouTube semua lompat-lompat. Lutut sakit, jiran bawah marah, anak terjaga.</div></div>
-      <div class="pain"><i>4</i><div>Tak tahu nak makan apa. Menu diet semua salad, bukan makanan kita.</div></div>
-      <div class="pain"><i>5</i><div>Segan nak bersenam di depan orang.</div></div>
+      <div class="pain"><i>1</i><div>Susah nak cari masa untuk diri sendiri.</div></div>
+      <div class="pain"><i>2</i><div>Nak kurus, tapi tak tahu nak mula dari mana.</div></div>
+      <div class="pain"><i>3</i><div>Dah cuba diet berkali-kali, tapi susah nak konsisten.</div></div>
+      <div class="pain"><i>4</i><div>Kurang yakin dengan bentuk badan sendiri.</div></div>
+      <div class="pain"><i>5</i><div>Tak selesa bersenam di gym, depan orang lain.</div></div>
+      <div class="pain"><i>6</i><div>Takut senaman terlalu susah, atau banyak melompat.</div></div>
+      <div class="pain"><i>7</i><div>Nak jaga berat badan, tapi masih nak makan nasi dan makanan biasa.</div></div>
     </div>
-    <div class="turn">Ladies Burn 30 dibina untuk semua ni: <b>di rumah, senyap, pendek, dan dengan makanan yang memang kita makan.</b></div>
+    <div class="turn">Semua ini perkara biasa, dan bukan sebab anda malas. Ladies Burn 30 dibina untuk mula dari tempat anda sekarang: <b>di rumah sendiri, dalam masa yang pendek, dengan makanan yang memang anda makan.</b></div>
   </div>
 </section>
 
-<section style="background:#fff">
+<section class="bg-w">
   <div class="w reveal">
-    <span class="k">Dalam app</span>
-    <h2>Semua yang anda perlukan, dalam satu tempat.</h2>
-    <div class="feat">
-      <div class="f">
-        <div class="phone"><img src="img/app-hero.jpg" alt="Skrin utama Ladies Burn 30" loading="lazy" width="541" height="1000"></div>
-        <div><h3>Buka telefon, tahu apa nak buat hari ni</h3><p>Senarai semak harian: workout, langkah, air, misi pemakanan, makan ikut pelan, tidur. Tanda satu-satu, rasa puas.</p></div>
-      </div>
-      <div class="f">
-        <div class="phone"><img src="img/app-menu.jpg" alt="Sasaran kalori dan menu Melayu" loading="lazy" width="541" height="1000"></div>
-        <div><h3>Sasaran kalori anda sendiri, dan menu Melayu</h3><p>Masukkan berat, tinggi dan umur. App kira sasaran harian anda (tidak pernah bawah 1,200 kcal). Tiga pilihan untuk setiap waktu makan: nasi lemak separuh, ayam masak kicap, asam pedas ikan…</p></div>
-      </div>
-      <div class="f">
-        <div class="phone"><img src="img/app-plan.jpg" alt="Pelan 30 hari" loading="lazy" width="541" height="1000"></div>
-        <div><h3>30 hari, satu langkah demi satu langkah</h3><p>Setiap hari ada workout tersendiri, 10 hingga 20 minit. Ikut video, dengan suara coach yang mengira untuk anda dan muzik.</p></div>
-      </div>
-    </div>
-    <div class="list">
-      <div class="li"><div class="ic">🎥</div><div><b>Video untuk setiap gerakan</b><span>Tengok dan ikut. Suara coach sebut nama gerakan, kira 5-4-3-2-1, dan bagi tahu bila rehat.</span></div></div>
-      <div class="li"><div class="ic">⏱</div><div><b>Maksimum 20 minit, atau 2 × 10 minit</b><span>Pagi 10 minit, petang 10 minit. Ikut masa anda.</span></div></div>
-      <div class="li"><div class="ic">📏</div><div><b>Check-in badan Hari 1, 15 dan 30</b><span>Berat, pinggang, pinggul, gambar progres (disimpan dalam telefon anda sahaja) dan fit test.</span></div></div>
-      <div class="li"><div class="ic">🏅</div><div><b>Lencana setiap minggu</b><span>Mula, Bina, Bakar, Kuat. Satu untuk setiap minggu yang anda tamatkan.</span></div></div>
+    <span class="k">Apa yang berubah</span>
+    <h2>30 hari untuk bina rutin yang anda mampu teruskan.</h2>
+    <div class="outs">
+      <div class="out"><div class="ic">🌱</div><b>Mudah mula, walaupun beginner</b><span>Minggu 1 sesi pendek, dan setiap gerakan ada video.</span></div>
+      <div class="out"><div class="ic">🏠</div><b>Privasi rumah sendiri</b><span>Tiada orang tengok. Cukup ruang sebesar tikar.</span></div>
+      <div class="out"><div class="ic">⏱</div><b>Muat dalam jadual harian</b><span>20 minit atau kurang, atau pecah jadi 2 × 10 minit.</span></div>
+      <div class="out"><div class="ic">🍛</div><b>Kekal dengan makanan Malaysia</b><span>Nasi, lauk kampung dan bekal, ikut sasaran kalori anda.</span></div>
+      <div class="out"><div class="ic">🗓</div><b>Program tersusun 30 hari</b><span>Setiap hari anda tahu apa nak buat, minggu demi minggu.</span></div>
+      <div class="out"><div class="ic">✅</div><b>Lebih konsisten</b><span>Senarai semak harian, check-in Hari 1, 15 dan 30, dan lencana mingguan.</span></div>
     </div>
   </div>
 </section>
 
 <section>
   <div class="w reveal">
+    <span class="k">Dalam app</span>
+    <h2>Apa anda dapat dengan RM39.</h2>
+    <p class="intro">Semua dalam telefon anda, di app.hitfat.io. Tiada muat turun dari App Store.</p>
+    <div class="feat">
+      <div class="f">
+        <div class="phone"><img src="img/app-hero.jpg" alt="Skrin utama Ladies Burn 30" loading="lazy" width="541" height="1000"></div>
+        <div><h3>Buka telefon, tahu apa nak buat hari ni</h3><p>Senarai semak harian: workout, langkah, air, misi pemakanan, makan ikut pelan, tidur. Tanda satu-satu.</p></div>
+      </div>
+      <div class="f">
+        <div class="phone"><img src="img/app-menu.jpg" alt="Sasaran kalori dan menu makanan Malaysia" loading="lazy" width="541" height="1000"></div>
+        <div><h3>Sasaran kalori anda, dan menu yang anda kenal</h3><p>Masukkan berat, tinggi dan umur, dan app kira sasaran harian anda (tidak pernah bawah 1,200 kcal). Tiga pilihan setiap waktu makan: nasi lemak separuh, ayam masak kicap, ikan bakar dan kangkung…</p></div>
+      </div>
+      <div class="f">
+        <div class="phone"><img src="img/app-plan.jpg" alt="Pelan 30 hari" loading="lazy" width="541" height="1000"></div>
+        <div><h3>30 workout, satu hari satu</h3><p>10 hingga 20 minit sehari, tanpa lompat dan tanpa alat. Ikut video, dengan suara yang mengira untuk anda, dan muzik.</p></div>
+      </div>
+    </div>
+    <div class="not"><b>Supaya jelas:</b> Ladies Burn 30 ialah program kendiri dalam app. Ia tidak termasuk coach peribadi atau sesi 1-ke-1. Untuk soalan tentang akses atau bayaran, kami bantu melalui WhatsApp.</div>
+  </div>
+</section>
+
+<section class="bg-w">
+  <div class="w reveal">
     <span class="k">Cara ia berjalan</span>
-    <h2>Mudah. Mula hari ini.</h2>
+    <h2>Mudah. Boleh mula hari ini.</h2>
     <div class="steps">
-      <div class="step"><b>Tekan Mula, log masuk, bayar RM39</b><span>Log masuk dengan Google atau emel, bayar dengan FPX atau DuitNow, dan program terus terbuka di telefon. Tiada muat turun dari App Store.</span></div>
-      <div class="step"><b>Hari 1: check-in, kemudian fit test</b><span>Rekod berat, pinggang dan pinggul. Fit test impak rendah, boleh dilangkau.</span></div>
-      <div class="step"><b>Satu workout setiap hari</b><span>Ikut video, 20 minit atau kurang. Tertinggal sehari? Buat hari ini, pelan menunggu anda.</span></div>
-      <div class="step"><b>Hari 15 dan 30: tengok perubahan</b><span>Ukur semula dan bandingkan gambar. Hari 30, ulang fit test.</span></div>
+      <div class="step"><b>Tekan "Saya Nak Mula" dan bayar RM39</b><span>Isi nama, emel dan no. telefon, kemudian bayar dengan FPX Online Banking atau DuitNow QR.</span></div>
+      <div class="step"><b>Log masuk dengan emel yang sama</b><span>Selepas bayar, buka app.hitfat.io dan log masuk dengan Google atau emel yang anda guna tadi. Program terus terbuka.</span></div>
+      <div class="step"><b>Hari 1: check-in dan fit test ringan</b><span>Rekod berat, pinggang dan pinggul, hanya untuk anda. Fit test impak rendah, boleh dilangkau.</span></div>
+      <div class="step"><b>Satu workout sehari</b><span>Ikut video, 20 minit atau kurang. Tertinggal sehari? Sambung esok, pelan menunggu anda.</span></div>
     </div>
     <div class="weeks">
       <div class="wk"><small>MINGGU 1</small><b>Mula</b><span>Sesi pendek. Tugas minggu ini cuma satu: hadir.</span></div>
-      <div class="wk"><small>MINGGU 2</small><b>Bina</b><span>Tiga pusingan. Sedikit lebih lama, lebih variasi.</span></div>
+      <div class="wk"><small>MINGGU 2</small><b>Bina</b><span>Sedikit lebih lama, lebih variasi.</span></div>
       <div class="wk"><small>MINGGU 3</small><b>Bakar</b><span>Minggu bakar lemak. Tetap tanpa lompat.</span></div>
-      <div class="wk"><small>MINGGU 4</small><b>Kuat</b><span>Sembilan hari terakhir. Anda lebih kuat dari Hari 1.</span></div>
+      <div class="wk"><small>MINGGU 4</small><b>Kuat</b><span>Hari-hari terakhir. Anda lebih kuat dari Hari 1.</span></div>
     </div>
   </div>
 </section>
 
-<section style="background:#fff">
+<section>
   <div class="w reveal">
     <span class="k">Untuk siapa</span>
-    <h2>Program ini sesuai kalau anda…</h2>
+    <h2>Adakah program ini sesuai untuk saya?</h2>
+    <p class="h3s">Sesuai kalau anda…</p>
     <div class="who">
       <div>Baru nak mula bersenam, atau dah lama berhenti</div>
-      <div>Ibu yang sibuk, bekerja atau di rumah</div>
-      <div>Tinggal di rumah teres atau apartmen, perlu senyap</div>
+      <div>Ibu yang bekerja, suri rumah, atau wanita yang sibuk</div>
+      <div>Lebih selesa bersenam di rumah, dalam privasi sendiri</div>
+      <div>Tinggal di rumah teres atau apartmen, dan perlu senyap</div>
       <div>Lutut tak suka lompat-lompat</div>
       <div>Nak makan makanan biasa, bukan diet pelik</div>
     </div>
+    <p class="h3s">Mungkin kurang sesuai kalau anda…</p>
+    <div class="who no">
+      <div>Mahukan coach peribadi yang pantau anda setiap hari</div>
+      <div>Mencari cara turun berat yang sangat cepat dalam masa singkat</div>
+      <div>Sudah biasa dengan latihan berat dan mahu cabaran yang lebih tinggi</div>
+    </div>
     <div class="care"><b>Sebelum mula:</b> jika anda hamil, baru bersalin (kurang 6 minggu), selepas pembedahan caesarean, atau ada masalah kesihatan, dapatkan nasihat doktor dahulu.</div>
-    <div class="maker"><img src="img/hfplus-mark.png" alt="HITFAT+"><p><b>Dibina oleh HITFAT</b>, yang mengendalikan kelas kecergasan fizikal termasuk kelas khas wanita, HITFAT Ladies. Program ini membawa cara kelas kami ke rumah anda.</p></div>
+  </div>
+</section>
+
+<section class="bg-p">
+  <div class="w reveal">
+    <span class="k">Siapa kami</span>
+    <h2>Dibina oleh HITFAT, gym di Kota Bharu.</h2>
+    <div class="trust">
+      <div class="tr"><b>Sejak 2015</b><span>Program kecergasan dan event weight loss</span></div>
+      <div class="tr"><b>Sejak 2020</b><span>HITFAT Functional Gym, Kota Bharu</span></div>
+      <div class="tr"><b>Ladies2Fit</b><span>Kelas khas wanita di gym kami, setiap minggu</span></div>
+      <div class="tr"><b>SSM</b><span>Seth Hitfat Ventures, 201703222681</span></div>
+    </div>
+    <div class="maker"><img src="img/hfplus-mark.png" alt="HITFAT+"><p><b>Dari pasukan yang sama yang mengendalikan kelas Ladies2Fit.</b> Ladies Burn 30 dibina untuk wanita yang mahu mula di rumah: gerakan mesra beginner, tanpa lompat, dan menu yang anda kenal.</p></div>
   </div>
 </section>
 
 <section class="price dark" id="harga">
   <div class="w reveal">
-    <span class="k" style="color:var(--rose2)">Harga</span>
-    <h2>Sekali bayar. Milik anda selamanya.</h2>
+    <span class="k">Harga</span>
+    <h2>RM39. Sekali bayar. Milik anda selamanya.</h2>
     <div class="pcard">
       <div class="amt"><b>RM39</b><span>sahaja</span></div>
       <div class="per">Kurang dari RM1.30 sehari untuk 30 hari. Tiada langganan, tiada caj bulanan.</div>
       <ul class="inc">
-        <li>30 workout tanpa lompat, dengan video setiap gerakan</li>
-        <li>Suara coach dan muzik semasa workout</li>
+        <li>30 workout tanpa lompat dan tanpa alat, dengan video setiap gerakan</li>
+        <li>10 hingga 20 minit sehari, boleh pecah 2 × 10 minit</li>
         <li>Sasaran kalori peribadi dan makro (protein, karbo, lemak)</li>
-        <li>Menu masakan Melayu untuk 30 hari, tiga pilihan setiap waktu makan</li>
+        <li>Menu makanan Malaysia untuk 30 hari, tiga pilihan setiap waktu makan</li>
         <li>30 misi pemakanan harian dan senarai semak</li>
-        <li>Check-in badan, gambar progres, fit test dan lencana</li>
+        <li>Check-in badan Hari 1, 15 dan 30, gambar progres (dalam telefon anda sahaja) dan lencana</li>
       </ul>
-      <a class="cta" href="#" data-buy="price">Mula Sekarang · RM39</a>
-      <div class="sub"><b>Selamat:</b> bayaran melalui Bayarcash</div>
+      <a class="cta" href="#" data-buy="price">Saya Nak Mula — RM39</a>
+      <div class="sub"><b>Bayaran selamat</b> melalui Bayarcash</div>
       <div class="pay"><span>FPX Online Banking</span><span>DuitNow QR</span></div>
+    </div>
+    <div class="after">
+      <div><i>1</i>Selepas bayar, anda nampak halaman pengesahan pembayaran.</div>
+      <div><i>2</i>Log masuk app.hitfat.io dengan emel yang sama, dan Hari 1 terbuka.</div>
+      <div><i>3</i>Ada masalah? WhatsApp kami dengan nombor pesanan, kami bantu bukakan.</div>
     </div>
   </div>
 </section>
@@ -302,11 +383,13 @@ footer a{color:var(--ink2);margin:0 6px}
     <span class="k">Soalan lazim</span>
     <h2>Ada soalan?</h2>
     <div style="margin-top:14px">
-      <details><summary>Saya tak pernah bersenam langsung. Boleh ke?</summary><p>Boleh. Minggu 1 memang sesi pendek, dan setiap gerakan ada video. Mula dengan apa yang anda mampu, dan sakit pada sendi tanda untuk berhenti.</p></details>
+      <details><summary>Saya tak pernah bersenam langsung. Boleh ke?</summary><p>Boleh. Minggu 1 memang sesi pendek, dan setiap gerakan ada video. Mula dengan apa yang anda mampu. Jika terasa sakit pada sendi, berhenti.</p></details>
       <details><summary>Perlu beli alat?</summary><p>Tak perlu. Cukup tikar atau tuala, sedikit ruang, dinding, dan botol air minum.</p></details>
-      <details><summary>Lepas bayar, macam mana nak buka?</summary><p>Anda log masuk ke app.hitfat.io dengan Google atau emel, dan program terus terbuka. Guna di pelayar telefon, atau tekan "Add to Home Screen" supaya ia jadi macam app. Boleh guna di iPhone dan Android.</p></details>
+      <details><summary>Boleh makan nasi?</summary><p>Boleh. Menu dalam app termasuk nasi putih, nasi lemak separuh, nasi goreng kampung dan lauk biasa, dengan sukatan yang ikut sasaran kalori anda. Sasaran itu tidak pernah bawah 1,200 kcal sehari.</p></details>
+      <details><summary>Ada coach peribadi?</summary><p>Tidak. Ladies Burn 30 ialah program kendiri dalam app: video workout, pelan harian, sasaran kalori dan menu. Untuk masalah akses atau bayaran, WhatsApp kami.</p></details>
+      <details><summary>Lepas bayar, macam mana nak buka?</summary><p>Buka app.hitfat.io dan log masuk dengan Google atau emel yang sama seperti semasa bayar. Program terus terbuka. Guna di pelayar telefon, atau tekan "Add to Home Screen" supaya ia jadi macam app. Boleh guna di iPhone dan Android.</p></details>
       <details><summary>Berapa kilo boleh turun?</summary><p>Kami tak janji nombor ajaib. Sasaran yang sihat dalam app ialah lebih kurang 0.5 kg seminggu, dan hasil bergantung pada pemakanan dan konsistensi anda. Ukur pinggang dan pinggul juga, kerana itu selalunya berubah dahulu.</p></details>
-      <details><summary>Saya sibuk. Tak sempat 20 minit.</summary><p>Pecahkan kepada 2 × 10 minit, pagi dan petang. Tertinggal sehari? Buat hari ini, pelan menunggu anda.</p></details>
+      <details><summary>Saya sibuk. Tak sempat 20 minit.</summary><p>Pecahkan kepada 2 × 10 minit, pagi dan petang. Tertinggal sehari? Sambung esok, pelan menunggu anda.</p></details>
       <details><summary>Waktu period macam mana?</summary><p>Dengar badan anda. Gerak ringan pun dah dikira. Anda boleh sambung bila sedia.</p></details>
       <details><summary>Ada bayaran balik?</summary><p>Semua pembelian adalah muktamad dan tiada bayaran balik (<a href="/refund">polisi bayaran balik</a>). Jika bayaran anda berjaya tetapi program tidak terbuka, WhatsApp kami dengan nombor pesanan dan kami akan bukakan.</p></details>
       <details><summary>Saya dah ada HITFAT+. Perlu beli lagi?</summary><p>Tak perlu. Ladies Burn 30 termasuk dalam membership HITFAT+.</p></details>
@@ -314,12 +397,12 @@ footer a{color:var(--ink2);margin:0 6px}
   </div>
 </section>
 
-<section class="final" style="background:#fff">
+<section class="final bg-w">
   <div class="w reveal">
-    <span class="k">30 hari dari sekarang</span>
-    <h2>Anda akan bersyukur anda mula hari ini.</h2>
-    <p>20 minit sehari, di rumah, tanpa lompat. RM39, sekali sahaja.</p>
-    <a class="cta" href="#" data-buy="final">Mula 30 Hari Saya · RM39</a>
+    <span class="k">Langkah pertama</span>
+    <h2>Mula dengan 20 minit hari ini.</h2>
+    <p>Bukan untuk jadi sempurna, cuma untuk mula. Di rumah, tanpa lompat, RM39 sekali bayar.</p>
+    <a class="cta" href="#" data-buy="final">Saya Nak Mula — RM39</a>
     <a class="wa" href="#" data-wa>💬 Ada soalan? WhatsApp kami</a>
   </div>
 </section>
@@ -334,7 +417,7 @@ footer a{color:var(--ink2);margin:0 6px}
 
 <div class="bar" id="bar"><div class="w">
   <div class="t"><b>Ladies Burn 30</b><span>RM39 · bayar sekali · 20 min sehari</span></div>
-  <a class="cta" href="#" data-buy="bar">Mula</a>
+  <a class="cta" href="#" data-buy="bar">Saya Nak Mula</a>
 </div></div>
 
 
@@ -342,7 +425,7 @@ footer a{color:var(--ink2);margin:0 6px}
 <div class="ck" id="ck" role="dialog" aria-modal="true" aria-labelledby="ck-t">
   <form class="ck-in" id="ck-f" novalidate>
     <div class="ck-hd"><b id="ck-t">Ladies Burn 30 · RM39</b><button type="button" class="ck-x" aria-label="Tutup" onclick="ckClose()">✕</button></div>
-    <p class="ck-p">Bayar sekali, milik anda selamanya. Lepas bayar, anda terus masuk app.</p>
+    <p class="ck-p">Bayar sekali, milik anda selamanya. Selepas bayar, log masuk app dengan emel yang sama.</p>
     <label for="ck-n">Nama</label><input id="ck-n" autocomplete="name" placeholder="Nama penuh">
     <label for="ck-e">Emel</label><input id="ck-e" type="email" autocomplete="email" inputmode="email" placeholder="nama@gmail.com">
     <label for="ck-ph">No. telefon</label><input id="ck-ph" type="tel" autocomplete="tel" inputmode="tel" placeholder="012-345 6789">
