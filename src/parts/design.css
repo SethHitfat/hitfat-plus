@@ -5982,3 +5982,41 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .lbx-medal.on .m span{background:linear-gradient(150deg,#F0313B,#B8040F);color:#fff;}
 .lbx-medal b{font-size:13.5px;font-weight:800;margin-top:8px;}
 .lbx-medal small{font-size:10.5px;color:var(--dim);font-weight:700;margin-top:2px;line-height:1.25;}
+
+/* ═══ Nutrition Academy · why watch (25 Oct 2026) ═══
+   A promise on a photograph, the next episode as a big card, and every
+   module in its own colour with an icon and what it gets you. */
+.ac-hero.acx-hero,:root[data-theme="light"] .ac-hero.acx-hero{background:#123B2A url('/ladies/img/lb-makanan.webp') center 40%/cover no-repeat;padding:150px 18px 18px;margin-bottom:12px;}
+.ac-hero.acx-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,30,20,0) 0%,rgba(6,30,20,.35) 30%,rgba(6,30,20,.88) 58%,rgba(6,30,20,.97) 100%);}
+.ac-hero.acx-hero > *{position:relative;}
+.ac-hero.acx-hero .fw-ic{display:none;}
+.acx-k{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8EF0B8;}
+.acx-t{font-size:30px;font-weight:800;letter-spacing:-.8px;line-height:1.06;margin-top:8px;color:#fff;}
+.acx-s{font-size:14.5px;line-height:1.45;margin-top:8px;color:rgba(255,255,255,.82);}
+.acx-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+.acx-chips span{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:99px;background:rgba(255,255,255,.14);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:12px;font-weight:700;color:#fff;}
+.acx-chips .gly{width:13px;height:13px;}
+.ac-hero.acx-hero .bigbtn{background:#fff;color:#0F5132;}
+.acx-next{display:flex;align-items:center;gap:14px;padding:14px;margin:0 0 18px;border-radius:20px;cursor:pointer;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--mc) 14%,var(--surface)),var(--surface));border:1.5px solid color-mix(in srgb,var(--mc) 35%,transparent);}
+.acx-next .pl{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--mc);color:#fff;box-shadow:0 8px 18px color-mix(in srgb,var(--mc) 40%,transparent);}
+.acx-next .pl .gly{width:20px;height:20px;fill:currentColor;stroke:none;}
+.acx-next .tx{min-width:0;}
+.acx-next .k{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mc);}
+.acx-next .t{font-size:17px;font-weight:800;margin-top:2px;letter-spacing:-.2px;}
+.acx-next .s{font-size:13px;color:var(--dim);margin-top:3px;line-height:1.4;}
+.acx-sec{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 4px 10px;}
+.acg .acx-ic{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--mc) 78%,#fff),var(--mc));box-shadow:0 6px 14px color-mix(in srgb,var(--mc) 30%,transparent);}
+.acg .acx-ic .gly{width:21px;height:21px;}
+.acx-mk{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mc);}
+.acg .ac-mod-h .t{font-size:15.5px;font-weight:800;line-height:1.3;margin-top:2px;}
+.acx-mm{font-size:12px;color:var(--dim);font-weight:600;margin-top:3px;}
+.acg .acg-bar i{background:var(--mc);}
+.ac-mod.acg{border-left:4px solid var(--mc);}
+.acg .ac-ep .n{background:color-mix(in srgb,var(--mc) 14%,transparent);color:var(--mc);}
+.acg .ac-ep.done .n{background:var(--mc);color:#fff;}
+.acx-h{font-size:12.5px;color:var(--dim);line-height:1.35;margin-top:2px;}
+.ac-mod.acg.open{box-shadow:0 10px 26px color-mix(in srgb,var(--mc) 18%,transparent);}
+.ac-hero.acx-hero::after{display:none;}

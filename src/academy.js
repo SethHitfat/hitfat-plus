@@ -217,31 +217,58 @@ function acBack(){
   else switchTab('eat');
 }
 
+/* Why watch (25 Oct 2026, Seth: "kenapa nak suruh orang tu view?"): each
+   module says what it gets you, in the words of the person scrolling, with
+   its own colour and icon; the course opens on a promise, not a summary.
+   No numbers are promised: the course teaches, it does not guarantee kilos. */
+const AC_LOOK=[
+  ['scale',   '#E30613','Berhenti panik bila naik penimbang'],
+  ['food',    '#E08A00','Makan nasi, santan & goreng, dengan sukatan yang betul'],
+  ['people',  '#7C3AED','Mamak, kenduri & Raya, tanpa rasa bersalah'],
+  ['moon',    '#2563EB','Lapar, emosi, tidur & plateau: kenapa ia berlaku'],
+  ['lab',     '#0891B2','IF, Ramadan & supplement: mana yang betul'],
+  ['calendar','#1F9D6A','Satukan semua dalam pelan 7 hari anda'],
+  ['repeat',  '#DB2777','Tersasar? Cara bangkit semula tanpa mula dari kosong'],
+  ['chart',   '#B45309','Kira TDEE dan audit makan anda sendiri'],
+  ['trophy',  '#0F766E','Supaya hasil kekal selepas 30 hari']
+];
+function acModMins(eps){ return Math.max(1, Math.round(eps.reduce((t,e)=>t+(e.d||0),0)/60)); }
 function academyHTML(){
-  const n=acCount(), all=AC_EPS.length, nx=acNext();
-  let h='<div class="ac-hero"><span class="fw-ic">'+glyph('food')+'</span><div class="k">HITFAT+ · '+all+' episod video</div>'+
-    '<div class="t">Nutrition Academy</div>'+
-    '<div class="s">'+all+' episod pendek tentang makan untuk turun lemak, cara Malaysia: nasi, mamak, kenduri, Ramadan. '+
-    'Setiap episod ada kuiz ringkas dan satu benda untuk terus buat dalam app.</div>'+
+  const n=acCount(), all=AC_EPS.length, nx=acNext(), mins=acModMins(AC_EPS);
+  let h='<div class="ac-hero acx-hero"><div class="acx-k">Nutrition Academy · '+all+' video</div>'+
+    '<div class="acx-t">Turun lemak tanpa tinggal nasi.</div>'+
+    '<div class="acx-s">Faham kenapa badan anda turun, naik atau tersekat, dan apa nak makan di mamak, kenduri dan rumah. Cara Malaysia.</div>'+
+    '<div class="acx-chips"><span>'+glyph('play')+all+' video pendek</span><span>'+glyph('clock')+'~3 min setiap satu</span><span>'+glyph('check')+'Kuiz 3 soalan</span></div>'+
     '<div class="ac-prog"><div class="pbar"><i style="width:'+Math.round(n/all*100)+'%"></i></div>'+
     '<span>'+n+' / '+all+' selesai</span></div>'+
-    (nx?'<button class="bigbtn" onclick="acOpen(\''+nx.id+'\')">'+glyph('play')+(n?'Sambung: Ep'+String(acNum(nx)).padStart(2,'0'):'Mula Episod 1')+'</button>'
+    (nx?''
        :'<div class="ac-cert">'+glyph('medal')+'<div><b>Tahniah, anda dah habis semua episod.</b><br>Ulang mana-mana episod bila perlu.</div></div>')+
     '</div>';
+  /* the next episode, big, so the eye has somewhere to land */
+  if(nx){
+    const lk=AC_LOOK[nx.m]||AC_LOOK[0];
+    h+='<div class="acx-next" style="--mc:'+lk[1]+'" onclick="acOpen(\''+nx.id+'\')"><span class="pl">'+glyph('play')+'</span>'+
+      '<div class="tx"><div class="k">'+(n?'Seterusnya':'Mula di sini')+' · Ep'+String(acNum(nx)).padStart(2,'0')+(nx.d?' · '+acMins(nx):'')+'</div>'+
+      '<div class="t">'+hesc(nx.t)+'</div><div class="s">'+hesc(acHook(nx))+'</div></div></div>';
+  }
+  h+='<div class="acx-sec">'+AC_MODS.length+' modul · '+mins+' minit semuanya</div>';
   /* each module a card that folds; the one with the next episode starts open (16 Oct) */
   AC_MODS.forEach((m,mi)=>{
-    const eps=AC_EPS.filter(e=>e.m===mi), d=eps.filter(acDone).length, open=acModOpen(mi), full=d===eps.length;
-    h+='<div class="ac-mod acg'+(open?' open':'')+'"><div class="ac-mod-h" onclick="acModToggle('+mi+')">'+
-      '<span class="acg-n'+(full?' full':'')+'">'+(full?glyph('check'):(mi+1))+'</span>'+
-      '<div class="acg-tx"><div class="t">'+m[0]+'</div><div class="s">'+m[1]+'</div>'+
+    const eps=AC_EPS.filter(e=>e.m===mi), d=eps.filter(acDone).length, open=acModOpen(mi), full=d===eps.length, lk=AC_LOOK[mi]||AC_LOOK[0];
+    h+='<div class="ac-mod acg'+(open?' open':'')+'" style="--mc:'+lk[1]+'"><div class="ac-mod-h" onclick="acModToggle('+mi+')">'+
+      '<span class="acx-ic">'+glyph(full?'check':lk[0])+'</span>'+
+      '<div class="acg-tx"><div class="acx-mk">Modul '+(mi+1)+' · '+m[0]+'</div><div class="t">'+lk[2]+'</div>'+
+      '<div class="acx-mm">'+eps.length+' video · '+acModMins(eps)+' min'+(d?' · '+d+'/'+eps.length+' siap':'')+'</div>'+
       '<div class="acg-bar"><i style="width:'+Math.round(d/eps.length*100)+'%"></i></div></div>'+
-      '<span class="ac-mod-n">'+d+'/'+eps.length+'</span><span class="jchev">›</span></div>'+
+      '<span class="jchev">›</span></div>'+
       (open?'<div class="ac-eps">'+eps.map(acRow).join('')+'</div>':'')+'</div>';
   });
   h+='<div class="aic-fine">Kandungan ini untuk pendidikan umum, bukan nasihat perubatan. Jika ada penyakit seperti diabetes, '+
      'darah tinggi atau buah pinggang, atau sedang hamil, rujuk doktor atau pakar dietetik dulu.</div>';
   return h;
 }
+/* an episode's first sentence: the reason to press play */
+function acHook(e){ const t=((String(e.sum||'').match(/^[^.?!]*[.?!]/)||[String(e.sum||'')])[0]); return t.length>96?t.slice(0,93).replace(/\s+\S*$/,'')+'…':t; }
 let _acMod={};
 function acModOpen(mi){ if(mi in _acMod) return _acMod[mi]; const nx=acNext(); return nx?nx.m===mi:false; }
 function acModToggle(mi){ _acMod[mi]=!acModOpen(mi);
@@ -254,6 +281,7 @@ function acRow(e){
     acFree(e)&&!contentOpen()&&!acLadies()?'<span class="ac-tag free">Percuma</span>':'';
   return '<div class="ac-ep'+(done?' done':'')+(ready?'':' soon')+'" onclick="acOpen(\''+e.id+'\')">'+
     '<span class="n">'+(done?glyph('check'):num)+'</span><div class="tx"><div class="t">'+hesc(e.t)+'</div>'+
+    (e.sum?'<div class="acx-h">'+hesc(acHook(e))+'</div>':'')+
     '<div class="m">Episod '+num+(e.d?' · '+acMins(e):'')+(e.quiz.length?' · kuiz '+e.quiz.length+' soalan':'')+(done&&e.quiz.length&&acData().done[e.id].score!=null?' · '+acData().done[e.id].score+'/'+e.quiz.length:'')+'</div></div>'+
     tag+'<span class="pdx-chev">›</span></div>';
 }
