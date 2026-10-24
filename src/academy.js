@@ -153,7 +153,10 @@ function acEp(id){ return AC_EPS.find(e=>e.id===id)||null; }
 function acNum(e){ return AC_EPS.indexOf(e)+1; }
 function acReady(e){ return !!e.v; }
 function acFree(e){ return acNum(e)<=AC_FREE; }
-function acLocked(e){ return !acFree(e) && !contentOpen(); }
+/* Ladies Burn 30 opens the whole course (25 Oct 2026, Seth): it is the
+   learning that goes with her 30 days */
+function acLadies(){ return typeof owns==='function' && owns('prog_lad4'); }
+function acLocked(e){ return !acFree(e) && !contentOpen() && !acLadies(); }
 function acDone(e){ return !!acData().done[e.id]; }
 function acCount(){ return AC_EPS.filter(acDone).length; }
 /* where to carry on: the first episode not done */
@@ -241,11 +244,14 @@ function academyHTML(){
 }
 let _acMod={};
 function acModOpen(mi){ if(mi in _acMod) return _acMod[mi]; const nx=acNext(); return nx?nx.m===mi:false; }
-function acModToggle(mi){ _acMod[mi]=!acModOpen(mi); if($('academy')&&$('academy').style.display==='block') renderAcademy(); else renderEat(); }
+function acModToggle(mi){ _acMod[mi]=!acModOpen(mi);
+  if($('academy')&&$('academy').style.display==='block') renderAcademy();
+  else if(typeof lbTab!=='undefined' && lbTab==='learn' && $('progdetail') && $('progdetail').style.display==='block') renderLB30();
+  else renderEat(); }
 function acRow(e){
   const done=acDone(e), lock=acLocked(e), ready=acReady(e), num=String(acNum(e)).padStart(2,'0');
   const tag=done?'':lock?'<span class="ac-tag">'+glyph('lock')+'</span>':!ready?'<span class="ac-tag soon">Akan datang</span>':
-    acFree(e)&&!contentOpen()?'<span class="ac-tag free">Percuma</span>':'';
+    acFree(e)&&!contentOpen()&&!acLadies()?'<span class="ac-tag free">Percuma</span>':'';
   return '<div class="ac-ep'+(done?' done':'')+(ready?'':' soon')+'" onclick="acOpen(\''+e.id+'\')">'+
     '<span class="n">'+(done?glyph('check'):num)+'</span><div class="tx"><div class="t">'+hesc(e.t)+'</div>'+
     '<div class="m">Episod '+num+(e.d?' · '+acMins(e):'')+(e.quiz.length?' · kuiz '+e.quiz.length+' soalan':'')+(done&&e.quiz.length&&acData().done[e.id].score!=null?' · '+acData().done[e.id].score+'/'+e.quiz.length:'')+'</div></div>'+

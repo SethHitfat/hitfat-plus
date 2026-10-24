@@ -21,8 +21,10 @@ function scanLeft(){ return Math.max(0, SCAN_FREE_TIER - scanUsed()); }
 /* scans made today, against a daily allowance (the server keeps the real count) */
 function scanUsedToday(){ const q=HF.data.scanQuota||{}; return q.day===iso(0)?(q.today||0):0; }
 function scanBump(today){
+  const lbFrom=(typeof ladiesScanWindow==='function' && ladiesScanWindow()) ? _ent.ladiesFrom : null, lbWas=lbFrom?ladiesScansUsed():0;
   HF.data.scanQuota={month:thisMonth(), used:scanUsed()+1, day:iso(0),
     today:(typeof today==='number')?today:scanUsedToday()+1};
+  if(lbFrom){ HF.data.scanQuota.lbFrom=lbFrom; HF.data.scanQuota.lb=lbWas+1; }
   HF.save();
 }
 

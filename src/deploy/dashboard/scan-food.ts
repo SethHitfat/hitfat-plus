@@ -39,6 +39,11 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 const MODEL = 'claude-sonnet-5-5';
 
 const FREE_SCANS_PER_MONTH = 3;
+/* Ladies Burn 30 (25 Oct 2026, Seth): whoever owns it gets 10 free scans in
+   the 30 days from when it opened on her account, instead of 3 a month, so
+   she can try scanning her meals while she starts. After the 30 days, or
+   the 10, it is the usual 3 a month (and Scan 6 is offered). */
+const LADIES_SKU = 'prog_lad4', LADIES_FREE_SCANS = 10, LADIES_FREE_DAYS = 30;
 
 /* Typed meals (20 Oct 2026, after Simple's "type what you ate"): the member
    writes "nasi lemak + teh tarik kurang manis" and gets the same estimate a
@@ -204,7 +209,7 @@ Deno.serve(async (req: Request) => {
        client shows, so what the button promises is what happens.      */
     const { data: ents, error: eErr } = await admin
       .from('plus_entitlements')
-      .select('id, sku, kind, credits_left, expires_at')
+      .select('id, sku, kind, credits_left, expires_at, created_at')
       .eq('user_id', user.id);
 
     /* Fail closed. If entitlements cannot be read we do not know what this
@@ -216,6 +221,11 @@ Deno.serve(async (req: Request) => {
     const daily = (ents || [])
       .filter((e) => e.kind === 'pass' && e.expires_at && new Date(e.expires_at).getTime() > now)
       .reduce((m, e) => Math.max(m, dailyFor(String(e.sku))), 0);
+
+    /* when her Ladies Burn 30 opened, if that was in the last 30 days */
+    const ladiesFrom = (ents || [])
+      .filter((e) => e.sku === LADIES_SKU && e.created_at && now - new Date(e.created_at).getTime() < LADIES_FREE_DAYS * 864e5)
+      .map((e) => String(e.created_at)).sort().pop() || '';
 
     let creditRow: any = null;
     let mode: 'free' | 'pass' | 'credits' = 'free';
@@ -243,6 +253,28 @@ Deno.serve(async (req: Request) => {
             code: 'daily_limit',
             used: usedToday,
             limit: daily,
+          }, 402);
+        }
+        mode = 'credits';
+      }
+    } else if (ladiesFrom) {
+      /* her Ladies Burn 30 welcome: 10 in the 30 days since it opened */
+      const { count, error: lErr } = await admin
+        .from('plus_scans')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('created_at', ladiesFrom);
+      if (lErr) return json({ error: 'Could not verify your scan quota. Try again shortly.' }, 503);
+      if ((count ?? 0) < LADIES_FREE_SCANS) {
+        mode = 'free';
+      } else {
+        creditRow = pickCredit();
+        if (!creditRow) {
+          return json({
+            error: `You have used your ${LADIES_FREE_SCANS} Ladies Burn 30 scans.`,
+            code: 'quota_exceeded',
+            used: count,
+            limit: LADIES_FREE_SCANS,
           }, 402);
         }
         mode = 'credits';

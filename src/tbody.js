@@ -3497,6 +3497,14 @@ print("\n── MEAL SCAN PLANS ──");
   ok("an add-on gives its own allowance", scanAccess().daily===6 && scanAccess().left===2);
   HF.data.scanQuota={month:thisMonth(), used:0, day:'2000-01-01', today:6};
   ok("the day's count resets", scanAccess().left===6);
+  /* Ladies Burn 30: 10 free scans in her first 30 days (25 Oct 2026) */
+  _guest(); _ent.ladiesFrom=new Date(Date.now()-3*864e5).toISOString(); HF.data.scanQuota={month:thisMonth(), used:3};
+  ok("Ladies Burn 30 gives 10 scans in its first 30 days, past the monthly 3", scanAccess().left===10 && scanAccess().ladies===true);
+  scanBump(); scanBump(); ok("...counted down on the phone", scanAccess().left===8 && HF.data.scanQuota.lb===2);
+  HF.data.scanQuota.lb=10; ok("...and when they are used, none is left (Scan 6 is offered)", scanAccess().left===0 && lbScanCard().indexOf("scan_d6")>0 && lbScanCard().indexOf('RM14.90')>0);
+  _ent.ladiesFrom=new Date(Date.now()-31*864e5).toISOString(); HF.data.scanQuota={month:thisMonth(), used:0};
+  ok("...after 30 days it is the usual 3 a month", scanAccess().left===SCAN_FREE_TIER && !scanAccess().ladies);
+  _ent.ladiesFrom=null;
   _ent=keepEnt; HF.data.scanQuota=keepQ;
 })();
 
@@ -4232,6 +4240,11 @@ print("\n── PICTURES INSIDE MATCH THE COVERS ──");
   ok("a program with no studio photo still gets the palette", hpoArt({id:'zz',goal:'Core',name:'x'}).indexOf('hpo-flat')>0 && hpoArt({id:'zz',goal:'Core',name:'x'}).indexOf('hpo-gly')>0);
   ok("Ladies Burn 30 has a poster with her photo cut out until its own comes", lbPoster('x').indexOf('mask/lad4.png')>0 && lbPoster('x').indexOf('Ladies Burn 30')>0);
   ok("the tab bar keeps its language on the Ladies program", String(lbLang).indexOf("data-noi18n")>0);
+  (function(){ var ke=_ent, ml=MEMBERSHIP_LIVE; MEMBERSHIP_LIVE=true; _guest(); var e3=AC_EPS[AC_FREE];
+    var before=acLocked(e3); _ent.skus['prog_lad4']=true; var after=acLocked(e3);
+    lbTab='learn'; renderLB30(); var lh=$('pgd-body').innerHTML; lbTab='plan';
+    ok("Ladies Burn 30 opens the whole Nutrition Academy (25 Oct)", before===true && after===false && lh.indexOf('Nutrition Academy')>0 && lh.indexOf('ac-tag">')<0);
+    _ent=ke; MEMBERSHIP_LIVE=ml; })();
 })();
 print("\n── HOME · YOUR 30-DAY BASE ──");
 (function(){

@@ -83,6 +83,9 @@ const SCAN_PRODUCTS=[
   {sku:'scan_y',    kind:'pass',    days:365,    price:99, daily:15, name:'1-year pass', note:'a year', legacy:true}
 ];
 const SCAN_FREE_TIER=3, MEMBER_SCANS_DAY=3;
+/* Ladies Burn 30 (25 Oct 2026): 10 free scans in the 30 days after it opens,
+   instead of 3 a month; scan-food holds the real count (LADIES_* there) */
+const LADIES_FREE_SCANS=10, LADIES_FREE_DAYS=30;
 /* how many scans a day a live pass gives */
 function scanDailyFor(sku){
   if(String(sku).indexOf('sub_')===0) return MEMBER_SCANS_DAY;
@@ -168,12 +171,22 @@ function scanAccess(){
       return {mode:'pass', daily, left, label:left+' of '+daily+' scans left today'};
     return {mode:'credits', daily, label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
   }
+  /* her Ladies Burn 30 welcome, while it lasts */
+  if(ladiesScanWindow()){
+    const lu=ladiesScansUsed(), ll=Math.max(0, LADIES_FREE_SCANS-lu);
+    if(ll>0) return {mode:'free', ladies:true, label:ll+' of '+LADIES_FREE_SCANS+' Ladies Burn 30 scans left', left:ll};
+    if(_ent.credits>0) return {mode:'credits', label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
+    return {mode:'none', ladies:true, label:'Your '+LADIES_FREE_SCANS+' Ladies Burn 30 scans are used', left:0};
+  }
   const used=scanUsed(), freeLeft=Math.max(0, SCAN_FREE_TIER-used);
   if(freeLeft>0)   return {mode:'free',    label:freeLeft+' of '+SCAN_FREE_TIER+' free scans left this month', left:freeLeft};
   if(_ent.credits>0) return {mode:'credits', label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
   return {mode:'none', label:'No scans left — free resets next month', left:0};
 }
 function canScan(){ return scanAccess().left>0; }
+function ladiesScanWindow(){ return !!(_ent && _ent.ladiesFrom && Date.now()-new Date(_ent.ladiesFrom).getTime()<LADIES_FREE_DAYS*864e5); }
+/* this phone's count of scans since her Ladies Burn 30 opened (the server keeps the real one) */
+function ladiesScansUsed(){ const q=HF.data.scanQuota||{}; return (q.lbFrom && _ent && q.lbFrom===_ent.ladiesFrom) ? (q.lb||0) : 0; }
 
 let _claimedFor=null;
 /* The pass, kept on the phone per account (19 Oct 2026): the app can open on
@@ -185,13 +198,13 @@ function entCacheGet(){ try{ const o=JSON.parse(localStorage.getItem(entCacheKey
 function entCacheSet(o){ try{ localStorage.setItem(entCacheKey(), JSON.stringify(o)); }catch(e){} }
 async function loadEntitlement(){
   /* built aside and swapped in whole, so a screen drawn meanwhile never sees an empty pass */
-  const ne={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, scanDaily:0, scanPlanUntil:null, loaded:true};
+  const ne={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, scanDaily:0, scanPlanUntil:null, ladiesFrom:null, loaded:true};
   if(!sb || !HF.userId){ _ent=ne; return _ent; }
   /* once a session: anything bought on a landing page under this email */
   if(_claimedFor!==HF.userId){ _claimedFor=HF.userId; await claimLandingPurchases(); }
   try{
     const r=await sb.from('plus_entitlements')
-                    .select('sku, kind, credits_left, expires_at')
+                    .select('sku, kind, credits_left, expires_at, created_at')
                     .eq('user_id',HF.userId);
     if(!r || r.error) throw new Error((r&&r.error&&r.error.message)||'entitlements');
     (r&&r.data||[]).forEach(e=>{
@@ -214,6 +227,8 @@ async function loadEntitlement(){
         return;
       }
       ne.skus[e.sku]=true;         // programs, the bundle, the bar
+      if(e.sku==='prog_lad4' && e.created_at && Date.now()-new Date(e.created_at).getTime()<LADIES_FREE_DAYS*864e5 &&
+         (!ne.ladiesFrom || e.created_at>ne.ladiesFrom)) ne.ladiesFrom=e.created_at;
     });
     _ent=ne; entCacheSet(ne);
   }catch(e){ /* offline, or the table is not deployed yet: the last pass this phone saw, else free */
