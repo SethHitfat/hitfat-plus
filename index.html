@@ -8273,6 +8273,13 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .ac-mod.acg.open{box-shadow:0 10px 26px color-mix(in srgb,var(--mc) 18%,transparent);}
 .ac-hero.acx-hero::after{display:none;}
 
+/* each module's cover photograph, its icon on the corner (25 Oct) */
+.acg .acx-cv{position:relative;flex:none;width:76px;height:76px;border-radius:16px;background:var(--mc) center/cover no-repeat;box-shadow:0 6px 16px rgba(0,0,0,.12);}
+.acg .acx-cv .acx-ic{position:absolute;right:-6px;bottom:-6px;width:30px;height:30px;border-radius:10px;border:2.5px solid var(--surface);box-shadow:none;}
+:root[data-theme="light"] .acg .acx-cv .acx-ic{border-color:#fff;}
+.acg .acx-cv .acx-ic .gly{width:15px;height:15px;}
+.acg .ac-mod-h{gap:14px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -19033,7 +19040,9 @@ function acBack(){
 /* Why watch (25 Oct 2026, Seth: "kenapa nak suruh orang tu view?"): each
    module says what it gets you, in the words of the person scrolling, with
    its own colour and icon; the course opens on a promise, not a summary.
-   No numbers are promised: the course teaches, it does not guarantee kilos. */
+   No numbers are promised: the course teaches, it does not guarantee kilos.
+   Each module has a cover photograph too (img/academy/m1–m9.jpg, made with
+   ChatGPT in one style), with its icon on the corner. */
 const AC_LOOK=[
   ['scale',   '#E30613','Berhenti panik bila naik penimbang'],
   ['food',    '#E08A00','Makan nasi, santan & goreng, dengan sukatan yang betul'],
@@ -19069,7 +19078,7 @@ function academyHTML(){
   AC_MODS.forEach((m,mi)=>{
     const eps=AC_EPS.filter(e=>e.m===mi), d=eps.filter(acDone).length, open=acModOpen(mi), full=d===eps.length, lk=AC_LOOK[mi]||AC_LOOK[0];
     h+='<div class="ac-mod acg'+(open?' open':'')+'" style="--mc:'+lk[1]+'"><div class="ac-mod-h" onclick="acModToggle('+mi+')">'+
-      '<span class="acx-ic">'+glyph(full?'check':lk[0])+'</span>'+
+      '<span class="acx-cv" style="background-image:url(\'/img/academy/m'+(mi+1)+'.jpg\')"><span class="acx-ic">'+glyph(full?'check':lk[0])+'</span></span>'+
       '<div class="acg-tx"><div class="acx-mk">Modul '+(mi+1)+' · '+m[0]+'</div><div class="t">'+lk[2]+'</div>'+
       '<div class="acx-mm">'+eps.length+' video · '+acModMins(eps)+' min'+(d?' · '+d+'/'+eps.length+' siap':'')+'</div>'+
       '<div class="acg-bar"><i style="width:'+Math.round(d/eps.length*100)+'%"></i></div></div>'+

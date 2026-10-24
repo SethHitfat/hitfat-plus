@@ -220,7 +220,9 @@ function acBack(){
 /* Why watch (25 Oct 2026, Seth: "kenapa nak suruh orang tu view?"): each
    module says what it gets you, in the words of the person scrolling, with
    its own colour and icon; the course opens on a promise, not a summary.
-   No numbers are promised: the course teaches, it does not guarantee kilos. */
+   No numbers are promised: the course teaches, it does not guarantee kilos.
+   Each module has a cover photograph too (img/academy/m1–m9.jpg, made with
+   ChatGPT in one style), with its icon on the corner. */
 const AC_LOOK=[
   ['scale',   '#E30613','Berhenti panik bila naik penimbang'],
   ['food',    '#E08A00','Makan nasi, santan & goreng, dengan sukatan yang betul'],
@@ -256,7 +258,7 @@ function academyHTML(){
   AC_MODS.forEach((m,mi)=>{
     const eps=AC_EPS.filter(e=>e.m===mi), d=eps.filter(acDone).length, open=acModOpen(mi), full=d===eps.length, lk=AC_LOOK[mi]||AC_LOOK[0];
     h+='<div class="ac-mod acg'+(open?' open':'')+'" style="--mc:'+lk[1]+'"><div class="ac-mod-h" onclick="acModToggle('+mi+')">'+
-      '<span class="acx-ic">'+glyph(full?'check':lk[0])+'</span>'+
+      '<span class="acx-cv" style="background-image:url(\'/img/academy/m'+(mi+1)+'.jpg\')"><span class="acx-ic">'+glyph(full?'check':lk[0])+'</span></span>'+
       '<div class="acg-tx"><div class="acx-mk">Modul '+(mi+1)+' · '+m[0]+'</div><div class="t">'+lk[2]+'</div>'+
       '<div class="acx-mm">'+eps.length+' video · '+acModMins(eps)+' min'+(d?' · '+d+'/'+eps.length+' siap':'')+'</div>'+
       '<div class="acg-bar"><i style="width:'+Math.round(d/eps.length*100)+'%"></i></div></div>'+
