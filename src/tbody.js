@@ -189,6 +189,13 @@ var sm=scanToMeal();
 ok("scan maps to a meal",   sm.name==='Nasi lemak' && sm.kcal===600 && sm.p===15, JSON.stringify(sm));
 ok("components carried",    sm.comps.length===2 && sm.comps[0].kcal===250);
 ok("slot auto-assigned",    ['breakfast','lunch','dinner','snack'].indexOf(sm.slot)>=0, sm.slot);
+_scanData={food_name:'Fried chicken with rice',food_name_bm:'Nasi ayam goreng',estimated_calories:650,protein_g:30,carbs_g:70,fat_g:25,breakdown:[]};
+renderScanResult(_scanData); var srh=$('scan-sheet').innerHTML;
+ok("a scanned dish is named in Malay first, the English name under it", srh.indexOf('<div class="t">Nasi ayam goreng</div>')>0 && srh.indexOf('Fried chicken with rice')>0 && scanToMeal().name==='Nasi ayam goreng');
+_scanData={food_name:'Burger',food_name_bm:'Burger',estimated_calories:500,protein_g:25,carbs_g:40,fat_g:25,breakdown:[]};
+renderScanResult(_scanData); ok("...and a dish Malaysians call by its English name keeps it, once", ($('scan-sheet').innerHTML.match(/Burger/g)||[]).length===1);
+_scanData={food_name:'Nasi lemak',food_name_bm:'Nasi lemak',estimated_calories:600,protein_g:15,carbs_g:70,fat_g:28,
+           breakdown:[{ingredient:'Rice',calories:250,weight_g:150},{ingredient:'Sambal',calories:120}]};
 saveFav();
 ok("favourite saved",       HF.data.favs.length===1 && HF.data.favs[0].name==='Nasi lemak');
 saveFav();
@@ -4310,7 +4317,9 @@ print("\n── PICTURES INSIDE MATCH THE COVERS ──");
   ok("the days are numbered tiles in the plan's colour, no repeated photo", h.indexOf('pdx-dt')>0 && h.indexOf('<span class="k">DAY</span><b>1</b>')>0 && h.indexOf("background-image:url('/img/p/sig1.jpg');background-size")<0);
   ok("each day's focus as a glyph", pdxDayGlyph('Upper Strength')==='workout' && pdxDayGlyph('Conditioning')==='flame' && pdxDayGlyph('Core & Finisher')==='target' && pdxDayGlyph('Lower Strength')==='steps');
   ok("a program with no studio photo still gets the palette", hpoArt({id:'zz',goal:'Core',name:'x'}).indexOf('hpo-flat')>0 && hpoArt({id:'zz',goal:'Core',name:'x'}).indexOf('hpo-gly')>0);
-  ok("Ladies Burn 30 has a poster with her photo cut out until its own comes", lbPoster('x').indexOf('mask/lad4.png')>0 && lbPoster('x').indexOf('Ladies Burn 30')>0);
+  ok("Ladies Burn 30's cover: her photograph in its own colours, the name in live type", lbPoster('x').indexOf('lb-cover.jpg')>0 && lbPoster('x').indexOf('lb-photo')>0 && lbPoster('x').indexOf('Ladies<br>Burn 30')>0);
+  var keepCover=LB30_COVER; LB30_COVER='';
+  ok("...and without it, her cut-out on magenta", lbPoster('x').indexOf('mask/lad4.png')>0); LB30_COVER=keepCover;
   ok("the tab bar keeps its language on the Ladies program", String(lbLang).indexOf("data-noi18n")>0);
   (function(){ var w0=lbShopItems(0), names=Object.keys(w0);
     ok("Ladies Burn 30 turns a week's menu into a shopping list (25 Oct)", names.indexOf('Beras')>=0 && names.indexOf('Telur')>=0 && w0['Beras']>=7 &&

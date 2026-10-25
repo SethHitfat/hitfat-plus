@@ -52,14 +52,14 @@ no commentary. Use exactly these keys:
 
 {
   "food_name": "a short English name for the whole meal",
-  "food_name_bm": "a short Malay name for the whole meal",
+  "food_name_bm": "a short Malay name for the whole meal, as Malaysians say it; an English name only where that is what people call it (burger, sandwich)",
   "portion_size": "what you assumed, e.g. '1 plate nasi lemak + 1 glass teh tarik'",
   "estimated_calories": number,
   "protein_g": number,
   "carbs_g": number,
   "fat_g": number,
   "confidence": "high" | "medium" | "low",
-  "breakdown": [ { "ingredient": "each item as the person would name it", "weight_g": number, "calories": number } ]
+  "breakdown": [ { "ingredient": "each item in Malay, as Malaysians say it (English only where that is what people call it)", "weight_g": number, "calories": number } ]
 }
 
 Rules:
@@ -107,7 +107,7 @@ no commentary. Use exactly these keys:
 
 {
   "food_name": "English name of the dish",
-  "food_name_bm": "Malay name, or an empty string if there is no distinct one",
+  "food_name_bm": "the dish's name as Malaysians say it, in Malay (nasi lemak, ayam goreng berempah, mi goreng mamak, telur dadar); if Malaysians call it by its English name (burger, sandwich, pizza, spaghetti, salad), that name",
   "portion_size": "what you judged the serving to be, e.g. '1 plate, about 350g'",
   "estimated_calories": number,
   "protein_g": number,
@@ -118,6 +118,9 @@ no commentary. Use exactly these keys:
 }
 
 Rules:
+- Name each breakdown ingredient as Malaysians say it, in Malay (nasi putih,
+  ayam goreng, telur mata, sambal, timun, kuah kari), keeping an English name
+  only where that is what people in Malaysia call it (burger, sosej, nugget).
 - In breakdown, x and y are where that item sits in the photo: the centre of
   it, as a percentage of the photo's width (x) and height (y), 0 to 100.
 - If the image contains no food, set food_name to "" and estimated_calories to 0.
@@ -361,7 +364,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const kcal = Math.round(Number(result?.estimated_calories ?? result?.calories ?? 0)) || 0;
-    const name = String(result?.food_name || '').trim();
+    const name = String(result?.food_name_bm || result?.food_name || '').trim();
 
     /* ── 5. Record the spend ──────────────────────────────────
        Only after a successful, parsed result. A failed scan must not cost

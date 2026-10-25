@@ -42,7 +42,8 @@ var LB30_ID='lad4';                             /* the SKU is prog_lad4 */
 var LB30_KEY='lb30';                            /* its data, its session keys */
 var LB30_PRICE=39;
 var LB30_POSTER='';                             /* gambar poster: model berhijab, akan datang */
-var LB30_ACCENT='#E30613';             /* HITFAT red, as the page she bought it from (25 Oct) */
+var LB30_COVER='/ladies/img/lb-cover.jpg';         /* the cover: her photograph on HITFAT red */
+var LB30_ACCENT='#C02A7C';             /* magenta, her program's own colour (25 Oct, Seth: "warna magenta aku nk") */
 var LB30_REST=20;                               /* the player's rest between moves (REST_SECS) */
 
 /* ── videos ── */
@@ -872,6 +873,12 @@ function renderLB30(){
 }
 /* the poster: the photograph when there is one, the name in type until then */
 function lbPoster(cls){
+  /* the cover (25 Oct 2026, Seth: "colour asal", "lagi wow"): her photograph
+     in its own colours on HITFAT red, the name in live type on the left */
+  if(LB30_COVER) return '<div class="'+cls+' lb-photo" style="background-image:url(\''+LB30_COVER+'\')">'+
+    '<div class="lb-tx"><img class="lb-mark" src="/img/brand/hfplus-mark.png" alt="HITFAT+">'+
+    '<div class="lb-name">'+hesc(LB30_NAME).replace(/^(\S+)\s+/,'$1<br>')+'</div><div class="lb-sub">30 HARI · DI RUMAH · TANPA LOMPAT</div>'+
+    '<div class="lb-pill">'+glyph('sliders')+'Pelan peribadi</div></div></div>';
   if(LB30_POSTER) return '<div class="'+cls+'"><img src="'+LB30_POSTER+'" alt="'+hesc(LB30_NAME)+'"></div>';
   /* until the poster comes (18 Oct): the ladies' studio photo (lad4) cut out
      on rose, in the look of the covers, with the name beside her */

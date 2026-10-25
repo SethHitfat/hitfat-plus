@@ -926,7 +926,10 @@ function renderScanResult(d){
   const p=Math.round(Number(d.protein_g||d.protein||0)*k);
   const c=Math.round(Number(d.carbs_g||d.carbs||0)*k);
   const f=Math.round(Number(d.fat_g||d.fat||0)*k);
-  const name=(_scanName||d.food_name||'').trim();
+  /* the dish by its Malay name, as Malaysians say it (25 Oct 2026, Seth); the
+     server keeps an English name where that is what people call it */
+  const en=(d.food_name||'').trim(), bm=(d.food_name_bm||'').trim();
+  const name=(_scanName||(en?bm||en:'')).trim();
   const unknown=!name||/^(n\/a|unknown)$/i.test(name);
   let h='<div class="sr-grab"></div>';
   if(unknown){
@@ -949,7 +952,7 @@ function renderScanResult(d){
        '<button onclick="saveScanName()">Save</button></div>';
   else
     h+='<div class="t">'+hesc(name)+'</div>'+
-       '<div class="s">'+[!_scanName&&d.food_name_bm&&d.food_name_bm.trim().toLowerCase()!==name.toLowerCase()?hesc(d.food_name_bm):'', d.portion_size?hesc(d.portion_size):''].filter(Boolean).join(' · ')+'</div>'+
+       '<div class="s">'+[!_scanName&&en&&en.toLowerCase()!==name.toLowerCase()?hesc(en):'', d.portion_size?hesc(d.portion_size):''].filter(Boolean).join(' · ')+'</div>'+
        '<button class="scan-fix" onclick="editScanName()">'+(kind==='meal'?'Wrong food? Rename it':'Rename')+'</button>';
   h+='</div><div class="sr-qty" aria-label="'+unit+'"><button onclick="scanQty(-1)" aria-label="Less">−</button><b>'+fmtQty(k)+'</b><button onclick="scanQty(1)" aria-label="More">+</button></div></div>';
   if(String(d.confidence||'').toLowerCase()==='low')
@@ -987,7 +990,7 @@ function renderScanResult(d){
 function scanToMeal(){
   const d=_scanData; if(!d) return null;
   const k=_scanPortion||1;
-  return { name:_scanName||d.food_name||'Food', bm:_scanName?'':(d.food_name_bm||''),
+  return { name:_scanName||(d.food_name_bm||'').trim()||d.food_name||'Food', bm:_scanName?'':(d.food_name_bm||''),
     kcal:Math.round(Number(d.estimated_calories||d.calories||0)*k),
     p:Math.round(Number(d.protein_g||d.protein||0)*k),
     c:Math.round(Number(d.carbs_g||d.carbs||0)*k),
