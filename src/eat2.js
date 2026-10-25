@@ -917,6 +917,21 @@ function burnOptions(kcal){
 }
 let _mrt=0;
 function setMRT(i){ _mrt=i; renderScanResult(_scanData); }
+/* a food's name as a title (25 Oct 2026, Seth: "Nasi Ayam, bukan Nasi ayam"):
+   every word capital, the little joining words small unless they come first,
+   and a word already in capitals (HITFAT, KFC) left as it is */
+var TITLE_SMALL=['dan','dengan','atau','&','of','and','with','or','ala'];
+function titleCase(t){
+  return String(t||'').trim().split(/(\s+)/).map(function(w,i){
+    if(/^\s+$/.test(w)||!w) return w;
+    if(i>0 && TITLE_SMALL.indexOf(w.toLowerCase())>=0) return w.toLowerCase();
+    if(w===w.toUpperCase() && /[A-Z]/.test(w)) return w;
+    var m=w.match(/^([^A-Za-zÀ-ÿ]*)(.*)$/);
+    return m[1]+(m[2] ? m[2].charAt(0).toUpperCase()+m[2].slice(1) : '');
+  }).join('');
+}
+/* a portion or a sentence: its first letter capital */
+function capFirst(t){ t=String(t||'').trim(); return t ? t.charAt(0).toUpperCase()+t.slice(1) : t; }
 /* ── the result, after MacroSnap: the photo with what is on it, the
    servings, four macro tiles, the ingredients, one Log button ── */
 function renderScanResult(d){
@@ -929,7 +944,8 @@ function renderScanResult(d){
   /* the dish by its Malay name, as Malaysians say it (25 Oct 2026, Seth); the
      server keeps an English name where that is what people call it */
   const en=(d.food_name||'').trim(), bm=(d.food_name_bm||'').trim();
-  const name=(_scanName||(en?bm||en:'')).trim();
+  /* a name she typed stays as she typed it */
+  const name=_scanName ? String(_scanName).trim() : titleCase(en?bm||en:'');
   const unknown=!name||/^(n\/a|unknown)$/i.test(name);
   let h='<div class="sr-grab"></div>';
   if(unknown){
@@ -943,7 +959,7 @@ function renderScanResult(d){
   if(_scanImg){
     const pins=(kind==='meal'?(d.breakdown||[]):[]).filter(it=>isFinite(it.x)&&isFinite(it.y)).slice(0,5);
     h+='<div class="sr-photo'+(kind==='barcode'?' prod':'')+'" style="background-image:url(\''+_scanImg+'\')">'+
-      pins.map(it=>'<span class="sr-pin" style="left:'+Math.min(88,Math.max(12,it.x))+'%;top:'+Math.min(88,Math.max(10,it.y))+'%"><i></i>'+hesc(it.ingredient||it.name||'')+'</span>').join('')+'</div>';
+      pins.map(it=>'<span class="sr-pin" style="left:'+Math.min(88,Math.max(12,it.x))+'%;top:'+Math.min(88,Math.max(10,it.y))+'%"><i></i>'+hesc(titleCase(it.ingredient||it.name||''))+'</span>').join('')+'</div>';
   }
   const unit=kind==='meal'?'Portion':'Servings';
   h+='<div class="sr-head"><div class="sr-name">';
@@ -952,7 +968,7 @@ function renderScanResult(d){
        '<button onclick="saveScanName()">Save</button></div>';
   else
     h+='<div class="t">'+hesc(name)+'</div>'+
-       '<div class="s">'+[!_scanName&&en&&en.toLowerCase()!==name.toLowerCase()?hesc(en):'', d.portion_size?hesc(d.portion_size):''].filter(Boolean).join(' · ')+'</div>'+
+       (d.portion_size?'<div class="s">'+hesc(capFirst(d.portion_size))+'</div>':'')+
        '<button class="scan-fix" onclick="editScanName()">'+(kind==='meal'?'Wrong food? Rename it':'Rename')+'</button>';
   h+='</div><div class="sr-qty" aria-label="'+unit+'"><button onclick="scanQty(-1)" aria-label="Less">−</button><b>'+fmtQty(k)+'</b><button onclick="scanQty(1)" aria-label="More">+</button></div></div>';
   if(String(d.confidence||'').toLowerCase()==='low')
@@ -964,10 +980,10 @@ function renderScanResult(d){
      '<div class="sr-tile"><span class="sr-ic c">C</span><small>Carbs</small><b>'+c+' g</b></div>'+
      '<div class="sr-tile"><span class="sr-ic f">F</span><small>Fat</small><b>'+f+' g</b></div></div>';
   if(kind==='meal' && d.breakdown && d.breakdown.length){
-    h+='<div class="nsub"><span>Ingredients</span><span>'+(d.portion_size?hesc(d.portion_size):'1 serving')+'</span></div>'+
+    h+='<div class="nsub"><span>Ingredients</span></div>'+
        '<div class="nlist">'+d.breakdown.map(it=>{
         const wt=it.weight_g?(Math.round(it.weight_g*k)+' g'):(it.weight_ml?(Math.round(it.weight_ml*k)+' ml'):'');
-        return '<div class="nli"><div class="nli-b"><div class="nli-t">'+hesc(it.ingredient||it.name||'')+'</div>'+
+        return '<div class="nli"><div class="nli-b"><div class="nli-t">'+hesc(titleCase(it.ingredient||it.name||''))+'</div>'+
           (wt?'<div class="nli-s">'+wt+'</div>':'')+'</div><span class="nval">'+Math.round((it.calories||0)*k)+'</span></div>';
       }).join('')+'</div>';
   }
@@ -990,13 +1006,13 @@ function renderScanResult(d){
 function scanToMeal(){
   const d=_scanData; if(!d) return null;
   const k=_scanPortion||1;
-  return { name:_scanName||(d.food_name_bm||'').trim()||d.food_name||'Food', bm:_scanName?'':(d.food_name_bm||''),
+  return { name:_scanName||titleCase((d.food_name_bm||'').trim()||d.food_name||'Food'), bm:_scanName?'':(d.food_name_bm||''),
     kcal:Math.round(Number(d.estimated_calories||d.calories||0)*k),
     p:Math.round(Number(d.protein_g||d.protein||0)*k),
     c:Math.round(Number(d.carbs_g||d.carbs||0)*k),
     f:Math.round(Number(d.fat_g||d.fat||0)*k),
     slot:slotNow(), src:d.kind||'meal',
-    comps:(d.breakdown||[]).map(x=>({name:x.ingredient||x.name||'',kcal:Math.round((x.calories||0)*k)})) };
+    comps:(d.breakdown||[]).map(x=>({name:titleCase(x.ingredient||x.name||''),kcal:Math.round((x.calories||0)*k)})) };
 }
 function logScanned(){
   const m=scanToMeal(); if(!m) return;

@@ -571,7 +571,7 @@ function lbQuiz(){
     '<div class="lbq-bar"><i style="width:'+Math.round(Math.min(lbQ,n)/n*100)+'%"></i></div><span class="lbq-n">'+(isFact?'':lbQCount(Math.min(lbQ,n))+'/'+qn)+'</span></div>';
   if(lbQ===0){
     var nm=((HF.data.prefs&&HF.data.prefs.name)||'').trim().split(/\s+/)[0];
-    return h+bar+'<div class="lbq-intro" style="background-image:url(\''+lbImg('hero')+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
+    return h+bar+'<div class="lbq-intro'+(LB30_COVER?' cover':'')+'" style="background-image:url(\''+lbTopImg()+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
       '<div class="k">Ladies Burn 30</div><div class="t">Jom bina pelan 30 hari anda'+(nm?', '+hesc(nm):'')+'.</div></div></div>'+
       '<div class="lbq-p">'+qn+' soalan, lebih kurang 2 minit. Jawapan anda menentukan gerakan, pusingan, minit setiap hari dan sasaran kalori anda.</div>'+
       '<div class="lbq-list">'+[['person','Tahap anda dan bahagian yang sakit'],['clock','Masa yang anda ada'],['target','Bahagian yang mahu diubah'],['flame','Badan, aktiviti dan rentak'],['food','Cara anda makan']]
@@ -723,7 +723,7 @@ function lbQuizResult(){
   var stat=function(xs){ return '<div class="lbq-stats">'+xs.map(function(x){ return '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'; }).join('')+'</div>'; };
   var chips=function(xs){ return xs.length?'<div class="lbq-chips">'+xs.map(function(x){ return '<span>'+hesc(x)+'</span>'; }).join('')+'</div>':''; };
   var end=tg&&me.wt ? Math.round((me.wt-lbPaceOf(me)*30/7)*10)/10 : null;
-  return '<div class="lbq-res"><div class="lbq-res-h" style="background-image:url(\''+lbImg('hero')+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
+  return '<div class="lbq-res"><div class="lbq-res-h'+(LB30_COVER?' cover':'')+'" style="background-image:url(\''+lbTopImg()+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
       '<div class="k">Pelan anda sudah sedia</div><div class="t">30 hari, dibina untuk '+(nm?hesc(nm):'anda')+'.</div></div></div>'+
     '<div class="lbq-card"><div class="lbq-ch">'+glyph('workout')+'<b>Workout anda</b><span>'+LB30_Q[0].o.filter(function(o){ return o[0]===me.level; })[0][1]+'</span></div>'+
       stat([[mins,'min sehari'],[secs,'saat / gerakan'],[(r1===r4?r1:r1+'→'+r4),'pusingan'],[swapped,'gerakan ditukar']])+chips(wt)+
@@ -798,6 +798,8 @@ var LB30_IMG={hero:'/ladies/img/lb-penyelesaian.webp', work:'/ladies/img/hero-ru
 /* one cover a week (25 Oct): Mula at sunrise, Bina, Bakar, Kuat at dusk; a
    training day shows its week's, so the picture moves on as she does */
 var LB30_WEEK_IMG=['/ladies/img/lb-w1.jpg','/ladies/img/lb-w2.jpg','/ladies/img/lb-w3.jpg','/ladies/img/lb-w4.jpg'];
+/* the picture at the top of her pages: the magenta cover when there is one (25 Oct 2026, Seth: "try tukar") */
+function lbTopImg(){ return LB30_COVER || lbImg('hero'); }
 function lbImg(k){ return LB30_IMG[k]||LB30_IMG.work; }
 function lbDayImg(gi){ var d=LB30_DAYS[gi]; return (d && d.k==='work') ? LB30_WEEK_IMG[lbWeekOf(gi)] : lbImg(d?d.k:'work'); }
 var lbTab='plan', lbWeek=-1, lbMenuDay=-1, lbFoodSeg='today';
@@ -825,7 +827,7 @@ function renderLB30(){
   var pill=!owned ? {icon:'lock',label:'RM'+LB30_PRICE,go:'lbBuy()'}
          : nx<tot ? {icon:'play',label:'Day '+(nx+1),go:'lbOpenDay('+nx+')'} : null;
   var h=pdxBar('program',pill)+
-    '<div class="lbx-hero" style="background-image:url(\''+lbImg('hero')+'\')"><div class="lbx-hero-ov"></div>'+
+    '<div class="lbx-hero'+(LB30_COVER?' cover':'')+'" style="background-image:url(\''+lbTopImg()+'\')"><div class="lbx-hero-ov"></div>'+
     '<div class="lbx-hero-tx"><img class="lbx-mark" src="/img/brand/hfplus-mark.png" alt="HITFAT+">'+
     '<div class="lbx-name">'+hesc(LB30_NAME)+'</div>'+
     '<div class="lbx-tags"><span>30 days</span><span>20 min a day</span><span>No jumping</span><span>At home</span></div></div></div>';

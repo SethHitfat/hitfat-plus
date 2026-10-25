@@ -186,18 +186,23 @@ ok("long durations show hours",  burnOptions(2000)[1][2].indexOf('h')>0, burnOpt
 _scanData={food_name:'Nasi lemak',food_name_bm:'Nasi lemak',estimated_calories:600,protein_g:15,carbs_g:70,fat_g:28,
            breakdown:[{ingredient:'Rice',calories:250,weight_g:150},{ingredient:'Sambal',calories:120}]};
 var sm=scanToMeal();
-ok("scan maps to a meal",   sm.name==='Nasi lemak' && sm.kcal===600 && sm.p===15, JSON.stringify(sm));
+ok("scan maps to a meal",   sm.name==='Nasi Lemak' && sm.kcal===600 && sm.p===15, JSON.stringify(sm));
 ok("components carried",    sm.comps.length===2 && sm.comps[0].kcal===250);
 ok("slot auto-assigned",    ['breakfast','lunch','dinner','snack'].indexOf(sm.slot)>=0, sm.slot);
 _scanData={food_name:'Fried chicken with rice',food_name_bm:'Nasi ayam goreng',estimated_calories:650,protein_g:30,carbs_g:70,fat_g:25,breakdown:[]};
 renderScanResult(_scanData); var srh=$('scan-sheet').innerHTML;
-ok("a scanned dish is named in Malay first, the English name under it", srh.indexOf('<div class="t">Nasi ayam goreng</div>')>0 && srh.indexOf('Fried chicken with rice')>0 && scanToMeal().name==='Nasi ayam goreng');
+ok("a scanned dish is named in Malay, its portion under it, not the English name", srh.indexOf('<div class="t">Nasi Ayam Goreng</div>')>0 && srh.indexOf('Fried chicken with rice')<0 && scanToMeal().name==='Nasi Ayam Goreng');
+_scanData={food_name:'Electrolyte drink',food_name_bm:'minuman elektrolit',portion_size:'1 gelas, ~250 ml',estimated_calories:10,protein_g:0,carbs_g:2,fat_g:0,breakdown:[{ingredient:'serbuk elektrolit',weight_g:7,calories:10},{ingredient:'air dan ais',weight_g:250,calories:0}]};
+renderScanResult(_scanData); srh=$('scan-sheet').innerHTML;
+ok("...every word capital, joining words small, the portion once (not glued to Ingredients)", srh.indexOf('>Minuman Elektrolit<')>0 && srh.indexOf('>Serbuk Elektrolit<')>0 && srh.indexOf('>Air dan Ais<')>0 &&
+   (srh.match(/1 gelas, ~250 ml/g)||[]).length===1 && srh.indexOf('<div class="nsub"><span>Ingredients</span></div>')>0);
+ok("...a name in capitals stays (HITFAT, KFC), a first joining word is capital", titleCase('minuman HITFAT hydrate')==='Minuman HITFAT Hydrate' && titleCase('nasi ayam & sup')==='Nasi Ayam & Sup' && titleCase('dan lain')==='Dan Lain');
 _scanData={food_name:'Burger',food_name_bm:'Burger',estimated_calories:500,protein_g:25,carbs_g:40,fat_g:25,breakdown:[]};
 renderScanResult(_scanData); ok("...and a dish Malaysians call by its English name keeps it, once", ($('scan-sheet').innerHTML.match(/Burger/g)||[]).length===1);
 _scanData={food_name:'Nasi lemak',food_name_bm:'Nasi lemak',estimated_calories:600,protein_g:15,carbs_g:70,fat_g:28,
            breakdown:[{ingredient:'Rice',calories:250,weight_g:150},{ingredient:'Sambal',calories:120}]};
 saveFav();
-ok("favourite saved",       HF.data.favs.length===1 && HF.data.favs[0].name==='Nasi lemak');
+ok("favourite saved",       HF.data.favs.length===1 && HF.data.favs[0].name==='Nasi Lemak');
 saveFav();
 ok("favourite not duplicated", HF.data.favs.length===1, HF.data.favs.length);
 

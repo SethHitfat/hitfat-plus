@@ -6275,3 +6275,6 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 :root .lbx .wl-md.on,:root:not([data-theme="light"]) .lbx .wl-md.on{background:var(--lr,#C02A7C) !important;border-color:var(--lr,#C02A7C) !important;color:#fff !important;box-shadow:0 8px 18px rgba(192,42,124,.28) !important;}
 .lbx .wl-md.on small,.lbx .wl-md.on b{color:#fff !important;}
 #pgd-body:has(.lbx) .pdx-pill,#dd-body:has(.lbx) .pdx-pill,#pgd-body:has(.lbq) .pdx-pill{background:#C02A7C !important;}
+/* her pages open on the magenta cover: she stands on the right, the words sit on magenta */
+.lbx-hero.cover,.lbq-intro.cover,.lbq-res-h.cover{background-color:#B5196E;background-position:78% 30%;}
+.lbx-hero.cover .lbx-hero-ov,.lbq-intro.cover .lbx-hero-ov,.lbq-res-h.cover .lbx-hero-ov{background:linear-gradient(180deg,rgba(80,6,52,.30) 0%,rgba(80,6,52,0) 24%,rgba(80,6,52,0) 48%,rgba(70,6,46,.88) 100%);}

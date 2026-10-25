@@ -8527,6 +8527,9 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 :root .lbx .wl-md.on,:root:not([data-theme="light"]) .lbx .wl-md.on{background:var(--lr,#C02A7C) !important;border-color:var(--lr,#C02A7C) !important;color:#fff !important;box-shadow:0 8px 18px rgba(192,42,124,.28) !important;}
 .lbx .wl-md.on small,.lbx .wl-md.on b{color:#fff !important;}
 #pgd-body:has(.lbx) .pdx-pill,#dd-body:has(.lbx) .pdx-pill,#pgd-body:has(.lbq) .pdx-pill{background:#C02A7C !important;}
+/* her pages open on the magenta cover: she stands on the right, the words sit on magenta */
+.lbx-hero.cover,.lbq-intro.cover,.lbq-res-h.cover{background-color:#B5196E;background-position:78% 30%;}
+.lbx-hero.cover .lbx-hero-ov,.lbq-intro.cover .lbx-hero-ov,.lbq-res-h.cover .lbx-hero-ov{background:linear-gradient(180deg,rgba(80,6,52,.30) 0%,rgba(80,6,52,0) 24%,rgba(80,6,52,0) 48%,rgba(70,6,46,.88) 100%);}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -14674,7 +14677,7 @@ function lbQuiz(){
     '<div class="lbq-bar"><i style="width:'+Math.round(Math.min(lbQ,n)/n*100)+'%"></i></div><span class="lbq-n">'+(isFact?'':lbQCount(Math.min(lbQ,n))+'/'+qn)+'</span></div>';
   if(lbQ===0){
     var nm=((HF.data.prefs&&HF.data.prefs.name)||'').trim().split(/\s+/)[0];
-    return h+bar+'<div class="lbq-intro" style="background-image:url(\''+lbImg('hero')+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
+    return h+bar+'<div class="lbq-intro'+(LB30_COVER?' cover':'')+'" style="background-image:url(\''+lbTopImg()+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
       '<div class="k">Ladies Burn 30</div><div class="t">Jom bina pelan 30 hari anda'+(nm?', '+hesc(nm):'')+'.</div></div></div>'+
       '<div class="lbq-p">'+qn+' soalan, lebih kurang 2 minit. Jawapan anda menentukan gerakan, pusingan, minit setiap hari dan sasaran kalori anda.</div>'+
       '<div class="lbq-list">'+[['person','Tahap anda dan bahagian yang sakit'],['clock','Masa yang anda ada'],['target','Bahagian yang mahu diubah'],['flame','Badan, aktiviti dan rentak'],['food','Cara anda makan']]
@@ -14826,7 +14829,7 @@ function lbQuizResult(){
   var stat=function(xs){ return '<div class="lbq-stats">'+xs.map(function(x){ return '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'; }).join('')+'</div>'; };
   var chips=function(xs){ return xs.length?'<div class="lbq-chips">'+xs.map(function(x){ return '<span>'+hesc(x)+'</span>'; }).join('')+'</div>':''; };
   var end=tg&&me.wt ? Math.round((me.wt-lbPaceOf(me)*30/7)*10)/10 : null;
-  return '<div class="lbq-res"><div class="lbq-res-h" style="background-image:url(\''+lbImg('hero')+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
+  return '<div class="lbq-res"><div class="lbq-res-h'+(LB30_COVER?' cover':'')+'" style="background-image:url(\''+lbTopImg()+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
       '<div class="k">Pelan anda sudah sedia</div><div class="t">30 hari, dibina untuk '+(nm?hesc(nm):'anda')+'.</div></div></div>'+
     '<div class="lbq-card"><div class="lbq-ch">'+glyph('workout')+'<b>Workout anda</b><span>'+LB30_Q[0].o.filter(function(o){ return o[0]===me.level; })[0][1]+'</span></div>'+
       stat([[mins,'min sehari'],[secs,'saat / gerakan'],[(r1===r4?r1:r1+'→'+r4),'pusingan'],[swapped,'gerakan ditukar']])+chips(wt)+
@@ -14901,6 +14904,8 @@ var LB30_IMG={hero:'/ladies/img/lb-penyelesaian.webp', work:'/ladies/img/hero-ru
 /* one cover a week (25 Oct): Mula at sunrise, Bina, Bakar, Kuat at dusk; a
    training day shows its week's, so the picture moves on as she does */
 var LB30_WEEK_IMG=['/ladies/img/lb-w1.jpg','/ladies/img/lb-w2.jpg','/ladies/img/lb-w3.jpg','/ladies/img/lb-w4.jpg'];
+/* the picture at the top of her pages: the magenta cover when there is one (25 Oct 2026, Seth: "try tukar") */
+function lbTopImg(){ return LB30_COVER || lbImg('hero'); }
 function lbImg(k){ return LB30_IMG[k]||LB30_IMG.work; }
 function lbDayImg(gi){ var d=LB30_DAYS[gi]; return (d && d.k==='work') ? LB30_WEEK_IMG[lbWeekOf(gi)] : lbImg(d?d.k:'work'); }
 var lbTab='plan', lbWeek=-1, lbMenuDay=-1, lbFoodSeg='today';
@@ -14928,7 +14933,7 @@ function renderLB30(){
   var pill=!owned ? {icon:'lock',label:'RM'+LB30_PRICE,go:'lbBuy()'}
          : nx<tot ? {icon:'play',label:'Day '+(nx+1),go:'lbOpenDay('+nx+')'} : null;
   var h=pdxBar('program',pill)+
-    '<div class="lbx-hero" style="background-image:url(\''+lbImg('hero')+'\')"><div class="lbx-hero-ov"></div>'+
+    '<div class="lbx-hero'+(LB30_COVER?' cover':'')+'" style="background-image:url(\''+lbTopImg()+'\')"><div class="lbx-hero-ov"></div>'+
     '<div class="lbx-hero-tx"><img class="lbx-mark" src="/img/brand/hfplus-mark.png" alt="HITFAT+">'+
     '<div class="lbx-name">'+hesc(LB30_NAME)+'</div>'+
     '<div class="lbx-tags"><span>30 days</span><span>20 min a day</span><span>No jumping</span><span>At home</span></div></div></div>';
@@ -34402,6 +34407,21 @@ function burnOptions(kcal){
 }
 let _mrt=0;
 function setMRT(i){ _mrt=i; renderScanResult(_scanData); }
+/* a food's name as a title (25 Oct 2026, Seth: "Nasi Ayam, bukan Nasi ayam"):
+   every word capital, the little joining words small unless they come first,
+   and a word already in capitals (HITFAT, KFC) left as it is */
+var TITLE_SMALL=['dan','dengan','atau','&','of','and','with','or','ala'];
+function titleCase(t){
+  return String(t||'').trim().split(/(\s+)/).map(function(w,i){
+    if(/^\s+$/.test(w)||!w) return w;
+    if(i>0 && TITLE_SMALL.indexOf(w.toLowerCase())>=0) return w.toLowerCase();
+    if(w===w.toUpperCase() && /[A-Z]/.test(w)) return w;
+    var m=w.match(/^([^A-Za-zÀ-ÿ]*)(.*)$/);
+    return m[1]+(m[2] ? m[2].charAt(0).toUpperCase()+m[2].slice(1) : '');
+  }).join('');
+}
+/* a portion or a sentence: its first letter capital */
+function capFirst(t){ t=String(t||'').trim(); return t ? t.charAt(0).toUpperCase()+t.slice(1) : t; }
 /* ── the result, after MacroSnap: the photo with what is on it, the
    servings, four macro tiles, the ingredients, one Log button ── */
 function renderScanResult(d){
@@ -34414,7 +34434,8 @@ function renderScanResult(d){
   /* the dish by its Malay name, as Malaysians say it (25 Oct 2026, Seth); the
      server keeps an English name where that is what people call it */
   const en=(d.food_name||'').trim(), bm=(d.food_name_bm||'').trim();
-  const name=(_scanName||(en?bm||en:'')).trim();
+  /* a name she typed stays as she typed it */
+  const name=_scanName ? String(_scanName).trim() : titleCase(en?bm||en:'');
   const unknown=!name||/^(n\/a|unknown)$/i.test(name);
   let h='<div class="sr-grab"></div>';
   if(unknown){
@@ -34428,7 +34449,7 @@ function renderScanResult(d){
   if(_scanImg){
     const pins=(kind==='meal'?(d.breakdown||[]):[]).filter(it=>isFinite(it.x)&&isFinite(it.y)).slice(0,5);
     h+='<div class="sr-photo'+(kind==='barcode'?' prod':'')+'" style="background-image:url(\''+_scanImg+'\')">'+
-      pins.map(it=>'<span class="sr-pin" style="left:'+Math.min(88,Math.max(12,it.x))+'%;top:'+Math.min(88,Math.max(10,it.y))+'%"><i></i>'+hesc(it.ingredient||it.name||'')+'</span>').join('')+'</div>';
+      pins.map(it=>'<span class="sr-pin" style="left:'+Math.min(88,Math.max(12,it.x))+'%;top:'+Math.min(88,Math.max(10,it.y))+'%"><i></i>'+hesc(titleCase(it.ingredient||it.name||''))+'</span>').join('')+'</div>';
   }
   const unit=kind==='meal'?'Portion':'Servings';
   h+='<div class="sr-head"><div class="sr-name">';
@@ -34437,7 +34458,7 @@ function renderScanResult(d){
        '<button onclick="saveScanName()">Save</button></div>';
   else
     h+='<div class="t">'+hesc(name)+'</div>'+
-       '<div class="s">'+[!_scanName&&en&&en.toLowerCase()!==name.toLowerCase()?hesc(en):'', d.portion_size?hesc(d.portion_size):''].filter(Boolean).join(' · ')+'</div>'+
+       (d.portion_size?'<div class="s">'+hesc(capFirst(d.portion_size))+'</div>':'')+
        '<button class="scan-fix" onclick="editScanName()">'+(kind==='meal'?'Wrong food? Rename it':'Rename')+'</button>';
   h+='</div><div class="sr-qty" aria-label="'+unit+'"><button onclick="scanQty(-1)" aria-label="Less">−</button><b>'+fmtQty(k)+'</b><button onclick="scanQty(1)" aria-label="More">+</button></div></div>';
   if(String(d.confidence||'').toLowerCase()==='low')
@@ -34449,10 +34470,10 @@ function renderScanResult(d){
      '<div class="sr-tile"><span class="sr-ic c">C</span><small>Carbs</small><b>'+c+' g</b></div>'+
      '<div class="sr-tile"><span class="sr-ic f">F</span><small>Fat</small><b>'+f+' g</b></div></div>';
   if(kind==='meal' && d.breakdown && d.breakdown.length){
-    h+='<div class="nsub"><span>Ingredients</span><span>'+(d.portion_size?hesc(d.portion_size):'1 serving')+'</span></div>'+
+    h+='<div class="nsub"><span>Ingredients</span></div>'+
        '<div class="nlist">'+d.breakdown.map(it=>{
         const wt=it.weight_g?(Math.round(it.weight_g*k)+' g'):(it.weight_ml?(Math.round(it.weight_ml*k)+' ml'):'');
-        return '<div class="nli"><div class="nli-b"><div class="nli-t">'+hesc(it.ingredient||it.name||'')+'</div>'+
+        return '<div class="nli"><div class="nli-b"><div class="nli-t">'+hesc(titleCase(it.ingredient||it.name||''))+'</div>'+
           (wt?'<div class="nli-s">'+wt+'</div>':'')+'</div><span class="nval">'+Math.round((it.calories||0)*k)+'</span></div>';
       }).join('')+'</div>';
   }
@@ -34475,13 +34496,13 @@ function renderScanResult(d){
 function scanToMeal(){
   const d=_scanData; if(!d) return null;
   const k=_scanPortion||1;
-  return { name:_scanName||(d.food_name_bm||'').trim()||d.food_name||'Food', bm:_scanName?'':(d.food_name_bm||''),
+  return { name:_scanName||titleCase((d.food_name_bm||'').trim()||d.food_name||'Food'), bm:_scanName?'':(d.food_name_bm||''),
     kcal:Math.round(Number(d.estimated_calories||d.calories||0)*k),
     p:Math.round(Number(d.protein_g||d.protein||0)*k),
     c:Math.round(Number(d.carbs_g||d.carbs||0)*k),
     f:Math.round(Number(d.fat_g||d.fat||0)*k),
     slot:slotNow(), src:d.kind||'meal',
-    comps:(d.breakdown||[]).map(x=>({name:x.ingredient||x.name||'',kcal:Math.round((x.calories||0)*k)})) };
+    comps:(d.breakdown||[]).map(x=>({name:titleCase(x.ingredient||x.name||''),kcal:Math.round((x.calories||0)*k)})) };
 }
 function logScanned(){
   const m=scanToMeal(); if(!m) return;
