@@ -1687,8 +1687,14 @@ ok("plan view has content",     document.getElementById('mp-view').innerHTML.len
 ok("BMI card rendered",         document.getElementById('mp-view').innerHTML.indexOf('CPG MOH 2023')>0);
 ok("MDG line rendered",         document.getElementById('mp-view').innerHTML.indexOf('MDG 2020')>0);
 ok("medical disclaimer present",document.getElementById('mp-view').innerHTML.indexOf('registered dietitian')>0);
-noThrow("day toggles",          function(){ mpDay(0); mpDay(0); });
-noThrow("option switch",        function(){ mpOpt('mps-0-0',1); });
+noThrow("day toggles",          function(){ mp2Day(1); mp2Day(0); });
+noThrow("option switch",        function(){ mp2Opt(0,0,1); });
+ok("one day at a time, each meal's three options side by side", (document.getElementById('mp-view').innerHTML.match(/class="mp2slot"/g)||[]).length===mpPlan.days[0].slots.length &&
+   (document.getElementById('mp-view').innerHTML.match(/class="opt[ "]/g)||[]).length===mpPlan.days[0].slots.length*3);
+ok("...the option chosen is the one shown", document.getElementById('mp-view').innerHTML.indexOf('mpEat(0,0,1)')>0);
+ok("...menus come before her numbers", document.getElementById('mp-view').innerHTML.indexOf('Your menus')<document.getElementById('mp-view').innerHTML.indexOf('Where you are'));
+ok("every menu has a photograph named", ['breakfast','lunch','dinner','snack'].every(function(k){ return MDB[k].every(function(o){ return !!MP_IMG[o.name]; }); }));
+ok("...a dish with fruit added takes its dish's photograph", mpImg('Oats + banana + milk + Pisang')==='/ladies/img/menu/d02.jpg');
 noThrow("plan saves",           function(){ mpSavePlan(); });
 ok("saved to the store",        HF.data.mealPlans.length===1);
 ok("saved as a spec, not a plan", JSON.stringify(HF.data.mealPlans[0]).length<400,

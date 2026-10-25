@@ -319,7 +319,7 @@ function mpGenerate(){
   HF.save();
   closeMealPlan(); openPlanView();
 }
-function openPlanView(){ hidePanels(); $('mealplan').style.display='block'; renderPlanView(); $('screen').scrollTop=0; }
+function openPlanView(){ mpDaySel=0; mpSelOpt={}; hidePanels(); $('mealplan').style.display='block'; renderPlanView(); $('screen').scrollTop=0; }
 function mpDay(i){ const c=$('mpday-'+i); if(c) c.classList.toggle('open'); }
 function mpOpt(slotId,idx){
   const w=$(slotId); if(!w) return;
@@ -360,6 +360,46 @@ function mpTagsHTML(o,tot,target){ const t=mpTagList(o,tot,target);
 function mpPass(o,target){ if(!mpFilter) return true; if(mpFilter==='low') return kcalOf(o)<=target*0.9; return (o.tags||[]).indexOf(mpFilter)>-1; }
 /* the option shown first: option 1, or the first that passes her filter */
 function mpFirst(s){ if(!mpFilter) return 0; for(let i=0;i<s.options.length;i++) if(mpPass(s.options[i],s.target)) return i; return 0; }
+/* the day on screen, and the option chosen in each meal (day-slot → option) */
+let mpDaySel=0, mpSelOpt={};
+function mp2Sel(di,si,s){ const k=di+'-'+si; return (k in mpSelOpt)?mpSelOpt[k]:mpFirst(s); }
+function mp2Keep(){ const y=$('screen')?$('screen').scrollTop:0; renderPlanView(); if($('screen')) $('screen').scrollTop=y; }
+function mp2Day(i){ mpDaySel=i; mp2Keep(); }
+function mp2Opt(di,si,oi){ mpSelOpt[di+'-'+si]=oi; mp2Keep(); }
+/* a photograph for each menu: the same dish already photographed for Ladies
+   Burn 30 and Diet 6 where there is one, the rest made for the plan (img/mp).
+   A dish with a fruit added ('… + Banana') takes its dish's photograph. */
+const MP_IMG={
+  'Oats + banana + milk':'/ladies/img/menu/d02.jpg','Wholemeal bread + omelette + cucumber':'/ladies/img/menu/d04.jpg',
+  'Egg fried rice + vegetables':'/img/mp/m01.jpg','Rice vermicelli chicken soup':'/ladies/img/menu/n01.jpg',
+  'Greek yoghurt + granola + fruit':'/img/mp/m02.jpg','Chicken rice porridge + ginger':'/ladies/img/menu/d07.jpg',
+  'Boiled eggs + wholemeal bread + tea':'/ladies/img/menu/d01.jpg','Nasi lemak, portion controlled':'/ladies/img/menu/d03.jpg',
+  'Bread wrap + tuna + salad':'/img/mp/m03.jpg','Wholegrain cereal + milk + fruit':'/img/mp/m04.jpg',
+  'Yellow noodle chicken soup':'/ladies/img/menu/d13.jpg','Banana oat pancakes':'/ladies/img/menu/n03.jpg',
+  'Greek yoghurt + honey':'/ladies/img/menu/n30.jpg','Banana + nuts':'/ladies/img/menu/n15.jpg','Boiled eggs':'/ladies/img/menu/n32.jpg',
+  'Cut fruit (papaya / watermelon)':'/img/mp/m05.jpg','Apple + tea':'/img/mp/m06.jpg','High-protein milk':'/ladies/img/menu/n27.jpg',
+  'Wholemeal bread + peanut butter':'/ladies/img/menu/n24.jpg','Small chicken sandwich':'/img/mp/m07.jpg',
+  'Grilled tofu + soy sauce':'/img/mp/m08.jpg','Edamame / boiled beans':'/img/mp/m09.jpg',
+  'Rice + vegetable curry + tofu + beans':'/img/mp/m10.jpg','Fried noodles with vegetables + tempe':'/img/mp/m11.jpg',
+  'Brown rice buddha bowl':'/img/mp/m12.jpg','Rice + grilled chicken + vegetables + soup':'/img/mp/m13.jpg',
+  'Rice + grilled fish + vegetables + sambal':'/ladies/img/menu/d12.jpg','Rice vermicelli soup + greens':'/ladies/img/menu/n01.jpg',
+  'Brown rice + tempe + tofu + vegetables':'/ladies/img/menu/n09.jpg','Grilled chicken chop + potato + salad':'/img/mp/m14.jpg',
+  'Steamed rice + chicken, portion controlled':'/ladies/img/menu/n06.jpg','Fried noodles, portion controlled':'/img/mp/m15.jpg',
+  'Wholemeal bread + tomato sardines + salad':'/img/mp/m16.jpg','Chicken tomyam + a little rice':'/img/mp/m17.jpg',
+  'Grilled chicken salad + brown rice':'/img/mp/m18.jpg','Asam laksa, lighter version':'/img/mp/m19.jpg',
+  'Vegetable soup + tofu + a little rice':'/img/mp/m20.jpg','Soy tempe + grilled aubergine + brown rice':'/img/mp/m21.jpg',
+  'Fried rice vermicelli + beans':'/img/mp/m22.jpg','Chicken vegetable soup + a little rice':'/img/mp/m23.jpg',
+  'Grilled fish + ulam + sambal + a little rice':'/ladies/img/menu/n13.jpg','Wholemeal bread + tuna salad':'/img/mp/m24.jpg',
+  'Ginger soy chicken + vegetables + a little rice':'/ladies/img/menu/d27.jpg','Chicken tomyam + rice vermicelli':'/ladies/img/menu/n08.jpg',
+  'Chicken porridge + egg + ginger':'/ladies/img/menu/d07.jpg','Chicken stir-fry + vegetables + egg + rice':'/img/mp/m25.jpg',
+  'Rice + egg + anchovy sambal + vegetables':'/ladies/img/menu/d14.jpg','Tofu + tempe + vegetables + a little rice':'/ladies/img/menu/n09.jpg',
+  'Chicken salad + boiled egg + dressing':'/img/mp/m26.jpg','Steamed ginger fish + rice + vegetables':'/ladies/img/menu/d24.jpg',
+  'Egg fried rice, portion controlled':'/img/mp/m01.jpg'
+};
+function mpImg(name){ let n=String(name||'');
+  while(n){ const u=MP_IMG[n]; if(u) return u;
+    const j=n.lastIndexOf(' + '); if(j<0) break; n=n.slice(0,j); }
+  return ''; }
 function mpSetFilter(f){ mpFilter=f; const y=$('screen')?$('screen').scrollTop:0; renderPlanView(); if($('screen')) $('screen').scrollTop=y; }
 /* she ate it: today's diary, macros in the plan's proportions */
 function mpAteKey(di,si,oi){ return iso(0)+':'+di+':'+si+':'+oi; }
@@ -395,6 +435,39 @@ function renderPlanView(){
        .map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+
      '</div></div>';
 
+  /* ── the menus first (25 Oct 2026, Seth: "cantikkan, ada gambar"): one day at
+     a time, each meal's three options as photographs side by side, the one
+     chosen shown below in a few lines ── */
+  h+=nHead('Your menus','Three options per meal, all within your calories');
+  h+='<div class="mpfilt">'+MP_FILTERS.map(f=>'<button class="'+(mpFilter===f[0]?'on':'')+'" onclick="mpSetFilter(\''+f[0]+'\')">'+f[1]+'</button>').join('')+'</div>';
+  if(mpDaySel>=p.days.length) mpDaySel=0;
+  h+='<div class="mp2days">'+p.days.map((d,di)=>'<button class="'+(di===mpDaySel?'on':'')+'" onclick="mp2Day('+di+')"><b>Day '+d.day+'</b><span>'+d.pct+'%</span></button>').join('')+'</div>';
+  const d=p.days[mpDaySel], di=mpDaySel;
+  const bal=(good,txt)=>'<span class="'+(good?'ok':'warn')+'">'+(good?glyph('check'):'')+txt+'</span>';
+  h+='<div class="mp2sum"><div class="t"><b>'+d.total.toLocaleString()+'</b> / '+n.cal.toLocaleString()+' kcal<em>'+d.pct+'% of target</em></div>'+
+     '<div class="bar"><i style="width:'+Math.min(100,d.pct)+'%"></i></div>'+
+     '<div class="bals">'+bal(d.bal.buah>0,'Fruit')+bal(d.bal.sayur>=2,'Veg')+bal(d.bal.protein>=d.slots.length-1,'Protein')+bal(d.bal.karbo>=1,'Carbs')+'</div></div>';
+  d.slots.forEach((s,si)=>{
+    const oi=mp2Sel(di,si,s), o=s.options[oi], tot=kcalOf(o), gap=s.target-tot, ate=mpAteIs(di,si,oi);
+    const g=groupsOf(o.items), chips=mpTagList(o,tot,s.target)
+      .concat(g.protein?['Protein']:[], g.karbo?['Carbs']:[], g.sayur?['Veg']:[], g.buah?['Fruit']:[]);
+    h+='<div class="mp2slot"><div class="hd"><b>'+s.label+'</b><span>'+s.time+' · about '+s.target+' kcal</span></div>'+
+      '<div class="opts">'+s.options.map((x,xi)=>{ const im=mpImg(x.name);
+        return '<button class="opt'+(xi===oi?' on':'')+(mpPass(x,s.target)?'':' dim')+'" onclick="mp2Opt('+di+','+si+','+xi+')">'+
+          '<span class="ph"'+(im?' style="background-image:url(\''+im+'\')"':'')+'>'+(im?'':glyph('food'))+'<i>'+(xi+1)+'</i></span>'+
+          '<b>'+mpMs(x.name)+'</b><em>'+kcalOf(x)+' kcal</em></button>'; }).join('')+'</div>'+
+      '<div class="det"><div class="dh"><b>'+mpMs(o.name)+'</b>'+
+        '<button class="mpeat'+(ate?' on':'')+'" onclick="mpEat('+di+','+si+','+oi+')">'+glyph('check')+(ate?'Logged':'I ate this')+'</button></div>'+
+        '<div class="its">'+o.items.map(it=>'<div><span>'+mpMs(it.food)+'<small>'+mpPor(it.portion)+'</small></span><em>'+it.kcal+'</em></div>').join('')+
+          '<div class="tot"><span>Total</span><em>'+tot+' kcal</em></div></div>'+
+        (chips.length?'<div class="chips"><span class="k">Dietary info</span>'+chips.map(c=>'<span>'+c+'</span>').join('')+'</div>':'')+
+        (o.scale>1?'<div class="note">'+glyph('scale')+'Portions ×'+o.scale.toFixed(1)+' to reach the '+s.target+' kcal this meal needs.</div>':'')+
+        (gap>80&&gapItems(gap,d.bal).length?'<div class="note warn">'+glyph('plus')+'Still '+gap+' kcal short: '+
+          gapItems(gap,d.bal).map(x=>mpMs(x.food)+' ('+x.kcal+')').join(', ')+'</div>':'')+
+      '</div></div>';
+  });
+
+  /* ── her numbers, after the food ── */
   /* ── body status, CPG MOH 2023 Asian cut-offs ── */
   h+=nHead('Where you are','CPG MOH 2023 · Asian cut-offs');
   h+='<div class="nstats">'+
@@ -420,54 +493,6 @@ function renderPlanView(){
      '</div>';
   if(n.floorHit) h+=nCall('info','Held at the safe minimum','Calories were kept at '+n.floor.toLocaleString()+' kcal (CPG MOH 2023). Give yourself more time, or ease the target.');
   if(n.deficit){ const v=deficitVerdict(n.deficit); h+=nCall(deficitTone(n.deficit), v.label, v.msg); }
-
-  /* ── the menus ── */
-  h+=nHead('Daily menus','Three options per meal — swap when an ingredient is missing');
-  h+='<div class="mpfilt">'+MP_FILTERS.map(f=>'<button class="'+(mpFilter===f[0]?'on':'')+'" onclick="mpSetFilter(\''+f[0]+'\')">'+f[1]+'</button>').join('')+'</div>';
-  p.days.forEach((d,di)=>{
-    const bal=(good,txt)=>'<span class="npill '+(good?'ok':'warn')+'">'+txt+'</span>';
-    h+='<div class="mpday'+(di===0?' open':'')+'" id="mpday-'+di+'">'+
-      '<button class="mpday-h" onclick="mpDay('+di+')"><span class="mpday-n">'+d.day+'</span>'+
-      '<div class="mpday-tx"><div class="t">Day '+d.day+'</div>'+
-      '<div class="m">'+d.total.toLocaleString()+' kcal · '+d.pct+'% of target</div></div><span class="ar">⌄</span></button>'+
-      '<div class="mpday-b">'+
-      '<div class="mpbals">'+
-        bal(d.bal.buah>0,'Fruit')+ bal(d.bal.sayur>=2,'Veg')+
-        bal(d.bal.protein>=d.slots.length-1,'Protein')+ bal(d.bal.karbo>=1,'Carbs')+
-        bal(d.ok,d.total.toLocaleString()+' kcal')+
-      '</div>';
-    d.slots.forEach((s,si)=>{
-      const sid='mps-'+di+'-'+si;
-      h+='<div class="mpslot" id="'+sid+'">'+
-        '<div class="mpslot-h"><div><div class="t">'+s.label+'</div>'+
-        '<div class="m">'+s.time+' · about '+s.target+' kcal</div></div>'+
-        '<div class="mpopts" role="tablist">'+
-        s.options.map((o,oi)=>'<button class="mpo'+(oi===mpFirst(s,oi)?' on':'')+(mpPass(o,s.target)?'':' dim')+'" aria-label="Option '+(oi+1)+'" onclick="mpOpt(\''+sid+'\','+oi+')">'+(oi+1)+'</button>').join('')+
-        '</div></div>';
-      s.options.forEach((o,oi)=>{
-        const tot=kcalOf(o), g=groupsOf(o.items), gap=s.target-tot;
-        h+='<div class="mpopt" style="display:'+(oi===mpFirst(s,oi)?'block':'none')+';">'+
-          /* the food in Malay, as in BURN30 (18 Oct); the screen around it stays English */
-          '<div class="mpopt-h"><div class="t">'+mpMs(o.name)+'</div><div class="k">'+tot+' kcal</div></div>'+
-          o.items.map(it=>'<div class="mpitem"><div><div class="t">'+mpMs(it.food)+'</div>'+
-            '<div class="m">'+mpPor(it.portion)+'</div></div><div class="k">'+it.kcal+'</div></div>').join('')+
-          mpTagsHTML(o,tot,s.target)+
-          '<button class="mpeat'+(mpAteIs(di,si,oi)?' on':'')+'" onclick="mpEat('+di+','+si+','+oi+')">'+glyph('check')+(mpAteIs(di,si,oi)?'Logged':'I ate this')+'</button>'+
-          '<div class="mpbals" style="margin-top:10px;">'+
-            (g.protein?'<span class="npill p">Protein</span>':'')+
-            (g.karbo?'<span class="npill c">Carbs</span>':'')+
-            (g.sayur?'<span class="npill ok">Veg</span>':'')+
-            (g.buah?'<span class="npill f">Fruit</span>':'')+
-          '</div>'+
-          (o.scale>1?nCall('info','','Portion scaled ×'+o.scale.toFixed(1)+' to reach the '+s.target+' kcal this meal needs.'):'')+
-          (gap>80&&gapItems(gap,d.bal).length?nCall('warn','Still '+gap+' kcal short',
-            gapItems(gap,d.bal).map(x=>'+'+x.kcal+' kcal · '+mpMs(x.food)).join('<br>')):'')+
-          '</div>';
-      });
-      h+='</div>';
-    });
-    h+='</div></div>';
-  });
 
   /* ── advice ── */
   h+=nHead('Tips for this plan','');
