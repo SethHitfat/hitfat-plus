@@ -6093,3 +6093,6 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .lbx-oc .h b{font-size:16.5px;font-weight:800;}
 .lbx-oc .o{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:14px;line-height:1.4;}
 .lbx-oc .o .gly{flex:none;width:16px;height:16px;margin-top:2px;color:var(--mc);}
+
+/* a photograph of each dish on its meal card (25 Oct) */
+.lbx-dish{margin-top:14px;aspect-ratio:16/10;border-radius:16px;background:var(--surface2) center/cover no-repeat;}

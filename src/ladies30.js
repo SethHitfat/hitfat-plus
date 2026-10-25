@@ -689,6 +689,12 @@ function lbPlateSVG(){
     '<line x1="60" y1="12" x2="60" y2="108" stroke="#fff" stroke-width="2.5"/><line x1="60" y1="60" x2="108" y2="60" stroke="#fff" stroke-width="2.5"/></svg>';
 }
 
+/* each dish's photograph (25 Oct 2026): made with ChatGPT in one style, in
+   menu order, breakfast 1-10, lunch 11-20, dinner 21-30 (ladies/img/menu) */
+function lbDishImg(slot,o){
+  var n=LB30_SLOTS.indexOf(slot)*10+LB30_MENU[slot].opts.indexOf(o)+1;
+  return '/ladies/img/menu/d'+(n<10?'0':'')+n+'.jpg';
+}
 function lbFood(){
   if(!lbOwned()) return lbLocked('food','Calorie target & 30-day menu',
     'Sasaran harian dari berat, tinggi dan umur anda — sarapan, bekal tengah hari dan makan malam keluarga, '+
@@ -722,6 +728,7 @@ function lbFood(){
       '<div class="hd"><div class="t">'+s.label+'</div><div class="m">'+s.time+' · ~'+Math.round(t.cal*s.share)+' kcal</div></div>'+
       '<div class="mpopts">'+opts.map(function(o,oi){ return '<button class="mpo'+(oi===0?' on':'')+'" aria-label="Option '+(oi+1)+'" onclick="mpOpt(\''+sid+'\','+oi+')">'+(oi+1)+'</button>'; }).join('')+'</div></div>'+
       opts.map(function(o,oi){ return '<div class="mpopt" style="display:'+(oi===0?'block':'none')+';">'+
+        '<div class="lbx-dish" style="background-image:url(\''+lbDishImg(slot,o)+'\')"></div>'+
         '<div class="mpopt-h"><div class="t">'+o.n+'</div><div class="k">'+o.k+' kcal</div></div>'+
         '<div class="lbx-items">'+o.it.map(function(it){ return '<span>'+it+'</span>'; }).join('')+'</div>'+
       '</div>'; }).join('')+'<div class="lbx-meal-n">'+s.note+'</div></div>';
