@@ -6353,3 +6353,56 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mpeat{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:8px 14px;border-radius:999px;border:1.5px solid color-mix(in srgb,#E30613 40%,transparent);background:transparent;color:#E30613;font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
 .mpeat .gly{width:14px;height:14px;}
 .mpeat.on{background:#E30613;border-color:#E30613;color:#fff;}
+
+/* Recipe Books in Eat (25 Oct 2026, after Everfit) */
+.rb-shelf{display:grid;grid-auto-flow:column;grid-auto-columns:76%;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px;}
+.rb-shelf::-webkit-scrollbar{display:none;}
+.rb-cover{position:relative;display:flex;align-items:flex-end;aspect-ratio:4/3;border:0;border-radius:22px;overflow:hidden;background:#3a1a12 center/cover no-repeat;text-align:left;cursor:pointer;scroll-snap-align:start;padding:0;}
+.rb-cover .ov,.rb-hero .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(12,6,6,.86));}
+.rb-cover .tx{position:relative;padding:16px;color:#fff;}
+.rb-cover small,.rb-hero small{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#FFB4A8;}
+.rb-cover b{display:block;margin-top:3px;font-size:22px;font-weight:800;letter-spacing:-.3px;line-height:1.1;}
+.rb-cover em{display:block;margin-top:4px;font-style:normal;font-size:13px;opacity:.88;line-height:1.35;}
+.rb-hero{position:relative;display:flex;align-items:flex-end;margin-top:8px;aspect-ratio:16/10;border-radius:24px;overflow:hidden;background:#3a1a12 center/cover no-repeat;}
+.rb-hero .tx{position:relative;padding:18px;color:#fff;}
+.rb-hero b{display:block;margin-top:4px;font-size:28px;font-weight:800;line-height:1.05;letter-spacing:-.5px;}
+.rb-hero .tx > span{display:block;margin-top:6px;font-size:14px;opacity:.9;}
+.rb-list{margin-top:14px;border-radius:20px;background:var(--surface);overflow:hidden;}
+.rb-row{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border:0;border-top:1px solid var(--line);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;}
+.rb-row:first-child{border-top:0;}
+.rb-row .ph{flex:none;width:64px;height:64px;border-radius:14px;background:var(--surface2) center/cover no-repeat;}
+.rb-row .tx{flex:1;min-width:0;}
+.rb-row .tx b{display:block;font-size:15.5px;font-weight:750;}
+.rb-row .tx span{display:block;margin-top:2px;font-size:12.5px;color:var(--dim);}
+.rb-row .go{flex:none;color:var(--dim);font-size:22px;}
+.rb-row .go .gly{width:16px;height:16px;}
+.rb-lock{display:flex;align-items:center;gap:12px;margin-top:12px;padding:14px;border-radius:18px;background:var(--surface);}
+.rb-lock > .gly{flex:none;width:20px;height:20px;color:#E30613;}
+.rb-lock div{flex:1;}
+.rb-lock b{display:block;font-size:14.5px;}
+.rb-lock span{display:block;font-size:12.5px;color:var(--dim);}
+.rb-lock button{flex:none;height:38px;padding:0 14px;border:0;border-radius:12px;background:#E30613;color:#fff;font:inherit;font-weight:800;cursor:pointer;}
+.rb-photo{margin-top:8px;aspect-ratio:16/10;border-radius:24px;background:var(--surface2) center/cover no-repeat;}
+.rb-head{margin-top:14px;}
+.rb-head b{display:block;font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1.1;}
+.rb-head .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.rb-head .chips span{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:999px;background:var(--surface);font-size:13px;font-weight:700;}
+.rb-head .chips .gly{width:14px;height:14px;color:#E30613;}
+.rb-sec{margin:20px 2px 8px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#E30613;}
+.rb-ings{border-radius:18px;background:var(--surface);overflow:hidden;}
+.rb-ing{display:flex;align-items:flex-start;gap:12px;width:100%;padding:11px 14px;border:0;border-top:1px solid var(--line);background:none;color:inherit;font:inherit;font-size:15px;line-height:1.4;text-align:left;cursor:pointer;}
+.rb-ing:first-child{border-top:0;}
+.rb-ing .b{flex:none;width:22px;height:22px;margin-top:1px;border-radius:7px;border:2px solid color-mix(in srgb,#E30613 40%,transparent);display:grid;place-items:center;color:#fff;}
+.rb-ing .b .gly{width:13px;height:13px;}
+.rb-ing.on .b{background:#E30613;border-color:#E30613;}
+.rb-ing.on span:last-child{text-decoration:line-through;color:var(--dim);}
+.rb-steps{margin:0;padding:6px 16px 6px 40px;border-radius:18px;background:var(--surface);}
+.rb-steps li{padding:9px 0;font-size:15px;line-height:1.5;border-top:1px solid var(--line);}
+.rb-steps li:first-child{border-top:0;}
+.rb-steps li::marker{font-weight:800;color:#E30613;}
+.rb-tip{display:flex;gap:12px;margin-top:14px;padding:14px;border-radius:18px;background:color-mix(in srgb,#E30613 7%,transparent);}
+.rb-tip > .gly{flex:none;width:20px;height:20px;color:#E30613;}
+.rb-tip b{display:block;font-size:13px;font-weight:800;}
+.rb-tip span{display:block;margin-top:2px;font-size:14.5px;line-height:1.45;}
+.rb-eat{margin-top:18px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.rb-eat .gly{width:18px;height:18px;}

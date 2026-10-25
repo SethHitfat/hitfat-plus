@@ -236,6 +236,17 @@ print("\n── EAT · AFTER EVERFIT ──");
   mpSetFilter('budget'); var sl=mpPlan.days[0].slots[0], fi=mpFirst(sl);
   ok("a filter shows first the option that passes it", !sl.options.some(function(o){ return o.tags.indexOf('budget')>-1; }) || sl.options[fi].tags.indexOf('budget')>-1);
   mpSetFilter('');
+  /* recipe books */
+  eatSeg='plan'; renderEat(); var ph=$('eat-body').innerHTML;
+  ok("Plan shows the recipe books that have recipes", ph.indexOf('Recipe Books')>0 && ph.indexOf("openRecipeBook('bekal')")>0 && ph.indexOf("openRecipeBook('snek')")<0);
+  ok("every recipe complete: photo on disk, minutes, kcal, ingredients, method", RB_BOOKS[0].recipes.length===10 && RB_BOOKS[0].recipes.every(function(r){ return r.img && r.min>0 && r.k>0 && r.bahan.length>=4 && r.cara.length>=3; }));
+  openRecipeBook('bekal'); var bk=$('rb-body').innerHTML;
+  ok("a book lists its recipes", (bk.match(/class="rb-row"/g)||[]).length===10 && $('recipes').style.display==='block');
+  openRecipe(0); var rc=$('rb-body').innerHTML;
+  ok("a recipe: ingredients to tick, the method, the tip, I ate this", rc.indexOf('Ingredients')>0 && rc.indexOf('rb-steps')>0 && rc.indexOf('Tip')>0 && rc.indexOf('rbEat()')>0);
+  var nb=mealsFor().length; rbEat(); ok("...I ate this logs it with its kcal", mealsFor().length===nb+1 && mealsFor()[nb].kcal===RB_BOOKS[0].recipes[0].k && mealsFor()[nb].p>0);
+  rbTickIng('bekal:0:0'); ok("...an ingredient ticks while she cooks", $('rb-body').innerHTML.indexOf('rb-ing on')>0);
+  rbBack(); rbBack();
   HF.save=keepSv; HF.data.meals=keepM; HF.data.goalText=keepG; HF.data.mpAte=keepA; mpPlan=keepP; eGoalEdit=false;
 })();
 print("\n── PROGRESS ──");

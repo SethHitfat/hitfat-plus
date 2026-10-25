@@ -386,6 +386,9 @@ function eatPlan(){
      '<button class="fglass emp-go" onclick="openMealPlan()">'+glyph('calendar')+(contentOpen()?'Build My Plan':'Unlock with HITFAT+')+'</button>'+
      '<div class="emp-src">MDG 2020 · CPG MOH 2023</div></div>';
 
+  /* recipe books (25 Oct 2026, after Everfit's on-demand recipe books) */
+  if(typeof rbShelf==='function') h+=rbShelf();
+
   if(mpl.length){
     h+=fsec('Your Plans','Saved — reopens identical every time.');
     h+='<div class="nlist">'+mpl.map((p,i)=>nRow('clipboard',
