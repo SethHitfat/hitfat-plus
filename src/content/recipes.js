@@ -247,9 +247,9 @@ function rbShelf(){
 function rbShow(){ hidePanels(); $('recipes').style.display='block'; renderRecipes(); $('screen').scrollTop=0; }
 function openRecipeBooks(){ rbBook=null; rbAt=-1; rbFrom=null; rbLib=true; rbShow(); }
 function openRecipeBook(id){ if($('recipes').style.display!=='block') rbLib=false; rbBook=id; rbAt=-1; rbFrom=null; rbShow(); }
-function openRecipe(i){ var b=rbFind(); if(!b||!b.recipes) return; if(!rbOpen(i)){ openPaywall(''); return; } rbAt=i; renderRecipes(); $('screen').scrollTop=0; }
+function openRecipe(i){ var b=rbFind(); if(!b||!b.recipes) return; if(!rbOpen(i)){ openPaywall(''); return; } rbAt=i; rbServ=1; renderRecipes(); $('screen').scrollTop=0; }
 /* a recipe from a plan or the filter: it opens in its own book, and back returns to where she was */
-function openRecipeIn(bid,i){ if(!rbOpen(i)){ openPaywall(''); return; } rbFrom={b:rbBook}; rbBook=bid; rbAt=i; renderRecipes(); $('screen').scrollTop=0; }
+function openRecipeIn(bid,i){ if(!rbOpen(i)){ openPaywall(''); return; } rbFrom={b:rbBook}; rbBook=bid; rbAt=i; rbServ=1; renderRecipes(); $('screen').scrollTop=0; }
 function rbBack(){
   if(rbAt>=0){ if(rbFrom){ rbBook=rbFrom.b; rbFrom=null; } rbAt=-1; renderRecipes(); $('screen').scrollTop=0; }
   else if(rbBook && rbLib){ rbBook=null; renderRecipes(); $('screen').scrollTop=0; }
@@ -258,10 +258,29 @@ function rbBack(){
 function rbKeep(f){ var y=$('screen').scrollTop; f(); renderRecipes(); $('screen').scrollTop=y; }
 function rbTickIng(k){ rbKeep(function(){ rbTick[k]=!rbTick[k]; }); }
 function rbSetFilt(k){ rbKeep(function(){ rbFilt=k; }); }
-/* she cooked it and ate it: today's diary, with the recipe's own macros */
-function rbLog(r){ logMeal({name:r.n, bm:r.n, kcal:r.k, p:r.p, c:r.c, f:r.f, src:'recipe', img:r.img}); toast('Logged: '+r.n); }
-function rbEat(){ var r=rbRec(rbBook,rbAt); if(r) rbLog(r); }
-function rbQuick(bid,i,ev){ if(ev) ev.stopPropagation(); if(!rbOpen(i)){ openPaywall(''); return; } rbLog(rbRec(bid,i)); }
+/* she cooked it and ate it: today's diary, with the recipe's own macros, for
+   the servings she ate. Logged once a day: the recipe then says Meal logged,
+   and a second tap takes it out again (after Everfit's Log Meal / Unlog; it
+   went into the diary twice before). HF.data.rbAte = {'date:book:index': meal id} */
+var rbServ=1;
+function rbAteKey(bid,i){ return iso(0)+':'+bid+':'+i; }
+function rbAteId(bid,i){ return (HF.data.rbAte||{})[rbAteKey(bid,i)]||''; }
+function rbAteMeal(bid,i){ var id=rbAteId(bid,i); if(!id) return null; var l=HF.data.meals[iso(0)]||[];
+  for(var j=0;j<l.length;j++) if(l[j].id===id) return l[j]; return null; }
+function rbAteIs(bid,i){ return !!rbAteMeal(bid,i); }
+function rbFmtServ(n){ return (n%1?n.toFixed(1):String(n)); }
+function rbSetServ(d){ rbKeep(function(){ rbServ=Math.min(4,Math.max(0.5,rbServ+d*0.5)); }); }
+function rbToggle(bid,i,serv){
+  var r=rbRec(bid,i); if(!r) return; var a=HF.data.rbAte=HF.data.rbAte||{}, k=rbAteKey(bid,i), m=rbAteMeal(bid,i);
+  if(m){ var l=HF.data.meals[iso(0)]||[], j=l.indexOf(m); if(j>=0) l.splice(j,1); delete a[k]; HF.save(); toast('Removed from your log'); return; }
+  var s=serv||1, id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  logMeal({id:id, name:r.n+(s!==1?' ×'+rbFmtServ(s):''), bm:r.n+(s!==1?' ×'+rbFmtServ(s):''), kcal:Math.round(r.k*s), p:Math.round(r.p*s), c:Math.round(r.c*s), f:Math.round(r.f*s),
+    serv:s, src:'recipe', img:r.img});
+  var since=iso(-1); Object.keys(a).forEach(function(x){ if(x.slice(0,10)<since) delete a[x]; });
+  a[k]=id; HF.save(); toast('Logged: '+r.n);
+}
+function rbEat(){ var r=rbRec(rbBook,rbAt); if(!r) return; rbToggle(rbBook,rbAt,rbServ); rbKeep(function(){}); }
+function rbQuick(bid,i,ev){ if(ev) ev.stopPropagation(); if(!rbOpen(i)){ openPaywall(''); return; } rbToggle(bid,i,1); rbKeep(function(){}); }
 
 /* ♥ saved recipes, 'book:index', newest first */
 function rbFavs(){ return HF.data.rbFavs=HF.data.rbFavs||[]; }
@@ -290,7 +309,7 @@ function rbRow(bid,i,label){
     '<span class="mac">P '+r.p+'g · C '+r.c+'g · F '+r.f+'g</span>'+
     '<span class="tg">'+(sv>1&&!label?'<i>'+rbServes(sv)+'</i>':'')+
       rbRowTags(r).filter(function(k){ return k!=='quick'; }).map(function(k){ return '<i class="t-'+k+'">'+rbTagName(k)+'</i>'; }).join('')+'</span></span>'+
-    (open?'<button class="add" aria-label="I ate this" onclick="rbQuick(\''+bid+'\','+i+',event)">'+glyph('plus')+'</button>'
+    (open?'<button class="add'+(rbAteIs(bid,i)?' on':'')+'" aria-label="'+(rbAteIs(bid,i)?'Logged, tap to unlog':'I ate this')+'" onclick="rbQuick(\''+bid+'\','+i+',event)">'+glyph(rbAteIs(bid,i)?'check':'plus')+'</button>'
          :'<span class="go">'+glyph('lock')+'</span>')+'</div>';
 }
 function rbLockCard(){
@@ -349,7 +368,11 @@ function renderRecipes(){
       rbWaBtn([[b.id,rbAt]],'','Send ingredients to WhatsApp')+
       '<div class="rb-sec">Method</div><ol class="rb-steps">'+r.cara.map(function(x){ return '<li>'+hesc(x)+'</li>'; }).join('')+'</ol>'+
       (r.tip?'<div class="rb-tip">'+glyph('spark')+'<div><b>Tip</b><span>'+hesc(r.tip)+'</span></div></div>':'')+
-      '<button class="bigbtn rb-eat" onclick="rbEat()">'+glyph('check')+'I ate this</button>'+
+      (function(){ var lm=rbAteMeal(b.id,rbAt);
+        if(lm) return '<div class="rb-logged">'+glyph('check')+'<div><b>Meal logged</b><span>'+lm.kcal+' kcal in today\'s diary'+(lm.serv&&lm.serv!==1?' · '+rbFmtServ(lm.serv)+' servings':'')+'</span></div>'+
+          '<button onclick="rbEat()">Unlog</button></div>';
+        return '<div class="rb-serv"><span>'+(sv>1?'Plates':'Servings')+'</span><button aria-label="Less" onclick="rbSetServ(-1)">−</button><b>'+rbFmtServ(rbServ)+'</b><button aria-label="More" onclick="rbSetServ(1)">+</button></div>'+
+          '<button class="bigbtn rb-eat" onclick="rbEat()">'+glyph('check')+'I ate this · '+Math.round(r.k*rbServ)+' kcal</button>'; })()+
       '<div class="nfoot" style="text-align:center;">kcal and macros are estimates for '+(sv>1?'one '+(r.pinggan?'plate':'serving'):'the portion')+' as written.</div>'+
       (!rbFrom&&rbAt+1<b.recipes.length?'<button class="authalt" onclick="openRecipe('+(rbAt+1)+')">Next: '+hesc(b.recipes[rbAt+1].n)+' ›</button>':'');
   }

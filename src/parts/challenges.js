@@ -90,7 +90,7 @@ const HF={
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
     body:[],goalKg:null,
     challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{},ifs:{},daily:{},sc:{},quits:[],kelas:{},
-    goalText:'',mpAte:{},myWeek:{},rbFavs:[] }; },
+    goalText:'',mpAte:{},myWeek:{},rbFavs:[],rbAte:{} }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
   apply(o){
@@ -126,6 +126,7 @@ const HF={
       d.mpAte=(o.mpAte&&typeof o.mpAte==='object')?Object.assign({},o.mpAte):{};
       d.myWeek=(o.myWeek&&typeof o.myWeek==='object')?JSON.parse(JSON.stringify(o.myWeek)):{};
       d.rbFavs=Array.isArray(o.rbFavs)?o.rbFavs.slice(0,200):[];
+      d.rbAte=(o.rbAte&&typeof o.rbAte==='object')?Object.assign({},o.rbAte):{};
     }
     this.data=d;
   },

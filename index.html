@@ -8897,6 +8897,51 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .m-scan2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
 .m-scan2 button{display:flex;align-items:center;justify-content:center;gap:7px;height:42px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:inherit;font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
 .m-scan2 .gly{width:17px;height:17px;color:#E30613;}
+/* recipe: servings, and Meal logged / Unlog (25 Oct 2026, after Everfit) */
+.rb-serv{display:flex;align-items:center;gap:10px;margin-top:18px;padding:10px 12px 10px 16px;border-radius:16px;background:var(--surface);}
+.rb-serv span{flex:1;font-size:14.5px;font-weight:700;}
+.rb-serv button{display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:50%;background:var(--surface2);color:inherit;font:inherit;font-size:20px;font-weight:700;cursor:pointer;}
+.rb-serv b{min-width:30px;text-align:center;font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;}
+.rb-serv + .rb-eat{margin-top:10px;}
+.rb-logged{display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px;border-radius:18px;background:color-mix(in srgb,#1F9D55 12%,transparent);}
+.rb-logged > .gly{flex:none;width:30px;height:30px;padding:6px;border-radius:50%;background:#1F9D55;color:#fff;}
+.rb-logged div{flex:1;min-width:0;}
+.rb-logged b{display:block;font-size:15.5px;font-weight:800;color:#17803F;}
+.rb-logged span{display:block;font-size:12.5px;color:var(--dim);}
+.rb-logged button{flex:none;height:36px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:inherit;font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.rb-row .add.on{background:#1F9D55;color:#fff;}
+/* My Week: the day's nutrition, the picker's sources and search, the shopping list (25 Oct 2026) */
+.mw-daycard{display:flex;align-items:center;gap:16px;margin-top:4px;padding:14px 16px;border-radius:20px;background:var(--surface);}
+.mw-daycard .nring{flex:none;}
+.mw-daycard .mbs{flex:1;min-width:0;display:flex;flex-direction:column;gap:9px;}
+.mw-daycard .mb .h{display:flex;justify-content:space-between;font-size:12.5px;color:var(--dim);}
+.mw-daycard .mb .h b{font-size:13.5px;font-weight:800;color:var(--txt);font-variant-numeric:tabular-nums;}
+.mw-daycard .mb .h b i{font-style:normal;font-weight:600;font-size:11.5px;color:var(--dim);}
+.mw-daycard .mb .t{height:6px;margin-top:4px;border-radius:3px;background:var(--surface2);overflow:hidden;}
+.mw-daycard .mb .t i{display:block;height:100%;border-radius:3px;}
+.mw-src{display:flex;gap:6px;padding:0 12px;overflow-x:auto;scrollbar-width:none;}
+.mw-src::-webkit-scrollbar{display:none;}
+.mw-src button{flex:none;height:32px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:inherit;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;}
+.mw-src button.on{background:#E30613;border-color:#E30613;color:#fff;}
+.mw-q{display:flex;align-items:center;gap:8px;margin:8px 12px 8px;padding:0 12px;border-radius:12px;background:var(--surface2);}
+.mw-q .gly{flex:none;width:16px;height:16px;color:var(--dim);}
+.mw-q .inp{flex:1;min-width:0;height:38px;margin:0;padding:0;border:0;background:none;font-size:14.5px;}
+.mw-none{padding:8px 14px 14px;font-size:13px;color:var(--dim);}
+.mw-shopbtn{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:13px 14px;border:0;border-radius:18px;background:var(--surface);color:inherit;font:inherit;text-align:left;cursor:pointer;}
+.mw-shopbtn > .gly{flex:none;width:38px;height:38px;padding:9px;border-radius:12px;background:color-mix(in srgb,#1F9D55 13%,transparent);color:#17803F;}
+.mw-shopbtn span:not(.go){flex:1;min-width:0;}
+.mw-shopbtn b{display:block;font-size:15px;font-weight:800;}
+.mw-shopbtn small{display:block;font-size:12.5px;color:var(--dim);}
+.mw-shopbtn .go{flex:none;font-size:22px;color:var(--dim);}
+.mw-shopsum{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin-top:14px;padding:14px 16px;border-radius:18px;background:var(--surface);}
+.mw-shopsum b{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;}
+.mw-shopsum b i{font-style:normal;font-size:15px;font-weight:700;color:var(--dim);}
+.mw-shopsum span{font-size:13px;color:var(--dim);}
+.mw-shopsum .t{flex-basis:100%;height:6px;border-radius:3px;background:var(--surface2);overflow:hidden;}
+.mw-shopsum .t i{display:block;height:100%;background:#1F9D55;border-radius:3px;}
+.mw-daycard .nring circle,.mw-daycard .nring path{stroke-width:10;}
+.mw-daycard .nring-c b{font-size:21px;letter-spacing:-.5px;}
+.mw-daycard .nring-c span{font-size:10.5px;margin-top:3px;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -21961,9 +22006,9 @@ function rbShelf(){
 function rbShow(){ hidePanels(); $('recipes').style.display='block'; renderRecipes(); $('screen').scrollTop=0; }
 function openRecipeBooks(){ rbBook=null; rbAt=-1; rbFrom=null; rbLib=true; rbShow(); }
 function openRecipeBook(id){ if($('recipes').style.display!=='block') rbLib=false; rbBook=id; rbAt=-1; rbFrom=null; rbShow(); }
-function openRecipe(i){ var b=rbFind(); if(!b||!b.recipes) return; if(!rbOpen(i)){ openPaywall(''); return; } rbAt=i; renderRecipes(); $('screen').scrollTop=0; }
+function openRecipe(i){ var b=rbFind(); if(!b||!b.recipes) return; if(!rbOpen(i)){ openPaywall(''); return; } rbAt=i; rbServ=1; renderRecipes(); $('screen').scrollTop=0; }
 /* a recipe from a plan or the filter: it opens in its own book, and back returns to where she was */
-function openRecipeIn(bid,i){ if(!rbOpen(i)){ openPaywall(''); return; } rbFrom={b:rbBook}; rbBook=bid; rbAt=i; renderRecipes(); $('screen').scrollTop=0; }
+function openRecipeIn(bid,i){ if(!rbOpen(i)){ openPaywall(''); return; } rbFrom={b:rbBook}; rbBook=bid; rbAt=i; rbServ=1; renderRecipes(); $('screen').scrollTop=0; }
 function rbBack(){
   if(rbAt>=0){ if(rbFrom){ rbBook=rbFrom.b; rbFrom=null; } rbAt=-1; renderRecipes(); $('screen').scrollTop=0; }
   else if(rbBook && rbLib){ rbBook=null; renderRecipes(); $('screen').scrollTop=0; }
@@ -21972,10 +22017,29 @@ function rbBack(){
 function rbKeep(f){ var y=$('screen').scrollTop; f(); renderRecipes(); $('screen').scrollTop=y; }
 function rbTickIng(k){ rbKeep(function(){ rbTick[k]=!rbTick[k]; }); }
 function rbSetFilt(k){ rbKeep(function(){ rbFilt=k; }); }
-/* she cooked it and ate it: today's diary, with the recipe's own macros */
-function rbLog(r){ logMeal({name:r.n, bm:r.n, kcal:r.k, p:r.p, c:r.c, f:r.f, src:'recipe', img:r.img}); toast('Logged: '+r.n); }
-function rbEat(){ var r=rbRec(rbBook,rbAt); if(r) rbLog(r); }
-function rbQuick(bid,i,ev){ if(ev) ev.stopPropagation(); if(!rbOpen(i)){ openPaywall(''); return; } rbLog(rbRec(bid,i)); }
+/* she cooked it and ate it: today's diary, with the recipe's own macros, for
+   the servings she ate. Logged once a day: the recipe then says Meal logged,
+   and a second tap takes it out again (after Everfit's Log Meal / Unlog; it
+   went into the diary twice before). HF.data.rbAte = {'date:book:index': meal id} */
+var rbServ=1;
+function rbAteKey(bid,i){ return iso(0)+':'+bid+':'+i; }
+function rbAteId(bid,i){ return (HF.data.rbAte||{})[rbAteKey(bid,i)]||''; }
+function rbAteMeal(bid,i){ var id=rbAteId(bid,i); if(!id) return null; var l=HF.data.meals[iso(0)]||[];
+  for(var j=0;j<l.length;j++) if(l[j].id===id) return l[j]; return null; }
+function rbAteIs(bid,i){ return !!rbAteMeal(bid,i); }
+function rbFmtServ(n){ return (n%1?n.toFixed(1):String(n)); }
+function rbSetServ(d){ rbKeep(function(){ rbServ=Math.min(4,Math.max(0.5,rbServ+d*0.5)); }); }
+function rbToggle(bid,i,serv){
+  var r=rbRec(bid,i); if(!r) return; var a=HF.data.rbAte=HF.data.rbAte||{}, k=rbAteKey(bid,i), m=rbAteMeal(bid,i);
+  if(m){ var l=HF.data.meals[iso(0)]||[], j=l.indexOf(m); if(j>=0) l.splice(j,1); delete a[k]; HF.save(); toast('Removed from your log'); return; }
+  var s=serv||1, id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  logMeal({id:id, name:r.n+(s!==1?' ×'+rbFmtServ(s):''), bm:r.n+(s!==1?' ×'+rbFmtServ(s):''), kcal:Math.round(r.k*s), p:Math.round(r.p*s), c:Math.round(r.c*s), f:Math.round(r.f*s),
+    serv:s, src:'recipe', img:r.img});
+  var since=iso(-1); Object.keys(a).forEach(function(x){ if(x.slice(0,10)<since) delete a[x]; });
+  a[k]=id; HF.save(); toast('Logged: '+r.n);
+}
+function rbEat(){ var r=rbRec(rbBook,rbAt); if(!r) return; rbToggle(rbBook,rbAt,rbServ); rbKeep(function(){}); }
+function rbQuick(bid,i,ev){ if(ev) ev.stopPropagation(); if(!rbOpen(i)){ openPaywall(''); return; } rbToggle(bid,i,1); rbKeep(function(){}); }
 
 /* ♥ saved recipes, 'book:index', newest first */
 function rbFavs(){ return HF.data.rbFavs=HF.data.rbFavs||[]; }
@@ -22004,7 +22068,7 @@ function rbRow(bid,i,label){
     '<span class="mac">P '+r.p+'g · C '+r.c+'g · F '+r.f+'g</span>'+
     '<span class="tg">'+(sv>1&&!label?'<i>'+rbServes(sv)+'</i>':'')+
       rbRowTags(r).filter(function(k){ return k!=='quick'; }).map(function(k){ return '<i class="t-'+k+'">'+rbTagName(k)+'</i>'; }).join('')+'</span></span>'+
-    (open?'<button class="add" aria-label="I ate this" onclick="rbQuick(\''+bid+'\','+i+',event)">'+glyph('plus')+'</button>'
+    (open?'<button class="add'+(rbAteIs(bid,i)?' on':'')+'" aria-label="'+(rbAteIs(bid,i)?'Logged, tap to unlog':'I ate this')+'" onclick="rbQuick(\''+bid+'\','+i+',event)">'+glyph(rbAteIs(bid,i)?'check':'plus')+'</button>'
          :'<span class="go">'+glyph('lock')+'</span>')+'</div>';
 }
 function rbLockCard(){
@@ -22063,7 +22127,11 @@ function renderRecipes(){
       rbWaBtn([[b.id,rbAt]],'','Send ingredients to WhatsApp')+
       '<div class="rb-sec">Method</div><ol class="rb-steps">'+r.cara.map(function(x){ return '<li>'+hesc(x)+'</li>'; }).join('')+'</ol>'+
       (r.tip?'<div class="rb-tip">'+glyph('spark')+'<div><b>Tip</b><span>'+hesc(r.tip)+'</span></div></div>':'')+
-      '<button class="bigbtn rb-eat" onclick="rbEat()">'+glyph('check')+'I ate this</button>'+
+      (function(){ var lm=rbAteMeal(b.id,rbAt);
+        if(lm) return '<div class="rb-logged">'+glyph('check')+'<div><b>Meal logged</b><span>'+lm.kcal+' kcal in today\'s diary'+(lm.serv&&lm.serv!==1?' · '+rbFmtServ(lm.serv)+' servings':'')+'</span></div>'+
+          '<button onclick="rbEat()">Unlog</button></div>';
+        return '<div class="rb-serv"><span>'+(sv>1?'Plates':'Servings')+'</span><button aria-label="Less" onclick="rbSetServ(-1)">−</button><b>'+rbFmtServ(rbServ)+'</b><button aria-label="More" onclick="rbSetServ(1)">+</button></div>'+
+          '<button class="bigbtn rb-eat" onclick="rbEat()">'+glyph('check')+'I ate this · '+Math.round(r.k*rbServ)+' kcal</button>'; })()+
       '<div class="nfoot" style="text-align:center;">kcal and macros are estimates for '+(sv>1?'one '+(r.pinggan?'plate':'serving'):'the portion')+' as written.</div>'+
       (!rbFrom&&rbAt+1<b.recipes.length?'<button class="authalt" onclick="openRecipe('+(rbAt+1)+')">Next: '+hesc(b.recipes[rbAt+1].n)+' ›</button>':'');
   }
@@ -22084,7 +22152,7 @@ var MW_SLOTS=[
   {k:'keluarga',n:'Dinner',    log:'dinner',    share:.30, books:['keluarga','bekal']}
 ];
 var MW_DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-var mwDay=-1, mwPick=null, mwOff=0;  /* the day on screen; the slot whose options are open; this week (0) or next (1) */
+var mwDay=-1, mwPick=null, mwOff=0, mwSrc='', mwQ='', mwShop=false;  /* the day on screen; the slot whose options are open; this week (0) or next (1) */
 
 function mwData(){ var d=HF.data.myWeek=HF.data.myWeek||{}; d.w=d.w||{}; d.ate=d.ate||{}; return d; }
 function mwMon(off){ var d=new Date(weekStartISO()+'T00:00:00'); d.setDate(d.getDate()+7*(off||0)); return localISO(d); }
@@ -22094,7 +22162,7 @@ function mwDate(di){ var d=new Date(mwMon(mwOff)+'T00:00:00'); d.setDate(d.getDa
 function mwCal(){ var n=HF.data.nutrition||{}; return n.cal||1500; }
 function mwRef(s){ if(!s) return null; var x=s.split(':'), r=rbRec(x[0],+x[1]); return r?{b:x[0],i:+x[1],r:r}:null; }
 function mwGet(di,sk,off){ return mwRef((mwWeek(off==null?mwOff:off)[di]||{})[sk]); }
-function mwDayTot(di,skip,off){ var t={k:0,p:0,n:0}; MW_SLOTS.forEach(function(s){ if(s.k===skip) return; var m=mwGet(di,s.k,off); if(m){ t.k+=m.r.k; t.p+=m.r.p; t.n++; } }); return t; }
+function mwDayTot(di,skip,off){ var t={k:0,p:0,c:0,f:0,n:0}; MW_SLOTS.forEach(function(s){ if(s.k===skip) return; var m=mwGet(di,s.k,off); if(m){ t.k+=m.r.k; t.p+=m.r.p; t.c+=m.r.c; t.f+=m.r.f; t.n++; } }); return t; }
 /* what one slot may hold: the target, less the meals already chosen that day,
    less the usual share of the slots still empty */
 function mwRoom(di,sk){ var cal=mwCal(), left=cal;
@@ -22111,7 +22179,17 @@ function mwSet(di,sk,bid,i){
   d.w[k][di][sk]=bid+':'+i; mwPick=null; mwSave(); mwKeep();
 }
 function mwClear(di,sk){ var w=mwWeek(mwOff); if(w[di]) delete w[di][sk]; mwPick=null; mwSave(); mwKeep(); }
-function mwOpenPick(sk){ mwPick=(mwPick===sk)?null:sk; mwKeep(); }
+function mwOpenPick(sk){ mwPick=(mwPick===sk)?null:sk; mwSrc=''; mwQ=''; mwKeep(); }
+/* where the options come from: the meal's own books, her saved recipes, or every book (after Everfit's Replace Meal) */
+function mwSetSrc(v){ mwSrc=v; mwKeep(); }
+/* the search hides the options that do not match, without redrawing, so the keyboard stays up */
+function mwFind(q){ mwQ=String(q||''); var t=mwQ.toLowerCase().trim();
+  Array.prototype.forEach.call(document.querySelectorAll('#mw-body .opt'),function(e){ e.style.display=(!t||(e.getAttribute('data-n')||'').indexOf(t)>=0)?'':'none'; }); }
+function mwOptRefs(s){
+  if(mwSrc==='fav') return (typeof rbFavs==='function'?rbFavs():[]).map(function(k){ var x=k.split(':'); return [x[0],+x[1]]; }).filter(function(x){ return rbRec(x[0],x[1]); });
+  var bs=mwSrc==='all'?rbBooks().map(function(b){ return b.id; }):s.books, out=[];
+  bs.forEach(function(bid){ rbFind(bid).recipes.forEach(function(r,i){ out.push([bid,i]); }); }); return out;
+}
 function mwSetDay(di){ mwDay=di; mwPick=null; mwKeep(); }
 function mwSetWeek(off){ mwOff=off; mwDay=off?0:mwToday(); mwPick=null; mwArm=false; mwKeep(); }
 /* a start: a featured plan's days go into the slots still empty */
@@ -22137,9 +22215,9 @@ function mwEat(sk){
   logMeal({id:id, name:m.r.n, bm:m.r.n, kcal:m.r.k, p:m.r.p, c:m.r.c, f:m.r.f, slot:s.log, src:'recipe', img:m.r.img});
   d.ate[k]=id; mwSave(); mwKeep(); toast('Logged: '+m.r.n);
 }
-function openMyWeek(){ mwOff=0; mwDay=mwToday(); mwPick=null; mwArm=false; hidePanels(); $('myweek').style.display='block'; renderMyWeek(); $('screen').scrollTop=0; }
+function openMyWeek(){ mwShop=false; mwOff=0; mwDay=mwToday(); mwPick=null; mwArm=false; hidePanels(); $('myweek').style.display='block'; renderMyWeek(); $('screen').scrollTop=0; }
 function mwKeep(){ var y=$('screen').scrollTop; renderMyWeek(); $('screen').scrollTop=y; }
-function mwBack(){ eatSeg='plan'; switchTab('eat'); }
+function mwBack(){ if(mwShop){ mwShop=false; renderMyWeek(); $('screen').scrollTop=0; return; } eatSeg='plan'; switchTab('eat'); }
 
 /* ── the card on Eat → Plan ── */
 function mwCard(){
@@ -22153,9 +22231,41 @@ function mwCard(){
 /* a day: on target when all four are chosen and it lands within 10% */
 function mwState(t,cal){ if(!t.n) return 'none'; if(t.k>cal*1.1) return 'over'; if(t.n===4&&t.k>=cal*0.9) return 'on'; return 'part'; }
 
+/* ── the shopping list, in the app (after Everfit's Shopping List): the week's
+   recipes once each, ×2 when chosen twice, every ingredient ticked off as it is
+   bought; kept a week (HF.data.myWeek.shop[monday]), and sent to WhatsApp ── */
+function mwShopRefs(){ var refs=[]; for(var di=0;di<7;di++) MW_SLOTS.forEach(function(s){ var m=mwGet(di,s.k); if(m) refs.push([m.b,m.i]); }); return refs; }
+function mwShopTicks(){ var d=mwData(); d.shop=d.shop||{}; var k=mwMon(mwOff); return d.shop[k]=d.shop[k]||{}; }
+function mwShopList(){
+  var cnt={}, order=[], tk=mwShopTicks(), items=[];
+  mwShopRefs().forEach(function(x){ var k=x[0]+':'+x[1]; if(!cnt[k]){ cnt[k]=0; order.push(x); } cnt[k]++; });
+  var recipes=order.map(function(x){ var b=rbFind(x[0]), r=b.recipes[x[1]], k=x[0]+':'+x[1];
+    var its=r.bahan.map(function(t,j){ var ik=k+':'+j, it={k:ik, t:t, on:!!tk[ik]}; items.push(it); return it; });
+    return {b:b, r:r, n:cnt[k], items:its}; });
+  return {recipes:recipes, items:items};
+}
+function mwOpenShop(){ mwShop=true; renderMyWeek(); $('screen').scrollTop=0; }
+function mwTick(ik){ var tk=mwShopTicks(); if(tk[ik]) delete tk[ik]; else tk[ik]=1; mwSave(); mwKeep(); }
+function mwShopClear(){ var d=mwData(); if(d.shop) delete d.shop[mwMon(mwOff)]; mwSave(); mwKeep(); }
+function renderMwShop(){
+  var sl=mwShopList(), tk=sl.items.filter(function(x){ return x.on; }).length;
+  var h='<button class="back" onclick="mwBack()"><span class="bk-c" aria-hidden="true"></span>My Week</button>'+
+    '<div class="rb-title">Shopping list</div><div class="rb-subt">'+mwDate(0).toLocaleDateString('en-MY',{day:'numeric',month:'short'})+' – '+
+      mwDate(6).toLocaleDateString('en-MY',{day:'numeric',month:'short'})+' · '+sl.recipes.length+' recipes</div>'+
+    '<div class="mw-shopsum"><b>'+tk+'<i> / '+sl.items.length+'</i></b><span>ticked</span><div class="t"><i style="width:'+Math.round(tk/(sl.items.length||1)*100)+'%"></i></div></div>'+
+    rbWaBtn(mwShopRefs(),'My Week '+mwDate(0).toLocaleDateString('en-MY',{day:'numeric',month:'short'}),'Send the list to WhatsApp');
+  sl.recipes.forEach(function(x){
+    h+='<div class="rb-sec">'+hesc(x.r.n)+(x.n>1?' ×'+x.n:'')+(rbSrv(x.b,x.r)>1?' · for '+rbSrv(x.b,x.r):'')+'</div><div class="rb-ings">'+
+      x.items.map(function(it){ return '<button class="rb-ing'+(it.on?' on':'')+'" onclick="mwTick(\''+it.k+'\')"><span class="b">'+(it.on?glyph('check'):'')+'</span><span>'+hesc(it.t)+'</span></button>'; }).join('')+'</div>';
+  });
+  if(tk) h+='<button class="authalt" onclick="mwShopClear()">Untick everything</button>';
+  return h;
+}
+
 /* ── the screen ── */
 function renderMyWeek(){
   var el=$('mw-body'); if(!el) return;
+  if(mwShop){ el.innerHTML=renderMwShop(); return; }
   if(mwDay<0) mwDay=mwToday();
   var cal=mwCal(), wk={k:0,p:0,n:0,days:0}, h='';
   for(var i=0;i<7;i++){ var t=mwDayTot(i); wk.k+=t.k; wk.p+=t.p; wk.n+=t.n; if(t.n) wk.days++; }
@@ -22174,14 +22284,17 @@ function renderMyWeek(){
     '<div class="s">'+(wk.n?(left>=0?'Still to plan'+(mwOff?' next':' this')+' week: <b>'+left.toLocaleString('en-MY')+' kcal</b>':'<b>'+(-left).toLocaleString('en-MY')+' kcal</b> over'+(mwOff?' next':' this')+' week'):'Choose a meal for each slot, or start from a plan below.')+'</div></div>';
   if(wk.n<28) h+='<div class="mw-starts">'+RB_PLANS.slice(0,1).map(function(p){ return '<button onclick="mwFill(\''+p.id+'\')">'+glyph('star')+'Start from '+hesc(p.t)+'</button>'; }).join('')+
     (Object.keys(mwWeek(mwOff-1)).length?'<button onclick="mwCopyLast()">'+glyph('repeat')+(mwOff?'Same as this week':'Same as last week')+'</button>':'')+'</div>';
-  if(wk.n){ var refs=[]; for(var di=0;di<7;di++) MW_SLOTS.forEach(function(s){ var m=mwGet(di,s.k); if(m) refs.push([m.b,m.i]); });
-    h+=rbWaBtn(refs,'My Week '+mwDate(0).toLocaleDateString('en-MY',{day:'numeric',month:'short'}),'Shopping list for '+(mwOff?'next':'this')+' week'); }
+  if(wk.n){ var sl=mwShopList(), tk=sl.items.filter(function(x){ return x.on; }).length;
+    h+='<button class="mw-shopbtn" onclick="mwOpenShop()">'+glyph('bag')+'<span><b>Shopping list</b><small>'+tk+' of '+sl.items.length+' ticked · '+sl.recipes.length+' recipes</small></span><span class="go">›</span></button>'; }
   /* the day */
   var t=mwDayTot(mwDay), st=mwState(t,cal), isToday=!mwOff&&mwDay===mwToday();
-  h+='<div class="mw-dayhd"><div><b>'+mwDate(mwDay).toLocaleDateString('en-MY',{weekday:'long'})+(isToday?' · Today':'')+'</b>'+
-    '<span>'+t.k.toLocaleString('en-MY')+' / '+cal.toLocaleString('en-MY')+' kcal · '+t.p+' g protein</span></div>'+
+  /* the day's nutrition, as Everfit's Daily Nutrition Total: the kcal as a ring, protein, carbs and fat against her targets */
+  var nu=HF.data.nutrition||{}, tg={p:nu.pt||Math.round(cal*.2/4), c:nu.ct||Math.round(cal*.5/4), f:nu.ft||Math.round(cal*.3/9)};
+  var mb=function(l,v,g,col){ return '<div class="mb"><div class="h"><span>'+l+'</span><b>'+v+'<i> / '+g+' g</i></b></div><div class="t"><i style="width:'+Math.min(100,Math.round(v/(g||1)*100))+'%;background:'+col+'"></i></div></div>'; };
+  h+='<div class="mw-dayhd"><div><b>'+mwDate(mwDay).toLocaleDateString('en-MY',{weekday:'long'})+(isToday?' · Today':'')+'</b></div>'+
     '<em class="'+st+'">'+({none:'Empty',part:(cal-t.k>=0?(cal-t.k).toLocaleString('en-MY')+' left':'Over'),on:'On target',over:'Over by '+(t.k-cal).toLocaleString('en-MY')})[st]+'</em></div>'+
-    '<div class="mw-bar"><i class="'+st+'" style="width:'+Math.min(100,Math.round(t.k/cal*100))+'%"></i></div>';
+    '<div class="mw-daycard">'+nRing(Math.round(t.k/cal*100),t.k.toLocaleString('en-MY'),'/ '+cal.toLocaleString('en-MY')+' kcal',108)+
+      '<div class="mbs">'+mb('Protein',t.p,tg.p,'#E30613')+mb('Carbs',t.c,tg.c,'#FFC20E')+mb('Fat',t.f,tg.f,'#A1A1AA')+'</div></div>';
   h+='<div class="mw-slots">'+MW_SLOTS.map(function(s){
     var m=mwGet(mwDay,s.k), room=mwRoom(mwDay,s.k), out='<div class="mw-slot'+(mwPick===s.k?' open':'')+'">';
     if(m){
@@ -22195,13 +22308,18 @@ function renderMyWeek(){
         '<b>Choose '+s.n.toLowerCase()+'</b><span>Room for about '+Math.max(0,Math.round(room/10)*10).toLocaleString('en-MY')+' kcal</span></span></button>';
     }
     if(mwPick===s.k){
+      var refs=mwOptRefs(s);
+      out+='<div class="mw-src">'+[['','For '+s.n.toLowerCase()],['fav','♥ Saved'],['all','All recipes']].map(function(x){
+          return '<button class="'+(mwSrc===x[0]?'on':'')+'" onclick="mwSetSrc(\''+x[0]+'\')">'+x[1]+'</button>'; }).join('')+'</div>'+
+        '<div class="mw-q">'+glyph('compass')+'<input class="inp" placeholder="Search recipes" value="'+hesc(mwQ)+'" oninput="mwFind(this.value)"></div>';
+      if(!refs.length) out+='<div class="mw-none">'+(mwSrc==='fav'?'Nothing saved yet. Tap ♥ on a recipe to keep it here.':'No recipes.')+'</div>';
       out+='<div class="opts">';
-      s.books.forEach(function(bid){ var b=rbFind(bid); b.recipes.forEach(function(r,i){
+      refs.forEach(function(x){ var bid=x[0], i=x[1], r=rbRec(bid,i); (function(){
         var on=!!m&&m.b===bid&&m.i===i, fit=mwFits(mwDay,s.k,r), open=rbOpen(i);
-        out+='<button class="opt'+(on?' on':'')+(fit?'':' dim')+'" onclick="mwSet('+mwDay+',\''+s.k+'\',\''+bid+'\','+i+')">'+
+        out+='<button class="opt'+(on?' on':'')+(fit?'':' dim')+'" data-n="'+hesc(r.n.toLowerCase())+'"'+(mwQ&&r.n.toLowerCase().indexOf(mwQ.toLowerCase().trim())<0?' style="display:none"':'')+' onclick="mwSet('+mwDay+',\''+s.k+'\',\''+bid+'\','+i+')">'+
           '<span class="ph" style="background-image:url(\''+r.img+'\')">'+(on?'<span class="ck">'+glyph('check')+'</span>':'')+(open?'':'<span class="lk">'+glyph('lock')+'</span>')+'</span>'+
           '<b>'+hesc(r.n)+'</b><span class="m">'+r.k+' kcal · P '+r.p+' g</span>'+
-          '<span class="ft '+(fit?'y':'n')+'">'+(fit?'Fits':'Over by '+Math.round(r.k-mwRoom(mwDay,s.k)))+'</span></button>'; }); });
+          '<span class="ft '+(fit?'y':'n')+'">'+(fit?'Fits':'Over by '+Math.round(r.k-mwRoom(mwDay,s.k)))+'</span></button>'; })(); });
       out+='</div>'+(m?'<button class="mw-rm" onclick="mwClear('+mwDay+',\''+s.k+'\')">Remove '+s.n.toLowerCase()+'</button>':'');
     }
     return out+'</div>'; }).join('')+'</div>';
@@ -23722,7 +23840,7 @@ const HF={
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
     body:[],goalKg:null,
     challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{},ifs:{},daily:{},sc:{},quits:[],kelas:{},
-    goalText:'',mpAte:{},myWeek:{},rbFavs:[] }; },
+    goalText:'',mpAte:{},myWeek:{},rbFavs:[],rbAte:{} }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
   apply(o){
@@ -23758,6 +23876,7 @@ const HF={
       d.mpAte=(o.mpAte&&typeof o.mpAte==='object')?Object.assign({},o.mpAte):{};
       d.myWeek=(o.myWeek&&typeof o.myWeek==='object')?JSON.parse(JSON.stringify(o.myWeek)):{};
       d.rbFavs=Array.isArray(o.rbFavs)?o.rbFavs.slice(0,200):[];
+      d.rbAte=(o.rbAte&&typeof o.rbAte==='object')?Object.assign({},o.rbAte):{};
     }
     this.data=d;
   },
