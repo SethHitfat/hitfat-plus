@@ -5,7 +5,7 @@
    goes into the app. Makan Malam Keluarga cooks for four (srv): its kcal is
    her plate, and pinggan says what goes on it. */
 var RB_BOOKS=[
-  {id:'bekal', t:'Bekal Pejabat', s:'Masak malam ni, bawa esok. 10 hidangan tengah hari.', recipes:[
+  {id:'bekal', cover:'/img/recipes/bekal.jpg', t:'Bekal Pejabat', s:'Masak malam ni, bawa esok. 10 hidangan tengah hari.', recipes:[
     {n:'Ayam Masak Kicap', img:'/ladies/img/menu/d11.jpg', min:25, k:500,
      bahan:['Nasi putih, 1 genggam (150 g)','Ayam tanpa kulit, 1 tapak tangan (120 g), potong kecil','1 ulas bawang putih, cincang','¼ biji bawang besar, hiris','1 sudu besar kicap manis','1 sudu kecil kicap masin','1 sudu kecil minyak','3 sudu besar air','Sayur campur (lobak, kobis, kacang buncis), 2 genggam'],
      cara:['Panaskan minyak, tumis bawang putih dan bawang besar hingga wangi.','Masukkan ayam, gaul hingga bertukar warna, lebih kurang 5 minit.','Masukkan kicap manis, kicap masin dan air. Masak api perlahan 8 hingga 10 minit hingga kuah pekat.','Celur sayur dalam air mendidih 2 minit, atau tumis dengan sedikit air.','Isi bekas: nasi, ayam dengan kuah sedikit, sayur.'],
@@ -47,7 +47,7 @@ var RB_BOOKS=[
      cara:['Bakar tempe dan tauhu dalam air fryer 180°C 10 minit, atau goreng dengan sedikit minyak.','Tumis bawang dan cili kisar hingga pecah minyak.','Masukkan air asam jawa, gula dan garam. Masukkan tempe dan tauhu, gaul rata.','Celur sayur.','Hidang dengan nasi.'],
      tip:'Tempe ialah protein yang murah: sesuai untuk bajet.'}
   ]},
-  {id:'sarapan', t:'Sarapan 10 Minit', s:'Pagi yang sibuk, sarapan yang betul. Semua siap dalam 10 minit.', recipes:[
+  {id:'sarapan', cover:'/img/recipes/sarapan.jpg', t:'Sarapan 10 Minit', s:'Pagi yang sibuk, sarapan yang betul. Semua siap dalam 10 minit.', recipes:[
     {n:'Telur Rebus & Roti Mil Penuh', img:'/ladies/img/menu/d01.jpg', min:10, k:350,
      bahan:['2 biji telur','2 keping roti mil penuh','Timun atau tomato, beberapa hiris','Lada sulah dan garam secubit','Teh o kurang manis'],
      cara:['Masukkan telur ke dalam periuk, tuang air hingga tenggelam, didihkan.','Bila mendidih, masak 7 minit untuk kuning yang lembut, 9 minit untuk masak penuh.','Rendam telur dalam air sejuk 1 minit, kemudian kupas.','Bakar roti, susun telur dihiris dengan timun atau tomato, tabur lada dan garam.'],
@@ -85,7 +85,7 @@ var RB_BOOKS=[
      cara:['Lenyek pisang, gaul dengan telur dan oat (atau kisar semua sekali).','Sapu sedikit minyak pada kuali tak melekat, api perlahan.','Tuang 1 sudu besar adunan setiap satu, masak 2 minit hingga berbuih, terbalikkan.','Hidang dengan segelas susu.'],
      tip:'Api perlahan. Pancake tanpa tepung ini mudah hangus.'}
   ]},
-  {id:'keluarga', t:'Makan Malam Keluarga', s:'Satu masakan untuk seisi rumah. Ambil bahagian anda.', srv:4, recipes:[
+  {id:'keluarga', cover:'/img/recipes/keluarga.jpg', t:'Makan Malam Keluarga', s:'Satu masakan untuk seisi rumah. Ambil bahagian anda.', srv:4, recipes:[
     {n:'Asam Pedas Ikan', img:'/ladies/img/menu/d21.jpg', min:30, k:480,
      pinggan:'Nasi 1 genggam, ikan 1 tapak tangan, kuah 2 senduk, bayam 1 genggam',
      bahan:['Ikan pari atau tenggiri, 4 potong (600 g)','5 tangkai cili kering dan 5 biji bawang merah, 2 ulas bawang putih, 2 cm kunyit hidup, kisar','1 sudu besar minyak','2 sudu besar air asam jawa pekat','1 batang serai, ketuk','Bendi, 8 batang','Daun kesum, segenggam','600 ml air','Garam dan sedikit gula','Bayam, 1 ikat, untuk ditumis'],
@@ -137,7 +137,7 @@ var RB_BOOKS=[
      cara:['Tumis bahan kisar dan cili kisar hingga pecah minyak.','Masukkan sos tomato, gula, garam dan air. Didihkan.','Masukkan udang, masak 3 hingga 4 minit hingga merah.','Tumis taugeh dengan bawang putih, 1 minit.'],
      tip:'Udang ialah protein yang tinggi dan rendah lemak. Masak sekejap sahaja supaya tak keras.'}
   ]},
-  {id:'snek', t:'Snek Bawah 200 kcal', s:'Ganti goreng pisang petang. Setiap satu bawah 200 kcal.', recipes:[
+  {id:'snek', cover:'/img/recipes/snek.jpg', t:'Snek Bawah 200 kcal', s:'Ganti goreng pisang petang. Setiap satu bawah 200 kcal.', recipes:[
     {n:'Bubur Kacang Hijau Tanpa Santan', img:'/ladies/img/menu/n31.jpg', min:45, k:150, srv:6,
      bahan:['Kacang hijau, 1 cawan (200 g), direndam 1 jam','1.5 liter air','2 helai daun pandan, simpul','3 sudu besar gula merah atau gula melaka','Garam secubit','2 cm halia, ketuk (pilihan)'],
      cara:['Rebus kacang hijau dengan pandan dan halia 35 hingga 40 minit hingga kembang.','Masukkan gula dan garam, kacau hingga larut.','Ambil separuh mangkuk untuk satu hidangan.'],
