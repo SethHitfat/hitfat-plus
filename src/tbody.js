@@ -3782,6 +3782,36 @@ print("\n── LADIES BURN 30 ──");
   ok("Start Here carries the safety note", html.indexOf('baru bersalin (kurang 6 minggu)')>0 && html.indexOf('caesarean')>0 && html.indexOf('hamil')>0);
   ok("day 1: the check-in first, then the fit test, which may be skipped", d1.indexOf('Body Check-in')>0 && d1.indexOf('Body Check-in')<d1.indexOf('Low-Impact Fit Test') &&
      d1.indexOf('Hips')>0 && d1.indexOf('lbSkipTest(0)')>0);
+  /* her own plan (25 Oct 2026): the questionnaire rebuilds the 30 days */
+  var lb=lbData(); delete lb.me;
+  ok("no answers: the template, as it was", lbDay(3)===LB30_DAYS[3] && (lbTab='plan', renderLB30(), $('pgd-body').innerHTML.indexOf('lbQuizOpen()')>0));
+  var all=function(me){ lb.me=me; me.done=true; var o=[]; for(var i=0;i<30;i++) o.push(lbDayFor(i)); return o; };
+  var names=function(ds){ return ds.reduce(function(a,d){ return a.concat(d.ex); },[]); };
+  var knee=all({level:'baru',pain:['lutut'],mom:'tidak',mins:15,focus:'semua',equip:[]});
+  ok("a sore knee: no squat, lunge or wall sit in 30 days", names(knee).every(function(n){ return LB30_SWAP.lutut.from.indexOf(n)<0; }));
+  ok("...every move filmed, none twice in a day", names(knee).every(lbInDB) && knee.every(function(d){ return d.ex.every(function(n,i){ return d.ex.indexOf(n)===i; }); }));
+  ok("...every day inside her 15 minutes, four moves at least", knee.every(function(d){ return d.k==='test' || (lbMinutes(d)<=15 && d.ex.length>=4); }));
+  ok("a beginner: 30 seconds, two rounds for two weeks, push-ups from the wall", knee[1].dur===30 && knee[8].r===2 && knee[1].ex.indexOf('Wall Push Up')>=0 && knee[21].ex.indexOf('Push Up')<0);
+  var mom=all({level:'pernah',pain:[],mom:'bersalin',clear:true,feed:true,mins:20,focus:'perut',equip:['kerusi']});
+  ok("after a birth: no crunch, sit-up, leg raise or twist", names(mom).every(function(n){ return LB30_SWAP.bersalin.from.indexOf(n)<0; }));
+  ok("her focus takes one day a week", mom.filter(function(d){ return /^Focus: Perut/.test(d.n); }).length===4);
+  ok("feeding a baby: the slow pace and never under 1,500 kcal", (lb.profile={wt:60,ht:155,age:30}, lb.me.wt=60, lb.me.ht=155, lb.me.age=30, lbPace()===0.25 && lbTarget().cal>=1500));
+  var fit=lbFitList(); ok("the fit test keeps five moves, day 1 and day 30 the same", fit.length===5 && lbDay(0).ex.join()===lbDay(29).ex.join());
+  var ten=all({level:'aktif',pain:['tangan','belakang'],mom:'tidak',mins:10,focus:'semua',equip:['botol']});
+  ok("10 minutes, a wrist and a back: inside the time, none of their moves", ten.every(function(d){ return d.k==='test'||lbMinutes(d)<=10; }) &&
+     names(ten).every(function(n){ return LB30_SWAP.tangan.from.indexOf(n)<0 && LB30_SWAP.belakang.from.indexOf(n)<0; }));
+  lbPlay(4); ok("she plays her own day", got.e.map(function(e){ return e.n; }).join()===lbDay(4).ex.join() && got.e.every(function(e){ return e.dur===45; }));
+  /* the questionnaire: a pregnancy stops it, a birth needs the doctor's yes */
+  lbQuizOpen(); lbQuizNext(); lbQPick('level','baru'); lbQPick('pain','tiada',1); lbQuizNext(); lbQPick('mom','hamil');
+  ok("pregnant: no plan is offered", lbQ===3 && $('pgd-body').innerHTML.indexOf('tidak dibina untuk kehamilan')>0 && $('pgd-body').innerHTML.indexOf('lbQuizNext()')<0);
+  lbQPick('mom','bersalin'); ok("after a birth: no next step until the doctor said yes", $('pgd-body').innerHTML.indexOf('lbQuizNext()')<0);
+  lbQTick('clear'); ok("...then there is", $('pgd-body').innerHTML.indexOf('lbQuizNext()')>0);
+  lbQuizNext(); lbQPick('mins',10); lbQPick('focus','punggung'); lbQPick('equip','tiada',1); lbQuizNext();
+  $('lbq-wt').value='70'; $('lbq-ht').value='160'; $('lbq-age').value='35'; lbQBody(); lbQPick('act','duduk'); lbQPick('pace','perlahan');
+  var res=$('pgd-body').innerHTML;
+  ok("her plan's summary says what changed, and only that", res.indexOf('Selepas bersalin')>0 && res.indexOf('Lutut selamat')<0 && res.indexOf('10 minit atau kurang')>0);
+  lbQuizSave(); ok("saved: her plan card, her days", lbMe() && lbMe().act==='duduk' && lbQ===-1 && $('pgd-body').innerHTML.indexOf('lbq-me')>0 && lbDay(1).dur===30);
+  delete lb.me; lb.profile={};
   /* BURN30 is as it was */
   ok("BURN30 is untouched", WL30.hub===true && findProg('wl30')===WL30 && WL30_DAYS.length===30 && WL30.price===39);
   var wbuy=0, keepWB=wlBuy, keepLB=lbBuy; wlBuy=function(){ wbuy++; }; lbBuy=function(){ wbuy+=10; };

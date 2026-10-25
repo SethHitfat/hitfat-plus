@@ -6105,3 +6105,51 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .ac-hero.d6x-hero .acx-k{color:#FFB4A8;}
 .ac-hero.d6x-hero .bigbtn{background:#fff;color:#B8040F;}
 .ac-mod.d6m:not(.open) .ac-eps{display:none;}
+
+/* Ladies Burn 30: her own plan, the questionnaire (25 Oct 2026) */
+.lbq{--lr:#E30613; --lr2:#B8040F; --lbl:rgba(227,6,19,.09); --lbl2:rgba(227,6,19,.16); padding:0 0 40px;}
+.lbq-top{display:flex;align-items:center;gap:12px;padding:10px 0 18px;}
+.lbq-top .pdx-back{position:static;flex:none;}
+.lbq-bar{flex:1;height:6px;border-radius:3px;background:color-mix(in srgb,#E30613 14%,transparent);overflow:hidden;}
+.lbq-bar i{display:block;height:100%;border-radius:3px;background:#E30613;transition:width .3s;}
+.lbq-n{font-size:12px;font-weight:700;color:var(--dim);font-variant-numeric:tabular-nums;}
+.lbq-q{font-size:25px;line-height:1.2;font-weight:800;letter-spacing:-.01em;text-wrap:balance;}
+.lbq-s{margin-top:8px;font-size:14.5px;line-height:1.45;color:var(--dim);}
+.lbq-opts{display:grid;gap:10px;margin:22px 0 18px;}
+.lbq-o{display:flex;align-items:center;gap:14px;width:100%;padding:15px 16px;border-radius:18px;border:1.5px solid var(--line);background:var(--surface);color:inherit;font:inherit;text-align:left;cursor:pointer;}
+.lbq-o .ic{flex:none;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:color-mix(in srgb,#E30613 10%,transparent);color:#E30613;}
+.lbq-o .ic .gly{width:22px;height:22px;}
+.lbq-o .tx{flex:1;min-width:0;}
+.lbq-o b{display:block;font-size:16px;font-weight:750;}
+.lbq-o small{display:block;margin-top:2px;font-size:13px;line-height:1.35;color:var(--dim);}
+.lbq-o .tk{flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--hairline);display:grid;place-items:center;color:#fff;}
+.lbq-o .tk .gly{width:15px;height:15px;}
+.lbq-o.on{border-color:#E30613;background:color-mix(in srgb,#E30613 6%,var(--surface));}
+.lbq-o.on .tk{background:#E30613;border-color:#E30613;}
+.lbq .lbx-go.off{opacity:.4;pointer-events:none;}
+.lbq-body{margin:22px 0 18px;}
+.lbq-ticks{display:grid;gap:10px;margin:0 0 18px;}
+.lbq-ticks .obrow{align-items:flex-start;line-height:1.4;}
+.lbq-hint,.lbq-fine{font-size:13.5px;line-height:1.45;color:var(--dim);text-align:center;margin:6px 8px 14px;}
+.lbq-warn{display:flex;gap:12px;padding:16px;border-radius:16px;background:color-mix(in srgb,#E30613 7%,transparent);font-size:14.5px;line-height:1.5;}
+.lbq-warn .gly{flex:none;width:22px;height:22px;color:#E30613;}
+.lbq-intro,.lbq-res-h{position:relative;height:250px;border-radius:24px;overflow:hidden;background:#3A0B0B center 30%/cover no-repeat;display:flex;align-items:flex-end;}
+.lbq-intro .tx,.lbq-res-h .tx{position:relative;padding:20px;color:#fff;}
+.lbq-intro .k,.lbq-res-h .k{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#FFB4A8;}
+.lbq-intro .t,.lbq-res-h .t{margin-top:6px;font-size:27px;line-height:1.12;font-weight:800;text-wrap:balance;}
+.lbq-p{margin:18px 2px 14px;font-size:15px;line-height:1.5;}
+.lbq-list{display:grid;gap:10px;margin-bottom:22px;}
+.lbq-list div{display:flex;align-items:center;gap:12px;font-size:14.5px;font-weight:650;}
+.lbq-list span,.lbq-lines span{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:color-mix(in srgb,#E30613 10%,transparent);color:#E30613;}
+.lbq-list .gly,.lbq-lines .gly{width:18px;height:18px;}
+.lbq-res{padding-top:14px;}
+.lbq-chips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 4px;}
+.lbq-chips span{padding:6px 11px;border-radius:999px;background:color-mix(in srgb,#E30613 9%,transparent);color:#B8040F;font-size:12.5px;font-weight:750;}
+.lbq-lines{display:grid;gap:12px;margin:16px 0 14px;}
+.lbq-lines div{display:flex;gap:12px;align-items:flex-start;}
+.lbq-lines p{margin:6px 0 0;font-size:14.5px;line-height:1.45;}
+.lbq-me .h{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.lbq-me .h b{display:block;margin-top:2px;font-size:16px;}
+.lbq-me .h button{display:flex;align-items:center;gap:6px;padding:8px 13px;border:0;border-radius:999px;background:color-mix(in srgb,#E30613 9%,transparent);color:#B8040F;font:inherit;font-size:13px;font-weight:750;}
+.lbq-me .h button .gly{width:15px;height:15px;}
+.lbq-me .lbq-chips{margin-bottom:0;}
