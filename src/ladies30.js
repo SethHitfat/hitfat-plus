@@ -1198,21 +1198,44 @@ function lbShopItems(wi){
   }
   return n;
 }
-function lbShopTick(wi,name){ var sh=lbData().shop, k='w'+wi; sh[k]=sh[k]||{}; sh[k][name]=!sh[k][name]; HF.save(); renderLB30(); }
+function lbShopTick(wi,name){ var sh=lbData().shop, k='w'+wi; sh[k]=sh[k]||{}; sh[k][name]=!sh[k][name]; HF.save(); lbShopRe(); }
+/* her own things on the list (25 Oct 2026, Seth: "tak leh ade yang nk add
+   sendiri?"): typed in, a week's list each, ticked and crossed off like the
+   rest, sent to WhatsApp with it. Kept by index, so any text is safe. */
+function lbShopMine(wi){ var sh=lbData().shop, k='x'+wi; sh[k]=sh[k]||[]; return sh[k]; }
+function lbShopRe(){ var s=$('screen'), y=s?s.scrollTop:0; renderLB30(); if(s) s.scrollTop=y; }
+function lbShopAdd(wi){
+  var el=$('lb-shop-in'), v=String(el&&el.value||'').replace(/\s+/g,' ').trim().slice(0,40), mine=lbShopMine(wi);
+  if(!v) return;
+  if(mine.some(function(x){ return x.n.toLowerCase()===v.toLowerCase(); })){ toast('Dah ada dalam senarai'); return; }
+  mine.push({n:v, on:false}); HF.save(); lbShopRe();
+  var again=$('lb-shop-in'); if(again) again.focus();
+}
+function lbShopMineTick(wi,i){ var x=lbShopMine(wi)[i]; if(!x) return; x.on=!x.on; HF.save(); lbShopRe(); }
+function lbShopMineDel(wi,i){ lbShopMine(wi).splice(i,1); HF.save(); lbShopRe(); }
 function lbShopText(wi){
   var n=lbShopItems(wi), t='Senarai belanja Ladies Burn 30 · Week '+(wi+1)+'\n';
   LB30_SHOP_CAT.concat([['Lain-lain']]).forEach(function(c,ci){
     var names=Object.keys(n).filter(function(x){ return ci<LB30_SHOP_CAT.length ? c[3].indexOf(x)>=0 : !LB30_SHOP_CAT.some(function(cc){ return cc[3].indexOf(x)>=0; }); });
     if(names.length) t+='\n'+c[0]+':\n'+names.map(function(x){ return '• '+x; }).join('\n')+'\n';
   });
+  var mine=lbShopMine(wi);
+  if(mine.length) t+='\nBarang saya:\n'+mine.map(function(x){ return '• '+x.n; }).join('\n')+'\n';
   return t;
 }
 function lbShopping(){
   if(lbShopWeek<0) lbShopWeek=lbWeekOf(Math.min(lbNext(),LB30_DAYS.length-1));
-  var wi=lbShopWeek, n=lbShopItems(wi), got=(lbData().shop['w'+wi])||{}, all=Object.keys(n).sort(function(a,b){ return n[b]-n[a]; }), have=all.filter(function(x){ return got[x]; }).length;
-  var h='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Shopping List</div><div class="lbx-ss">Untuk menu seminggu (pilihan 1). Tanda bila dah beli.</div></div></div>';
-  h+='<div class="lbx-card lbx-shop"><div class="lbx-shop-w">'+LB30_WEEKS.map(function(x,i){ return '<button class="'+(i===wi?'on':'')+'" onclick="lbShopWeek='+i+';renderLB30()">Week '+(i+1)+'</button>'; }).join('')+'</div>'+
-    '<div class="lbx-shop-p"><div class="bar"><i style="width:'+(all.length?Math.round(have/all.length*100):0)+'%"></i></div><span>'+have+' / '+all.length+' dibeli</span></div>';
+  var wi=lbShopWeek, n=lbShopItems(wi), got=(lbData().shop['w'+wi])||{}, all=Object.keys(n).sort(function(a,b){ return n[b]-n[a]; }), mine=lbShopMine(wi);
+  var have=all.filter(function(x){ return got[x]; }).length+mine.filter(function(x){ return x.on; }).length, count=all.length+mine.length;
+  var h='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Shopping List</div><div class="lbx-ss">Dari menu minggu ini, dan apa saja yang anda tambah. Tanda bila dah beli.</div></div></div>';
+  h+='<div class="lbx-card lbx-shop"><div class="lbx-shop-w">'+LB30_WEEKS.map(function(x,i){ return '<button class="'+(i===wi?'on':'')+'" onclick="lbShopWeek='+i+';lbShopRe()">Week '+(i+1)+'</button>'; }).join('')+'</div>'+
+    '<div class="lbx-shop-p"><div class="bar"><i style="width:'+(count?Math.round(have/count*100):0)+'%"></i></div><span>'+have+' / '+count+' dibeli</span></div>';
+  /* her own things, first: what she types in */
+  h+='<div class="lbx-shop-c lbx-shop-mine" style="--mc:var(--lr,#C02A7C)"><div class="h"><span class="ic">'+glyph('pencil')+'</span><b>Barang Saya</b><span>'+(mine.length||'')+'</span></div>'+
+    '<form class="lbx-shop-add" onsubmit="event.preventDefault();lbShopAdd('+wi+')"><input id="lb-shop-in" class="inp" maxlength="40" placeholder="Tambah barang, cth. kicap, susu anak" aria-label="Tambah barang">'+
+    '<button type="submit" aria-label="Tambah">'+glyph('plus')+'</button></form>'+
+    mine.map(function(x,i){ return '<div class="lbx-shop-i mine'+(x.on?' on':'')+'" role="button" onclick="lbShopMineTick('+wi+','+i+')"><span class="b">'+(x.on?glyph('check'):'')+'</span>'+
+      '<span class="n">'+hesc(x.n)+'</span><button class="del" aria-label="Buang '+hesc(x.n)+'" onclick="event.stopPropagation();lbShopMineDel('+wi+','+i+')">×</button></div>'; }).join('')+'</div>';
   LB30_SHOP_CAT.concat([['Lain-lain','bag','#6B6B6B']]).forEach(function(c,ci){
     var names=all.filter(function(x){ return ci<LB30_SHOP_CAT.length ? c[3].indexOf(x)>=0 : !LB30_SHOP_CAT.some(function(cc){ return cc[3].indexOf(x)>=0; }); });
     if(!names.length) return;

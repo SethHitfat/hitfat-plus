@@ -3863,6 +3863,15 @@ print("\n── LADIES BURN 30 ──");
   ok("...each dish beside its photograph", ft.indexOf('class="lbx-mo"')>0 && ft.indexOf('lbx-dish sm')>0);
   ok("the meal scan where she sees it: above the tabs, and a Scan on every meal", (lbTab='plan', renderLB30(), $('pgd-body').innerHTML.indexOf('lbx-scanhero')>0) &&
      (ft.match(/lbx-mscan/g)||[]).length===lbSlots().length && ft.indexOf('lbScanGo()')>0);
+  /* her own things on the shopping list */
+  lb.shop={}; lbTab='food'; lbFoodSeg='shop'; lbShopWeek=0; renderLB30();
+  $('lb-shop-in').value='  kicap   manis '; lbShopAdd(0); $('lb-shop-in').value='Kicap manis'; lbShopAdd(0); $('lb-shop-in').value='Susu <b>anak</b>'; lbShopAdd(0);
+  var sh1=$('pgd-body').innerHTML;
+  ok("she adds her own things: trimmed, once each, written safely, counted", lbShopMine(0).length===2 && lbShopMine(0)[0].n==='kicap manis' &&
+     sh1.indexOf('Susu &lt;b&gt;anak&lt;/b&gt;')>0 && sh1.indexOf('Barang Saya')>0 && lbShopText(0).indexOf('• kicap manis')>0);
+  lbShopMineTick(0,0); lbShopMineDel(0,1);
+  ok("...ticks one, crosses one off; another week has its own", lbShopMine(0).length===1 && lbShopMine(0)[0].on && lbShopMine(1).length===0);
+  lb.shop={};
   lbFoodSeg='today';
   delete lb.me.meals; ok("answered before the menu questions: asked them on Nutrition", (lbTab='food', renderLB30(), $('pgd-body').innerHTML.indexOf('lbQuizMenu()')>0));
   delete lb.me; lb.profile={};
