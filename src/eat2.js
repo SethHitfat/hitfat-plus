@@ -588,17 +588,24 @@ function renderManual(){
   const favs=(HF.data.favs||[]).slice(0,8);
   $('man-body').innerHTML=
     '<div style="font-size:17px;font-weight:800;margin-bottom:3px;">Add a meal</div>'+
-    '<div class="sub" style="margin-bottom:14px;">Type it and let AI work it out, or fill it in yourself. A drink? <button class="m-drink" onclick="closeManual();drOpen()">Log a drink</button></div>'+
+    '<div class="sub" style="margin-bottom:6px;">Scan it, type it, or fill it in. A drink? <button class="m-drink" onclick="closeManual();drOpen()">Log a drink</button></div>'+
+    /* the meal first, as every way below logs into it; then the scan, the quickest
+       (25 Oct 2026, Seth: "scan meal sesuai tak letak sini") */
+    '<div class="qh">Meal</div><div class="filters">'+SLOTS.map(s=>
+      '<button class="chip'+(_slot===s.k?' y':'')+'" onclick="setSlot(\''+s.k+'\')">'+glyph(s.e)+' '+s.n+'</button>').join('')+'</div>'+
+    (()=>{ const sa=typeof scanAccess==='function'?scanAccess():null;
+      return '<button class="m-scan" onclick="openScanFor(_slot)"><span class="ic">'+glyph('photo')+'</span>'+
+        '<span class="tx"><b>Scan your plate</b><small>'+(sa&&sa.label?hesc(sa.label):'AI reads it in seconds')+'</small></span><span class="go">›</span></button>'+
+        '<div class="m-scan2"><button onclick="openScanFor(_slot,\'barcode\')">'+glyph('qr')+'Barcode</button>'+
+        '<button onclick="openScanFor(_slot,\'label\')">'+glyph('doc')+'Food label</button></div>'; })()+
     /* type it, and AI works it out (20 Oct 2026, after Simple's "type what you ate") */
-    '<div class="qh">Type what you ate</div>'+
+    '<div class="qh">Or type what you ate</div>'+
     '<div class="m-type"><textarea class="inp" id="m-text" rows="2" maxlength="300" placeholder="e.g. nasi lemak telur + teh tarik kurang manis" oninput="_mText=this.value">'+hesc(_mText)+'</textarea>'+
     '<button class="m-ai" id="m-ai" onclick="typeMeal()">'+glyph('spark')+'Work it out</button></div>'+
     '<div id="m-typed">'+typedHTML()+'</div>'+
 
     (favs.length?'<div class="qh">Quick pick</div><div class="filters">'+favs.map((f,i)=>
       '<button class="chip" onclick="fillFav('+i+')">'+f.name+' · '+f.kcal+'</button>').join('')+'</div>':'')+
-    '<div class="qh">Meal</div><div class="filters">'+SLOTS.map(s=>
-      '<button class="chip'+(_slot===s.k?' y':'')+'" onclick="setSlot(\''+s.k+'\')">'+glyph(s.e)+' '+s.n+'</button>').join('')+'</div>'+
     '<div class="qh">Or fill it in</div>'+
     '<input class="inp" id="m-name" placeholder="What did you eat? e.g. Nasi lemak">'+
     '<input class="inp" id="m-kcal" type="number" inputmode="numeric" placeholder="Calories (kcal)">'+
@@ -681,8 +688,11 @@ function fmtQty(q){ return String(Math.round(q*100)/100); }
 function editScanName(){ _scanEditing=true; renderScanResult(_scanData); setTimeout(()=>{ const i=$('scan-name-in'); if(i){ i.focus(); i.select(); } },50); }
 function saveScanName(){ const i=$('scan-name-in'); const v=i?String(i.value||'').trim().slice(0,80):''; if(v) _scanName=v; _scanEditing=false; renderScanResult(_scanData); }
 
+/* a scan opened from Add a meal goes into the meal she picked there; from anywhere else, the meal of the hour */
+let _scanSlot=null;
+function openScanFor(slot,mode){ closeManual(); openScan(mode||'meal'); _scanSlot=slot; }
 function openScan(mode){
-  _scanData=null; _scanPortion=1; _scanName=''; _scanEditing=false; _scanImg='';
+  _scanSlot=null; _scanData=null; _scanPortion=1; _scanName=''; _scanEditing=false; _scanImg='';
   $('scan').classList.add('on');
   $('scan-sheet').classList.remove('on');
   setScanMode(mode||_scanMode||'meal', true);
@@ -1069,7 +1079,7 @@ function scanToMeal(){
     p:Math.round(Number(d.protein_g||d.protein||0)*k),
     c:Math.round(Number(d.carbs_g||d.carbs||0)*k),
     f:Math.round(Number(d.fat_g||d.fat||0)*k),
-    slot:slotNow(), src:d.kind||'meal',
+    slot:_scanSlot||slotNow(), src:d.kind||'meal',
     comps:(d.breakdown||[]).map(x=>({name:titleCase(x.ingredient||x.name||''),kcal:Math.round((x.calories||0)*k)})) };
 }
 function logScanned(){

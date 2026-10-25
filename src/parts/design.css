@@ -6634,3 +6634,14 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .eweek2 .days .now em{color:#E30613;}
 .eweek2 .days .fut .c{opacity:.45;}
 .eweek2 .s{margin-top:10px;font-size:12.5px;color:var(--dim);}
+/* Add a meal: the scan first (25 Oct 2026) */
+.m-scan{display:flex;align-items:center;gap:13px;width:100%;margin-top:14px;padding:14px 16px;border:0;border-radius:18px;background:linear-gradient(135deg,#E30613,#B5040F);color:#fff;font:inherit;text-align:left;cursor:pointer;box-shadow:0 6px 18px rgba(227,6,19,.25);}
+.m-scan .ic{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.18);}
+.m-scan .ic .gly{width:22px;height:22px;}
+.m-scan .tx{flex:1;min-width:0;}
+.m-scan b{display:block;font-size:17px;font-weight:800;}
+.m-scan small{display:block;margin-top:1px;font-size:12.5px;opacity:.9;}
+.m-scan .go{flex:none;font-size:24px;opacity:.85;}
+.m-scan2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.m-scan2 button{display:flex;align-items:center;justify-content:center;gap:7px;height:42px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:inherit;font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+.m-scan2 .gly{width:17px;height:17px;color:#E30613;}
