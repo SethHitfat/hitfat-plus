@@ -14124,6 +14124,26 @@ var LB30_TIPS=[
   'Rehat dengan baik. Esok hari terakhir.',
   'Hari 30. Rekod badan anda, ulang fit test, dan lihat sejauh mana anda sudah pergi.'
 ];
+/* the notes that name a move, a round count or the longest day hold only
+   for the template; once her plan has changed that day (25 Oct 2026), a note
+   whose subject is not in her day gives way to one that fits any day.
+   gi: [is it still true of her day?, the note instead] */
+var LB30_LUNGE=['Reverse Lunges','Curtsy Lunges','Side Lunges','Walking Lunges','Alternating Lunges'];
+var LB30_TIP_IF={
+  7: [function(d){ return d.r>=3; }, 'Minggu kedua bermula. Rehat bila pemasa kata, bukan sebelum.'],
+  9: [function(d){ return lbHasMove(d,['Mountain Climber']); }, 'Gerak berterusan tanpa lompat. Senyap, tetapi bertenaga.'],
+  11:[function(d){ return lbHasMove(d,['Knee Push Ups']); }, 'Bentuk dahulu, laju kemudian. Turun perlahan, naik dengan kuat.'],
+  15:[function(d){ return lbHasMove(d,LB30_LUNGE.concat(['Single Leg Glutes Bridge','Single Leg Calf Raises'])); }, 'Gerakan yang perlahan dan terkawal lebih berkesan daripada yang laju.'],
+  16:[function(d){ return lbHasMove(d,['Russian Twist','Bicycle Crunch']); }, 'Teras hari ini. Tarik pusat ke arah tulang belakang, dan terus bernafas.'],
+  19:[function(d){ return lbHasMove(d,['Hip Thrust','Single Leg Glutes Bridge','Chair Glute Bridge','Bottle Hip Thrust','Towel Glute Bridge']); }, 'Rasa otot yang bekerja di setiap ulangan. Turun perlahan.'],
+  21:[function(d){ return lbHasMove(d,['Push Up']); }, 'Minggu terakhir. Buat setiap ulangan dengan bentuk terbaik anda.'],
+  23:[function(d){ return lbHasMove(d,LB30_LUNGE); }, 'Tahan sekejap di bahagian paling susah setiap gerakan. Di situ otot paling bekerja.'],
+  27:[function(d){ var m=0; for(var i=0;i<LB30_DAYS.length;i++) if(LB30_DAYS[i].k==='work') m=Math.max(m,lbMinutes(lbDay(i))); return lbMinutes(d)>=m; },
+      'Satu sesi penuh lagi sebelum hari terakhir. Habiskan dengan kuat.']
+};
+function lbHasMove(d,names){ return d.ex.some(function(n){ return names.indexOf(n)>=0; }); }
+/* the coach's note for her day */
+function lbTip(gi){ var c=LB30_TIP_IF[gi]; return c && lbMe() && !c[0](lbDay(gi)) ? c[1] : LB30_TIPS[gi]; }
 
 /* ── the daily checklist: walking and water climb through the month ── */
 var LB30_STEPS=[4000,4000,4200,4500,4500,5000,5000,5500,5500,6000,6000,6000,6500,6500,6500,
@@ -14871,7 +14891,7 @@ function lbOpenDay(gi){
          '<button class="lbx-ghost" onclick="lbComplete('+gi+')">'+glyph('check')+'Mark done without playing</button>';
     }
   }
-  h+='<div class="lbx-note"><div class="q">“</div><div><div class="k">Coach&rsquo;s note</div><div class="t">'+LB30_TIPS[gi]+'</div></div></div>';
+  h+='<div class="lbx-note"><div class="q">“</div><div><div class="k">Coach&rsquo;s note</div><div class="t">'+lbTip(gi)+'</div></div></div>';
   if(d.k==='recover') h+='<div class="lbx-note leaf"><div class="q">'+glyph('leaf')+'</div><div><div class="k">Recovery day</div>'+
     '<div class="t">Bergerak perlahan dan bernafas. Hari ini badan anda menjadi lebih kuat.</div></div></div>';
   h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">In This Workout</div><div class="lbx-ss">Tap a move to watch it.</div></div></div>'+

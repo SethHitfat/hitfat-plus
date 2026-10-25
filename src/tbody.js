@@ -3800,6 +3800,12 @@ print("\n── LADIES BURN 30 ──");
   var ten=all({level:'aktif',pain:['tangan','belakang'],mom:'tidak',mins:10,focus:'semua',equip:['botol']});
   ok("10 minutes, a wrist and a back: inside the time, none of their moves", ten.every(function(d){ return d.k==='test'||lbMinutes(d)<=10; }) &&
      names(ten).every(function(n){ return LB30_SWAP.tangan.from.indexOf(n)<0 && LB30_SWAP.belakang.from.indexOf(n)<0; }));
+  ok("a wrist and a back: no note names a push-up or a twist; her lunges keep theirs", lbTip(11)!==LB30_TIPS[11] && lbTip(21)!==LB30_TIPS[21] && lbTip(23)===LB30_TIPS[23] && lbTip(16)!==LB30_TIPS[16] && lbTip(0)===LB30_TIPS[0]);
+  lb.me={done:true,level:'aktif',pain:[],mom:'tidak',mins:20,focus:'semua',equip:[]};
+  ok("...and keep the template's when her day still has it", [7,11,15,16,19,21,23].every(function(g){ return lbTip(g)===LB30_TIPS[g]; }));
+  lb.me={done:true,level:'baru',pain:['lutut'],mom:'tidak',mins:15,focus:'semua',equip:[]};
+  ok("a beginner with a sore knee: week 2 at two rounds, no lunges, no full push-ups, so neither are mentioned", lbTip(7)!==LB30_TIPS[7] && lbTip(23)!==LB30_TIPS[23] && lbTip(21)!==LB30_TIPS[21]);
+  all({level:'aktif',pain:['tangan','belakang'],mom:'tidak',mins:10,focus:'semua',equip:['botol']});
   lbPlay(4); ok("she plays her own day", got.e.map(function(e){ return e.n; }).join()===lbDay(4).ex.join() && got.e.every(function(e){ return e.dur===45; }));
   /* the questionnaire: a pregnancy stops it, a birth needs the doctor's yes */
   lbQuizOpen(); lbQuizNext(); lbQPick('level','baru'); lbQPick('pain','tiada',1); lbQuizNext(); lbQPick('mom','hamil');
