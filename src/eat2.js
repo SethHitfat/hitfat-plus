@@ -387,6 +387,7 @@ function eatPlan(){
      '<div class="emp-src">MDG 2020 · CPG MOH 2023</div></div>';
 
   /* recipe books (25 Oct 2026, after Everfit's on-demand recipe books) */
+  if(typeof mwCard==='function') h+=mwCard();
   if(typeof rbShelf==='function') h+=rbShelf();
 
   if(mpl.length){

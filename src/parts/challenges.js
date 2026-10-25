@@ -89,7 +89,8 @@ const HF={
     weight:[],meals:{},burn:{},favs:[],custom:null,nutrition:{},scanQuota:{used:0,month:''},owned:{},purchases:[],
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
     body:[],goalKg:null,
-    challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{},ifs:{},daily:{},sc:{},quits:[],kelas:{} }; },
+    challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{},ifs:{},daily:{},sc:{},quits:[],kelas:{},
+    goalText:'',mpAte:{},myWeek:{} }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
   apply(o){
@@ -120,6 +121,10 @@ const HF={
       d.quits=Array.isArray(o.quits)?o.quits.slice(-60):[];
       /* HITFAT Class: the personal records a class member logs */
       d.kelas=(o.kelas&&typeof o.kelas==='object')?JSON.parse(JSON.stringify(o.kelas)):{};
+      /* Eat: her goal in her own words, the plan meals she ate, and My Week */
+      d.goalText=typeof o.goalText==='string'?o.goalText.slice(0,60):'';
+      d.mpAte=(o.mpAte&&typeof o.mpAte==='object')?Object.assign({},o.mpAte):{};
+      d.myWeek=(o.myWeek&&typeof o.myWeek==='object')?JSON.parse(JSON.stringify(o.myWeek)):{};
     }
     this.data=d;
   },
@@ -177,7 +182,7 @@ function daysThisWeek(){ const ws=weekStartISO(), seen={};
 function doneToday(){ const t=iso(0); return Object.values(HF.data.sessions).some(s=>sessionISO(s)===t); }
 
 /* ── PANELS — never hand-write a hide list ── */
-const PANELS=['home','train','eat','progress','me','progdetail','daydetail','library','mealplan','store','monthly','club','t42','aicoach','academy','d6c','ifp','kelas','recipes'];
+const PANELS=['home','train','eat','progress','me','progdetail','daydetail','library','mealplan','store','monthly','club','t42','aicoach','academy','d6c','ifp','kelas','recipes','myweek'];
 function hidePanels(){ if(typeof lbLang==='function') lbLang(false); PANELS.forEach(id=>{ const e=$(id); if(e) e.style.display='none'; }); }
 let curTab='home';
 function switchTab(tab){
