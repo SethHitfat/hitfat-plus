@@ -103,6 +103,8 @@ function renderMyWeek(){
     '<div class="s">'+(wk.n?(left>=0?'Still to plan'+(mwOff?' next':' this')+' week: <b>'+left.toLocaleString('en-MY')+' kcal</b>':'<b>'+(-left).toLocaleString('en-MY')+' kcal</b> over'+(mwOff?' next':' this')+' week'):'Choose a meal for each slot, or start from a plan below.')+'</div></div>';
   if(wk.n<28) h+='<div class="mw-starts">'+RB_PLANS.slice(0,1).map(function(p){ return '<button onclick="mwFill(\''+p.id+'\')">'+glyph('star')+'Start from '+hesc(p.t)+'</button>'; }).join('')+
     (Object.keys(mwWeek(mwOff-1)).length?'<button onclick="mwCopyLast()">'+glyph('repeat')+(mwOff?'Same as this week':'Same as last week')+'</button>':'')+'</div>';
+  if(wk.n){ var refs=[]; for(var di=0;di<7;di++) MW_SLOTS.forEach(function(s){ var m=mwGet(di,s.k); if(m) refs.push([m.b,m.i]); });
+    h+=rbWaBtn(refs,'My Week '+mwDate(0).toLocaleDateString('en-MY',{day:'numeric',month:'short'}),'Shopping list for '+(mwOff?'next':'this')+' week'); }
   /* the day */
   var t=mwDayTot(mwDay), st=mwState(t,cal), isToday=!mwOff&&mwDay===mwToday();
   h+='<div class="mw-dayhd"><div><b>'+mwDate(mwDay).toLocaleDateString('en-MY',{weekday:'long'})+(isToday?' · Today':'')+'</b>'+

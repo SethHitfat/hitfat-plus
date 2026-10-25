@@ -187,7 +187,7 @@ var RB_BOOKS=[
    when a recipe changes. */
 var RB_SLOT={sarapan:'Breakfast', bekal:'Lunch', snek:'Snack', keluarga:'Dinner'};
 var RB_PLANS=[
-  {id:'turun7', t:'7 Hari Turun Berat', s:'Empat hidangan sehari, siap disusun.', cover:'/ladies/img/menu/d12.jpg',
+  {id:'turun7', t:'7 Hari Turun Berat', s:'Empat hidangan sehari, siap disusun.', cover:'/img/recipes/turun7.jpg',
    d:'Tujuh hari menu lengkap: sarapan, bekal, snek dan makan malam, lebih kurang 1,400 kcal sehari. Ikut sukatan setiap resipi.',
    days:[[['sarapan',1],['bekal',1],['snek',1],['keluarga',3]],
          [['sarapan',0],['bekal',2],['snek',5],['keluarga',1]],
@@ -196,7 +196,7 @@ var RB_PLANS=[
          [['sarapan',2],['bekal',3],['snek',7],['keluarga',2]],
          [['sarapan',4],['bekal',9],['snek',9],['keluarga',9]],
          [['sarapan',8],['bekal',8],['snek',3],['keluarga',8]]]},
-  {id:'protein3', t:'3 Hari Protein Tinggi', s:'Ayam, ikan dan telur setiap hidangan.', cover:'/ladies/img/menu/d23.jpg',
+  {id:'protein3', t:'3 Hari Protein Tinggi', s:'Ayam, ikan dan telur setiap hidangan.', cover:'/img/recipes/protein3.jpg',
    d:'Tiga hari menu dengan protein dalam setiap hidangan, sekitar 90 hingga 105 g sehari. Sesuai bila anda berlatih kekuatan.',
    days:[[['sarapan',7],['bekal',8],['snek',9],['keluarga',1]],
          [['sarapan',0],['bekal',0],['snek',4],['keluarga',2]],
@@ -263,13 +263,33 @@ function rbLog(r){ logMeal({name:r.n, bm:r.n, kcal:r.k, p:r.p, c:r.c, f:r.f, src
 function rbEat(){ var r=rbRec(rbBook,rbAt); if(r) rbLog(r); }
 function rbQuick(bid,i,ev){ if(ev) ev.stopPropagation(); if(!rbOpen(i)){ openPaywall(''); return; } rbLog(rbRec(bid,i)); }
 
+/* ♥ saved recipes, 'book:index', newest first */
+function rbFavs(){ return HF.data.rbFavs=HF.data.rbFavs||[]; }
+function rbIsFav(bid,i){ return rbFavs().indexOf(bid+':'+i)>=0; }
+function rbFav(){ var k=rbBook+':'+rbAt, f=rbFavs(), j=f.indexOf(k);
+  if(j>=0){ f.splice(j,1); toast('Removed from Saved'); } else { f.unshift(k); toast('Saved to your recipes'); }
+  HF.save(); rbKeep(function(){}); }
+/* the shopping list goes to WhatsApp: each recipe's ingredients under its name,
+   a recipe chosen twice said once with ×2; a family pot says how many it feeds */
+function rbShopLines(b,r,n){ return ['*'+r.n+'*'+(n>1?' ×'+n:'')+(rbSrv(b,r)>1?' (untuk '+rbSrv(b,r)+' orang)':'')].concat(r.bahan.map(function(x){ return '• '+x; })); }
+function rbShopText(refs,title){
+  var cnt={}, order=[];
+  refs.forEach(function(x){ var k=x[0]+':'+x[1]; if(!cnt[k]){ cnt[k]=0; order.push(x); } cnt[k]++; });
+  return 'Senarai beli-belah'+(title?': '+title:'')+' (HITFAT+)\n\n'+order.map(function(x){ var b=rbFind(x[0]);
+    return rbShopLines(b,b.recipes[x[1]],cnt[x[0]+':'+x[1]]).join('\n'); }).join('\n\n');
+}
+function rbWaBtn(refs,title,label){
+  return '<a class="rb-wa" href="https://wa.me/?text='+encodeURIComponent(rbShopText(refs,title))+'" target="_blank" rel="noopener">'+glyph('share')+label+'</a>';
+}
 function rbRow(bid,i,label){
   var b=rbFind(bid), r=b.recipes[i], sv=rbSrv(b,r), open=rbOpen(i);
   var go=(bid===rbBook&&!label)?'openRecipe('+i+')':'openRecipeIn(\''+bid+'\','+i+')';
   return '<div class="rb-row" role="button" tabindex="0" onclick="'+go+'"><span class="ph" style="background-image:url(\''+r.img+'\')"></span>'+
     '<span class="tx">'+(label?'<small>'+hesc(label)+'</small>':'')+'<b>'+hesc(r.n)+'</b>'+
-    '<span class="m">'+r.min+' min · '+r.k+' kcal'+rbPer(b,r)+(sv>1&&!label?' · '+rbServes(sv):'')+'</span>'+
-    '<span class="tg">'+rbRowTags(r).map(function(k){ return '<i class="t-'+k+'">'+rbTagName(k)+'</i>'; }).join('')+'</span></span>'+
+    '<span class="m"><em>'+r.k+'</em> kcal'+rbPer(b,r)+' · '+r.min+' min</span>'+
+    '<span class="mac">P '+r.p+'g · C '+r.c+'g · F '+r.f+'g</span>'+
+    '<span class="tg">'+(sv>1&&!label?'<i>'+rbServes(sv)+'</i>':'')+
+      rbRowTags(r).filter(function(k){ return k!=='quick'; }).map(function(k){ return '<i class="t-'+k+'">'+rbTagName(k)+'</i>'; }).join('')+'</span></span>'+
     (open?'<button class="add" aria-label="I ate this" onclick="rbQuick(\''+bid+'\','+i+',event)">'+glyph('plus')+'</button>'
          :'<span class="go">'+glyph('lock')+'</span>')+'</div>';
 }
@@ -289,6 +309,8 @@ function rbLibrary(){
       '<b>'+hesc(p.t)+'</b><em>'+hesc(p.s)+'</em></span></button>'; }).join('')+'</div>';
   h+='<div class="rb-filt">'+[['','All']].concat(RB_TAGS).map(function(t){
     return '<button class="'+(rbFilt===t[0]?'on':'')+'" onclick="rbSetFilt(\''+t[0]+'\')">'+t[1]+'</button>'; }).join('')+'</div>';
+  var fv=rbFavs().map(function(k){ var x=k.split(':'); return {b:x[0],i:+x[1]}; }).filter(function(x){ return rbRec(x.b,x.i); });
+  if(!rbFilt && fv.length) h+='<div class="rb-sec">'+glyph('heart')+'Saved · '+fv.length+'</div><div class="rb-list">'+fv.map(function(x){ return rbRow(x.b,x.i,rbFind(x.b).t); }).join('')+'</div>';
   if(!rbFilt) h+='<div class="rb-sec">All Recipe Books</div><div class="rb-grid">'+rbBooks().map(rbTile).join('')+'</div>';
   else {
     var rows=[]; rbBooks().forEach(function(b){ b.recipes.forEach(function(r,i){ if(rbTags(r).indexOf(rbFilt)>=0) rows.push(rbRow(b.id,i,b.t)); }); });
@@ -304,6 +326,8 @@ function renderRecipes(){
   var h='<button class="back" onclick="rbBack()"><span class="bk-c" aria-hidden="true"></span>'+hesc(backTo)+'</button>';
   if(b.days){
     h+=rbHero(b,'Meal plan · '+b.days.length+' days');
+    if(typeof contentOpen==='function'&&contentOpen()){ var refs=[]; b.days.forEach(function(d){ d.forEach(function(x){ refs.push(x); }); });
+      h+=rbWaBtn(refs,b.t,'Shopping list for '+b.days.length+' days'); }
     b.days.forEach(function(day,di){ var t=rbDay(day);
       h+='<div class="rb-dayhd"><b>Day '+(di+1)+'</b><span>'+t.k.toLocaleString('en-MY')+' kcal · '+t.p+' g protein</span></div>'+
         '<div class="rb-list">'+day.map(function(x){ return rbRow(x[0],x[1],RB_SLOT[x[0]]); }).join('')+'</div>'; });
@@ -313,7 +337,8 @@ function renderRecipes(){
     h+='<div class="rb-list">'+b.recipes.map(function(r,i){ return rbRow(b.id,i); }).join('')+'</div>'+rbLockCard();
   } else {
     var r=b.recipes[rbAt], sv=rbSrv(b,r);
-    h+='<div class="rb-photo" style="background-image:url(\''+r.img+'\')"></div>'+
+    var fav=rbIsFav(b.id,rbAt);
+    h+='<div class="rb-photo" style="background-image:url(\''+r.img+'\')"><button class="rb-heart'+(fav?' on':'')+'" aria-label="'+(fav?'Remove from Saved':'Save recipe')+'" onclick="rbFav()">'+glyph('heart')+'</button></div>'+
       '<div class="rb-head"><b>'+hesc(r.n)+'</b><div class="chips"><span>'+glyph('clock')+r.min+' min</span><span>'+glyph(sv>1?'people':'person')+rbServes(sv)+'</span></div></div>'+
       '<div class="rb-mac">'+[[r.k,'kcal'+rbPer(b,r)],[r.p+' g','Protein'],[r.c+' g','Carbs'],[r.f+' g','Fat']].map(function(x,i){
         return '<div class="m'+i+'"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'; }).join('')+'</div>'+
@@ -321,6 +346,7 @@ function renderRecipes(){
       (r.pinggan?'<div class="rb-plate">'+glyph('food')+'<div><b>Your plate</b><span>'+hesc(r.pinggan)+'</span></div></div>':'')+
       '<div class="rb-sec">Ingredients</div><div class="rb-ings">'+r.bahan.map(function(x,i){ var k=b.id+':'+rbAt+':'+i, on=!!rbTick[k];
         return '<button class="rb-ing'+(on?' on':'')+'" onclick="rbTickIng(\''+k+'\')"><span class="b">'+(on?glyph('check'):'')+'</span><span>'+hesc(x)+'</span></button>'; }).join('')+'</div>'+
+      rbWaBtn([[b.id,rbAt]],'','Send ingredients to WhatsApp')+
       '<div class="rb-sec">Method</div><ol class="rb-steps">'+r.cara.map(function(x){ return '<li>'+hesc(x)+'</li>'; }).join('')+'</ol>'+
       (r.tip?'<div class="rb-tip">'+glyph('spark')+'<div><b>Tip</b><span>'+hesc(r.tip)+'</span></div></div>':'')+
       '<button class="bigbtn rb-eat" onclick="rbEat()">'+glyph('check')+'I ate this</button>'+
