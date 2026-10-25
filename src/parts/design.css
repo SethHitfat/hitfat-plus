@@ -6278,3 +6278,34 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 /* her pages open on the magenta cover: she stands on the right, the words sit on magenta */
 .lbx-hero.cover,.lbq-intro.cover,.lbq-res-h.cover{background-color:#B5196E;background-position:78% 30%;}
 .lbx-hero.cover .lbx-hero-ov,.lbq-intro.cover .lbx-hero-ov,.lbq-res-h.cover .lbx-hero-ov{background:linear-gradient(180deg,rgba(80,6,52,.30) 0%,rgba(80,6,52,0) 24%,rgba(80,6,52,0) 48%,rgba(70,6,46,.88) 100%);}
+
+/* Ladies Burn 30, today's checklist as one card (25 Oct 2026) */
+.lbx-cl{padding:4px 14px;}
+.lbx-cr{display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;}
+.lbx-cr + .lbx-cr{border-top:1px solid var(--line);}
+.lbx-cr .ck{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;border:2px solid color-mix(in srgb,var(--lr,#C02A7C) 30%,transparent);color:var(--lr,#C02A7C);box-sizing:border-box;}
+.lbx-cr .ck .gly{width:15px;height:15px;}
+.lbx-cr .ck.on{background:var(--lr,#C02A7C);border-color:var(--lr,#C02A7C);color:#fff;}
+.lbx-cr .tx{flex:1;min-width:0;}
+.lbx-cr .tx b{display:block;font-size:15px;font-weight:750;line-height:1.3;}
+.lbx-cr .tx b.w{font-weight:600;font-size:14.5px;}
+.lbx-cr .tx b em{font-style:normal;font-size:12.5px;font-weight:600;color:var(--dim);}
+.lbx-cr .tx > span{display:block;margin-top:1px;font-size:12.5px;color:var(--dim);}
+.lbx-cr .tx .k{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--lr,#C02A7C);margin:0 0 1px;}
+.lbx-cr.on .tx b{opacity:.55;}
+.lbx-cr .bar{height:5px;margin-top:7px;border-radius:5px;background:color-mix(in srgb,var(--lr,#C02A7C) 12%,transparent);overflow:hidden;}
+.lbx-cr .bar i{display:block;height:100%;border-radius:5px;background:var(--lr,#C02A7C);transition:width .4s;}
+.lbx-cr .pm{flex:none;display:flex;gap:6px;}
+.lbx-cr .pm button{width:34px;height:34px;border:0;border-radius:11px;background:color-mix(in srgb,var(--lr,#C02A7C) 10%,transparent);color:var(--lr,#C02A7C);font-size:19px;font-weight:700;cursor:pointer;}
+/* her plan card, smaller: one line, one row of chips that scrolls */
+.lbq-me{padding:14px 16px;}
+.lbq-me .h{gap:10px;}
+.lbq-me .h .ic{flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--lr,#C02A7C) 10%,transparent);color:var(--lr,#C02A7C);}
+.lbq-me .h .ic .gly{width:18px;height:18px;}
+.lbq-me .h .tt{flex:1;min-width:0;}
+.lbq-me .h .tt b{font-size:15px;margin-top:0;}
+.lbq-chips.row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:10px -16px 0;padding:0 16px;}
+.lbq-chips.row::-webkit-scrollbar{display:none;}
+.lbq-chips.row span{flex:none;}
+/* the weeks: the chosen one in her magenta */
+.lbx-weeks button.on{background:var(--lr,#C02A7C);color:#fff;}

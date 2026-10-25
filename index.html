@@ -8531,6 +8531,37 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .lbx-hero.cover,.lbq-intro.cover,.lbq-res-h.cover{background-color:#B5196E;background-position:78% 30%;}
 .lbx-hero.cover .lbx-hero-ov,.lbq-intro.cover .lbx-hero-ov,.lbq-res-h.cover .lbx-hero-ov{background:linear-gradient(180deg,rgba(80,6,52,.30) 0%,rgba(80,6,52,0) 24%,rgba(80,6,52,0) 48%,rgba(70,6,46,.88) 100%);}
 
+/* Ladies Burn 30, today's checklist as one card (25 Oct 2026) */
+.lbx-cl{padding:4px 14px;}
+.lbx-cr{display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;}
+.lbx-cr + .lbx-cr{border-top:1px solid var(--line);}
+.lbx-cr .ck{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;border:2px solid color-mix(in srgb,var(--lr,#C02A7C) 30%,transparent);color:var(--lr,#C02A7C);box-sizing:border-box;}
+.lbx-cr .ck .gly{width:15px;height:15px;}
+.lbx-cr .ck.on{background:var(--lr,#C02A7C);border-color:var(--lr,#C02A7C);color:#fff;}
+.lbx-cr .tx{flex:1;min-width:0;}
+.lbx-cr .tx b{display:block;font-size:15px;font-weight:750;line-height:1.3;}
+.lbx-cr .tx b.w{font-weight:600;font-size:14.5px;}
+.lbx-cr .tx b em{font-style:normal;font-size:12.5px;font-weight:600;color:var(--dim);}
+.lbx-cr .tx > span{display:block;margin-top:1px;font-size:12.5px;color:var(--dim);}
+.lbx-cr .tx .k{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--lr,#C02A7C);margin:0 0 1px;}
+.lbx-cr.on .tx b{opacity:.55;}
+.lbx-cr .bar{height:5px;margin-top:7px;border-radius:5px;background:color-mix(in srgb,var(--lr,#C02A7C) 12%,transparent);overflow:hidden;}
+.lbx-cr .bar i{display:block;height:100%;border-radius:5px;background:var(--lr,#C02A7C);transition:width .4s;}
+.lbx-cr .pm{flex:none;display:flex;gap:6px;}
+.lbx-cr .pm button{width:34px;height:34px;border:0;border-radius:11px;background:color-mix(in srgb,var(--lr,#C02A7C) 10%,transparent);color:var(--lr,#C02A7C);font-size:19px;font-weight:700;cursor:pointer;}
+/* her plan card, smaller: one line, one row of chips that scrolls */
+.lbq-me{padding:14px 16px;}
+.lbq-me .h{gap:10px;}
+.lbq-me .h .ic{flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--lr,#C02A7C) 10%,transparent);color:var(--lr,#C02A7C);}
+.lbq-me .h .ic .gly{width:18px;height:18px;}
+.lbq-me .h .tt{flex:1;min-width:0;}
+.lbq-me .h .tt b{font-size:15px;margin-top:0;}
+.lbq-chips.row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:10px -16px 0;padding:0 16px;}
+.lbq-chips.row::-webkit-scrollbar{display:none;}
+.lbq-chips.row span{flex:none;}
+/* the weeks: the chosen one in her magenta */
+.lbx-weeks button.on{background:var(--lr,#C02A7C);color:#fff;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -14851,9 +14882,9 @@ function lbMeCard(){
   if(me.mom==='bersalin') tags.push('Selepas bersalin');
   if(LB30_FOCUS[me.focus]) tags.push(LB30_FOCUS[me.focus][0]);
   if(LB30_MEALS[me.meals]) tags.push(me.meals+'× makan sehari');
-  return '<div class="lbx-card lbq-me"><div class="h"><div><div class="lbx-k">Your plan</div><b>Dibina dari jawapan anda</b></div>'+
+  return '<div class="lbx-card lbq-me"><div class="h"><span class="ic">'+glyph('sliders')+'</span><div class="tt"><div class="lbx-k">Your plan</div><b>Dibina dari jawapan anda</b></div>'+
     '<button onclick="lbQuizOpen()">'+glyph('pencil')+'Ubah</button></div>'+
-    '<div class="lbq-chips">'+tags.map(function(x){ return '<span>'+hesc(x)+'</span>'; }).join('')+'</div></div>';
+    '<div class="lbq-chips row">'+tags.map(function(x){ return '<span>'+hesc(x)+'</span>'; }).join('')+'</div></div>';
 }
 function lbVid(v){ var p=String(v||'').split('/'); return {v:p[0]||'', h:p[1]||''}; }
 /* a movement, in the shape the player plays: the hijab demo when there is one */
@@ -15034,27 +15065,28 @@ function lbChecklist(){
   var stepOk=st>=stepT, waterOk=wt>=waterT-0.001;
   var n=(trained?1:0)+(stepOk?1:0)+(waterOk?1:0);
   LB30_CHECKS.forEach(function(x){ if(c[x[0]]) n++; });
-  var total=3+LB30_CHECKS.length;
-  var tile=function(on,icon,title,val,goal,pct,minus,plus,lm,lp,go){
-    return '<div class="lbx-tile'+(on?' on':'')+'"'+(go?' onclick="'+go+'"':'')+'>'+
-      '<div class="lbx-tile-h"><span class="ic">'+glyph(icon)+'</span><span>'+title+'</span>'+(on?'<span class="ok">'+glyph('check')+'</span>':'')+'</div>'+
-      '<div class="lbx-tile-v"><b>'+val+'</b><span>/ '+goal+'</span></div>'+
-      '<div class="lbx-tile-bar"><i style="width:'+Math.round(Math.min(1,pct)*100)+'%"></i></div>'+
-      '<div class="lbx-tile-c" onclick="event.stopPropagation()"><button onclick="'+minus+'" aria-label="'+lm+'">−</button><button onclick="'+plus+'" aria-label="'+lp+'">+</button></div></div>';
-  };
-  var d=lbDay(gi);
+  var total=3+LB30_CHECKS.length, d=lbDay(gi);
+  /* one card, one row a thing (25 Oct 2026, Seth: "kemaskan lagi"): a ring
+     that fills when it is done, what it is, and on the right what to press */
+  var ck=function(on,icon){ return '<span class="ck'+(on?' on':'')+'">'+glyph(on?'check':icon)+'</span>'; };
+  var bar=function(p){ return '<div class="bar"><i style="width:'+Math.round(Math.min(1,p)*100)+'%"></i></div>'; };
+  var pm=function(minus,plus,lm,lp){ return '<div class="pm" onclick="event.stopPropagation()"><button onclick="'+minus+'" aria-label="'+lm+'">−</button><button onclick="'+plus+'" aria-label="'+lp+'">+</button></div>'; };
   var h='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Today&rsquo;s Checklist</div><div class="lbx-ss">'+n+' of '+total+' done</div></div>'+
     lbRing(n/total,44,n,'')+'</div>';
-  h+='<div class="lbx-row'+(trained?' on':'')+'" onclick="lbOpenDay('+gi+')"><span class="b">'+(trained?glyph('check'):glyph('play'))+'</span>'+
-     '<div class="tx"><div class="t">Workout · '+d.n+'</div><div class="m">'+lbMinutes(d)+' min · no jumping</div></div><span class="pdx-chev">›</span></div>';
-  h+='<div class="lbx-tiles">'+
-    tile(stepOk,'steps','Steps',st.toLocaleString(),stepT.toLocaleString(),st/stepT,'lbSteps(-500)','lbSteps(500)','500 fewer steps','500 more steps','lbSteps(\'goal\')')+
-    tile(waterOk,'bottle','Water',wt.toFixed(2).replace(/0$/,'')+' L',waterT.toFixed(1)+' L',wt/waterT,'lbWaterAdd(-0.25)','lbWaterAdd(0.25)','250 ml less','250 ml more','')+'</div>';
-  h+='<div class="lbx-misi'+(c.misi?' on':'')+'" onclick="lbTick(\'misi\')"><span class="b">'+(c.misi?glyph('check'):'')+'</span>'+
-     '<div><div class="k">Nutrition mission · Day '+(gi+1)+'</div><div class="t">'+LB30_MISI[gi]+'</div></div></div>';
-  h+='<div class="lbx-ticks">'+
-     '<button class="'+(c.makan?'on':'')+'" onclick="lbTick(\'makan\')"><span class="b">'+(c.makan?glyph('check'):'')+'</span>Ate to plan</button>'+
-     '<button class="'+(c.tidur?'on':'')+'" onclick="lbTick(\'tidur\')"><span class="b">'+(c.tidur?glyph('check'):'')+'</span>Slept 7 hours</button></div>';
+  h+='<div class="lbx-card lbx-cl">'+
+    '<div class="lbx-cr'+(trained?' on':'')+'" onclick="lbOpenDay('+gi+')">'+ck(trained,'play')+
+      '<div class="tx"><b>'+d.n+'</b><span>Workout · '+lbMinutes(d)+' min · no jumping</span></div><span class="pdx-chev">›</span></div>'+
+    '<div class="lbx-cr'+(stepOk?' on':'')+'" onclick="lbSteps(\'goal\')">'+ck(stepOk,'steps')+
+      '<div class="tx"><b>'+st.toLocaleString()+' <em>/ '+stepT.toLocaleString()+' steps</em></b>'+bar(st/stepT)+'</div>'+
+      pm('lbSteps(-500)','lbSteps(500)','500 fewer steps','500 more steps')+'</div>'+
+    '<div class="lbx-cr'+(waterOk?' on':'')+'">'+ck(waterOk,'bottle')+
+      '<div class="tx"><b>'+wt.toFixed(2).replace(/0$/,'')+' <em>/ '+waterT.toFixed(1)+' L water</em></b>'+bar(wt/waterT)+'</div>'+
+      pm('lbWaterAdd(-0.25)','lbWaterAdd(0.25)','250 ml less','250 ml more')+'</div>'+
+    '<div class="lbx-cr'+(c.misi?' on':'')+'" onclick="lbTick(\'misi\')">'+ck(c.misi,'target')+
+      '<div class="tx"><span class="k">Nutrition mission</span><b class="w">'+LB30_MISI[gi]+'</b></div></div>'+
+    '<div class="lbx-cr'+(c.makan?' on':'')+'" onclick="lbTick(\'makan\')">'+ck(c.makan,'food')+'<div class="tx"><b>Ate to plan</b></div></div>'+
+    '<div class="lbx-cr'+(c.tidur?' on':'')+'" onclick="lbTick(\'tidur\')">'+ck(c.tidur,'moon')+'<div class="tx"><b>Slept 7 hours</b></div></div>'+
+  '</div>';
   return h;
 }
 function lbTick(k){ var d=lbData(), t=iso(0); d.check[t]=d.check[t]||{}; d.check[t][k]=!d.check[t][k]; HF.save(); renderLB30(); }
