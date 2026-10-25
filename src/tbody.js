@@ -3501,7 +3501,7 @@ print("\n── MEAL SCAN PLANS ──");
   _guest(); _ent.ladiesFrom=new Date(Date.now()-3*864e5).toISOString(); HF.data.scanQuota={month:thisMonth(), used:3};
   ok("Ladies Burn 30 gives 10 scans in its first 30 days, past the monthly 3", scanAccess().left===10 && scanAccess().ladies===true);
   scanBump(); scanBump(); ok("...counted down on the phone", scanAccess().left===8 && HF.data.scanQuota.lb===2);
-  HF.data.scanQuota.lb=10; ok("...and when they are used, none is left (Scan 6 is offered)", scanAccess().left===0 && lbScanCard().indexOf("scan_d6")>0 && lbScanCard().indexOf('RM14.90')>0);
+  HF.data.scanQuota.lb=10; ok("...and when they are used, none is left (Scan 6 is offered)", scanAccess().left===0 && lbScanHero().indexOf('RM14.90')>0);
   _ent.ladiesFrom=new Date(Date.now()-31*864e5).toISOString(); HF.data.scanQuota={month:thisMonth(), used:0};
   ok("...after 30 days it is the usual 3 a month", scanAccess().left===SCAN_FREE_TIER && !scanAccess().ladies);
   _ent.ladiesFrom=null;
@@ -3849,6 +3849,8 @@ print("\n── LADIES BURN 30 ──");
   ok("Nutrition in three parts: today's menu, the shopping list, the guide, each alone", ft.indexOf('lbx-meals')>0 && ft.indexOf('lbx-shop')<0 && ft.indexOf('lbx-plate')<0 &&
      fsh.indexOf('lbx-shop')>0 && fsh.indexOf('lbx-meals')<0 && fg.indexOf('lbx-plate')>0 && fg.indexOf('lbx-meals')<0 && fg.indexOf('lbx-shop')<0);
   ok("...each dish beside its photograph", ft.indexOf('class="lbx-mo"')>0 && ft.indexOf('lbx-dish sm')>0);
+  ok("the meal scan where she sees it: above the tabs, and a Scan on every meal", (lbTab='plan', renderLB30(), $('pgd-body').innerHTML.indexOf('lbx-scanhero')>0) &&
+     (ft.match(/lbx-mscan/g)||[]).length===lbSlots().length && ft.indexOf('lbScanGo()')>0);
   lbFoodSeg='today';
   delete lb.me.meals; ok("answered before the menu questions: asked them on Nutrition", (lbTab='food', renderLB30(), $('pgd-body').innerHTML.indexOf('lbQuizMenu()')>0));
   delete lb.me; lb.profile={};

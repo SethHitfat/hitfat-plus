@@ -8487,6 +8487,31 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .lbq-more summary span{margin-left:auto;min-width:24px;padding:2px 8px;border-radius:999px;background:var(--surface2);color:var(--dim);font-size:12px;text-align:center;}
 .lbq-more .lbq-lines{margin:0;padding:0 16px 16px;}
 
+/* Ladies Burn 30: the meal scan where she sees it (25 Oct 2026) */
+.lbx-scanhero{position:relative;display:flex;align-items:center;gap:14px;padding:12px 14px 12px 12px;border-radius:22px;cursor:pointer;
+  background:linear-gradient(120deg,#F0313B,#E30613 55%,#A8030E);color:#fff;box-shadow:0 12px 28px rgba(227,6,19,.30);overflow:hidden;}
+.lbx-scanhero:active{transform:scale(.985);}
+.lbx-scanhero .ph{position:relative;flex:none;width:68px;height:68px;border-radius:16px;background:#3a1a12 center/cover no-repeat;}
+.lbx-scanhero .ph i{position:absolute;width:14px;height:14px;border:2.5px solid #fff;}
+.lbx-scanhero .ph .c1{top:6px;left:6px;border-right:0;border-bottom:0;border-radius:5px 0 0 0;}
+.lbx-scanhero .ph .c2{top:6px;right:6px;border-left:0;border-bottom:0;border-radius:0 5px 0 0;}
+.lbx-scanhero .ph .c3{bottom:6px;left:6px;border-right:0;border-top:0;border-radius:0 0 0 5px;}
+.lbx-scanhero .ph .c4{bottom:6px;right:6px;border-left:0;border-top:0;border-radius:0 0 5px 0;}
+.lbx-scanhero .ph .ln{left:10px;right:10px;width:auto;height:2px;border:0;top:10px;background:#fff;box-shadow:0 0 10px 2px rgba(255,255,255,.8);border-radius:2px;animation:lbScanLine 2.2s ease-in-out infinite alternate;}
+@keyframes lbScanLine{from{top:10px}to{top:56px}}
+@media (prefers-reduced-motion:reduce){ .lbx-scanhero .ph .ln{animation:none;top:33px;} }
+.lbx-scanhero .tx{flex:1;min-width:0;}
+.lbx-scanhero .k{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#FFD6D2;}
+.lbx-scanhero .k .gly{width:13px;height:13px;}
+.lbx-scanhero b{display:block;margin-top:2px;font-size:16px;line-height:1.25;font-weight:800;}
+.lbx-scanhero .tx > span{display:inline-block;margin-top:5px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.18);font-size:11.5px;font-weight:750;}
+.lbx-scanhero .go{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#E30613;box-shadow:0 6px 14px rgba(0,0,0,.18);}
+.lbx-scanhero .go .gly{width:22px;height:22px;}
+.lbx-meal-f{display:flex;align-items:center;gap:10px;margin-top:10px;}
+.lbx-meal-f .lbx-meal-n{flex:1;margin-top:0;}
+.lbx-mscan{flex:none;display:flex;align-items:center;gap:6px;padding:8px 13px;border:0;border-radius:999px;background:color-mix(in srgb,var(--mc) 13%,transparent);color:var(--mc);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.lbx-mscan .gly{width:15px;height:15px;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -14921,6 +14946,7 @@ function renderLB30(){
       '<div class="lbx-h">30 days complete</div><div class="lbx-p">Lihat sejauh mana anda sudah pergi.</div>'+
       '<button class="lbx-go" onclick="lbSetTab(\'progress\')">'+glyph('trophy')+'See Your Results</button></div>';
   }
+  if(owned) h+=lbScanHero();
   h+='<div class="lbx-seg" id="lb-tabs">'+[['plan','Plan'],['food','Nutrition'],['learn','Learn'],['progress','Progress'],['guide','Start Here']]
     .map(function(t){ return '<button class="'+(lbTab===t[0]?'on':'')+'" onclick="lbSetTab(\''+t[0]+'\')">'+t[1]+'</button>'; }).join('')+'</div>';
   if(lbTab==='food') h+=lbFood();
@@ -15203,15 +15229,21 @@ function lbLearn(){
 }
 /* her meal scans (25 Oct 2026): 10 free in her first 30 days, then Scan 6,
    six a day for 30 days at RM14.90, the plan that covers a whole program */
-function lbScanCard(){
+/* the meal scan, where she sees it every time she opens the program
+   (25 Oct 2026, Seth: "killer feature", "mudah nampak"): a red strip
+   above the tabs, and a Scan button on every meal of her menu */
+function lbScanGo(){
+  var a=typeof scanAccess==='function' ? scanAccess() : {left:0};
+  if(a.left>0) openScan('meal'); else startCheckout('scan_d6');
+}
+function lbScanHero(){
   if(typeof scanAccess!=='function') return '';
   var a=scanAccess(), has=a.left>0;
-  var head=a.mode==='pass' ? a.left+' of '+a.daily+' scans left today' : a.label;
-  var tx='<div class="lbx-scan-tx"><div class="lbx-k">Meal scan</div><div class="t">Ambil gambar hidangan, dapat kalori serta-merta.</div>'+
-    '<div class="s">'+head+'</div></div>';
-  if(has) return '<div class="lbx-scan">'+tx+'<button class="lbx-go" onclick="openScan()">'+glyph('photo')+'Scan a Meal</button></div>';
-  return '<div class="lbx-scan">'+tx+'<button class="lbx-go" onclick="startCheckout(\'scan_d6\')">'+glyph('photo')+'Get Scan 6 · RM14.90</button>'+
-    '<div class="lbx-scan-fine">6 scan sehari selama 30 hari: sarapan, makan tengah hari, makan malam dan snek.</div></div>';
+  var sub=has ? (a.mode==='pass' ? a.left+' of '+a.daily+' scans left today' : a.label) : 'Scan 6 · 6 sehari, 30 hari · RM14.90';
+  return '<div class="lbx-scanhero" role="button" tabindex="0" onclick="lbScanGo()">'+
+    '<div class="ph" style="background-image:url(\'/ladies/img/menu/d11.jpg\')"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><i class="ln"></i></div>'+
+    '<div class="tx"><div class="k">'+glyph('spark')+'AI Meal Scan</div><b>Snap makanan anda, tahu kalorinya.</b><span>'+sub+'</span></div>'+
+    '<span class="go">'+glyph('photo')+'</span></div>';
 }
 /* ── the shopping list (25 Oct 2026, Seth): a week's menu (option 1 of each
    meal) turned into what to buy, grouped as a market is, ticked off in the
@@ -15335,9 +15367,9 @@ function lbFood(){
         '<div class="tx"><div class="mpopt-h"><div class="t">'+o.n+'</div><div class="k">'+ds.k+' kcal</div></div>'+
         (ds.r!==null&&me?'<div class="lbx-rice">'+glyph('food')+'Nasi: <b>'+lbFist(ds.r)+'</b></div>':'')+
         '<div class="lbx-items">'+ds.it.map(function(it){ return '<span>'+it+'</span>'; }).join('')+'</div></div>'+
-      '</div></div>'; }).join('')+'<div class="lbx-meal-n">'+note+'</div></div>';
+      '</div></div>'; }).join('')+'<div class="lbx-meal-f"><div class="lbx-meal-n">'+note+'</div>'+
+      '<button class="lbx-mscan" onclick="lbScanGo()">'+glyph('photo')+'Scan</button></div></div>';
   }).join('')+'</div>';
-  h+=lbScanCard();
   return h;
   }
   /* the guide: the healthy plate, then the hands */

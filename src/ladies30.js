@@ -859,6 +859,7 @@ function renderLB30(){
       '<div class="lbx-h">30 days complete</div><div class="lbx-p">Lihat sejauh mana anda sudah pergi.</div>'+
       '<button class="lbx-go" onclick="lbSetTab(\'progress\')">'+glyph('trophy')+'See Your Results</button></div>';
   }
+  if(owned) h+=lbScanHero();
   h+='<div class="lbx-seg" id="lb-tabs">'+[['plan','Plan'],['food','Nutrition'],['learn','Learn'],['progress','Progress'],['guide','Start Here']]
     .map(function(t){ return '<button class="'+(lbTab===t[0]?'on':'')+'" onclick="lbSetTab(\''+t[0]+'\')">'+t[1]+'</button>'; }).join('')+'</div>';
   if(lbTab==='food') h+=lbFood();
@@ -1141,15 +1142,21 @@ function lbLearn(){
 }
 /* her meal scans (25 Oct 2026): 10 free in her first 30 days, then Scan 6,
    six a day for 30 days at RM14.90, the plan that covers a whole program */
-function lbScanCard(){
+/* the meal scan, where she sees it every time she opens the program
+   (25 Oct 2026, Seth: "killer feature", "mudah nampak"): a red strip
+   above the tabs, and a Scan button on every meal of her menu */
+function lbScanGo(){
+  var a=typeof scanAccess==='function' ? scanAccess() : {left:0};
+  if(a.left>0) openScan('meal'); else startCheckout('scan_d6');
+}
+function lbScanHero(){
   if(typeof scanAccess!=='function') return '';
   var a=scanAccess(), has=a.left>0;
-  var head=a.mode==='pass' ? a.left+' of '+a.daily+' scans left today' : a.label;
-  var tx='<div class="lbx-scan-tx"><div class="lbx-k">Meal scan</div><div class="t">Ambil gambar hidangan, dapat kalori serta-merta.</div>'+
-    '<div class="s">'+head+'</div></div>';
-  if(has) return '<div class="lbx-scan">'+tx+'<button class="lbx-go" onclick="openScan()">'+glyph('photo')+'Scan a Meal</button></div>';
-  return '<div class="lbx-scan">'+tx+'<button class="lbx-go" onclick="startCheckout(\'scan_d6\')">'+glyph('photo')+'Get Scan 6 · RM14.90</button>'+
-    '<div class="lbx-scan-fine">6 scan sehari selama 30 hari: sarapan, makan tengah hari, makan malam dan snek.</div></div>';
+  var sub=has ? (a.mode==='pass' ? a.left+' of '+a.daily+' scans left today' : a.label) : 'Scan 6 · 6 sehari, 30 hari · RM14.90';
+  return '<div class="lbx-scanhero" role="button" tabindex="0" onclick="lbScanGo()">'+
+    '<div class="ph" style="background-image:url(\'/ladies/img/menu/d11.jpg\')"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><i class="ln"></i></div>'+
+    '<div class="tx"><div class="k">'+glyph('spark')+'AI Meal Scan</div><b>Snap makanan anda, tahu kalorinya.</b><span>'+sub+'</span></div>'+
+    '<span class="go">'+glyph('photo')+'</span></div>';
 }
 /* ── the shopping list (25 Oct 2026, Seth): a week's menu (option 1 of each
    meal) turned into what to buy, grouped as a market is, ticked off in the
@@ -1273,9 +1280,9 @@ function lbFood(){
         '<div class="tx"><div class="mpopt-h"><div class="t">'+o.n+'</div><div class="k">'+ds.k+' kcal</div></div>'+
         (ds.r!==null&&me?'<div class="lbx-rice">'+glyph('food')+'Nasi: <b>'+lbFist(ds.r)+'</b></div>':'')+
         '<div class="lbx-items">'+ds.it.map(function(it){ return '<span>'+it+'</span>'; }).join('')+'</div></div>'+
-      '</div></div>'; }).join('')+'<div class="lbx-meal-n">'+note+'</div></div>';
+      '</div></div>'; }).join('')+'<div class="lbx-meal-f"><div class="lbx-meal-n">'+note+'</div>'+
+      '<button class="lbx-mscan" onclick="lbScanGo()">'+glyph('photo')+'Scan</button></div></div>';
   }).join('')+'</div>';
-  h+=lbScanCard();
   return h;
   }
   /* the guide: the healthy plate, then the hands */
