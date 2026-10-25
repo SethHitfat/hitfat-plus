@@ -3830,7 +3830,7 @@ print("\n── DIET 6 MINGGU 6KG ──");
   /* the course: modules, lessons, tools, progress; Malay; the content unedited */
   HF.data.d6={p:{sex:'wanita',age:30,wt:70,ht:160,act:'tidak aktif',rate:0.005}}; HF.data.d6.bud=d6Calc(HF.data.d6.p);
   var html=''; ['lessons','tools','progress'].forEach(function(t){ d6View=null; d6Seg=t; renderD6(); html+=$('d6c-body').innerHTML; });
-  ok("six modules of lessons, each lesson by its card's title", (html.match(/class="ac-mod"/g)||[]).length===6 && html.indexOf(hesc(D6_DAYS[41].card.title))>0);
+  ok("six modules of lessons, each lesson by its card's title", (html.match(/class="ac-mod d6m/g)||[]).length===6 && html.indexOf(hesc(D6_DAYS[41].card.title))>0);
   ok("the tools carry the content as written", html.indexOf(hesc(D6_DATA.start_here.safety))>0 && html.indexOf(hesc(D6_DATA.nutrition.meals['Sarapan'][0].name))>0);
   ok("...in Malay", ["Today's Checklist","Start Here","Nutrition<","Start Day","Lessons<"].every(function(x){ return html.indexOf(x)<0; }) && html.indexOf('Pelajaran')>0 && html.indexOf('Alat')>0);
   d6View=2; renderD6(); var d3=$('d6c-body').innerHTML;

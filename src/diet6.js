@@ -134,12 +134,13 @@ function renderD6(){
 /* the course page: progress, then the six modules, the tools, progress */
 function d6Course(){
   var owned=d6Owned(), done=d6Done(), nx=d6Next(), bud=d6Budget();
-  var h='<div class="ac-hero d6-hero"><div class="k">HITFAT+ · Kursus '+D6_TOT+' Hari</div><div class="t">'+hesc(D6_NAME)+'</div>'+
-    '<div class="s">'+hesc(D6_SUB)+'</div>';
+  var h='<div class="ac-hero d6-hero d6x-hero"><div class="acx-k">HITFAT+ · Kursus '+D6_TOT+' Hari</div><div class="acx-t">'+hesc(D6_NAME)+'</div>'+
+    '<div class="acx-s">'+hesc(D6_SUB)+'</div>'+
+    '<div class="acx-chips"><span>'+glyph('calendar')+'6 minggu · '+D6_TOT+' pelajaran</span><span>'+glyph('food')+'Tetap makan nasi</span><span>'+glyph('chart')+'Bajet kalori anda</span></div>';
   if(owned){
     h+='<div class="ac-prog"><div class="pbar"><i style="width:'+Math.round(done/D6_TOT*100)+'%"></i></div><span>'+done+' / '+D6_TOT+' selesai</span></div>';
     if(!bud) h+='<button class="bigbtn d6-btn" onclick="d6SetSeg(\'tools\')">'+glyph('flag')+'Mula: kira bajet anda</button>';
-    else if(nx<D6_TOT) h+='<button class="bigbtn d6-btn" onclick="openD6('+nx+')">'+glyph('play')+(done?'Sambung: Hari '+(nx+1):'Mula Hari 1')+'</button>';
+    else if(nx<D6_TOT){ if(d6Seg!=='lessons') h+='<button class="bigbtn d6-btn" onclick="openD6('+nx+')">'+glyph('play')+(done?'Sambung: Hari '+(nx+1):'Mula Hari 1')+'</button>'; }
     else h+='<div class="ac-cert">'+glyph('medal')+'<div><b>Tahniah, 6 minggu selesai.</b><br>Ulang mana-mana pelajaran bila perlu.</div></div>';
   } else {
     h+='<button class="bigbtn d6-btn" onclick="d6Buy()">Dapatkan Kursus · RM'+D6_PRICE+'</button>'+
@@ -148,6 +149,10 @@ function d6Course(){
   h+='</div>';
   if(owned && bud) h+='<div class="d6-budrow" onclick="d6SetSeg(\'tools\')"><div><b>'+bud.cal.toLocaleString()+'</b><span>kcal sehari</span></div>'+
     '<div><b>'+d6Senduk(bud.cal)+'</b><span>senduk nasi</span></div><div><b>'+bud.goal+' kg</b><span>sasaran 6 minggu</span></div></div>';
+  if(owned && bud && nx<D6_TOT && d6Seg==='lessons'){ var nd=D6_DAYS[nx], lk=D6_LOOK[nd.week-1];
+    h+='<div class="acx-next" style="--mc:'+lk[1]+'" onclick="openD6('+nx+')"><span class="pl">'+glyph('play')+'</span>'+
+      '<div class="tx"><div class="k">'+(done?'Hari ini':'Mula di sini')+' · Hari '+nd.day+' · Modul '+nd.week+'</div>'+
+      '<div class="t">'+hesc(nd.card.title)+'</div><div class="s">'+hesc(d6Hook(nd))+'</div></div></div>'; }
   h+='<div class="obseg d6-segs">'+[['lessons','Pelajaran'],['tools','Alat'],['progress','Progres']].map(function(x){
     return '<button class="'+(d6Seg===x[0]?'on':'')+'" onclick="d6SetSeg(\''+x[0]+'\')">'+x[1]+'</button>'; }).join('')+'</div>';
   if(d6Seg==='tools') h+=d6Tools();
@@ -155,15 +160,38 @@ function d6Course(){
   else h+=d6Modules();
   return h;
 }
+/* each module: a cover, an icon, a colour and what it gets you (25 Oct
+   2026, Seth: "ini pun aku nk baiki mcm ko buat"), folding like the Academy;
+   the one with today's lesson starts open. Covers made with ChatGPT in one
+   style as a 3x2 grid and cut into img/diet6/m1-m6.jpg. */
+var D6_LOOK=[
+  ['chart',   '#E30613','Kira bajet kalori anda, macam gaji bulanan','/img/diet6/m1.jpg'],
+  ['food',    '#E08A00','Kekal makan nasi, tahu sukatan senduk','/img/diet6/m2.jpg'],
+  ['steps',   '#1F9D6A','Langkah, kekuatan & tidur yang bakar lemak','/img/diet6/m3.jpg'],
+  ['people',  '#7C3AED','Mamak, kenduri & makan keluarga tanpa rosak pelan','/img/diet6/m4.jpg'],
+  ['warning', '#0891B2','Pembakar lemak, detoks & shake: elak tertipu','/img/diet6/m5.jpg'],
+  ['trophy',  '#0F766E','Bila berat tersekat, dan cara kekal selepas 6 minggu','/img/diet6/m6.jpg']
+];
+var _d6Mod={};
+function d6ModOpen(w){ if(w in _d6Mod) return _d6Mod[w]; var nx=d6Next(); return D6_DAYS[Math.min(nx,D6_TOT-1)].week===w; }
+function d6ModToggle(w){ _d6Mod[w]=!d6ModOpen(w); d6Re(); }
+/* a lesson's first sentence, as the reason to open it */
+function d6Hook(d){ var c=d.card||{}, t=String(c.body||c.text||c.subtitle||(d.mission&&d.mission.text)||d.mission||''); t=((t.match(/^[^.?!]*[.?!]/)||[t])[0]); return t.length>96?t.slice(0,93).replace(/\s+\S*$/,'')+'…':t; }
 function d6Modules(){
   var done=d6Done(), nx=d6Next(), owned=d6Owned(), h='';
   [1,2,3,4,5,6].forEach(function(w){
-    var ls=D6_DAYS.filter(function(d){ return d.week===w; }), n=ls.filter(function(d){ return d.day-1<done; }).length;
-    h+='<div class="ac-mod"><div class="ac-mod-h"><div><div class="k">Modul '+w+'</div><div class="t">'+hesc(d6WeekName(w))+'</div></div>'+
-      '<span class="ac-mod-n">'+n+'/'+ls.length+'</span></div><div class="ac-eps">'+ls.map(function(d){
-        var gi=d.day-1, isDone=gi<done, now=owned&&gi===nx, tags=d6Tags(d,true);
+    var ls=D6_DAYS.filter(function(d){ return d.week===w; }), n=ls.filter(function(d){ return d.day-1<done; }).length, lk=D6_LOOK[w-1], open=d6ModOpen(w), full=n===ls.length;
+    h+='<div class="ac-mod d6m acg'+(open?' open':'')+'" style="--mc:'+lk[1]+'"><div class="ac-mod-h" onclick="d6ModToggle('+w+')">'+
+      '<span class="acx-cv" style="background-image:url(\''+lk[3]+'\')"><span class="acx-ic">'+glyph(full?'check':lk[0])+'</span></span>'+
+      '<div class="acg-tx"><div class="acx-mk">Modul '+w+' · '+hesc(d6WeekName(w))+'</div><div class="t">'+lk[2]+'</div>'+
+      '<div class="acx-mm">'+ls.length+' pelajaran · Hari '+ls[0].day+'–'+ls[ls.length-1].day+(n?' · '+n+'/'+ls.length+' siap':'')+'</div>'+
+      '<div class="acg-bar"><i style="width:'+Math.round(n/ls.length*100)+'%"></i></div></div>'+
+      '<span class="jchev">›</span></div>'+
+      '<div class="ac-eps">'+ls.map(function(d){
+        var gi=d.day-1, isDone=gi<done, now=owned&&gi===nx, tags=d6Tags(d,true), hk=d6Hook(d);
         return '<div class="ac-ep'+(isDone?' done':'')+(now?' d6-on':'')+'" onclick="'+(owned?'openD6('+gi+')':'d6Buy()')+'">'+
           '<span class="n">'+(isDone?glyph('check'):d.day)+'</span><div class="tx"><div class="t">'+hesc(d.card.title)+'</div>'+
+          (hk?'<div class="acx-h">'+hesc(hk)+'</div>':'')+
           '<div class="m">Hari '+d.day+(tags.length?' · '+tags.join(' · '):'')+'</div></div>'+
           (now?'<span class="ac-tag d6-today">Hari ini</span>':!owned&&gi>0?'<span class="ac-tag">'+glyph('lock')+'</span>':'')+
           '<span class="pdx-chev">›</span></div>';

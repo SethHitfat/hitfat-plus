@@ -6096,3 +6096,12 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 
 /* a photograph of each dish on its meal card (25 Oct) */
 .lbx-dish{margin-top:14px;aspect-ratio:16/10;border-radius:16px;background:var(--surface2) center/cover no-repeat;}
+
+/* Diet 6 Minggu 6KG, in the Academy's dress (25 Oct 2026) */
+.ac-hero.d6x-hero,:root[data-theme="light"] .ac-hero.d6x-hero{background:#3A0B0B url('/ladies/img/menu/plate.jpg') center 35%/cover no-repeat;padding:160px 18px 18px;}
+.ac-hero.d6x-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(40,6,6,0) 0%,rgba(40,6,6,.35) 28%,rgba(40,6,6,.9) 56%,rgba(30,4,4,.97) 100%);}
+.ac-hero.d6x-hero::after{display:none;}
+.ac-hero.d6x-hero > *{position:relative;}
+.ac-hero.d6x-hero .acx-k{color:#FFB4A8;}
+.ac-hero.d6x-hero .bigbtn{background:#fff;color:#B8040F;}
+.ac-mod.d6m:not(.open) .ac-eps{display:none;}
