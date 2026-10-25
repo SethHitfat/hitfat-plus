@@ -6153,3 +6153,11 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .lbq-me .h button{display:flex;align-items:center;gap:6px;padding:8px 13px;border:0;border-radius:999px;background:color-mix(in srgb,#E30613 9%,transparent);color:#B8040F;font:inherit;font-size:13px;font-weight:750;}
 .lbq-me .h button .gly{width:15px;height:15px;}
 .lbq-me .lbq-chips{margin-bottom:0;}
+.lbq-opts.grid{grid-template-columns:1fr 1fr;}
+.lbq-opts.grid .lbq-o{padding:12px;gap:10px;}
+.lbq-opts.grid .lbq-o .ic{width:34px;height:34px;border-radius:11px;}
+.lbq-opts.grid .lbq-o b{font-size:14.5px;}
+.lbq-opts.grid .lbq-o .tk{width:20px;height:20px;}
+.lbx-rice{display:inline-flex;align-items:center;gap:6px;margin:8px 0 2px;padding:6px 11px;border-radius:999px;background:color-mix(in srgb,#E08A00 12%,transparent);color:#9A5B00;font-size:13px;font-weight:650;}
+.lbx-rice .gly{width:15px;height:15px;}
+:root:not([data-theme="light"]) .lbx-rice{color:#F2B65A;}

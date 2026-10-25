@@ -8405,6 +8405,14 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .lbq-me .h button{display:flex;align-items:center;gap:6px;padding:8px 13px;border:0;border-radius:999px;background:color-mix(in srgb,#E30613 9%,transparent);color:#B8040F;font:inherit;font-size:13px;font-weight:750;}
 .lbq-me .h button .gly{width:15px;height:15px;}
 .lbq-me .lbq-chips{margin-bottom:0;}
+.lbq-opts.grid{grid-template-columns:1fr 1fr;}
+.lbq-opts.grid .lbq-o{padding:12px;gap:10px;}
+.lbq-opts.grid .lbq-o .ic{width:34px;height:34px;border-radius:11px;}
+.lbq-opts.grid .lbq-o b{font-size:14.5px;}
+.lbq-opts.grid .lbq-o .tk{width:20px;height:20px;}
+.lbx-rice{display:inline-flex;align-items:center;gap:6px;margin:8px 0 2px;padding:6px 11px;border-radius:999px;background:color-mix(in srgb,#E08A00 12%,transparent);color:#9A5B00;font-size:13px;font-weight:650;}
+.lbx-rice .gly{width:15px;height:15px;}
+:root:not([data-theme="light"]) .lbx-rice{color:#F2B65A;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -14000,7 +14008,8 @@ function wlHomeCard(){
        a low-impact fit test that can be skipped;
      · check-ins on days 1, 15 and 30 include the hip;
      · the calorie target is BURN30's own sum (mpNut), never below 1,200;
-     · Malay home-cooking menus with three options per meal.
+     · Malay home-cooking menus with three options per meal, for 3 to 6
+       meals a day, without what she doesn't eat, her rice measured.
 
    Placeholders, to be filled when Seth sends them, live in one place each:
      LB30_NAME            the program's name
@@ -14157,48 +14166,112 @@ var LB30_MISI=[
 var LB30_CHECKS=[['misi','Nutrition mission','food'],['makan','Ate to plan','clipboard'],['tidur','Slept 7 hours','moon']];
 
 /* ── the menus: Malay home cooking ──
-   Ten Malay home dishes for each meal (19 Oct: four added to each, so the
-   30 days don't repeat two sets); each day shows three, picked by the day.
-   kcal is for the portion shown. Seth can still swap in his own list here. */
+   Each day shows three of each meal's dishes, picked by the day; kcal is for
+   the portion shown. Seth can still swap in his own list here.
+   25 Oct 2026, her own menu:
+   Every dish says what is in it, so her answers can take it off her menu:
+   x: ikan · laut (udang, sotong, belacan) · daging · santan · pedas · susu ·
+   telur · kacang. b:1 she can buy it at a kedai or warung. ra: the rice in
+   the dish, in fists (genggam, about 200 kcal each), written {nasi} in its
+   items; her own rice is worked out from her target for that meal.
+   The first ten of breakfast, lunch and dinner keep their photographs
+   (ladies/img/menu/d01-d30.jpg); the rest have theirs in n01-n34.
+   kcal are estimates for the portions written. */
 var LB30_MENU={
   sarapan:{label:'Breakfast', time:'7:00 am', share:0.25, note:'Cepat, untuk ibu yang bekerja', opts:[
-    {n:'Telur rebus & roti mil penuh', k:350, it:['2 biji telur rebus','2 keping roti mil penuh','Teh o kurang manis']},
-    {n:'Oat susu & pisang',            k:330, it:['Oat dimasak dengan susu rendah lemak','1 biji pisang']},
-    {n:'Nasi lemak separuh',           k:420, it:['Nasi lemak, separuh pinggan','1 biji telur rebus','Timun','Sambal, sedikit']},
-    {n:'Roti telur',                   k:330, it:['2 keping roti mil penuh','Telur dadar 1 biji','Kopi o kosong']},
-    {n:'Bihun goreng kurang minyak',   k:400, it:['Bihun goreng, 1 genggam','1 biji telur mata','Sayur sawi']},
-    {n:'Lempeng pisang & telur',       k:360, it:['2 keping lempeng pisang kecil','1 biji telur rebus','Teh o kosong']},
-    {n:'Bubur nasi ayam',              k:340, it:['Bubur nasi ayam, 1 mangkuk','Hirisan halia & daun bawang','Teh o kosong']},
-    {n:'Ubi rebus & telur',            k:320, it:['Ubi kayu rebus, 1 genggam','1 biji telur rebus','Kopi o kosong']},
-    {n:'Tosai & kuah sambar',          k:350, it:['2 keping tosai','Kuah sambar','Teh o kurang manis']},
-    {n:'Roti canai kosong & dal',      k:380, it:['1 keping roti canai kosong','Kuah dal, sedikit','Teh o kosong']}
+    {n:'Telur rebus & roti mil penuh', k:350, x:'telur', it:['2 biji telur rebus','2 keping roti mil penuh','Teh o kurang manis']},
+    {n:'Oat susu & pisang',            k:330, x:'susu', it:['Oat dimasak dengan susu rendah lemak','1 biji pisang']},
+    {n:'Nasi lemak separuh',           k:420, x:'santan pedas telur laut', b:1, it:['Nasi lemak, separuh pinggan','1 biji telur rebus','Timun','Sambal, sedikit']},
+    {n:'Roti telur',                   k:330, x:'telur', it:['2 keping roti mil penuh','Telur dadar 1 biji','Kopi o kosong']},
+    {n:'Bihun goreng kurang minyak',   k:400, x:'telur', b:1, it:['Bihun goreng, 1 genggam','1 biji telur mata','Sayur sawi']},
+    {n:'Lempeng pisang & telur',       k:360, x:'telur', it:['2 keping lempeng pisang kecil','1 biji telur rebus','Teh o kosong']},
+    {n:'Bubur nasi ayam',              k:340, b:1, it:['Bubur nasi ayam, 1 mangkuk','Hirisan halia & daun bawang','Teh o kosong']},
+    {n:'Ubi rebus & telur',            k:320, x:'telur', it:['Ubi kayu rebus, 1 genggam','1 biji telur rebus','Kopi o kosong']},
+    {n:'Tosai & kuah sambar',          k:350, b:1, it:['2 keping tosai','Kuah sambar','Teh o kurang manis']},
+    {n:'Roti canai kosong & dal',      k:380, b:1, it:['1 keping roti canai kosong','Kuah dal, sedikit','Teh o kosong']},
+    {n:'Mihun sup',                    k:320, b:1, it:['Mihun sup, 1 mangkuk','Ayam carik, sedikit','Teh o kosong']},
+    {n:'Sandwic tuna',                 k:340, x:'ikan', it:['2 keping roti mil penuh','Tuna dalam air, 3 sudu','Timun & salad']},
+    {n:'Pancake oat pisang',           k:330, x:'telur susu', it:['Pancake: oat, 1 biji pisang, 1 biji telur','Susu rendah lemak, 1 gelas']},
+    {n:'Nasi impit & kuah kacang',     k:380, x:'kacang', b:1, it:['Nasi impit, 5 ketul','Kuah kacang, 2 sudu','Timun']}
   ]},
   tengahari:{label:'Lunch Box', time:'1:00 pm', share:0.40, note:'Bekal dari rumah', opts:[
-    {n:'Ayam masak kicap',             k:500, it:['Nasi putih, 1 genggam','Ayam masak kicap, 1 tapak tangan','Sayur campur, 2 genggam']},
-    {n:'Ikan bakar & kangkung',        k:480, it:['Nasi perang, 1 genggam','Ikan bakar, 1 tapak tangan','Kangkung tumis']},
-    {n:'Mi sup ayam',                  k:430, it:['Mi kuning, 1 genggam','Ayam carik, 1 tapak tangan','Sup sayur']},
-    {n:'Telur dadar sayur',            k:450, it:['Nasi putih, 1 genggam','Telur dadar sayur 2 biji','Sambal timun']},
-    {n:'Daging masak merah',           k:520, it:['Nasi putih, 1 genggam','Daging masak merah, kuah sedikit','Sawi tumis']},
-    {n:'Nasi goreng kampung',          k:520, it:['Nasi goreng kampung kurang minyak, 1 genggam','1 biji telur mata','Timun']},
-    {n:'Ayam percik & ulam',           k:510, it:['Nasi putih, 1 genggam','Ayam percik tanpa kulit, 1 tapak tangan','Ulam & timun']},
-    {n:'Sup daging & sayur',           k:480, it:['Nasi putih, 1 genggam','Sup daging, isi 1 tapak tangan','Kobis goreng sedikit minyak']},
-    {n:'Ikan masak lemak cili api',    k:510, it:['Nasi putih, 1 genggam','Ikan masak lemak, kuah sedikit','Kacang buncis goreng']},
-    {n:'Nasi kerabu & ikan bakar',     k:500, it:['Nasi kerabu, 1 genggam','Ikan bakar, 1 tapak tangan','Ulam & kerabu, sambal sedikit']}
+    {n:'Ayam masak kicap',             k:500, ra:1, it:['Nasi putih, {nasi}','Ayam masak kicap, 1 tapak tangan','Sayur campur, 2 genggam']},
+    {n:'Ikan bakar & kangkung',        k:480, ra:1, x:'ikan', it:['Nasi perang, {nasi}','Ikan bakar, 1 tapak tangan','Kangkung tumis']},
+    {n:'Mi sup ayam',                  k:430, b:1, it:['Mi kuning, 1 genggam','Ayam carik, 1 tapak tangan','Sup sayur']},
+    {n:'Telur dadar sayur',            k:450, ra:1, x:'telur pedas', it:['Nasi putih, {nasi}','Telur dadar sayur 2 biji','Sambal timun']},
+    {n:'Daging masak merah',           k:520, ra:1, x:'daging pedas', it:['Nasi putih, {nasi}','Daging masak merah, kuah sedikit','Sawi tumis']},
+    {n:'Nasi goreng kampung',          k:520, ra:1, x:'telur pedas ikan', b:1, it:['Nasi goreng kampung kurang minyak, {nasi}','1 biji telur mata','Timun']},
+    {n:'Ayam percik & ulam',           k:510, ra:1, x:'santan pedas', b:1, it:['Nasi putih, {nasi}','Ayam percik tanpa kulit, 1 tapak tangan','Ulam & timun']},
+    {n:'Sup daging & sayur',           k:480, ra:1, x:'daging', it:['Nasi putih, {nasi}','Sup daging, isi 1 tapak tangan','Kobis goreng sedikit minyak']},
+    {n:'Ikan masak lemak cili api',    k:510, ra:1, x:'ikan santan pedas', it:['Nasi putih, {nasi}','Ikan masak lemak, kuah sedikit','Kacang buncis goreng']},
+    {n:'Nasi kerabu & ikan bakar',     k:500, ra:1, x:'ikan pedas laut', b:1, it:['Nasi kerabu, {nasi}','Ikan bakar, 1 tapak tangan','Ulam & kerabu, sambal sedikit']},
+    {n:'Nasi campur pilihan',          k:540, ra:1, b:1, it:['Nasi putih, {nasi}','Ayam goreng tanpa kulit, 1 ketul','2 jenis sayur, bukan bersantan']},
+    {n:'Nasi ayam & sup',              k:540, ra:1, b:1, it:['Nasi ayam, {nasi}','Ayam panggang tanpa kulit, 1 tapak tangan','Sup & timun']},
+    {n:'Kuey teow sup',                k:420, x:'ikan', b:1, it:['Kuey teow sup, 1 mangkuk','Bebola ikan & ayam carik','Sayur sawi']},
+    {n:'Bihun tomyam ayam',            k:430, x:'pedas', b:1, it:['Bihun tomyam, 1 mangkuk','Ayam, 1 tapak tangan','Sayur & cendawan']},
+    {n:'Tempe & tauhu sambal',         k:480, ra:1, x:'pedas', it:['Nasi putih, {nasi}','Tempe & tauhu sambal, 1 tapak tangan','Sayur campur']}
   ]},
   malam:{label:'Family Dinner', time:'7:30 pm', share:0.35, note:'Makan bersama keluarga', opts:[
-    {n:'Asam pedas ikan',              k:480, it:['Nasi putih, 1 genggam','Ikan asam pedas, 1 tapak tangan','Bayam tumis']},
-    {n:'Sup ayam & tempe',             k:450, it:['Sup ayam dengan sayur','Nasi, separuh genggam','Tempe bakar']},
-    {n:'Ayam panggang & ulam',         k:480, it:['Nasi putih, 1 genggam','Ayam panggang tanpa kulit','Ulam & sambal belacan']},
-    {n:'Ikan kukus halia',             k:450, it:['Nasi putih, 1 genggam','Ikan kukus halia','Sawi tumis']},
-    {n:'Gulai ayam',                   k:520, it:['Nasi putih, 1 genggam','Gulai ayam, kuah sedikit','Timun & tomato']},
-    {n:'Tauhu sumbat & sup sayur',     k:430, it:['Nasi, separuh genggam','Tauhu sumbat 2 keping','Sup sayur']},
-    {n:'Ayam masak halia',             k:460, it:['Nasi putih, 1 genggam','Ayam masak halia, 1 tapak tangan','Kailan tumis']},
-    {n:'Sotong sambal kurang minyak',  k:470, it:['Nasi putih, 1 genggam','Sotong sambal, 1 tapak tangan','Kacang panjang goreng']},
-    {n:'Telur bistik & sayur',         k:450, it:['Nasi, separuh genggam','Telur bistik 2 biji','Sayur campur']},
-    {n:'Udang masak merah',            k:480, it:['Nasi putih, 1 genggam','Udang masak merah, 1 tapak tangan','Taugeh goreng']}
+    {n:'Asam pedas ikan',              k:480, ra:1, x:'ikan pedas', it:['Nasi putih, {nasi}','Ikan asam pedas, 1 tapak tangan','Bayam tumis']},
+    {n:'Sup ayam & tempe',             k:450, ra:0.5, it:['Sup ayam dengan sayur','Nasi, {nasi}','Tempe bakar']},
+    {n:'Ayam panggang & ulam',         k:480, ra:1, x:'pedas laut', it:['Nasi putih, {nasi}','Ayam panggang tanpa kulit','Ulam & sambal belacan']},
+    {n:'Ikan kukus halia',             k:450, ra:1, x:'ikan', it:['Nasi putih, {nasi}','Ikan kukus halia','Sawi tumis']},
+    {n:'Gulai ayam',                   k:520, ra:1, x:'santan pedas', it:['Nasi putih, {nasi}','Gulai ayam, kuah sedikit','Timun & tomato']},
+    {n:'Tauhu sumbat & sup sayur',     k:430, ra:0.5, it:['Nasi, {nasi}','Tauhu sumbat 2 keping','Sup sayur']},
+    {n:'Ayam masak halia',             k:460, ra:1, it:['Nasi putih, {nasi}','Ayam masak halia, 1 tapak tangan','Kailan tumis']},
+    {n:'Sotong sambal kurang minyak',  k:470, ra:1, x:'laut pedas', it:['Nasi putih, {nasi}','Sotong sambal, 1 tapak tangan','Kacang panjang goreng']},
+    {n:'Telur bistik & sayur',         k:450, ra:0.5, x:'telur', it:['Nasi, {nasi}','Telur bistik 2 biji','Sayur campur']},
+    {n:'Udang masak merah',            k:480, ra:1, x:'laut pedas', it:['Nasi putih, {nasi}','Udang masak merah, 1 tapak tangan','Taugeh goreng']},
+    {n:'Ayam masak lemak cili padi',   k:520, ra:1, x:'santan pedas', it:['Nasi putih, {nasi}','Ayam masak lemak, kuah sedikit','Ulam timun']},
+    {n:'Daging masak kicap',           k:500, ra:1, x:'daging', it:['Nasi putih, {nasi}','Daging masak kicap, 1 tapak tangan','Kobis tumis']},
+    {n:'Sayur lodeh & tempe',          k:450, ra:0.5, x:'santan', it:['Nasi, {nasi}','Sayur lodeh, 1 mangkuk','Tempe goreng 2 keping']},
+    {n:'Ikan bawal bakar & air asam',  k:470, ra:1, x:'ikan pedas', it:['Nasi putih, {nasi}','Ikan bawal bakar, 1 ekor kecil','Air asam & ulam']},
+    {n:'Telur kukus & sup sayur',      k:400, ra:0.5, x:'telur', it:['Nasi, {nasi}','Telur kukus 2 biji','Sup sayur campur']}
+  ]},
+  /* snacks: one list for the morning and the afternoon, a lighter one at night */
+  pagi:{label:'Morning Snack', time:'10:00 am', note:'Kecil, supaya tak lapar sangat waktu tengah hari', opts:null},
+  petang:{label:'Tea Time', time:'4:30 pm', note:'Ganti goreng pisang petang', opts:null},
+  lewat:{label:'Supper', time:'9:30 pm', note:'Ringan, sekurang-kurangnya sejam sebelum tidur', opts:[
+    {n:'Susu suam rendah lemak',       k:110, x:'susu', it:['Susu rendah lemak, 1 gelas']},
+    {n:'Epal',                         k:80,  it:['1 biji epal']},
+    {n:'Oat & kurma',                  k:140, it:['Oat, 3 sudu, dimasak dengan air','1 biji kurma']},
+    {n:'Yogurt asli',                  k:100, x:'susu', it:['Yogurt asli, 1 cawan kecil']},
+    {n:'Bubur kacang hijau tanpa santan', k:150, it:['Bubur kacang hijau, separuh mangkuk','Gula sedikit, tanpa santan']},
+    {n:'Telur rebus & timun',          k:90,  x:'telur', it:['1 biji telur rebus','Timun']},
+    {n:'Pisang',                       k:90,  it:['1 biji pisang kecil']},
+    {n:'Susu soya tanpa gula',         k:100, it:['Susu soya tanpa gula, 1 gelas']}
   ]}
 };
-var LB30_SLOTS=['sarapan','tengahari','malam'];
+var LB30_SNACKS=[
+  {n:'Pisang & kacang tanah',          k:170, x:'kacang', it:['1 biji pisang','Kacang tanah, 1 genggam kecil']},
+  {n:'Yogurt asli & betik',            k:150, x:'susu', it:['Yogurt asli, 1 cawan kecil','Betik potong, 1 genggam']},
+  {n:'Epal & susu',                    k:170, x:'susu', it:['1 biji epal','Susu rendah lemak, 1 gelas']},
+  {n:'Kurma & air kosong',             k:110, it:['3 biji kurma','Segelas air kosong']},
+  {n:'Jambu batu & telur rebus',       k:140, x:'telur', it:['Jambu batu, separuh biji','1 biji telur rebus']},
+  {n:'Jagung rebus',                   k:150, b:1, it:['Jagung rebus, 1 tongkol','Teh o kosong']},
+  {n:'Ubi keledek rebus',              k:150, it:['Ubi keledek rebus, 1 genggam','Teh o kosong']},
+  {n:'Biskut kraker & teh o',          k:130, it:['3 keping biskut kraker','Teh o kurang manis']},
+  {n:'Sebiji kuih & teh o kosong',     k:160, x:'santan', b:1, it:['1 biji kuih muih','Teh o kosong']},
+  {n:'Roti mil & mentega kacang',      k:190, x:'kacang', it:['1 keping roti mil penuh','Mentega kacang, 1 sudu teh']},
+  {n:'Tembikai & badam',               k:150, x:'kacang', it:['Tembikai, 1 mangkuk','Badam, 10 biji']},
+  {n:'Air kelapa & buah naga',         k:120, b:1, it:['Air kelapa muda, 1 gelas','Buah naga, separuh biji']}
+];
+LB30_MENU.pagi.opts=LB30_SNACKS; LB30_MENU.petang.opts=LB30_SNACKS;
+/* the photographs of the dishes added on 25 Oct, made with ChatGPT in the
+   style of the first thirty as four 3x3 grids, in this order: breakfast 11-14,
+   lunch 11-15, dinner 11-15, the twelve snacks, the eight suppers (n01-n34) */
+(function(){ var n=1;
+  [[LB30_MENU.sarapan.opts,10],[LB30_MENU.tengahari.opts,10],[LB30_MENU.malam.opts,10],[LB30_SNACKS,0],[LB30_MENU.lewat.opts,0]].forEach(function(x){
+    for(var i=x[1];i<x[0].length;i++){ x[0][i].img='/ladies/img/menu/n'+(n<10?'0':'')+n+'.jpg'; n++; } });
+})();
+var LB30_SLOTS=['sarapan','tengahari','malam'];   /* before her answers: three meals */
+/* her meals a day, each with its share of her target */
+var LB30_MEALS={
+  3:[['sarapan',0.30],['tengahari',0.38],['malam',0.32]],
+  4:[['sarapan',0.25],['tengahari',0.33],['petang',0.12],['malam',0.30]],
+  5:[['sarapan',0.22],['pagi',0.10],['tengahari',0.30],['petang',0.10],['malam',0.28]],
+  6:[['sarapan',0.20],['pagi',0.09],['tengahari',0.27],['petang',0.09],['malam',0.25],['lewat',0.10]]
+};
 
 /* the fit test, low impact: reps in the time, the plank in seconds */
 var LB30_FIT=[['squat','Bodyweight Squat','reps'],['push','Knee Push Ups','reps'],['bridge','Hip Thrust','reps'],
@@ -14294,8 +14367,23 @@ var LB30_Q=[
     ['aktif','Kerja fizikal','Banyak mengangkat dan bergerak','workout']]},
   {k:'pace', t:'Rentak yang anda mahu', s:'Perlahan lebih mudah dikekalkan.', o:[
     ['perlahan','Perlahan & selesa','Lebih kurang 0.25 kg seminggu','leaf'],
-    ['sederhana','Sederhana','Lebih kurang 0.5 kg seminggu','flame']]}
+    ['sederhana','Sederhana','Lebih kurang 0.5 kg seminggu','flame']]},
+  {k:'meals', t:'Berapa kali anda makan sehari?', s:'Termasuk snek. Menu anda ikut cara anda makan.', o:[
+    [3,'3 kali','Sarapan, tengah hari, malam','food'],
+    [4,'4 kali','Tambah minum petang','food'],
+    [5,'5 kali','Tambah minum pagi dan petang','food'],
+    [6,'6 kali','Tambah snek malam','food']]},
+  {k:'avoid', multi:true, grid:true, t:'Ada makanan yang anda tak makan?', s:'Kami keluarkan dari menu anda. Pilih semua yang berkaitan.', o:[
+    ['ikan','Ikan','','food'],['laut','Udang & sotong','','food'],['daging','Daging lembu','','food'],['santan','Santan','','bottle'],
+    ['pedas','Pedas','','flame'],['susu','Susu & yogurt','','bottle'],['telur','Telur','','food'],['kacang','Kacang','','leaf'],
+    ['tiada','Semua boleh','','check']]},
+  {k:'cook', t:'Siapa yang sediakan makanan anda?', s:'Supaya menu anda sesuai dengan hari anda.', o:[
+    ['sendiri','Saya masak sendiri','Bawa bekal ke tempat kerja','home'],
+    ['keluarga','Saya masak untuk keluarga','Satu masakan untuk seisi rumah','people'],
+    ['beli','Kebanyakannya beli','Kedai, warung, kafe pejabat','bag']]}
 ];
+var LB30_MEAL_MS={sarapan:'sarapan',pagi:'minum pagi',tengahari:'makan tengah hari',petang:'minum petang',malam:'makan malam',lewat:'snek malam'};
+var LB30_AVOID={ikan:'ikan',laut:'udang & sotong',daging:'daging lembu',santan:'santan',pedas:'pedas',susu:'susu',telur:'telur',kacang:'kacang'};
 var LB30_ACT={duduk:1.2, ringan:1.375, aktif:1.55};
 var LB30_PACE={perlahan:0.25, sederhana:0.5};
 var LB30_SECS={baru:30, pernah:40, aktif:45};
@@ -14407,11 +14495,13 @@ function lbPace(){ var me=lbMe(); if(me&&me.feed) return 0.25; return me&&LB30_P
 
 /* ── the questionnaire: one question a screen ── */
 var lbQ=-1, lbQA=null;
-function lbQuizOpen(){
+function lbQuizOpen(at){
   var me=lbData().me||{}, pr=lbProfile();
   lbQA=JSON.parse(JSON.stringify(me)); lbQA.wt=lbQA.wt||pr.wt||''; lbQA.ht=lbQA.ht||pr.ht||''; lbQA.age=lbQA.age||pr.age||'';
-  lbQ=0; hidePanels(); $('progdetail').style.display='block'; renderLB30(); $('screen').scrollTop=0;
+  lbQ=at||0; hidePanels(); $('progdetail').style.display='block'; renderLB30(); $('screen').scrollTop=0;
 }
+/* those who answered before the menu questions came: straight to them */
+function lbQuizMenu(){ var i; for(i=0;i<LB30_Q.length;i++) if(LB30_Q[i].k==='meals') break; lbQuizOpen(i+1); }
 function lbQuizBack(){ if(lbQ<=0){ lbQ=-1; renderLB30(); } else { lbQ--; renderLB30(); } $('screen').scrollTop=0; }
 function lbQuizNext(){ lbQ++; renderLB30(); $('screen').scrollTop=0; }
 function lbQPick(k,v,multi){
@@ -14446,7 +14536,7 @@ function lbQuiz(){
     return h+bar+'<div class="lbq-intro" style="background-image:url(\''+lbImg('hero')+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
       '<div class="k">Ladies Burn 30</div><div class="t">Jom bina pelan 30 hari anda'+(nm?', '+hesc(nm):'')+'.</div></div></div>'+
       '<div class="lbq-p">'+n+' soalan, lebih kurang 2 minit. Jawapan anda menentukan gerakan, pusingan, minit setiap hari dan sasaran kalori anda.</div>'+
-      '<div class="lbq-list">'+[['person','Tahap anda dan bahagian yang sakit'],['clock','Masa yang anda ada'],['target','Bahagian yang mahu diubah'],['flame','Badan, aktiviti dan rentak']]
+      '<div class="lbq-list">'+[['person','Tahap anda dan bahagian yang sakit'],['clock','Masa yang anda ada'],['target','Bahagian yang mahu diubah'],['flame','Badan, aktiviti dan rentak'],['food','Cara anda makan']]
         .map(function(x){ return '<div><span>'+glyph(x[0])+'</span>'+x[1]+'</div>'; }).join('')+'</div>'+
       '<button class="lbx-go" onclick="lbQuizNext()">'+glyph('play')+'Mula</button></div>';
   }
@@ -14458,7 +14548,7 @@ function lbQuiz(){
     return h+'<div class="esfields lbq-body">'+fld('lbq-wt','Berat','kg',lbQA.wt,'decimal')+fld('lbq-ht','Tinggi','cm',lbQA.ht,'decimal')+fld('lbq-age','Umur','tahun',lbQA.age,'numeric')+'</div>'+
       '<button class="lbx-go" onclick="lbQBody()">Seterusnya</button></div>';
   }
-  h+='<div class="lbq-opts">'+q.o.map(function(o){
+  h+='<div class="lbq-opts'+(q.grid?' grid':'')+'">'+q.o.map(function(o){
     var on=q.multi ? (v||[]).indexOf(o[0])>=0 : v===o[0];
     return '<button class="lbq-o'+(on?' on':'')+'" onclick="lbQPick(\''+q.k+'\','+(typeof o[0]==='number'?o[0]:'\''+o[0]+'\'')+(q.multi?',1':'')+')">'+
       '<span class="ic">'+glyph(o[3])+'</span><span class="tx"><b>'+hesc(o[1])+'</b>'+(o[2]?'<small>'+hesc(o[2])+'</small>':'')+'</span>'+
@@ -14505,7 +14595,12 @@ function lbQuizResult(){
   if(log.focus) lines.push(['target','Satu hari seminggu khas untuk '+LB30_FOCUS[me.focus][0].toLowerCase()+'.']);
   if(log.botol) lines.push(['bottle',LB30_SAYS.botol]);
   if(log.kerusi) lines.push(['chair',LB30_SAYS.kerusi]);
-  if(tg) lines.push(['food','Sasaran '+tg.cal.toLocaleString()+' kcal sehari, dari berat, tinggi, umur, aktiviti dan rentak anda'+(me.feed?', ditambah kerana anda menyusukan bayi':'')+'.']);
+  if(tg) lines.push(['flame','Sasaran '+tg.cal.toLocaleString()+' kcal sehari, dari berat, tinggi, umur, aktiviti dan rentak anda'+(me.feed?', ditambah kerana anda menyusukan bayi':'')+'.']);
+  if(LB30_MEALS[me.meals]) lines.push(['food','Menu '+me.meals+' kali sehari: '+LB30_MEALS[me.meals].map(function(m){ return LB30_MEAL_MS[m[0]]; }).join(', ')+
+    (tg?'. Nasi disukat ikut sasaran anda, contohnya '+lbFist(lbRice(LB30_MENU.tengahari.opts[0],tg.cal*LB30_MEALS[me.meals].filter(function(m){ return m[0]==='tengahari'; })[0][1]))+' waktu tengah hari':'')+'.']);
+  var av=(me.avoid||[]).filter(function(a){ return LB30_AVOID[a]; });
+  if(av.length) lines.push(['check','Tanpa '+av.map(function(a){ return LB30_AVOID[a]; }).join(', ')+' dalam menu dan senarai belanja anda.']);
+  if(me.cook==='beli') lines.push(['bag','Sarapan dan makan tengah hari dari pilihan yang mudah dibeli di kedai dan warung.']);
   return '<div class="lbq-res"><div class="lbq-res-h" style="background-image:url(\''+lbImg('hero')+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
       '<div class="k">Pelan anda sudah sedia</div><div class="t">30 hari, dibina untuk '+(nm?hesc(nm):'anda')+'.</div></div></div>'+
     '<div class="lbq-chips"><span>'+LB30_Q[0].o.filter(function(o){ return o[0]===me.level; })[0][1]+'</span><span>'+me.mins+' min</span>'+
@@ -14522,6 +14617,7 @@ function lbMeCard(){
   (me.pain||[]).forEach(function(p){ if(LB30_SWAP[p]) tags.push({lutut:'Lutut selamat',belakang:'Belakang selamat',tangan:'Tangan selamat'}[p]); });
   if(me.mom==='bersalin') tags.push('Selepas bersalin');
   if(LB30_FOCUS[me.focus]) tags.push(LB30_FOCUS[me.focus][0]);
+  if(LB30_MEALS[me.meals]) tags.push(me.meals+'× makan sehari');
   return '<div class="lbx-card lbq-me"><div class="h"><div><div class="lbx-k">Your plan</div><b>Dibina dari jawapan anda</b></div>'+
     '<button onclick="lbQuizOpen()">'+glyph('pencil')+'Ubah</button></div>'+
     '<div class="lbq-chips">'+tags.map(function(x){ return '<span>'+hesc(x)+'</span>'; }).join('')+'</div></div>';
@@ -14884,10 +14980,30 @@ function lbSaveProfile(){
 function lbForgetNumbers(){ var d=lbData(); d.profile={}; if(d.me){ delete d.me.wt; delete d.me.ht; delete d.me.age; } HF.save(); renderLB30(); }
 /* the three options a meal shows on a day: different every day, never twice */
 function lbMenuFor(slot,day){
-  var opts=LB30_MENU[slot].opts, n=opts.length, out=[], k;
-  /* three in a row from day×3, so one day's dishes don't come back the next */
-  for(k=0;k<3;k++) out.push(opts[(day*3+k)%n]);
+  var me=lbMe(), opts=LB30_MENU[slot].opts.filter(function(o){ return lbOk(o,me); }), out=[], k, n;
+  /* she mostly buys: breakfast and lunch from what a kedai sells, when there are three */
+  if(me && me.cook==='beli' && (slot==='sarapan'||slot==='tengahari')){
+    var bought=opts.filter(function(o){ return o.b; }); if(bought.length>=3) opts=bought;
+  }
+  n=opts.length;
+  /* three in a row from day×3, so one day's dishes don't come back the next;
+     tea time starts further round than the morning, from the same list */
+  for(k=0;k<Math.min(3,n);k++) out.push(opts[(day*3+k+(slot==='petang'?5:0))%n]);
   return out;
+}
+/* her meals, each with its share of her target */
+function lbSlots(){ var me=lbMe(); if(me && LB30_MEALS[me.meals]) return LB30_MEALS[me.meals];
+  return LB30_SLOTS.map(function(s){ return [s, LB30_MENU[s].share]; }); }
+/* nothing she said she doesn't eat */
+function lbOk(o,me){ if(!me||!me.avoid) return true; var x=' '+(o.x||'')+' '; return me.avoid.every(function(a){ return x.indexOf(' '+a+' ')<0; }); }
+/* her rice for a dish, in half fists, from her target for that meal */
+function lbRice(o,kcal){ if(!o.ra) return null; if(!kcal) return o.ra;
+  var r=Math.round((kcal-(o.k-o.ra*200))/100)/2; return Math.max(0.5,Math.min(2,r)); }
+function lbFist(r){ return (r<1?'½':Math.floor(r)+(r%1?'½':''))+' genggam'; }
+function lbDish(o,kcal){
+  var r=lbRice(o,kcal);
+  return {k:r===null?o.k:Math.round(o.k-o.ra*200+r*200), r:r,
+    it:o.it.map(function(x){ return x.replace('{nasi}', lbFist(r===null?1:r)); })};
 }
 /* Learn (25 Oct 2026, Seth): the Nutrition Academy, all of it, inside her
    program; Ladies Burn 30 opens every episode (acLadies, academy.js) */
@@ -14911,20 +15027,27 @@ function lbScanCard(){
 /* ── the shopping list (25 Oct 2026, Seth): a week's menu (option 1 of each
    meal) turned into what to buy, grouped as a market is, ticked off in the
    shop and sent on WhatsApp ── */
-var LB30_SHOP_ING=[['nasi lemak','Beras & santan'],['nasi perang','Beras perang'],['nasi','Beras'],['bubur','Beras'],
+var LB30_SHOP_ING=[['nasi impit','Beras'],['bebola ikan','Bebola ikan'],['tuna','Tuna'],['kuey teow','Kuey teow'],['mihun','Bihun'],
+  ['ubi keledek','Ubi keledek'],['mentega kacang','Mentega kacang'],['kacang tanah','Kacang tanah'],['kacang hijau','Kacang hijau'],['badam','Badam'],
+  ['susu soya','Susu soya'],['yogurt','Yogurt asli'],['epal','Epal'],['kurma','Kurma'],['jambu','Jambu batu'],['jagung','Jagung'],['kraker','Biskut kraker'],
+  ['kuih','Kuih'],['tembikai','Tembikai'],['betik','Betik'],['buah naga','Buah naga'],['kelapa','Kelapa muda'],['cendawan','Cendawan'],
+  ['nasi lemak','Beras & santan'],['nasi perang','Beras perang'],['nasi','Beras'],['bubur','Beras'],
   ['roti canai','Roti canai (beku)'],['roti','Roti mil penuh'],['oat','Oat'],['mi ','Mi kuning'],['mi kuning','Mi kuning'],['bihun','Bihun'],['ubi','Ubi kayu'],['tosai','Tepung tosai'],['lempeng','Tepung & pisang'],
   ['ayam','Ayam'],['ikan','Ikan'],['telur','Telur'],['daging','Daging'],['sotong','Sotong'],['udang','Udang'],['tauhu','Tauhu'],['tempe','Tempe'],
   ['kangkung','Kangkung'],['sawi','Sawi'],['bayam','Bayam'],['kailan','Kailan'],['kobis','Kobis'],['taugeh','Taugeh'],['kacang panjang','Kacang panjang'],['buncis','Kacang buncis'],
   ['timun','Timun'],['tomato','Tomato'],['ulam','Ulam'],['sayur','Sayur campur'],['pisang','Pisang'],['halia','Halia'],
   ['susu','Susu rendah lemak'],['dal','Kacang dal'],['sambal','Cili & belacan'],['santan','Santan'],['kicap','Kicap'],['teh','Teh'],['kopi','Kopi']];
-var LB30_SHOP_CAT=[['Protein','food','#E30613',['Ayam','Ikan','Telur','Daging','Sotong','Udang','Tauhu','Tempe']],
-  ['Karbohidrat','workout','#E08A00',['Beras','Beras perang','Beras & santan','Roti mil penuh','Roti canai (beku)','Oat','Mi kuning','Bihun','Ubi kayu','Tepung tosai','Tepung & pisang']],
-  ['Sayur & Buah','leaf','#1F9D6A',['Kangkung','Sawi','Bayam','Kailan','Kobis','Taugeh','Kacang panjang','Kacang buncis','Timun','Tomato','Ulam','Sayur campur','Pisang','Halia']]];
+var LB30_SHOP_CAT=[['Protein','food','#E30613',['Ayam','Ikan','Telur','Daging','Sotong','Udang','Tauhu','Tempe','Tuna','Bebola ikan']],
+  ['Karbohidrat','workout','#E08A00',['Beras','Beras perang','Beras & santan','Roti mil penuh','Roti canai (beku)','Oat','Mi kuning','Bihun','Ubi kayu','Tepung tosai','Tepung & pisang',
+    'Kuey teow','Ubi keledek','Jagung','Biskut kraker']],
+  ['Sayur & Buah','leaf','#1F9D6A',['Kangkung','Sawi','Bayam','Kailan','Kobis','Taugeh','Kacang panjang','Kacang buncis','Timun','Tomato','Ulam','Sayur campur','Pisang','Halia',
+    'Epal','Kurma','Jambu batu','Tembikai','Betik','Buah naga','Kelapa muda','Cendawan']]];
 var lbShopWeek=-1;
 function lbShopItems(wi){
   var w=LB30_WEEKS[wi], n={}, d, si, it, k, low;
-  for(d=w.from-1; d<w.to; d++) for(si=0; si<LB30_SLOTS.length; si++){
-    lbMenuFor(LB30_SLOTS[si],d)[0].it.forEach(function(x){
+  var sl=lbSlots();
+  for(d=w.from-1; d<w.to; d++) for(si=0; si<sl.length; si++){
+    lbDish(lbMenuFor(sl[si][0],d)[0]).it.forEach(function(x){
       low=' '+String(x).toLowerCase()+' ';
       for(k=0;k<LB30_SHOP_ING.length;k++) if(low.indexOf(LB30_SHOP_ING[k][0])>=0){ it=LB30_SHOP_ING[k][1]; n[it]=(n[it]||0)+1; break; }
     });
@@ -14970,7 +15093,9 @@ function lbPlateSVG(){
 /* each dish's photograph (25 Oct 2026): made with ChatGPT in one style, in
    menu order, breakfast 1-10, lunch 11-20, dinner 21-30 (ladies/img/menu) */
 function lbDishImg(slot,o){
-  var n=LB30_SLOTS.indexOf(slot)*10+LB30_MENU[slot].opts.indexOf(o)+1;
+  if(o.img) return o.img;
+  var si=LB30_SLOTS.indexOf(slot), oi=LB30_MENU[slot].opts.indexOf(o), n=si*10+oi+1;
+  if(si<0 || oi<0 || oi>9) return '';
   return '/ladies/img/menu/d'+(n<10?'0':'')+n+'.jpg';
 }
 function lbFood(){
@@ -14995,21 +15120,28 @@ function lbFood(){
       .map(function(x){ return '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'; }).join('')+'</div></div>';
   h+='<div class="lbx-misi"><span class="b">'+glyph('target')+'</span><div><div class="k">Nutrition mission · Day '+(lbMenuDay+1)+'</div><div class="t">'+LB30_MISI[lbMenuDay]+'</div></div></div>';
   h+=lbScanCard();
-  /* the menu: a day, three meals, three options each */
-  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Today&rsquo;s Menu</div><div class="lbx-ss">Day '+(lbMenuDay+1)+' · tiga pilihan untuk setiap waktu makan</div></div></div>';
+  if(lbMe() && !lbMe().meals) h+='<div class="lbx-card lbq-invite"><div class="lbx-k">New · your own menu</div>'+
+    '<div class="lbx-h">Menu ikut cara anda makan.</div><div class="lbx-p">3 soalan: berapa kali makan sehari, apa yang anda tak makan, siapa yang masak.</div>'+
+    '<button class="lbx-go" onclick="lbQuizMenu()">'+glyph('sliders')+'Jawab 3 Soalan</button></div>';
+  /* the menu: a day, her meals, three options each */
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Today&rsquo;s Menu</div><div class="lbx-ss">Day '+(lbMenuDay+1)+' · '+lbSlots().length+' kali makan, tiga pilihan setiap satu</div></div></div>';
   h+='<div class="hscroll wl-mdays lbx-mdays">'+LB30_DAYS.map(function(d,i){
     return '<button class="wl-md'+(i===lbMenuDay?' on':'')+'" onclick="lbMenuDay='+i+';renderLB30()"><small>Day</small><b>'+(i+1)+'</b></button>'; }).join('')+'</div>';
-  var slotLook={sarapan:['sunrise','#E08A00'],tengahari:['sun','#E30613'],malam:['moon','#5B4BC4']};
-  h+='<div class="lbx-meals">'+LB30_SLOTS.map(function(slot,si){
-    var s=LB30_MENU[slot], opts=lbMenuFor(slot,lbMenuDay), sid='lbm-'+lbMenuDay+'-'+si, lk=slotLook[slot]||['food','#E30613'];
+  var slotLook={sarapan:['sunrise','#E08A00'],pagi:['leaf','#1F9D6A'],tengahari:['sun','#E30613'],petang:['clock','#DB2777'],malam:['moon','#5B4BC4'],lewat:['moon','#0F766E']};
+  var me=lbMe(), cook=me&&me.cook;
+  h+='<div class="lbx-meals">'+lbSlots().map(function(sl,si){
+    var slot=sl[0], s=LB30_MENU[slot], kc=Math.round(t.cal*sl[1]), opts=lbMenuFor(slot,lbMenuDay), sid='lbm-'+lbMenuDay+'-'+si, lk=slotLook[slot]||['food','#E30613'];
+    var label=slot==='tengahari'&&cook&&cook!=='sendiri'?'Lunch':slot==='malam'&&cook==='beli'?'Dinner':s.label;
+    var note=slot==='tengahari'&&cook==='beli'?'Pilihan yang mudah dibeli di kedai dan warung':slot==='malam'&&cook==='keluarga'?'Masak sekali untuk seisi rumah, ambil bahagian anda':s.note;
     return '<div class="mpslot lbx-meal" id="'+sid+'" style="--mc:'+lk[1]+'"><div class="mpslot-h"><span class="ic">'+glyph(lk[0])+'</span>'+
-      '<div class="hd"><div class="t">'+s.label+'</div><div class="m">'+s.time+' · ~'+Math.round(t.cal*s.share)+' kcal</div></div>'+
+      '<div class="hd"><div class="t">'+label+'</div><div class="m">'+s.time+' · ~'+kc+' kcal</div></div>'+
       '<div class="mpopts">'+opts.map(function(o,oi){ return '<button class="mpo'+(oi===0?' on':'')+'" aria-label="Option '+(oi+1)+'" onclick="mpOpt(\''+sid+'\','+oi+')">'+(oi+1)+'</button>'; }).join('')+'</div></div>'+
-      opts.map(function(o,oi){ return '<div class="mpopt" style="display:'+(oi===0?'block':'none')+';">'+
-        '<div class="lbx-dish" style="background-image:url(\''+lbDishImg(slot,o)+'\')"></div>'+
-        '<div class="mpopt-h"><div class="t">'+o.n+'</div><div class="k">'+o.k+' kcal</div></div>'+
-        '<div class="lbx-items">'+o.it.map(function(it){ return '<span>'+it+'</span>'; }).join('')+'</div>'+
-      '</div>'; }).join('')+'<div class="lbx-meal-n">'+s.note+'</div></div>';
+      opts.map(function(o,oi){ var ds=lbDish(o,kc), im=lbDishImg(slot,o); return '<div class="mpopt" style="display:'+(oi===0?'block':'none')+';">'+
+        (im?'<div class="lbx-dish" style="background-image:url(\''+im+'\')"></div>':'')+
+        '<div class="mpopt-h"><div class="t">'+o.n+'</div><div class="k">'+ds.k+' kcal</div></div>'+
+        (ds.r!==null&&me?'<div class="lbx-rice">'+glyph('food')+'Nasi anda: <b>'+lbFist(ds.r)+'</b></div>':'')+
+        '<div class="lbx-items">'+ds.it.map(function(it){ return '<span>'+it+'</span>'; }).join('')+'</div>'+
+      '</div>'; }).join('')+'<div class="lbx-meal-n">'+note+'</div></div>';
   }).join('')+'</div>';
   h+=lbShopping();
   /* the healthy plate, then the hands */

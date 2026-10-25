@@ -3808,9 +3808,30 @@ print("\n── LADIES BURN 30 ──");
   lbQTick('clear'); ok("...then there is", $('pgd-body').innerHTML.indexOf('lbQuizNext()')>0);
   lbQuizNext(); lbQPick('mins',10); lbQPick('focus','punggung'); lbQPick('equip','tiada',1); lbQuizNext();
   $('lbq-wt').value='70'; $('lbq-ht').value='160'; $('lbq-age').value='35'; lbQBody(); lbQPick('act','duduk'); lbQPick('pace','perlahan');
+  lbQPick('meals',5); lbQPick('avoid','ikan',1); lbQPick('avoid','pedas',1); lbQuizNext(); lbQPick('cook','beli');
   var res=$('pgd-body').innerHTML;
-  ok("her plan's summary says what changed, and only that", res.indexOf('Selepas bersalin')>0 && res.indexOf('Lutut selamat')<0 && res.indexOf('10 minit atau kurang')>0);
+  ok("her plan's summary says what changed, and only that", res.indexOf('Selepas bersalin')>0 && res.indexOf('Lutut selamat')<0 && res.indexOf('10 minit atau kurang')>0 &&
+     res.indexOf('Menu 5 kali sehari')>0 && res.indexOf('Tanpa ikan, pedas')>0 && res.indexOf('mudah dibeli')>0);
   lbQuizSave(); ok("saved: her plan card, her days", lbMe() && lbMe().act==='duduk' && lbQ===-1 && $('pgd-body').innerHTML.indexOf('lbq-me')>0 && lbDay(1).dur===30);
+  /* her menu: her meals a day, nothing she doesn't eat, her rice */
+  ok("five meals: breakfast, two snacks, lunch, dinner, the shares whole", lbSlots().map(function(m){ return m[0]; }).join()==='sarapan,pagi,tengahari,petang,malam' &&
+     [3,4,5,6].every(function(n){ return Math.abs(LB30_MEALS[n].reduce(function(a,m){ return a+m[1]; },0)-1)<0.001 && LB30_MEALS[n].length===n; }));
+  var seen=[]; for(var dd=0; dd<30; dd++) lbSlots().forEach(function(m){ lbMenuFor(m[0],dd).forEach(function(o){ seen.push(o); }); });
+  ok("30 days of it: no fish, nothing spicy, three options every meal", seen.every(function(o){ return !/\b(ikan|pedas)\b/.test(o.x||''); }) &&
+     lbSlots().every(function(m){ return lbMenuFor(m[0],7).length===3; }));
+  ok("she buys: breakfast and lunch from a kedai", [0,1,2,3].every(function(dd){ return lbMenuFor('tengahari',dd).every(function(o){ return o.b; }) && lbMenuFor('sarapan',dd).every(function(o){ return o.b; }); }));
+  ok("tea time is not the morning's snack", [0,3,9].every(function(dd){ var a=lbMenuFor('pagi',dd)[0], b=lbMenuFor('petang',dd)[0]; return a!==b; }));
+  var every=['ikan','laut','daging','santan','pedas','susu','telur','kacang'];
+  lb.me.avoid=every; ok("avoiding everything still leaves three a meal", [3,4,5,6].every(function(n){ lb.me.meals=n; return lbSlots().every(function(m){ return lbMenuFor(m[0],11).length===3; }); }));
+  var aym=LB30_MENU.tengahari.opts[0];
+  ok("her rice from her target: more for more, half a fist at least, two at most", lbRice(aym,700)===2 && lbRice(aym,500)===1 && lbRice(aym,300)===0.5 &&
+     lbDish(aym,500).it[0]==='Nasi putih, 1 genggam' && lbDish(aym,600).it[0]==='Nasi putih, 1½ genggam' && lbDish(aym,600).k===600 && lbDish(LB30_MENU.tengahari.opts[2],600).r===null);
+  ok("every dish's tags are known ones", ['sarapan','tengahari','malam','pagi','lewat'].every(function(sl){ return LB30_MENU[sl].opts.every(function(o){ return (o.x||'').split(' ').every(function(t){ return !t || every.indexOf(t)>=0; }); }); }));
+  ok("every dish has its photograph: the old thirty, then n01-n34 in order", lbDishImg('malam',LB30_MENU.malam.opts[9])==='/ladies/img/menu/d30.jpg' &&
+     lbDishImg('sarapan',LB30_MENU.sarapan.opts[10])==='/ladies/img/menu/n01.jpg' && lbDishImg('pagi',LB30_SNACKS[0])==='/ladies/img/menu/n15.jpg' &&
+     lbDishImg('lewat',LB30_MENU.lewat.opts[7])==='/ladies/img/menu/n34.jpg' &&
+     ['sarapan','tengahari','malam','pagi','lewat'].every(function(sl){ return LB30_MENU[sl].opts.every(function(o){ return !!lbDishImg(sl,o); }); }));
+  delete lb.me.meals; ok("answered before the menu questions: asked them on Nutrition", (lbTab='food', renderLB30(), $('pgd-body').innerHTML.indexOf('lbQuizMenu()')>0));
   delete lb.me; lb.profile={};
   /* BURN30 is as it was */
   ok("BURN30 is untouched", WL30.hub===true && findProg('wl30')===WL30 && WL30_DAYS.length===30 && WL30.price===39);
