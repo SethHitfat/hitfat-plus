@@ -6027,3 +6027,69 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 :root[data-theme="light"] .acg .acx-cv .acx-ic{border-color:#fff;}
 .acg .acx-cv .acx-ic .gly{width:15px;height:15px;}
 .acg .ac-mod-h{gap:14px;}
+
+/* ═══ Ladies Burn 30 · Nutrition, premium (25 Oct 2026) ═══ */
+.lbx .lbx-misi{cursor:default;}
+/* day picker */
+.lbx .lbx-mdays{margin:0 -18px;padding:2px 18px 6px;gap:8px;}
+.lbx .lbx-mdays .wl-md{border-radius:16px;background:var(--lcard);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.lbx .lbx-mdays .wl-md.on{background:linear-gradient(150deg,#F0313B,var(--lr) 60%,var(--lr2));color:#fff;box-shadow:0 8px 18px rgba(227,6,19,.3);}
+/* meals */
+.lbx-meals{display:flex;flex-direction:column;gap:12px;}
+.lbx .mpslot.lbx-meal{margin:0;padding:14px;border-radius:22px;background:var(--lcard);border-top:4px solid var(--mc);}
+.lbx-meal .mpslot-h{display:flex;align-items:center;gap:10px;}
+.lbx-meal .mpslot-h .ic{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;color:#fff;background:var(--mc);}
+.lbx-meal .mpslot-h .ic .gly{width:20px;height:20px;}
+.lbx-meal .hd{flex:1;min-width:0;}
+.lbx-meal .hd .t{font-size:16.5px;font-weight:800;}
+.lbx-meal .hd .m{font-size:12.5px;color:var(--dim);font-weight:600;margin-top:1px;}
+.lbx-meal .mpopts{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--surface2);}
+.lbx-meal .mpo{width:30px;height:30px;border-radius:9px;border:none;background:transparent;color:var(--dim);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.lbx-meal .mpo.on{background:var(--mc);color:#fff;}
+.lbx-meal .mpopt-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:14px;}
+.lbx-meal .mpopt-h .t{font-size:19px;font-weight:800;letter-spacing:-.3px;}
+.lbx-meal .mpopt-h .k{flex:none;padding:4px 9px;border-radius:99px;background:color-mix(in srgb,var(--mc) 14%,transparent);color:var(--mc);font-size:12.5px;font-weight:800;}
+.lbx-items{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+.lbx-items span{position:relative;padding-left:18px;font-size:14px;line-height:1.4;}
+.lbx-items span:before{content:'';position:absolute;left:4px;top:7px;width:7px;height:7px;border-radius:50%;background:var(--mc);}
+.lbx-meal-n{margin-top:10px;font-size:12px;color:var(--dim);font-weight:600;}
+/* shopping list */
+.lbx-shop{display:flex;flex-direction:column;gap:12px;}
+.lbx-shop-w{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;border-radius:14px;background:var(--surface2);}
+.lbx-shop-w button{padding:9px 4px;border:none;border-radius:10px;background:transparent;color:var(--dim);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.lbx-shop-w button.on{background:var(--lcard);color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.lbx-shop-p{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:800;color:var(--dim);}
+.lbx-shop-p .bar{flex:1;height:7px;border-radius:7px;background:var(--lbl);overflow:hidden;}
+.lbx-shop-p .bar i{display:block;height:100%;background:var(--lr);border-radius:7px;transition:width .3s;}
+.lbx-shop-c .h{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.lbx-shop-c .h .ic{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--mc);color:#fff;}
+.lbx-shop-c .h .ic .gly{width:15px;height:15px;}
+.lbx-shop-c .h b{font-size:14.5px;font-weight:800;}
+.lbx-shop-c .h > span:last-child{margin-left:auto;font-size:12px;font-weight:800;color:var(--dim);}
+.lbx-shop-i{display:flex;align-items:center;gap:10px;width:100%;padding:9px 4px;border:none;border-top:1px solid var(--line);background:none;color:var(--txt);font:inherit;text-align:left;cursor:pointer;}
+.lbx-shop-i .b{flex:none;width:24px;height:24px;border-radius:8px;border:2px solid color-mix(in srgb,var(--mc) 45%,transparent);display:grid;place-items:center;}
+.lbx-shop-i.on .b{background:var(--mc);border-color:var(--mc);color:#fff;}
+.lbx-shop-i .b .gly{width:13px;height:13px;}
+.lbx-shop-i .n{flex:1;font-size:15px;font-weight:700;}
+.lbx-shop-i.on .n{text-decoration:line-through;color:var(--dim);}
+.lbx-shop-i .q{font-size:12px;color:var(--dim);font-weight:600;}
+.lbx-shop-wa{color:#128C4A !important;text-decoration:none;border:1.5px solid rgba(18,140,74,.3);}
+/* the healthy plate */
+.lbx-plate{display:flex;align-items:center;gap:16px;}
+.lbx-plate-svg{flex:none;width:120px;height:120px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.1));}
+.lbx-plate-k{display:flex;flex-direction:column;gap:8px;min-width:0;}
+.lbx-plate-k div{display:grid;grid-template-columns:12px 1fr;column-gap:8px;align-items:center;}
+.lbx-plate-k i{grid-row:span 2;width:12px;height:12px;border-radius:4px;}
+.lbx-plate-k b{font-size:14.5px;font-weight:800;line-height:1.1;}
+.lbx-plate-k span{font-size:12px;color:var(--dim);font-weight:600;}
+/* eating out */
+.lbx-out{display:grid;grid-auto-flow:column;grid-auto-columns:78%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -18px;padding:2px 18px 8px;scrollbar-width:none;}
+.lbx-out::-webkit-scrollbar{display:none;}
+.lbx-oc{scroll-snap-align:start;padding:14px;border-radius:22px;background:var(--lcard);
+  background-image:radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--mc) 16%,transparent),transparent 55%);}
+.lbx-oc .h{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.lbx-oc .h .ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--mc);color:#fff;}
+.lbx-oc .h .ic .gly{width:18px;height:18px;}
+.lbx-oc .h b{font-size:16.5px;font-weight:800;}
+.lbx-oc .o{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:14px;line-height:1.4;}
+.lbx-oc .o .gly{flex:none;width:16px;height:16px;margin-top:2px;color:var(--mc);}

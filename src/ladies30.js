@@ -251,7 +251,7 @@ var LB30=(function(){
 /* ── state ── */
 function lbData(){
   var d=HF.data.lb30||(HF.data.lb30={});
-  d.check=d.check||{}; d.fit=d.fit||{}; d.body=d.body||{}; d.half=d.half||{}; d.steps=d.steps||{}; d.water=d.water||{};
+  d.check=d.check||{}; d.fit=d.fit||{}; d.body=d.body||{}; d.half=d.half||{}; d.steps=d.steps||{}; d.water=d.water||{}; d.shop=d.shop||{};
   /* the old Ladies Beginner counted its own days; the new program starts at day 1 */
   if(!d.v){ d.v=1; HF.data.progress[LB30_ID]=0; }
   return d;
@@ -630,6 +630,65 @@ function lbScanCard(){
   return '<div class="lbx-scan">'+tx+'<button class="lbx-go" onclick="startCheckout(\'scan_d6\')">'+glyph('photo')+'Get Scan 6 · RM14.90</button>'+
     '<div class="lbx-scan-fine">6 scan sehari selama 30 hari: sarapan, makan tengah hari, makan malam dan snek.</div></div>';
 }
+/* ── the shopping list (25 Oct 2026, Seth): a week's menu (option 1 of each
+   meal) turned into what to buy, grouped as a market is, ticked off in the
+   shop and sent on WhatsApp ── */
+var LB30_SHOP_ING=[['nasi lemak','Beras & santan'],['nasi perang','Beras perang'],['nasi','Beras'],['bubur','Beras'],
+  ['roti canai','Roti canai (beku)'],['roti','Roti mil penuh'],['oat','Oat'],['mi ','Mi kuning'],['mi kuning','Mi kuning'],['bihun','Bihun'],['ubi','Ubi kayu'],['tosai','Tepung tosai'],['lempeng','Tepung & pisang'],
+  ['ayam','Ayam'],['ikan','Ikan'],['telur','Telur'],['daging','Daging'],['sotong','Sotong'],['udang','Udang'],['tauhu','Tauhu'],['tempe','Tempe'],
+  ['kangkung','Kangkung'],['sawi','Sawi'],['bayam','Bayam'],['kailan','Kailan'],['kobis','Kobis'],['taugeh','Taugeh'],['kacang panjang','Kacang panjang'],['buncis','Kacang buncis'],
+  ['timun','Timun'],['tomato','Tomato'],['ulam','Ulam'],['sayur','Sayur campur'],['pisang','Pisang'],['halia','Halia'],
+  ['susu','Susu rendah lemak'],['dal','Kacang dal'],['sambal','Cili & belacan'],['santan','Santan'],['kicap','Kicap'],['teh','Teh'],['kopi','Kopi']];
+var LB30_SHOP_CAT=[['Protein','food','#E30613',['Ayam','Ikan','Telur','Daging','Sotong','Udang','Tauhu','Tempe']],
+  ['Karbohidrat','workout','#E08A00',['Beras','Beras perang','Beras & santan','Roti mil penuh','Roti canai (beku)','Oat','Mi kuning','Bihun','Ubi kayu','Tepung tosai','Tepung & pisang']],
+  ['Sayur & Buah','leaf','#1F9D6A',['Kangkung','Sawi','Bayam','Kailan','Kobis','Taugeh','Kacang panjang','Kacang buncis','Timun','Tomato','Ulam','Sayur campur','Pisang','Halia']]];
+var lbShopWeek=-1;
+function lbShopItems(wi){
+  var w=LB30_WEEKS[wi], n={}, d, si, it, k, low;
+  for(d=w.from-1; d<w.to; d++) for(si=0; si<LB30_SLOTS.length; si++){
+    lbMenuFor(LB30_SLOTS[si],d)[0].it.forEach(function(x){
+      low=' '+String(x).toLowerCase()+' ';
+      for(k=0;k<LB30_SHOP_ING.length;k++) if(low.indexOf(LB30_SHOP_ING[k][0])>=0){ it=LB30_SHOP_ING[k][1]; n[it]=(n[it]||0)+1; break; }
+    });
+  }
+  return n;
+}
+function lbShopTick(wi,name){ var sh=lbData().shop, k='w'+wi; sh[k]=sh[k]||{}; sh[k][name]=!sh[k][name]; HF.save(); renderLB30(); }
+function lbShopText(wi){
+  var n=lbShopItems(wi), t='Senarai belanja Ladies Burn 30 · Week '+(wi+1)+'\n';
+  LB30_SHOP_CAT.concat([['Lain-lain']]).forEach(function(c,ci){
+    var names=Object.keys(n).filter(function(x){ return ci<LB30_SHOP_CAT.length ? c[3].indexOf(x)>=0 : !LB30_SHOP_CAT.some(function(cc){ return cc[3].indexOf(x)>=0; }); });
+    if(names.length) t+='\n'+c[0]+':\n'+names.map(function(x){ return '• '+x; }).join('\n')+'\n';
+  });
+  return t;
+}
+function lbShopping(){
+  if(lbShopWeek<0) lbShopWeek=lbWeekOf(Math.min(lbNext(),LB30_DAYS.length-1));
+  var wi=lbShopWeek, n=lbShopItems(wi), got=(lbData().shop['w'+wi])||{}, all=Object.keys(n).sort(function(a,b){ return n[b]-n[a]; }), have=all.filter(function(x){ return got[x]; }).length;
+  var h='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Shopping List</div><div class="lbx-ss">Untuk menu seminggu (pilihan 1). Tanda bila dah beli.</div></div></div>';
+  h+='<div class="lbx-card lbx-shop"><div class="lbx-shop-w">'+LB30_WEEKS.map(function(x,i){ return '<button class="'+(i===wi?'on':'')+'" onclick="lbShopWeek='+i+';renderLB30()">Week '+(i+1)+'</button>'; }).join('')+'</div>'+
+    '<div class="lbx-shop-p"><div class="bar"><i style="width:'+(all.length?Math.round(have/all.length*100):0)+'%"></i></div><span>'+have+' / '+all.length+' dibeli</span></div>';
+  LB30_SHOP_CAT.concat([['Lain-lain','bag','#6B6B6B']]).forEach(function(c,ci){
+    var names=all.filter(function(x){ return ci<LB30_SHOP_CAT.length ? c[3].indexOf(x)>=0 : !LB30_SHOP_CAT.some(function(cc){ return cc[3].indexOf(x)>=0; }); });
+    if(!names.length) return;
+    h+='<div class="lbx-shop-c" style="--mc:'+c[2]+'"><div class="h"><span class="ic">'+glyph(c[1])+'</span><b>'+c[0]+'</b><span>'+names.length+'</span></div>'+
+      names.map(function(x){ var on=!!got[x]; return '<button class="lbx-shop-i'+(on?' on':'')+'" onclick="lbShopTick('+wi+',\''+x.replace(/'/g,"\\'")+'\')"><span class="b">'+(on?glyph('check'):'')+'</span><span class="n">'+x+'</span><span class="q">'+n[x]+'× hidangan</span></button>'; }).join('')+'</div>';
+  });
+  h+='<a class="lbx-ghost lbx-shop-wa" href="https://wa.me/?text='+encodeURIComponent(lbShopText(wi))+'" target="_blank" rel="noopener">'+glyph('share')+'Hantar senarai ke WhatsApp</a></div>';
+  return h;
+}
+/* the healthy plate: half veg, a quarter protein, a quarter carbs */
+function lbPlateSVG(){
+  return '<svg class="lbx-plate-svg" viewBox="0 0 120 120" aria-hidden="true">'+
+    '<circle cx="60" cy="60" r="58" fill="#fff" stroke="rgba(0,0,0,.08)" stroke-width="2"/>'+
+    '<circle cx="60" cy="60" r="50" fill="#F3EFEA"/>'+
+    '<path d="M60 60 L60 12 A48 48 0 0 0 60 108 Z" fill="#1F9D6A"/>'+
+    '<path d="M60 60 L60 12 A48 48 0 0 1 108 60 Z" fill="#E30613"/>'+
+    '<path d="M60 60 L108 60 A48 48 0 0 1 60 108 Z" fill="#E08A00"/>'+
+    '<circle cx="104" cy="22" r="8" fill="#C9A227" stroke="#fff" stroke-width="2"/>'+
+    '<line x1="60" y1="12" x2="60" y2="108" stroke="#fff" stroke-width="2.5"/><line x1="60" y1="60" x2="108" y2="60" stroke="#fff" stroke-width="2.5"/></svg>';
+}
+
 function lbFood(){
   if(!lbOwned()) return lbLocked('food','Calorie target & 30-day menu',
     'Sasaran harian dari berat, tinggi dan umur anda — sarapan, bekal tengah hari dan makan malam keluarga, '+
@@ -644,29 +703,35 @@ function lbFood(){
   }
   var tot=LB30_DAYS.length;
   if(lbMenuDay<0) lbMenuDay=Math.min(lbNext(),tot-1);
-  h+=lbScanCard();
-  if(lbOwned() && typeof AC_EPS!=='undefined') h+='<div class="lbx-row" onclick="lbSetTab(\'learn\')"><span class="b">'+glyph('play')+'</span><div class="tx"><div class="t">Nutrition Academy</div><div class="m">'+AC_EPS.length+' episod · full access with Ladies Burn 30</div></div><span class="pdx-chev">›</span></div>';
   h+='<div class="lbx-foodph" style="background-image:url(\''+lbImg('food')+'\')"><div><b>Makan biasa, sukatan yang betul.</b><span>Nasi dan lauk yang anda kenal — tiga pilihan setiap waktu makan.</span></div></div>';
   h+='<div class="nstage wl-stage lb-stage"><span class="wl-st-gly">'+glyph('flame')+'</span><div class="nstage-k">Your daily target</div>'+
     '<div class="nstage-n">'+t.cal.toLocaleString()+'<span> kcal</span></div>'+
     '<div class="nstage-s">Lebih kurang 0.5 kg seminggu · tidak pernah bawah 1,200 kcal</div>'+
     '<div class="nstage-g">'+[[t.prot+'g','Protein'],[t.carb+'g','Carbs'],[t.fat+'g','Fat'],[lbWater(lbMenuDay).toFixed(1)+' L','Water']]
       .map(function(x){ return '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'; }).join('')+'</div></div>';
-  h+='<div class="lb-misi">'+ic('food')+'<div><div class="k">Nutrition mission · Day '+(lbMenuDay+1)+'</div><div class="t">'+LB30_MISI[lbMenuDay]+'</div></div></div>';
-  h+=fsec('Menu','Day '+(lbMenuDay+1)+' · tiga pilihan untuk setiap waktu makan');
-  h+='<div class="hscroll wl-mdays">'+LB30_DAYS.map(function(d,i){
+  h+='<div class="lbx-misi"><span class="b">'+glyph('target')+'</span><div><div class="k">Nutrition mission · Day '+(lbMenuDay+1)+'</div><div class="t">'+LB30_MISI[lbMenuDay]+'</div></div></div>';
+  h+=lbScanCard();
+  /* the menu: a day, three meals, three options each */
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Today&rsquo;s Menu</div><div class="lbx-ss">Day '+(lbMenuDay+1)+' · tiga pilihan untuk setiap waktu makan</div></div></div>';
+  h+='<div class="hscroll wl-mdays lbx-mdays">'+LB30_DAYS.map(function(d,i){
     return '<button class="wl-md'+(i===lbMenuDay?' on':'')+'" onclick="lbMenuDay='+i+';renderLB30()"><small>Day</small><b>'+(i+1)+'</b></button>'; }).join('')+'</div>';
-  h+='<div class="wl-meals">'+LB30_SLOTS.map(function(slot,si){
-    var s=LB30_MENU[slot], opts=lbMenuFor(slot,lbMenuDay), sid='lbm-'+lbMenuDay+'-'+si;
-    return '<div class="mpslot" id="'+sid+'"><div class="mpslot-h"><div><div class="t">'+s.label+'</div>'+
-      '<div class="m">'+s.time+' · lebih kurang '+Math.round(t.cal*s.share)+' kcal · '+s.note+'</div></div>'+
+  var slotLook={sarapan:['sunrise','#E08A00'],tengahari:['sun','#E30613'],malam:['moon','#5B4BC4']};
+  h+='<div class="lbx-meals">'+LB30_SLOTS.map(function(slot,si){
+    var s=LB30_MENU[slot], opts=lbMenuFor(slot,lbMenuDay), sid='lbm-'+lbMenuDay+'-'+si, lk=slotLook[slot]||['food','#E30613'];
+    return '<div class="mpslot lbx-meal" id="'+sid+'" style="--mc:'+lk[1]+'"><div class="mpslot-h"><span class="ic">'+glyph(lk[0])+'</span>'+
+      '<div class="hd"><div class="t">'+s.label+'</div><div class="m">'+s.time+' · ~'+Math.round(t.cal*s.share)+' kcal</div></div>'+
       '<div class="mpopts">'+opts.map(function(o,oi){ return '<button class="mpo'+(oi===0?' on':'')+'" aria-label="Option '+(oi+1)+'" onclick="mpOpt(\''+sid+'\','+oi+')">'+(oi+1)+'</button>'; }).join('')+'</div></div>'+
       opts.map(function(o,oi){ return '<div class="mpopt" style="display:'+(oi===0?'block':'none')+';">'+
         '<div class="mpopt-h"><div class="t">'+o.n+'</div><div class="k">'+o.k+' kcal</div></div>'+
-        o.it.map(function(it){ return '<div class="mpitem"><div><div class="t">'+it+'</div></div></div>'; }).join('')+
-      '</div>'; }).join('')+'</div>';
+        '<div class="lbx-items">'+o.it.map(function(it){ return '<span>'+it+'</span>'; }).join('')+'</div>'+
+      '</div>'; }).join('')+'<div class="lbx-meal-n">'+s.note+'</div></div>';
   }).join('')+'</div>';
-  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Portion Guide</div><div class="lbx-ss">Tak perlu penimbang — guna tangan anda.</div></div></div>';
+  h+=lbShopping();
+  /* the healthy plate, then the hands */
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Pinggan Sihat</div><div class="lbx-ss">Bentuk pinggan setiap kali makan. Tak perlu penimbang.</div></div></div>';
+  h+='<div class="lbx-card lbx-plate">'+lbPlateSVG()+'<div class="lbx-plate-k">'+
+    [['#1F9D6A','Sayur','½ pinggan · 2 genggam'],['#E30613','Protein','¼ pinggan · 1 tapak tangan'],['#E08A00','Karbo','¼ pinggan · 1 genggam'],['#C9A227','Lemak','1 ibu jari']]
+    .map(function(x){ return '<div><i style="background:'+x[0]+'"></i><b>'+x[1]+'</b><span>'+x[2]+'</span></div>'; }).join('')+'</div></div>';
   h+='<div class="lbx-por">'+[['food','Protein','1','palm','tapak tangan','ayam, ikan, telur, tauhu, tempe','#E30613'],
       ['workout','Carbs','1','fist','genggam','nasi, mi, roti','#E08A00'],
       ['leaf','Veg','2','fists','genggam','separuh pinggan','#1F9D6A'],
@@ -680,6 +745,16 @@ function lbFood(){
     ['Kuih selepas makan','Buah','Sama-sama manis, buah buat kenyang.'],
     ['Tambah kali kedua','Segelas air','Tunggu 10 minit. Rasa kenyang sampai lewat.']]
     .map(function(x){ return '<div class="lbx-sw"><div class="lbx-sw-r"><span class="from">'+x[0]+'</span><span class="arr">→</span><span class="to">'+x[1]+'</span></div><div class="lbx-sw-s">'+x[2]+'</div></div>'; }).join('')+'</div>';
+  /* eating out, the places she actually goes */
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Makan Di Luar</div><div class="lbx-ss">Apa nak order, bila tak masak.</div></div></div>';
+  h+='<div class="lbx-out">'+[
+    ['people','#7C3AED','Mamak',['Roti canai kosong + kuah dal','Nasi kandar: ayam bakar, sayur, kuah sikit','Teh o kosong atau teh tarik kurang manis']],
+    ['star','#DB2777','Kenduri & Raya',['Ambil sayur dulu, kemudian lauk','Nasi separuh pinggan','Pilih lauk tak bersantan bila ada','Air kosong, bukan sirap']],
+    ['bag','#E08A00','Makanan Segera',['Burger ayam panggang, bukan goreng','Air kosong atau minuman zero','Langkau kentang goreng, atau kongsi']],
+    ['food','#1F9D6A','Kedai Kopitiam',['Roti bakar + 2 telur separuh masak','Kopi o kurang manis','Mi sup berbanding mi goreng']]]
+    .map(function(x){ return '<div class="lbx-oc" style="--mc:'+x[1]+'"><div class="h"><span class="ic">'+glyph(x[0])+'</span><b>'+x[2]+'</b></div>'+
+      x[3].map(function(o){ return '<div class="o">'+glyph('check')+'<span>'+o+'</span></div>'; }).join('')+'</div>'; }).join('')+'</div>';
+  if(typeof AC_EPS!=='undefined') h+='<div class="lbx-row" onclick="lbSetTab(\'learn\')"><span class="b">'+glyph('play')+'</span><div class="tx"><div class="t">Nutrition Academy</div><div class="m">'+AC_EPS.length+' episod · full access with Ladies Burn 30</div></div><span class="pdx-chev">›</span></div>';
   h+=LB30_SETH.nutrition.map(function(v,i){ return v?lbVideoCard(v,'Nutrition tip '+(i+1)+' with Coach Seth'):''; }).join('');
   h+='<button class="authalt" onclick="lbForgetNumbers()">Change my numbers</button>';
   return h;

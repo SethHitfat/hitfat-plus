@@ -4240,6 +4240,9 @@ print("\n── PICTURES INSIDE MATCH THE COVERS ──");
   ok("a program with no studio photo still gets the palette", hpoArt({id:'zz',goal:'Core',name:'x'}).indexOf('hpo-flat')>0 && hpoArt({id:'zz',goal:'Core',name:'x'}).indexOf('hpo-gly')>0);
   ok("Ladies Burn 30 has a poster with her photo cut out until its own comes", lbPoster('x').indexOf('mask/lad4.png')>0 && lbPoster('x').indexOf('Ladies Burn 30')>0);
   ok("the tab bar keeps its language on the Ladies program", String(lbLang).indexOf("data-noi18n")>0);
+  (function(){ var w0=lbShopItems(0), names=Object.keys(w0);
+    ok("Ladies Burn 30 turns a week's menu into a shopping list (25 Oct)", names.indexOf('Beras')>=0 && names.indexOf('Telur')>=0 && w0['Beras']>=7 &&
+       lbShopText(0).indexOf('Protein:')>0 && lbPlateSVG().indexOf('<svg')===0); })();
   (function(){ var ke=_ent, ml=MEMBERSHIP_LIVE; MEMBERSHIP_LIVE=true; _guest(); var e3=AC_EPS[AC_FREE];
     var before=acLocked(e3); _ent.skus['prog_lad4']=true; var after=acLocked(e3);
     lbTab='learn'; renderLB30(); var lh=$('pgd-body').innerHTML; lbTab='plan';
