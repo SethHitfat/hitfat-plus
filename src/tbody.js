@@ -3812,12 +3812,19 @@ print("\n── LADIES BURN 30 ──");
   ok("pregnant: no plan is offered", lbQ===3 && $('pgd-body').innerHTML.indexOf('tidak dibina untuk kehamilan')>0 && $('pgd-body').innerHTML.indexOf('lbQuizNext()')<0);
   lbQPick('mom','bersalin'); ok("after a birth: no next step until the doctor said yes", $('pgd-body').innerHTML.indexOf('lbQuizNext()')<0);
   lbQTick('clear'); ok("...then there is", $('pgd-body').innerHTML.indexOf('lbQuizNext()')>0);
-  lbQuizNext(); lbQPick('mins',10); lbQPick('focus','punggung'); lbQPick('equip','tiada',1); lbQuizNext();
+  lbQuizNext(); lbQPick('mins',10);
+  var f1=$('pgd-body').innerHTML; ok("between the questions, the research with its chart and its source", f1.indexOf('Tahukah anda')>0 && f1.indexOf('role="img"')>0 && f1.indexOf('WHO')>0 && f1.indexOf('10 minit sehari')>0 && f1.indexOf('class="lbq-n"></span>')>0);
+  lbQuizNext(); lbQPick('focus','punggung'); lbQPick('equip','tiada',1); lbQuizNext();
+  ok("...habits take time, a missed day does not undo them", $('pgd-body').innerHTML.indexOf('Lally')>0 && $('pgd-body').innerHTML.indexOf('66 hari')>0);
+  lbQuizNext();
   $('lbq-wt').value='70'; $('lbq-ht').value='160'; $('lbq-age').value='35'; lbQBody(); lbQPick('act','duduk'); lbQPick('pace','perlahan');
+  var f3=$('pgd-body').innerHTML; ok("...and her own 30 days at her pace, an estimate and not a promise", f3.indexOf('70 kg')>0 && f3.indexOf('~68.9 kg')>0 && f3.indexOf('bukan janji')>0 && f3.indexOf('CPG')>0);
+  lbQuizNext();
   lbQPick('meals',5); lbQPick('avoid','ikan',1); lbQPick('avoid','pedas',1); lbQuizNext(); lbQPick('cook','beli');
   var res=$('pgd-body').innerHTML;
-  ok("her plan's summary says what changed, and only that", res.indexOf('Selepas bersalin')>0 && res.indexOf('Lutut selamat')<0 && res.indexOf('10 minit atau kurang')>0 &&
-     res.indexOf('Menu 5 kali sehari')>0 && res.indexOf('Tanpa ikan, pedas')>0 && res.indexOf('mudah dibeli')>0);
+  ok("her plan's summary says what changed, and only that", res.indexOf('Selepas bersalin')>0 && res.indexOf('Lutut selamat')<0 && res.indexOf('min sehari')>0 &&
+     res.indexOf('5 kali sehari')>0 && res.indexOf('Tanpa ikan')>0 && res.indexOf('Tanpa pedas')>0 && res.indexOf('mudah dibeli')>0 && (res.match(/role="img"/g)||[]).length===2);
+  ok("...12 questions counted, the research screens not", lbQCount(LB30_Q.length)===12 && LB30_Q.length===15);
   lbQuizSave(); ok("saved: her plan card, her days", lbMe() && lbMe().act==='duduk' && lbQ===-1 && $('pgd-body').innerHTML.indexOf('lbq-me')>0 && lbDay(1).dur===30);
   /* her menu: her meals a day, nothing she doesn't eat, her rice */
   ok("five meals: breakfast, two snacks, lunch, dinner, the shares whole", lbSlots().map(function(m){ return m[0]; }).join()==='sarapan,pagi,tengahari,petang,malam' &&
@@ -3837,6 +3844,12 @@ print("\n── LADIES BURN 30 ──");
      lbDishImg('sarapan',LB30_MENU.sarapan.opts[10])==='/ladies/img/menu/n01.jpg' && lbDishImg('pagi',LB30_SNACKS[0])==='/ladies/img/menu/n15.jpg' &&
      lbDishImg('lewat',LB30_MENU.lewat.opts[7])==='/ladies/img/menu/n34.jpg' &&
      ['sarapan','tengahari','malam','pagi','lewat'].every(function(sl){ return LB30_MENU[sl].opts.every(function(o){ return !!lbDishImg(sl,o); }); }));
+  var fs=function(x){ lbFoodSeg=x; lbTab='food'; renderLB30(); return $('pgd-body').innerHTML; };
+  var ft=fs('today'), fsh=fs('shop'), fg=fs('guide');
+  ok("Nutrition in three parts: today's menu, the shopping list, the guide, each alone", ft.indexOf('lbx-meals')>0 && ft.indexOf('lbx-shop')<0 && ft.indexOf('lbx-plate')<0 &&
+     fsh.indexOf('lbx-shop')>0 && fsh.indexOf('lbx-meals')<0 && fg.indexOf('lbx-plate')>0 && fg.indexOf('lbx-meals')<0 && fg.indexOf('lbx-shop')<0);
+  ok("...each dish beside its photograph", ft.indexOf('class="lbx-mo"')>0 && ft.indexOf('lbx-dish sm')>0);
+  lbFoodSeg='today';
   delete lb.me.meals; ok("answered before the menu questions: asked them on Nutrition", (lbTab='food', renderLB30(), $('pgd-body').innerHTML.indexOf('lbQuizMenu()')>0));
   delete lb.me; lb.profile={};
   /* BURN30 is as it was */
