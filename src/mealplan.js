@@ -78,9 +78,9 @@ function mpShuffle(a,seed){
     const j=Math.abs(s)%(i+1); const t=r[i]; r[i]=r[j]; r[j]=t; }
   return r;
 }
-function mpOptions(key,prefs,styles,day,slot){
+function mpOptions(key,prefs,styles,day,slot,v){
   let pool=(MDB[key]||[]).slice();
-  ['noegg','noseafood','nomeat'].forEach(p=>{
+  ['noegg','noseafood','nomeat','nosantan','lowsugar'].forEach(p=>{
     if(prefs.indexOf(p)>-1) pool=pool.filter(o=>o.tags.indexOf(p)>-1);
   });
   const score=o=>{ let s=0;
@@ -91,10 +91,19 @@ function mpOptions(key,prefs,styles,day,slot){
     if(styles.indexOf('hiprotein')>-1&&o.tags.indexOf('hiprotein')>-1)s+=2;
     if(styles.indexOf('lowcarb')>-1 && o.tags.indexOf('lowcarb')>-1)  s+=2;
     if(styles.indexOf('budget')>-1  && o.tags.indexOf('budget')>-1)   s+=2;
+    /* simple: three things or fewer on the plate; eating out: a dish a kedai sells */
+    if(styles.indexOf('simple')>-1  && o.items.length<=3)              s+=2;
+    if(styles.indexOf('eatout')>-1  && hasKW(o.name,MP_EATOUT_KW))     s+=2;
     return s; };
-  pool.sort((a,b)=>score(b)-score(a));
-  return mpShuffle(pool, day*37+slot*13).slice(0,3);
+  /* v2 (25 Oct 2026): shuffle, then rank, so her style and taste choose the
+     dishes. Before, the ranking was shuffled away and only the restrictions
+     counted. Plans saved before keep v1 and reopen exactly as they were. */
+  if((v||1)<2){ pool.sort((a,b)=>score(b)-score(a)); return mpShuffle(pool, day*37+slot*13).slice(0,3); }
+  const sh=mpShuffle(pool, day*37+slot*13), rank=new Map(sh.map((o,i)=>[o,i]));
+  sh.sort((a,b)=>(score(b)-score(a))||(rank.get(a)-rank.get(b)));
+  return sh.slice(0,3);
 }
+const MP_EATOUT_KW=['lemak','noodles','tomyam','laksa','porridge','chop','vermicelli','fried','sandwich'];
 function mpMs(s){ return typeof wlMs==='function'?wlMs(s):s; }
 function mpPor(s){ return typeof wlPortion==='function'?wlPortion(s):s; }
 function kcalOf(o){ return o.items.reduce((s,i)=>s+i.kcal,0); }
@@ -154,7 +163,7 @@ function scaleOption(o,target){
 function buildPlan(d){
   const nut=mpNut(d), slots=mpSlots(d.struct), days=[];
   for(let day=1; day<=d.days; day++){
-    const opts=slots.map((s,i)=>mpOptions(s.key,d.prefs||[],d.styles||[],day,i));
+    const opts=slots.map((s,i)=>mpOptions(s.key,d.prefs||[],d.styles||[],day,i,d.v));
 
     // MDG wants fruit every day — promote a fruit option in whichever slot has one
     let hasFruit=opts.some(o=>o.length&&groupsOf(o[0].items).buah>0);
@@ -231,8 +240,8 @@ const MP_RATES={loss:[[0.25,'Relaxed — 0.25 kg a week'],[0.5,'Standard — 0.5
                 maintain:[[0,'Hold your current weight']]};
 const MP_STYLES=[['hiprotein','High protein','Capped at 20% of calories or 2g/kg'],['lowcarb','Controlled carbs','Carbs stay, just tidier'],
                  ['budget','Budget','Cheap food that actually works'],['simple','Simple','Fewer ingredients, easy to cook'],
-                 ['eatout','Eating out','You eat out often'],['mealprep','Meal prep','Cook ahead, save time']];
-const MP_PREFS=[['noegg','No egg'],['noseafood','No seafood'],['nomeat','No meat'],
+                 ['eatout','Eating out','Dishes you can buy at a kedai'],['mealprep','Meal prep','Cook ahead, save time']];
+const MP_PREFS=[['noegg','No egg'],['noseafood','No seafood'],['nomeat','No meat'],['nosantan','No santan'],['lowsugar','Low sugar'],
                 ['lovenasi','I like rice'],['lessnasi','Less rice'],['loveroti','I like bread'],
                 ['lovemee','I like noodles'],['family','Family friendly']];
 
@@ -306,7 +315,7 @@ function mpGenerate(){
   if(mp.wc) HF.data.wc=mp.wc;
   if(mp.days>maxPlanDays()) mp.days=maxPlanDays();
   mpPlan=buildPlan({goal:mp.goal, rate:mp.rate, gender:mp.gender, age:mp.age, wt:mp.wt, ht:mp.ht,
-                    activity:mp.activity, struct:mp.struct, days:mp.days, styles:mp.styles, prefs:mp.prefs});
+                    activity:mp.activity, struct:mp.struct, days:mp.days, styles:mp.styles, prefs:mp.prefs, v:2});
   HF.save();
   closeMealPlan(); openPlanView();
 }

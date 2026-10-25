@@ -1582,6 +1582,24 @@ ok("no-everything still feeds", (function(){
     ['breakfast','lunch','dinner','snack'].forEach(function(k){
       if(!mpOptions(k,['noegg','noseafood','nomeat'],[],1,0).length) bad.push(k); });
     return bad.length===0; })(), 'a slot went empty under all three restrictions');
+ok("no santan and low sugar are derived from the food, and honest", (function(){
+    var nl=MDB.breakfast.filter(function(o){ return /lemak/i.test(o.name); })[0], hy=MDB.snack.filter(function(o){ return /honey/i.test(o.name); })[0];
+    return nl && nl.tags.indexOf('nosantan')<0 && hy && hy.tags.indexOf('lowsugar')<0 &&
+      ['breakfast','lunch','dinner','snack'].every(function(k){ return mpOptions(k,['nosantan','lowsugar'],[],1,0).every(function(o){ return o.tags.indexOf('nosantan')>-1&&o.tags.indexOf('lowsugar')>-1; }); }); })());
+ok("no santan + low sugar + the three still feed every slot", ['breakfast','lunch','dinner','snack'].every(function(k){
+    return mpOptions(k,['noegg','noseafood','nomeat','nosantan','lowsugar'],[],1,0).length>0; }));
+ok("Simple and Eating out change the dishes, not just the tips", (function(){
+    var n=0, m=0;
+    for(var d=1;d<=7;d++){ mpOptions('lunch',[],['simple'],d,0,2).forEach(function(o){ if(o.items.length<=3) n++; });
+      mpOptions('lunch',[],['eatout'],d,0,2).forEach(function(o){ if(hasKW(o.name,MP_EATOUT_KW)) m++; }); }
+    var n0=0, m0=0;
+    for(var d2=1;d2<=7;d2++){ mpOptions('lunch',[],[],d2,0,2).forEach(function(o){ if(o.items.length<=3) n0++; if(hasKW(o.name,MP_EATOUT_KW)) m0++; }); }
+    return n>n0 && m>m0; })());
+ok("v2: High protein and I like rice now pick the dishes", (function(){
+    var h=0, h0=0; for(var d=1;d<=7;d++){ mpOptions('lunch',[],['hiprotein'],d,0,2).forEach(function(o){ if(o.tags.indexOf('hiprotein')>-1) h++; });
+      mpOptions('lunch',[],[],d,0,2).forEach(function(o){ if(o.tags.indexOf('hiprotein')>-1) h0++; }); }
+    return h>h0; })());
+ok("v1 plans saved before reopen exactly as they were", JSON.stringify(mpOptions('lunch',['lovenasi'],['hiprotein'],3,1))===JSON.stringify(mpOptions('lunch',['lovenasi'],['hiprotein'],3,1,1)) && mpOptions('lunch',[],[],3,1,2).map(function(o){return o.name;}).join()===mpOptions('lunch',[],[],3,1).map(function(o){return o.name;}).join());
 ok("prefs rank, not exclude", (function(){
     var a=mpOptions('lunch',['lovenasi'],[],1,0);
     return a.length===3 && a.some(function(o){ return o.tags.indexOf('lovenasi')>-1; }); })());

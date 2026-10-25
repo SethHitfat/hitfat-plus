@@ -98,16 +98,21 @@ const GAP_POOL=[
    those are taste, not safety.                                              */
 const _EGG=['egg','eggs','omelette'],
       _SEA=['fish','tuna','prawn','prawns','squid','anchovies','belacan','mackerel','seabass','sardines','crab','cockles'],
-      _MEAT=['chicken','beef','mutton','lamb','duck','burger','sausage'];
+      _MEAT=['chicken','beef','mutton','lamb','duck','burger','sausage'],
+      /* 25 Oct 2026: no santan and low sugar, derived the same way */
+      _SANTAN=['coconut','santan','lemak','curry','rendang','gulai','lodeh'],
+      _SUGAR=['honey','syrup','condensed','granola','cereal','jam','sweetened','kuih'];
 (function deriveDietTags(){
   const words=s=>String(s).toLowerCase().split(/[^a-z]+/).filter(Boolean);
   const hit=(o,kw)=>o.items.some(i=>words(i.food).some(w=>kw.indexOf(w)>-1))
                  || words(o.name).some(w=>kw.indexOf(w)>-1);
   Object.keys(MDB).forEach(k=>MDB[k].forEach(o=>{
-    o.tags=o.tags.filter(t=>t!=='noegg'&&t!=='noseafood'&&t!=='nomeat');
+    o.tags=o.tags.filter(t=>['noegg','noseafood','nomeat','nosantan','lowsugar'].indexOf(t)<0);
     if(!hit(o,_EGG))  o.tags.push('noegg');
     if(!hit(o,_SEA))  o.tags.push('noseafood');
     if(!hit(o,_MEAT)) o.tags.push('nomeat');
+    if(!hit(o,_SANTAN)) o.tags.push('nosantan');
+    if(!hit(o,_SUGAR))  o.tags.push('lowsugar');
   }));
 })();
 
