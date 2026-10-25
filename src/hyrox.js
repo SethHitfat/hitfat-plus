@@ -4,7 +4,7 @@
      hx8   HYROX 8-Week Race Prep     RM99    8 weeks × 5 days, three levels
      hxft  HYROX First Timer          RM19    4 weeks × 4 sessions
    Each is part of HITFAT+ (All Access, and class members through it) and
-   sold on its own, like Ladies Burn 30. The sessions are Hybrid's own
+   sold on its own, like MAK2FIT 30. The sessions are Hybrid's own
    words (parts/hyroxdata.js): a coach's whiteboard for the race builds,
    blocks of moves with HITFAT's clips for the First Timer. They are gym
    sessions (SkiErg, rower, sled, wall balls), so the page says so.

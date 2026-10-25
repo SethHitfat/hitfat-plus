@@ -1023,11 +1023,19 @@ function renderScanResult(d){
        '<button class="authalt" onclick="closeScan();openManual()">Log it by hand</button></div>';
     $('scan-sheet').innerHTML=h; $('scan-sheet').classList.add('on'); return;
   }
-  /* the photo, with what the AI found pinned where it found it */
+  /* the photo as the hero (26 Oct 2026, after Everfit's MacroSnap): the scan's
+     corners, what the AI found pinned where it found it, and the four numbers
+     on the photo itself in their colours */
+  const n=HF.data.nutrition||{};
   if(_scanImg){
     const pins=(kind==='meal'?(d.breakdown||[]):[]).filter(it=>isFinite(it.x)&&isFinite(it.y)).slice(0,5);
-    h+='<div class="sr-photo'+(kind==='barcode'?' prod':'')+'" style="background-image:url(\''+_scanImg+'\')">'+
-      pins.map(it=>'<span class="sr-pin" style="left:'+Math.min(88,Math.max(12,it.x))+'%;top:'+Math.min(88,Math.max(10,it.y))+'%"><i></i>'+hesc(titleCase(it.ingredient||it.name||''))+'</span>').join('')+'</div>';
+    h+='<div class="sr-hero'+(kind==='barcode'?' prod':'')+'" style="background-image:url(\''+_scanImg+'\')">'+
+      '<span class="sr-cn tl"></span><span class="sr-cn tr"></span><span class="sr-cn bl"></span><span class="sr-cn br"></span>'+
+      pins.map(it=>'<span class="sr-pin" style="left:'+Math.min(84,Math.max(16,it.x))+'%;top:'+Math.min(62,Math.max(10,it.y*0.7))+'%"><i></i>'+hesc(titleCase(it.ingredient||it.name||''))+'</span>').join('')+
+      '<div class="sr-mac"><div class="m k"><small>Calories</small><b>'+kcal.toLocaleString()+'</b></div>'+
+        '<div class="m c"><small>Carbs</small><b>'+c+'<i>g</i></b></div>'+
+        '<div class="m p"><small>Protein</small><b>'+p+'<i>g</i></b></div>'+
+        '<div class="m f"><small>Fat</small><b>'+f+'<i>g</i></b></div></div></div>';
   }
   const unit=kind==='meal'?'Portion':'Servings';
   h+='<div class="sr-head"><div class="sr-name">';
@@ -1041,8 +1049,17 @@ function renderScanResult(d){
   h+='</div><div class="sr-qty" aria-label="'+unit+'"><button onclick="scanQty(-1)" aria-label="Less">−</button><b>'+fmtQty(k)+'</b><button onclick="scanQty(1)" aria-label="More">+</button></div></div>';
   if(String(d.confidence||'').toLowerCase()==='low')
     h+=nCall('warn','Not sure about this one','Check the name and the portion before you log it. A photo from above, with the whole plate in view, scans better.');
-  const n=HF.data.nutrition||{};
-  h+='<div class="sr-tiles">'+
+  /* her day with this meal in it (Everfit's macro goals card): the ring and the three bars, today's part and this meal's */
+  if(n.cal){
+    const t=mealTotals(), after=t.kcal+kcal, pct=Math.round(after/n.cal*100);
+    const bar=(l,now,add,tg,col)=>{ const a=Math.min(100,now/(tg||1)*100), b=Math.max(0,Math.min(100-a,add/(tg||1)*100));
+      return '<div class="mb"><div class="h"><span>'+l+'</span><b>'+(now+add)+'<i> / '+(tg||0)+' g</i></b></div>'+
+        '<div class="t"><i style="width:'+a+'%;background:'+col+'"></i><i class="add" style="width:'+b+'%;background:'+col+'"></i></div></div>'; };
+    h+='<div class="sr-day"><div class="rg">'+nRing(pct,after.toLocaleString(),'/ '+n.cal.toLocaleString()+' kcal',96)+'</div>'+
+      '<div class="tx"><div class="k">Today, with this meal</div>'+
+        bar('Protein',t.p,p,n.pt,'#3A7BFF')+bar('Carbs',t.c,c,n.ct,'#34C759')+bar('Fat',t.f,f,n.ft,'#F5B400')+'</div></div>';
+  }
+  if(!_scanImg) h+='<div class="sr-tiles">'+
      '<div class="sr-tile"><span class="sr-ic k">'+glyph('flame')+'</span><small>Calories</small><b>'+(kind==='meal'?'≈ ':'')+kcal.toLocaleString()+'</b>'+(n.cal?'<em>'+Math.round(kcal/n.cal*100)+'% of your day</em>':'')+'</div>'+
      '<div class="sr-tile"><span class="sr-ic p">P</span><small>Protein</small><b>'+p+' g</b></div>'+
      '<div class="sr-tile"><span class="sr-ic c">C</span><small>Carbs</small><b>'+c+' g</b></div>'+
@@ -1051,15 +1068,16 @@ function renderScanResult(d){
     h+='<div class="nsub"><span>Ingredients</span></div>'+
        '<div class="nlist">'+d.breakdown.map(it=>{
         const wt=it.weight_g?(Math.round(it.weight_g*k)+' g'):(it.weight_ml?(Math.round(it.weight_ml*k)+' ml'):'');
-        return '<div class="nli"><div class="nli-b"><div class="nli-t">'+hesc(titleCase(it.ingredient||it.name||''))+'</div>'+
-          (wt?'<div class="nli-s">'+wt+'</div>':'')+'</div><span class="nval">'+Math.round((it.calories||0)*k)+'</span></div>';
+        const sh=kcal?Math.round((it.calories||0)*k/kcal*100):0;
+        return '<div class="nli sr-ing"><div class="nli-b"><div class="nli-t">'+hesc(titleCase(it.ingredient||it.name||''))+'</div>'+
+          '<div class="nli-s">'+(wt?wt+' · ':'')+sh+'% of the kcal</div><div class="sr-share"><i style="width:'+sh+'%"></i></div></div><span class="nval">'+Math.round((it.calories||0)*k)+'<small> kcal</small></span></div>';
       }).join('')+'</div>';
   }
   if(kind!=='meal'){
     const extra=[['Sugar',d.sugar_g,' g'],['Fibre',d.fiber_g,' g'],['Sodium',d.sodium_mg,' mg']].filter(x=>x[1]!==null&&x[1]!==undefined&&x[1]!=='');
     if(extra.length) h+='<div class="nlist">'+extra.map(x=>'<div class="nli"><div class="nli-b"><div class="nli-t">'+x[0]+'</div></div><span class="nval">'+Math.round(x[1]*k*10)/10+x[2]+'</span></div>').join('')+'</div>';
   }
-  h+='<button class="bigbtn sr-log" onclick="logScanned()">Log '+(k===1?'it':fmtQty(k)+' '+(kind==='meal'?'portions':'servings'))+'</button>'+
+  h+='<div class="sr-logbar"><button class="sr-logbtn" onclick="logScanned()">'+glyph('check')+'Log '+(k===1?'it':fmtQty(k)+' '+(kind==='meal'?'portions':'servings'))+' · '+kcal.toLocaleString()+' kcal</button></div>'+
      '<div class="sr-row"><button class="authalt" onclick="saveFav()">Save as usual</button><button class="authalt" onclick="scanAgain()">Scan another</button></div>';
   /* the coach's read and what it takes to burn it, folded away */
   h+='<details class="sr-more"><summary>Coach tip · how long to burn it</summary>'+

@@ -83,7 +83,7 @@ const SCAN_PRODUCTS=[
   {sku:'scan_y',    kind:'pass',    days:365,    price:99, daily:15, name:'1-year pass', note:'a year', legacy:true}
 ];
 const SCAN_FREE_TIER=3, MEMBER_SCANS_DAY=3;
-/* Ladies Burn 30 (25 Oct 2026): 10 free scans in the 30 days after it opens,
+/* MAK2FIT 30 (25 Oct 2026): 10 free scans in the 30 days after it opens,
    instead of 3 a month; scan-food holds the real count (LADIES_* there) */
 const LADIES_FREE_SCANS=10, LADIES_FREE_DAYS=30;
 /* how many scans a day a live pass gives */
@@ -171,12 +171,12 @@ function scanAccess(){
       return {mode:'pass', daily, left, label:left+' of '+daily+' scans left today'};
     return {mode:'credits', daily, label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
   }
-  /* her Ladies Burn 30 welcome, while it lasts */
+  /* her MAK2FIT 30 welcome, while it lasts */
   if(ladiesScanWindow()){
     const lu=ladiesScansUsed(), ll=Math.max(0, LADIES_FREE_SCANS-lu);
-    if(ll>0) return {mode:'free', ladies:true, label:ll+' of '+LADIES_FREE_SCANS+' Ladies Burn 30 scans left', left:ll};
+    if(ll>0) return {mode:'free', ladies:true, label:ll+' of '+LADIES_FREE_SCANS+' MAK2FIT 30 scans left', left:ll};
     if(_ent.credits>0) return {mode:'credits', label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
-    return {mode:'none', ladies:true, label:'Your '+LADIES_FREE_SCANS+' Ladies Burn 30 scans are used', left:0};
+    return {mode:'none', ladies:true, label:'Your '+LADIES_FREE_SCANS+' MAK2FIT 30 scans are used', left:0};
   }
   const used=scanUsed(), freeLeft=Math.max(0, SCAN_FREE_TIER-used);
   if(freeLeft>0)   return {mode:'free',    label:freeLeft+' of '+SCAN_FREE_TIER+' free scans left this month', left:freeLeft};
@@ -185,7 +185,7 @@ function scanAccess(){
 }
 function canScan(){ return scanAccess().left>0; }
 function ladiesScanWindow(){ return !!(_ent && _ent.ladiesFrom && Date.now()-new Date(_ent.ladiesFrom).getTime()<LADIES_FREE_DAYS*864e5); }
-/* this phone's count of scans since her Ladies Burn 30 opened (the server keeps the real one) */
+/* this phone's count of scans since her MAK2FIT 30 opened (the server keeps the real one) */
 function ladiesScansUsed(){ const q=HF.data.scanQuota||{}; return (q.lbFrom && _ent && q.lbFrom===_ent.ladiesFrom) ? (q.lb||0) : 0; }
 
 let _claimedFor=null;
@@ -575,7 +575,7 @@ function awaitPayment(){
   }, 3000);
 }
 
-/* ── Meta Pixel for the ad funnels (23 Oct 2026, Seth: Ladies Burn 30 first) ──
+/* ── Meta Pixel for the ad funnels (23 Oct 2026, Seth: MAK2FIT 30 first) ──
    The landing page counts the visit and the tap on Mula; the app counts the
    Purchase, once the payment is confirmed, so Meta learns who buys and not
    only who clicks. Only for what is sold through ads (PIXEL_SKUS), once per
@@ -611,9 +611,9 @@ function coConfirm(state){
     late:['co-late','Not confirmed yet','Your bank has not told us yet. It unlocks by itself once it does — nothing to do but wait.',
         'OK','closeProduct()']
   }[state];
-  /* Ladies Burn 30 is sold in Malay, so its confirmation is too */
+  /* MAK2FIT 30 is sold in Malay, so its confirmation is too */
   if(state==='ok' && typeof LB30_ID!=='undefined' && _paySku==='prog_'+LB30_ID)
-    v=['co-ok','Pembayaran berjaya 🎉','Ladies Burn 30 dah terbuka. Jom mula Hari 1, cuma 20 minit.','Mula Hari 1','closeProduct();openProgram(LB30_ID)'];
+    v=['co-ok','Pembayaran berjaya 🎉','MAK2FIT 30 dah terbuka. Jom mula Hari 1, cuma 20 minit.','Mula Hari 1','closeProduct();openProgram(LB30_ID)'];
   if(!v || !$('pw-body')) return;
   $('pw-body').innerHTML='<div class="co co-done">'+
     (state==='wait'?'':'<div class="pwtop cotop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>')+

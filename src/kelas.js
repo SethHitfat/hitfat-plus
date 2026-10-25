@@ -2213,7 +2213,7 @@ function kelasHxSetGoal(){
                    progress photos in a private bucket only she can open
                    (43-progress-photos.sql), and a before/after card that
                    shows centimetres, never weight.
-     Ladies Burn 30  open to her with the class (All Access), for the
+     MAK2FIT 30  open to her with the class (All Access), for the
                    days without class.
      the challenge 12 Ladies classes a month; the group sees who made it
                    (096 posts it when the 12th lands). */
@@ -2270,12 +2270,12 @@ function kelasCycToday(){
   c.starts=Array.from(new Set((c.starts||[]).concat([t]))).sort().slice(-24); HF.save();
   toast('Logged. Go easy on yourself today 🤍'); renderKelas();
 }
-/* Today (Ladies): the cycle, Ladies Burn 30, the challenge */
+/* Today (Ladies): the cycle, MAK2FIT 30, the challenge */
 function kelasLxTodayHTML(){
   let h=kelasCycHTML();
   h+=kelasLxChallengeHTML(false);
   const n=typeof lbDone==='function'?lbDone():0, tot=(typeof LB30_DAYS!=='undefined'&&LB30_DAYS.length)||30;
-  h+='<button class="kl-lb" onclick="openProgram(\'lad4\')"><span class="kl-lb-ic">'+glyph('flame')+'</span><span class="kl-lb-t"><b>Ladies Burn 30</b>'+
+  h+='<button class="kl-lb" onclick="openProgram(\'lad4\')"><span class="kl-lb-ic">'+glyph('flame')+'</span><span class="kl-lb-t"><b>MAK2FIT 30</b>'+
      '<small>For the days without class · up to 20 min at home · included with your class</small></span><em>'+(n?n+'/'+tot:'Open')+'</em></button>';
   return h;
 }

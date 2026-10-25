@@ -3642,9 +3642,9 @@ print("\n── MEAL SCAN PLANS ──");
   ok("an add-on gives its own allowance", scanAccess().daily===6 && scanAccess().left===2);
   HF.data.scanQuota={month:thisMonth(), used:0, day:'2000-01-01', today:6};
   ok("the day's count resets", scanAccess().left===6);
-  /* Ladies Burn 30: 10 free scans in her first 30 days (25 Oct 2026) */
+  /* MAK2FIT 30: 10 free scans in her first 30 days (25 Oct 2026) */
   _guest(); _ent.ladiesFrom=new Date(Date.now()-3*864e5).toISOString(); HF.data.scanQuota={month:thisMonth(), used:3};
-  ok("Ladies Burn 30 gives 10 scans in its first 30 days, past the monthly 3", scanAccess().left===10 && scanAccess().ladies===true);
+  ok("MAK2FIT 30 gives 10 scans in its first 30 days, past the monthly 3", scanAccess().left===10 && scanAccess().ladies===true);
   scanBump(); scanBump(); ok("...counted down on the phone", scanAccess().left===8 && HF.data.scanQuota.lb===2);
   HF.data.scanQuota.lb=10; ok("...and when they are used, none is left (Scan 6 is offered)", scanAccess().left===0 && lbScanHero().indexOf('RM14.90')>0);
   _ent.ladiesFrom=new Date(Date.now()-31*864e5).toISOString(); HF.data.scanQuota={month:thisMonth(), used:0};
@@ -3677,7 +3677,12 @@ print("\n── SCANNER: MODES, BARCODE, LABEL ──");
     breakdown:[{ingredient:'Chicken',weight_g:120,calories:250,x:30,y:40},{ingredient:'Rice',weight_g:200,calories:260,x:70,y:55}]};
   _scanPortion=1; _scanImg='data:image/jpeg;base64,AAAA'; renderScanResult(_scanData); h=document.getElementById('scan-sheet').innerHTML;
   ok("a meal shows its ingredients pinned on the photo", (h.match(/class="sr-pin"/g)||[]).length===2 && h.indexOf('Chicken')>0);
-  ok("...four macro tiles", (h.match(/class="sr-tile"/g)||[]).length===4);
+  ok("...the four numbers on the photo, in their colours", (h.match(/class="m [kcpf]"/g)||[]).length===4 && h.indexOf('sr-tile')<0);
+  var keepN2=HF.data.nutrition; HF.data.nutrition={cal:2000,pt:120,ct:250,ft:60};
+  renderScanResult(_scanData); h=document.getElementById('scan-sheet').innerHTML;
+  ok("...her day with this meal in it", h.indexOf('Today, with this meal')>0 && (h.match(/class="mb"/g)||[]).length===3);
+  ok("...each ingredient's share of the kcal", h.indexOf('% of the kcal')>0 && h.indexOf('Log it · 650 kcal')>0);
+  HF.data.nutrition=keepN2;
   closeScan(); _scanData=keep; _scanPortion=1; _scanImg='';
 })();
 
@@ -3862,7 +3867,7 @@ print("\n── LANGUAGE: BM / EN ──");
   ok("every template keeps its numbers", bad.length===0, bad.slice(0,5).join(' | '));
   ok("the switch is hidden while BM waits", LANG_LIVE===false && String(renderMe).indexOf("LANG_LIVE?")>0);
 })();
-print("\n── LADIES BURN 30 ──");
+print("\n── MAK2FIT 30 ──");
 (function(){
   var keepEnt=_ent, keepLb=HF.data.lb30, keepProg=HF.data.progress[LB30_ID], keepSave=HF.save, keepSW=startWorkout, keepLang=LANG, keepLive=MEMBERSHIP_LIVE;
   HF.save=function(){}; HF.data.lb30={}; MEMBERSHIP_LIVE=true;
@@ -4464,17 +4469,17 @@ print("\n── PICTURES INSIDE MATCH THE COVERS ──");
   ok("the days are numbered tiles in the plan's colour, no repeated photo", h.indexOf('pdx-dt')>0 && h.indexOf('<span class="k">DAY</span><b>1</b>')>0 && h.indexOf("background-image:url('/img/p/sig1.jpg');background-size")<0);
   ok("each day's focus as a glyph", pdxDayGlyph('Upper Strength')==='workout' && pdxDayGlyph('Conditioning')==='flame' && pdxDayGlyph('Core & Finisher')==='target' && pdxDayGlyph('Lower Strength')==='steps');
   ok("a program with no studio photo still gets the palette", hpoArt({id:'zz',goal:'Core',name:'x'}).indexOf('hpo-flat')>0 && hpoArt({id:'zz',goal:'Core',name:'x'}).indexOf('hpo-gly')>0);
-  ok("Ladies Burn 30's cover: her photograph in its own colours, the name in live type", lbPoster('x').indexOf('lb-cover.jpg')>0 && lbPoster('x').indexOf('lb-photo')>0 && lbPoster('x').indexOf('Ladies<br>Burn 30')>0);
+  ok("MAK2FIT 30's cover: her photograph in its own colours, the name in live type", lbPoster('x').indexOf('lb-cover.jpg')>0 && lbPoster('x').indexOf('lb-photo')>0 && lbPoster('x').indexOf('mak2fit-logo-ww.png')>0 && lbPoster('x').indexOf('alt="MAK2FIT 30"')>0);
   var keepCover=LB30_COVER; LB30_COVER='';
   ok("...and without it, her cut-out on magenta", lbPoster('x').indexOf('mask/lad4.png')>0); LB30_COVER=keepCover;
   ok("the tab bar keeps its language on the Ladies program", String(lbLang).indexOf("data-noi18n")>0);
   (function(){ var w0=lbShopItems(0), names=Object.keys(w0);
-    ok("Ladies Burn 30 turns a week's menu into a shopping list (25 Oct)", names.indexOf('Beras')>=0 && names.indexOf('Telur')>=0 && w0['Beras']>=7 &&
+    ok("MAK2FIT 30 turns a week's menu into a shopping list (25 Oct)", names.indexOf('Beras')>=0 && names.indexOf('Telur')>=0 && w0['Beras']>=7 &&
        lbShopText(0).indexOf('Protein:')>0 && lbPlateSVG().indexOf('<svg')===0); })();
   (function(){ var ke=_ent, ml=MEMBERSHIP_LIVE; MEMBERSHIP_LIVE=true; _guest(); var e3=AC_EPS[AC_FREE];
     var before=acLocked(e3); _ent.skus['prog_lad4']=true; var after=acLocked(e3);
     lbTab='learn'; renderLB30(); var lh=$('pgd-body').innerHTML; lbTab='plan';
-    ok("Ladies Burn 30 opens the whole Nutrition Academy (25 Oct)", before===true && after===false && lh.indexOf('Nutrition Academy')>0 && lh.indexOf('ac-tag">')<0);
+    ok("MAK2FIT 30 opens the whole Nutrition Academy (25 Oct)", before===true && after===false && lh.indexOf('Nutrition Academy')>0 && lh.indexOf('ac-tag">')<0);
     _ent=ke; MEMBERSHIP_LIVE=ml; })();
 })();
 print("\n── HOME · YOUR 30-DAY BASE ──");
@@ -4853,7 +4858,7 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   Kelas.data.lx_ins=Kelas.data.checkins.slice(0,5); Kelas.data.total_lx=5; Kelas.data.weeks_lx=[];
   ok("a Ladies member: the Ladies space, no switch, her own classes", kelasSpaces().join()==='ladies' && kelasSpace()==='ladies' && kelasHTML().indexOf('kl-space')<0 && kelasIns().length===5 && kelasTotal()===5 && kelasSpaceCat()==='Ladies');
   ok("...the rose look, Ladies2Fit, FIRST 30 still there", kelasTodayTab().indexOf('kl-hero kl-hero2 lx')>0 && kelasTodayTab().indexOf('LADIES2FIT MEMBER')>0 && kelasTodayTab().indexOf('Your first 30 days')>0);
-  ok("...Ladies Burn 30 on Today, for the days without class", kelasTodayTab().indexOf("openProgram('lad4')")>0);
+  ok("...MAK2FIT 30 on Today, for the days without class", kelasTodayTab().indexOf("openProgram('lad4')")>0);
   Kelas.data.memberships.push({category:'Membership',plan:'1 Month',start_date:'2026-10-01',end_date:'2026-12-31',active:true});
   ok("Ladies + Active: a switch with both", kelasSpaces().join()==='active,ladies' && kelasHTML().indexOf('class="ladies on"')>0===false && kelasHTML().indexOf('kl-space n2')>0);
   ok("...Active leaves the Ladies classes out", (Kelas.space='active', kelasIns().length===Kelas.data.checkins.length-5));

@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>Pembayaran berjaya · Ladies Burn 30</title>
+<title>Pembayaran berjaya · MAK2FIT 30</title>
 <meta name="theme-color" content="#4A0A36">
 <link rel="icon" href="/img/icon/favicon-64.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <!--
-  Ladies Burn 30 · "Pembayaran berjaya" (24 Oct 2026)
+  MAK2FIT 30 · "Pembayaran berjaya" (24 Oct 2026)
 
   Where the Bayarcash Link form sends the buyer back after paying (set it as
   the form's return URL: https://app.hitfat.io/ladies/berjaya/). It counts the
@@ -54,20 +54,20 @@ h1{margin:0;font-size:34px;line-height:1.1;letter-spacing:-.02em}
 </head>
 <body>
 <div class="hero"><div class="w">
-  <div class="brand">HITFAT+ · Ladies Burn 30</div>
+  <div class="brand">HITFAT+ · MAK2FIT 30</div>
   <div class="tick" id="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
   <h1 id="h">Pembayaran berjaya! 🎉</h1>
-  <p class="lead" id="lead">Terima kasih. Ladies Burn 30 milik anda selamanya. Resit Bayarcash dihantar ke emel anda.</p>
+  <p class="lead" id="lead">Terima kasih. MAK2FIT 30 milik anda selamanya. Resit Bayarcash dihantar ke emel anda.</p>
 </div></div>
 
 <div class="w"><div class="card" id="card">
   <div class="ord" id="ord" hidden><span>No. pesanan</span><b id="ordno"></b></div>
   <div class="steps">
-    <div class="st"><i>1</i><div><b>Tekan "Buka Ladies Burn 30"</b><small>App HITFAT+ terbuka di telefon anda. Tak perlu App Store.</small></div></div>
+    <div class="st"><i>1</i><div><b>Tekan "Buka MAK2FIT 30"</b><small>App HITFAT+ terbuka di telefon anda. Tak perlu App Store.</small></div></div>
     <div class="st"><i>2</i><div><b>Log masuk dengan Google</b><small>Sebaiknya guna emel yang sama dengan bayaran tadi.</small></div></div>
     <div class="st"><i>3</i><div><b>Mula Hari 1</b><small>20 minit sahaja, di rumah, tanpa lompat.</small></div></div>
   </div>
-  <a class="cta" id="go" href="/?tebus=lad4">Buka Ladies Burn 30</a>
+  <a class="cta" id="go" href="/?tebus=lad4">Buka MAK2FIT 30</a>
   <div class="note">Lepas buka, app akan tunjuk cara letak HITFAT+ di skrin telefon anda.</div>
 </div>
 <div class="help">Ada masalah? <a id="wa" href="#" target="_blank" rel="noopener">WhatsApp kami</a></div>
@@ -85,7 +85,7 @@ var order = pick(['order_number','order_no','order','orderNo','ref_no','referenc
 var status = pick(['status','payment_status','status_description']).toLowerCase();
 var failed = /fail|cancel|unsuccess|reject|declin|expire/.test(status);
 
-document.getElementById('wa').href = 'https://wa.me/'+WA+'?text='+encodeURIComponent('Hai HITFAT, saya dah bayar Ladies Burn 30'+(order?' (no. pesanan '+order+')':'')+' dan perlukan bantuan.');
+document.getElementById('wa').href = 'https://wa.me/'+WA+'?text='+encodeURIComponent('Hai HITFAT, saya dah bayar MAK2FIT 30'+(order?' (no. pesanan '+order+')':'')+' dan perlukan bantuan.');
 
 var PAY_FN = 'https://ercvaagznsndvrewlvgt.supabase.co/functions/v1/landing-pay';
 var card = document.getElementById('card'), cardHTML = card.innerHTML;
@@ -102,7 +102,7 @@ function showPaid(sure){
   document.body.className='';
   if(typeof okTick!=='undefined') document.getElementById('tick').innerHTML=okTick;
   document.getElementById('h').textContent='Pembayaran berjaya! 🎉';
-  document.getElementById('lead').textContent='Terima kasih. Ladies Burn 30 milik anda selamanya. Resit dihantar ke emel anda.';
+  document.getElementById('lead').textContent='Terima kasih. MAK2FIT 30 milik anda selamanya. Resit dihantar ke emel anda.';
   card.innerHTML=cardHTML;
   if(order){ document.getElementById('ord').hidden=false; document.getElementById('ordno').textContent=order; }
   document.getElementById('go').href = '/?tebus=lad4'+(order?'&o='+encodeURIComponent(order):'');
@@ -121,7 +121,7 @@ function showPaid(sure){
 function showSlow(){
   showPaid(false);
   document.getElementById('h').textContent='Pembayaran sedang diproses';
-  document.getElementById('lead').textContent='Bank anda belum sahkan lagi. Biasanya beberapa minit. Ladies Burn 30 terbuka sendiri sebaik disahkan.';
+  document.getElementById('lead').textContent='Bank anda belum sahkan lagi. Biasanya beberapa minit. MAK2FIT 30 terbuka sendiri sebaik disahkan.';
 }
 
 if(failed) showFailed();

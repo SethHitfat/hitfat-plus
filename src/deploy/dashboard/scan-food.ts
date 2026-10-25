@@ -39,7 +39,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 const MODEL = 'claude-sonnet-5-5';
 
 const FREE_SCANS_PER_MONTH = 3;
-/* Ladies Burn 30 (25 Oct 2026, Seth): whoever owns it gets 10 free scans in
+/* MAK2FIT 30 (25 Oct 2026, Seth): whoever owns it gets 10 free scans in
    the 30 days from when it opened on her account, instead of 3 a month, so
    she can try scanning her meals while she starts. After the 30 days, or
    the 10, it is the usual 3 a month (and Scan 6 is offered). */
@@ -227,7 +227,7 @@ Deno.serve(async (req: Request) => {
       .filter((e) => e.kind === 'pass' && e.expires_at && new Date(e.expires_at).getTime() > now)
       .reduce((m, e) => Math.max(m, dailyFor(String(e.sku))), 0);
 
-    /* when her Ladies Burn 30 opened, if that was in the last 30 days */
+    /* when her MAK2FIT 30 opened, if that was in the last 30 days */
     const ladiesFrom = (ents || [])
       .filter((e) => e.sku === LADIES_SKU && e.created_at && now - new Date(e.created_at).getTime() < LADIES_FREE_DAYS * 864e5)
       .map((e) => String(e.created_at)).sort().pop() || '';
@@ -263,7 +263,7 @@ Deno.serve(async (req: Request) => {
         mode = 'credits';
       }
     } else if (ladiesFrom) {
-      /* her Ladies Burn 30 welcome: 10 in the 30 days since it opened */
+      /* her MAK2FIT 30 welcome: 10 in the 30 days since it opened */
       const { count, error: lErr } = await admin
         .from('plus_scans')
         .select('id', { count: 'exact', head: true })
@@ -276,7 +276,7 @@ Deno.serve(async (req: Request) => {
         creditRow = pickCredit();
         if (!creditRow) {
           return json({
-            error: `You have used your ${LADIES_FREE_SCANS} Ladies Burn 30 scans.`,
+            error: `You have used your ${LADIES_FREE_SCANS} MAK2FIT 30 scans.`,
             code: 'quota_exceeded',
             used: count,
             limit: LADIES_FREE_SCANS,

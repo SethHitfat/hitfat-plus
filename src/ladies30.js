@@ -1,4 +1,4 @@
-/* ═══════════════ LADIES BURN 30 ═══════════════
+/* ═══════════════ MAK2FIT 30 ═══════════════
    The women's 30-day program, built on BURN30's template and replacing
    "Ladies Beginner" (the SKU prog_lad4 stays, so anyone who bought that
    keeps it). Its content moved here from the old HITFAT Ladies 30 Day app
@@ -36,7 +36,7 @@
    ES5 only in this file (var, function, no arrows or template strings),
    as the brief for this program asks. */
 
-var LB30_NAME='Ladies Burn 30';                 /* nama sementara: tukar di sini sahaja */
+var LB30_NAME='MAK2FIT 30';                 /* nama sementara: tukar di sini sahaja */
 var LB30_SUB='30 Hari Bakar Lemak · Khas Wanita';
 var LB30_ID='lad4';                             /* the SKU is prog_lad4 */
 var LB30_KEY='lb30';                            /* its data, its session keys */
@@ -572,7 +572,7 @@ function lbQuiz(){
   if(lbQ===0){
     var nm=((HF.data.prefs&&HF.data.prefs.name)||'').trim().split(/\s+/)[0];
     return h+bar+'<div class="lbq-intro'+(LB30_COVER?' cover':'')+'" style="background-image:url(\''+lbTopImg()+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
-      '<div class="k">Ladies Burn 30</div><div class="t">Jom bina pelan 30 hari anda'+(nm?', '+hesc(nm):'')+'.</div></div></div>'+
+      '<div class="k">MAK2FIT 30</div><div class="t">Jom bina pelan 30 hari anda'+(nm?', '+hesc(nm):'')+'.</div></div></div>'+
       '<div class="lbq-p">'+qn+' soalan, lebih kurang 2 minit. Jawapan anda menentukan gerakan, pusingan, minit setiap hari dan sasaran kalori anda.</div>'+
       '<div class="lbq-list">'+[['person','Tahap anda dan bahagian yang sakit'],['clock','Masa yang anda ada'],['target','Bahagian yang mahu diubah'],['flame','Badan, aktiviti dan rentak'],['food','Cara anda makan']]
         .map(function(x){ return '<div><span>'+glyph(x[0])+'</span>'+x[1]+'</div>'; }).join('')+'</div>'+
@@ -594,7 +594,7 @@ function lbQuiz(){
       '<span class="tk">'+(on?glyph('check'):'')+'</span></button>';
   }).join('')+'</div>';
   if(q.k==='mom' && v==='hamil'){
-    return h+'<div class="lbq-warn">'+glyph('heart')+'<div><b>Tahniah.</b> Ladies Burn 30 tidak dibina untuk kehamilan: ia mengurangkan kalori, dan '+
+    return h+'<div class="lbq-warn">'+glyph('heart')+'<div><b>Tahniah.</b> MAK2FIT 30 tidak dibina untuk kehamilan: ia mengurangkan kalori, dan '+
       'gerakannya tidak disusun untuk badan yang mengandung. Simpan program ini sehingga selepas bersalin dan doktor membenarkan anda bersenam. '+
       'Program ini kekal dalam akaun anda.</div></div></div>';
   }
@@ -793,8 +793,8 @@ function lbLang(on){
    as tiles, and the month as day tiles she can swipe through. Warm cream and
    HITFAT red, like the page she bought it from. The photographs are the ones
    the landing page uses (/ladies/img), one per kind of day. */
-var LB30_IMG={hero:'/ladies/img/lb-penyelesaian.webp', work:'/ladies/img/hero-rumah.webp',
-  test:'/ladies/img/hero-rumah.webp', recover:'/ladies/img/lb-ibu-anak.webp', food:'/ladies/img/lb-makanan.webp'};
+var LB30_IMG={hero:'/ladies/img/lb-penyelesaian.jpg', work:'/ladies/img/hero-rumah.jpg',
+  test:'/ladies/img/hero-rumah.jpg', recover:'/ladies/img/lb-ibu-anak.jpg', food:'/ladies/img/lb-makanan.jpg'};
 /* one cover a week (25 Oct): Mula at sunrise, Bina, Bakar, Kuat at dusk; a
    training day shows its week's, so the picture moves on as she does */
 var LB30_WEEK_IMG=['/ladies/img/lb-w1.jpg','/ladies/img/lb-w2.jpg','/ladies/img/lb-w3.jpg','/ladies/img/lb-w4.jpg'];
@@ -829,7 +829,7 @@ function renderLB30(){
   var h=pdxBar('program',pill)+
     '<div class="lbx-hero'+(LB30_COVER?' cover':'')+'" style="background-image:url(\''+lbTopImg()+'\')"><div class="lbx-hero-ov"></div>'+
     '<div class="lbx-hero-tx"><img class="lbx-mark" src="/img/brand/hfplus-mark.png" alt="HITFAT+">'+
-    '<div class="lbx-name">'+hesc(LB30_NAME)+'</div>'+
+    '<div class="lbx-name lb-logo">'+lbLogo('w')+'</div>'+
     '<div class="lbx-tags"><span>30 days</span><span>20 min a day</span><span>No jumping</span><span>At home</span></div></div></div>';
   h+='<div class="lbx">';
   if(!owned){
@@ -873,13 +873,16 @@ function renderLB30(){
   h+='</div>';
   $('pgd-body').innerHTML=h;
 }
+/* the MAK2FIT 30 logo (Seth's, 26 Oct 2026): '' plum and rose gold for light
+   grounds, 'w' white and rose gold on photographs, 'ww' all white on magenta */
+function lbLogo(v){ return '<img src="/ladies/img/mak2fit-logo'+(v?'-'+v:'')+'.png" alt="'+hesc(LB30_NAME)+'">'; }
 /* the poster: the photograph when there is one, the name in type until then */
 function lbPoster(cls){
   /* the cover (25 Oct 2026, Seth: "colour asal", "lagi wow"): her photograph
      in its own colours on HITFAT red, the name in live type on the left */
   if(LB30_COVER) return '<div class="'+cls+' lb-photo" style="background-image:url(\''+LB30_COVER+'\')">'+
     '<div class="lb-tx"><img class="lb-mark" src="/img/brand/hfplus-mark.png" alt="HITFAT+">'+
-    '<div class="lb-name">'+hesc(LB30_NAME).replace(/^(\S+)\s+/,'$1<br>')+'</div><div class="lb-sub">30 HARI · DI RUMAH · TANPA LOMPAT</div>'+
+    '<div class="lb-name lb-logo">'+lbLogo('ww')+'</div><div class="lb-sub">30 HARI · DI RUMAH · TANPA LOMPAT</div>'+
     '<div class="lb-pill">'+glyph('sliders')+'Pelan peribadi</div></div></div>';
   if(LB30_POSTER) return '<div class="'+cls+'"><img src="'+LB30_POSTER+'" alt="'+hesc(LB30_NAME)+'"></div>';
   /* until the poster comes (18 Oct): the ladies' studio photo (lad4) cut out
@@ -1144,7 +1147,7 @@ function lbDish(o,kcal){
     it:o.it.map(function(x){ return x.replace('{nasi}', lbFist(r===null?1:r)); })};
 }
 /* Learn (25 Oct 2026, Seth): the Nutrition Academy, all of it, inside her
-   program; Ladies Burn 30 opens every episode (acLadies, academy.js) */
+   program; MAK2FIT 30 opens every episode (acLadies, academy.js) */
 function lbLearn(){
   if(typeof academyHTML!=='function') return '';
   if(!lbOwned()) return lbLocked('book','Nutrition Academy','Episod video pendek tentang makan untuk turun lemak, cara Malaysia, setiap satu dengan kuiz 3 soalan.');
@@ -1214,7 +1217,7 @@ function lbShopAdd(wi){
 function lbShopMineTick(wi,i){ var x=lbShopMine(wi)[i]; if(!x) return; x.on=!x.on; HF.save(); lbShopRe(); }
 function lbShopMineDel(wi,i){ lbShopMine(wi).splice(i,1); HF.save(); lbShopRe(); }
 function lbShopText(wi){
-  var n=lbShopItems(wi), t='Senarai belanja Ladies Burn 30 · Week '+(wi+1)+'\n';
+  var n=lbShopItems(wi), t='Senarai belanja MAK2FIT 30 · Week '+(wi+1)+'\n';
   LB30_SHOP_CAT.concat([['Lain-lain']]).forEach(function(c,ci){
     var names=Object.keys(n).filter(function(x){ return ci<LB30_SHOP_CAT.length ? c[3].indexOf(x)>=0 : !LB30_SHOP_CAT.some(function(cc){ return cc[3].indexOf(x)>=0; }); });
     if(names.length) t+='\n'+c[0]+':\n'+names.map(function(x){ return '• '+x; }).join('\n')+'\n';
@@ -1345,7 +1348,7 @@ function lbFood(){
     ['food','#1F9D6A','Kedai Kopitiam',['Roti bakar + 2 telur separuh masak','Kopi o kurang manis','Mi sup berbanding mi goreng']]]
     .map(function(x){ return '<div class="lbx-oc" style="--mc:'+x[1]+'"><div class="h"><span class="ic">'+glyph(x[0])+'</span><b>'+x[2]+'</b></div>'+
       x[3].map(function(o){ return '<div class="o">'+glyph('check')+'<span>'+o+'</span></div>'; }).join('')+'</div>'; }).join('')+'</div>';
-  if(typeof AC_EPS!=='undefined') h+='<div class="lbx-row" onclick="lbSetTab(\'learn\')"><span class="b">'+glyph('play')+'</span><div class="tx"><div class="t">Nutrition Academy</div><div class="m">'+AC_EPS.length+' episod · full access with Ladies Burn 30</div></div><span class="pdx-chev">›</span></div>';
+  if(typeof AC_EPS!=='undefined') h+='<div class="lbx-row" onclick="lbSetTab(\'learn\')"><span class="b">'+glyph('play')+'</span><div class="tx"><div class="t">Nutrition Academy</div><div class="m">'+AC_EPS.length+' episod · full access with MAK2FIT 30</div></div><span class="pdx-chev">›</span></div>';
   h+=LB30_SETH.nutrition.map(function(v,i){ return v?lbVideoCard(v,'Nutrition tip '+(i+1)+' with Coach Seth'):''; }).join('');
   h+='<button class="authalt" onclick="lbForgetNumbers()">Change my numbers</button>';
   return h;
@@ -1513,7 +1516,7 @@ function lbTebusSheet(state,o){
     '<div class="co-s">Kalau anda bayar guna emel lain, masukkan nombor pesanan dari resit Bayarcash.</div></div>'+
     '<div class="wl-claim"><div class="wl-claim-f"><input id="lb-order" placeholder="Nombor pesanan" autocomplete="off" value="'+hesc(o||'')+'"><button onclick="lbClaim()">Buka</button></div></div>'+
     '<button class="bigbtn lb-btn" onclick="lbTebus(1)">Cuba lagi</button>'+
-    '<button class="authalt" onclick="window.open(\'https://wa.me/60189174656?text='+encodeURIComponent('Hai HITFAT, saya dah bayar Ladies Burn 30 tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">Masih tak terbuka? <b>WhatsApp kami</b></button>';
+    '<button class="authalt" onclick="window.open(\'https://wa.me/60189174656?text='+encodeURIComponent('Hai HITFAT, saya dah bayar MAK2FIT 30 tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">Masih tak terbuka? <b>WhatsApp kami</b></button>';
   $('pw-body').innerHTML=h; $('pwm').classList.add('on');
 }
 

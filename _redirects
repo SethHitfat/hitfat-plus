@@ -11,3 +11,7 @@
 # The gym's bunting QR (23 Oct 2026): straight to connecting a class
 # membership, kept through sign-in (kelas.js captureKelasParam)
 /kelas    /?kelas=today  302
+
+# MAK2FIT 30 (26 Oct 2026): the new name's address; /ladies stays, so links and ads already out keep working
+/mak2fit    /ladies/        301
+/mak2fit/*  /ladies/:splat  301

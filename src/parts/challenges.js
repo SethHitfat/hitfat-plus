@@ -58,7 +58,7 @@ function progEq(p){
    that plays for 19. Recovery keeps its own (its clips are still being
    filmed) and so does the plan a member builds, which they set themselves. */
 function progMinutes(p){
-  if(!p || p.rehab || p.id==='custom' || p.hub==='lb30' || p.hub==='d6') return null;   /* Ladies Burn 30 counts its own */
+  if(!p || p.rehab || p.id==='custom' || p.hub==='lb30' || p.hub==='d6') return null;   /* MAK2FIT 30 counts its own */
   var rest=(typeof REST_SECS!=='undefined')?REST_SECS:20, rounds=p.rounds||3, eq=progEq(p), tot=0, n=0;
   var day=function(names){
     if(!names || !names.length) return;

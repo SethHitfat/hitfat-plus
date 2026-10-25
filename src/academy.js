@@ -153,7 +153,7 @@ function acEp(id){ return AC_EPS.find(e=>e.id===id)||null; }
 function acNum(e){ return AC_EPS.indexOf(e)+1; }
 function acReady(e){ return !!e.v; }
 function acFree(e){ return acNum(e)<=AC_FREE; }
-/* Ladies Burn 30 opens the whole course (25 Oct 2026, Seth): it is the
+/* MAK2FIT 30 opens the whole course (25 Oct 2026, Seth): it is the
    learning that goes with her 30 days */
 function acLadies(){ return typeof owns==='function' && owns('prog_lad4'); }
 function acLocked(e){ return !acFree(e) && !contentOpen() && !acLadies(); }

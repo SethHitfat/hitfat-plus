@@ -574,7 +574,7 @@ function d6Claim(){
   })['catch'](function(){ toast('Pesanan itu tidak dapat disemak — cuba lagi sebentar.'); });
 }
 
-/* ── Home: the course once started, else a tile beside Ladies Burn 30 ── */
+/* ── Home: the course once started, else a tile beside MAK2FIT 30 ── */
 function d6Full(){ return d6Owned() && d6Next()<D6_TOT && d6Done()>0; }
 function d6HomeCard(){
   if(!d6Full()) return '';
