@@ -110,9 +110,9 @@ function eGoalRow(){
   if(eGoalEdit) return '<form class="egoal edit" onsubmit="event.preventDefault();eGoalSave()"><span class="ic">'+glyph('target')+'</span>'+
     '<input id="egoal-in" class="inp" maxlength="60" placeholder="e.g. Lose 5 kg before Raya" value="'+hesc(g)+'">'+
     '<button type="submit">Save</button></form>';
-  return '<div class="egoal" onclick="eGoalEdit=true;renderEat();setTimeout(function(){ var e=$(\'egoal-in\'); if(e) e.focus(); },50)">'+
-    '<span class="ic">'+glyph('target')+'</span><div class="tx"><span>'+(g?'Your goal':'What is your goal?')+'</span>'+
-    '<b>'+(g?hesc(g):'Set one, so you remember why you started')+'</b></div><span class="chev">›</span></div>';
+  /* a slim line at the foot of the ring card (25 Oct 2026, Seth: kemaskan Today) */
+  return '<button class="egoal2'+(g?' on':'')+'" onclick="eGoalEdit=true;renderEat();setTimeout(function(){ var e=$(\'egoal-in\'); if(e) e.focus(); },50)">'+
+    glyph('target')+(g?'<b>'+hesc(g)+'</b>':'<span>What is your goal? <b>Add it</b></span>')+'<span class="chev">›</span></button>';
 }
 function eGoalSave(){ const v=String(($('egoal-in')||{}).value||'').replace(/\s+/g,' ').trim().slice(0,60); HF.data.goalText=v; HF.save(); eGoalEdit=false; renderEat(); }
 /* ── the week, Monday to today, against the daily target ── */
@@ -121,15 +121,45 @@ function weekSoFar(cal){
   for(let i=dow;i>=0;i--) eaten+=mealTotals(iso(-i)).kcal;
   return {eaten, target:(cal||0)*(dow+1), days:dow+1};
 }
-function eWeekRow(n){
-  const w=weekSoFar(n.cal), r=weekReport(), left=w.target-w.eaten;
-  return '<div class="eweek" onclick="setEatSeg(\'journal\')"><div class="h"><b>This week</b><span>Monday to today · '+w.days+(w.days===1?' day':' days')+'</span><span class="chev">›</span></div>'+
-    '<div class="g"><div><b>'+w.eaten.toLocaleString()+'</b><span>/ '+w.target.toLocaleString()+' kcal</span></div>'+
-    '<div><b>'+(r.logged?r.avgKcal.toLocaleString():'–')+'</b><span>avg a day</span></div>'+
-    '<div><b>'+r.onTarget+'<i>/'+r.logged+'</i></b><span>days on target</span></div></div>'+
-    '<div class="bar"><i style="width:'+Math.min(100,Math.round(w.eaten/(w.target||1)*100))+'%"></i></div>'+
-    '<div class="s">'+(left>=0?'Left this week: <b>'+left.toLocaleString()+' kcal</b>':'<b>'+(-left).toLocaleString()+' kcal</b> over this week')+'</div></div>';
+/* Monday to Sunday as bars. Only the days she logged count: a day with nothing
+   logged is empty, not a day she ate nothing (it read "13,731 kcal left this
+   week" on a Sunday with two days logged). */
+function eWeekDays(cal){
+  const dow=(new Date().getDay()+6)%7, out=[];
+  for(let i=0;i<7;i++){ const d=iso(i-dow), t=mealTotals(d), lg=i<=dow&&mealsFor(d).length>0;
+    out.push({i, d, k:t.kcal, p:t.p, logged:lg, future:i>dow, today:i===dow, on:lg&&cal&&t.kcal>=cal*0.85&&t.kcal<=cal*1.1}); }
+  return out;
 }
+function eWeekRow(n){
+  const cal=n.cal||0, ds=eWeekDays(cal), lg=ds.filter(x=>x.logged), avg=k=>lg.length?Math.round(lg.reduce((a,x)=>a+x[k],0)/lg.length):0;
+  const onT=lg.filter(x=>x.on).length;
+  return '<div class="eweek2" onclick="setEatSeg(\'journal\')"><div class="h"><b>This week</b><span class="chev">›</span></div>'+
+    '<div class="g"><div><b>'+lg.length+'<i>/7</i></b><span>days logged</span></div>'+
+    '<div><b>'+(lg.length?avg('k').toLocaleString():'–')+'</b><span>kcal a day</span></div>'+
+    '<div><b>'+(lg.length?avg('p'):'–')+'<i>g</i></b><span>protein a day</span></div>'+
+    '<div><b>'+onT+'<i>/'+lg.length+'</i></b><span>on target</span></div></div>'+
+    '<div class="days">'+ds.map(x=>'<span class="'+(x.today?'now ':'')+(x.future?'fut':'')+'"><span class="c">'+
+      (x.logged?'<i class="'+(x.on?'on':x.k>cal*1.1?'over':'part')+'" style="height:'+Math.max(6,Math.min(100,Math.round(x.k/(cal||1)*100)))+'%"></i>':'')+
+      '</span><em>'+['M','T','W','T','F','S','S'][x.i]+'</em></span>').join('')+'</div>'+
+    '<div class="s">'+(lg.length?'Average over the '+lg.length+(lg.length===1?' day':' days')+' you logged, against '+cal.toLocaleString()+' kcal a day.':'Log your meals and your week shows here.')+'</div></div>';
+}
+const E_MW={breakfast:'sarapan',lunch:'bekal',dinner:'keluarga',snack:'snek'};
+function eMealCard(s,items,n){
+  const kc=items.reduce((a,m)=>a+(m.kcal||0),0), aim=Math.round((n.cal||0)*SLOT_SHARE[s.k]/10)*10;
+  const mk=E_MW[s.k], pl=(typeof mwGet==='function')?mwGet((new Date().getDay()+6)%7,mk,0):null,
+        ate=pl&&!!((HF.data.myWeek||{}).ate||{})[iso(0)+':'+mk];
+  let h='<div class="emeal"><div class="hd" onclick="openManualAt(\''+s.k+'\')"><span class="e">'+s.e+'</span>'+
+    '<div class="tx"><b>'+s.n+'</b><span>'+(items.length?kc.toLocaleString()+' kcal · '+items.length+(items.length===1?' item':' items'):'Aim for about '+aim.toLocaleString()+' kcal')+'</span></div>'+
+    '<span class="nadd" aria-label="Add">+</span></div>';
+  if(items.length) h+='<div class="ths">'+items.map(m=>{ const ph=mealPhoto(m);
+    return '<div class="th"><span class="ph"'+(ph?' style="background-image:url(\''+ph+'\')"':'')+'>'+(ph?'':glyph('food'))+'</span>'+
+      '<b>'+hesc(m.bm||m.name)+'</b><em>'+(m.kcal||0)+' kcal</em></div>'; }).join('')+'</div>';
+  if(pl&&!ate) h+='<div class="pl"><span class="ph" style="background-image:url(\''+pl.r.img+'\')"></span>'+
+    '<div class="tx"><small>Planned · My Week</small><b>'+hesc(pl.r.n)+'</b><em>'+pl.r.k+' kcal</em></div>'+
+    '<button onclick="ePlanLog(\''+mk+'\')">'+glyph('check')+'Log</button></div>';
+  return h+'</div>';
+}
+function ePlanLog(mk){ mwEat(mk); renderEat(); }
 /* ── shared pieces ──
    The Eat tab is a nutrition dashboard, so it is built from the same four
    parts everywhere: a summary card, grouped rows, quick-action tiles and
@@ -206,27 +236,21 @@ function eatToday(){
       '<div class="ehero-top">'+nRing(pct,(over?'+':'')+(over?t.kcal-budget:left).toLocaleString(),over?'kcal over':'kcal left',132)+
       '<div class="ehero-m">'+bar('Protein',t.p,n.pt,'#E30613')+bar('Carbs',t.c,n.ct,'#FFC20E')+bar('Fat',t.f,n.ft,'#A1A1AA')+'</div></div>'+
       '<div class="ehero-f"><span>'+t.kcal.toLocaleString()+' eaten · '+budget.toLocaleString()+' target</span><span class="nstat2 '+st.c+'"><i></i>'+st.t+'</span></div>'+
+      eGoalRow()+
     '</div>'+
     '<div class="etiles">'+
       '<div class="etile" onclick="openBurn()"><span class="ic" style="--c:#E30613">'+glyph('flame')+'</span><div><b>+'+burned.toLocaleString()+'<i> kcal</i></b><span>'+(burnFor().length?'Exercise · '+burnFor().length+' logged':'Exercise · tap to log')+'</span></div></div>'+
-      '<div class="etile"><span class="ic" style="--c:#C9962E">'+glyph('target')+'</span><div><b>'+(logged?score:'—')+'</b><span>Meal balance</span></div></div>'+
+      '<div class="etile"><span class="ic" style="--c:#C9962E">'+glyph('target')+'</span><div><b>'+(logged?score+'<i> / 100</i>':'—')+'</b><span>Meal balance</span></div></div>'+
     '</div>';
 
-  /* her goal and her week (25 Oct 2026, after Everfit: a client's own goal
-     on her dashboard, and the week's averages one tap from Today) */
-  h+=eGoalRow()+eWeekRow(n);
-  /* drinks (20 Oct 2026): teh tarik, kopi, Milo… to water, and their sugar to food */
-  if(typeof drRowHTML==='function') h+=drRowHTML();
-
-  // meals: one grouped list, the slot to fill next marked, + to add
-  h+=fsec('Meals', 'Tap a meal to log into it.');
-  h+='<div class="nlist">'+SLOTS.map(s=>{
-      const items=bySlot[s.k]||[], kc=items.reduce((a,m)=>a+(m.kcal||0),0);
-      const aim=Math.round(n.cal*SLOT_SHARE[s.k]/10)*10;
-      const sub= items.length ? kc.toLocaleString()+' kcal · '+hesc(items.map(m=>m.bm||m.name).join(', '))
-                              : 'Aim for about '+aim.toLocaleString()+' kcal';
-      return nRow(s.e, s.n, sub, '<span class="nadd" aria-label="Add">+</span>', "openManualAt('"+s.k+"')");
-    }).join('')+'</div>';
+  /* meals straight after the ring (25 Oct 2026): each slot with photographs of
+     what she logged, and the meal she planned in My Week, one tap to log;
+     drinks as the last row */
+  h+=fsec('Meals', 'Tap + to log, or log what you planned.');
+  h+='<div class="emeals">'+SLOTS.map(s=>eMealCard(s,bySlot[s.k]||[],n)).join('')+
+     (typeof drRowHTML==='function'?drRowHTML():'')+'</div>';
+  /* the week, Monday to Sunday, after the food */
+  h+=eWeekRow(n);
 
   // tools, as colour tiles (the Library's look)
   /* (17 Oct) the tools as posters, like Train after FIIT: Scan a Meal wide

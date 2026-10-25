@@ -6585,3 +6585,52 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mp2slot .note{display:flex;align-items:flex-start;gap:7px;margin-top:10px;font-size:12.5px;line-height:1.4;color:var(--dim);}
 .mp2slot .note .gly{flex:none;width:15px;height:15px;margin-top:1px;}
 .mp2slot .note.warn{color:#A86400;}
+/* ── Eat Today, tidied (25 Oct 2026) ── */
+.egoal2{display:flex;align-items:center;gap:8px;width:100%;margin-top:12px;padding:10px 0 0;border:0;border-top:1px solid var(--line);background:none;color:var(--dim);font:inherit;font-size:13.5px;text-align:left;cursor:pointer;}
+.egoal2 > .gly{flex:none;width:17px;height:17px;color:#E30613;}
+.egoal2 b{color:#E30613;font-weight:800;}
+.egoal2.on b{color:var(--txt);font-weight:750;}
+.egoal2 > span:not(.chev),.egoal2 > b{flex:1;min-width:0;}
+.egoal2 .chev{flex:none;font-size:18px;color:var(--dim);}
+.ehero .egoal.edit{margin-top:12px;padding:10px 0 0;background:none;border-top:1px solid var(--line);border-radius:0;}
+.emeals{display:flex;flex-direction:column;gap:10px;}
+.emeal{border-radius:20px;background:var(--surface);overflow:hidden;}
+.emeal .hd{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;}
+.emeal .e{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:13px;background:var(--surface2);font-size:20px;}
+.emeal .tx{flex:1;min-width:0;}
+.emeal .hd b{display:block;font-size:16px;font-weight:800;}
+.emeal .hd .tx span{display:block;margin-top:1px;font-size:12.5px;color:var(--dim);font-variant-numeric:tabular-nums;}
+.emeal .ths{display:grid;grid-auto-flow:column;grid-auto-columns:96px;gap:10px;overflow-x:auto;padding:0 14px 14px;scrollbar-width:none;}
+.emeal .ths::-webkit-scrollbar{display:none;}
+.emeal .th{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.emeal .th .ph{display:grid;place-items:center;width:96px;height:76px;border-radius:13px;background:var(--surface2) center/cover no-repeat;color:var(--dim);}
+.emeal .th .ph .gly{width:22px;height:22px;opacity:.5;}
+.emeal .th b{margin-top:4px;font-size:12px;font-weight:750;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.emeal .th em{font-style:normal;font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums;}
+.emeal .pl{display:flex;align-items:center;gap:11px;margin:0 10px 10px;padding:9px;border-radius:15px;border:1.5px dashed color-mix(in srgb,#E30613 35%,transparent);}
+.emeal .pl .ph{flex:none;width:48px;height:48px;border-radius:11px;background:var(--surface2) center/cover no-repeat;}
+.emeal .pl small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E30613;}
+.emeal .pl b{display:block;font-size:14px;font-weight:750;line-height:1.25;}
+.emeal .pl em{font-style:normal;font-size:12px;color:var(--dim);}
+.emeal .pl button{flex:none;display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 12px;border:0;border-radius:999px;background:#E30613;color:#fff;font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.emeal .pl button .gly{width:14px;height:14px;}
+.emeals .dr-row{margin:0;}
+.eweek2{margin-top:22px;padding:16px;border-radius:22px;background:var(--surface);cursor:pointer;}
+.eweek2 .h{display:flex;align-items:center;justify-content:space-between;}
+.eweek2 .h b{font-size:18px;font-weight:800;letter-spacing:-.3px;}
+.eweek2 .h .chev{font-size:20px;color:var(--dim);}
+.eweek2 .g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
+.eweek2 .g b{display:block;font-size:19px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums;}
+.eweek2 .g b i{font-style:normal;font-size:12px;font-weight:700;color:var(--dim);}
+.eweek2 .g span{display:block;font-size:11px;font-weight:700;color:var(--dim);}
+.eweek2 .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:14px;}
+.eweek2 .days > span{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.eweek2 .days .c{display:flex;align-items:flex-end;width:100%;max-width:22px;height:54px;border-radius:7px;background:var(--surface2);overflow:hidden;}
+.eweek2 .days .c i{display:block;width:100%;border-radius:7px;}
+.eweek2 .days i.on{background:#1F9D55;}
+.eweek2 .days i.part{background:#F0A23A;}
+.eweek2 .days i.over{background:#E30613;}
+.eweek2 .days em{font-style:normal;font-size:11px;font-weight:800;color:var(--dim);}
+.eweek2 .days .now em{color:#E30613;}
+.eweek2 .days .fut .c{opacity:.45;}
+.eweek2 .s{margin-top:10px;font-size:12.5px;color:var(--dim);}

@@ -412,7 +412,7 @@ function mpEat(di,si,oi){
   else {
     const kc=kcalOf(o), slotOf={breakfast:'breakfast',lunch:'lunch',dinner:'dinner'}[s.key]||'snack';
     const id=logMeal({name:mpMs(o.name), bm:mpMs(o.name), kcal:kc, p:Math.round(kc*n.pPct/100/4), c:Math.round(kc*n.cPct/100/4), f:Math.round(kc*n.fPct/100/9),
-      slot:slotOf, src:'plan', comps:o.items.map(it=>({name:mpMs(it.food), kcal:it.kcal}))});
+      slot:slotOf, src:'plan', img:mpImg(o.name)||undefined, comps:o.items.map(it=>({name:mpMs(it.food), kcal:it.kcal}))});
     HF.data.mpAte[k]=id; HF.save(); toast('Logged: '+mpMs(o.name));
   }
   const y=$('screen')?$('screen').scrollTop:0; renderPlanView(); if($('screen')) $('screen').scrollTop=y;

@@ -8837,6 +8837,55 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mp2slot .note{display:flex;align-items:flex-start;gap:7px;margin-top:10px;font-size:12.5px;line-height:1.4;color:var(--dim);}
 .mp2slot .note .gly{flex:none;width:15px;height:15px;margin-top:1px;}
 .mp2slot .note.warn{color:#A86400;}
+/* ── Eat Today, tidied (25 Oct 2026) ── */
+.egoal2{display:flex;align-items:center;gap:8px;width:100%;margin-top:12px;padding:10px 0 0;border:0;border-top:1px solid var(--line);background:none;color:var(--dim);font:inherit;font-size:13.5px;text-align:left;cursor:pointer;}
+.egoal2 > .gly{flex:none;width:17px;height:17px;color:#E30613;}
+.egoal2 b{color:#E30613;font-weight:800;}
+.egoal2.on b{color:var(--txt);font-weight:750;}
+.egoal2 > span:not(.chev),.egoal2 > b{flex:1;min-width:0;}
+.egoal2 .chev{flex:none;font-size:18px;color:var(--dim);}
+.ehero .egoal.edit{margin-top:12px;padding:10px 0 0;background:none;border-top:1px solid var(--line);border-radius:0;}
+.emeals{display:flex;flex-direction:column;gap:10px;}
+.emeal{border-radius:20px;background:var(--surface);overflow:hidden;}
+.emeal .hd{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;}
+.emeal .e{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:13px;background:var(--surface2);font-size:20px;}
+.emeal .tx{flex:1;min-width:0;}
+.emeal .hd b{display:block;font-size:16px;font-weight:800;}
+.emeal .hd .tx span{display:block;margin-top:1px;font-size:12.5px;color:var(--dim);font-variant-numeric:tabular-nums;}
+.emeal .ths{display:grid;grid-auto-flow:column;grid-auto-columns:96px;gap:10px;overflow-x:auto;padding:0 14px 14px;scrollbar-width:none;}
+.emeal .ths::-webkit-scrollbar{display:none;}
+.emeal .th{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.emeal .th .ph{display:grid;place-items:center;width:96px;height:76px;border-radius:13px;background:var(--surface2) center/cover no-repeat;color:var(--dim);}
+.emeal .th .ph .gly{width:22px;height:22px;opacity:.5;}
+.emeal .th b{margin-top:4px;font-size:12px;font-weight:750;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.emeal .th em{font-style:normal;font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums;}
+.emeal .pl{display:flex;align-items:center;gap:11px;margin:0 10px 10px;padding:9px;border-radius:15px;border:1.5px dashed color-mix(in srgb,#E30613 35%,transparent);}
+.emeal .pl .ph{flex:none;width:48px;height:48px;border-radius:11px;background:var(--surface2) center/cover no-repeat;}
+.emeal .pl small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E30613;}
+.emeal .pl b{display:block;font-size:14px;font-weight:750;line-height:1.25;}
+.emeal .pl em{font-style:normal;font-size:12px;color:var(--dim);}
+.emeal .pl button{flex:none;display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 12px;border:0;border-radius:999px;background:#E30613;color:#fff;font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.emeal .pl button .gly{width:14px;height:14px;}
+.emeals .dr-row{margin:0;}
+.eweek2{margin-top:22px;padding:16px;border-radius:22px;background:var(--surface);cursor:pointer;}
+.eweek2 .h{display:flex;align-items:center;justify-content:space-between;}
+.eweek2 .h b{font-size:18px;font-weight:800;letter-spacing:-.3px;}
+.eweek2 .h .chev{font-size:20px;color:var(--dim);}
+.eweek2 .g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
+.eweek2 .g b{display:block;font-size:19px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums;}
+.eweek2 .g b i{font-style:normal;font-size:12px;font-weight:700;color:var(--dim);}
+.eweek2 .g span{display:block;font-size:11px;font-weight:700;color:var(--dim);}
+.eweek2 .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:14px;}
+.eweek2 .days > span{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.eweek2 .days .c{display:flex;align-items:flex-end;width:100%;max-width:22px;height:54px;border-radius:7px;background:var(--surface2);overflow:hidden;}
+.eweek2 .days .c i{display:block;width:100%;border-radius:7px;}
+.eweek2 .days i.on{background:#1F9D55;}
+.eweek2 .days i.part{background:#F0A23A;}
+.eweek2 .days i.over{background:#E30613;}
+.eweek2 .days em{font-style:normal;font-size:11px;font-weight:800;color:var(--dim);}
+.eweek2 .days .now em{color:#E30613;}
+.eweek2 .days .fut .c{opacity:.45;}
+.eweek2 .s{margin-top:10px;font-size:12.5px;color:var(--dim);}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -22564,7 +22613,7 @@ function mpEat(di,si,oi){
   else {
     const kc=kcalOf(o), slotOf={breakfast:'breakfast',lunch:'lunch',dinner:'dinner'}[s.key]||'snack';
     const id=logMeal({name:mpMs(o.name), bm:mpMs(o.name), kcal:kc, p:Math.round(kc*n.pPct/100/4), c:Math.round(kc*n.cPct/100/4), f:Math.round(kc*n.fPct/100/9),
-      slot:slotOf, src:'plan', comps:o.items.map(it=>({name:mpMs(it.food), kcal:it.kcal}))});
+      slot:slotOf, src:'plan', img:mpImg(o.name)||undefined, comps:o.items.map(it=>({name:mpMs(it.food), kcal:it.kcal}))});
     HF.data.mpAte[k]=id; HF.save(); toast('Logged: '+mpMs(o.name));
   }
   const y=$('screen')?$('screen').scrollTop:0; renderPlanView(); if($('screen')) $('screen').scrollTop=y;
@@ -34508,9 +34557,9 @@ function eGoalRow(){
   if(eGoalEdit) return '<form class="egoal edit" onsubmit="event.preventDefault();eGoalSave()"><span class="ic">'+glyph('target')+'</span>'+
     '<input id="egoal-in" class="inp" maxlength="60" placeholder="e.g. Lose 5 kg before Raya" value="'+hesc(g)+'">'+
     '<button type="submit">Save</button></form>';
-  return '<div class="egoal" onclick="eGoalEdit=true;renderEat();setTimeout(function(){ var e=$(\'egoal-in\'); if(e) e.focus(); },50)">'+
-    '<span class="ic">'+glyph('target')+'</span><div class="tx"><span>'+(g?'Your goal':'What is your goal?')+'</span>'+
-    '<b>'+(g?hesc(g):'Set one, so you remember why you started')+'</b></div><span class="chev">›</span></div>';
+  /* a slim line at the foot of the ring card (25 Oct 2026, Seth: kemaskan Today) */
+  return '<button class="egoal2'+(g?' on':'')+'" onclick="eGoalEdit=true;renderEat();setTimeout(function(){ var e=$(\'egoal-in\'); if(e) e.focus(); },50)">'+
+    glyph('target')+(g?'<b>'+hesc(g)+'</b>':'<span>What is your goal? <b>Add it</b></span>')+'<span class="chev">›</span></button>';
 }
 function eGoalSave(){ const v=String(($('egoal-in')||{}).value||'').replace(/\s+/g,' ').trim().slice(0,60); HF.data.goalText=v; HF.save(); eGoalEdit=false; renderEat(); }
 /* ── the week, Monday to today, against the daily target ── */
@@ -34519,15 +34568,45 @@ function weekSoFar(cal){
   for(let i=dow;i>=0;i--) eaten+=mealTotals(iso(-i)).kcal;
   return {eaten, target:(cal||0)*(dow+1), days:dow+1};
 }
-function eWeekRow(n){
-  const w=weekSoFar(n.cal), r=weekReport(), left=w.target-w.eaten;
-  return '<div class="eweek" onclick="setEatSeg(\'journal\')"><div class="h"><b>This week</b><span>Monday to today · '+w.days+(w.days===1?' day':' days')+'</span><span class="chev">›</span></div>'+
-    '<div class="g"><div><b>'+w.eaten.toLocaleString()+'</b><span>/ '+w.target.toLocaleString()+' kcal</span></div>'+
-    '<div><b>'+(r.logged?r.avgKcal.toLocaleString():'–')+'</b><span>avg a day</span></div>'+
-    '<div><b>'+r.onTarget+'<i>/'+r.logged+'</i></b><span>days on target</span></div></div>'+
-    '<div class="bar"><i style="width:'+Math.min(100,Math.round(w.eaten/(w.target||1)*100))+'%"></i></div>'+
-    '<div class="s">'+(left>=0?'Left this week: <b>'+left.toLocaleString()+' kcal</b>':'<b>'+(-left).toLocaleString()+' kcal</b> over this week')+'</div></div>';
+/* Monday to Sunday as bars. Only the days she logged count: a day with nothing
+   logged is empty, not a day she ate nothing (it read "13,731 kcal left this
+   week" on a Sunday with two days logged). */
+function eWeekDays(cal){
+  const dow=(new Date().getDay()+6)%7, out=[];
+  for(let i=0;i<7;i++){ const d=iso(i-dow), t=mealTotals(d), lg=i<=dow&&mealsFor(d).length>0;
+    out.push({i, d, k:t.kcal, p:t.p, logged:lg, future:i>dow, today:i===dow, on:lg&&cal&&t.kcal>=cal*0.85&&t.kcal<=cal*1.1}); }
+  return out;
 }
+function eWeekRow(n){
+  const cal=n.cal||0, ds=eWeekDays(cal), lg=ds.filter(x=>x.logged), avg=k=>lg.length?Math.round(lg.reduce((a,x)=>a+x[k],0)/lg.length):0;
+  const onT=lg.filter(x=>x.on).length;
+  return '<div class="eweek2" onclick="setEatSeg(\'journal\')"><div class="h"><b>This week</b><span class="chev">›</span></div>'+
+    '<div class="g"><div><b>'+lg.length+'<i>/7</i></b><span>days logged</span></div>'+
+    '<div><b>'+(lg.length?avg('k').toLocaleString():'–')+'</b><span>kcal a day</span></div>'+
+    '<div><b>'+(lg.length?avg('p'):'–')+'<i>g</i></b><span>protein a day</span></div>'+
+    '<div><b>'+onT+'<i>/'+lg.length+'</i></b><span>on target</span></div></div>'+
+    '<div class="days">'+ds.map(x=>'<span class="'+(x.today?'now ':'')+(x.future?'fut':'')+'"><span class="c">'+
+      (x.logged?'<i class="'+(x.on?'on':x.k>cal*1.1?'over':'part')+'" style="height:'+Math.max(6,Math.min(100,Math.round(x.k/(cal||1)*100)))+'%"></i>':'')+
+      '</span><em>'+['M','T','W','T','F','S','S'][x.i]+'</em></span>').join('')+'</div>'+
+    '<div class="s">'+(lg.length?'Average over the '+lg.length+(lg.length===1?' day':' days')+' you logged, against '+cal.toLocaleString()+' kcal a day.':'Log your meals and your week shows here.')+'</div></div>';
+}
+const E_MW={breakfast:'sarapan',lunch:'bekal',dinner:'keluarga',snack:'snek'};
+function eMealCard(s,items,n){
+  const kc=items.reduce((a,m)=>a+(m.kcal||0),0), aim=Math.round((n.cal||0)*SLOT_SHARE[s.k]/10)*10;
+  const mk=E_MW[s.k], pl=(typeof mwGet==='function')?mwGet((new Date().getDay()+6)%7,mk,0):null,
+        ate=pl&&!!((HF.data.myWeek||{}).ate||{})[iso(0)+':'+mk];
+  let h='<div class="emeal"><div class="hd" onclick="openManualAt(\''+s.k+'\')"><span class="e">'+s.e+'</span>'+
+    '<div class="tx"><b>'+s.n+'</b><span>'+(items.length?kc.toLocaleString()+' kcal · '+items.length+(items.length===1?' item':' items'):'Aim for about '+aim.toLocaleString()+' kcal')+'</span></div>'+
+    '<span class="nadd" aria-label="Add">+</span></div>';
+  if(items.length) h+='<div class="ths">'+items.map(m=>{ const ph=mealPhoto(m);
+    return '<div class="th"><span class="ph"'+(ph?' style="background-image:url(\''+ph+'\')"':'')+'>'+(ph?'':glyph('food'))+'</span>'+
+      '<b>'+hesc(m.bm||m.name)+'</b><em>'+(m.kcal||0)+' kcal</em></div>'; }).join('')+'</div>';
+  if(pl&&!ate) h+='<div class="pl"><span class="ph" style="background-image:url(\''+pl.r.img+'\')"></span>'+
+    '<div class="tx"><small>Planned · My Week</small><b>'+hesc(pl.r.n)+'</b><em>'+pl.r.k+' kcal</em></div>'+
+    '<button onclick="ePlanLog(\''+mk+'\')">'+glyph('check')+'Log</button></div>';
+  return h+'</div>';
+}
+function ePlanLog(mk){ mwEat(mk); renderEat(); }
 /* ── shared pieces ──
    The Eat tab is a nutrition dashboard, so it is built from the same four
    parts everywhere: a summary card, grouped rows, quick-action tiles and
@@ -34604,27 +34683,21 @@ function eatToday(){
       '<div class="ehero-top">'+nRing(pct,(over?'+':'')+(over?t.kcal-budget:left).toLocaleString(),over?'kcal over':'kcal left',132)+
       '<div class="ehero-m">'+bar('Protein',t.p,n.pt,'#E30613')+bar('Carbs',t.c,n.ct,'#FFC20E')+bar('Fat',t.f,n.ft,'#A1A1AA')+'</div></div>'+
       '<div class="ehero-f"><span>'+t.kcal.toLocaleString()+' eaten · '+budget.toLocaleString()+' target</span><span class="nstat2 '+st.c+'"><i></i>'+st.t+'</span></div>'+
+      eGoalRow()+
     '</div>'+
     '<div class="etiles">'+
       '<div class="etile" onclick="openBurn()"><span class="ic" style="--c:#E30613">'+glyph('flame')+'</span><div><b>+'+burned.toLocaleString()+'<i> kcal</i></b><span>'+(burnFor().length?'Exercise · '+burnFor().length+' logged':'Exercise · tap to log')+'</span></div></div>'+
-      '<div class="etile"><span class="ic" style="--c:#C9962E">'+glyph('target')+'</span><div><b>'+(logged?score:'—')+'</b><span>Meal balance</span></div></div>'+
+      '<div class="etile"><span class="ic" style="--c:#C9962E">'+glyph('target')+'</span><div><b>'+(logged?score+'<i> / 100</i>':'—')+'</b><span>Meal balance</span></div></div>'+
     '</div>';
 
-  /* her goal and her week (25 Oct 2026, after Everfit: a client's own goal
-     on her dashboard, and the week's averages one tap from Today) */
-  h+=eGoalRow()+eWeekRow(n);
-  /* drinks (20 Oct 2026): teh tarik, kopi, Milo… to water, and their sugar to food */
-  if(typeof drRowHTML==='function') h+=drRowHTML();
-
-  // meals: one grouped list, the slot to fill next marked, + to add
-  h+=fsec('Meals', 'Tap a meal to log into it.');
-  h+='<div class="nlist">'+SLOTS.map(s=>{
-      const items=bySlot[s.k]||[], kc=items.reduce((a,m)=>a+(m.kcal||0),0);
-      const aim=Math.round(n.cal*SLOT_SHARE[s.k]/10)*10;
-      const sub= items.length ? kc.toLocaleString()+' kcal · '+hesc(items.map(m=>m.bm||m.name).join(', '))
-                              : 'Aim for about '+aim.toLocaleString()+' kcal';
-      return nRow(s.e, s.n, sub, '<span class="nadd" aria-label="Add">+</span>', "openManualAt('"+s.k+"')");
-    }).join('')+'</div>';
+  /* meals straight after the ring (25 Oct 2026): each slot with photographs of
+     what she logged, and the meal she planned in My Week, one tap to log;
+     drinks as the last row */
+  h+=fsec('Meals', 'Tap + to log, or log what you planned.');
+  h+='<div class="emeals">'+SLOTS.map(s=>eMealCard(s,bySlot[s.k]||[],n)).join('')+
+     (typeof drRowHTML==='function'?drRowHTML():'')+'</div>';
+  /* the week, Monday to Sunday, after the food */
+  h+=eWeekRow(n);
 
   // tools, as colour tiles (the Library's look)
   /* (17 Oct) the tools as posters, like Train after FIIT: Scan a Meal wide
