@@ -103,6 +103,33 @@ function renderEat(){
   eatToday();
 }
 
+/* ── her goal, in her words ── */
+let eGoalEdit=false;
+function eGoalRow(){
+  const g=String(HF.data.goalText||'');
+  if(eGoalEdit) return '<form class="egoal edit" onsubmit="event.preventDefault();eGoalSave()"><span class="ic">'+glyph('target')+'</span>'+
+    '<input id="egoal-in" class="inp" maxlength="60" placeholder="e.g. Lose 5 kg before Raya" value="'+hesc(g)+'">'+
+    '<button type="submit">Save</button></form>';
+  return '<div class="egoal" onclick="eGoalEdit=true;renderEat();setTimeout(function(){ var e=$(\'egoal-in\'); if(e) e.focus(); },50)">'+
+    '<span class="ic">'+glyph('target')+'</span><div class="tx"><span>'+(g?'Your goal':'What is your goal?')+'</span>'+
+    '<b>'+(g?hesc(g):'Set one, so you remember why you started')+'</b></div><span class="chev">›</span></div>';
+}
+function eGoalSave(){ const v=String(($('egoal-in')||{}).value||'').replace(/\s+/g,' ').trim().slice(0,60); HF.data.goalText=v; HF.save(); eGoalEdit=false; renderEat(); }
+/* ── the week, Monday to today, against the daily target ── */
+function weekSoFar(cal){
+  const dow=(new Date().getDay()+6)%7; let eaten=0;
+  for(let i=dow;i>=0;i--) eaten+=mealTotals(iso(-i)).kcal;
+  return {eaten, target:(cal||0)*(dow+1), days:dow+1};
+}
+function eWeekRow(n){
+  const w=weekSoFar(n.cal), r=weekReport(), left=w.target-w.eaten;
+  return '<div class="eweek" onclick="setEatSeg(\'journal\')"><div class="h"><b>This week</b><span>Monday to today · '+w.days+(w.days===1?' day':' days')+'</span><span class="chev">›</span></div>'+
+    '<div class="g"><div><b>'+w.eaten.toLocaleString()+'</b><span>/ '+w.target.toLocaleString()+' kcal</span></div>'+
+    '<div><b>'+(r.logged?r.avgKcal.toLocaleString():'–')+'</b><span>avg a day</span></div>'+
+    '<div><b>'+r.onTarget+'<i>/'+r.logged+'</i></b><span>days on target</span></div></div>'+
+    '<div class="bar"><i style="width:'+Math.min(100,Math.round(w.eaten/(w.target||1)*100))+'%"></i></div>'+
+    '<div class="s">'+(left>=0?'Left this week: <b>'+left.toLocaleString()+' kcal</b>':'<b>'+(-left).toLocaleString()+' kcal</b> over this week')+'</div></div>';
+}
 /* ── shared pieces ──
    The Eat tab is a nutrition dashboard, so it is built from the same four
    parts everywhere: a summary card, grouped rows, quick-action tiles and
@@ -185,6 +212,9 @@ function eatToday(){
       '<div class="etile"><span class="ic" style="--c:#C9962E">'+glyph('target')+'</span><div><b>'+(logged?score:'—')+'</b><span>Meal balance</span></div></div>'+
     '</div>';
 
+  /* her goal and her week (25 Oct 2026, after Everfit: a client's own goal
+     on her dashboard, and the week's averages one tap from Today) */
+  h+=eGoalRow()+eWeekRow(n);
   /* drinks (20 Oct 2026): teh tarik, kopi, Milo… to water, and their sugar to food */
   if(typeof drRowHTML==='function') h+=drRowHTML();
 

@@ -216,6 +216,28 @@ noThrow("scan result renders",   function(){ _scanData={food_name:'Roti canai',e
 noThrow("unknown food handled",  function(){ renderScanResult({food_name:'',estimated_calories:0}); });
 [0,1,2].forEach(function(i){ noThrow("result tab "+i, function(){ _scanData={food_name:'X',estimated_calories:500,protein_g:20,carbs_g:50,fat_g:18}; setMRT(i); }); });
 
+print("\n── EAT · AFTER EVERFIT ──");
+(function(){
+  var keepSv=HF.save, keepM=HF.data.meals, keepG=HF.data.goalText, keepA=HF.data.mpAte, keepP=mpPlan; HF.save=function(){};
+  HF.data.meals={}; HF.data.goalText=''; HF.data.nutrition={w:70,h:160,a:30,gender:'female',goal:'lose',cal:1500,pt:75,ct:190,ft:47};
+  eatSeg='today'; renderEat(); var eh=$('eat-body').innerHTML;
+  ok("Today asks for her goal, and shows her week so far", eh.indexOf('What is your goal?')>0 && eh.indexOf('This week')>0 && eh.indexOf('Left this week')>0);
+  eGoalEdit=true; renderEat(); $('egoal-in').value='  Turun 5 kg   sebelum Raya '; eGoalSave();
+  ok("...her goal saved, tidied, on Today", HF.data.goalText==='Turun 5 kg sebelum Raya' && $('eat-body').innerHTML.indexOf('Turun 5 kg sebelum Raya')>0);
+  logMeal({name:'Nasi Lemak',kcal:600,p:20,c:70,f:25}); var w=weekSoFar(1500);
+  ok("...the week counts today's meals against a day's target per day so far", w.eaten===600 && w.target===1500*w.days);
+  mpPlan=buildPlan({goal:'loss',rate:0.5,gender:'female',age:30,wt:70,ht:160,activity:1.375,struct:'3x',days:2,prefs:[],styles:[]});
+  var host=document.createElement('div'); host.id='mp-view'; if(!$('mp-view')) document.body.appendChild(host);
+  renderPlanView(); var pv=$('mp-view').innerHTML;
+  ok("the plan shows each dish's dietary information and a filter", pv.indexOf('Dietary info')>0 && pv.indexOf('mpSetFilter(')>0 && pv.indexOf('I ate this')>0);
+  var before=mealsFor().length; mpEat(0,1,0);
+  ok("I ate this puts the dish into today's diary with its macros", mealsFor().length===before+1 && mealsFor()[before].kcal===kcalOf(mpPlan.days[0].slots[1].options[0]) && mealsFor()[before].p>0 && mpAteIs(0,1,0));
+  mpEat(0,1,0); ok("...pressed again, it comes out", mealsFor().length===before && !mpAteIs(0,1,0));
+  mpSetFilter('budget'); var sl=mpPlan.days[0].slots[0], fi=mpFirst(sl);
+  ok("a filter shows first the option that passes it", !sl.options.some(function(o){ return o.tags.indexOf('budget')>-1; }) || sl.options[fi].tags.indexOf('budget')>-1);
+  mpSetFilter('');
+  HF.save=keepSv; HF.data.meals=keepM; HF.data.goalText=keepG; HF.data.mpAte=keepA; mpPlan=keepP; eGoalEdit=false;
+})();
 print("\n── PROGRESS ──");
 HF.apply(null); HF.data.onboarded=true;
 noThrow("empty progress renders", function(){ switchTab('progress'); });

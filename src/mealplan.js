@@ -340,6 +340,34 @@ function mpDelete(i){ const l=(HF.data.mealPlans||[]).slice(); l.splice(i,1); HF
 function bmiTone(cls){ return cls==='normal'?'ok':cls==='under'?'info':cls==='preobes'?'warn':'risk'; }
 function deficitTone(k){ return k<=750?'ok':k<=1000?'warn':'risk'; }
 
+/* ── dietary information, a filter, and "I ate this" (25 Oct 2026, after Everfit) ── */
+const MP_TAG_NAME={hiprotein:'High protein',lowcarb:'Controlled carbs',budget:'Budget',lovenasi:'Rice',lovemee:'Noodles',loveroti:'Bread'};
+const MP_FILTERS=[['','All'],['low','Low calorie'],['hiprotein','High protein'],['lowcarb','Controlled carbs'],['budget','Budget']];
+let mpFilter='';
+function mpTagList(o,tot,target){ const t=(o.tags||[]).filter(x=>MP_TAG_NAME[x]).map(x=>MP_TAG_NAME[x]);
+  if(target && tot<=target*0.9) t.unshift('Low calorie'); return t; }
+function mpTagsHTML(o,tot,target){ const t=mpTagList(o,tot,target);
+  return t.length?'<div class="mptags"><span class="k">Dietary info</span>'+t.map(x=>'<span>'+x+'</span>').join('')+'</div>':''; }
+function mpPass(o,target){ if(!mpFilter) return true; if(mpFilter==='low') return kcalOf(o)<=target*0.9; return (o.tags||[]).indexOf(mpFilter)>-1; }
+/* the option shown first: option 1, or the first that passes her filter */
+function mpFirst(s){ if(!mpFilter) return 0; for(let i=0;i<s.options.length;i++) if(mpPass(s.options[i],s.target)) return i; return 0; }
+function mpSetFilter(f){ mpFilter=f; const y=$('screen')?$('screen').scrollTop:0; renderPlanView(); if($('screen')) $('screen').scrollTop=y; }
+/* she ate it: today's diary, macros in the plan's proportions */
+function mpAteKey(di,si,oi){ return iso(0)+':'+di+':'+si+':'+oi; }
+function mpAteIs(di,si,oi){ return !!((HF.data.mpAte||{})[mpAteKey(di,si,oi)]); }
+function mpEat(di,si,oi){
+  const p=mpPlan; if(!p) return; const s=p.days[di].slots[si], o=s.options[oi], k=mpAteKey(di,si,oi), n=p.nut;
+  HF.data.mpAte=HF.data.mpAte||{};
+  if(HF.data.mpAte[k]){ const id=HF.data.mpAte[k], list=HF.data.meals[iso(0)]||[], j=list.map(m=>m.id).indexOf(id);
+    if(j>=0) list.splice(j,1); delete HF.data.mpAte[k]; HF.save(); toast('Removed from your log'); }
+  else {
+    const kc=kcalOf(o), slotOf={breakfast:'breakfast',lunch:'lunch',dinner:'dinner'}[s.key]||'snack';
+    const id=logMeal({name:mpMs(o.name), bm:mpMs(o.name), kcal:kc, p:Math.round(kc*n.pPct/100/4), c:Math.round(kc*n.cPct/100/4), f:Math.round(kc*n.fPct/100/9),
+      slot:slotOf, src:'plan', comps:o.items.map(it=>({name:mpMs(it.food), kcal:it.kcal}))});
+    HF.data.mpAte[k]=id; HF.save(); toast('Logged: '+mpMs(o.name));
+  }
+  const y=$('screen')?$('screen').scrollTop:0; renderPlanView(); if($('screen')) $('screen').scrollTop=y;
+}
 function renderPlanView(){
   const p=mpPlan; if(!p){ $('mp-view').innerHTML='<div class="empty">No plan yet.</div>'; return; }
   const n=p.nut, ok=mdgOk(n), bc=bmiClass(n.bmi), wr=wcRisk(p.meta.wc||HF.data.wc, p.meta.gender);
@@ -386,6 +414,7 @@ function renderPlanView(){
 
   /* ── the menus ── */
   h+=nHead('Daily menus','Three options per meal — swap when an ingredient is missing');
+  h+='<div class="mpfilt">'+MP_FILTERS.map(f=>'<button class="'+(mpFilter===f[0]?'on':'')+'" onclick="mpSetFilter(\''+f[0]+'\')">'+f[1]+'</button>').join('')+'</div>';
   p.days.forEach((d,di)=>{
     const bal=(good,txt)=>'<span class="npill '+(good?'ok':'warn')+'">'+txt+'</span>';
     h+='<div class="mpday'+(di===0?' open':'')+'" id="mpday-'+di+'">'+
@@ -404,15 +433,17 @@ function renderPlanView(){
         '<div class="mpslot-h"><div><div class="t">'+s.label+'</div>'+
         '<div class="m">'+s.time+' · about '+s.target+' kcal</div></div>'+
         '<div class="mpopts" role="tablist">'+
-        s.options.map((o,oi)=>'<button class="mpo'+(oi===0?' on':'')+'" aria-label="Option '+(oi+1)+'" onclick="mpOpt(\''+sid+'\','+oi+')">'+(oi+1)+'</button>').join('')+
+        s.options.map((o,oi)=>'<button class="mpo'+(oi===mpFirst(s,oi)?' on':'')+(mpPass(o,s.target)?'':' dim')+'" aria-label="Option '+(oi+1)+'" onclick="mpOpt(\''+sid+'\','+oi+')">'+(oi+1)+'</button>').join('')+
         '</div></div>';
       s.options.forEach((o,oi)=>{
         const tot=kcalOf(o), g=groupsOf(o.items), gap=s.target-tot;
-        h+='<div class="mpopt" style="display:'+(oi===0?'block':'none')+';">'+
+        h+='<div class="mpopt" style="display:'+(oi===mpFirst(s,oi)?'block':'none')+';">'+
           /* the food in Malay, as in BURN30 (18 Oct); the screen around it stays English */
           '<div class="mpopt-h"><div class="t">'+mpMs(o.name)+'</div><div class="k">'+tot+' kcal</div></div>'+
           o.items.map(it=>'<div class="mpitem"><div><div class="t">'+mpMs(it.food)+'</div>'+
             '<div class="m">'+mpPor(it.portion)+'</div></div><div class="k">'+it.kcal+'</div></div>').join('')+
+          mpTagsHTML(o,tot,s.target)+
+          '<button class="mpeat'+(mpAteIs(di,si,oi)?' on':'')+'" onclick="mpEat('+di+','+si+','+oi+')">'+glyph('check')+(mpAteIs(di,si,oi)?'Logged':'I ate this')+'</button>'+
           '<div class="mpbals" style="margin-top:10px;">'+
             (g.protein?'<span class="npill p">Protein</span>':'')+
             (g.karbo?'<span class="npill c">Carbs</span>':'')+
