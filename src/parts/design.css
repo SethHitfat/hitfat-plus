@@ -6736,3 +6736,10 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .lbx-name.lb-logo{text-shadow:none}
 .lbx-name.lb-logo img{max-width:250px}
 .hub-tile-p .lb-logo img{max-width:120px}
+/* the small tile in the programs row: the mark and the logo on the left, she stays clear on the right (26 Oct 2026) */
+.hub-tile-p.lb-photo{justify-content:flex-end;align-items:flex-start;background-position:78% center}
+.hub-tile-p.lb-photo .lb-tx{width:60%;padding:10px 10px 12px;text-align:left}
+.hub-tile-p.lb-photo .lb-mark{width:22px !important;height:22px !important;margin:0 0 6px !important}
+.hub-tile-p.lb-photo .lb-logo{padding:0 !important}
+.hub-tile-p.lb-photo .lb-logo img{max-width:100%}
+.hub-tile-p.lb-photo .lb-sub,.hub-tile-p.lb-photo .lb-pill{display:none}
