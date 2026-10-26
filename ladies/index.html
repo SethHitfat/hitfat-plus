@@ -486,6 +486,35 @@ header .w{display:flex;align-items:center;justify-content:space-between;height:6
 .qt .who small{font-size:12px;color:var(--ink2)}
 @media(min-width:900px){ .bas,.qts{flex-wrap:wrap;justify-content:center;overflow:visible;margin:14px 0 0;padding:4px 0 10px} }
 
+
+/* reviews, one tidy system (26 Oct 2026, Seth: "serabut, kemaskan, biar wow") */
+.tx-mos{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:620px;margin:22px auto 0}
+.tx-mos div{aspect-ratio:1;border-radius:20px;background:#ddd center/cover no-repeat}
+.tx-mos .g{position:relative;grid-column:span 2;aspect-ratio:1000/543;overflow:hidden}
+.tx-mos .g::after{content:'';position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(180deg,transparent,rgba(30,10,25,.7))}
+.tx-mos .g b{position:absolute;z-index:1;left:14px;bottom:12px;color:#fff;font-size:15px;font-weight:800;text-align:left}
+.tx-hd{display:flex;align-items:baseline;justify-content:space-between;max-width:620px;margin:30px auto 0;text-align:left}
+.tx-hd h3{font-size:21px;font-weight:800}
+.tx-hd span{font-size:12.5px;font-weight:800;color:var(--m)}
+.tx-row{display:flex;gap:12px;margin:12px -22px 0;padding:6px 22px 14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;text-align:left}
+.tx-row::-webkit-scrollbar{display:none}
+.tx-c{flex:none;width:248px;margin:0;scroll-snap-align:center;border-radius:24px;background:#fff;overflow:hidden;box-shadow:0 18px 38px -24px rgba(80,0,40,.5)}
+.tx-im{position:relative;aspect-ratio:1;background:#eee center/cover no-repeat}
+.tx-im.two{display:grid;grid-template-columns:1fr 1fr;gap:3px;background:#fff}
+.tx-im.two span{background:#ddd center top/cover no-repeat}
+.tx-im.two i{position:absolute;bottom:8px;padding:3px 9px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;font-style:normal;font-size:11px;font-weight:800}
+.tx-im.two i:nth-of-type(1){left:8px} .tx-im.two i:nth-of-type(2){left:calc(50% + 6px)}
+.tx-c figcaption{padding:12px 14px 14px}
+.tx-c b{display:block;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;background:linear-gradient(90deg,var(--m),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tx-c span{display:block;margin-top:2px;font-size:14px;font-weight:800;color:var(--ink)}
+.tx-c small{display:block;margin-top:2px;font-size:12px;color:var(--ink2)}
+.tx-q{flex:none;width:270px;scroll-snap-align:center;display:flex;flex-direction:column;justify-content:space-between;gap:14px;padding:18px;border-radius:24px;background:var(--lav)}
+.tx-q p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink)}
+.tx-q .who{display:flex;align-items:center;gap:10px}
+.tx-q .who span{flex:none;width:44px;height:44px;border-radius:50%;background:#ddd center/cover no-repeat;box-shadow:0 0 0 2px #fff}
+.tx-q .who b{display:block;font-size:14px;font-weight:800}
+.tx-q .who small{font-size:12px;color:var(--ink2)}
+@media(min-width:900px){ .tx-row{flex-wrap:wrap;justify-content:center;overflow:visible;margin:12px 0 0;padding:6px 0 14px} .tx-hd span{display:none} }
 /* her own plan: what it follows */
 .pl2{display:grid;gap:14px;margin-top:26px;text-align:left}
 @media(min-width:760px){ .pl2{grid-template-columns:1fr 1fr} }
@@ -802,39 +831,34 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
   <div style="margin-top:22px"><a class="cta" href="#" data-buy="makan">Saya Nak Mula — RM39</a></div>
 </section>
 
-<!-- 9 · REVIEWS: women from HITFAT's own classes, shared by Seth (26 Oct 2026); labelled as class members, not MAK2FIT users -->
-<section class="box c reveal" id="testi">
+<!-- 9 · REVIEWS: real women from HITFAT's own classes only (labelled as class members, not MAK2FIT users); redone tidy 26 Oct 2026 -->
+<section class="box c reveal tx" id="testi">
   <span class="pill">Testimoni</span>
   <h2 class="sec-h">Wanita sebenar. <span class="grad">Hasil sebenar.</span></h2>
   <p class="sec-p">Peserta kelas HITFAT bersama Coach Seth dan pasukan. Kelas berlainan dengan MAK2FIT 30, tetapi caranya sama: latihan berpandu, dan makan yang boleh diteruskan.</p>
-  <figure class="grp"><div data-bg="img/testi/r-group.jpg" role="img" aria-label="Kelas wanita di gym HITFAT"></div><figcaption>Kelas wanita di gym HITFAT</figcaption></figure>
-  <div class="big"><div class="pp"><div><span style="background-image:url(img/testi/big-a.jpg)"></span><small>Sebelum · 98 kg</small></div><div><span style="background-image:url(img/testi/big-b.jpg)"></span><small>Selepas · 63.7 kg</small></div></div>
-    <b>−34.3 kg</b><em>Peserta HITFAT. Ini perjalanan panjang, bukan 30 hari, dan ia bermula dengan hari pertama.</em></div>
-  <h3 class="mk-h">Lebih ramai wanita HITFAT</h3>
-  <div class="bas"><div class="ba fb"><div class="pp"><div><span style="background-image:url(img/testi/t42w-a.jpg)"></span><small>Sebelum</small></div><div><span style="background-image:url(img/testi/t42w-b.jpg)"></span><small>Selepas</small></div></div><b>Wanita · 40-an</b><em>Program latihan HITFAT</em></div><div class="ba fb w2"><div class="pp"><div><span style="background-image:url(img/testi/w2-a.jpg)"></span><small>Sebelum</small></div><div><span style="background-image:url(img/testi/w2-b.jpg)"></span><small>Selepas</small></div></div><b>Peserta HITFAT</b><em>Program latihan HITFAT</em></div></div>
-  <h3 class="mk-h">Keputusan cabaran HITFAT</h3>
-  <div class="res"><figure><div data-bg="img/testi/r-hafifah.jpg" role="img" aria-label="Gambar sebelum dan selepas: Hafifah, 116 → 95 kg"></div><figcaption><b>116 → 95 kg</b><span>Hafifah</span></figcaption></figure><figure><div data-bg="img/testi/r-aishah.jpg" role="img" aria-label="Gambar sebelum dan selepas: Peserta HITFAT, 70.9 → 63.1 kg"></div><figcaption><b>70.9 → 63.1 kg</b><span>Peserta HITFAT</span></figcaption></figure><figure><div data-bg="img/testi/r-31d5.jpg" role="img" aria-label="Gambar sebelum dan selepas: 31 Days Challenge · tempat ke-5, 75.4 → 70 kg dalam 31 hari"></div><figcaption><b>75.4 → 70 kg dalam 31 hari</b><span>31 Days Challenge · tempat ke-5</span></figcaption></figure><figure><div data-bg="img/testi/r-aniza.jpg" role="img" aria-label="Gambar sebelum dan selepas: Aniza · HITFAT Challenge Oktober 2021, −4.6 kg dalam sebulan"></div><figcaption><b>−4.6 kg dalam sebulan</b><span>Aniza · HITFAT Challenge Oktober 2021</span></figcaption></figure></div>
-  <h3 class="mk-h">Kata mereka</h3>
-  <div class="qts"><div class="qt"><p>“Saya suka sangat join HITFAT sebab coach banyak bagi nasihat dan semangat. Saya dapat turunkan berat badan sebanyak 10 kg dalam tempoh 7 minggu.”</p><div class="who"><span style="background-image:url(img/testi/q-shereen.jpg)"></span><div><b>Shereen</b><small>Peserta HITFAT Temerloh</small></div></div></div><div class="qt"><p>“Alhamdulillah, akhirnya dapat berat ideal kembali. Dulu kerap migrain dan sakit lutut, tapi kini tiada lagi.”</p><div class="who"><span style="background-image:url(img/testi/q-suhana.jpg)"></span><div><b>Suhana</b><small>Peserta HITFAT Johor Bahru</small></div></div></div><div class="qt"><p>“Dah berjaya turun 8 kg. Saya tak lagi lesu dan selalu mengantuk, dan rasa kebas-kebas kaki dah hilang. Happy bila saiz baju dah bertukar.”</p><div class="who"><span style="background-image:url(img/testi/q-pyka.jpg)"></span><div><b>Pyka</b><small>Peserta HITFAT Shah Alam</small></div></div></div><div class="qt"><p>“Coach, saya bangga join HITFAT dari 77 kg dan sekarang 70 kg. Rasa berbeza sangat.”</p><div class="who"><span style="background-image:url(img/testi/q-eera.jpg)"></span><div><b>Eera Ziman</b><small>Peserta HITFAT Ampang</small></div></div></div><div class="qt"><p>“Akhirnya raya haji ni saya dapat pakai baju raya lama. Alhamdulillah.”</p><div class="who"><span style="background-image:url(img/testi/q-izzati.jpg)"></span><div><b>Izzati</b><small>Peserta HITFAT Kota Bharu</small></div></div></div><div class="qt"><p>“Saya rasa lain sangat, terutama badan dan pergerakan. Baju kurung saya banyak kena alter.”</p><div class="who"><span style="background-image:url(img/testi/q-rara.jpg)"></span><div><b>Kak Rara</b><small>Peserta HITFAT Kota Bharu</small></div></div></div><div class="qt"><p>“Dari HITFAT, saiz XL ke M. Sukar menurunkan berat badan, jadi mudah dan menyedarkan saya betapa pentingnya kesihatan.”</p><div class="who"><span style="background-image:url(img/testi/q-syud.jpg)"></span><div><b>Syud Syuhada</b><small>Peserta HITFAT Kuantan</small></div></div></div><div class="qt"><p>“Saya suka HITFAT sebab coach HITFAT semua ada latar belakang Sains Sukan.”</p><div class="who"><span style="background-image:url(img/testi/q-hartini.jpg)"></span><div><b>Hartini Baharudin</b><small>Peserta HITFAT Kuantan</small></div></div></div></div>
-  <h3 class="mk-h">Dari kelas HITFAT</h3>
-  <div class="kom">
+  <div class="tx-mos">
+    <div class="g" data-bg="img/testi/r-group.jpg" role="img" aria-label="Kelas wanita di gym HITFAT"><b>Kelas wanita HITFAT</b></div>
     <div data-bg="img/testi/k-komuniti-3.jpg" role="img" aria-label="Tiga wanita memegang papan I survived my first session at HITFAT"></div>
-    <div data-bg="img/testi/k-komuniti-4.jpg" role="img" aria-label="Wanita berlatih dengan battle rope di kelas HITFAT"></div>
+    <div data-bg="img/testi/k-komuniti-4.jpg" role="img" aria-label="Wanita berlatih battle rope di kelas HITFAT"></div>
   </div>
-  <p class="fine">Gambar dan kata-kata dikongsi oleh peserta kelas HITFAT. Keputusan setiap orang berbeza, bergantung pada konsistensi, pemakanan, tidur dan kesihatan.</p>
+  <div class="tx-hd"><h3>Sebelum → Selepas</h3><span>Leret →</span></div>
+  <div class="tx-row tx-ba"><figure class="tx-c"><div class="tx-im two"><span data-bg="img/testi/big-a.jpg"></span><span data-bg="img/testi/big-b.jpg"></span><i>Sebelum</i><i>Selepas</i></div><figcaption><b>−34.3 kg</b><span>98 → 63.7 kg</span><small>Peserta HITFAT · perjalanan jangka panjang</small></figcaption></figure><figure class="tx-c"><div class="tx-im" data-bg="img/testi/r-hafifah.jpg"></div><figcaption><b>−21 kg</b><span>116 → 95 kg</span><small>Hafifah · Peserta HITFAT</small></figcaption></figure><figure class="tx-c"><div class="tx-im" data-bg="img/testi/r-aishah.jpg"></div><figcaption><b>−7.8 kg</b><span>70.9 → 63.1 kg</span><small>Peserta HITFAT</small></figcaption></figure><figure class="tx-c"><div class="tx-im" data-bg="img/testi/r-31d5.jpg"></div><figcaption><b>−5.4 kg</b><span>75.4 → 70 kg dalam 31 hari</span><small>31 Days Challenge · tempat ke-5</small></figcaption></figure><figure class="tx-c"><div class="tx-im" data-bg="img/testi/r-aniza.jpg"></div><figcaption><b>−4.6 kg</b><span>6.6% dalam sebulan</span><small>Aniza · HITFAT Challenge Okt 2021</small></figcaption></figure><figure class="tx-c"><div class="tx-im two"><span data-bg="img/testi/t42w-a.jpg"></span><span data-bg="img/testi/t42w-b.jpg"></span><i>Sebelum</i><i>Selepas</i></div><figcaption><b>Wanita · 40-an</b><span>Sebelum → selepas</span><small>Program latihan HITFAT</small></figcaption></figure><figure class="tx-c"><div class="tx-im two"><span data-bg="img/testi/w2-a.jpg"></span><span data-bg="img/testi/w2-b.jpg"></span><i>Sebelum</i><i>Selepas</i></div><figcaption><b>Peserta HITFAT</b><span>Sebelum → selepas</span><small>Program latihan HITFAT</small></figcaption></figure></div>
+  <div class="tx-hd"><h3>Kata mereka</h3><span>Leret →</span></div>
+  <div class="tx-row tx-qs"><div class="tx-q"><p>“Saya suka sangat join HITFAT sebab coach banyak bagi nasihat dan semangat. Saya dapat turunkan berat badan sebanyak 10 kg dalam tempoh 7 minggu.”</p><div class="who"><span data-bg="img/testi/q-shereen.jpg"></span><div><b>Shereen</b><small>Peserta HITFAT Temerloh</small></div></div></div><div class="tx-q"><p>“Alhamdulillah, akhirnya dapat berat ideal kembali. Dulu kerap migrain dan sakit lutut, tapi kini tiada lagi.”</p><div class="who"><span data-bg="img/testi/q-suhana.jpg"></span><div><b>Suhana</b><small>Peserta HITFAT Johor Bahru</small></div></div></div><div class="tx-q"><p>“Dah berjaya turun 8 kg. Saya tak lagi lesu dan selalu mengantuk, dan rasa kebas-kebas kaki dah hilang. Happy bila saiz baju dah bertukar.”</p><div class="who"><span data-bg="img/testi/q-pyka.jpg"></span><div><b>Pyka</b><small>Peserta HITFAT Shah Alam</small></div></div></div><div class="tx-q"><p>“Coach, saya bangga join HITFAT dari 77 kg dan sekarang 70 kg. Rasa berbeza sangat.”</p><div class="who"><span data-bg="img/testi/q-eera.jpg"></span><div><b>Eera Ziman</b><small>Peserta HITFAT Ampang</small></div></div></div><div class="tx-q"><p>“Akhirnya raya haji ni saya dapat pakai baju raya lama. Alhamdulillah.”</p><div class="who"><span data-bg="img/testi/q-izzati.jpg"></span><div><b>Izzati</b><small>Peserta HITFAT Kota Bharu</small></div></div></div><div class="tx-q"><p>“Saya rasa lain sangat, terutama badan dan pergerakan. Baju kurung saya banyak kena alter.”</p><div class="who"><span data-bg="img/testi/q-rara.jpg"></span><div><b>Kak Rara</b><small>Peserta HITFAT Kota Bharu</small></div></div></div><div class="tx-q"><p>“Dari HITFAT, saiz XL ke M. Sukar menurunkan berat badan, jadi mudah dan menyedarkan saya betapa pentingnya kesihatan.”</p><div class="who"><span data-bg="img/testi/q-syud.jpg"></span><div><b>Syud Syuhada</b><small>Peserta HITFAT Kuantan</small></div></div></div><div class="tx-q"><p>“Saya suka HITFAT sebab coach HITFAT semua ada latar belakang Sains Sukan.”</p><div class="who"><span data-bg="img/testi/q-hartini.jpg"></span><div><b>Hartini Baharudin</b><small>Peserta HITFAT Kuantan</small></div></div></div></div>
+  <p class="fine">Gambar dan kata-kata daripada peserta kelas HITFAT. Keputusan setiap orang berbeza, bergantung pada konsistensi, pemakanan, tidur dan kesihatan.</p>
 </section>
 
 <!-- 3 · WHO MADE IT (laurels, facts only) -->
 <section class="box c reveal">
   <span class="pill">Dibangunkan oleh HITFAT</span>
-  <h2 class="sec-h">Dari <span class="grad">gym sebenar</span> di Kelantan.</h2>
+  <h2 class="sec-h">Dari <span class="grad">gym sebenar.</span></h2>
   <div class="laurels">
     <div class="lau"><svg viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg><div>Sejak 2015<em>Program weight loss</em></div><svg class="r" viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg></div>
     <div class="lau"><svg viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg><div>Sejak 2020<em>HITFAT Functional Gym</em></div><svg class="r" viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg></div>
     <div class="lau"><svg viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg><div>Ladies2Fit<em>Kelas wanita setiap minggu</em></div><svg class="r" viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg></div>
   </div>
   <div class="coach"><span class="ph" role="img" aria-label="Coach Seth"></span>
-    <div><b>Direka oleh Coach Seth</b><span>Pengasas HITFAT · Ijazah Sarjana Muda Sains Sukan (UiTM) · pernah melatih atlet di Institut Sukan Negara Kelantan</span></div></div>
+    <div><b>Direka oleh Coach Seth</b><span>Pengasas HITFAT</span></div></div>
 </section>
 
 <!-- 6 · THE APP, AS STACKED CARDS -->
@@ -1271,7 +1295,7 @@ var TESTI = [];
   /* a card in a sideways row counts as hidden until swiped, so the row itself is watched */
   var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(!e.isIntersecting) return; io.unobserve(e.target);
       if(e.target.hasAttribute('data-bg')) show(e.target); else e.target.querySelectorAll('[data-bg]').forEach(show); }); },{rootMargin:'700px 0px'});
-  var rows=[]; els.forEach(function(el){ var row=el.closest('.nums,.weeks,.lv');
+  var rows=[]; els.forEach(function(el){ var row=el.closest('.nums,.weeks,.lv,.tx-row');
     if(row){ if(rows.indexOf(row)<0){ rows.push(row); io.observe(row); } } else io.observe(el); });
 })();
 </script>
