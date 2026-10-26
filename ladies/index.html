@@ -330,6 +330,43 @@ header .w{display:flex;align-items:center;justify-content:space-between;height:6
   .ss[data-s] .s0 .fr,.ss[data-s] .s0 .sh{animation:none}
 }
 
+
+/* the app, alive (26 Oct 2026, after Fit Mother's phone that uses its own app):
+   one phone of real screens; a tap lands, the next screen slides in as the app
+   does, and two glass notes float beside it */
+.lv{position:absolute;left:0;right:0;bottom:-118px;height:478px}
+.lv-ph{position:absolute;left:50%;bottom:0;width:222px;aspect-ratio:546/1182;margin-left:-111px;border-radius:32px;border:7px solid #141014;background:#fff;overflow:hidden;box-shadow:0 30px 60px -20px rgba(40,0,25,.6)}
+.lv-ph::before{content:'';position:absolute;z-index:3;top:6px;left:50%;width:58px;height:16px;margin-left:-29px;border-radius:10px;background:#141014}
+.lv-s{position:absolute;inset:0;background:#fff center top/cover no-repeat;transition:transform .55s cubic-bezier(.3,.8,.2,1),filter .55s;will-change:transform}
+.lv-s.on{transform:none;z-index:1}
+.lv-s.nx{transform:translateX(102%);z-index:2;box-shadow:-10px 0 24px -12px rgba(0,0,0,.3)}
+.lv.b .lv-s.on{transform:translateX(-28%);filter:brightness(.85)}
+.lv.b .lv-s.nx{transform:none}
+.lv-tap{position:absolute;z-index:4;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:rgba(255,255,255,.55);border:2px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:0;transform:scale(.6)}
+.lv.t .lv-tap{animation:lvTap .55s ease-out}
+@keyframes lvTap{0%{opacity:0;transform:scale(1.3)}30%{opacity:1;transform:scale(.8)}100%{opacity:0;transform:scale(1.6)}}
+.lv-chip{position:absolute;z-index:5;display:inline-flex;align-items:center;gap:6px;max-width:46%;padding:9px 12px;border-radius:16px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--ink);font-size:12.5px;font-weight:800;line-height:1.2;text-align:left;box-shadow:0 16px 30px -12px rgba(40,0,25,.55);opacity:0;transform:translateY(16px) scale(.85);transition:opacity .45s,transform .55s cubic-bezier(.3,1.5,.5,1)}
+.lv-chip b{font-size:18px;color:var(--m);letter-spacing:-.02em}
+.lv-chip i.d{flex:none;width:9px;height:9px;border-radius:50%;background:#34C759;box-shadow:0 0 0 3px rgba(52,199,89,.22)}
+.lv-chip.l{left:12px;top:36px}
+.lv-chip.r{right:12px;top:200px;transition-delay:.15s}
+.fc.in .lv-chip{opacity:1;transform:none}
+.fc.in .lv-chip.l{animation:snBob 4s 1s ease-in-out infinite}
+.fc.in .lv-chip.r{animation:snBob 4.4s 1.4s ease-in-out infinite}
+@media(min-width:420px){ .lv-chip.l{left:6%} .lv-chip.r{right:6%} }
+@media (prefers-reduced-motion:reduce){ .lv-chip{opacity:1;transform:none;transition:none} .fc.in .lv-chip{animation:none} .lv-s{transition:none} }
+/* the program's real numbers, then the button (Sweat's icon list) */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:560px;margin:22px auto 0}
+.stats div{display:flex;flex-direction:column;align-items:center;padding:16px 10px;border-radius:22px;background:var(--lav)}
+.stats b{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1;background:linear-gradient(135deg,var(--pink),var(--m2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stats span{margin-top:6px;font-size:13px;font-weight:700;color:var(--ink2);line-height:1.3}
+@media(min-width:760px){ .stats{grid-template-columns:repeat(4,1fr)} }
+.ss-pin .cta{margin-top:4px}
+/* the strip above the header, and the lighter second step in the hero */
+.topbar{display:block;padding:9px 16px;background:linear-gradient(90deg,var(--m2),var(--m));color:#fff;font-size:12.5px;line-height:1.35;text-align:center;text-decoration:none}
+.topbar u{text-decoration:none;font-weight:800;margin-left:4px;white-space:nowrap}
+.peek{display:inline-block;margin-top:10px;font-size:14px;font-weight:800;color:var(--m);text-decoration:none}
+
 /* her own plan: what it follows */
 .pl2{display:grid;gap:14px;margin-top:26px;text-align:left}
 @media(min-width:760px){ .pl2{grid-template-columns:1fr 1fr} }
@@ -457,6 +494,7 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
 </head>
 <body>
 
+<a class="topbar" href="#" data-buy="topbar"><b>RM39 sekali bayar</b> · pelan 30 hari + 10 scan AI percuma <u>Mula ›</u></a>
 <header><div class="w">
   <a class="logo" href="/"><img src="img/hf-mark.png" alt=""><span>HITFAT<i>+</i></span></a>
   <a class="wa-top" href="#" data-wa>WhatsApp kami</a>
@@ -472,6 +510,7 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
   <h1>Nak kurus, tapi sibuk urus <span class="grad">kerja, rumah &amp; keluarga?</span></h1>
   <p class="lead">Pelan 30 hari yang dibina ikut badan, masa dan cara anda makan. Dari rumah, 10 hingga 20 minit sehari, tanpa lompat.</p>
   <div class="ctas"><a class="cta" href="#" data-buy="hero">Saya Nak Mula — RM39</a></div>
+  <a class="peek" href="#app">Tengok dalam app dahulu ↓</a>
   <div class="sub">Bayar sekali · tiada langganan · akses terus dalam app HITFAT+</div>
   <div class="safe"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Bayaran selamat · FPX · DuitNow</div>
   <div class="chips"><span><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg>Di rumah</span><span><svg class="ic" aria-hidden="true"><use href="#i-quiet"/></svg>Tanpa lompat</span><span><svg class="ic" aria-hidden="true"><use href="#i-bowl"/></svg>Termasuk nasi</span><span><svg class="ic" aria-hidden="true"><use href="#i-timer"/></svg>10–20 min</span></div>
@@ -556,22 +595,29 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
 </section>
 
 <!-- 6 · THE APP, AS STACKED CARDS -->
-<section class="box c reveal">
+<section class="box c reveal" id="app">
   <span class="pill">Semua dalam satu app</span>
   <h2 class="sec-h">Semua yang anda perlu, <span class="grad">di telefon anda.</span></h2>
   <p class="sec-p">Skrin sebenar MAK2FIT 30 dalam app HITFAT+, di app.hitfat.io. Tiada muat turun dari App Store.</p>
   <div class="feats">
     <div class="fc g1"><span class="k">1 · PELAN PERIBADI</span><h3>Dibina untuk anda, bukan semua orang</h3><p>Jawab 12 soalan dalam 2 minit. Tahap, lutut atau belakang yang sakit, masa, dan berapa kali anda makan.</p>
-      <div class="phones"><div class="ph" data-bg="img/s-quiz.jpg"></div><div class="ph" data-bg="img/s-home.jpg"></div></div></div>
+      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/s-quiz.jpg"></div><div class="lv-s nx" data-bg="img/s-home.jpg"></div><span class="lv-tap" style="left:50%;top:65%"></span></div><span class="lv-chip l"><b>12</b> soalan · 2 minit</span><span class="lv-chip r"><i class="d"></i>Pelan ikut jawapan anda</span></div></div>
     <div class="fc g2"><span class="k">2 · WORKOUT</span><h3>10–20 minit. Sifar lompatan.</h3><p>Setiap gerakan ada video. Buat sekali gus, atau 2 × 10 minit pagi dan petang.</p>
-      <div class="phones"><div class="ph" data-bg="img/s-day.jpg"></div><div class="ph" data-bg="img/s-moves.jpg"></div></div></div>
+      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/s-day.jpg"></div><div class="lv-s nx" data-bg="img/s-moves.jpg"></div><span class="lv-tap" style="left:50%;top:63%"></span></div><span class="lv-chip l"><b>0</b> lompatan</span><span class="lv-chip r"><i class="d"></i>Video setiap gerakan</span></div></div>
     <div class="fc g3"><span class="k">3 · MAKAN</span><h3>Makan makanan biasa, termasuk nasi</h3><p>Sasaran kalori anda, 3 pilihan setiap waktu makan, dan berapa genggam nasi untuk anda.</p>
-      <div class="phones"><div class="ph" data-bg="img/s-target.jpg"></div><div class="ph" data-bg="img/s-menu.jpg"></div></div></div>
+      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/s-target.jpg"></div><div class="lv-s nx" data-bg="img/s-menu.jpg"></div><span class="lv-tap" style="left:8%;top:73%"></span></div><span class="lv-chip l"><b>3</b> pilihan setiap waktu</span><span class="lv-chip r"><i class="d"></i>Nasi disukat, bukan dibuang</span></div></div>
     <div class="fc g2"><span class="k">4 · SETIAP HARI</span><h3>Senarai semak &amp; senarai belanja</h3><p>Workout, langkah, air, satu misi pemakanan. Dan senarai belanja ikut menu anda, tanda bila dah beli.</p>
-      <div class="phones"><div class="ph" data-bg="img/s-plan.jpg"></div><div class="ph" data-bg="img/s-shop.jpg"></div></div></div>
+      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/s-plan.jpg"></div><div class="lv-s nx" data-bg="img/s-shop.jpg"></div><span class="lv-tap" style="left:28%;top:5%"></span></div><span class="lv-chip l"><b>6</b> tugas kecil sehari</span><span class="lv-chip r"><i class="d"></i>Senarai belanja ikut menu</span></div></div>
     <div class="fc g1"><span class="k">5 · PROGRES &amp; ILMU</span><h3>Nampak diri makin kuat</h3><p>Check-in Hari 1, 15 dan 30, fit test, dan Nutrition Academy: 28 video pendek dalam Bahasa Melayu.</p>
-      <div class="phones"><div class="ph" data-bg="img/s-progress.jpg"></div><div class="ph" data-bg="img/s-learn.jpg"></div></div></div>
+      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/s-progress.jpg"></div><div class="lv-s nx" data-bg="img/s-learn.jpg"></div><span class="lv-tap" style="left:49%;top:11%"></span></div><span class="lv-chip l">Check-in Hari <b>1 · 15 · 30</b></span><span class="lv-chip r"><i class="d"></i>28 video Bahasa Melayu</span></div></div>
   </div>
+  <div class="stats">
+    <div><b>30</b><span>workout berpandu video</span></div>
+    <div><b>64</b><span>hidangan Malaysia bergambar</span></div>
+    <div><b>28</b><span>video Nutrition Academy</span></div>
+    <div><b>10</b><span>scan makanan AI percuma</span></div>
+  </div>
+  <div style="margin-top:22px"><a class="cta" href="#" data-buy="app">Saya Nak Mula — RM39</a></div>
 </section>
 
 <!-- 6b · SCAN AI, after Everfit's MacroSnap -->
@@ -638,6 +684,7 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
         <div><h3>Setiap bahan, setiap makro</h3><p>AI kenal nasi, ayam, sayur dan sos, kira setiap satu, dan tunjuk apa makanan ini buat pada hari anda.</p></div>
         <div><h3>Masuk terus ke hari anda</h3><p>Tekan Log. Kalori dan makro hari ini dikemas kini ikut sasaran anda, bersama menu yang dirancang.</p></div>
       </div>
+      <a class="cta" href="#" data-buy="scan">Saya Nak Mula — RM39</a>
     </div>
   </div>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="snRing" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0509E"/><stop offset="1" stop-color="#8E1460"/></linearGradient></defs></svg>
@@ -930,6 +977,20 @@ if('IntersectionObserver' in window){
     new IntersectionObserver(function(es){ if(es[0].isIntersecting){ if(!seen){ seen=true; show(0); } play(); } else stop(); },{threshold:.35}).observe(ss);
   } else { show(0); play(); }
 })();
+/* the app cards: each phone taps and slides to its next screen and back while it is on screen */
+(function(){
+  var still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-lv]').forEach(function(lv){
+    var card=lv.closest('.fc'), t=null, on=false;
+    function loop(){ if(!on) return;
+      lv.classList.add('t'); setTimeout(function(){ lv.classList.remove('t'); lv.classList.add('b'); },420);
+      t=setTimeout(function(){ lv.classList.remove('b'); t=setTimeout(loop,2300); },3600); }
+    if(!('IntersectionObserver' in window)){ card.classList.add('in'); return; }
+    new IntersectionObserver(function(es){ var e=es[0];
+      if(e.isIntersecting){ card.classList.add('in'); if(!still && !on){ on=true; t=setTimeout(loop,1400); } }
+      else { on=false; clearTimeout(t); lv.classList.remove('t','b'); } },{threshold:.45}).observe(card);
+  });
+})();
 /* Real reviews only, given with permission; while empty the section stays hidden */
 var TESTI = [];
 (function(){
@@ -960,7 +1021,7 @@ var TESTI = [];
   /* a card in a sideways row counts as hidden until swiped, so the row itself is watched */
   var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(!e.isIntersecting) return; io.unobserve(e.target);
       if(e.target.hasAttribute('data-bg')) show(e.target); else e.target.querySelectorAll('[data-bg]').forEach(show); }); },{rootMargin:'700px 0px'});
-  var rows=[]; els.forEach(function(el){ var row=el.closest('.nums,.weeks');
+  var rows=[]; els.forEach(function(el){ var row=el.closest('.nums,.weeks,.lv');
     if(row){ if(rows.indexOf(row)<0){ rows.push(row); io.observe(row); } } else io.observe(el); });
 })();
 </script>
