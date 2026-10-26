@@ -638,6 +638,18 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
 /* safe-payment line under the first button */
 .safe{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:12.5px;font-weight:700;color:#7A6274}
 .safe .ic{color:#2E9D63}
+/* 27 Oct 2026 audit: a shorter page */
+details.more{max-width:640px;margin:22px auto 0;text-align:left}
+details.more>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 16px;border-radius:999px;background:#FFF5F9;color:var(--m);font-weight:800;font-size:15px}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::after{content:'+';font-size:20px;line-height:1}
+details.more[open]>summary::after{content:'–'}
+details.more[open]>summary{margin-bottom:6px}
+@media(max-width:899px){
+  .feats{grid-auto-flow:column;grid-auto-columns:86%;overflow-x:auto;scroll-snap-type:x mandatory;margin:14px -22px 0;padding:0 22px 4px;scrollbar-width:none}
+  .feats::-webkit-scrollbar{display:none}
+  .feats .fc{scroll-snap-align:center}
+}
 </style>
 </head>
 <body>
@@ -662,18 +674,23 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
   <div class="sub">Bayar sekali · tiada langganan · akses terus dalam app HITFAT+</div>
   <div class="safe"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Bayaran selamat · FPX · DuitNow</div>
   <div class="chips"><span><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg>Di rumah</span><span><svg class="ic" aria-hidden="true"><use href="#i-quiet"/></svg>Tanpa lompat</span><span><svg class="ic" aria-hidden="true"><use href="#i-bowl"/></svg>Termasuk nasi</span><span><svg class="ic" aria-hidden="true"><use href="#i-timer"/></svg>10–20 min</span></div>
-  <div class="stage np" id="stage"><div class="art" data-bg="img/v2-hero.jpg"></div><div class="scr"></div></div>
 </section>
 
-<!-- 2 · THE PROGRAM IN THREE NUMBERS -->
+
+<!-- 3 · WHO MADE IT, moved up with three real before/afters (27 Oct 2026 audit: proof was on screen 14) -->
 <section class="box c reveal">
-  <span class="pill">MAK2FIT 30 dalam angka</span>
-  <h2 class="sec-h">Kecil setiap hari. <span class="grad">Besar dalam 30 hari.</span></h2>
-  <div class="nums">
-    <div class="num n30" data-bg="img/v2-n30.jpg"><span class="big">30</span><div><b>hari, satu pelan</b><small>Dibina daripada 12 jawapan anda</small></div></div>
-    <div class="num n0" data-bg="img/v2-n0.jpg"><span class="big">0</span><div><b>lompatan</b><small>Senyap untuk rumah teres, mesra lutut</small></div></div>
-    <div class="num n64" data-bg="img/v2-n64.jpg"><span class="big">64</span><div><b>hidangan Malaysia</b><small>Bergambar, nasi disukat untuk anda</small></div></div>
+  <span class="pill">Dibangunkan oleh HITFAT</span>
+  <h2 class="sec-h">Dari <span class="grad">gym sebenar.</span></h2>
+  <div class="tx-hd"><h3>Wanita sebenar, kelas HITFAT</h3><span>Leret →</span></div>
+  <div class="tx-row tx-ba"><figure class="tx-c"><div class="tx-im" data-bg="img/testi/r-hafifah.jpg"></div><figcaption><b>−21 kg</b><span>116 → 95 kg</span><small>Hafifah · Peserta HITFAT</small></figcaption></figure><figure class="tx-c"><div class="tx-im" data-bg="img/testi/r-31d5.jpg"></div><figcaption><b>−5.4 kg</b><span>75.4 → 70 kg dalam 31 hari</span><small>31 Days Challenge</small></figcaption></figure><figure class="tx-c"><div class="tx-im" data-bg="img/testi/r-aniza.jpg"></div><figcaption><b>−4.6 kg</b><span>6.6% dalam sebulan</span><small>Aniza · HITFAT Challenge</small></figcaption></figure></div>
+  <p class="fine">Peserta kelas HITFAT, bukan pengguna MAK2FIT 30. Keputusan setiap orang berbeza. <a href="#testi">Lihat semua testimoni ↓</a></p>
+  <div class="laurels">
+    <div class="lau"><svg viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg><div>Sejak 2015<em>Program weight loss</em></div><svg class="r" viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg></div>
+    <div class="lau"><svg viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg><div>Sejak 2020<em>HITFAT Functional Gym</em></div><svg class="r" viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg></div>
+    <div class="lau"><svg viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg><div>Ladies2Fit<em>Kelas wanita setiap minggu</em></div><svg class="r" viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg></div>
   </div>
+  <div class="coach"><span class="ph" role="img" aria-label="Coach Seth"></span>
+    <div><b>Direka oleh Coach Seth</b><span>Pengasas HITFAT</span></div></div>
 </section>
 
 <!-- 4 · THE PROBLEM -->
@@ -687,21 +704,13 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
     <div class="pc" data-bg="img/lb-p3.webp"><div><b>SEGAN KE GYM</b><span>Rasa diperhati. Sampai pintu, terus tak jadi.</span></div></div>
     <div class="pc" data-bg="img/lb-p4.webp"><div><b>DIET TAK TAHAN</b><span>Makan salad seorang, keluarga makan nasi.</span></div></div>
   </div>
-  <h3 style="margin-top:34px;font-size:24px">Bukan sebab anda malas.</h3>
-  <div class="why">
-    <div><i>1</i><p><b>Workout terlalu lama atau susah</b><span>Dibuat untuk yang dah biasa, bukan yang baru mula.</span></p></div>
-    <div><i>2</i><p><b>Banyak lompat</b><span>Tak sesuai untuk lutut, dan bising untuk rumah teres.</span></p></div>
-    <div><i>3</i><p><b>Diet yang suruh tinggal semua</b><span>Tiada nasi, tiada makanan keluarga. Seminggu, putus.</span></p></div>
-    <div><i>4</i><p><b>Tiada pelan</b><span>Setiap hari kena fikir sendiri. Hari sibuk, terus tak buat.</span></p></div>
-  </div>
-  <p class="turn">Anda tak perlukan lebih motivasi. Anda perlukan <span class="grad">pelan yang cukup mudah</span>, walaupun pada hari paling sibuk.</p>
+  <p class="turn">Bukan sebab anda malas. Anda tak perlukan lebih motivasi. Anda perlukan <span class="grad">pelan yang cukup mudah</span>, walaupun pada hari paling sibuk.</p>
 </section>
 
 <!-- 4b · REAL LIFE -->
 <section class="box c reveal">
   <span class="pill">Dalam hidup sebenar</span>
   <h2 class="sec-h">Muat dalam hari anda <span class="grad">yang sibuk.</span></h2>
-  <div class="lpic"><img src="img/lb-ibu-anak.jpg" alt="Seorang ibu bersenam di atas tikar sambil anaknya bermain di sebelah" loading="lazy" width="1536" height="1024"></div>
   <div class="life">
     <div><i><svg class="ic" aria-hidden="true"><use href="#i-sun"/></svg></i><b>Pagi, sebelum rumah bising</b><span>10 minit pertama, sebelum anak bangun.</span></div>
     <div><i><svg class="ic" aria-hidden="true"><use href="#i-moon"/></svg></i><b>Malam, lepas anak tidur</b><span>10 minit lagi, dan hari ini dah siap.</span></div>
@@ -742,6 +751,7 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
     <div><i>2</i><b>Jawab 12 soalan</b><span>Dalam app, 2 minit</span></div>
     <div><i>3</i><b>Pelan sedia</b><span>Hari 1 terus terbuka</span></div>
   </div>
+  <details class="more"><summary>Lihat apa yang disesuaikan untuk anda</summary>
   <div class="pl2">
     <div><h3>Workout anda ikut…</h3><ul>
       <li>Tahap anda: baru mula, kadang-kadang, atau aktif</li>
@@ -755,21 +765,11 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
       <li>Sasaran kalori anda, dan nasi disukat setiap waktu makan</li>
       <li>Masak sendiri, untuk keluarga, atau kebanyakannya beli</li></ul></div>
   </div>
+  </details>
   <p class="fine">Pelan anda dibina oleh app HITFAT+ secara automatik daripada jawapan anda. Ubah jawapan bila-bila masa, dan pelan dibina semula.</p>
   <div style="margin-top:22px"><a class="cta" href="#" data-buy="plan">Bina Pelan Saya — RM39</a></div>
 </section>
 
-<!-- 8 · FOUR WEEKS -->
-<section class="box c reveal">
-  <span class="pill">30 hari, 4 minggu</span>
-  <h2 class="sec-h">Start. Build. <span class="grad">Glow. Strong.</span></h2>
-  <div class="weeks">
-    <div class="wk" data-bg="img/lb-w1.jpg"><div><small>WEEK 1</small><b>Start</b><span>Sesi pendek. Tugas minggu ini cuma satu: hadir.</span></div></div>
-    <div class="wk" data-bg="img/lb-w2.jpg"><div><small>WEEK 2</small><b>Build</b><span>Sedikit lebih lama, lebih variasi.</span></div></div>
-    <div class="wk" data-bg="img/lb-w3.jpg"><div><small>WEEK 3</small><b>Glow</b><span>Minggu paling bertenaga. Tetap tanpa lompat.</span></div></div>
-    <div class="wk" data-bg="img/lb-w4.jpg"><div><small>WEEK 4</small><b>Strong</b><span>Anda lebih kuat dari Hari 1.</span></div></div>
-  </div>
-</section>
 
 <!-- 8b · THE TRAINING, IN DETAIL (26 Oct 2026, Seth: "highlightkan program training, berapa lama") -->
 <section class="box c reveal" id="latihan">
@@ -821,13 +821,14 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
     <div><s>Mi goreng</s><i>→</i><b>Mi sup</b></div>
     <div><s>Kuih lepas makan</s><i>→</i><b>Buah</b></div>
   </div>
-  <h3 class="mk-h">Makan di luar pun ada panduan</h3>
+  <details class="more"><summary>Makan di luar pun ada panduan</summary>
   <div class="outs">
     <div><b>Mamak</b><span>Roti canai kosong + kuah dal · nasi kandar ayam bakar, kuah sikit</span></div>
     <div><b>Kenduri &amp; raya</b><span>Sayur dulu, nasi separuh pinggan, air kosong bukan sirap</span></div>
     <div><b>Makanan segera</b><span>Burger ayam panggang, langkau kentang goreng atau kongsi</span></div>
     <div><b>Kopitiam</b><span>Roti bakar + 2 telur separuh masak, kopi o kurang manis</span></div>
   </div>
+  </details>
   <div style="margin-top:22px"><a class="cta" href="#" data-buy="makan">Saya Nak Mula — RM39</a></div>
 </section>
 
@@ -848,24 +849,13 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
   <p class="fine">Gambar dan kata-kata daripada peserta kelas HITFAT. Keputusan setiap orang berbeza, bergantung pada konsistensi, pemakanan, tidur dan kesihatan.</p>
 </section>
 
-<!-- 3 · WHO MADE IT (laurels, facts only) -->
-<section class="box c reveal">
-  <span class="pill">Dibangunkan oleh HITFAT</span>
-  <h2 class="sec-h">Dari <span class="grad">gym sebenar.</span></h2>
-  <div class="laurels">
-    <div class="lau"><svg viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg><div>Sejak 2015<em>Program weight loss</em></div><svg class="r" viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg></div>
-    <div class="lau"><svg viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg><div>Sejak 2020<em>HITFAT Functional Gym</em></div><svg class="r" viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg></div>
-    <div class="lau"><svg viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg><div>Ladies2Fit<em>Kelas wanita setiap minggu</em></div><svg class="r" viewBox="0 0 34 72" aria-hidden="true"><use href="#laurel"/></svg></div>
-  </div>
-  <div class="coach"><span class="ph" role="img" aria-label="Coach Seth"></span>
-    <div><b>Direka oleh Coach Seth</b><span>Pengasas HITFAT</span></div></div>
-</section>
 
 <!-- 6 · THE APP, AS STACKED CARDS -->
 <section class="box c reveal" id="app">
   <span class="pill">Semua dalam satu app</span>
   <h2 class="sec-h">Semua yang anda perlu, <span class="grad">di telefon anda.</span></h2>
   <p class="sec-p">Skrin sebenar MAK2FIT 30 dalam app HITFAT+, di app.hitfat.io. Tiada muat turun dari App Store.</p>
+  <div class="tx-hd"><h3>5 bahagian app</h3><span>Leret →</span></div>
   <div class="feats">
     <div class="fc g1"><span class="k">1 · PELAN PERIBADI</span><h3>Dibina untuk anda, bukan semua orang</h3><p>Jawab 12 soalan dalam 2 minit. Tahap, lutut atau belakang yang sakit, masa, dan berapa kali anda makan.</p>
       <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/s-quiz.jpg"></div><div class="lv-s nx" data-bg="img/s-home.jpg"></div><span class="lv-tap" style="left:50%;top:65%"></span></div><span class="lv-chip l"><b>12</b> soalan · 2 minit</span><span class="lv-chip r"><i class="d"></i>Pelan ikut jawapan anda</span></div></div>
@@ -877,12 +867,6 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
       <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/s-plan.jpg"></div><div class="lv-s nx" data-bg="img/s-shop.jpg"></div><span class="lv-tap" style="left:28%;top:5%"></span></div><span class="lv-chip l"><b>6</b> tugas kecil sehari</span><span class="lv-chip r"><i class="d"></i>Senarai belanja ikut menu</span></div></div>
     <div class="fc g1"><span class="k">5 · PROGRES &amp; ILMU</span><h3>Nampak diri makin kuat</h3><p>Check-in Hari 1, 15 dan 30, fit test, dan Nutrition Academy: 28 video pendek dalam Bahasa Melayu.</p>
       <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/s-progress.jpg"></div><div class="lv-s nx" data-bg="img/s-learn.jpg"></div><span class="lv-tap" style="left:49%;top:11%"></span></div><span class="lv-chip l">Check-in Hari <b>1 · 15 · 30</b></span><span class="lv-chip r"><i class="d"></i>28 video Bahasa Melayu</span></div></div>
-  </div>
-  <div class="stats">
-    <div><b>30</b><span>workout berpandu video</span></div>
-    <div><b>64</b><span>hidangan Malaysia bergambar</span></div>
-    <div><b>28</b><span>video Nutrition Academy</span></div>
-    <div><b>10</b><span>scan makanan AI percuma</span></div>
   </div>
   <div style="margin-top:22px"><a class="cta" href="#" data-buy="app">Saya Nak Mula — RM39</a></div>
 </section>
@@ -974,17 +958,6 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
   </div>
 </section>
 
-<!-- 10 · THE SCIENCE -->
-<section class="box c reveal">
-  <span class="pill"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg>Apa kata kajian</span>
-  <h2 class="sec-h">Kenapa 20 minit sehari <span class="grad">berbaloi.</span></h2>
-  <div class="kaji">
-    <div><i>1</i><b>Bergerak setiap hari</b><p>WHO menyarankan 150 hingga 300 minit aktiviti sederhana seminggu. 20 minit sehari, ditambah langkah harian, membawa anda ke situ.</p><a href="https://www.who.int/news-room/fact-sheets/detail/physical-activity" target="_blank" rel="noopener">Lihat sumber (WHO) →</a></div>
-    <div><i>2</i><b>Kuatkan otot</b><p>WHO juga menyarankan latihan menguatkan otot sekurang-kurangnya 2 hari seminggu. MAK2FIT 30 menggabungkan gerakan kekuatan dengan latihan impak rendah.</p><a href="https://www.who.int/publications/i/item/9789240015128" target="_blank" rel="noopener">Lihat sumber (WHO) →</a></div>
-    <div><i>3</i><b>Makan yang boleh diteruskan</b><p>Dari pengalaman kami sejak 2015: diet yang mengharamkan makanan kegemaran jarang bertahan. Sukatan yang sesuai lebih mudah dijadikan tabiat.</p></div>
-  </div>
-  <p class="fine">Setiap badan berbeza. Hasil bergantung pada konsistensi, pemakanan, tidur dan kesihatan anda.</p>
-</section>
 
 <!-- 11 · WHO IT IS FOR -->
 <section class="box c reveal">
@@ -1017,15 +990,10 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
     <div class="per">Kurang dari RM1.30 sehari · tiada langganan · milik anda selamanya</div>
     <ul>
       <li>Pelan 30 hari ikut 12 jawapan anda</li>
-      <li>30 workout dengan video setiap gerakan, tanpa lompat</li>
-      <li>Suara yang mengira, dan muzik</li>
-      <li>Sasaran kalori dan makro anda (tidak pernah bawah 1,200 kcal)</li>
-      <li>Menu Malaysia: 64 hidangan bergambar, nasi disukat</li>
-      <li>Senarai semak harian</li>
-      <li>Check-in Hari 1, 15, 30 dan lencana setiap minggu</li>
-      <li class="bn"><em>BONUS</em>Nutrition Academy: 28 video Bahasa Melayu</li>
-      <li class="bn"><em>BONUS</em>10 scan makanan AI percuma</li>
-      <li class="bn"><em>BONUS</em>Senarai belanja mingguan ikut menu</li>
+      <li>30 workout dengan video, tanpa lompat</li>
+      <li>Menu Malaysia ikut kalori anda, nasi disukat</li>
+      <li>Check-in Hari 1, 15 &amp; 30</li>
+      <li class="bn"><em>BONUS</em>Nutrition Academy · 10 scan AI · senarai belanja</li>
     </ul>
     <a class="cta" href="#" data-buy="price">Saya Nak Mula — RM39</a>
     <div class="pay"><span>FPX Online Banking</span><span>DuitNow QR</span></div>
@@ -1048,6 +1016,7 @@ body{background:radial-gradient(60% 40% at 100% 0%,#FFE1EE 0%,transparent 70%) f
     <details><summary>Ada coach personal yang pantau saya?</summary><p>Tidak. MAK2FIT 30 ialah program kendiri dalam app: video workout, pelan harian, sasaran kalori dan menu. Untuk masalah akses atau bayaran, WhatsApp kami.</p></details>
     <details><summary>Berapa kilo boleh turun?</summary><p>Kami tak janji nombor ajaib. Dalam app anda pilih rentak perlahan (lebih kurang 0.25 kg seminggu) atau sederhana (lebih kurang 0.5 kg seminggu), dan hasil bergantung pada pemakanan dan konsistensi anda. Ukur pinggang dan pinggul juga, kerana itu selalunya berubah dahulu.</p></details>
     <details><summary>Macam mana nak akses selepas bayar?</summary><p>Anda nampak halaman pengesahan, kemudian log masuk app.hitfat.io dengan Google atau emel yang sama seperti semasa bayar, jawab 12 soalan, dan Hari 1 terbuka. Boleh guna di iPhone, Android, tablet atau komputer. Jika bayaran berjaya tetapi program tidak terbuka, WhatsApp kami dengan nombor pesanan.</p></details>
+    <details><summary>Kenapa 20 minit sehari berbaloi?</summary><p>WHO menyarankan 150 hingga 300 minit aktiviti sederhana seminggu, dan latihan menguatkan otot sekurang-kurangnya 2 hari seminggu (<a href="https://www.who.int/news-room/fact-sheets/detail/physical-activity" target="_blank" rel="noopener">sumber WHO</a>). 20 minit sehari, ditambah langkah harian, membawa anda ke situ. Dari pengalaman kami sejak 2015, sukatan makanan yang sesuai lebih mudah dijadikan tabiat berbanding diet yang mengharamkan makanan kegemaran.</p></details>
     <details><summary>Ada bayaran balik?</summary><p>Semua pembelian adalah muktamad dan tiada bayaran balik (<a href="/refund">polisi bayaran balik</a>).</p></details>
     <details><summary>Saya dah ada HITFAT+. Perlu beli lagi?</summary><p>Tak perlu. MAK2FIT 30 termasuk dalam membership HITFAT+.</p></details>
   </div>
@@ -1134,13 +1103,35 @@ var REF = (function(){
 
 /* Meta Pixel: only when an ID is set */
 function track(ev, data){ try{ if(window.fbq) fbq('track', ev, data||{}); }catch(e){} }
+function trackC(ev, data){ try{ if(window.fbq) fbq('trackCustom', ev, data||{}); }catch(e){} }
 if(PIXEL_ID){
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
   if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;
   s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', PIXEL_ID); fbq('track','PageView');
-  track('ViewContent',{content_name:'MAK2FIT 30',content_ids:['prog_lad4'],content_type:'product',value:39,currency:'MYR'});
 }
+/* ViewContent only once she is really reading (27 Oct 2026 audit): 15 seconds on the
+   page, or a quarter of it scrolled. Sent on load it was just a second PageView, so
+   Meta could not tell a reader from a bounce. */
+var VC_SENT=false;
+function viewContent(why){ if(VC_SENT) return; VC_SENT=true;
+  track('ViewContent',{content_name:'MAK2FIT 30',content_ids:['prog_lad4'],content_type:'product',value:39,currency:'MYR',engaged_by:why}); }
+setTimeout(function(){ if(!document.hidden) viewContent('time'); }, 15000);
+/* where readers stop: scroll depth, and the sections they reach (custom events in Events Manager) */
+(function(){
+  var marks=[25,50,75,100], hit={};
+  function onScroll(){ var h=document.documentElement.scrollHeight-innerHeight; if(h<=0) return;
+    var pct=Math.round(scrollY/h*100);
+    if(pct>=25) viewContent('scroll');
+    marks.forEach(function(m){ if(pct>=m-1 && !hit[m]){ hit[m]=true; trackC('ScrollDepth',{depth:m}); } }); }
+  addEventListener('scroll', onScroll, {passive:true});
+  if(!('IntersectionObserver' in window)) return;
+  var seen={}, io=new IntersectionObserver(function(es){ es.forEach(function(e){ var k=e.target.getAttribute('data-sec');
+    if(e.isIntersecting && !seen[k]){ seen[k]=true; trackC('SectionView',{section:k}); io.unobserve(e.target); } }); },{threshold:0, rootMargin:'-45% 0px -45% 0px'});
+  document.querySelectorAll('main > section').forEach(function(sec, i){
+    var h=sec.querySelector('h1,h2'), k=sec.id||(h?h.textContent.trim().split(/\s+/).slice(0,3).join(' '):'s'+i);
+    sec.setAttribute('data-sec', k); io.observe(sec); });
+})();
 
 /* the buy buttons: Bayarcash when set, else the app; the ad's UTM tags ride along */
 function buyHref(){
@@ -1152,7 +1143,9 @@ function buyHref(){
 document.querySelectorAll('[data-buy]').forEach(function(a){
   a.href = buyHref();
   a.addEventListener('click', function(ev){
-    track('InitiateCheckout',{content_name:'MAK2FIT 30',content_ids:['prog_lad4'],value:39,currency:'MYR'});
+    var pos=a.getAttribute('data-buy')||'';
+    track('InitiateCheckout',{content_name:'MAK2FIT 30',content_ids:['prog_lad4'],value:39,currency:'MYR',button:pos});
+    trackC('BuyClick',{button:pos});
     if(PAY_MODE==='api'){ ev.preventDefault(); ckOpen(); }
   });
 });
@@ -1160,7 +1153,7 @@ document.querySelectorAll('[data-buy]').forEach(function(a){
 /* the checkout sheet: who is paying, then Bayarcash's own page (landing-pay) */
 var ck=document.getElementById('ck'), ckCh=1;
 function ckOpen(){ ck.classList.add('on'); setTimeout(function(){ try{ document.getElementById('ck-n').focus(); }catch(e){} },150); }
-function ckClose(){ ck.classList.remove('on'); }
+function ckClose(){ if(ck.classList.contains('on')) trackC('CheckoutClose',{filled:['ck-n','ck-e','ck-ph'].filter(function(id){ return document.getElementById(id).value.trim(); }).length}); ck.classList.remove('on'); }
 ck.addEventListener('click', function(e){ if(e.target===ck) ckClose(); });
 document.querySelectorAll('.ck-ch button').forEach(function(b){
   b.addEventListener('click', function(){ ckCh=+b.getAttribute('data-ch'); document.querySelectorAll('.ck-ch button').forEach(function(x){ x.classList.toggle('on', x===b); }); });
@@ -1306,7 +1299,7 @@ var TESTI = [];
   /* a card in a sideways row counts as hidden until swiped, so the row itself is watched */
   var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(!e.isIntersecting) return; io.unobserve(e.target);
       if(e.target.hasAttribute('data-bg')) show(e.target); else e.target.querySelectorAll('[data-bg]').forEach(show); }); },{rootMargin:'700px 0px'});
-  var rows=[]; els.forEach(function(el){ var row=el.closest('.nums,.weeks,.lv,.tx-row');
+  var rows=[]; els.forEach(function(el){ var row=el.closest('.nums,.weeks,.feats,.tx-row');
     if(row){ if(rows.indexOf(row)<0){ rows.push(row); io.observe(row); } } else io.observe(el); });
 })();
 </script>
