@@ -759,6 +759,7 @@ function renderMe(){
       (T42_LIVE?grow('trophy','T42 included','One edition','openT42()'):'')+'</div>';
   }
   if(typeof kelasMeRow==='function' && kelasMeRow()) h+=fsec('HITFAT HQ','')+'<div class="glist">'+kelasMeRow()+'</div>';
+  if(typeof affSection==='function') h+=affSection();
   h+=fsec('Challenges','')+'<div class="glist">';
   if(T42_LIVE && typeof T42!=='undefined' && T42.state==='ready' && (T42.challenge||T42.past))
     h+=grow('trophy','T42 Challenge', meT42Line(), 'openT42()');

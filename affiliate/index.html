@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Affiliate HITFAT+ · Jual & Dapat Komisen</title>
+<meta name="description" content="Kongsi HITFAT+ dan MAK2FIT 30 dengan pautan anda sendiri. RM10 hingga RM40 setiap jualan, dibayar setiap bulan.">
+<meta name="theme-color" content="#E30613">
+<link rel="icon" href="/img/icon/favicon-64.png?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<!--
+  HITFAT+ · the affiliate page (26 Oct 2026, Seth: "ok buat")
+
+  The same affiliates as the app's Me tab, behind their own door, so an
+  agent who never trains with us can ask and see her sales here. The
+  database is the app's (51-plus-affiliates.sql): this page reads the
+  same session the app keeps on app.hitfat.io, applies with
+  plus_affiliate_apply and shows plus_affiliate_me. Signing in happens in
+  the app: /?beli=affiliate comes back to the ask.
+-->
+<style>
+:root{--r:#E30613;--r2:#B0040F;--ink:#16121A;--ink2:#625B66;--line:#ECE6EA;--bg:#FBF8F7;--card:#fff;--soft:#F5F1F0}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.1;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+.w{max-width:760px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:rgba(251,248,247,.85);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+header .w{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:18px;text-decoration:none}
+.logo img{width:30px;height:30px;border-radius:8px}
+.logo i{font-style:normal;color:var(--r)}
+.hbtn{padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-family:inherit;font-weight:700;font-size:13.5px;line-height:1;text-decoration:none;color:var(--ink)}
+.hero{padding:34px 0 10px;text-align:center}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;background:#FFE9EA;color:var(--r);font-size:13px;font-weight:800}
+.hero h1{margin-top:16px;font-size:clamp(34px,9vw,54px);font-weight:800}
+.hero h1 span{color:var(--r)}
+.hero p{margin:14px auto 0;max-width:30em;color:var(--ink2);font-size:16.5px}
+.cta{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 28px;border:0;border-radius:999px;background:linear-gradient(135deg,#FF3B3F,var(--r) 55%,var(--r2));color:#fff;font-family:inherit;font-weight:800;font-size:17px;line-height:1.2;text-decoration:none;cursor:pointer;box-shadow:0 12px 28px -10px rgba(227,6,19,.55)}
+.cta[disabled]{opacity:.6}
+.sub{margin-top:10px;font-size:13px;color:var(--ink2)}
+.sec{margin-top:16px;padding:30px 20px;border-radius:30px;background:var(--card)}
+.sec h2{font-size:clamp(26px,7vw,36px);font-weight:800;text-align:center}
+.sec .lead{margin:10px auto 0;max-width:32em;text-align:center;color:var(--ink2)}
+.rates{display:grid;gap:10px;margin-top:20px}
+.rate{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-radius:20px;background:var(--soft)}
+.rate b{display:block;font-size:16px;font-weight:800}
+.rate span{font-size:13px;color:var(--ink2)}
+.rate em{font-style:normal;font-size:30px;font-weight:800;letter-spacing:-.03em;color:var(--r)}
+.steps{display:grid;gap:10px;margin-top:20px}
+.step{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:18px;background:var(--soft)}
+.step i{flex:none;width:34px;height:34px;border-radius:50%;background:var(--r);color:#fff;font-style:normal;font-weight:800;display:flex;align-items:center;justify-content:center}
+.step b{display:block;font-size:15.5px;font-weight:800}
+.step span{display:block;font-size:13.5px;color:var(--ink2)}
+.rules{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.rules li{display:flex;gap:10px;font-size:14.5px}
+.rules li::before{content:'✓';flex:none;width:22px;height:22px;border-radius:50%;background:#E9F8EE;color:#1F9E47;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center}
+details{border-bottom:1px solid var(--line);padding:14px 2px}
+summary{cursor:pointer;font-weight:800;list-style:none}
+summary::-webkit-details-marker{display:none}
+details p{margin-top:8px;color:var(--ink2);font-size:14.5px}
+footer{padding:30px 0 50px;text-align:center;font-size:13px;color:var(--ink2)}
+/* her own area: signed out, the ask, waiting, or her dashboard */
+#me{margin-top:22px}
+.box{padding:20px;border-radius:26px;background:var(--card);box-shadow:0 18px 40px -26px rgba(60,0,10,.4);text-align:left}
+.box .k{font-size:11.5px;font-weight:800;letter-spacing:.08em;color:var(--r)}
+.box .t{margin-top:4px;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.box .s{margin-top:8px;font-size:13.5px;color:var(--ink2)}
+.code{font-size:34px;font-weight:900;letter-spacing:.04em}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stats div{padding:12px 6px;border-radius:16px;background:var(--soft);text-align:center}
+.stats b{display:block;font-size:18px;font-weight:800}
+.stats span{font-size:11.5px;font-weight:700;color:var(--ink2)}
+.link{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 10px 10px 14px;border-radius:16px;background:var(--soft)}
+.link .tx{flex:1;min-width:0}
+.link .tx b{display:block;font-size:13.5px}
+.link .tx span{display:block;font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link button{flex:none;height:36px;padding:0 13px;border:0;border-radius:999px;background:var(--ink);color:#fff;font-family:inherit;font-weight:800;font-size:12.5px;line-height:1;cursor:pointer}
+.link button.wa{background:#25D366}
+.rec{margin-top:12px}
+.rec div{display:flex;justify-content:space-between;padding:8px 2px;border-bottom:1px solid var(--line);font-size:13px}
+.rec span{color:var(--ink2)} .rec b.paid{color:#1F9E47}
+form label{display:block;margin-top:14px;font-size:13px;font-weight:800;color:var(--ink2)}
+form input{display:block;width:100%;margin-top:6px;height:50px;padding:0 14px;border:1.5px solid var(--line);border-radius:14px;font-family:inherit;font-weight:600;font-size:16px;background:#fff;color:var(--ink)}
+.opt{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.opt button{padding:12px;border:1.5px solid var(--line);border-radius:16px;background:#fff;text-align:left;font:inherit;cursor:pointer}
+.opt button b{display:block;font-size:14.5px}
+.opt button span{display:block;font-size:12px;color:var(--ink2)}
+.opt button.on{border-color:var(--r);box-shadow:0 0 0 2px rgba(227,6,19,.18)}
+form .cta{width:100%;margin-top:18px}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);padding:12px 18px;border-radius:14px;background:var(--ink);color:#fff;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:.25s}
+#toast.on{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<header><div class="w">
+  <a class="logo" href="/"><img src="/img/icon/favicon-64.png?v=3" alt=""><span>HITFAT<i>+</i></span></a>
+  <a class="hbtn" id="hbtn" href="/?beli=affiliate">Log masuk</a>
+</div></header>
+
+<main class="w">
+  <section class="hero">
+    <span class="pill">Affiliate HITFAT+</span>
+    <h1>Kongsi pautan anda. <span>Dapat komisen setiap jualan.</span></h1>
+    <p>Untuk ahli HITFAT dan agen. Kongsikan HITFAT+ dan MAK2FIT 30 dengan pautan anda sendiri. Kami jejak setiap jualan, dan anda dibayar setiap bulan.</p>
+    <div id="me"></div>
+  </section>
+
+  <section class="sec">
+    <h2>Komisen anda</h2>
+    <p class="lead">Untuk setiap pembelian melalui pautan anda. Pembeli bayar harga biasa.</p>
+    <div class="rates">
+      <div class="rate"><div><b>MAK2FIT 30</b><span>Program 30 hari khas wanita · RM39</span></div><em>RM10</em></div>
+      <div class="rate"><div><b>HITFAT+ 6 bulan</b><span>Keahlian penuh · RM179</span></div><em>RM30</em></div>
+      <div class="rate"><div><b>HITFAT+ 12 bulan</b><span>Keahlian penuh · RM249</span></div><em>RM40</em></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Cara ia berjalan</h2>
+    <div class="steps">
+      <div class="step"><i>1</i><div><b>Mohon</b><span>Isi nama dan nombor WhatsApp. Pilih dibayar tunai, atau mata OS jika anda ahli kelas HITFAT.</span></div></div>
+      <div class="step"><i>2</i><div><b>Kami luluskan</b><span>Biasanya dalam 1 hingga 2 hari. Kod dan pautan anda terus aktif.</span></div></div>
+      <div class="step"><i>3</i><div><b>Kongsi</b><span>WhatsApp, Instagram, TikTok atau Facebook. Pembelian dalam 30 hari selepas klik pautan anda dikira untuk anda.</span></div></div>
+      <div class="step"><i>4</i><div><b>Dibayar setiap bulan</b><span>Lihat jualan dan komisen anda di sini, atau di tab Me dalam app.</span></div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Peraturan ringkas</h2>
+    <ul class="rules">
+      <li>Komisen dikira bila bayaran pembeli berjaya.</li>
+      <li>Pembelian guna pautan anda sendiri tidak dikira.</li>
+      <li>Komisen dibatalkan jika bayaran ditarik balik.</li>
+      <li>Kongsi dengan jujur: tiada janji turun berat yang tidak benar, tiada spam.</li>
+    </ul>
+  </section>
+
+  <section class="sec">
+    <h2>Soalan</h2>
+    <details><summary>Siapa boleh jadi affiliate?</summary><p>Ahli HITFAT+, ahli kelas HITFAT, dan agen yang kami luluskan.</p></details>
+    <details><summary>Pembeli dapat diskaun?</summary><p>Tidak. Pembeli bayar harga biasa, dan anda dapat komisen.</p></details>
+    <details><summary>Bila saya dibayar?</summary><p>Sebulan sekali, melalui pindahan bank, atau mata OS untuk ahli kelas.</p></details>
+    <details><summary>Bagaimana saya tahu jualan saya?</summary><p>Log masuk di halaman ini atau buka tab Me dalam app HITFAT+. Jualan, komisen belum dibayar dan sudah dibayar ditunjukkan di situ.</p></details>
+  </section>
+</main>
+<footer>HITFAT · Soalan? WhatsApp kami di <a href="https://wa.me/60189174656?text=Hai%20HITFAT%2C%20saya%20nak%20tanya%20tentang%20affiliate." target="_blank" rel="noopener">018-917 4656</a></footer>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
+<script>
+const SUPA_URL='https://ercvaagznsndvrewlvgt.supabase.co';
+const SUPA_KEY='sb_publishable_aZ5NIn03riGJ_ikX0R5-rQ_oOfoS0G7';
+let sb=null; try{ sb=window.supabase.createClient(SUPA_URL,SUPA_KEY); }catch(e){}
+const $=id=>document.getElementById(id);
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2600); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function rm(n){ return 'RM'+(Math.round(Number(n||0)*100)/100).toLocaleString(); }
+const SKU={prog_lad4:'MAK2FIT 30',sub_plus_6m:'HITFAT+ 6 bulan',sub_plus_12m:'HITFAT+ 12 bulan'};
+let A=null;
+const links=c=>[['MAK2FIT 30','https://app.hitfat.io/ladies/?ref='+c],['HITFAT+','https://app.hitfat.io/?ref='+c]];
+
+function signedOut(){
+  $('me').innerHTML='<a class="cta" href="/?beli=affiliate">Mohon sekarang</a><div class="sub">Log masuk dengan akaun HITFAT+ anda (atau buat akaun percuma), kemudian isi borang ringkas.</div>';
+}
+function askForm(name){
+  $('me').innerHTML='<form class="box" onsubmit="apply(event)"><div class="k">MOHON</div><div class="t">Jadi affiliate HITFAT+</div>'+
+    '<label>Nama penuh<input id="f-n" value="'+esc(name||'')+'" autocomplete="name"></label>'+
+    '<label>No. telefon (WhatsApp)<input id="f-p" inputmode="tel" autocomplete="tel" placeholder="012-345 6789"></label>'+
+    '<label>Komisen dibayar dalam bentuk</label><div class="opt"><button type="button" class="on" data-v="cash" onclick="pick(this)"><b>Tunai</b><span>Pindahan bank, sebulan sekali</span></button>'+
+    '<button type="button" data-v="points" onclick="pick(this)"><b>Mata OS</b><span>Untuk ahli kelas HITFAT</span></button></div>'+
+    '<button class="cta" id="f-go">Hantar permohonan</button></form>';
+}
+function pick(b){ b.parentNode.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); }
+async function apply(ev){
+  ev.preventDefault();
+  const n=$('f-n').value.trim(), p=$('f-p').value.trim(), o=document.querySelector('.opt .on');
+  if(n.length<2) return toast('Masukkan nama anda');
+  if(p.replace(/\D/g,'').length<9) return toast('Masukkan no. telefon penuh');
+  const b=$('f-go'); b.disabled=true; b.textContent='Menghantar…';
+  const r=await sb.rpc('plus_affiliate_apply',{p_name:n,p_phone:p,p_payout:o?o.getAttribute('data-v'):'cash'});
+  if(r.error){ b.disabled=false; b.textContent='Hantar permohonan'; return toast('Tak berjaya. Cuba lagi.'); }
+  toast('Permohonan dihantar'); load();
+}
+function dash(){
+  if(A.status==='pending'){ $('me').innerHTML='<div class="box"><div class="k">PERMOHONAN DIHANTAR</div><div class="t">Menunggu kelulusan</div><div class="s">Kod anda nanti: <b>'+esc(A.code)+'</b>. Kami akan luluskan secepat mungkin.</div></div>'; return; }
+  if(A.status==='paused'){ $('me').innerHTML='<div class="box"><div class="k">AFFILIATE</div><div class="t">Dihentikan sementara</div><div class="s">Hubungi kami di WhatsApp untuk maklumat lanjut.</div></div>'; return; }
+  $('me').innerHTML='<div class="box"><div class="k">KOD ANDA</div><div class="code">'+esc(A.code)+'</div>'+
+    '<div class="stats"><div><b>'+(A.sales||0)+'</b><span>jualan</span></div><div><b>'+rm(A.pending)+'</b><span>belum dibayar</span></div><div><b>'+rm(A.paid)+'</b><span>sudah dibayar</span></div></div>'+
+    links(A.code).map((l,i)=>'<div class="link"><div class="tx"><b>'+l[0]+'</b><span>'+l[1].replace('https://','')+'</span></div><button onclick="copyL('+i+')">Salin</button><button class="wa" onclick="shareL('+i+')">Kongsi</button></div>').join('')+
+    ((A.recent||[]).length?'<div class="rec">'+A.recent.slice(0,10).map(c=>'<div><span>'+(SKU[c.sku]||c.sku)+' · '+new Date(c.at).toLocaleDateString('ms-MY',{day:'numeric',month:'short'})+'</span><b class="'+c.status+'">'+rm(c.commission)+(c.status==='paid'?' ✓':'')+'</b></div>').join('')+'</div>':'')+
+    '<div class="s">'+(A.payout==='points'?'Dibayar dalam mata OS.':'Dibayar tunai, sebulan sekali.')+'</div></div>';
+}
+function copyL(i){ const u=links(A.code)[i][1]; try{ navigator.clipboard.writeText(u).then(()=>toast('Pautan disalin'),()=>prompt('Salin pautan ini',u)); }catch(e){ prompt('Salin pautan ini',u); } }
+function shareL(i){
+  const l=links(A.code)[i], t=(i===0?'Program 30 hari khas wanita, dari rumah. Tengok di sini: ':'Latihan, menu dan scan makanan dalam satu app. Tengok di sini: ')+l[1];
+  if(navigator.share){ navigator.share({text:t}).catch(()=>{}); return; }
+  window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank','noopener');
+}
+async function load(){
+  if(!sb){ signedOut(); return; }
+  const s=await sb.auth.getSession(), sess=s&&s.data&&s.data.session;
+  if(!sess){ signedOut(); return; }
+  $('hbtn').textContent='Buka app'; $('hbtn').href='/';
+  const r=await sb.rpc('plus_affiliate_me');
+  if(r.error){ $('me').innerHTML='<div class="sub">Pendaftaran affiliate belum dibuka. Cuba sebentar lagi.</div>'; return; }
+  A=r.data;
+  if(!A){ const m=sess.user&&sess.user.user_metadata||{}; askForm(m.full_name||m.name||''); return; }
+  dash();
+}
+load();
+</script>
+</body>
+</html>

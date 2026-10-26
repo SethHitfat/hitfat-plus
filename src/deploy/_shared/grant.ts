@@ -50,5 +50,21 @@ export async function grant(admin: any, user_id: string, sku: string, order_numb
   await admin.from('plus_orders')
     .update({ status: 'paid', transaction_id: tx || null, paid_at: new Date().toISOString() })
     .eq('order_number', order_number);
+  await commission(admin, user_id, sku, order_number);
   return true;
+}
+
+/* An affiliate's commission for an order that came through her link (26 Oct
+   2026). The rules (approved code, not her own purchase, the rate) are in
+   plus_commission_record; the order number is unique there, so the push and
+   pull paths both calling this records it once. Never blocks the grant. */
+async function commission(admin: any, user_id: string, sku: string, order_number: string) {
+  try {
+    const { data: o } = await admin.from('plus_orders').select('ref, amount').eq('order_number', order_number).maybeSingle();
+    if (!o || !o.ref) return;
+    const { data: u } = await admin.auth.admin.getUserById(user_id);
+    const { error } = await admin.rpc('plus_commission_record', { p_order: order_number, p_source: 'app', p_sku: sku,
+      p_sale: o.amount, p_ref: o.ref, p_buyer: user_id, p_email: u?.user?.email || null });
+    if (error) console.error('commission failed', error.message);
+  } catch (e) { console.error('commission crashed', String(e)); }
 }

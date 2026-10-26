@@ -1121,6 +1121,17 @@ var PIXEL_ID = '1860516742038949';                                      /* Meta 
 var WA = '60189174656';
 var WA_TEXT = 'Hai HITFAT, saya nak tanya tentang MAK2FIT 30.';
 
+/* An affiliate's link (?ref=CODE, 26 Oct 2026): kept 30 days in this
+   browser and sent with the order; landing-pay checks it when it is paid. */
+var REF = (function(){
+  try{
+    var m = location.search.match(/[?&]ref=([A-Za-z0-9]{3,16})/), now = Date.now();
+    if(m){ localStorage.setItem('hf_ref', JSON.stringify({c:m[1].toUpperCase(), t:now})); return m[1].toUpperCase(); }
+    var k = JSON.parse(localStorage.getItem('hf_ref')||'null');
+    return k && now - k.t < 30*864e5 ? k.c : '';
+  }catch(e){ return ''; }
+})();
+
 /* Meta Pixel: only when an ID is set */
 function track(ev, data){ try{ if(window.fbq) fbq('track', ev, data||{}); }catch(e){} }
 if(PIXEL_ID){
@@ -1167,7 +1178,7 @@ document.getElementById('ck-f').addEventListener('submit', function(e){
   er.textContent=''; go.disabled=true; go.textContent='Membuka halaman bayaran…';
   track('AddPaymentInfo',{content_ids:['prog_lad4'],value:39,currency:'MYR'});
   fetch(PAY_FN+'?action=create',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({sku:'prog_lad4',name:n,email:em,phone:ph,channel:ckCh,fbp:fbCookie('_fbp'),fbc:fbCookie('_fbc')||fbcFromUrl()})})
+    body:JSON.stringify({sku:'prog_lad4',name:n,email:em,phone:ph,channel:ckCh,fbp:fbCookie('_fbp'),fbc:fbCookie('_fbc')||fbcFromUrl(),ref:REF})})
     .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
     .then(function(x){
       if(x.ok && x.d && x.d.url){ location.href=x.d.url; return; }

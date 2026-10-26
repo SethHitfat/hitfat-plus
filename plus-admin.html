@@ -88,6 +88,7 @@
       <button id="t-find" class="on" onclick="tab('find')">Find</button>
       <button id="t-orders" onclick="tab('orders')">Recent orders</button>
       <button id="t-landing" onclick="tab('landing')">Programs</button>
+      <button id="t-aff" onclick="tab('aff')">Affiliates</button>
       <button id="t-log" onclick="tab('log')">Log</button>
     </div>
 
@@ -119,6 +120,19 @@
       <div class="card"><div class="sub" style="margin:0 0 10px">Paste this address into the landing-page form's webhook (callback) setting. It contains a secret — do not post it anywhere public.</div>
         <div class="row"><button class="btn sec sm" onclick="landingHook()">Show the address</button></div>
         <div class="mono" id="l-hook" style="word-break:break-all;margin-top:10px;white-space:pre-line"></div></div>
+    </section>
+
+    <section id="s-aff" class="hide">
+      <div class="sub">Members and agents who sell with their own link (?ref=CODE). Approve a request to switch the link on. A sale through the link records the commission once Bayarcash says it is paid: MAK2FIT 30 RM10 · HITFAT+ 6 months RM30 · 12 months RM40. Pay once a month, by bank transfer or OS points, then press <b>Mark paid</b>.</div>
+      <h2>Add an agent</h2>
+      <div class="card"><div class="sub" style="margin:0 0 10px">Someone without a HITFAT+ account. Their code is approved straight away.</div><div class="row">
+        <input id="a-name" placeholder="Name" style="flex:1;min-width:160px">
+        <input id="a-phone" placeholder="Phone" style="flex:1;min-width:130px">
+        <input id="a-email" type="email" placeholder="Email (optional)" style="flex:1;min-width:180px">
+        <input id="a-code" placeholder="Code e.g. AINA" style="width:140px;text-transform:uppercase">
+        <button class="btn" onclick="affAdd()">Add</button></div></div>
+      <h2>Affiliates</h2>
+      <div class="card scroll" id="aff"></div>
     </section>
 
     <section id="s-log" class="hide">
@@ -172,8 +186,8 @@ async function afterAuth(loud){
 async function signOut(){ try{ await sb.auth.signOut(); }catch(e){} location.reload(); }
 
 function tab(t){
-  ['find','orders','landing','log'].forEach(x=>{ $('s-'+x).classList.toggle('hide',x!==t); $('t-'+x).classList.toggle('on',x===t); });
-  if(t==='orders') loadOrders(); if(t==='landing') loadLanding(); if(t==='log') loadLog();
+  ['find','orders','landing','aff','log'].forEach(x=>{ $('s-'+x).classList.toggle('hide',x!==t); $('t-'+x).classList.toggle('on',x===t); });
+  if(t==='orders') loadOrders(); if(t==='landing') loadLanding(); if(t==='aff') loadAff(); if(t==='log') loadLog();
 }
 
 /* ── find ── */
@@ -301,6 +315,43 @@ async function landingHook(){
   if(r.error) return toast(msg(r.error));
   /* one address per program sold on its own: each landing form gets its own */
   $('l-hook').textContent=['prog_wl30','prog_d6','prog_lad4'].map(s=>SKU_NAME[s].replace(' (for good)','')+':\n'+SUPA_URL+'/functions/v1/plus-landing?sku='+s+'&key='+r.data).join('\n\n');
+}
+/* ── affiliates (51-plus-affiliates.sql) ── */
+async function loadAff(){
+  $('aff').innerHTML='<div class="sub">Loading…</div>';
+  const r=await sb.rpc('plus_admin_affiliates');
+  if(r.error){ $('aff').innerHTML='<div class="err">'+esc(/function|schema cache/i.test(r.error.message)?'Not set up yet: run 51-plus-affiliates.sql.':msg(r.error))+'</div>'; return; }
+  const l=r.data||[];
+  $('aff').innerHTML=l.length?'<table><tr><th>Asked</th><th>Name</th><th>Code</th><th>Kind</th><th>Paid in</th><th>Sales</th><th>To pay</th><th>Paid</th><th>Status</th><th></th></tr>'+
+    l.map(a=>'<tr><td>'+day(a.created_at)+'</td><td>'+esc(a.name)+'<div class="sub">'+esc(a.phone||'')+(a.email?' · '+esc(a.email):'')+'</div></td>'+
+      '<td class="mono">'+esc(a.code)+'</td><td>'+esc(a.kind)+'</td><td>'+(a.payout==='points'?'OS points':'cash')+'</td><td>'+a.sales+'</td>'+
+      '<td><b>'+rm(a.pending)+'</b></td><td>'+rm(a.paid)+'</td>'+
+      '<td><span class="pill '+(a.status==='approved'?'p-ok':a.status==='pending'?'p-wait':'p-bad')+'">'+esc(a.status)+'</span></td><td style="white-space:nowrap">'+
+      (a.status!=='approved'?'<button class="btn sm" onclick="affSet(\''+a.id+'\',\'approved\')">Approve</button> ':'')+
+      (a.status==='approved'?'<button class="btn sec sm" onclick="affSet(\''+a.id+'\',\'paused\')">Pause</button> ':'')+
+      (Number(a.pending)>0?'<button class="btn sm" onclick="affPaid(\''+a.id+'\',\''+a.payout+'\','+Number(a.pending)+')">Mark paid</button>':'')+
+      '</td></tr>').join('')+'</table>'
+    :'<div class="sub">No affiliates yet. Members ask from the Me tab in the app.</div>';
+}
+async function affSet(id,status){
+  const r=await sb.rpc('plus_admin_affiliate_set',{p_id:id,p_status:status});
+  if(r.error) return toast(msg(r.error));
+  toast(status==='approved'?'Approved · '+r.data.code:'Paused'); loadAff();
+}
+async function affPaid(id,payout,sum){
+  const ref=prompt('Paid '+rm(sum)+' by '+(payout==='points'?'OS points':'bank transfer')+'. Reference (e.g. transfer ID or OS note):','');
+  if(ref===null) return;
+  const r=await sb.rpc('plus_admin_affiliate_paid',{p_id:id,p_payout:payout,p_ref:ref});
+  if(r.error) return toast(msg(r.error));
+  toast('Marked paid · '+r.data.n+' sales · '+rm(r.data.sum)); loadAff();
+}
+async function affAdd(){
+  const name=$('a-name').value.trim(), phone=$('a-phone').value.trim(), email=$('a-email').value.trim(), code=$('a-code').value.trim().toUpperCase();
+  if(name.length<2) return toast('Enter a name.');
+  if(!/^[A-Z0-9]{3,16}$/.test(code)) return toast('Code: 3 to 16 letters or numbers.');
+  const r=await sb.rpc('plus_admin_affiliate_set',{p_id:null,p_kind:'agent',p_code:code,p_name:name,p_phone:phone,p_email:email});
+  if(r.error) return toast(/duplicate|unique/i.test(r.error.message)?'That code is taken.':msg(r.error));
+  toast('Added · '+code); ['a-name','a-phone','a-email','a-code'].forEach(x=>$(x).value=''); loadAff();
 }
 async function loadLog(){
   $('log').innerHTML='<div class="sub">Loading…</div>';

@@ -535,7 +535,7 @@ async function payNow(){
     if(!tk){ toast('Sign in first.'); if(btn){ btn.disabled=false; btn.textContent=label; } return; }
     const r=await fetch(PAY_CREATE,{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk,'apikey':SUPA_KEY},
-      body:JSON.stringify({sku, channel:payChannel, name:(HF.data.prefs&&HF.data.prefs.name)||''})});
+      body:JSON.stringify({sku, channel:payChannel, name:(HF.data.prefs&&HF.data.prefs.name)||'', ref:affRef()})});
     const d=await r.json();
     if(r.ok && d && d.url){ localStorage.setItem('hf_plus_pending', sku); location.href=d.url; return; }
     if(d && d.code==='already_owned'){ toast('You already own this.'); await refreshPurchases(); closeProduct(); return; }
@@ -631,7 +631,11 @@ const BUY_GO={lad4:function(){ openProgram(LB30_ID); if(typeof lbBuy==='function
               wl30:function(){ if(typeof wlBuy==='function') wlBuy(); },
               /* ?tebus=lad4 (24 Oct 2026): paid on the landing page already, back
                  through ladies/berjaya: open what she bought (ladies30.js lbTebus) */
-              tebus_lad4:function(){ if(typeof lbTebus==='function') lbTebus(0); }};
+              tebus_lad4:function(){ if(typeof lbTebus==='function') lbTebus(0); },
+              /* ?beli=affiliate (26 Oct 2026): the /affiliate page's Mohon button. Me, and
+                 the ask if she is not one yet (her status and links are on Me otherwise) */
+              affiliate:function(){ switchTab('me'); _aff=undefined; affLoad();
+                var n=0, t=setInterval(function(){ if(_aff!==undefined || ++n>20){ clearInterval(t); if(_aff===null) openAffApply(); } },300); }};
 function captureBuyParam(){
   try{
     /* (24 Oct 2026) the first real landing payment came back to the app
@@ -840,4 +844,102 @@ function needPlus(reason){
   if(contentOpen()) return false;
   openPaywall(reason||'');
   return true;
+}
+
+
+/* ═══ AFFILIATES (26 Oct 2026, Seth) ═══════════════════════════════
+   Members and agents sell MAK2FIT 30 and HITFAT+ with their own link and
+   earn RM10 / RM30 / RM40 a sale, paid monthly in cash or OS points. An
+   admin approves them first (plus-admin). The link's ?ref=CODE is kept 30
+   days and goes with the order; the rules (approved, not her own purchase,
+   the rate) are in the database (51-plus-affiliates.sql). */
+var AFF_LIVE=true;
+var AFF_RATES=[['MAK2FIT 30','RM10'],['HITFAT+ 6 bulan','RM30'],['HITFAT+ 12 bulan','RM40']];
+var _aff, _affBusy=false;
+function affRef(){
+  try{
+    var m=location.search.match(/[?&]ref=([A-Za-z0-9]{3,16})/), now=Date.now();
+    if(m){ localStorage.setItem('hf_ref',JSON.stringify({c:m[1].toUpperCase(),t:now})); return m[1].toUpperCase(); }
+    var k=JSON.parse(localStorage.getItem('hf_ref')||'null');
+    return k && now-k.t<30*864e5 ? k.c : '';
+  }catch(e){ return ''; }
+}
+try{ affRef(); }catch(e){}                       /* keep a code from the link she opened the app with */
+function affLoad(){
+  if(!AFF_LIVE || !sb || !HF.userId || _affBusy) return;
+  _affBusy=true;
+  sb.rpc('plus_affiliate_me').then(function(r){
+    _affBusy=false;
+    if(r.error){ _aff=false; return; }             /* not set up on the server yet: show nothing */
+    _aff=r.data||null;
+    try{ if(document.getElementById('me-body')) renderMe(); }catch(e){}
+  },function(){ _affBusy=false; _aff=false; });
+}
+function affLinks(code){
+  return [['MAK2FIT 30','https://app.hitfat.io/ladies/?ref='+code],['HITFAT+','https://app.hitfat.io/?ref='+code]];
+}
+function affSection(){
+  if(!AFF_LIVE || !sb || !HF.userId) return '';
+  if(_aff===undefined){ affLoad(); return ''; }
+  if(_aff===false) return '';
+  var h=fsec('Affiliate','');
+  if(!_aff){
+    return h+'<div class="aff-card aff-ask"><div class="k">JUAL &amp; DAPAT KOMISEN</div>'+
+      '<div class="t">Kongsi pautan anda. Setiap jualan, anda dapat komisen.</div>'+
+      '<div class="aff-rates">'+AFF_RATES.map(function(r){ return '<span><b>'+r[1]+'</b>'+r[0]+'</span>'; }).join('')+'</div>'+
+      '<button class="bigbtn" onclick="openAffApply()">Mohon jadi affiliate</button>'+
+      '<div class="s">Untuk ahli HITFAT dan agen. Kami luluskan dahulu, kemudian anda dapat pautan sendiri.</div></div>';
+  }
+  if(_aff.status==='pending')
+    return h+'<div class="aff-card"><div class="k">PERMOHONAN DIHANTAR</div><div class="t">Menunggu kelulusan</div>'+
+      '<div class="s">Kod anda nanti: <b>'+hesc(_aff.code)+'</b>. Kami akan luluskan secepat mungkin.</div></div>';
+  if(_aff.status==='paused')
+    return h+'<div class="aff-card"><div class="k">AFFILIATE</div><div class="t">Dihentikan sementara</div>'+
+      '<div class="s">Hubungi kami di WhatsApp untuk maklumat lanjut.</div></div>';
+  var rm=function(n){ return 'RM'+(Math.round(Number(n)*100)/100).toLocaleString(); };
+  return h+'<div class="aff-card aff-on"><div class="aff-top"><div><div class="k">KOD ANDA</div><div class="code">'+hesc(_aff.code)+'</div></div>'+
+      '<span class="aff-pay">'+(_aff.payout==='points'?'Bayaran: mata OS':'Bayaran: tunai')+'</span></div>'+
+    '<div class="aff-stats"><div><b>'+(_aff.sales||0)+'</b><span>jualan</span></div><div><b>'+rm(_aff.pending||0)+'</b><span>belum dibayar</span></div><div><b>'+rm(_aff.paid||0)+'</b><span>sudah dibayar</span></div></div>'+
+    affLinks(_aff.code).map(function(l,i){ return '<div class="aff-link"><div class="tx"><b>'+l[0]+'</b><span>'+l[1].replace('https://','')+'</span></div>'+
+      '<button onclick="affCopy('+i+')">Salin</button><button class="wa" onclick="affShare('+i+')">Kongsi</button></div>'; }).join('')+
+    '<div class="aff-rates sm">'+AFF_RATES.map(function(r){ return '<span><b>'+r[1]+'</b>'+r[0]+'</span>'; }).join('')+'</div>'+
+    ((_aff.recent||[]).length?'<div class="aff-rec">'+_aff.recent.slice(0,8).map(function(c){
+      var n=c.sku==='prog_lad4'?'MAK2FIT 30':c.sku==='sub_plus_12m'?'HITFAT+ 12 bulan':c.sku==='sub_plus_6m'?'HITFAT+ 6 bulan':c.sku;
+      return '<div><span>'+n+' · '+fmtDate(c.at)+'</span><b class="'+c.status+'">'+rm(c.commission)+(c.status==='paid'?' ✓':c.status==='void'?' ✕':'')+'</b></div>'; }).join('')+'</div>':'')+
+    '<div class="s">Komisen dikira bila pembeli bayar melalui pautan anda (dalam 30 hari). Dibayar sebulan sekali.</div></div>';
+}
+function affCopy(i){
+  var u=affLinks(_aff.code)[i][1];
+  try{ navigator.clipboard.writeText(u).then(function(){ toast('Pautan disalin'); },function(){ window.prompt('Salin pautan ini',u); }); }catch(e){ window.prompt('Salin pautan ini',u); }
+}
+function affShare(i){
+  var l=affLinks(_aff.code)[i];
+  var t=l[0]==='MAK2FIT 30'?'Program 30 hari khas wanita, dari rumah. Tengok di sini: ':'Latihan, menu dan scan makanan dalam satu app. Tengok di sini: ';
+  if(navigator.share){ navigator.share({text:t+l[1]}).catch(function(){}); return; }
+  window.open('https://wa.me/?text='+encodeURIComponent(t+l[1]),'_blank','noopener');
+}
+function openAffApply(){
+  var p=HF.data.prefs||{};
+  $('pw-body').innerHTML='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>'+
+    '<div class="aff-form"><div class="k">AFFILIATE</div><div class="t">Mohon jadi affiliate</div>'+
+    '<div class="s">Kami semak dan luluskan, biasanya dalam 1–2 hari. Lepas itu pautan anda terus aktif di sini.</div>'+
+    '<label>Nama penuh<input id="aff-n" value="'+hesc((p.name||'').trim())+'" autocomplete="name"></label>'+
+    '<label>No. telefon (WhatsApp)<input id="aff-p" inputmode="tel" autocomplete="tel" placeholder="012-345 6789"></label>'+
+    '<div class="lab">Komisen dibayar dalam bentuk</div>'+
+    '<div class="aff-opt"><button class="on" data-v="cash" onclick="affPick(this)"><b>Tunai</b><span>Pindahan bank, sebulan sekali</span></button>'+
+    '<button data-v="points" onclick="affPick(this)"><b>Mata OS</b><span>Untuk ahli kelas HITFAT, tebus di gym</span></button></div>'+
+    '<button class="bigbtn" id="aff-go" onclick="affApply()">Hantar permohonan</button></div>';
+  $('pwm').classList.add('on');
+}
+function affPick(b){ b.parentNode.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on',x===b); }); }
+function affApply(){
+  var n=($('aff-n').value||'').trim(), ph=($('aff-p').value||'').trim();
+  var o=document.querySelector('.aff-opt .on'), pay=o?o.getAttribute('data-v'):'cash';
+  if(n.length<2) return toast('Masukkan nama anda');
+  if(ph.replace(/\D/g,'').length<9) return toast('Masukkan no. telefon penuh');
+  var b=$('aff-go'); b.disabled=true; b.textContent='Menghantar…';
+  sb.rpc('plus_affiliate_apply',{p_name:n,p_phone:ph,p_payout:pay}).then(function(r){
+    if(r.error) throw r.error;
+    closeProduct(); toast('Permohonan dihantar'); _aff=undefined; affLoad();
+  }).catch(function(){ b.disabled=false; b.textContent='Hantar permohonan'; toast('Tak berjaya. Cuba lagi.'); });
 }

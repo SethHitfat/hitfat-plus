@@ -5167,5 +5167,25 @@ print("\n── DRINKS (after Simple's hydration tracker) ──");
   mrDone();
   HF.data.daily=keepD; HF.data.meals=keepM; HF.save=keepSv; mrAnimate=ko;
 })();
+print("\n── AFFILIATES ──");
+(function(){
+  var keepSb=sb, keepUid=HF.userId;
+  sb={rpc:function(){ return {then:function(){}}; }}; HF.userId='u-aff';
+  _aff=null; var h=affSection();
+  ok("not an affiliate yet: the ask, with the three rates", h.indexOf('Mohon jadi affiliate')>0 && h.indexOf('RM10')>0 && h.indexOf('RM40')>0);
+  _aff={code:'AINA12',status:'pending'};
+  ok("pending: waiting, with the code she will get", affSection().indexOf('Menunggu kelulusan')>0 && affSection().indexOf('AINA12')>0);
+  _aff={code:'AINA12',status:'approved',payout:'points',sales:2,pending:20,paid:10,
+        recent:[{sku:'prog_lad4',commission:10,status:'pending',at:'2026-10-26T00:00:00Z'},{sku:'sub_plus_6m',commission:30,status:'paid',at:'2026-10-20T00:00:00Z'}]};
+  h=affSection();
+  ok("approved: her code and both links carrying ?ref=", h.indexOf('AINA12')>0 && h.indexOf('ladies/?ref=AINA12')>0 && h.indexOf('app.hitfat.io/?ref=AINA12')>0);
+  ok("...her totals, how she is paid, and her recent sales named", h.indexOf('RM20')>0 && h.indexOf('mata OS')>0 && h.indexOf('HITFAT+ 6 bulan')>0);
+  _aff=false;
+  ok("the server not set up: nothing on Me", affSection()==='');
+  sb=null;
+  ok("signed out: nothing on Me", affSection()==='');
+  sb=keepSb; HF.userId=keepUid; _aff=undefined;
+})();
+
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

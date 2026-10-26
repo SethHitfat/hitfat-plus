@@ -268,6 +268,12 @@ async function markPaid(db: any, o: any, tx: string, paid: number): Promise<bool
   const { data: turned } = await db.from('plus_landing_orders').update({ status: 'paid', transaction_id: tx || null, paid_at: new Date().toISOString() })
     .eq('order_number', o.order_number).neq('status', 'paid').select('order_number');
   if (turned && turned.length) {
+    /* an affiliate's commission, once (51-plus-affiliates.sql decides whether it counts) */
+    if (o.ref) {
+      const { error: cErr } = await db.rpc('plus_commission_record', { p_order: o.order_number, p_source: 'landing', p_sku: o.sku,
+        p_sale: o.amount, p_ref: o.ref, p_email: o.email, p_phone: o.phone });
+      if (cErr) console.error('landing-pay: commission failed', cErr.message);
+    }
     const c = await sendCapi(o);
     if (c.ok) await db.from('plus_landing_orders').update({ capi_sent_at: new Date().toISOString() }).eq('order_number', o.order_number);
   }
@@ -305,7 +311,9 @@ Deno.serve(async (req: Request) => {
         ip: (req.headers.get('x-forwarded-for') || '').split(',')[0].trim().slice(0, 64),
         ua: (req.headers.get('user-agent') || '').slice(0, 400),
       };
-      const { error: oErr } = await db.from('plus_landing_orders').insert({ order_number, sku, email, name, phone, amount: price, channel, meta });
+      /* an affiliate's code from her link (?ref=), kept by the page; checked when it is paid */
+      const ref = String(b?.ref || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16);
+      const { error: oErr } = await db.from('plus_landing_orders').insert({ order_number, sku, email, name, phone, amount: price, channel, meta, ref: ref.length >= 3 ? ref : null });
       if (oErr) return json({ error: 'Pesanan tidak dapat dimulakan.', detail: oErr.message }, 500);
 
       const amount = Number(price).toFixed(2);

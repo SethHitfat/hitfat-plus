@@ -226,8 +226,10 @@ Deno.serve(async (req: Request) => {
     const order_number = 'HP' + Date.now().toString(36).toUpperCase()
                        + Math.random().toString(36).slice(2, 6).toUpperCase();
 
+    /* an affiliate's code from the link that brought her (?ref=), kept by the app */
+    const ref = String(body?.ref || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16);
     const { error: oErr } = await admin.from('plus_orders').insert({
-      order_number, user_id: user.id, sku, amount: price, status: 'pending', channel,
+      order_number, user_id: user.id, sku, amount: price, status: 'pending', channel, ref: ref.length >= 3 ? ref : null,
     });
     if (oErr) return json({ error: 'Could not start the order.', detail: oErr.message }, 500);
 
