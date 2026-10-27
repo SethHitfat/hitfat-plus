@@ -3706,7 +3706,10 @@ print("\n── MEAL SCAN PLANS ──");
   HF.data.scanQuota.lb=10; ok("...and when they are used, none is left (Scan 6 is offered)", scanAccess().left===0 && lbScanHero().indexOf('RM14.90')>0);
   _ent.ladiesFrom=new Date(Date.now()-31*864e5).toISOString(); HF.data.scanQuota={month:thisMonth(), used:0};
   ok("...after 30 days it is the usual 3 a month", scanAccess().left===SCAN_FREE_TIER && !scanAccess().ladies);
-  _ent.ladiesFrom=null;
+  _ent.ladiesFrom=new Date(Date.now()-2*864e5).toISOString(); _ent.welcomeName='BURN30'; HF.data.scanQuota={month:thisMonth(), used:0};
+  ok("BURN30 gives the same 10, under its own name", scanAccess().left===10 && scanAccess().label.indexOf('BURN30 scans left')>0);
+  ok("...and the app reads it from either program", WELCOME_SCAN_SKUS.prog_wl30==='BURN30' && WELCOME_SCAN_SKUS.prog_lad4==='MAK2FIT 30');
+  _ent.ladiesFrom=null; _ent.welcomeName=null;
   _ent=keepEnt; HF.data.scanQuota=keepQ;
 })();
 

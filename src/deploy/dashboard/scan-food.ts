@@ -43,7 +43,9 @@ const FREE_SCANS_PER_MONTH = 3;
    the 30 days from when it opened on her account, instead of 3 a month, so
    she can try scanning her meals while she starts. After the 30 days, or
    the 10, it is the usual 3 a month (and Scan 6 is offered). */
-const LADIES_SKU = 'prog_lad4', LADIES_FREE_SCANS = 10, LADIES_FREE_DAYS = 30;
+const LADIES_FREE_SCANS = 10, LADIES_FREE_DAYS = 30;
+/* BURN30 (28 Oct 2026, Seth) gives its buyers the same welcome */
+const WELCOME_SKUS: Record<string, string> = { prog_lad4: 'MAK2FIT 30', prog_wl30: 'BURN30' };
 
 /* Typed meals (20 Oct 2026, after Simple's "type what you ate"): the member
    writes "nasi lemak + teh tarik kurang manis" and gets the same estimate a
@@ -227,10 +229,11 @@ Deno.serve(async (req: Request) => {
       .filter((e) => e.kind === 'pass' && e.expires_at && new Date(e.expires_at).getTime() > now)
       .reduce((m, e) => Math.max(m, dailyFor(String(e.sku))), 0);
 
-    /* when her MAK2FIT 30 opened, if that was in the last 30 days */
-    const ladiesFrom = (ents || [])
-      .filter((e) => e.sku === LADIES_SKU && e.created_at && now - new Date(e.created_at).getTime() < LADIES_FREE_DAYS * 864e5)
-      .map((e) => String(e.created_at)).sort().pop() || '';
+    /* when their MAK2FIT 30 or BURN30 opened, if that was in the last 30 days */
+    const welcome = (ents || [])
+      .filter((e) => WELCOME_SKUS[e.sku] && e.created_at && now - new Date(e.created_at).getTime() < LADIES_FREE_DAYS * 864e5)
+      .sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))).pop();
+    const ladiesFrom = welcome ? String(welcome.created_at) : '';
 
     let creditRow: any = null;
     let mode: 'free' | 'pass' | 'credits' = 'free';
@@ -263,7 +266,7 @@ Deno.serve(async (req: Request) => {
         mode = 'credits';
       }
     } else if (ladiesFrom) {
-      /* her MAK2FIT 30 welcome: 10 in the 30 days since it opened */
+      /* the program welcome: 10 in the 30 days since it opened */
       const { count, error: lErr } = await admin
         .from('plus_scans')
         .select('id', { count: 'exact', head: true })
@@ -276,7 +279,7 @@ Deno.serve(async (req: Request) => {
         creditRow = pickCredit();
         if (!creditRow) {
           return json({
-            error: `You have used your ${LADIES_FREE_SCANS} MAK2FIT 30 scans.`,
+            error: `You have used your ${LADIES_FREE_SCANS} ${WELCOME_SKUS[welcome.sku]} scans.`,
             code: 'quota_exceeded',
             used: count,
             limit: LADIES_FREE_SCANS,

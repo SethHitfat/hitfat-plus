@@ -7042,9 +7042,12 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .bn .lbx-mdays .wl-md.on{box-shadow:0 8px 18px rgba(227,6,19,.28);}
 .bn .lbx-sw .from{text-decoration-color:rgba(227,6,19,.6);}
 .lbq.bn .lbq-intro .k,.lbq.bn .lbq-res-h .k{color:#FFD0CC;}
-.lbx-hero.bn-hero,.lbq-intro.bn-hero,.lbq-res-h.bn-hero{background-color:#C8101A;background-position:50% 18%;}
+.lbx-hero.bn-hero,.lbq-intro.bn-hero,.lbq-res-h.bn-hero{background-color:#C8101A;background-position:50% 0;}
 .lbx-hero.bn-hero .lbx-hero-ov,.lbq-intro.bn-hero .lbx-hero-ov,.lbq-res-h.bn-hero .lbx-hero-ov{
   background:linear-gradient(180deg,rgba(60,4,6,.28) 0%,rgba(60,4,6,0) 24%,rgba(60,4,6,0) 46%,rgba(40,3,5,.88) 100%);}
 .bn-name{font-size:52px;font-weight:900;letter-spacing:-1.5px;font-style:italic;text-transform:uppercase;}
 #pgd-body:has(.lbx.bn) .pdx-pill,#dd-body:has(.lbx.bn) .pdx-pill,#pgd-body:has(.lbq.bn) .pdx-pill{background:#E30613 !important;}
-.lbx-hero.bn-day{background-color:#F2F2F2;background-size:auto 100%;background-position:50% 0;}
+/* the red studio photographs, in their wide copies (img/p/burn30/*-w.jpg) */
+.lbx-hero.bn-day{background-color:#BE0617;background-size:cover;background-position:50% 30%;}
+.bn .lbx-today-ph{background-color:#BE0617;background-size:cover;background-position:50% 35%;}
+.bn .lbx-wcover{background-color:#BE0617;background-size:cover;background-position:4% 40%;}

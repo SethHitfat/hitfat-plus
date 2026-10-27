@@ -86,6 +86,8 @@ const SCAN_FREE_TIER=3, MEMBER_SCANS_DAY=3;
 /* MAK2FIT 30 (25 Oct 2026): 10 free scans in the 30 days after it opens,
    instead of 3 a month; scan-food holds the real count (LADIES_* there) */
 const LADIES_FREE_SCANS=10, LADIES_FREE_DAYS=30;
+/* the programs whose buyers get them (BURN30 since 28 Oct 2026), and what the count is called */
+const WELCOME_SCAN_SKUS={prog_lad4:'MAK2FIT 30', prog_wl30:'BURN30'};
 /* how many scans a day a live pass gives */
 function scanDailyFor(sku){
   if(String(sku).indexOf('sub_')===0) return MEMBER_SCANS_DAY;
@@ -174,9 +176,10 @@ function scanAccess(){
   /* her MAK2FIT 30 welcome, while it lasts */
   if(ladiesScanWindow()){
     const lu=ladiesScansUsed(), ll=Math.max(0, LADIES_FREE_SCANS-lu);
-    if(ll>0) return {mode:'free', ladies:true, label:ll+' of '+LADIES_FREE_SCANS+' MAK2FIT 30 scans left', left:ll};
+    const wn=_ent.welcomeName||'MAK2FIT 30';
+    if(ll>0) return {mode:'free', ladies:true, label:ll+' of '+LADIES_FREE_SCANS+' '+wn+' scans left', left:ll};
     if(_ent.credits>0) return {mode:'credits', label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
-    return {mode:'none', ladies:true, label:'Your '+LADIES_FREE_SCANS+' MAK2FIT 30 scans are used', left:0};
+    return {mode:'none', ladies:true, label:'Your '+LADIES_FREE_SCANS+' '+wn+' scans are used', left:0};
   }
   const used=scanUsed(), freeLeft=Math.max(0, SCAN_FREE_TIER-used);
   if(freeLeft>0)   return {mode:'free',    label:freeLeft+' of '+SCAN_FREE_TIER+' free scans left this month', left:freeLeft};
@@ -198,7 +201,7 @@ function entCacheGet(){ try{ const o=JSON.parse(localStorage.getItem(entCacheKey
 function entCacheSet(o){ try{ localStorage.setItem(entCacheKey(), JSON.stringify(o)); }catch(e){} }
 async function loadEntitlement(){
   /* built aside and swapped in whole, so a screen drawn meanwhile never sees an empty pass */
-  const ne={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, scanDaily:0, scanPlanUntil:null, ladiesFrom:null, loaded:true};
+  const ne={skus:{}, credits:0, passUntil:null, plusUntil:null, coachUntil:null, scanDaily:0, scanPlanUntil:null, ladiesFrom:null, welcomeName:null, loaded:true};
   if(!sb || !HF.userId){ _ent=ne; return _ent; }
   /* once a session: anything bought on a landing page under this email */
   if(_claimedFor!==HF.userId){ _claimedFor=HF.userId; await claimLandingPurchases(); }
@@ -227,8 +230,8 @@ async function loadEntitlement(){
         return;
       }
       ne.skus[e.sku]=true;         // programs, the bundle, the bar
-      if(e.sku==='prog_lad4' && e.created_at && Date.now()-new Date(e.created_at).getTime()<LADIES_FREE_DAYS*864e5 &&
-         (!ne.ladiesFrom || e.created_at>ne.ladiesFrom)) ne.ladiesFrom=e.created_at;
+      if(WELCOME_SCAN_SKUS[e.sku] && e.created_at && Date.now()-new Date(e.created_at).getTime()<LADIES_FREE_DAYS*864e5 &&
+         (!ne.ladiesFrom || e.created_at>ne.ladiesFrom)){ ne.ladiesFrom=e.created_at; ne.welcomeName=WELCOME_SCAN_SKUS[e.sku]; }
     });
     _ent=ne; entCacheSet(ne);
   }catch(e){ /* offline, or the table is not deployed yet: the last pass this phone saw, else free */

@@ -388,19 +388,25 @@ function wlHalves(d){ const exs=wlExercises(d), m=Math.ceil(exs.length/2); retur
 function wlJumps(d){ return d.ex.filter(n=>WL30_JUMPS.indexOf(n)>=0).length; }
 const WL30_KIND={test:'Fit Test', train:'Full Body', lower:'Lower Body', upper:'Upper Body', cardio:'Cardio', core:'Core', recover:'Recovery'};
 
-/* ── the photographs: the BURN30 cover, and HITFAT's studio athletes, a man
-   and a woman in turn; once the member has answered, their own ── */
+/* ── the photographs (28 Oct 2026, Seth: "kemaskan gambar semua"): one
+   athlete on BURN30's seamless red, a woman's set and a man's, made with
+   ChatGPT (img/p/burn30, illustration only). Each member sees their own
+   once they have answered; before that, the man's cover and the two in
+   turn. Week 1 squat, 2 lunge, 3 mountain climber, 4 jump; the fit test a
+   plank, recovery a stretch. ── */
+const WL30_PH='/img/p/burn30/';
 const WL30_IMG={
-  l:{cover:'/img/p/wl30.jpg', weeks:['/img/p/act-fatloss.jpg','/img/p/act-strength.jpg','/img/p/act-core.jpg','/img/p/wl30.jpg'],
-     test:'/img/p/act-fatloss.jpg', recover:'/img/p/act-core.jpg'},
-  p:{cover:'/img/p/wl30.jpg', weeks:['/img/p/act-beginner.jpg','/img/p/act-equipment.jpg','/img/p/act-beginner.jpg','/img/p/act-equipment.jpg'],
-     test:'/img/p/act-beginner.jpg', recover:'/img/p/act-recovery.jpg'},
-  x:{cover:'/img/p/wl30.jpg', weeks:['/img/p/act-beginner.jpg','/img/p/act-fatloss.jpg','/img/p/act-equipment.jpg','/img/p/act-strength.jpg'],
-     test:'/img/p/act-fatloss.jpg', recover:'/img/p/act-recovery.jpg'}
+  l:{cover:'/img/p/wl30.jpg', weeks:['l-squat','l-lunge','l-climber','l-jump'], test:'l-plank', recover:'l-stretch'},
+  p:{cover:WL30_PH+'p-cover.jpg', weeks:['p-squat','p-lunge','p-climber','p-jump'], test:'p-plank', recover:'p-stretch'},
+  x:{cover:'/img/p/wl30.jpg', weeks:['p-squat','l-lunge','p-climber','l-jump'], test:'l-plank', recover:'p-stretch'}
 };
-function wlImgSet(){ const m=wlData().me; return WL30_IMG[m&&m.sex] || WL30_IMG.x; }
-function wlWeekImg(wi){ return wlImgSet().weeks[wi]||WL30_COVER; }
-function wlDayImg(gi){ const d=WL30_DAYS[gi], s=wlImgSet(); return d&&d.k==='test' ? s.test : d&&d.k==='recover' ? s.recover : wlWeekImg(wlWeekOf(gi)); }
+function wlImgSet(sx){ const m=wlData().me; return WL30_IMG[sx||(m&&m.sex)] || WL30_IMG.x; }
+/* a day's and a week's photograph: the wide copy (name-w.jpg, the studio
+   red carried out to both sides), so a wide box crops only backdrop */
+function wlBg(u){ return "background-image:url('"+u+"')"; }
+function wlCover(sx){ return wlImgSet(sx).cover; }
+function wlWeekImg(wi){ const w=wlImgSet().weeks[wi]; return w ? WL30_PH+w+'-w.jpg' : WL30_COVER; }
+function wlDayImg(gi){ const d=WL30_DAYS[gi], s=wlImgSet(); return d&&d.k==='test' ? WL30_PH+s.test+'-w.jpg' : d&&d.k==='recover' ? WL30_PH+s.recover+'-w.jpg' : wlWeekImg(wlWeekOf(gi)); }
 
 /* ── the program's home ── */
 let wlTab='plan', wlWeek=-1, wlMenuDay=-1, wlFoodSeg='today', wlShopWeek=-1;
@@ -408,7 +414,7 @@ function wlScrollTabs(){ try{ const s=$('screen'), a=$('wl-tabs'); if(s&&a&&a.of
 function wlSetTab(t){ wlTab=t; renderWL30(); wlScrollTabs(); }
 function wlSetFoodSeg(x){ wlFoodSeg=x; renderWL30(); wlScrollTabs(); }
 function wlHero(){
-  return '<div class="lbx-hero bn-hero" style="background-image:url(\''+WL30_COVER+'\')"><div class="lbx-hero-ov"></div>'+
+  return '<div class="lbx-hero bn-hero" style="background-image:url(\''+wlCover()+'\')"><div class="lbx-hero-ov"></div>'+
     '<div class="lbx-hero-tx"><img class="lbx-mark" src="/img/brand/hfplus-mark.png" alt="HITFAT+">'+
     '<div class="lbx-name bn-name">'+WL30_NAME+'</div>'+
     '<div class="lbx-tags"><span>30 days</span><span>15–25 min</span><span>Men & women</span><span>At home</span></div></div></div>';
@@ -441,7 +447,7 @@ function renderWL30(){
         '<div class="lbx-h">Day '+(nx+1)+' · Week '+(wi+1)+'</div>'+
         '<div class="lbx-p">'+WL30_WEEKS[wi].n+'. '+(st>1?st+'-day streak 🔥':'One day at a time.')+'</div></div></div>'+
       '<div class="lbx-today" onclick="wlOpenDay('+nx+')">'+
-        '<div class="lbx-today-ph" style="background-image:url(\''+wlDayImg(nx)+'\')"><span class="lbx-badge">Today</span></div>'+
+        '<div class="lbx-today-ph" style="'+wlBg(wlDayImg(nx))+'"><span class="lbx-badge">Today</span></div>'+
         '<div class="lbx-today-b"><div class="lbx-k">'+(WL30_KIND[d.k]||'Workout')+' · '+wlMinutes(d)+' min · '+d.ex.length+' moves</div>'+
         '<div class="lbx-t">'+d.n+'</div></div></div>'+
       '<button class="lbx-go" onclick="wlOpenDay('+nx+')">'+glyph('play')+(done?'Continue Day '+(nx+1):'Start Day 1')+'</button></div>';
@@ -514,7 +520,7 @@ function wlQuiz(){
     '<div class="lbq-bar"><i style="width:'+Math.round(Math.min(wlQ,n)/n*100)+'%"></i></div><span class="lbq-n">'+(isFact?'':wlQCount(Math.min(wlQ,n))+'/'+qn)+'</span></div>';
   if(wlQ===0){
     const nm=((HF.data.prefs&&HF.data.prefs.name)||'').trim().split(/\s+/)[0];
-    return h+bar+'<div class="lbq-intro bn-hero" style="background-image:url(\''+WL30_COVER+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
+    return h+bar+'<div class="lbq-intro bn-hero" style="background-image:url(\''+wlCover(wlQA&&wlQA.sex)+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
       '<div class="k">BURN30</div><div class="t">Jom bina pelan 30 hari anda'+(nm?', '+hesc(nm):'')+'.</div></div></div>'+
       '<div class="lbq-p">'+qn+' soalan, lebih kurang 2 minit. Jawapan anda menentukan gerakan, pusingan, minit setiap hari dan sasaran kalori anda.</div>'+
       '<div class="lbq-list">'+[['person','Anda, tahap anda dan bahagian yang sakit'],['home','Lompat atau tidak, dan alat di rumah'],['clock','Masa yang anda ada'],
@@ -590,7 +596,7 @@ function wlQuizResult(){
   const stat=xs=>'<div class="lbq-stats">'+xs.map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
   const chips=xs=>xs.length?'<div class="lbq-chips">'+xs.map(x=>'<span>'+hesc(x)+'</span>').join('')+'</div>':'';
   const end=tg&&me.wt ? Math.round((me.wt-wlPaceOf(me)*30/7)*10)/10 : null;
-  return '<div class="lbq-res"><div class="lbq-res-h bn-hero" style="background-image:url(\''+WL30_COVER+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
+  return '<div class="lbq-res"><div class="lbq-res-h bn-hero" style="background-image:url(\''+wlCover(me.sex)+'\')"><div class="lbx-hero-ov"></div><div class="tx">'+
       '<div class="k">Pelan anda sudah sedia</div><div class="t">30 hari, dibina untuk '+(nm?hesc(nm):'anda')+'.</div></div></div>'+
     '<div class="lbq-card"><div class="lbq-ch">'+glyph('workout')+'<b>Workout anda</b><span>'+WL30_Q[1].o.filter(o=>o[0]===me.level)[0][1]+'</span></div>'+
       stat([[mins,'min sehari'],[secs,'saat / gerakan'],[(r1===r4?r1:r1+'→'+r4),'pusingan'],[swapped,'gerakan ditukar']])+chips(wt)+
@@ -629,7 +635,7 @@ function wlPlan(){
   h+='<div class="lbx-dots">'+WL30_DAYS.map((d,i)=>'<i class="'+(i<done?'d':i===nx&&owned?'n':'')+(WL30_WEEKS.some(x=>x.from===i+1&&i>0)?' gap':'')+'"></i>').join('')+'</div>';
   h+='<div class="lbx-weeks">'+WL30_WEEKS.map((x,i)=>
     '<button class="'+(i===wlWeek?'on':'')+'" onclick="wlWeek='+i+';renderWL30()"><small>Week '+(i+1)+'</small><b>'+(done>=x.to?'✓ ':'')+x.n+'</b></button>').join('')+'</div>';
-  h+='<div class="lbx-wcover" style="background-image:url(\''+wlWeekImg(wlWeek)+'\')"><div><small>Week '+(wlWeek+1)+' · Days '+w.from+'–'+w.to+'</small><b>'+w.n+'</b><span>'+w.s+'</span></div></div>';
+  h+='<div class="lbx-wcover" style="'+wlBg(wlWeekImg(wlWeek))+'"><div><small>Week '+(wlWeek+1)+' · Days '+w.from+'–'+w.to+'</small><b>'+w.n+'</b><span>'+w.s+'</span></div></div>';
   h+='<div class="lbx-days">'+WL30_DAYS.slice(w.from-1,w.to).map((d0,j)=>{
     const gi=w.from-1+j, d=wlDay(gi), isDone=gi<done, now=gi===nx&&owned;
     return '<div class="lbx-day'+(isDone?' done':'')+(now?' now':'')+' k-'+d.k+'" onclick="wlOpenDay('+gi+')">'+
@@ -685,7 +691,7 @@ function wlOpenDay(gi){
   const owned=wlOwned(), exs=wlExercises(d), w=wlData(), wi=wlWeekOf(gi), done=gi<wlDone();
   curProg=WL30; curDay={p:WL30, day:WL30.weeks[wi].days[gi-WL30_WEEKS[wi].from+1], gi};
   let h=pdxBar('day', owned?{icon:'play',label:'Start',go:'wlPlay('+gi+')'}:{icon:'lock',label:'RM'+WL30_PRICE,go:'wlBuy()'})+
-    '<div class="lbx-hero day bn-day" style="background-image:url(\''+wlDayImg(gi)+'\')"><div class="lbx-hero-ov"></div>'+
+    '<div class="lbx-hero day bn-day" style="'+wlBg(wlDayImg(gi))+'"><div class="lbx-hero-ov"></div>'+
     '<div class="lbx-hero-tx"><div class="lbx-kick">Day '+(gi+1)+' of 30 · Week '+(wi+1)+': '+WL30_WEEKS[wi].n+(done?' · ✓ Done':'')+'</div>'+
     '<div class="lbx-name">'+d.n+'</div></div></div>';
   h+='<div class="lbx bn">';
