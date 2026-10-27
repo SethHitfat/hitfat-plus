@@ -9111,6 +9111,61 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kp-tg b{display:block;font-size:15.5px;font-weight:800;font-variant-numeric:tabular-nums;}
 .kp-tg span{font-size:11px;color:var(--dim);font-weight:650;}
 
+/* My plan: the week before it is saved, tidy and premium (28 Oct 2026) */
+.kpr{padding-top:6px;}
+.kpr-hero{position:relative;overflow:hidden;padding:22px 20px 18px;border-radius:26px;color:#fff;
+  background:radial-gradient(90% 80% at 100% 0%,rgba(255,255,255,.22) 0%,transparent 60%),radial-gradient(120% 120% at 0% 0%,var(--lr0) 0%,transparent 55%),linear-gradient(150deg,var(--lr),var(--lr2));
+  box-shadow:0 18px 40px -16px color-mix(in srgb,var(--lr) 70%,transparent);}
+.kpr-k{display:inline-flex;align-items:center;gap:6px;padding:6px 11px 6px 8px;border-radius:999px;background:rgba(255,255,255,.18);font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;}
+.kpr-k .gly{width:14px;height:14px;stroke:#fff;}
+.kpr-t{margin-top:12px;font-size:30px;line-height:1.08;font-weight:800;letter-spacing:-.6px;}
+.kpr-s{margin-top:6px;font-size:14.5px;font-weight:600;opacity:.9;}
+.kpr-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;}
+.kpr-nums div{padding:12px 6px 10px;border-radius:16px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);text-align:center;}
+.kpr-nums b{display:block;font-size:26px;font-weight:800;line-height:1;letter-spacing:-.5px;font-variant-numeric:tabular-nums;}
+.kpr-nums span{display:block;margin-top:5px;font-size:11.5px;font-weight:650;opacity:.9;}
+.kpr-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.kpr-tags span{padding:6px 11px;border-radius:999px;border:1px solid color-mix(in srgb,var(--lr) 28%,transparent);color:var(--lr2);font-size:12.5px;font-weight:750;background:var(--surface);}
+:root:not([data-theme="light"]) .kpr-tags span{color:var(--lr0);}
+.kpr-sh{display:flex;align-items:baseline;justify-content:space-between;margin:24px 2px 10px;}
+.kpr-sh b{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;}
+.kpr-sh span{font-size:12px;font-weight:650;color:var(--dim);}
+.kpr-tl{position:relative;padding:6px 0;border-radius:22px;background:var(--surface);box-shadow:0 10px 28px rgba(40,10,10,.06);}
+:root[data-theme="light"] .kpr-tl{background:#fff;}
+.kpr-tl:before{content:'';position:absolute;left:62px;top:26px;bottom:26px;width:2px;background:var(--hairline);}
+.kpr-d{position:relative;display:grid;grid-template-columns:44px 16px 1fr auto;align-items:center;gap:0 10px;padding:11px 14px 11px 12px;}
+.kpr-d + .kpr-d{border-top:1px solid color-mix(in srgb,var(--hairline) 60%,transparent);}
+.kpr-dw{font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);}
+.kpr-dot{position:relative;z-index:1;width:14px;height:14px;border-radius:50%;background:var(--surface);border:2px solid var(--hairline);justify-self:center;}
+.kpr-c{min-width:0;}
+.kpr-ck{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.kpr-c b{display:block;margin-top:2px;font-size:15.5px;font-weight:750;line-height:1.25;}
+.kpr-c small{display:block;margin-top:1px;font-size:12.5px;color:var(--dim);}
+.kpr-d em{font-style:normal;padding:6px 10px;border-radius:10px;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.kpr-d.class .kpr-dw{color:var(--txt);}
+.kpr-d.class .kpr-dot{background:var(--lr);border-color:var(--lr);box-shadow:0 0 0 4px color-mix(in srgb,var(--lr) 16%,transparent);}
+.kpr-d.class .kpr-ck{color:var(--lr);}
+.kpr-d.class em{background:color-mix(in srgb,var(--lr) 10%,transparent);color:var(--lr);}
+.kpr-d.home .kpr-dw{color:var(--txt);}
+.kpr-d.home .kpr-dot{background:#2563EB;border-color:#2563EB;box-shadow:0 0 0 4px rgba(37,99,235,.16);}
+.kpr-d.home .kpr-ck{color:#2563EB;}
+.kpr-d.home em{background:rgba(37,99,235,.10);color:#2563EB;}
+.kpr-d.recover .kpr-dot{border-color:#16A34A;}
+.kpr-d.recover .kpr-ck{color:#16A34A;}
+.kpr-d.rest .kpr-c b,.kpr-d.recover .kpr-c b{font-size:13.5px;font-weight:600;color:var(--dim);}
+.kpr-tg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.kpr-tg div{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;gap:0 10px;padding:14px;border-radius:18px;background:var(--surface);box-shadow:0 8px 22px rgba(40,10,10,.05);}
+:root[data-theme="light"] .kpr-tg div{background:#fff;}
+.kpr-tg .ic{grid-row:span 2;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--lr) 10%,transparent);color:var(--lr);}
+.kpr-tg .ic .gly{width:19px;height:19px;}
+.kpr-tg b{font-size:20px;font-weight:800;letter-spacing:-.4px;line-height:1.1;font-variant-numeric:tabular-nums;}
+.kpr-tg b i{font-style:normal;margin-left:2px;font-size:12.5px;font-weight:700;color:var(--dim);}
+.kpr-tg small{font-size:12px;font-weight:650;color:var(--dim);}
+.kpr-note{margin:10px 4px 0;font-size:12.5px;line-height:1.45;color:var(--dim);}
+.kpr-foot{margin-top:22px;}
+.kpr-fine{margin-top:8px;font-size:12.5px;line-height:1.4;color:var(--dim);text-align:center;}
+.kpr-d.recover em{background:rgba(22,163,74,.10);color:#16A34A;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -28983,23 +29038,41 @@ function kpTags(a){
   else t.push('HITFAT only');
   return t.filter(Boolean);
 }
+/* the plan, before it is saved (28 Oct 2026, Seth: "biar nampak kemas,
+   premium"): the hero with the week in three numbers, the days as a
+   timeline, the day's targets as four tiles */
 function kpResultHTML(){
   var a=KP.a, wk=kpWeek(a), t=kpNut(a), nm=String((Kelas.data&&Kelas.data.name)||'').trim().split(/\s+/)[0];
   var nc=wk.filter(function(x){ return x.kind==='class'; }).length, nh=wk.filter(function(x){ return x.kind==='home'; }).length;
   var mins=wk.reduce(function(s,x){ return s+(x.kind==='class'?(x.c.min||45):x.s?x.s.mins:0); },0);
-  var stat=function(xs){ return '<div class="lbq-stats">'+xs.map(function(x){ return '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'; }).join('')+'</div>'; };
-  return '<div class="lbq-res"><div class="kpq-intro res"><div class="k">Your week is ready</div><div class="t">Built for '+(nm?hesc(nm):'you')+'.</div>'+
-      '<div class="s">'+hesc(KP_GOALS[a.goal][0])+' · '+(a.mode==='hybrid'?'HITFAT + online':'HITFAT classes only')+'</div></div>'+
-    '<div class="lbq-card"><div class="lbq-ch">'+glyph('calendar')+'<b>Your week</b><span>'+mins+' min</span></div>'+
-      stat([[nc,nc===1?'class':'classes'],[nh,'at home'],[7-nc-nh,7-nc-nh===1?'easy day':'easy days']])+
-      '<div class="lbq-chips">'+kpTags(a).map(function(x){ return '<span>'+hesc(x)+'</span>'; }).join('')+'</div>'+
-      kpWeekRows(wk,a,0)+'</div>'+
-    (t?'<div class="lbq-card"><div class="lbq-ch">'+glyph('food')+'<b>Your day</b><span>Eat follows this</span></div>'+
-      stat([[t.cal.toLocaleString(),'kcal'],[t.pt+'g','protein'],[(t.steps/1000)+'k','steps'],[t.water+'L','water']])+
-      '<div class="lbq-cap">Protein '+(a.goal==='strong'?'2':a.goal==='fat'?'1.8':'1.6')+' g per kg, to keep the muscle your classes build. Calories never go under the CPG MOH floor.</div></div>':'')+
-    '<div class="lbq-fine">Home sessions don\'t earn HITFAT Points: only check-ins at HQ do. Change your answers any time.</div>'+
-    '<button class="lbx-go" onclick="kpSave()">'+glyph('check')+'Save my plan</button>'+
-    '<button class="lbx-ghost" onclick="KP.q=1;renderKelas()">Change answers</button></div>';
+  var h='<div class="kpr">';
+  h+='<div class="kpr-hero"><div class="kpr-k">'+glyph('check')+'Your week is ready</div>'+
+    '<div class="kpr-t">Built for '+(nm?hesc(nm):'you')+'.</div>'+
+    '<div class="kpr-s">'+hesc(KP_GOALS[a.goal][0])+' · '+(a.mode==='hybrid'?'HITFAT + online':'HITFAT classes only')+'</div>'+
+    '<div class="kpr-nums"><div><b>'+nc+'</b><span>'+(nc===1?'class':'classes')+' at HQ</span></div>'+
+      '<div><b>'+nh+'</b><span>at home</span></div><div><b>'+mins+'</b><span>min a week</span></div></div></div>';
+  h+='<div class="kpr-tags">'+kpTags(a).map(function(x){ return '<span>'+hesc(x)+'</span>'; }).join('')+'</div>';
+  h+='<div class="kpr-sh"><b>The week</b><span>Mon – Sun</span></div><div class="kpr-tl">'+wk.map(function(x){
+    var r=kpRow(x,a), side=x.kind==='class'?kpClock(x.c.start):x.s?x.s.mins+' min':'';
+    var kick={'class':'Class · HQ', home:'Online · home', recover:'Recovery', rest:'Rest'}[r[0]];
+    var sub=x.kind==='class'?(x.c.min||45)+' min'+(x.c.coach?' · '+x.c.coach:'')
+      : x.kind==='home'?x.s.moves.length+' moves × '+x.s.rounds+' rounds'
+      : r[2];
+    return '<div class="kpr-d '+r[0]+'"><div class="kpr-dw">'+KP_DOW[x.dow-1]+'</div><i class="kpr-dot"></i>'+
+      '<div class="kpr-c"><div class="kpr-ck">'+kick+'</div><b>'+hesc(x.kind==='rest'?r[2]:x.kind==='recover'?(x.s?'Easy mobility, then a walk':r[2]):r[1])+'</b>'+
+      (x.kind==='rest'||x.kind==='recover'?'':'<small>'+hesc(sub)+'</small>')+'</div>'+
+      (side?'<em>'+side+'</em>':'')+'</div>';
+  }).join('')+'</div>';
+  if(t){
+    h+='<div class="kpr-sh"><b>Every day</b><span>Eat follows this</span></div><div class="kpr-tg">'+
+      [['flame',t.cal.toLocaleString(),'kcal','Calories'],['food',t.pt,'g','Protein'],['steps',t.steps.toLocaleString(),'','Steps'],['water',t.water,'L','Water']]
+      .map(function(x){ return '<div><span class="ic">'+glyph(x[0])+'</span><b>'+x[1]+'<i>'+x[2]+'</i></b><small>'+x[3]+'</small></div>'; }).join('')+'</div>'+
+      '<div class="kpr-note">Protein '+(a.goal==='strong'?'2':a.goal==='fat'?'1.8':'1.6')+' g per kg keeps the muscle your classes build. Calories never go under the CPG MOH floor.</div>';
+  }
+  h+='<div class="kpr-foot"><button class="lbx-go" onclick="kpSave()">'+glyph('check')+'Save my plan</button>'+
+    '<button class="lbx-ghost" onclick="KP.q=1;renderKelas()">Change answers</button>'+
+    '<div class="kpr-fine">Home sessions don\'t earn HITFAT Points: only check-ins at HQ do.</div></div>';
+  return h+'</div>';
 }
 
 /* ── on the Class screen: the week, and today ── */

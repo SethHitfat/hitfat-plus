@@ -323,23 +323,41 @@ function kpTags(a){
   else t.push('HITFAT only');
   return t.filter(Boolean);
 }
+/* the plan, before it is saved (28 Oct 2026, Seth: "biar nampak kemas,
+   premium"): the hero with the week in three numbers, the days as a
+   timeline, the day's targets as four tiles */
 function kpResultHTML(){
   var a=KP.a, wk=kpWeek(a), t=kpNut(a), nm=String((Kelas.data&&Kelas.data.name)||'').trim().split(/\s+/)[0];
   var nc=wk.filter(function(x){ return x.kind==='class'; }).length, nh=wk.filter(function(x){ return x.kind==='home'; }).length;
   var mins=wk.reduce(function(s,x){ return s+(x.kind==='class'?(x.c.min||45):x.s?x.s.mins:0); },0);
-  var stat=function(xs){ return '<div class="lbq-stats">'+xs.map(function(x){ return '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'; }).join('')+'</div>'; };
-  return '<div class="lbq-res"><div class="kpq-intro res"><div class="k">Your week is ready</div><div class="t">Built for '+(nm?hesc(nm):'you')+'.</div>'+
-      '<div class="s">'+hesc(KP_GOALS[a.goal][0])+' · '+(a.mode==='hybrid'?'HITFAT + online':'HITFAT classes only')+'</div></div>'+
-    '<div class="lbq-card"><div class="lbq-ch">'+glyph('calendar')+'<b>Your week</b><span>'+mins+' min</span></div>'+
-      stat([[nc,nc===1?'class':'classes'],[nh,'at home'],[7-nc-nh,7-nc-nh===1?'easy day':'easy days']])+
-      '<div class="lbq-chips">'+kpTags(a).map(function(x){ return '<span>'+hesc(x)+'</span>'; }).join('')+'</div>'+
-      kpWeekRows(wk,a,0)+'</div>'+
-    (t?'<div class="lbq-card"><div class="lbq-ch">'+glyph('food')+'<b>Your day</b><span>Eat follows this</span></div>'+
-      stat([[t.cal.toLocaleString(),'kcal'],[t.pt+'g','protein'],[(t.steps/1000)+'k','steps'],[t.water+'L','water']])+
-      '<div class="lbq-cap">Protein '+(a.goal==='strong'?'2':a.goal==='fat'?'1.8':'1.6')+' g per kg, to keep the muscle your classes build. Calories never go under the CPG MOH floor.</div></div>':'')+
-    '<div class="lbq-fine">Home sessions don\'t earn HITFAT Points: only check-ins at HQ do. Change your answers any time.</div>'+
-    '<button class="lbx-go" onclick="kpSave()">'+glyph('check')+'Save my plan</button>'+
-    '<button class="lbx-ghost" onclick="KP.q=1;renderKelas()">Change answers</button></div>';
+  var h='<div class="kpr">';
+  h+='<div class="kpr-hero"><div class="kpr-k">'+glyph('check')+'Your week is ready</div>'+
+    '<div class="kpr-t">Built for '+(nm?hesc(nm):'you')+'.</div>'+
+    '<div class="kpr-s">'+hesc(KP_GOALS[a.goal][0])+' · '+(a.mode==='hybrid'?'HITFAT + online':'HITFAT classes only')+'</div>'+
+    '<div class="kpr-nums"><div><b>'+nc+'</b><span>'+(nc===1?'class':'classes')+' at HQ</span></div>'+
+      '<div><b>'+nh+'</b><span>at home</span></div><div><b>'+mins+'</b><span>min a week</span></div></div></div>';
+  h+='<div class="kpr-tags">'+kpTags(a).map(function(x){ return '<span>'+hesc(x)+'</span>'; }).join('')+'</div>';
+  h+='<div class="kpr-sh"><b>The week</b><span>Mon – Sun</span></div><div class="kpr-tl">'+wk.map(function(x){
+    var r=kpRow(x,a), side=x.kind==='class'?kpClock(x.c.start):x.s?x.s.mins+' min':'';
+    var kick={'class':'Class · HQ', home:'Online · home', recover:'Recovery', rest:'Rest'}[r[0]];
+    var sub=x.kind==='class'?(x.c.min||45)+' min'+(x.c.coach?' · '+x.c.coach:'')
+      : x.kind==='home'?x.s.moves.length+' moves × '+x.s.rounds+' rounds'
+      : r[2];
+    return '<div class="kpr-d '+r[0]+'"><div class="kpr-dw">'+KP_DOW[x.dow-1]+'</div><i class="kpr-dot"></i>'+
+      '<div class="kpr-c"><div class="kpr-ck">'+kick+'</div><b>'+hesc(x.kind==='rest'?r[2]:x.kind==='recover'?(x.s?'Easy mobility, then a walk':r[2]):r[1])+'</b>'+
+      (x.kind==='rest'||x.kind==='recover'?'':'<small>'+hesc(sub)+'</small>')+'</div>'+
+      (side?'<em>'+side+'</em>':'')+'</div>';
+  }).join('')+'</div>';
+  if(t){
+    h+='<div class="kpr-sh"><b>Every day</b><span>Eat follows this</span></div><div class="kpr-tg">'+
+      [['flame',t.cal.toLocaleString(),'kcal','Calories'],['food',t.pt,'g','Protein'],['steps',t.steps.toLocaleString(),'','Steps'],['water',t.water,'L','Water']]
+      .map(function(x){ return '<div><span class="ic">'+glyph(x[0])+'</span><b>'+x[1]+'<i>'+x[2]+'</i></b><small>'+x[3]+'</small></div>'; }).join('')+'</div>'+
+      '<div class="kpr-note">Protein '+(a.goal==='strong'?'2':a.goal==='fat'?'1.8':'1.6')+' g per kg keeps the muscle your classes build. Calories never go under the CPG MOH floor.</div>';
+  }
+  h+='<div class="kpr-foot"><button class="lbx-go" onclick="kpSave()">'+glyph('check')+'Save my plan</button>'+
+    '<button class="lbx-ghost" onclick="KP.q=1;renderKelas()">Change answers</button>'+
+    '<div class="kpr-fine">Home sessions don\'t earn HITFAT Points: only check-ins at HQ do.</div></div>';
+  return h+'</div>';
 }
 
 /* ── on the Class screen: the week, and today ── */
