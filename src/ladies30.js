@@ -1475,7 +1475,7 @@ function lbBuy(){
   lbLang(true);
 }
 function lbClaim(){
-  var o=String((($('lb-order')||{}).value)||'').trim();
+  var o=String((($('lb-order')||{}).value)||'').trim(), hl=/^HL[A-Z0-9]+/i.exec(o); if(hl) o=hl[0].toUpperCase();
   if(!o) return toast('Masukkan nombor pesanan dari resit anda');
   if(!sb||!HF.userId) return toast('Log masuk dahulu');
   sb.rpc('plus_claim_landing',{p_order:o}).then(function(r){
@@ -1495,6 +1495,7 @@ function lbClaim(){
 function lbTebus(tries){
   tries=tries||0;
   var o=''; try{ o=localStorage.getItem('hf_tebus_o')||''; }catch(e){}
+  var hl=/^HL[A-Z0-9]+/i.exec(o); if(hl) o=hl[0].toUpperCase();   /* an order with Bayarcash's ?payment_intent_id stuck on (27 Oct 2026) */
   var claim=(sb && HF.userId) ? sb.rpc('plus_claim_landing', o?{p_order:o}:{}) : Promise.resolve(null);
   var after=function(){
     if(lbOwned()){

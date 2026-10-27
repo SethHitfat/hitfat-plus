@@ -79,9 +79,13 @@ var PIXEL_ID = '1860516742038949'; /* Meta Pixel ID, the same as ladies/index.ht
 var WA = '60189174656';
 
 /* what Bayarcash sends back: the order number (its name varies), and a status if any */
-var q = new URLSearchParams(location.search);
+/* Bayarcash adds its own "?payment_intent_id=…" after ours (27 Oct 2026, the
+   first DuitNow payment after the change): read every "?" as "&", and keep
+   only the HL… part of the order number */
+var q = new URLSearchParams(location.search.replace(/^\?/,'').replace(/\?/g,'&'));
 function pick(names){ for(var i=0;i<names.length;i++){ var v=q.get(names[i]); if(v) return String(v).trim().slice(0,64); } return ''; }
 var order = pick(['order_number','order_no','order','orderNo','ref_no','reference','ref','transaction_id','txn_id']);
+var hl = /^HL[A-Z0-9]+/i.exec(order); if(hl) order = hl[0].toUpperCase();
 var status = pick(['status','payment_status','status_description']).toLowerCase();
 var failed = /fail|cancel|unsuccess|reject|declin|expire/.test(status);
 

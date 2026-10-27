@@ -5055,7 +5055,10 @@ print("\n── LANDING PAGE BUY LINK ──");
   ok("...a webhook a few seconds late: two more looks, then the order-number box", String(lbTebus).indexOf('tries<2')>0 && String(lbTebusSheet).indexOf('lb-order')>0 && String(lbTebusSheet).indexOf('lbClaim()')>0);
   ok("...and it skips the English onboarding like ?beli", (function(){ localStorage.setItem('hf_buy','tebus_lad4'); HF.data.onboarded=false; var kp=HF.data.prefs, r=obFromLanding(); HF.data.prefs=kp; localStorage.removeItem('hf_buy'); return r===true; })());
   ok("...opened, it is the Malay confirmation and Day 1", String(lbTebus).indexOf("coConfirm('ok')")>0 && String(lbTebus).indexOf("_paySku='prog_'+LB30_ID")>0);
-  ok("...a landing order (HL…) that comes back to the app's own address goes on to its berjaya page", String(captureBuyParam).indexOf("/ladies/berjaya/")>0 && String(captureBuyParam).indexOf("^HL[A-Z0-9]+$")>0);
+  ok("...a landing order (HL…) that comes back to the app's own address goes on to its berjaya page", String(captureBuyParam).indexOf("/ladies/berjaya/")>0 && String(captureBuyParam).indexOf("^HL[A-Z0-9]+/")>0);
+  ok("...Bayarcash's own ?payment_intent_id stuck on the order is cut off, here, in the claim and on berjaya (27 Oct 2026)",
+    String(captureBuyParam).indexOf("replace(/\\?/g,'&')")>0 && String(lbTebus).indexOf("/^HL[A-Z0-9]+/i.exec(o)")>0 && String(lbClaim).indexOf("/^HL[A-Z0-9]+/i.exec(o)")>0 &&
+    readFile('../ladies/berjaya/index.html').indexOf("replace(/\\?/g,'&')")>0);
   BUY_GO.tebus_lad4=keepT; tb=0;
   BUY_GO.lad4=keepGo; HF.data.onboarded=keepOb;
 })();

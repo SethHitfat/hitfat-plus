@@ -16252,7 +16252,7 @@ function lbBuy(){
   lbLang(true);
 }
 function lbClaim(){
-  var o=String((($('lb-order')||{}).value)||'').trim();
+  var o=String((($('lb-order')||{}).value)||'').trim(), hl=/^HL[A-Z0-9]+/i.exec(o); if(hl) o=hl[0].toUpperCase();
   if(!o) return toast('Masukkan nombor pesanan dari resit anda');
   if(!sb||!HF.userId) return toast('Log masuk dahulu');
   sb.rpc('plus_claim_landing',{p_order:o}).then(function(r){
@@ -16272,6 +16272,7 @@ function lbClaim(){
 function lbTebus(tries){
   tries=tries||0;
   var o=''; try{ o=localStorage.getItem('hf_tebus_o')||''; }catch(e){}
+  var hl=/^HL[A-Z0-9]+/i.exec(o); if(hl) o=hl[0].toUpperCase();   /* an order with Bayarcash's ?payment_intent_id stuck on (27 Oct 2026) */
   var claim=(sb && HF.userId) ? sb.rpc('plus_claim_landing', o?{p_order:o}:{}) : Promise.resolve(null);
   var after=function(){
     if(lbOwned()){
@@ -21485,13 +21486,13 @@ function captureBuyParam(){
     /* (24 Oct 2026) the first real landing payment came back to the app
        itself, not to ladies/berjaya: an order from a landing page (HL…) on
        the app's address goes on to its "Pembayaran berjaya" page */
-    const lo=String(new URLSearchParams(location.search).get('order_number')||'');
-    if(/^HL[A-Z0-9]+$/.test(lo) && location.pathname==='/'){ location.replace('/ladies/berjaya/'+location.search); return; }
+    const lo=String(new URLSearchParams(location.search.replace(/^\?/,'').replace(/\?/g,'&')).get('order_number')||'');
+    if(/^HL[A-Z0-9]+/.test(lo) && location.pathname==='/'){ location.replace('/ladies/berjaya/'+location.search); return; }
     const q=new URLSearchParams(location.search), b=q.get('beli'), t=q.get('tebus');
     let k='';
     if(b && BUY_GO[b]){ k=b; q.delete('beli'); }
     else if(t && BUY_GO['tebus_'+t]){
-      k='tebus_'+t; const o=String(q.get('o')||'').trim().slice(0,64);
+      k='tebus_'+t; const o0=String(q.get('o')||'').trim(), hl=/^HL[A-Z0-9]+/i.exec(o0), o=(hl?hl[0].toUpperCase():o0).slice(0,64);
       if(o) localStorage.setItem('hf_tebus_o',o);
       q.delete('tebus'); q.delete('o');
     }

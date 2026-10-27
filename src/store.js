@@ -641,13 +641,13 @@ function captureBuyParam(){
     /* (24 Oct 2026) the first real landing payment came back to the app
        itself, not to ladies/berjaya: an order from a landing page (HL…) on
        the app's address goes on to its "Pembayaran berjaya" page */
-    const lo=String(new URLSearchParams(location.search).get('order_number')||'');
-    if(/^HL[A-Z0-9]+$/.test(lo) && location.pathname==='/'){ location.replace('/ladies/berjaya/'+location.search); return; }
+    const lo=String(new URLSearchParams(location.search.replace(/^\?/,'').replace(/\?/g,'&')).get('order_number')||'');
+    if(/^HL[A-Z0-9]+/.test(lo) && location.pathname==='/'){ location.replace('/ladies/berjaya/'+location.search); return; }
     const q=new URLSearchParams(location.search), b=q.get('beli'), t=q.get('tebus');
     let k='';
     if(b && BUY_GO[b]){ k=b; q.delete('beli'); }
     else if(t && BUY_GO['tebus_'+t]){
-      k='tebus_'+t; const o=String(q.get('o')||'').trim().slice(0,64);
+      k='tebus_'+t; const o0=String(q.get('o')||'').trim(), hl=/^HL[A-Z0-9]+/i.exec(o0), o=(hl?hl[0].toUpperCase():o0).slice(0,64);
       if(o) localStorage.setItem('hf_tebus_o',o);
       q.delete('tebus'); q.delete('o');
     }
