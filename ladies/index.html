@@ -65,7 +65,6 @@ header .w{display:flex;align-items:center;justify-content:space-between;height:6
 .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none}
 .logo img{width:30px;height:30px;border-radius:8px;background:#E30613;padding:4px}
 .logo i{font-style:normal;color:#E30613}
-.wa-top{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 15px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:13.5px;font-weight:700;text-decoration:none}
 
 /* hero: a pastel container, the words centred, then the paw and the phone */
 .hero{background:radial-gradient(120% 70% at 0% 0%,#FFD9EC 0%,transparent 60%),radial-gradient(90% 60% at 100% 20%,#FFE3D3 0%,transparent 60%),
@@ -624,6 +623,7 @@ footer a{color:#fff;text-decoration:none;margin:0 6px}
 .ck-err{min-height:20px;margin-top:10px;font-size:13.5px;color:#C0172B}
 .ck .cta{width:100%;margin-top:6px}
 .ck-note{margin-top:10px;font-size:12.5px;color:var(--ink2);text-align:center}
+.ck-help{display:block;margin-top:8px;font-size:13px;font-weight:700;color:var(--m);text-align:center;text-decoration:none}
 
 /* line icons (no emoji: they read cheap next to the photographs) */
 .ic{width:1.15em;height:1.15em;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em}
@@ -650,15 +650,13 @@ details.more[open]>summary{margin-bottom:6px}
   .feats::-webkit-scrollbar{display:none}
   .feats .fc{scroll-snap-align:center}
 }
-.wa-top .ic{width:17px;height:17px;color:#25A244}
 </style>
 </head>
 <body>
 
 <a class="topbar" href="#" data-buy="topbar"><b>RM39 sekali bayar</b> · pelan 30 hari + 10 scan AI percuma <u>Mula ›</u></a>
 <header><div class="w">
-  <a class="logo" href="/"><img src="img/hf-mark.png" alt=""><span>HITFAT<i>+</i></span></a>
-  <a class="wa-top" href="#" data-wa><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>018-917 4656</a>
+  <span class="logo"><img src="img/hf-mark.png" alt=""><span>HITFAT<i>+</i></span></span>
 </div></header>
 
 <main class="w">
@@ -991,7 +989,7 @@ details.more[open]>summary{margin-bottom:6px}
     <div class="per">Kurang dari RM1.30 sehari · tiada langganan · milik anda selamanya</div>
     <ul>
       <li>Pelan 30 hari ikut 12 jawapan anda</li>
-      <li>30 workout dengan video, tanpa lompat</li>
+      <li>30 hari latihan dengan video, tanpa lompat</li>
       <li>Menu Malaysia ikut kalori anda, nasi disukat</li>
       <li>Check-in Hari 1, 15 &amp; 30</li>
       <li class="bn"><em>BONUS</em>Nutrition Academy · 10 scan AI · senarai belanja</li>
@@ -1029,7 +1027,7 @@ details.more[open]>summary{margin-bottom:6px}
   <h2 class="sec-h">Anda dah jaga semua orang. <span class="grad">20 minit ini untuk anda.</span></h2>
   <p class="sec-p">Tak perlu tunggu Isnin. Tak perlu jadi sempurna. Mula dengan satu workout pendek hari ini, dan biar pelan bawa anda, hari demi hari.</p>
   <div style="margin-top:24px"><a class="cta" href="#" data-buy="final">Saya Nak Mula — RM39</a></div>
-  <a class="wa" href="#" data-wa><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>Ada soalan? WhatsApp 018-917 4656</a>
+  <a class="wa" href="#" data-wa><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>Ada soalan? WhatsApp kami</a>
 </section>
 
 </main>
@@ -1079,6 +1077,7 @@ details.more[open]>summary{margin-bottom:6px}
     <div class="ck-err" id="ck-err"></div>
     <button class="cta" id="ck-go" type="submit">Bayar RM39</button>
     <div class="ck-note">Pembayaran selamat melalui Bayarcash. Guna emel Google yang anda akan log masuk app.</div>
+    <a class="ck-help" href="#" data-wa>Masalah bayaran? WhatsApp kami</a>
   </form>
 </div>
 <script>
@@ -1181,8 +1180,9 @@ document.getElementById('ck-f').addEventListener('submit', function(e){
 });
 document.querySelectorAll('[data-wa]').forEach(function(a){
   a.href = 'https://wa.me/'+WA+'?text='+encodeURIComponent(WA_TEXT);
-  a.target = '_blank'; a.rel = 'noopener';
-  a.addEventListener('click', function(){ track('Contact'); });
+  /* a phone opens WhatsApp straight from the link; a new tab only on a computer (Facebook's in-app browser handles _blank badly) */
+  if(!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){ a.target = '_blank'; a.rel = 'noopener'; }
+  a.addEventListener('click', function(){ track('Contact',{where:a.className||'link'}); });
 });
 
 /* the bar at the foot once the first button has scrolled away */
