@@ -7029,3 +7029,22 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
   font-size:13px;font-weight:800;}
 .klp-gift .gly{width:16px;height:16px;stroke:#FFFFFF;}
 .kl-pass.sp-hyrox .klp-gift{background:rgba(255,212,0,.14);color:#FFD400;} .kl-pass.sp-hyrox .klp-gift .gly{stroke:#FFD400;}
+
+/* ── BURN30, in MAK2FIT's look (28 Oct 2026): the same .lbx / .lbq pages in
+   HITFAT red; its cover is the red studio photograph (img/p/wl30.jpg) ── */
+.lbx.bn,.lbq.bn{--lr:#E30613; --lr2:#9E0A10; --lr0:#FF4B3E; --lbl:rgba(227,6,19,.09); --lbl2:rgba(227,6,19,.15);}
+.bn .lbx-go{box-shadow:0 10px 24px rgba(227,6,19,.28);}
+.bn .lbx-day.now{box-shadow:0 10px 24px rgba(227,6,19,.28);}
+.bn .nstage.wl-stage.lb-stage{box-shadow:0 12px 28px rgba(227,6,19,.24);}
+.bn .lbx-chip.fl{background:linear-gradient(135deg,rgba(255,138,0,.16),rgba(227,6,19,.12));}
+.bn .lbx-ph .ic,.bn .lbx-medal.on .m{box-shadow:0 8px 20px rgba(227,6,19,.26);}
+.bn .lbx-medal.on .m{background:linear-gradient(135deg,#FFD25A,var(--lr0) 60%,var(--lr2));}
+.bn .lbx-mdays .wl-md.on{box-shadow:0 8px 18px rgba(227,6,19,.28);}
+.bn .lbx-sw .from{text-decoration-color:rgba(227,6,19,.6);}
+.lbq.bn .lbq-intro .k,.lbq.bn .lbq-res-h .k{color:#FFD0CC;}
+.lbx-hero.bn-hero,.lbq-intro.bn-hero,.lbq-res-h.bn-hero{background-color:#C8101A;background-position:50% 18%;}
+.lbx-hero.bn-hero .lbx-hero-ov,.lbq-intro.bn-hero .lbx-hero-ov,.lbq-res-h.bn-hero .lbx-hero-ov{
+  background:linear-gradient(180deg,rgba(60,4,6,.28) 0%,rgba(60,4,6,0) 24%,rgba(60,4,6,0) 46%,rgba(40,3,5,.88) 100%);}
+.bn-name{font-size:52px;font-weight:900;letter-spacing:-1.5px;font-style:italic;text-transform:uppercase;}
+#pgd-body:has(.lbx.bn) .pdx-pill,#dd-body:has(.lbx.bn) .pdx-pill,#pgd-body:has(.lbq.bn) .pdx-pill{background:#E30613 !important;}
+.lbx-hero.bn-day{background-color:#F2F2F2;background-size:auto 100%;background-position:50% 0;}

@@ -3515,9 +3515,9 @@ print("\n── 30-DAY WEIGHT LOSS ──");
   var played=null; startWorkout=function(exs,meta){ played={exs:exs,meta:meta}; };
   var html=function(id){ return document.getElementById(id).innerHTML; };
 
-  ok("thirty days, in five phases that cover them all", WL30_DAYS.length===30 && progDays(WL30)===30 &&
-     WL30_PHASES[0].from===1 && WL30_PHASES[WL30_PHASES.length-1].to===30 &&
-     WL30_PHASES.every(function(p,i){ return i===0 || p.from===WL30_PHASES[i-1].to+1; }));
+  ok("thirty days, in four weeks that cover them all", WL30_DAYS.length===30 && progDays(WL30)===30 &&
+     WL30_WEEKS.length===4 && WL30_WEEKS[0].from===1 && WL30_WEEKS[3].to===30 &&
+     WL30_WEEKS.every(function(p,i){ return i===0 || p.from===WL30_WEEKS[i-1].to+1; }));
   var bad=[]; WL30_DAYS.forEach(function(d,i){ pickEx(d.ex,null).forEach(function(e,j){
     if(e.n!==d.ex[j] || !e.v || ['Bodyweight','Chair','Bottle','Towel'].indexOf(e.eq)<0) bad.push('day '+(i+1)+': '+d.ex[j]); }); });
   ok("every movement is filmed and needs only home kit", bad.length===0, bad.join(', '));
@@ -3525,25 +3525,26 @@ print("\n── 30-DAY WEIGHT LOSS ──");
      WL30_DAYS[0].ex.join()===WL30_DAYS[29].ex.join());
   ok("it gets harder: two rounds in week 1, three after", WL30_DAYS.slice(1,6).every(function(d){return d.r===2;}) &&
      WL30_DAYS.slice(7,13).every(function(d){return d.r===3;}));
-  ok("every day has a coach's note", WL30_DAYS.every(function(d){ return d.tip && d.tip.length>20; }));
+  ok("every day has a coach's note, in Malay", WL30_TIPS.length===30 && WL30_TIPS.every(function(t){ return t.length>20; }));
   ok("sold for RM39, the price the server knows", programPrice(WL30)===39 && isPaidProgram(WL30));
   ok("it is one of the training plans", trainingPlans().some(function(p){ return p.id===WL30_ID; }));
 
   /* someone who has bought nothing */
-  _guest(); HF.data.progress[WL30_ID]=0;
+  _guest(); HF.data.progress[WL30_ID]=0; HF.data.wl30={};
   ok("locked to a guest", !ownsProgram(WL30));
   noThrow("its page opens for a guest", function(){ openProgram(WL30_ID); });
   var pg=html('pgd-body');
-  ok("...as its own home, not the ordinary program page", pg.indexOf('wl-cal')>0 && pg.indexOf('Your 30 Days')>0);
-  ok("...with its price and the membership beside it", pg.indexOf('RM39')>0 && pg.indexOf('Included with HITFAT+')>0);
-  ok("...and all thirty days on the calendar", (pg.match(/class="wl-day /g)||[]).length===30);
-  ['food','progress'].forEach(function(t){ wlSetTab(t);
+  ok("...as MAK2FIT's premium home, in red", pg.indexOf('lbx-hero bn-hero')>0 && pg.indexOf('class="lbx bn"')>0 && pg.indexOf('Your 30 Days')>0);
+  ok("...for men and women", pg.indexOf('Men & women')>0 && pg.indexOf('For men & women')>0);
+  ok("...with its price and the membership beside it", pg.indexOf('RM39')>0 && pg.indexOf('Included in HITFAT+')>0);
+  ok("...five tabs, Learn among them", ['Plan','Nutrition','Learn','Progress','Start Here'].every(function(t){ return pg.indexOf('>'+t+'</button>')>0; }));
+  ['food','progress','learn'].forEach(function(t){ wlSetTab(t);
     ok("a guest's "+t+" tab shows the offer", html('pgd-body').indexOf('wl-lock')>0); });
   wlSetTab('guide'); ok("the guide is open to everyone", html('pgd-body').indexOf('How It Works')>0 && html('pgd-body').indexOf('wl-lock')<0);
   wlSetTab('plan');
-  openDay(WL30_ID,4); ok("a day opens for a guest, locked", html('dd-body').indexOf('Unlock · RM39')>0 && html('dd-body').indexOf("Coach's note")>0);
-  played=null; playDay(); ok("...and its player sells the program instead", played===null && html('pw-body').indexOf('Buy for RM39')>0);
-  ok("the offer can be bought in the app", html('pw-body').indexOf("startCheckout('prog_wl30')")>0);
+  openDay(WL30_ID,4); ok("a day opens for a guest, locked", html('dd-body').indexOf('Unlock · RM39')>0 && html('dd-body').indexOf("Coach&rsquo;s note")>0);
+  played=null; wlPlay(4); ok("...and playing it sells the program instead", played===null && html('pw-body').indexOf('Buy for RM39')>0);
+  ok("the offer can be bought in the app", html('pw-body').indexOf("startCheckout('prog_wl30')")>0 && html('pw-body').indexOf('Nutrition Academy')>0);
   ok("...or claimed with an order number from the website", html('pw-body').indexOf('wl-order')>0);
   ok("checkout knows what it is", checkoutItem('prog_wl30').price===39);
   ok("an old product link lands on the same offer", (openProduct('prog_wl30'), html('pw-body').indexOf('Buy for RM39')>0));
@@ -3554,39 +3555,95 @@ print("\n── 30-DAY WEIGHT LOSS ──");
   _guest(); _ent.skus['prog_wl30']=true;
   ok("bought on its own, it opens", ownsProgram(WL30));
   ok("...and the rest of the app stays locked", !contentOpen() && PROGRAMS.filter(function(p){return p.id!==WL30_ID;}).every(function(p){ return !ownsProgram(p); }));
+  ok("...but the Nutrition Academy opens with it", acLadies() && !acLocked(AC_EPS[AC_EPS.length-1]));
   openProgram(WL30_ID); pg=html('pgd-body');
-  ok("its home starts at day 1", pg.indexOf('Start Day 1')>0 && pg.indexOf("Today's Checklist")>0);
-  openDay(WL30_ID,2); played=null; playDay();
-  ok("a day plays with its own rounds", played && played.meta.rounds===2 && played.meta.pid===WL30_ID && played.exs.length===6);
-  played=null; playExercise(WL30_DAYS[2].ex[0]);
+  ok("before day 1 it asks to build the plan", pg.indexOf('Bina Pelan Saya')>0 && pg.indexOf('wlQuizOpen()')>0);
+  openDay(WL30_ID,2); played=null; wlPlay(2);
+  ok("the template plays as written until the plan is built", played && played.meta.rounds===2 && played.meta.pid===WL30_ID && played.exs.length===6 && played.meta.key==='wl30-d2');
+  played=null; wlPlayOne(WL30_DAYS[2].ex[0]);
   ok("...and its movements play without the membership", played && played.exs[0].n===WL30_DAYS[2].ex[0]);
-  played=null; playExercise('Kettlebell Swing'); ok("...but the rest of the library does not", played===null);
-  HF.data.progress[WL30_ID]=5; openProgram(WL30_ID); pg=html('pgd-body');
-  ok("progress shows on the calendar", (pg.match(/wl-day done/g)||[]).length===5 && pg.indexOf('wl-day now')>0 && pg.indexOf('Day 6 of 30')>0);
-  ok("Home carries on from the day reached", wlHomeCard().indexOf('Day 6 · ')>0 && wlHomeCard().indexOf('wlOpenDay(5)')>0);
-  wlTick('water'); ok("the checklist ticks", wlData().check[iso(0)].water===true);
 
-  /* nutrition: asks for three numbers, then builds thirty days */
-  HF.data.nutrition={}; HF.data.wl30={}; _wlPlan=null;
-  wlSetTab('food'); ok("the meal plan asks for weight, height and age first", html('pgd-body').indexOf('Build My Meal Plan')>0);
-  HF.data.wl30={profile:{gender:'female', wt:72, ht:158, age:34}}; _wlPlan=null; wlMenuDay=-1;
-  wlSetTab('food'); pg=html('pgd-body');
-  var mp=wlMealPlan();
-  ok("...then plans all thirty days", mp && mp.days.length===30 && mp.nut.cal>=1200);
-  ok("...with today's menu, a shopping list and the hand guide", pg.indexOf('Shopping List')>0 && pg.indexOf('Portion Guide')>0 && pg.indexOf('Breakfast')>0);
+  /* the questionnaire */
+  wlQuizOpen(); pg=html('pgd-body');
+  ok("the questionnaire opens on its intro", pg.indexOf('Jom bina pelan 30 hari anda')>0 && pg.indexOf('lbq bn')>0);
+  wlQuizNext(); ok("...and asks man or woman first", html('pgd-body').indexOf('lelaki atau perempuan')>0);
+  wlQPick('sex','l'); wlQPick('level','pernah'); wlQPick('pain','tiada',1); wlQuizNext();
+  ok("a man is not asked about pregnancy", html('pgd-body').indexOf('Boleh melompat')>0);
+  wlQuizBack(); ok("...and Back skips it too", html('pgd-body').indexOf('selalu sakit')>0);
+  ok("a man answers fewer questions than a woman", (wlQA.sex='l', wlQCount(WL30_Q.length))===(wlQA.sex='p', wlQCount(WL30_Q.length))-1);
+  var plan=function(a){ HF.data.wl30={me:Object.assign({done:true, sex:'l', level:'pernah', pain:['tiada'], jump:'ya', mins:25, focus:'semua',
+      equip:['kerusi','botol'], wt:85, ht:172, age:35, act:'duduk', pace:'sederhana', meals:3, avoid:['tiada'], cook:'sendiri'},a)};
+    var out=[]; for(var i=0;i<30;i++) out.push(wlDay(i)); return out; };
+  var all=function(ds){ var x=[]; ds.forEach(function(d){ x=x.concat(d.ex); }); return x; };
+  var ds=plan({});
+  ok("with everything at home and jumps allowed, the moves are the template's", ds.every(function(d,i){ return d.ex.length && d.ex.every(function(n){ return WL30_DAYS[i].ex.indexOf(n)>=0; }); }));
+  ok("...and the fit test keeps its moves", ds[0].ex.join()===WL30_TEST.join() && ds[29].ex.join()===WL30_TEST.join());
+  ds=plan({jump:'tidak'});
+  ok("no jumping takes every jump out", all(ds).every(function(n){ return WL30_JUMPS.indexOf(n)<0; }) && ds.every(function(d){ return d.ex.length>=4; }));
+  ok("...and day 1 and day 30 still match", ds[0].ex.join()===ds[29].ex.join());
+  ds=plan({equip:['tiada']});
+  ok("no chair and no bottles swaps what needs them", all(ds).every(function(n){ return !WL30_KIT[n] && !/^Bottle|Chair/.test(n); }) && ds.every(function(d){ return d.ex.length>=4; }));
+  ds=plan({pain:['lutut']});
+  ok("a sore knee: no squats, lunges or jumps", all(ds).every(function(n){ return WL30_SWAP.lutut.from.indexOf(n)<0; }));
+  ds=plan({mins:15});
+  ok("15 minutes caps every day but the fit test", ds.every(function(d){ return d.k==='test' || wlMinutes(d)<=15; }));
+  ds=plan({level:'baru'}); ok("a beginner does 30 seconds a move", ds[1].dur===30 && all(ds).indexOf('Squat Jump')<0);
+  ds=plan({focus:'atas'}); ok("a focus turns one day a week to it, never the day after its copy", [1,12,19,26].every(function(i){ return ds[i].n.indexOf('Focus: Dada')===0; }) &&
+     ds.every(function(d,i){ return !i || d.n.indexOf('Focus')<0 || d.ex.join()!==ds[i-1].ex.join(); }));
+  ds=plan({jump:'tidak', pain:['lutut']});
+  ok("no jumps and a sore knee: cardio stays cardio", ds[3].ex.indexOf('Mountain Climber')>=0 && ds[3].ex.filter(function(n){ return /Bridge|Hip Thrust/.test(n); }).length<=1);
+  ds=plan({sex:'p', mom:'bersalin', clear:true});
+  ok("after a birth: no jumps and no crunches", all(ds).every(function(n){ return WL30_SWAP.bersalin.from.indexOf(n)<0; }));
+  plan({}); var tm=wlTarget(); plan({sex:'p', wt:60, ht:158, age:30}); var tf=wlTarget();
+  ok("a man's calorie target is his own, and higher", tm && tf && tm.cal>tf.cal && tm.cal>=1500 && tf.cal>=1200);
+  plan({}); ok("a man drinks half a litre more", wlWater(0)===2.5);
+  wlQ=-1; plan({}); openProgram(WL30_ID); pg=html('pgd-body');
+  ok("with a plan, home shows today and the checklist", pg.indexOf('Start Day 1')>0 && pg.indexOf("Today&rsquo;s Checklist")>0 && pg.indexOf('Your plan')>0 && pg.indexOf('Lelaki')>0);
+  wlQuizOpen(); wlQ=WL30_Q.length+1; renderWL30(); pg=html('pgd-body');
+  ok("the result shows the workout and the menu", pg.indexOf('Workout anda')>0 && pg.indexOf('Menu anda')>0 && pg.indexOf('Foundation')>0);
+  wlQuizSave(); ok("...and saving it keeps the plan", !!wlMe() && wlData().profile.gender==='male');
+
+  HF.data.progress[WL30_ID]=5; openProgram(WL30_ID); pg=html('pgd-body');
+  ok("progress shows on the day tiles", (pg.match(/lbx-day done/g)||[]).length===5 && pg.indexOf('lbx-day now')>0 && pg.indexOf('Day 6 · Week 1')>0);
+  ok("Home carries on from the day reached", wlHomeCard().indexOf('Day 6 · ')>0 && wlHomeCard().indexOf('wlOpenDay(5)')>0);
+  wlTick('misi'); ok("the checklist ticks", wlData().check[iso(0)].misi===true);
+  wlWaterAdd(0.5); ok("...and counts water", wlData().water[iso(0)]===0.5);
+
+  /* a day, in two sessions */
+  wlOpenDay(5); ok("a day opens with its facts and the jumps it has", html('dd-body').indexOf('lbx-facts')>0 && html('dd-body').indexOf('jumps')>0);
+  wlToggleSplit(5); played=null; wlPlay(5,'a');
+  ok("two sessions: the first half does not count the day", played && !played.meta.pid && played.meta.wl.half==='a');
+  HF.data.sessions['wl30-d5-a']={mins:8}; wlAfterSession({gi:5,half:'a'});
+  played=null; wlPlay(5,'b'); ok("...the second does", played && played.meta.pid===WL30_ID && played.meta.gi===5);
+  HF.data.sessions['wl30-d5-b']={mins:8}; wlAfterSession({gi:5,half:'b'}); ok("...and both halves finish it", progDone(WL30_ID)===6);
+  delete HF.data.sessions['wl30-d5-a']; delete HF.data.sessions['wl30-d5-b']; wlData().split=false;
+
+  /* nutrition: his target, the menu, the shopping list, the guide */
+  wlMenuDay=-1; wlFoodSeg='today'; wlSetTab('food'); pg=html('pgd-body');
+  ok("Nutrition shows his target and today's menu", pg.indexOf('Your daily target')>0 && pg.indexOf('1,500 kcal')>0 && pg.indexOf('lbx-meal')>0 && pg.indexOf('Breakfast')>0);
+  ok("...with no mother's note on breakfast", pg.indexOf('untuk ibu')<0 && pg.indexOf('sebelum keluar bekerja')>0);
+  wlSetFoodSeg('shop'); pg=html('pgd-body');
+  ok("the shopping list is built from the week's menu", pg.indexOf('Shopping List')>0 && pg.indexOf('Protein')>0 && wlShopText(0).indexOf('BURN30 · Week 1')>0);
+  wlSetFoodSeg('guide'); ok("the guide gives a man two palms of protein", html('pgd-body').indexOf('Pinggan Sihat')>0 && /Protein<\/span><\/div><div class="lbx-po-n"><b>2<\/b>/.test(html('pgd-body')));
+  wlFoodSeg='today';
+  HF.data.wl30={profile:{}}; wlSetTab('food');
+  ok("without numbers it asks for sex, weight, height and age", html('pgd-body').indexOf('Work Out My Target')>0 && html('pgd-body').indexOf('>Male<')>0);
+  wlSetTab('learn'); ok("Learn holds the Academy", html('pgd-body').indexOf('lbx-acad')>0);
 
   /* progress */
+  HF.data.wl30={}; HF.data.progress[WL30_ID]=5;
   wlSetFit('d1','squat','20'); wlSetFit('d30','squat','30');
   wlSetTab('progress'); pg=html('pgd-body');
   ok("the fit test compares day 1 with day 30", pg.indexOf('+50%')>0);
-  ok("five badges, none earned at day 5", (pg.match(/class="wl-badge"/g)||[]).length===5);
+  ok("four badges, none earned at day 5, and the leaderboard", (pg.match(/class="lbx-medal"/g)||[]).length===4 && pg.indexOf('lb-burn30')>0);
   HF.data.progress[WL30_ID]=30; wlSetTab('progress'); pg=html('pgd-body');
-  ok("finishing earns every badge and the certificate", (pg.match(/wl-badge on/g)||[]).length===5 && pg.indexOf('30 Days Complete')>0);
+  ok("finishing earns every badge and the certificate", (pg.match(/lbx-medal on/g)||[]).length===4 && pg.indexOf('30 Days Complete')>0);
   ok("a finished program leaves Home", wlHomeCard()==='');
 
   /* a member has it as part of HITFAT+ */
   _member(); HF.data.progress[WL30_ID]=0;
   ok("members have it included", ownsProgram(WL30) && wlHomeCard().indexOf('In HITFAT+')>0);
+  ok("the player hands a BURN30 session back to it", /pl0\.wl && typeof wlAfterSession/.test(String(plCloseNow)));
 
   ok("the app claims website purchases when it loads what you own", /claimLandingPurchases/.test(String(loadEntitlement)));
   /* the quick start (19 Oct): the pass kept per account, used offline and to open at once */
@@ -3599,8 +3656,8 @@ print("\n── 30-DAY WEIGHT LOSS ──");
   ok("...offline, the last pass is used instead of free", /entCacheGet\(\)\|\|ne/.test(String(loadEntitlement)));
   ok("...built aside, so a screen never sees an empty pass mid-load", /_ent=ne; entCacheSet\(ne\)/.test(String(loadEntitlement)) && !/_ent=\{skus/.test(String(loadEntitlement)));
   ok("a cloud copy older than something logged meanwhile is not applied", /_savedAt>=t0/.test(String(HF.pull)));
-  startWorkout=keepSW; _ent=keepEnt; HF.data.progress[WL30_ID]=keepProg||0; HF.data.wl30=keepWl||{}; HF.data.nutrition=keepNut; _wlPlan=null;
-  wlTab='plan'; wlWeek=-1; wlMenuDay=-1; closeProduct();
+  startWorkout=keepSW; _ent=keepEnt; HF.data.progress[WL30_ID]=keepProg||0; HF.data.wl30=keepWl||{}; HF.data.nutrition=keepNut;
+  wlTab='plan'; wlWeek=-1; wlMenuDay=-1; wlQ=-1; closeProduct();
 })();
 
 print("\n── MEAL SCAN: PORTION AND NAME ──");
@@ -4014,7 +4071,7 @@ print("\n── MAK2FIT 30 ──");
   delete lb.me.meals; ok("answered before the menu questions: asked them on Nutrition", (lbTab='food', renderLB30(), $('pgd-body').innerHTML.indexOf('lbQuizMenu()')>0));
   delete lb.me; lb.profile={};
   /* BURN30 is as it was */
-  ok("BURN30 is untouched", WL30.hub===true && findProg('wl30')===WL30 && WL30_DAYS.length===30 && WL30.price===39);
+  ok("BURN30 keeps its own hub", WL30.hub===true && findProg('wl30')===WL30 && WL30_DAYS.length===30 && WL30.price===39);
   var wbuy=0, keepWB=wlBuy, keepLB=lbBuy; wlBuy=function(){ wbuy++; }; lbBuy=function(){ wbuy+=10; };
   _guest(); lockedProgram(WL30); lockedProgram(LB30);
   ok("each program sells itself", wbuy===11);
@@ -4449,14 +4506,9 @@ print("\n── BURN30: PICTURES AND FOOD IN MALAY ──");
   ok("...a dish with a fruit after it", wlMs('Nasi lemak, portion controlled + Cut watermelon')==='Nasi lemak, porsi terkawal + Tembikai potong');
   ok("the Eat plans too: snacks and their measures", wlMs('Banana + nuts')==='Pisang + kacang' && wlPortion('15g / 1 thumb')==='15g / 1 ibu jari' && mpMs('Small chicken sandwich')==='Sandwic ayam kecil');
   ok("...the Eat meal plan uses them", String(renderPlanView).indexOf('mpMs(it.food)')>0 && String(renderPlanView).indexOf('mpPor(it.portion)')>0);
-  ok("BURN30's home has the covers' hero, not the flat poster", wlHero('program','','Day 1 of 30 · Foundation','',null).indexOf('pdx-hpo')>0 && wlHero('program','','x','',null).indexOf('burn30-poster')<0);
-  ok("no 0% bar before day 1", String(renderWL30).indexOf("owned && done>0) h+='<div class=\"wl-prog\"")>0);
-  ok("the checklist and the kit in one red tile style", String(wlChecklist).indexOf('wl-kic')>0 && String(wlGuide).indexOf("['mat','A mat or a towel']")>0);
-  ok("the hand guide tip is not repeated under the portion guide", String(wlFood).indexOf('Hand guide')>0);
+  ok("BURN30's home has its red photograph and its name in type", wlHero().indexOf('bn-hero')>0 && wlHero().indexOf('BURN30')>0 && wlHero().indexOf('burn30-poster')<0);
   ok("Home's swipe box follows the card in view", typeof scCarFit==='function' && String(scCarScroll).indexOf('scCarFit')>0);
   ok("...a medium fruit", wlPortion('1 medium')==='1 biji sederhana' && wlPortion('1.5 tbsp')==='1.5 sudu besar');
-  ok("the days are numbered red tiles, not other people's photos", String(wlPlan).indexOf('pdx-dt')>0 && String(wlPlan).indexOf('wlPic(d)')<0);
-  ok("one progress line, in days done", String(renderWL30).indexOf(' days done')>0 && String(renderWL30).indexOf("% complete'")<0);
 })();
 print("\n── PICTURES INSIDE MATCH THE COVERS ──");
 (function(){

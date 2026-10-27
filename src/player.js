@@ -542,6 +542,7 @@ function plCloseNow(){
   const lb=pl&&pl.meta&&pl.meta.lb, pl0=pl&&pl.meta;
   exitPlayer();
   if(lb && typeof lbAfterSession==='function') return lbAfterSession(lb);
+  if(pl0&&pl0.wl && typeof wlAfterSession==='function') return wlAfterSession(pl0.wl);
   if(pl0&&pl0.kp && typeof kpAfterSession==='function') return kpAfterSession();
   const d6=pl0&&pl0.d6;
   if(d6 && typeof d6AfterSession==='function') return d6AfterSession(d6);

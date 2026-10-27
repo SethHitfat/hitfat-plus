@@ -614,8 +614,9 @@ function lbQuiz(){
    graf"). Only claims with a source, each named under its chart; the
    habit curve is drawn as an illustration and says so; her estimate is
    her own pace and says it is not a promise. ── */
-function lbFact(f){
-  var a=lbQA||{}, h='<div class="lbq-fact"><div class="lbq-fk">'+glyph('lab')+'Tahukah anda?</div>';
+/* a: the answers so far (BURN30 passes its own, wl30.js) */
+function lbFact(f,a){
+  a=a||lbQA||{}; var h='<div class="lbq-fact"><div class="lbq-fk">'+glyph('lab')+'Tahukah anda?</div>';
   if(f==='minit'){
     var m=+a.mins||20;
     h+='<div class="lbq-q">Setiap minit dikira.</div>'+
@@ -678,12 +679,14 @@ function lbProjSVG(a,b){
     '<text x="20" y="142" class="sm" text-anchor="start">Hari 1</text><text x="270" y="142" class="sm" text-anchor="end">Hari 30</text></svg>';
 }
 /* minutes a week in her plan, weeks 1 to 4 */
-function lbWeeksSVG(mins){
+/* weeks: whose names label the bars (BURN30 passes its own) */
+function lbWeeksSVG(mins,weeks){
+  weeks=weeks||LB30_WEEKS;
   var mx=Math.max.apply(null,mins)||1;
   return '<svg viewBox="0 0 300 150" role="img" aria-label="Minit latihan seminggu, minggu 1 hingga 4">'+
     '<line x1="20" y1="122" x2="280" y2="122" class="ax"/>'+mins.map(function(m,i){ var hgt=Math.max(8,m/mx*92), x=34+i*64;
       return '<rect x="'+x+'" y="'+(122-hgt).toFixed(1)+'" width="40" height="'+hgt.toFixed(1)+'" rx="8" class="'+(i===3?'b1':'b2')+'"/>'+
-        '<text x="'+(x+20)+'" y="'+(116-hgt).toFixed(1)+'" class="lb c">'+m+'</text><text x="'+(x+20)+'" y="142" class="sm c">'+LB30_WEEKS[i].n+'</text>'; }).join('')+'</svg>';
+        '<text x="'+(x+20)+'" y="'+(116-hgt).toFixed(1)+'" class="lb c">'+m+'</text><text x="'+(x+20)+'" y="142" class="sm c">'+weeks[i].n+'</text>'; }).join('')+'</svg>';
 }
 /* what her answers did: only the changes that really happened */
 var LB30_SAYS={
