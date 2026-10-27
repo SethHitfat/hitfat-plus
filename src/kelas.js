@@ -324,21 +324,28 @@ function kelasTodayTab(){
   const spc=kelasSpace(), hxs=spc==='hyrox', lxs=spc==='ladies', mxs=spc==='mens', pts=spc==='pt';
   /* (22 Oct 2026) the member card leads: Seth wants access to feel "wow",
      something a member wants to share; all they do is come to class */
+  /* (28 Oct 2026, Seth: "serabut, mata tak tahu nk fokus mana satu") one
+     thing in focus: the card and one Check in, Bara's line on the page
+     (not a second red block), then today. Next class showed three times
+     (its card, My plan, the timetable) and Check in twice; FIRST 30 listed
+     all seven missions. Now today is one card, the rest folds away. */
   h+='<div class="kl-greet">'+kelasGreet()+(first?', '+hesc(first):'')+'</div>'+kelasCardHTML()+
      '<div class="kl-card-act"><button class="kl-card-ci" onclick="kelasQRFull()">'+glyph('qr')+(act?' Check in':' Renew first')+'</button>'+
      '<button class="kl-card-sh" onclick="kelasShareCard()">'+glyph('share')+' Share my card</button></div>'+
-     '<div class="kl-hero kl-hero2'+(hxs?' hx':lxs?' lx':mxs?' mx':pts?' pt':'')+' kl-bara-only'+(act?'':' off')+'">'+kelasBaraHTML()+'</div>';
+     '<div class="kl-bara-lite'+(hxs?' hx':lxs?' lx':mxs?' mx':pts?' pt':'')+(act?'':' off')+'">'+kelasBaraHTML()+'</div>';
   h+=kelasGiftHTML();
 
-  /* the next class straight under the door: the one thing a regular wants
-     to know after checking in (19 Oct 2026, the loyalty pass) */
+  /* today: their plan when they have one (it holds today's class), or the
+     next class and a short way into My plan */
   const cls=kelasClasses(), n=cls.length?kelasNext():null;
-  if(n) h+='<div class="kl-next kl-next-top"><div class="kl-nt">Next class</div>'+
-     '<div class="kl-nw">'+kelasWhen(n)+' · '+kelasClock(n.c.start)+'</div>'+
-     '<div class="kl-nn">'+hesc(n.c.name)+' · '+(n.c.min||60)+' min'+(n.c.coach?' · '+hesc(n.c.coach):'')+'</div></div>';
-
-  /* My plan: their week, classes and home together (kplan.js, 27 Oct 2026) */
-  if(typeof kpCard==='function') h+=kpCard();
+  const plan=typeof kpCard==='function' && typeof kpPlan==='function' && kpSpace() && kpPlan();
+  if(plan) h+=kpCard();
+  else{
+    if(n) h+='<div class="kl-next kl-next-top"><div class="kl-nt">Next class</div>'+
+       '<div class="kl-nw">'+kelasWhen(n)+' · '+kelasClock(n.c.start)+'</div>'+
+       '<div class="kl-nn">'+hesc(n.c.name)+' · '+(n.c.min||60)+' min'+(n.c.coach?' · '+hesc(n.c.coach):'')+'</div></div>';
+    if(typeof kpCard==='function') h+=kpCard();
+  }
 
   /* FIRST 30: a new member's first month, mission by mission; then a
      60-day journey for the goal */
@@ -350,28 +357,35 @@ function kelasTodayTab(){
   if(hxs && typeof hxKelasCard==='function') h+=hxKelasCard();   // the HYROX programs, part of the class (19 Oct 2026)
   h+=kelasWodHTML();
 
-  /* the timetable, this space's classes only */
+  /* the timetable and the membership: one tap away, in a short list */
+  const more=[];
   if(cls.length){
     if(Kelas.day===null||Kelas.day===undefined) Kelas.day=n?n.c.dow:kelasDow(kelasNowMY());
-    h+=fsec('Timetable','Every class at HITFAT HQ this week.');
-    const today=kelasDow(kelasNowMY());
-    h+='<div class="kl-days">'+KELAS_DOW.map((w,i)=>{
-      const dd=i+1, has=cls.some(c=>c.dow===dd);
-      return '<button class="'+(dd===Kelas.day?'on ':'')+(has?'':'rest ')+(dd===today?'now':'')+'" onclick="kelasPickDay('+dd+')">'+w+'</button>';
-    }).join('')+'</div>';
-    const day=cls.filter(c=>c.dow===Kelas.day);
-    h+='<div class="kl-list">'+(day.length?day.map(c=>
-      '<div class="kl-cls"><b>'+kelasClock(c.start)+'</b><div><div class="kl-cn">'+hesc(c.name)+'</div>'+
-      '<div class="kl-cm">'+(c.min||60)+' min · '+hesc(kelasCat(c.category))+(c.coach?' · '+hesc(c.coach):'')+'</div></div></div>').join('')
-      :'<div class="kl-none">No class on '+KELAS_DOW[Kelas.day-1]+'. Rest day.</div>')+'</div>';
+    const today=kelasDow(kelasNowMY()), nt=cls.filter(c=>c.dow===today).length;
+    let t=kelasFold('tt',glyph('calendar'),'Timetable',nt?nt+' class'+(nt===1?'':'es')+' today at HQ':'No class today · rest day');
+    if(Kelas.ttOpen){
+      t+='<div class="kl-fold-b"><div class="kl-days">'+KELAS_DOW.map((w,i)=>{
+        const dd=i+1, has=cls.some(c=>c.dow===dd);
+        return '<button class="'+(dd===Kelas.day?'on ':'')+(has?'':'rest ')+(dd===today?'now':'')+'" onclick="kelasPickDay('+dd+')">'+w+'</button>';
+      }).join('')+'</div>';
+      const day=cls.filter(c=>c.dow===Kelas.day);
+      t+='<div class="kl-list">'+(day.length?day.map(c=>
+        '<div class="kl-cls"><b>'+kelasClock(c.start)+'</b><div><div class="kl-cn">'+hesc(c.name)+'</div>'+
+        '<div class="kl-cm">'+(c.min||60)+' min · '+hesc(kelasCat(c.category))+(c.coach?' · '+hesc(c.coach):'')+'</div></div></div>').join('')
+        :'<div class="kl-none">No class on '+KELAS_DOW[Kelas.day-1]+'. Rest day.</div>')+'</div></div>';
+    }
+    more.push(t);
   }
 
-  /* the membership */
+  /* the membership: a line while all is well, the whole card when it is
+     ending or has ended (or they open it) */
   if(m){
     const s0=m.start_date?Date.parse(m.start_date):null, s1=m.end_date?Date.parse(m.end_date):null;
     const pct=(s0&&s1&&s1>s0)?Math.max(0,Math.min(100,Math.round((Date.now()-s0)/(s1+864e5-s0)*100))):0;
-    h+=fsec('Membership','');
-    h+='<div class="kl-mem'+(soon?' soon':'')+(act?'':' off')+'">'+
+    const full=soon || !act || Kelas.memOpen;
+    let t=kelasFold('mem',glyph('card'),hesc(kelasCat(m.category)),act?(left!==null?(left+1)+' day'+(left===0?'':'s')+' left · until '+kelasDate(m.end_date):'Active'):'Ended '+kelasDate(m.end_date),
+      act&&!soon?'<span class="kl-chip">Active</span>':'');
+    if(full) t+='<div class="kl-fold-b"><div class="kl-mem'+(soon?' soon':'')+(act?'':' off')+'">'+
        '<div class="kl-mrow"><div><div class="kl-mt">'+hesc(kelasCat(m.category))+'</div>'+
        '<div class="kl-ms">'+hesc(m.plan||'')+'</div></div>'+
        '<span class="kl-chip">'+(act?(soon?'Ends soon':'Active'):'Ended')+'</span></div>'+
@@ -380,11 +394,13 @@ function kelasTodayTab(){
        '<div class="kl-left">'+(act&&left!==null?'<b>'+(left+1)+'</b><small>day'+(left===0?'':'s')+' left</small>':'')+'</div>'+
        '<div class="r"><small>'+(act?'Ends':'Ended')+'</small><b>'+kelasDate(m.end_date)+'</b></div></div>'+
        (soon||!act?'<button class="kl-renew" onclick="kelasRenew()">'+glyph('repeat')+' Renew with HITFAT</button>':'')+
+       '</div>'+
+       kelasSpMems().filter(x=>x!==m && x.active && x.category!==m.category).map(x=>
+         '<div class="kl-mem2"><span>'+hesc(kelasCat(x.category))+'</span><span>until '+kelasDate(x.end_date)+'</span></div>').join('')+
        '</div>';
-    kelasSpMems().filter(x=>x!==m && x.active && x.category!==m.category).forEach(x=>{
-      h+='<div class="kl-mem2"><span>'+hesc(kelasCat(x.category))+'</span><span>until '+kelasDate(x.end_date)+'</span></div>';
-    });
+    more.push(t);
   }
+  if(more.length) h+='<div class="kl-folds">'+more.map(x=>'<div class="kl-fold">'+x+'</div>').join('')+'</div>';
   const aaEnd=kelasMems().filter(x=>x.active).map(x=>x.end_date).concat(kelasPtLive()?[kelasPt().end]:[]).filter(Boolean).sort().pop();
   h+='<div class="kl-foot">Your HITFAT+ All Access runs with your HITFAT membership'+(aaEnd?', until '+kelasDate(aaEnd):'')+'.<br>'+
      '<button class="kl-unlink" onclick="kelasUnlink()">'+(Kelas.unlinkAsk?'Tap again to disconnect':'Not you? Disconnect')+'</button></div>';
@@ -1673,7 +1689,9 @@ function kelasF30HTML(){
     return h;
   }
   if(f.day>30) h+='<div class="f30-late">Day 30 has passed. Finish the last '+(7-f.done)+' with your coach by day 37.</div>';
-  h+='<div class="f30-list">'+KL_F30.map(d=>{
+  /* (28 Oct 2026) the next mission only; the seven behind a tap */
+  const all=Kelas.f30All || !nx;
+  h+='<div class="f30-list">'+KL_F30.filter(d=>all || d[0]===nx[0]).map(d=>{
     const m=kelasF30M(f,d[0]), locked=m.from && f.day<m.from && !m.done, isNext=nx && nx[0]===d[0];
     const prog=(d[0]==='week3'?(m.n||0)+'/3':d[0]==='ten'?(m.n||0)+'/10':'');
     let act='';
@@ -1686,7 +1704,8 @@ function kelasF30HTML(){
       '<div class="f30-t"><b>'+d[1]+(prog&&!m.done?' <em>'+prog+'</em>':'')+'</b><small>'+(d[0]==='goal'&&m.done&&m.goal?hesc(m.goal):locked?'Opens on day '+m.from:d[2])+'</small></div>'+act+'</div>';
     if(d[0]==='goal' && Kelas.f30Goal && !m.done) row+='<div class="f30-goals">'+KL_GOALS.map(g=>'<button onclick="kelasF30SetGoal(\''+g+'\')">'+g+'</button>').join('')+'</div>';
     return row;
-  }).join('')+'</div></div>';
+  }).join('')+'</div>'+
+  (nx?'<button class="f30-all" onclick="Kelas.f30All=!Kelas.f30All;renderKelas()">'+(Kelas.f30All?'Show the next one only':'See all 7 missions')+'</button>':'')+'</div>';
   return h;
 }
 function kelasF30GoalOpen(){ Kelas.f30Goal=!Kelas.f30Goal; renderKelas(); }
@@ -1736,7 +1755,8 @@ function kelasJourneyHTML(){
       '<span class="kl-tb f30-bar"><i style="width:'+pct+'%"></i></span>';
     if(J.complete) return h+'<div class="f30-win">'+glyph('trophy')+'<div><b>+600 points</b><span>Four of four. Choose your next journey any time.</span></div></div></div>';
     if(J.day>60) h+='<div class="f30-late">Day 60 has passed. You have until day 67 to finish.</div>';
-    h+='<div class="f30-list">'+['weeks','classes','inbody','result'].map(k=>{
+    const ks=['weeks','classes','inbody','result'], nk=ks.filter(k=>!kelasJrM(J,k).done)[0], all=Kelas.jrAll || !nk;
+    h+='<div class="f30-list">'+ks.filter(k=>all || k===nk).map(k=>{
       const m=kelasJrM(J,k), d=KL_JR_M[k];
       let sub=d[1];
       if(k==='result'){
@@ -1745,7 +1765,8 @@ function kelasJourneyHTML(){
       return '<div class="f30-m'+(m.done?' ok':'')+'"><span class="f30-c">'+(m.done?glyph('check'):glyph(k==='result'?D.ic:d[2]))+'</span>'+
         '<div class="f30-t"><b>'+d[0]+(m.of&&!m.done?' <em>'+(m.n||0)+'/'+m.of+'</em>':'')+'</b><small>'+hesc(sub)+'</small></div>'+
         (k==='inbody'&&!m.done?'<button class="f30-go" onclick="kelasTab(\'body\')">Scan</button>':'')+'</div>';
-    }).join('')+'</div></div>';
+    }).join('')+'</div>'+
+    (nk?'<button class="f30-all" onclick="Kelas.jrAll=!Kelas.jrAll;renderKelas()">'+(Kelas.jrAll?'Show the next one only':'See all 4 missions')+'</button>':'')+'</div>';
     return h;
   }
   /* no journey running: choose one, if FIRST 30 is behind them */
@@ -1771,6 +1792,13 @@ async function kelasJrStart(){
 }
 
 function kelasPickDay(d){ Kelas.day=d; renderKelas(); }
+/* a line in Today's short list that opens in place (28 Oct 2026) */
+function kelasFold(k,ic,t,s,right){
+  const on=!!Kelas[k+'Open'];
+  return '<button class="kl-fold-h'+(on?' on':'')+'" onclick="kelasFoldTap(\''+k+'\')"><span class="kl-fold-i">'+ic+'</span>'+
+    '<span class="kl-fold-t"><b>'+t+'</b><small>'+s+'</small></span>'+(right||'')+'<i class="kl-fold-c">›</i></button>';
+}
+function kelasFoldTap(k){ Kelas[k+'Open']=!Kelas[k+'Open']; renderKelas(); }
 function kelasRenew(){
   const m=kelasMain();
   window.open('https://wa.me/60176132170?text='+encodeURIComponent(
@@ -1902,15 +1930,25 @@ async function kelasClaim(){
 
 /* ═══════════════ elsewhere in the app ═══════════════ */
 /* Home: the door, one tap from opening the app */
+/* (28 Oct 2026, Seth: "bila user nk tekan tu rasa benda tu bernilai") the
+   member's pass, a short version of the card on the Class screen: their
+   space's colours and sheen, what they have built (classes, streak,
+   points), the next class, Check in; a reward waiting says so */
 function kelasHomeCard(){
   if(!kelasLinked()) return '';
-  const n=kelasNext(), act=kelasActive();
-  return '<div class="kl-home" onclick="openKelas()">'+
-    '<span class="kl-hqr">'+glyph('qr')+'</span>'+
-    '<div class="kl-ht"><div class="kl-htk">HITFAT Class'+(act&&n?' · next':'')+'</div>'+
-    '<div class="kl-htt">'+(act?(n?kelasWhen(n)+' · '+kelasClock(n.c.start):'Your classes'):'Membership ended')+'</div>'+
-    '<div class="kl-hts">'+(act?(n?hesc(n.c.name)+' · '+(n.c.min||60)+' min':'Timetable and attendance'):'Renew at the counter')+'</div></div>'+
-    (act?'<button class="kl-hbtn" onclick="event.stopPropagation();kelasQRFull()">Check in</button>':'')+'</div>';
+  const n=kelasNext(), act=kelasActive(), c=kelasCardInfo(), P=kelasPts();
+  const gift=act && P && (P.rewards||[]).some(x=>x.points<=(P.balance||0));
+  return '<div class="kl-home kl-pass sp-'+c.sp+(act?'':' off')+'" onclick="openKelas()" style="--acc:'+c.acc+';--g:linear-gradient(155deg,'+c.g[0]+' 0%,'+c.g[1]+' 45%,'+c.g[2]+' 100%)">'+
+    '<i class="kl-card-glow"></i><i class="kl-card-mark"></i><i class="kl-card-sheen"></i>'+
+    '<div class="klp-top"><span class="kl-card-logo"><i></i>HITFAT<b>+</b></span><span class="kl-card-chip">'+(act?c.lbl+' MEMBER':'RENEW TO RETURN')+'</span></div>'+
+    '<div class="klp-mid"><div class="klp-k">HITFAT Class'+(act&&n?' · next':'')+'</div>'+
+    '<div class="klp-t">'+(act?(n?kelasWhen(n)+' · '+kelasClock(n.c.start):'Your classes'):'Membership ended')+'</div>'+
+    '<div class="klp-s">'+(act?(n?hesc(n.c.name)+' · '+(n.c.min||60)+' min':'Timetable and attendance'):'Renew at the counter')+'</div></div>'+
+    '<div class="klp-bot"><div class="klp-st"><span><b>'+c.n+'</b><small>'+(c.sp==='pt'?'sessions':'classes')+'</small></span>'+
+      (c.sp==='pt'?'':'<span><b>'+c.wk+'</b><small>week streak</small></span>')+
+      (c.pts!==null?'<span><b>'+c.pts.toLocaleString()+'</b><small>points</small></span>':'')+'</div>'+
+    (act?'<button class="klp-ci" onclick="event.stopPropagation();kelasQRFull()">'+glyph('qr')+' Check in</button>':'')+'</div>'+
+    (gift?'<div class="klp-gift">'+glyph('star')+' A reward is ready for you</div>':'')+'</div>';
 }
 /* Me: connected, the screen; not connected, the way in */
 function kelasMeRow(){
@@ -2666,9 +2704,14 @@ function kelasWodHTML(){
   if(!w){ w=kelasWodFor(tmr); when='Tomorrow'; }
   if(!w) return '';
   const day=String(w.date).slice(0,10), U=w.type&&KL_WOD_UNIT[w.type], mine=kelasWodLog()[day], prev=kelasWodPrev(w.title,day);
-  let h='<div class="kl-wod"><div class="kl-wod-k">'+glyph('workout')+' '+when+"'s workout"+(w.cat!=='all'?' · '+hesc(kelasCat(w.cat)):'')+'</div>'+
-    '<div class="kl-wod-t">'+hesc(w.title)+'</div>'+
-    (w.body?'<div class="kl-wod-b">'+hesc(w.body)+'</div>':'');
+  /* (28 Oct 2026) folded to its name until tapped, with the score if logged */
+  const open=!!(Kelas.wodOpen || Kelas.wodEdit);
+  let h='<div class="kl-wod'+(open?' on':'')+'"><button class="kl-wod-h" onclick="Kelas.wodOpen=!Kelas.wodOpen;renderKelas()"><span>'+
+    '<span class="kl-wod-k">'+glyph('workout')+' '+when+"'s workout · from your coach</span>"+
+    '<span class="kl-wod-t">'+hesc(w.title)+'</span></span>'+
+    (!open&&mine?'<span class="kl-wod-v">'+hesc(mine.v)+'</span>':'')+'<i class="kl-fold-c">›</i></button>';
+  if(!open) return h+'</div>';
+  h+=(w.body?'<div class="kl-wod-b">'+hesc(w.body)+'</div>':'');
   if(U && when==='Today'){
     if(mine && !Kelas.wodEdit) h+='<div class="kl-wod-me"><div><small>Your '+U[0].toLowerCase()+'</small><b>'+hesc(mine.v)+'</b>'+
         (U[1]!=='mm:ss'&&U[1]!=='rounds + reps'?' <span>'+U[1]+'</span>':'')+'</div>'+

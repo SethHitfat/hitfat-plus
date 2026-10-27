@@ -6946,3 +6946,86 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kp-tg .ic .gly{width:15px;height:15px;}
 .kp-tg b{margin-top:3px;}
 .kp-tg small{font-size:11px;color:var(--dim);font-weight:650;}
+
+/* HITFAT Class · Today, tidied (28 Oct 2026, Seth: "serabut … mata tak tahu
+   nk fokus mana satu"): Bara on the page instead of a second red block,
+   the short list that opens in place, FIRST 30's next mission only, the
+   workout folded to its name, My plan's invitation as one line */
+.kl-bara-lite .kl-bara{margin:14px 0 0;padding:0;background:none;align-items:center;gap:10px;}
+:root[data-theme="light"] .kl-bara-lite .kl-bara{background:none;}
+.kl-bara-lite .kl-bslot{width:62px;height:62px;}
+.kl-bara-lite .kl-bslot::before{display:none;}
+.kl-bara-lite .kl-bub{background:var(--surface);border-radius:16px 16px 16px 4px;box-shadow:0 6px 18px rgba(20,20,30,.06);}
+:root[data-theme="light"] .kl-bara-lite .kl-bub{background:#FFFFFF;}
+.kl-bara-lite .kl-bub b{color:var(--kla,#E30613);}
+.kl-bara-lite .kl-bub span{color:var(--txt);}
+.kl-bara-lite.off{filter:grayscale(1);opacity:.8;}
+
+.kl-folds{display:flex;flex-direction:column;margin:18px 0 0;border-radius:18px;overflow:hidden;background:var(--surface);}
+:root[data-theme="light"] .kl-folds{background:#FFFFFF;}
+.kl-fold+.kl-fold{border-top:1px solid var(--hairline);}
+.kl-fold-h{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border:0;background:none;font:inherit;text-align:left;color:var(--txt);cursor:pointer;}
+.kl-fold-i{flex:none;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:var(--kla2,rgba(227,6,19,.12));}
+.kl-fold-i .gly{width:19px;height:19px;stroke:var(--kla,#E30613);}
+.kl-fold-t{flex:1;min-width:0;}
+.kl-fold-t b{display:block;font-size:15.5px;font-weight:800;}
+.kl-fold-t small{display:block;font-size:13px;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kl-fold-c{flex:none;font-style:normal;font-size:22px;line-height:1;color:var(--dim);transition:rotate .2s;}
+.kl-fold-h.on .kl-fold-c,.kl-wod.on .kl-wod-h .kl-fold-c{rotate:90deg;}
+.kl-fold-b{padding:0 14px 14px;}
+.kl-fold-b .kl-days{margin-top:0;}
+.kl-fold-b .kl-list,.kl-fold-b .kl-mem{background:rgba(127,127,127,.07);}
+:root[data-theme="light"] .kl-fold-b .kl-list,:root[data-theme="light"] .kl-fold-b .kl-mem{background:#F6F6F8;}
+.kl-fold-b .kl-mem2{margin-top:8px;}
+
+.f30-all{display:block;width:100%;margin-top:6px;padding:10px 0 0;border:0;border-top:1px solid var(--hairline);background:none;
+  font:inherit;font-size:13.5px;font-weight:800;color:var(--kla,#E30613);cursor:pointer;}
+
+.kl-wod-h{display:flex;align-items:center;gap:10px;width:100%;padding:0;border:0;background:none;font:inherit;text-align:left;color:var(--txt);cursor:pointer;}
+.kl-wod-h>span:first-child{flex:1;min-width:0;}
+.kl-wod-h .kl-wod-t{display:block;font-size:18px;margin-top:4px;}
+.kl-wod-v{flex:none;font-size:17px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--txt);}
+.kl-wod{padding:14px 16px;}
+
+.kp-invite{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:14px 16px;border:0;border-radius:18px;
+  background:var(--surface);font:inherit;text-align:left;color:var(--txt);cursor:pointer;box-shadow:inset 0 0 0 1.5px var(--kla2,rgba(227,6,19,.22));}
+:root[data-theme="light"] .kp-invite{background:#FFFFFF;}
+.kp-ii{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--kla,#E30613);}
+.kp-ii .gly{width:20px;height:20px;stroke:var(--klon,#FFFFFF);}
+.kp-it{flex:1;min-width:0;}
+.kp-it b{display:block;font-size:15.5px;font-weight:800;}
+.kp-it small{display:block;font-size:13px;color:var(--dim);margin-top:2px;}
+
+/* Home: the member's pass (28 Oct 2026) */
+.kl-home.kl-pass{position:relative;overflow:hidden;display:block;padding:16px 16px 14px;border-radius:22px;background:var(--g);
+  box-shadow:0 14px 30px rgba(227,6,19,.26),inset 0 0 0 1px rgba(255,255,255,.18);}
+.kl-pass.sp-hyrox{box-shadow:0 14px 30px rgba(0,0,0,.30),inset 0 0 0 1px rgba(255,255,255,.12);}
+.kl-pass.sp-ladies{box-shadow:0 14px 30px rgba(219,39,119,.28),inset 0 0 0 1px rgba(255,255,255,.22);}
+.kl-pass.sp-mens{box-shadow:0 14px 30px rgba(29,78,216,.28),inset 0 0 0 1px rgba(255,255,255,.22);}
+.kl-pass.sp-pt{box-shadow:0 14px 30px rgba(91,33,182,.28),inset 0 0 0 1px rgba(255,255,255,.22);}
+.kl-pass.off{filter:grayscale(1);box-shadow:none;}
+.kl-pass>i{position:absolute;pointer-events:none;}
+.kl-pass.sp-hyrox .kl-card-glow{background:radial-gradient(75% 90% at 92% 0%,rgba(255,212,0,.35) 0%,transparent 70%);}
+.kl-pass .kl-card-mark{width:44%;height:110%;bottom:-24%;}
+.klp-top,.klp-mid,.klp-bot,.klp-gift{position:relative;}
+.klp-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.klp-top .kl-card-logo{font-size:13px;gap:6px;} .klp-top .kl-card-logo i{width:18px;height:18px;}
+.klp-top .kl-card-chip{font-size:9.5px;padding:3px 8px;white-space:nowrap;}
+.klp-mid{margin-top:14px;}
+.klp-k{font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,.8);}
+.klp-t{font-size:24px;font-weight:900;letter-spacing:-.3px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.klp-s{font-size:13.5px;color:rgba(255,255,255,.88);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.klp-bot{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:14px;}
+.klp-st{display:flex;gap:14px;min-width:0;}
+.klp-st span{display:flex;flex-direction:column;}
+.klp-st b{font-size:17px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;}
+.klp-st small{font-size:10px;font-weight:600;color:rgba(255,255,255,.75);margin-top:3px;white-space:nowrap;}
+.klp-ci{flex:none;display:flex;align-items:center;gap:6px;padding:10px 14px;border:0;border-radius:99px;background:#FFFFFF;color:#E30613;
+  font:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.14);}
+.klp-ci .gly{width:16px;height:16px;stroke:currentColor;}
+.kl-pass.sp-hyrox .klp-ci{background:#FFD400;color:#16161A;}
+.kl-pass.sp-ladies .klp-ci{color:#DB2777;} .kl-pass.sp-mens .klp-ci{color:#1D4ED8;} .kl-pass.sp-pt .klp-ci{color:#6D28D9;}
+.klp-gift{display:flex;align-items:center;gap:7px;margin:12px -16px -14px;padding:9px 16px;background:rgba(255,255,255,.16);
+  font-size:13px;font-weight:800;}
+.klp-gift .gly{width:16px;height:16px;stroke:#FFFFFF;}
+.kl-pass.sp-hyrox .klp-gift{background:rgba(255,212,0,.14);color:#FFD400;} .kl-pass.sp-hyrox .klp-gift .gly{stroke:#FFD400;}

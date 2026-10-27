@@ -366,10 +366,9 @@ function kpHomeDone(off){ return !!(HF.data.sessions&&HF.data.sessions['kp-'+iso
 function kpCard(){
   var sp=kpSpace(); if(!sp || !kelasActive()) return '';
   var a=kpPlan();
-  if(!a) return '<div class="kp-card kp-new kp-'+sp+'"><div class="kl-kick">New · My plan</div>'+
-    '<b class="kp-h">Your week, built for you</b>'+
-    '<div class="kp-p">Tell us your goal, the days you can come and whether you also train at home. We put your classes, home sessions and meals in one plan.</div>'+
-    '<button class="kp-go" onclick="kpOpen()">'+glyph('sliders')+' Build my plan · 2 min</button></div>';
+  /* (28 Oct 2026) one line on Today, not a second big card */
+  if(!a) return '<button class="kp-invite kp-'+sp+'" onclick="kpOpen()"><span class="kp-ii">'+glyph('sliders')+'</span>'+
+    '<span class="kp-it"><b>Build my plan · 2 min</b><small>Your classes, home sessions and meals in one week</small></span><i class="kl-fold-c">›</i></button>';
   /* (28 Oct 2026, Seth: tidy, as the week before saving) the goal, the
      week's two counts as bars, the strip, the day as a card, the targets */
   var wk=kpWeek(a), today=kelasDow(kelasNowMY()), sel=KP.day||today, x=wk[sel-1], r=kpRow(x,a), t=kpNut(a);
@@ -386,7 +385,7 @@ function kpCard(){
   h+='<div class="kp-day '+r[0]+'"><div class="kp-dk">'+(sel===today?'Today':KP_DOW[sel-1])+' · '+kick+'</div>';
   if(x.kind==='class'){
     h+='<b>'+hesc(r[1])+'</b><div class="kp-pills"><span>'+kpClock(x.c.start)+'</span><span>'+(x.c.min||45)+' min</span>'+(x.c.coach?'<span>'+hesc(x.c.coach)+'</span>':'')+'</div>';
-    if(sel===today) h+='<button class="kp-go" onclick="kelasQRFull()">'+glyph('qr')+' Check in</button>';
+    /* (28 Oct 2026) Check in sits under the card at the top; once is enough */
   } else if(x.s){
     var done=kpHomeDone(sel-1);
     h+='<b>'+hesc(x.s.name)+'</b><div class="kp-pills"><span>'+x.s.mins+' min</span><span>'+x.s.moves.length+' moves</span><span>'+x.s.rounds+' rounds</span></div>'+
