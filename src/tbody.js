@@ -5213,7 +5213,7 @@ print("\n── MY PLAN (class members) ──");
   HF.data.kelas={}; ok("no plan yet: the card asks to build one", kpCard().indexOf('kpOpen()')>0);
   kpOpen(); KP.a=JSON.parse(JSON.stringify(a)); kpSave();
   ok("saved per space, and Eat follows it", !!kpPlan() && HF.data.nutrition.goal==='lose' && HF.data.nutrition.cal===n.cal);
-  ok("the card shows the week and today", kpCard().indexOf('kp-strip')>0 && kpCard().indexOf('kp-today')>0);
+  ok("the card shows the week and today", kpCard().indexOf('kp-strip')>0 && kpCard().indexOf('kp-day ')>0 && kpCard().indexOf('kp-pbs')>0);
   kelasSpace=function(){ return 'hyrox'; };
   ok("HYROX has its own programs: no card", kpCard()==='');
   if(keepSp) kelasSpace=keepSp; Kelas.data=keepK; KP.q=-1;

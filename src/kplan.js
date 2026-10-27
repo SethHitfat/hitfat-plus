@@ -370,26 +370,36 @@ function kpCard(){
     '<b class="kp-h">Your week, built for you</b>'+
     '<div class="kp-p">Tell us your goal, the days you can come and whether you also train at home. We put your classes, home sessions and meals in one plan.</div>'+
     '<button class="kp-go" onclick="kpOpen()">'+glyph('sliders')+' Build my plan · 2 min</button></div>';
+  /* (28 Oct 2026, Seth: tidy, as the week before saving) the goal, the
+     week's two counts as bars, the strip, the day as a card, the targets */
   var wk=kpWeek(a), today=kelasDow(kelasNowMY()), sel=KP.day||today, x=wk[sel-1], r=kpRow(x,a), t=kpNut(a);
   var nc=wk.filter(function(y){ return y.kind==='class'; }).length, nh=wk.filter(function(y){ return y.kind==='home'; });
-  var hd=nh.filter(function(y){ return kpHomeDone(y.dow-1); }).length, cd=typeof kelasThisWeekN==='function'?kelasThisWeekN():0;
-  var h='<div class="kp-card kp-'+sp+'"><div class="kp-top"><div><div class="kl-kick">My plan · '+hesc(KP_GOALS[a.goal][0])+'</div>'+
-    '<b class="kp-h">This week: '+Math.min(cd,nc)+'/'+nc+' classes'+(nh.length?' · '+hd+'/'+nh.length+' at home':'')+'</b></div>'+
+  var hd=nh.filter(function(y){ return kpHomeDone(y.dow-1); }).length, cd=Math.min(nc,typeof kelasThisWeekN==='function'?kelasThisWeekN():0);
+  var bar=function(cls,l,n,of){ return '<div class="kp-pb '+cls+'"><div><span>'+l+'</span><b>'+n+'<i>/'+of+'</i></b></div><u><i style="width:'+Math.round(n/(of||1)*100)+'%"></i></u></div>'; };
+  var h='<div class="kp-card kp-'+sp+'"><div class="kp-top"><div><div class="kl-kick">My plan</div><b class="kp-h">'+hesc(KP_GOALS[a.goal][0])+'</b></div>'+
     '<button class="kp-edit" onclick="kpOpen()">'+glyph('pencil')+'Edit</button></div>';
+  h+='<div class="kp-pbs">'+bar('class','Classes',cd,nc)+(nh.length?bar('home','At home',hd,nh.length):'')+'</div>';
   h+='<div class="kp-strip">'+wk.map(function(y){ var rr=kpRow(y,a), done=y.kind==='home'&&kpHomeDone(y.dow-1);
     return '<button class="'+rr[0]+(y.dow===sel?' on':'')+(y.dow===today?' now':'')+(done?' ok':'')+'" onclick="KP.day='+y.dow+';renderKelas()">'+
       '<small>'+KP_DOW[y.dow-1].charAt(0)+'</small><i>'+glyph(done?'check':rr[3])+'</i></button>'; }).join('')+'</div>';
-  h+='<div class="kp-today '+r[0]+'"><div class="kp-tk">'+(sel===today?'Today':KP_DOW[sel-1])+'</div><b>'+hesc(r[1])+'</b><small>'+hesc(r[2])+'</small>';
-  if(x.kind==='class' && sel===today) h+='<button class="kp-go" onclick="kelasQRFull()">'+glyph('qr')+' Check in</button>';
-  if(x.s){
+  var kick={'class':'Class · HQ', home:'Online · home', recover:'Recovery', rest:'Rest'}[r[0]];
+  h+='<div class="kp-day '+r[0]+'"><div class="kp-dk">'+(sel===today?'Today':KP_DOW[sel-1])+' · '+kick+'</div>';
+  if(x.kind==='class'){
+    h+='<b>'+hesc(r[1])+'</b><div class="kp-pills"><span>'+kpClock(x.c.start)+'</span><span>'+(x.c.min||45)+' min</span>'+(x.c.coach?'<span>'+hesc(x.c.coach)+'</span>':'')+'</div>';
+    if(sel===today) h+='<button class="kp-go" onclick="kelasQRFull()">'+glyph('qr')+' Check in</button>';
+  } else if(x.s){
     var done=kpHomeDone(sel-1);
-    h+='<div class="kp-moves">'+x.s.moves.map(function(m){ return '<span>'+hesc(m[0])+'</span>'; }).join('')+'</div>';
+    h+='<b>'+hesc(x.s.name)+'</b><div class="kp-pills"><span>'+x.s.mins+' min</span><span>'+x.s.moves.length+' moves</span><span>'+x.s.rounds+' rounds</span></div>'+
+      '<ol class="kp-ol">'+x.s.moves.map(function(m){ return '<li>'+hesc(m[0])+'</li>'; }).join('')+'</ol>';
     if(done && sel===today) h+='<div class="kp-done">'+glyph('check')+' Done today. Well done!</div>';
     else h+='<button class="kp-go" onclick="kpPlay('+sel+')">'+glyph('play')+' Start '+x.s.mins+' min</button>';
-  }
+  } else h+='<b>'+hesc(x.kind==='recover'?'An easy day':'Rest day')+'</b><div class="kp-dp">'+hesc(r[2])+'</div>';
+  /* a class on the timetable on a day the plan keeps for home or rest: going counts */
+  if(x.kind!=='class' && sel===today){ var c=kpClassOn(today,a.slot);
+    if(c) h+='<div class="kp-alt">'+glyph('gym')+'<span>Rather come to class? '+(c.name?hesc(c.name)+' at ':'There\'s one at ')+kpClock(c.start)+'. It counts for your week.</span></div>'; }
   h+='</div>';
-  if(t) h+='<div class="kp-tg"><div><b>'+t.cal.toLocaleString()+'</b><span>kcal</span></div><div><b>'+t.pt+'g</b><span>protein</span></div>'+
-    '<div><b>'+(t.steps/1000)+'k</b><span>steps</span></div><div><b>'+t.water+'L</b><span>water</span></div></div>';
+  if(t) h+='<div class="kp-tg">'+[['flame',t.cal.toLocaleString(),'kcal'],['food',t.pt+'g','protein'],['steps',(t.steps/1000)+'k','steps'],['water',t.water+'L','water']]
+    .map(function(y){ return '<div><span class="ic">'+glyph(y[0])+'</span><b>'+y[1]+'</b><small>'+y[2]+'</small></div>'; }).join('')+'</div>';
   return h+'</div>';
 }
 function kpPlay(dow){

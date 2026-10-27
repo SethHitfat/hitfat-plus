@@ -9166,6 +9166,39 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .kpr-fine{margin-top:8px;font-size:12.5px;line-height:1.4;color:var(--dim);text-align:center;}
 .kpr-d.recover em{background:rgba(22,163,74,.10);color:#16A34A;}
 
+/* My plan card on the Class screen, tidied like the week before saving (28 Oct 2026) */
+.kp-card .kp-h{font-size:20px;}
+.kp-pbs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:14px;}
+.kp-pb{padding:10px 12px;border-radius:14px;background:var(--surface2);}
+.kp-pb>div{display:flex;align-items:baseline;justify-content:space-between;gap:6px;}
+.kp-pb span{font-size:12px;font-weight:700;color:var(--dim);}
+.kp-pb b{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;}
+.kp-pb b i{font-style:normal;font-size:12.5px;font-weight:700;color:var(--dim);}
+.kp-pb u{display:block;height:5px;margin-top:7px;border-radius:3px;background:rgba(127,127,127,.18);overflow:hidden;text-decoration:none;}
+.kp-pb u i{display:block;height:100%;border-radius:3px;background:var(--kp);}
+.kp-pb.home u i{background:#2563EB;}
+.kp-day{position:relative;margin-top:12px;padding:14px 14px 14px 18px;border-radius:16px;background:var(--surface2);overflow:hidden;}
+.kp-day:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--hairline);}
+.kp-day.class:before{background:var(--kp);} .kp-day.home:before{background:#2563EB;} .kp-day.recover:before{background:#16A34A;}
+.kp-dk{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.kp-day.class .kp-dk{color:var(--kp);} .kp-day.home .kp-dk{color:#2563EB;} .kp-day.recover .kp-dk{color:#16A34A;}
+.kp-day b{display:block;margin-top:4px;font-size:19px;font-weight:800;letter-spacing:-.3px;}
+.kp-dp{margin-top:3px;font-size:14px;color:var(--dim);}
+.kp-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.kp-pills span{padding:5px 10px;border-radius:9px;background:var(--surface);font-size:12.5px;font-weight:750;font-variant-numeric:tabular-nums;}
+:root[data-theme="light"] .kp-pills span{background:#fff;}
+.kp-ol{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin:12px 0 0;padding:0;list-style:none;counter-reset:kp;}
+.kp-ol li{display:flex;align-items:center;gap:8px;min-width:0;font-size:13px;font-weight:650;line-height:1.25;counter-increment:kp;}
+.kp-ol li:before{content:counter(kp);flex:none;width:20px;height:20px;border-radius:7px;display:grid;place-items:center;background:rgba(37,99,235,.12);color:#2563EB;font-size:11px;font-weight:800;}
+.kp-day.home .kp-go{background:#2563EB;}
+.kp-alt{display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding-top:12px;border-top:1px solid var(--hairline);font-size:12.5px;line-height:1.4;color:var(--dim);}
+.kp-alt .gly{flex:none;width:16px;height:16px;color:var(--kp);margin-top:1px;}
+.kp-tg div{display:grid;justify-items:center;gap:2px;padding:10px 4px 9px;}
+.kp-tg .ic{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--kp) 10%,transparent);color:var(--kp);}
+.kp-tg .ic .gly{width:15px;height:15px;}
+.kp-tg b{margin-top:3px;}
+.kp-tg small{font-size:11px;color:var(--dim);font-weight:650;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -29085,26 +29118,36 @@ function kpCard(){
     '<b class="kp-h">Your week, built for you</b>'+
     '<div class="kp-p">Tell us your goal, the days you can come and whether you also train at home. We put your classes, home sessions and meals in one plan.</div>'+
     '<button class="kp-go" onclick="kpOpen()">'+glyph('sliders')+' Build my plan · 2 min</button></div>';
+  /* (28 Oct 2026, Seth: tidy, as the week before saving) the goal, the
+     week's two counts as bars, the strip, the day as a card, the targets */
   var wk=kpWeek(a), today=kelasDow(kelasNowMY()), sel=KP.day||today, x=wk[sel-1], r=kpRow(x,a), t=kpNut(a);
   var nc=wk.filter(function(y){ return y.kind==='class'; }).length, nh=wk.filter(function(y){ return y.kind==='home'; });
-  var hd=nh.filter(function(y){ return kpHomeDone(y.dow-1); }).length, cd=typeof kelasThisWeekN==='function'?kelasThisWeekN():0;
-  var h='<div class="kp-card kp-'+sp+'"><div class="kp-top"><div><div class="kl-kick">My plan · '+hesc(KP_GOALS[a.goal][0])+'</div>'+
-    '<b class="kp-h">This week: '+Math.min(cd,nc)+'/'+nc+' classes'+(nh.length?' · '+hd+'/'+nh.length+' at home':'')+'</b></div>'+
+  var hd=nh.filter(function(y){ return kpHomeDone(y.dow-1); }).length, cd=Math.min(nc,typeof kelasThisWeekN==='function'?kelasThisWeekN():0);
+  var bar=function(cls,l,n,of){ return '<div class="kp-pb '+cls+'"><div><span>'+l+'</span><b>'+n+'<i>/'+of+'</i></b></div><u><i style="width:'+Math.round(n/(of||1)*100)+'%"></i></u></div>'; };
+  var h='<div class="kp-card kp-'+sp+'"><div class="kp-top"><div><div class="kl-kick">My plan</div><b class="kp-h">'+hesc(KP_GOALS[a.goal][0])+'</b></div>'+
     '<button class="kp-edit" onclick="kpOpen()">'+glyph('pencil')+'Edit</button></div>';
+  h+='<div class="kp-pbs">'+bar('class','Classes',cd,nc)+(nh.length?bar('home','At home',hd,nh.length):'')+'</div>';
   h+='<div class="kp-strip">'+wk.map(function(y){ var rr=kpRow(y,a), done=y.kind==='home'&&kpHomeDone(y.dow-1);
     return '<button class="'+rr[0]+(y.dow===sel?' on':'')+(y.dow===today?' now':'')+(done?' ok':'')+'" onclick="KP.day='+y.dow+';renderKelas()">'+
       '<small>'+KP_DOW[y.dow-1].charAt(0)+'</small><i>'+glyph(done?'check':rr[3])+'</i></button>'; }).join('')+'</div>';
-  h+='<div class="kp-today '+r[0]+'"><div class="kp-tk">'+(sel===today?'Today':KP_DOW[sel-1])+'</div><b>'+hesc(r[1])+'</b><small>'+hesc(r[2])+'</small>';
-  if(x.kind==='class' && sel===today) h+='<button class="kp-go" onclick="kelasQRFull()">'+glyph('qr')+' Check in</button>';
-  if(x.s){
+  var kick={'class':'Class · HQ', home:'Online · home', recover:'Recovery', rest:'Rest'}[r[0]];
+  h+='<div class="kp-day '+r[0]+'"><div class="kp-dk">'+(sel===today?'Today':KP_DOW[sel-1])+' · '+kick+'</div>';
+  if(x.kind==='class'){
+    h+='<b>'+hesc(r[1])+'</b><div class="kp-pills"><span>'+kpClock(x.c.start)+'</span><span>'+(x.c.min||45)+' min</span>'+(x.c.coach?'<span>'+hesc(x.c.coach)+'</span>':'')+'</div>';
+    if(sel===today) h+='<button class="kp-go" onclick="kelasQRFull()">'+glyph('qr')+' Check in</button>';
+  } else if(x.s){
     var done=kpHomeDone(sel-1);
-    h+='<div class="kp-moves">'+x.s.moves.map(function(m){ return '<span>'+hesc(m[0])+'</span>'; }).join('')+'</div>';
+    h+='<b>'+hesc(x.s.name)+'</b><div class="kp-pills"><span>'+x.s.mins+' min</span><span>'+x.s.moves.length+' moves</span><span>'+x.s.rounds+' rounds</span></div>'+
+      '<ol class="kp-ol">'+x.s.moves.map(function(m){ return '<li>'+hesc(m[0])+'</li>'; }).join('')+'</ol>';
     if(done && sel===today) h+='<div class="kp-done">'+glyph('check')+' Done today. Well done!</div>';
     else h+='<button class="kp-go" onclick="kpPlay('+sel+')">'+glyph('play')+' Start '+x.s.mins+' min</button>';
-  }
+  } else h+='<b>'+hesc(x.kind==='recover'?'An easy day':'Rest day')+'</b><div class="kp-dp">'+hesc(r[2])+'</div>';
+  /* a class on the timetable on a day the plan keeps for home or rest: going counts */
+  if(x.kind!=='class' && sel===today){ var c=kpClassOn(today,a.slot);
+    if(c) h+='<div class="kp-alt">'+glyph('gym')+'<span>Rather come to class? '+(c.name?hesc(c.name)+' at ':'There\'s one at ')+kpClock(c.start)+'. It counts for your week.</span></div>'; }
   h+='</div>';
-  if(t) h+='<div class="kp-tg"><div><b>'+t.cal.toLocaleString()+'</b><span>kcal</span></div><div><b>'+t.pt+'g</b><span>protein</span></div>'+
-    '<div><b>'+(t.steps/1000)+'k</b><span>steps</span></div><div><b>'+t.water+'L</b><span>water</span></div></div>';
+  if(t) h+='<div class="kp-tg">'+[['flame',t.cal.toLocaleString(),'kcal'],['food',t.pt+'g','protein'],['steps',(t.steps/1000)+'k','steps'],['water',t.water+'L','water']]
+    .map(function(y){ return '<div><span class="ic">'+glyph(y[0])+'</span><b>'+y[1]+'</b><small>'+y[2]+'</small></div>'; }).join('')+'</div>';
   return h+'</div>';
 }
 function kpPlay(dow){
