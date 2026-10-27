@@ -420,9 +420,7 @@ header .w{display:flex;align-items:center;justify-content:space-between;height:6
 .gi span{display:block;margin-top:2px;font-size:13.5px;line-height:1.4;color:var(--ink2)}
 .gi.bonus{background:linear-gradient(135deg,#FFF1E8,#FFE3EF);box-shadow:inset 0 0 0 1.5px #F3C3A8}
 .gi.bonus p{padding-right:60px}
-.gi em,.pcard li.bn em{position:absolute;top:10px;right:12px;padding:3px 8px;border-radius:999px;background:linear-gradient(135deg,#C9947F,#E3B39C);color:#fff;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.06em}
-.pcard li.bn{position:relative}
-.pcard li.bn em{position:static;margin-right:6px;align-self:center}
+.gi em{position:absolute;top:10px;right:12px;padding:3px 8px;border-radius:999px;background:linear-gradient(135deg,#C9947F,#E3B39C);color:#fff;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.06em}
 .getp{display:flex;align-items:baseline;justify-content:center;gap:8px;margin-top:18px}
 .getp b{font-size:34px;font-weight:800;letter-spacing:-.03em;color:var(--m)}
 .getp span{font-size:13.5px;color:var(--ink2);font-weight:700}
@@ -564,16 +562,33 @@ header .w{display:flex;align-items:center;justify-content:space-between;height:6
 /* price: a glass card on magenta */
 .price{background:radial-gradient(90% 60% at 50% 0%,#F06CB0 0%,transparent 70%),linear-gradient(180deg,#B8256F,#7E1452);color:#fff}
 .price .pill{background:rgba(255,255,255,.18);color:#fff}
-.pcard{max-width:520px;margin:26px auto 0;padding:28px 22px;border-radius:30px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.pcard .amt{font-size:76px;font-weight:800;letter-spacing:-.05em;line-height:1}
-.pcard .amt small{display:block;margin-top:8px;font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
-.pcard .per{margin-top:8px;font-size:15px;opacity:.9}
-.pcard ul{margin:20px 0 0;padding:0;list-style:none;display:grid;gap:9px;text-align:left}
-.pcard li{display:flex;gap:10px;font-size:14.5px;line-height:1.4}
-.pcard li::before{content:'';flex:none;width:20px;height:20px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C02A7C' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/12px no-repeat}
-.price .cta{margin-top:24px;width:100%;background:#fff;color:var(--m);box-shadow:0 14px 30px -10px rgba(0,0,0,.4)}
+/* the price card, 27 Oct 2026 (Seth: "nampak wow, tersusun, nampak mahal"): an ivory card with a rose-gold rim on the plum band, the package as four numbers, the bonuses as one strip, a ticket's tear line, then the price */
+.pcard{position:relative;max-width:520px;margin:28px auto 0;padding:30px 22px 24px;border-radius:32px;color:var(--ink);
+  background:linear-gradient(#FFFCFA,#FFF6F1) padding-box,linear-gradient(140deg,#F3D3C2,#C9947F 40%,#FBE6DA 60%,#B9806A) border-box;border:2px solid transparent;
+  box-shadow:0 30px 60px -20px rgba(40,4,26,.55),0 0 0 8px rgba(255,255,255,.07)}
+.pk-k{font-size:11.5px;font-weight:800;letter-spacing:.22em;color:#B07A66}
+.pk{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.pk>div{display:grid;justify-items:center;align-content:start;gap:2px;padding:14px 8px 13px;border-radius:20px;background:#fff;border:1px solid #F3E2DA;box-shadow:0 6px 16px -10px rgba(94,26,71,.25)}
+.pk i{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#FBEFF5;color:var(--m)}
+.pk i .ic{width:19px;height:19px}
+.pk b{margin-top:6px;font-size:36px;font-weight:800;line-height:1;letter-spacing:-.04em;background:linear-gradient(180deg,var(--m),var(--m2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.pk span{font-size:13px;line-height:1.35;color:var(--ink2);font-weight:600}
+.pk-bn{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 8px;margin-top:12px;padding:12px;border-radius:18px;background:linear-gradient(135deg,#FBEDE5,#F6E1D6)}
+.pk-bn em{padding:3px 9px;border-radius:999px;background:linear-gradient(135deg,#C9947F,#E3B39C);color:#fff;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.08em}
+.pk-bn span{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:#7A4A3C}
+.pk-bn .ic{width:15px;height:15px;color:#B07A66}
+.pk-cut{position:relative;margin:22px -22px 18px;border-top:2px dashed #EBD3C8}
+.pk-cut::before,.pk-cut::after{content:'';position:absolute;top:-13px;width:24px;height:24px;border-radius:50%;background:#9A1C60}
+.pk-cut::before{left:-13px}.pk-cut::after{right:-13px}
+.pk-all{font-size:14px;font-weight:700;color:var(--ink2)}
+.pcard .amt{margin-top:2px;font-size:84px;font-weight:800;letter-spacing:-.05em;line-height:1;background:linear-gradient(180deg,var(--m) 20%,var(--m2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.pcard .amt sup{font-size:.34em;letter-spacing:0;vertical-align:.95em;margin-right:4px}
+.pcard .per{margin-top:8px;font-size:14px;color:var(--ink2)}
+.pcard .per b{color:var(--ink)}
+.price .pcard .cta{margin-top:20px;width:100%;background:linear-gradient(135deg,var(--pink),var(--m) 55%,var(--m2));color:#fff;box-shadow:0 12px 30px -8px rgba(192,42,124,.6),inset 0 1px 0 rgba(255,255,255,.35)}
 .pay{display:flex;justify-content:center;gap:8px;margin-top:14px}
-.pay span{padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.16);font-size:12.5px;font-weight:700}
+.pay span{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;background:#F7ECEF;color:var(--ink2);font-size:12.5px;font-weight:700}
+.pay .ic{width:13px;height:13px}
 .clear{max-width:520px;margin:16px auto 0;font-size:13.5px;opacity:.85}
 
 /* FAQ: Simple's plus buttons */
@@ -984,18 +999,21 @@ details.more[open]>summary{margin-bottom:6px}
   <h2 class="sec-h" style="color:#fff">Kurang dari satu kelas walk-in.</h2>
   <p class="sec-p" style="color:rgba(255,255,255,.88)">Satu kelas walk-in di gym HITFAT ialah RM40. MAK2FIT 30 memberi anda 30 hari pelan peribadi.</p>
   <div class="pcard">
-    <img class="mk-logo" src="img/mak2fit-logo-ww.png" alt="MAK2FIT 30" width="720" height="112" loading="lazy">
-    <div class="amt">RM39<small>sekali bayar</small></div>
-    <div class="per">Kurang dari RM1.30 sehari · tiada langganan · milik anda selamanya</div>
-    <ul>
-      <li>Pelan 30 hari ikut 12 jawapan anda</li>
-      <li>30 hari latihan dengan video, tanpa lompat</li>
-      <li>Menu Malaysia ikut kalori anda, nasi disukat</li>
-      <li>Check-in Hari 1, 15 &amp; 30</li>
-      <li class="bn"><em>BONUS</em>Nutrition Academy · 10 scan AI · senarai belanja</li>
-    </ul>
+    <img class="mk-logo" src="img/mak2fit-logo.png" alt="MAK2FIT 30" width="720" height="112" loading="lazy">
+    <div class="pk-k">PAKEJ LENGKAP</div>
+    <div class="pk">
+      <div><i><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></i><b>12</b><span>soalan, pelan<br>ikut anda</span></div>
+      <div><i><svg class="ic" aria-hidden="true"><use href="#i-dumb"/></svg></i><b>22</b><span>sesi latihan<br>dengan video</span></div>
+      <div><i><svg class="ic" aria-hidden="true"><use href="#i-bowl"/></svg></i><b>64</b><span>hidangan<br>Malaysia</span></div>
+      <div><i><svg class="ic" aria-hidden="true"><use href="#i-tape"/></svg></i><b>3</b><span>check-in<br>kemajuan</span></div>
+    </div>
+    <div class="pk-bn"><em>BONUS</em><span><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg>Nutrition Academy</span><span><svg class="ic" aria-hidden="true"><use href="#i-scan"/></svg>10 scan AI</span><span><svg class="ic" aria-hidden="true"><use href="#i-cart"/></svg>Senarai belanja</span></div>
+    <div class="pk-cut" aria-hidden="true"></div>
+    <div class="pk-all">Semua ini, untuk</div>
+    <div class="amt"><sup>RM</sup>39</div>
+    <div class="per"><b>Sekali bayar</b> · tiada langganan · milik anda selamanya</div>
     <a class="cta" href="#" data-buy="price">Saya Nak Mula — RM39</a>
-    <div class="pay"><span>FPX Online Banking</span><span>DuitNow QR</span></div>
+    <div class="pay"><span><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>FPX Online Banking</span><span>DuitNow QR</span></div>
   </div>
   <p class="clear">Supaya jelas: MAK2FIT 30 ialah program kendiri dalam app, tanpa coach peribadi atau sesi 1-ke-1. Untuk soalan akses atau bayaran, kami bantu melalui WhatsApp.</p>
 </section>
