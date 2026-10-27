@@ -5187,5 +5187,37 @@ print("\n── AFFILIATES ──");
   sb=keepSb; HF.userId=keepUid; _aff=undefined;
 })();
 
+print("\n── MY PLAN (class members) ──");
+(function(){
+  var keepK=Kelas.data, keepSp=typeof kelasSpace==='function'?kelasSpace:null;
+  var T={1:['08:15','10:30','18:00','20:15'],3:['08:15','10:30','18:00','20:15'],4:['08:15','10:30','17:30','20:15'],6:['09:30','17:30','20:15']}, cls=[];
+  Object.keys(T).forEach(function(d){ T[d].forEach(function(t){ cls.push({name:'HITFAT Active Class',dow:+d,start:t,min:45,category:'Membership'}); }); });
+  Kelas.data={linked:true, name:'Aina Rahman', memberships:[{category:'Membership',start_date:'2026-10-01',end_date:'2099-12-31',active:true}], classes:cls, checkins:[]};
+  var a={goal:'fat', level:'regular', pain:['knee'], mode:'hybrid', days:[1,3,4,6], slot:'pm', home:2, mins:20, equip:['none'], wt:64, ht:158, age:34, gender:'female'};
+  var wk=kpWeek(a);
+  ok("classes on the days chosen, at the evening class", wk[0].kind==='class' && wk[0].c.start==='18:00' && wk[3].c.start==='17:30' && wk[5].c.start==='17:30');
+  ok("two home days, between classes, never on a class day", wk.filter(function(x){ return x.kind==='home'; }).length===2 && wk[1].kind==='home');
+  ok("morning picks the first class", kpWeek({days:[6],slot:'am'})[5].c.start==='09:30');
+  ok("a day with no class is never a class day", kpWeek({days:[5],slot:'pm'})[4].kind==='rest');
+  var moves=[]; wk.forEach(function(x){ if(x.s) moves=moves.concat(x.s.moves.map(function(m){ return m[0]; })); });
+  ok("knees: no squat, lunge or jump at home", moves.length && !moves.some(function(n){ return /squat|lunge|jump|jack|high knee|burpee/i.test(n); }), moves.join(','));
+  ok("every home move is in the filmed library", moves.every(function(n){ return !!kpDBRow(n); }));
+  ['fat','strong','fit','tone','health'].forEach(function(g){ ['body','db','kb'].forEach(function(k){
+    var s=kpSession({goal:g, level:'strong', mins:30, equip:[k==='body'?'none':k]},0);
+    ok(g+' · '+k+': a session that fits the time', s.moves.length>=5 && s.mins<=33 && s.rounds>=2 && kpExs(s).every(function(e){ return e.v; }), s.mins+' min'); }); });
+  var gym=kpWeek({goal:'strong', mode:'gym', days:[1,3,4,6], slot:'pm'});
+  ok("HITFAT only: no home sessions, a recovery day after a full week", !gym.some(function(x){ return x.kind==='home'; }) && gym.filter(function(x){ return x.kind==='recover'; }).length===1);
+  var n=kpNut(a);
+  ok("targets: calories at or over the floor, protein 1.8 g/kg for fat loss", n && n.cal>=1200 && n.pt===Math.round(64*1.8), n&&n.cal);
+  kelasSpace=function(){ return 'active'; };
+  HF.data.kelas={}; ok("no plan yet: the card asks to build one", kpCard().indexOf('kpOpen()')>0);
+  kpOpen(); KP.a=JSON.parse(JSON.stringify(a)); kpSave();
+  ok("saved per space, and Eat follows it", !!kpPlan() && HF.data.nutrition.goal==='lose' && HF.data.nutrition.cal===n.cal);
+  ok("the card shows the week and today", kpCard().indexOf('kp-strip')>0 && kpCard().indexOf('kp-today')>0);
+  kelasSpace=function(){ return 'hyrox'; };
+  ok("HYROX has its own programs: no card", kpCard()==='');
+  if(keepSp) kelasSpace=keepSp; Kelas.data=keepK; KP.q=-1;
+})();
+
 print("\n"+pass+" passed, "+fail+" failed");
 if(fail) throw new Error(fail+" failed");

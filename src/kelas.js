@@ -281,8 +281,8 @@ function renderKelas(){
       '<p class="kl-p">Sign in to HITFAT+, then connect your class membership with your phone number.</p></div>';
     return;
   }
-  el.innerHTML=kelasLinked()?kelasHTML():kelasLinkHTML();
-  if(kelasLinked() && (Kelas.tab||'today')==='today'){ kelasBaraLive(); setTimeout(kelasCardMoment,700); }
+  el.innerHTML=kelasLinked()?(typeof KP!=='undefined'&&KP.q>=0?kpQuizHTML():kelasHTML()):kelasLinkHTML();
+  if(kelasLinked() && !(typeof KP!=='undefined'&&KP.q>=0) && (Kelas.tab||'today')==='today'){ kelasBaraLive(); setTimeout(kelasCardMoment,700); }
 }
 
 function kelasQR(px){ return typeof qrSVG==='function' ? qrSVG(String(Kelas.data.member_id), px) : ''; }
@@ -336,6 +336,9 @@ function kelasTodayTab(){
   if(n) h+='<div class="kl-next kl-next-top"><div class="kl-nt">Next class</div>'+
      '<div class="kl-nw">'+kelasWhen(n)+' · '+kelasClock(n.c.start)+'</div>'+
      '<div class="kl-nn">'+hesc(n.c.name)+' · '+(n.c.min||60)+' min'+(n.c.coach?' · '+hesc(n.c.coach):'')+'</div></div>';
+
+  /* My plan: their week, classes and home together (kplan.js, 27 Oct 2026) */
+  if(typeof kpCard==='function') h+=kpCard();
 
   /* FIRST 30: a new member's first month, mission by mission; then a
      60-day journey for the goal */
