@@ -567,12 +567,16 @@ header .w{display:flex;align-items:center;justify-content:space-between;height:6
   background:linear-gradient(#FFFCFA,#FFF6F1) padding-box,linear-gradient(140deg,#F3D3C2,#C9947F 40%,#FBE6DA 60%,#B9806A) border-box;border:2px solid transparent;
   box-shadow:0 30px 60px -20px rgba(40,4,26,.55),0 0 0 8px rgba(255,255,255,.07)}
 .pk-k{font-size:11.5px;font-weight:800;letter-spacing:.22em;color:#B07A66}
-.pk{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-.pk>div{display:grid;justify-items:center;align-content:start;gap:2px;padding:14px 8px 13px;border-radius:20px;background:#fff;border:1px solid #F3E2DA;box-shadow:0 6px 16px -10px rgba(94,26,71,.25)}
-.pk i{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#FBEFF5;color:var(--m)}
-.pk i .ic{width:19px;height:19px}
-.pk b{margin-top:6px;font-size:36px;font-weight:800;line-height:1;letter-spacing:-.04em;background:linear-gradient(180deg,var(--m),var(--m2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.pk span{font-size:13px;line-height:1.35;color:var(--ink2);font-weight:600}
+.pk-me{display:flex;align-items:center;gap:14px;margin-top:14px;padding:16px;border-radius:22px;text-align:left;color:#fff;
+  background:radial-gradient(120% 140% at 0% 0%,#F06CB0 0%,transparent 55%),linear-gradient(135deg,var(--m),var(--m2));box-shadow:0 14px 28px -14px rgba(142,20,96,.7)}
+.pk-me i{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:15px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3)}
+.pk-me i .ic{width:24px;height:24px}
+.pk-me small{display:block;font-size:11px;font-weight:800;letter-spacing:.2em;color:#F8D9C9}
+.pk-me b{display:block;margin-top:3px;font-size:16.5px;line-height:1.3;font-weight:800}
+.pk{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.pk>div{display:grid;justify-items:center;align-content:start;gap:4px;padding:14px 4px 12px;border-radius:18px;background:#fff;border:1px solid #F3E2DA;box-shadow:0 6px 16px -10px rgba(94,26,71,.25)}
+.pk b{font-size:34px;font-weight:800;line-height:1;letter-spacing:-.04em;background:linear-gradient(180deg,var(--m),var(--m2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.pk span{font-size:12px;line-height:1.3;color:var(--ink2);font-weight:700;letter-spacing:.01em}
 .pk-bn{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 8px;margin-top:12px;padding:12px;border-radius:18px;background:linear-gradient(135deg,#FBEDE5,#F6E1D6)}
 .pk-bn em{padding:3px 9px;border-radius:999px;background:linear-gradient(135deg,#C9947F,#E3B39C);color:#fff;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.08em}
 .pk-bn span{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:#7A4A3C}
@@ -1000,14 +1004,17 @@ details.more[open]>summary{margin-bottom:6px}
   <p class="sec-p" style="color:rgba(255,255,255,.88)">Satu kelas walk-in di gym HITFAT ialah RM40. MAK2FIT 30 memberi anda 30 hari pelan peribadi.</p>
   <div class="pcard">
     <img class="mk-logo" src="img/mak2fit-logo.png" alt="MAK2FIT 30" width="720" height="112" loading="lazy">
-    <div class="pk-k">PAKEJ LENGKAP</div>
-    <div class="pk">
-      <div><i><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></i><b>12</b><span>soalan, pelan<br>ikut anda</span></div>
-      <div><i><svg class="ic" aria-hidden="true"><use href="#i-dumb"/></svg></i><b>22</b><span>sesi latihan<br>dengan video</span></div>
-      <div><i><svg class="ic" aria-hidden="true"><use href="#i-bowl"/></svg></i><b>64</b><span>hidangan<br>Malaysia</span></div>
-      <div><i><svg class="ic" aria-hidden="true"><use href="#i-tape"/></svg></i><b>3</b><span>check-in<br>kemajuan</span></div>
+    <div class="pk-k">THE COMPLETE PACKAGE</div>
+    <div class="pk-me">
+      <i><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></i>
+      <div><small>PERSONAL PLAN</small><b>Dibina khas untuk badan, masa &amp; selera anda</b></div>
     </div>
-    <div class="pk-bn"><em>BONUS</em><span><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg>Nutrition Academy</span><span><svg class="ic" aria-hidden="true"><use href="#i-scan"/></svg>10 scan AI</span><span><svg class="ic" aria-hidden="true"><use href="#i-cart"/></svg>Senarai belanja</span></div>
+    <div class="pk">
+      <div><b>22</b><span>Guided<br>Workouts</span></div>
+      <div><b>64</b><span>Malaysian<br>Meals</span></div>
+      <div><b>3</b><span>Progress<br>Check-ins</span></div>
+    </div>
+    <div class="pk-bn"><em>BONUS</em><span><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg>Nutrition Academy</span><span><svg class="ic" aria-hidden="true"><use href="#i-scan"/></svg>10 AI Food Scans</span><span><svg class="ic" aria-hidden="true"><use href="#i-cart"/></svg>Shopping List</span></div>
     <div class="pk-cut" aria-hidden="true"></div>
     <div class="pk-all">Semua ini, untuk</div>
     <div class="amt"><sup>RM</sup>39</div>
