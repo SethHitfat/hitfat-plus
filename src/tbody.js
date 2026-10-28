@@ -4672,11 +4672,20 @@ print("\n── HITFAT CLASS · PHYSICAL CLASS MEMBERS ──");
   ok("...one way in from Me", kelasMeRow().indexOf('openKelasLink()')>0);
   ok("...and one line under the paywall", paywallHTML(true).indexOf('Connect with your phone number')>0);
   ok("...not active", !kelasActive());
-  /* a phone number is not proof: the counter approves the request in person (48-os-plus-claim-lulus.sql) */
+  /* connected at once, no counter step (OS 106, 25 Oct 2026; the app's words since 28 Oct) */
   Kelas.step='confirm'; Kelas.found={name:'S*** M***', category:'Membership', end_date:'2026-12-31', mine:false};
-  ok("connecting asks for no code, and says the counter approves it", kelasLinkHTML().indexOf('kl-kod')<0 && kelasLinkHTML().indexOf('approve it in person')>0 && kelasLinkHTML().indexOf('kelasClaim()')>0);
-  Kelas.found.mine=true;
-  ok("...not said when the number is already this account's", kelasLinkHTML().indexOf('approve it in person')<0);
+  ok("connecting asks for no code and no counter: one tap opens it", kelasLinkHTML().indexOf('kl-kod')<0 && kelasLinkHTML().indexOf('approve it in person')<0 && kelasLinkHTML().indexOf('One tap and your HITFAT+ All Access opens')>0 && kelasLinkHTML().indexOf('kelasClaim()')>0);
+  /* one tap (28 Oct 2026): the number, Connect, connected; no "Is this you?" */
+  (function(){ var keepCall=kelasCall, keepLE=loadEntitlement, calls=[];
+    Kelas.step='phone'; Kelas.found=null; Kelas.err='';
+    ok("the phone step has one button, Connect", kelasLinkHTML().indexOf('>Connect<')>0 && kelasLinkHTML().indexOf('Find my membership')<0);
+    kelasCall=function(a,b){ calls.push(a); return Promise.resolve(a==='lookup'?{found:true,active:true,name:'S*** M***',category:'Membership',end_date:'2026-12-31'}:{ok:false,error:'taken'}); };
+    loadEntitlement=function(){ return Promise.resolve(); };
+    Kelas.phone='0123456789'; var inp=$('kl-ph'); if(inp) inp.value='0123456789';
+    kelasFind();
+    flush(); flush();
+    ok("...a number found is claimed at once, without asking", calls.join()==='lookup,claim' && Kelas.step==='phone' && Kelas.err===KELAS_ERR.taken);
+    kelasCall=keepCall; loadEntitlement=keepLE; Kelas.err=''; Kelas.found=null; })();
   var keepU=HF.userId; HF.userId='u-wait';
   Kelas.wait={name:'S*** M***', category:'Membership', end_date:'2026-12-31', at:Date.now()}; kelasWaitSet(Kelas.wait); Kelas.step='wait';
   ok("asked: waiting for the counter, checked again without typing anything", kelasLinkHTML().indexOf('Waiting for the counter')>0 && kelasLinkHTML().indexOf('kelasRecheck()')>0 && kelasLinkHTML().indexOf('id="kl-ph"')<0 && !!kelasWaitGet());

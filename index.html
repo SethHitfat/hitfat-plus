@@ -28478,7 +28478,8 @@ function kelasLinkHTML(){
     '<p class="kl-p">For members of HITFAT Active Class, Ladies Only, Mens Only and HYROX at HITFAT HQ. '+
     'HITFAT+ All Access is included with your class.</p>';
   if(Kelas.step==='wait' && Kelas.wait){
-    /* asked, and waiting for the counter to approve it in person */
+    /* asked, and waiting for the counter to approve it in person (only a
+       request filed before OS 106 connected at once can still be here) */
     const w=Kelas.wait;
     h+='<div class="kl-found kl-wait"><div class="kl-fq">Waiting for the counter</div>'+
        '<div class="kl-fn">'+hesc(w.name||'')+'</div>'+
@@ -28491,17 +28492,18 @@ function kelasLinkHTML(){
     h+='<div class="kl-found"><div class="kl-fq">Is this you?</div>'+
        '<div class="kl-fn">'+hesc(f.name)+'</div>'+
        '<div class="kl-fc">'+hesc(kelasCat(f.category))+' · until '+kelasDate(f.end_date)+'</div></div>'+
-       /* a phone number alone is not proof it is you: the counter approves
-          the request in person (48-os-plus-claim-lulus.sql). Already
-          yours: connected at once. */
-       (f.mine?'':'<div class="kl-hint">Staff at the HITFAT HQ counter will approve it in person.</div>')+
+       /* connected at once (OS 106, 25 Oct 2026, Seth: no counter step);
+          the hint said the counter approves until 28 Oct. A number already
+          on another account still comes back 'taken'. */
+       '<div class="kl-hint">One tap and your HITFAT+ All Access opens.</div>'+
        '<button class="bigbtn kl-go" onclick="kelasClaim()"'+(Kelas.busy?' disabled':'')+'>'+(Kelas.busy?'Connecting…':'Yes, this is me')+'</button>'+
        '<button class="kl-alt" onclick="kelasBack()">No, use another number</button>';
   } else {
     h+='<label class="kl-lab" for="kl-ph">Phone number at the counter</label>'+
        '<input id="kl-ph" class="kl-in" type="tel" inputmode="tel" autocomplete="tel" placeholder="012-345 6789" value="'+hesc(Kelas.phone)+'" '+
        'onkeydown="if(event.key===\'Enter\')kelasFind()">'+
-       '<button class="bigbtn kl-go" onclick="kelasFind()"'+(Kelas.busy?' disabled':'')+'>'+(Kelas.busy?'Checking…':'Find my membership')+'</button>';
+       '<button class="bigbtn kl-go" onclick="kelasFind()"'+(Kelas.busy?' disabled':'')+'>'+(Kelas.busy?'Connecting…':'Connect')+'</button>'+
+       '<div class="kl-hint">Your HITFAT+ All Access opens straight away.</div>';
   }
   if(Kelas.err) h+='<div class="kl-err">'+Kelas.err+'</div>';
   h+='<div class="kl-fine">Not a class member yet? <a href="https://hitfat.io/one" target="_blank" rel="noopener">See the classes at HITFAT HQ</a></div></div>';
@@ -28542,7 +28544,11 @@ async function kelasFind(){
     if(!r.found) Kelas.err=KELAS_ERR.not_found;
     else if(r.taken) Kelas.err=KELAS_ERR.taken;
     else if(!r.active) Kelas.err=KELAS_ERR.expired;
-    else { Kelas.found=r; Kelas.step='confirm'; }
+    /* found and free: connected at once, no "Is this you?" (28 Oct 2026,
+       Seth: "masukkan nombor phone saja… dia boleh access"); their name
+       greets them on the Class screen. The confirm step stays below,
+       unused, for a way back. */
+    else { Kelas.found=r; Kelas.busy=false; return kelasClaim(); }
   }catch(e){ Kelas.err=KELAS_ERR[e.message]||KELAS_ERR.failed; }
   Kelas.busy=false; renderKelas();
 }
