@@ -669,6 +669,19 @@ details.more[open]>summary{margin-bottom:6px}
   .feats::-webkit-scrollbar{display:none}
   .feats .fc{scroll-snap-align:center}
 }
+/* 29 Oct 2026, Seth: "x smooth" swiping the 5 app cards on iPhone. Ten frosted chips bobbing forever,
+   frosted bars over moving content and big phone shadows were all repainted every frame of the swipe.
+   Now: solid chips, solid bars on phones, each card and phone on its own layer, sideways rows that
+   keep their swipe to themselves, and every animation in a row paused while it is being swiped. */
+.lv-chip{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,.97)}
+.nums,.weeks,.feats,.tx-row,.bas,.qts{overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.feats .fc,.nums .num,.weeks .wk{transform:translateZ(0);contain:paint}
+.lv-ph{transform:translateZ(0)}
+.swiping .lv-chip,.swiping .lv-tap{animation-play-state:paused!important}
+@media(max-width:899px){
+  header{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,248,251,.97)}
+  .bar{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,.98)}
+}
 </style>
 </head>
 <body>
@@ -1249,8 +1262,9 @@ if('IntersectionObserver' in window){
 (function(){
   var still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('[data-lv]').forEach(function(lv){
-    var card=lv.closest('.fc'), t=null, on=false;
+    var card=lv.closest('.fc'), row=card.closest('.feats'), t=null, on=false;
     function loop(){ if(!on) return;
+      if(row && row.classList.contains('swiping')){ t=setTimeout(loop,400); return; }   // never change screens mid-swipe
       lv.classList.add('t'); setTimeout(function(){ lv.classList.remove('t'); lv.classList.add('b'); },420);
       t=setTimeout(function(){ lv.classList.remove('b'); t=setTimeout(loop,2300); },3600); }
     if(!('IntersectionObserver' in window)){ card.classList.add('in'); return; }
@@ -1259,6 +1273,11 @@ if('IntersectionObserver' in window){
       else { on=false; clearTimeout(t); lv.classList.remove('t','b'); } },{threshold:.45}).observe(card);
   });
 })();
+/* a sideways row is marked while it is being swiped, so its animations hold still (29 Oct) */
+document.querySelectorAll('.nums,.weeks,.feats,.tx-row,.bas,.qts').forEach(function(row){
+  var t=null; row.addEventListener('scroll',function(){ row.classList.add('swiping'); clearTimeout(t);
+    t=setTimeout(function(){ row.classList.remove('swiping'); },180); },{passive:true});
+});
 /* the training calendar (the program's own 30 days, from ladies30.js) */
 (function(){
   var D=[["Check-in & Fit Test","test",5,1,["Bodyweight Squat","Knee Push Ups","Hip Thrust","Crunch","Plank"],"Hari ini garisan permulaan anda. Rekod badan dahulu, kemudian fit test — atau langkau fit test jika belum bersedia."],["Full Body Basics","work",11,2,["Bodyweight Squat","Wall Push Up","Hip Thrust","Dead Bug","Calf Raises"],"Perlahan dan belajar bentuk setiap gerakan. Laju datang kemudian."],["Glutes & Legs","work",11,2,["Bodyweight Squat","Reverse Lunges","Hip Thrust","Side Lunges","Wall Sit"],"Tolak lantai dengan tumit. Kaki dan punggung ialah enjin terbesar anda."],["Core Basics","work",10,2,["Dead Bug","Crunch","Bird Dog","Reverse Crunch","Plank"],"Tekan pinggang ke lantai. Perut yang rata bermula dengan teras yang kuat."],["Posture & Upper Body","work",11,2,["Wall Push Up","Bird Dog","Knee Push Ups","Dead Bug","Plank"],"Bahu ke belakang, dada terbuka. Postur yang baik dilatih, bukan diharap."],["Low-Impact Burn","work",10,2,["Squat Pulse","Mountain Climber","Alternating Lunges","Bicycle Crunch","Calf Raises"],"Gerak berterusan tanpa lompat. Berpeluh tetap berpeluh."],["Stretch & Recover","recover",5,1,["Pemanasan","Bird Dog","Dead Bug","Hip Thrust","Calf Raises"],"Hari pulih. Tambah jalan kaki 20 minit jika boleh."],["Full Body","work",16,3,["Bodyweight Squat","Knee Push Ups","Reverse Lunges","Mountain Climber","Hip Thrust"],"Tiga pusingan bermula hari ini. Rehat bila pemasa kata, bukan sebelum."],["Glute Focus","work",16,3,["Hip Thrust","Curtsy Lunges","Single Leg Glutes Bridge","Side Lunges","Squat Hold"],"Picit punggung di setiap ulangan. Rasa ototnya bekerja."],["Low-Impact Burn","work",16,3,["Squat Pulse","Mountain Climber","Alternating Lunges","Plank Shoulder Taps","Calf Raises"],"Lutut naik setinggi selesa. Senyap tetapi laju."],["Strong Core","work",15,3,["Dead Bug","Russian Twist","Reverse Crunch","Side Plank","Plank"],"Hembus nafas semasa mengecut perut. Jangan tahan nafas."],["Posture & Upper Body","work",15,3,["Knee Push Ups","Bird Dog","Push Up Hold","Plank Shoulder Taps","Dead Bug"],"Push-up dari lutut sekarang. Dada ke lantai, siku 45 darjah."],["Glutes & Legs","work",16,3,["Squat Pause","Walking Lunges","Hip Thrust","Curtsy Lunges","Wall Sit"],"Turun perlahan, naik dengan kuat."],["Stretch & Recover","recover",5,1,["Pemanasan","Bird Dog","Dead Bug","Hip Thrust","Calf Raises"],"Dua minggu siap. Esok pagi, Hari 15: rekod berat, pinggang dan pinggul sebelum sarapan."],["Full Body Burn","work",19,3,["Bodyweight Squat","Knee Push Ups","Alternating Lunges","Mountain Climber","Hip Thrust","Bicycle Crunch"],"Separuh jalan. Ambil gambar Hari 15 — cermin boleh menipu, pita ukur tidak."],["Glutes & Legs","work",19,3,["Squat Pulse","Reverse Lunges","Single Leg Glutes Bridge","Curtsy Lunges","Side Lunges","Single Leg Calf Raises"],"Satu kaki pada satu masa. Imbangan datang dengan ulangan."],["Core & Waist","work",18,3,["Dead Bug","Russian Twist","Bicycle Crunch","Leg Raises","Side Plank","Plank"],"Pinggang dan teras hari ini. Pusing dari dada, bukan dari leher."],["Stretch & Recover","recover",5,1,["Pemanasan","Bird Dog","Dead Bug","Hip Thrust","Calf Raises"],"Hari pulih. Badan anda menjadi kuat semasa berehat."],["Posture & Upper Strength","work",19,3,["Knee Push Ups","Bird Dog","Plank Shoulder Taps","Push Up Hold","Wall Push Up","Dead Bug"],"Kekuatan badan atas membantu kerja harian: angkat anak, angkat beg barang."],["Glute Burn","work",19,3,["Hip Thrust","Single Leg Glutes Bridge","Curtsy Lunges","Squat Hold","Side Lunges","Calf Raises"],"Fokus punggung. Picit di atas, turun perlahan."],["Stretch & Recover","recover",5,1,["Pemanasan","Bird Dog","Dead Bug","Hip Thrust","Calf Raises"],"Tiga minggu siap. Ini sudah tabiat, bukan cabaran lagi."],["Strong Full Body","work",19,3,["Squat Pause","Push Up","Walking Lunges","Mountain Climber","Hip Thrust","Plank"],"Minggu terakhir, dan push-up penuh. Turun ke lutut bila perlu — itu tetap dikira."],["Low-Impact Burn","work",19,3,["Squat Pulse","Mountain Climber","Reverse Lunges","Plank Shoulder Taps","Bicycle Crunch","Calf Raises"],"Bakar tanpa lompat. Muzik kegemaran, dan teruskan bergerak."],["Glutes & Legs","work",19,3,["Squat Pause","Curtsy Lunges","Single Leg Glutes Bridge","Side Lunges","Wall Sit","Single Leg Calf Raises"],"Kaki dan punggung. Tahan sekejap di bawah setiap lunge."],["Stretch & Recover","recover",5,1,["Pemanasan","Bird Dog","Dead Bug","Hip Thrust","Calf Raises"],"Hari pulih. Tidur awal malam ini."],["Core Finisher","work",17,3,["Dead Bug","Leg Raises","Russian Twist","Flutter Kick","Side Plank","Hollow Hold"],"Teras penamat. Kawal setiap ulangan, jangan terburu-buru."],["Posture & Upper Strength","work",18,3,["Push Up","Bird Dog","Plank Shoulder Taps","Push Up Hold","Knee Push Ups","Plank"],"Postur dan kekuatan. Berdiri tinggi selepas sesi ini."],["Full Body Challenge","work",19,3,["Bodyweight Squat","Push Up","Alternating Lunges","Mountain Climber","Hip Thrust","Plank"],"Sesi paling panjang program ini. Habiskan dengan kuat."],["Stretch & Recover","recover",5,1,["Pemanasan","Bird Dog","Dead Bug","Hip Thrust","Calf Raises"],"Rehat dengan baik. Esok hari terakhir."],["Final Check-in & Fit Test","test",5,1,["Bodyweight Squat","Knee Push Ups","Hip Thrust","Crunch","Plank"],"Hari 30. Rekod badan anda, ulang fit test, dan lihat sejauh mana anda sudah pergi."]];
