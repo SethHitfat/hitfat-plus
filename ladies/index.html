@@ -664,11 +664,7 @@ details.more>summary::-webkit-details-marker{display:none}
 details.more>summary::after{content:'+';font-size:20px;line-height:1}
 details.more[open]>summary::after{content:'–'}
 details.more[open]>summary{margin-bottom:6px}
-@media(max-width:899px){
-  .feats{grid-auto-flow:column;grid-auto-columns:86%;overflow-x:auto;scroll-snap-type:x mandatory;margin:14px -22px 0;padding:0 22px 4px;scrollbar-width:none}
-  .feats::-webkit-scrollbar{display:none}
-  .feats .fc{scroll-snap-align:center}
-}
+/* the 5 app cards stand one under another on phones too (29 Oct, Seth: "jgn wat swipe sbb tu penting") */
 /* 29 Oct 2026, Seth: "x smooth" swiping the 5 app cards on iPhone. Ten frosted chips bobbing forever,
    frosted bars over moving content and big phone shadows were all repainted every frame of the swipe.
    Now: solid chips, solid bars on phones, each card and phone on its own layer, sideways rows that
@@ -886,7 +882,7 @@ details.more[open]>summary{margin-bottom:6px}
   <span class="pill">Semua dalam satu app</span>
   <h2 class="sec-h">Semua yang anda perlu, <span class="grad">di telefon anda.</span></h2>
   <p class="sec-p">Skrin sebenar MAK2FIT 30 dalam app HITFAT+, di app.hitfat.io. Tiada muat turun dari App Store.</p>
-  <div class="tx-hd"><h3>5 bahagian app</h3><span>Swipe →</span></div>
+  <div class="tx-hd"><h3>5 bahagian app</h3></div>
   <div class="feats">
     <div class="fc g1"><span class="k">1 · PELAN PERIBADI</span><h3>Dibina untuk anda, bukan semua orang</h3><p>Jawab 12 soalan dalam 2 minit. Tahap, lutut atau belakang yang sakit, masa, dan berapa kali anda makan.</p>
       <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/s-quiz.jpg"></div><div class="lv-s nx" data-bg="img/s-home.jpg"></div><span class="lv-tap" style="left:50%;top:65%"></span></div><span class="lv-chip l"><b>12</b> soalan · 2 minit</span><span class="lv-chip r"><i class="d"></i>Pelan ikut jawapan anda</span></div></div>
