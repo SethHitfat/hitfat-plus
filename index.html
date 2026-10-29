@@ -7441,6 +7441,43 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
   -webkit-transform:scaleY(.3);transform:scaleY(.3);transition:transform .08s linear;}
 #play #pl-sndb.eq{border-color:rgba(255,77,85,.45);}
 
+/* ── MAK2FIT 30 in the player (30 Oct 2026, Seth: "vibe khas untuk mak2fit
+   jika dari program mak2fit, baru nampak special") ──
+   The same player in her program's colours: magenta where HITFAT is red, a
+   rose-gold rest, a plum ground under the coach and her logo by the kcal.
+   Only a session started from MAK2FIT 30 (meta.lb) wears it. */
+#play .pl-m2f{display:none;}
+#play.m2f .pl-m2f{display:block;margin-left:auto;height:17px;width:auto;opacity:.95;}
+#play.m2f .pl-ph{background:linear-gradient(135deg,#F0509E,#C02A7C);box-shadow:0 4px 14px rgba(240,80,158,.4);}
+#play.m2f .pl-ring .fg{stroke:#F0509E;-webkit-filter:drop-shadow(0 0 6px rgba(240,80,158,.55));filter:drop-shadow(0 0 6px rgba(240,80,158,.55));}
+#play.m2f .pl-stat.pl-tm:has(.pl-clock.hot) .fg{stroke:#FF8CC4;}
+#play.m2f .pl-head .pl-segs i.now{background:linear-gradient(90deg,#F0509E var(--p,0%),rgba(255,255,255,.26) var(--p,0%));}
+#play.m2f .bigbtn,#play.m2f #pl-rest .rs{background:linear-gradient(135deg,#F0509E,#C02A7C);color:#FFFFFF;}
+#play.m2f.nomirror .pl-go2[aria-label="Play"]{background:#C02A7C;box-shadow:0 8px 28px rgba(192,42,124,.5);}
+#play.m2f.nomirror .pl-info .pl-next.soon{background:#C02A7C;}
+#play.m2f .pl-lvb i.on{background:#F0509E;}
+#play.m2f #pl-sndb .pl-eq i{background:#F0509E;}
+#play.m2f #pl-sndb.eq{border-color:rgba(240,80,158,.5);}
+#play.m2f .pl-pill b{color:#FF8CC4;}
+#play.m2f #pl-rest .rnk,#play.m2f .pl-cue b,#play.m2f #pl-rest .rtip b{color:#EDB59E;}
+#play.m2f .pl-bot{background:linear-gradient(180deg,rgba(28,8,20,0) 0,rgba(28,8,20,.86) 34px,#1C0814 64px);}
+#play.m2f #pl-cd{background:rgba(28,8,20,.78);}
+#play.m2f .pl-gr .cdring path{stroke:#F0509E;}
+#play.m2f #pl-rest .rph{background:#EDB59E;color:#3A1024;box-shadow:0 4px 14px rgba(237,181,158,.4);}
+#play.m2f #pl-rest .rring path{stroke:#EDB59E;}
+#play.m2f #pl-done{background:linear-gradient(180deg,rgba(48,12,34,.96) 0%,rgba(16,4,11,.97) 70%);}
+#play.m2f #pl-done .dscore em,#play.m2f #pl-done .dfeel button.on,#play.m2f #pl-done .dweek .wkd i.on{background:#C02A7C;}
+#play.m2f #pl-done .dscore i{color:#F0509E;}
+#play.m2f #pl-done .dk,#play.m2f #pl-done .hc-days{color:#FF8CC4;}
+#play.m2f #pl-done .dscore{background:linear-gradient(180deg,rgba(192,42,124,.24),rgba(142,20,96,.14));box-shadow:inset 0 0 0 1px rgba(240,80,158,.38);}
+#play.m2f #pl-done .dwrap::before{content:"";display:block;width:150px;height:23px;margin:0 auto 6px;
+  background:url(/ladies/img/mak2fit-logo-w.png) center/contain no-repeat;}
+#play.m2f #pl-why .wopts button:active{background:#C02A7C;border-color:#C02A7C;}
+#play.m2f #pl-ready{background:linear-gradient(180deg,rgba(28,8,20,.10) 0%,rgba(28,8,20,.5) 30%,rgba(28,8,20,.93) 55%,#1C0814 70%);}
+#play.m2f #pl-ready .rdwrap::before{content:"";display:block;width:168px;height:26px;margin:0 0 14px;
+  background:url(/ladies/img/mak2fit-logo-w.png) left center/contain no-repeat;}
+#play.m2f.nomirror #pl-ready .rdk,#play.m2f #pl-ready .rdk{color:#FF8CC4;}
+
 /* ── Today's Check-in (19 Oct) ── */
 .ck{padding:4px 2px 8px;}
 .ck-h{font-size:26px;font-weight:900;letter-spacing:-.6px;color:var(--txt);line-height:1.15;}
@@ -9869,7 +9906,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
       <div class="pl-info">
         <div class="pl-name" id="pl-name"></div>
         <div class="pl-next" id="pl-next"></div>
-        <div class="pl-kc"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 6 6.5 6 10.5A6 6 0 0 1 6 13.5C6 10 8 8 9 6c.5 2 1.5 3 3 3-1-2-.8-4 0-6z"/></svg><b id="pl-kcal">0</b> kcal</div>
+        <div class="pl-kc"><svg class="gly" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 6 6.5 6 10.5A6 6 0 0 1 6 13.5C6 10 8 8 9 6c.5 2 1.5 3 3 3-1-2-.8-4 0-6z"/></svg><b id="pl-kcal">0</b> kcal<img class="pl-m2f" id="pl-m2f" alt="MAK2FIT 30"></div>
       </div>
     </div>
     <div class="pl-tl">
@@ -24372,6 +24409,11 @@ function startWorkout(exs,meta){
   $('pl-done').classList.remove('on');
   $('pl-why').classList.remove('on');
   $('play').classList.toggle('nomirror', !PL_MIRROR);
+  /* MAK2FIT 30 plays in its own colours (30 Oct 2026, Seth: "vibe khas untuk
+     mak2fit … baru nampak special"): only a session started from her program */
+  const m2f=!!(meta && meta.lb);
+  $('play').classList.toggle('m2f', m2f);
+  if(m2f && $('pl-m2f') && !$('pl-m2f').getAttribute('src')) $('pl-m2f').setAttribute('src','/ladies/img/mak2fit-logo-w.png');
   plCam.off=false; $('play').classList.remove('camoff');
   plSetMode(plCam.mode);
   renderPl(); setClip(exs[0]);
@@ -24407,7 +24449,7 @@ function exitPlayer(){
   plUnwait();
   if(pl) pl.clip=null;
   pl=null;
-  $('play').classList.remove('on','idle','rdy','resting','counting');
+  $('play').classList.remove('on','idle','rdy','resting','counting','m2f');
   if(plIdleT){ clearTimeout(plIdleT); plIdleT=null; }
   $('pl-rest').classList.remove('on');
   $('pl-cd').classList.remove('on');

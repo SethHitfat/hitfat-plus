@@ -260,6 +260,11 @@ function startWorkout(exs,meta){
   $('pl-done').classList.remove('on');
   $('pl-why').classList.remove('on');
   $('play').classList.toggle('nomirror', !PL_MIRROR);
+  /* MAK2FIT 30 plays in its own colours (30 Oct 2026, Seth: "vibe khas untuk
+     mak2fit … baru nampak special"): only a session started from her program */
+  const m2f=!!(meta && meta.lb);
+  $('play').classList.toggle('m2f', m2f);
+  if(m2f && $('pl-m2f') && !$('pl-m2f').getAttribute('src')) $('pl-m2f').setAttribute('src','/ladies/img/mak2fit-logo-w.png');
   plCam.off=false; $('play').classList.remove('camoff');
   plSetMode(plCam.mode);
   renderPl(); setClip(exs[0]);
@@ -295,7 +300,7 @@ function exitPlayer(){
   plUnwait();
   if(pl) pl.clip=null;
   pl=null;
-  $('play').classList.remove('on','idle','rdy','resting','counting');
+  $('play').classList.remove('on','idle','rdy','resting','counting','m2f');
   if(plIdleT){ clearTimeout(plIdleT); plIdleT=null; }
   $('pl-rest').classList.remove('on');
   $('pl-cd').classList.remove('on');
