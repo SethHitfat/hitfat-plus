@@ -388,8 +388,9 @@ header .w{display:flex;align-items:center;justify-content:space-between;height:6
 .tp-leg{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 12px;max-width:620px;margin:12px auto 0;font-size:12px;font-weight:700;color:var(--ink2)}
 .tp-leg span{display:inline-flex;align-items:center;gap:6px}
 .tp-leg i{width:10px;height:10px;border-radius:3px}
-.tp-day{max-width:620px;min-height:452px;margin:14px auto 0;padding:18px;border-radius:24px;background:#fff;box-shadow:0 18px 40px -22px rgba(80,0,40,.35);text-align:left;transition:opacity .25s}
+.tp-day{max-width:620px;min-height:612px;margin:14px auto 0;padding:18px;border-radius:24px;background:#fff;box-shadow:0 18px 40px -22px rgba(80,0,40,.35);text-align:left;transition:opacity .25s}
 .tp-day.fade{opacity:.25}
+@media(min-width:640px){ .tp-day{min-height:540px} }  /* tall enough for the longest day with her posters, so the tour doesn't jump */
 .tp-day .h{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
 .tp-day .h i{width:10px;height:10px;border-radius:3px}
 .tp-day h3{margin-top:6px;font-size:22px;font-weight:800}
@@ -407,7 +408,62 @@ header .w{display:flex;align-items:center;justify-content:space-between;height:6
 .tp-prog span{font-size:12px;font-weight:700;color:var(--ink2)}
 .tp-prog > i{font-style:normal;font-weight:800;color:var(--m)}
 .tp-note{max-width:34em;margin:14px auto 0;font-size:14.5px;line-height:1.5;color:var(--ink2)}
+.tp-day li img{flex:none;width:30px;height:40px;border-radius:8px;object-fit:cover;background:var(--lav)}
 @media (prefers-reduced-motion:reduce){ .tp-b i{transition:none} }
+/* the video course: her real clips in a player like the app's (29 Oct 2026) */
+.vc{display:grid;gap:18px;max-width:760px;margin:24px auto 0;text-align:left}
+@media(min-width:760px){ .vc{grid-template-columns:320px 1fr;align-items:start} }
+.vc-ph{position:relative;width:100%;max-width:320px;aspect-ratio:9/16;margin:0 auto;border-radius:30px;overflow:hidden;background:#1E1420;box-shadow:0 30px 60px -28px rgba(80,0,40,.55),0 0 0 6px #fff,0 0 0 7px var(--line);isolation:isolate}
+.vc-po,.vc-f{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}
+.vc-f{opacity:0;transition:opacity .45s;pointer-events:none}
+.vc-f.cur.ready{opacity:1}
+.vc-ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,20,32,.55),rgba(30,20,32,0) 22%,rgba(30,20,32,0) 58%,rgba(30,20,32,.82));pointer-events:none}
+.vc-top{position:absolute;z-index:2;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;gap:8px;color:#fff;font-size:12px;font-weight:800}
+.vc-top span{padding:6px 10px;border-radius:999px;background:rgba(30,20,32,.55)}
+.vc-seg{position:absolute;z-index:2;top:50px;left:14px;right:14px;display:flex;gap:4px}
+.vc-seg i{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.3);overflow:hidden}
+.vc-seg i b{display:block;height:100%;width:0;background:#fff}
+.vc-seg i.done b{width:100%}
+.vc-bot{position:absolute;z-index:2;left:16px;right:16px;bottom:16px;display:flex;align-items:flex-end;gap:12px;color:#fff}
+.vc-bot > div:first-child{flex:1;min-width:0}
+.vc-bot small{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#FFC3DF}
+.vc-bot b{display:block;margin-top:2px;font-size:22px;font-weight:800;line-height:1.1;letter-spacing:-.02em}
+.vc-bot span{display:block;margin-top:6px;font-size:12.5px;font-weight:700;color:rgba(255,255,255,.8)}
+.vc-ring{position:relative;flex:none;width:64px;height:64px}
+.vc-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.vc-ring circle{fill:none;stroke-width:6}
+.vc-ring .bg{stroke:rgba(255,255,255,.22)}
+.vc-ring .fg{stroke:var(--pink);stroke-linecap:round;stroke-dasharray:170;stroke-dashoffset:0}
+.vc-ring em{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.vc-rest{position:absolute;z-index:3;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(94,26,71,.88);color:#fff;text-align:center;opacity:0;transition:opacity .3s;pointer-events:none}
+.vc-rest.on{opacity:1}
+.vc-rest small{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#FFC3DF}
+.vc-rest b{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.vc-cap{max-width:320px;margin:10px auto 0;font-size:12.5px;color:var(--ink2);text-align:center}
+.vc-big{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.vc-big div{display:flex;flex-direction:column;align-items:center;padding:12px 4px;border-radius:18px;background:var(--lav);text-align:center}
+.vc-big b{font-size:30px;font-weight:800;letter-spacing:-.04em;line-height:1;background:linear-gradient(135deg,var(--pink),var(--m2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.vc-big span{margin-top:4px;font-size:12px;font-weight:700;color:var(--ink2);line-height:1.25}
+.vc-h{margin-top:16px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.vc-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.vc-t{position:relative;display:block;aspect-ratio:9/16;padding:0;border:0;border-radius:16px;overflow:hidden;background:var(--lav);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.vc-t img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vc-t::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,20,32,0) 25%,rgba(30,20,32,.92) 80%)}
+.vc-t span{position:absolute;z-index:1;left:6px;right:6px;bottom:6px;color:#fff;font-size:11px;font-weight:800;line-height:1.15;text-align:left}
+.vc-t span small{display:block;font-size:9.5px;letter-spacing:.06em;color:#FFC3DF}
+.vc-t span em{display:block;margin-top:2px;font-style:normal;font-size:10px;font-weight:700;color:rgba(255,255,255,.8)}
+.vc-t.on{box-shadow:0 0 0 3px var(--m)}
+.vc-t i{position:absolute;z-index:1;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.9)}
+.vc-t i::after{content:"";position:absolute;left:8.5px;top:6.5px;border-left:7px solid var(--m);border-top:4.5px solid transparent;border-bottom:4.5px solid transparent}
+.vc-lock{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:var(--m2);color:#fff;text-decoration:none;isolation:isolate}
+.vc-lock img{position:absolute;inset:-12px;width:calc(100% + 24px);height:calc(100% + 24px);object-fit:cover;filter:blur(7px) saturate(.8);z-index:-2}
+.vc-lock::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(192,42,124,.78),rgba(94,26,71,.9));z-index:-1}
+.vc-lock b{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.vc-lock span{margin-top:3px;font-size:11px;font-weight:800;line-height:1.15;text-align:center}
+.vc-lock i{position:absolute;top:8px;right:8px;width:14px;height:11px;border-radius:3px;background:#fff}
+.vc-lock i::before{content:"";position:absolute;left:3px;top:-6px;width:8px;height:8px;border:2px solid #fff;border-bottom:0;border-radius:5px 5px 0 0;box-sizing:border-box}
+.vc-more{margin-top:10px;font-size:13px;font-weight:700;color:var(--ink2)}
+@media (prefers-reduced-motion:reduce){ .vc-f,.vc-rest{transition:none} }
 
 
 /* what she gets: the program, then its bonuses */
@@ -809,6 +865,33 @@ details.more[open]>summary{margin-bottom:6px}
 </section>
 
 
+<!-- 8a · THE VIDEO COURSE: her real clips, filmed at HITFAT (29 Oct 2026, Seth: "gambar training macam video course… biar nampak real") -->
+<section class="box c reveal" id="video">
+  <span class="pill">Program video 30 hari</span>
+  <h2 class="sec-h">Tekan Mula. <span class="grad">Ikut coach. Siap.</span></h2>
+  <p class="sec-p">Bukan senarai senaman untuk anda susun sendiri. Setiap hari ada sesi yang sudah dirancang, dan setiap minggu makin mencabar. Tekan Mula, dan app bawa anda hingga habis: video coach, kiraan suara dan rehat automatik.</p>
+  <div class="vc">
+    <div>
+      <div class="vc-ph" id="vc-ph" aria-label="Pratonton video latihan">
+        <img class="vc-po" id="vc-po" alt="" loading="lazy">
+        <div class="vc-top"><span id="vc-day">Hari 2 · Full Body Basics</span><span id="vc-n">1 / 5</span></div>
+        <div class="vc-seg" id="vc-seg"></div>
+        <div class="vc-bot"><div><small>Sekarang</small><b id="vc-name">Bodyweight Squat</b><span id="vc-next"></span></div>
+          <div class="vc-ring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" id="vc-arc" cx="32" cy="32" r="27"/></svg><em id="vc-sec">10</em></div></div>
+        <div class="vc-rest" id="vc-rest"><small>Rehat · seterusnya</small><b id="vc-rn"></b></div>
+      </div>
+      <p class="vc-cap">Rakaman sebenar coach wanita di gym HITFAT, bukan animasi. Pratonton dipendekkan; dalam app setiap gerakan 30–45 saat.</p>
+    </div>
+    <div>
+      <div class="vc-big"><div><b>30</b><span>hari</span></div><div><b>22</b><span>sesi latihan</span></div><div><b>20</b><span>minit paling lama</span></div></div>
+      <div class="vc-h">Minggu 1, sesi demi sesi</div>
+      <div class="vc-tiles" id="vc-tiles"><a class="vc-lock" href="#" data-buy="video-more"><img src="https://i.vimeocdn.com/video/2217368524-cf2a575fb992d6b83d925cb307dac7bcb28a306eb6fa21bfe417bfe14e868c32-d_240x427" alt="" loading="lazy"><b>+27</b><span>hari lagi</span><i aria-hidden="true"></i></a></div>
+      <p class="vc-more">Minggu 1 dua pusingan. Minggu 2 tiga pusingan. Minggu 3 dan 4, enam gerakan setiap sesi.</p>
+    </div>
+  </div>
+  <div style="margin-top:22px"><a class="cta" href="#" data-buy="video">Saya Nak Mula — RM39</a></div>
+</section>
+
 <!-- 8b · THE TRAINING, IN DETAIL (26 Oct 2026, Seth: "highlightkan program training, berapa lama") -->
 <section class="box c reveal" id="latihan">
   <span class="pill">Program latihan</span>
@@ -818,7 +901,7 @@ details.more[open]>summary{margin-bottom:6px}
     <div><b>22</b><span>sesi latihan</span></div>
     <div><b>6</b><span>hari regangan &amp; pulih</span></div>
     <div><b>2</b><span>fit test, Hari 1 &amp; 30</span></div>
-    <div><b>32</b><span>gerakan berbeza</span></div>
+    <div><b>34</b><span>gerakan berbeza</span></div>
   </div>
   <div class="tp-cal" id="tp-cal" aria-label="Kalendar 30 hari: tinggi setiap bar ialah minit sesi"></div>
   <div class="tp-leg" id="tp-leg"></div>
@@ -830,7 +913,7 @@ details.more[open]>summary{margin-bottom:6px}
     <i aria-hidden="true">›</i>
     <div><small>Minggu 3–4</small><b>≈ 19 min</b><span>6 gerakan × 3</span></div>
   </div>
-  <p class="tp-note">Push-up naik setahap demi setahap: <b>dinding → lutut → lantai</b>. Setiap gerakan 30–45 saat, rehat 20 saat, dengan video, suara yang mengira dan pemasa. Buat sekali gus, atau 2 × 10 minit pagi dan petang.</p>
+  <p class="tp-note">Push-up naik setahap demi setahap: <b>tahan plank → lutut → lantai</b>. Setiap gerakan 30–45 saat, rehat 20 saat, dengan video, suara yang mengira dan pemasa. Buat sekali gus, atau 2 × 10 minit pagi dan petang.</p>
   <div style="margin-top:22px"><a class="cta" href="#" data-buy="latihan">Saya Nak Mula — RM39</a></div>
 </section>
 
@@ -1307,9 +1390,13 @@ document.querySelectorAll('.nums,.weeks,.feats,.tx-row,.bas,.qts').forEach(funct
   var t=null; row.addEventListener('scroll',function(){ row.classList.add('swiping'); clearTimeout(t);
     t=setTimeout(function(){ row.classList.remove('swiping'); },180); },{passive:true});
 });
+/* the video course (29 Oct 2026): her clips, the vimeo id and its poster, by move name */
+var VC={"Bodyweight Squat":["1239746361","2217368535-e10ef05381f191984e04f9f27509345792f4838f5bd7d7fe76ca7de8dedc4674"],"Squat Pulse":["1239746365","2217368538-3e080321e478b05fb18921a521862e860dc1a3d3a385c319dd1a7ffda2c857a1"],"Squat Pulse 2":["1239746365","2217368538-3e080321e478b05fb18921a521862e860dc1a3d3a385c319dd1a7ffda2c857a1"],"Squat Hold":["1239746406","2217368570-01cba57695d8078cc05bc22d378b56d35cca853f63e7c8d867c173a9cd7f9d86"],"Reverse Lunges":["1239746364","2217368494-e6cf363309a855fcd974abf2c8e7189cf6293effc28ce01cd4ece02ae9804938"],"Alternating Lunges":["1239746366","2217368499-6ef6fc08ef68bdd6c349e3670fcd7a154cfb62bc3d0b1de6496bba992d63e218"],"Curtsy Lunges":["1239746401","2217368524-cf2a575fb992d6b83d925cb307dac7bcb28a306eb6fa21bfe417bfe14e868c32"],"Side Lunges":["1239746397","2217368544-d37cd319e91d81a799f54a122d8b8d36e225ed900c97d76d3064d4e627446329"],"Bulgarian Split Squat":["1240677022","2218529161-36bc18a62a0712ce76f7c79bc604135f26f13af0d6009dd4192f0489bae14d70"],"Hip Thrust":["1239746393","2217368330-4cfbd07e01e135f4e79d4374c9c7717851cd73b790decc602c6c05fa4b245196"],"Single Leg Glutes Bridge":["1239746375","2217368319-efe20b7691de3403a9076df23d254f0656774c415e6178ee9d5909931485badd"],"Calf Raises":["1239746399","2217368328-c432b2544f7bc63c633e7c760158ce94a33de6ba697c88b5fbbd488def806d7a"],"Single Leg Calf Raises":["1240677084","2218529515-5a3d5ec913356088f59d502cb9f1d812c60903d5fd8e544b4347dea22e8b93bc"],"Crunch":["1239746380","2217368569-a3c6dfba4d43bbf40c0f1c6c657ed643331da5824bbba6c90ee4a8b5718a7a84"],"Reverse Crunch":["1240677061","2218547987-dc4bdab6f68b401da923b6595b6f7a4e06128a9e6f689d73b2cf311fb4bc61c5"],"Bicycle Crunch":["1239746377","2217368416-8e7af4fda57bbad7788d533a71574f7ff8a2084011a344de3b129b707637869f"],"Russian Twist":["1239746396","2217368517-0b5b8ea2b700882fa37bf66f4ded8b312aa49aa7031a170d4745dd70d219260b"],"Leg Raises":["1239746400","2217368558-51189db6304aa0de73e4d3f146c1a44e1806ffee10cb722bb8006909e65d5513"],"Flutter Kick":["1239746381","2217368533-8826c729c26596e70fcd1019050033bacae8d11f99c8ce8b25a4d84c9c4bb881"],"Hollow Hold":["1239746368","2217368487-4a05ce2a47b85fa4fef564a61921da04287ece53827f7c0a18f080025c4d93d8"],"Sit Up":["1239746379","2217368493-e6c362f928dd50cbf875352b94ec5f101cffa56de1a1cbea042a84f6cd9061fe"],"Plank":["1239746407","2217368457-5216b658bc01862188b3c99436bef354975676dc90412d9a2b1f536213dc1f96"],"Side Plank":["1239746370","2217368309-96869cb4578c74c579c32b2ad1704bd0f397b453ce9e566c8996396cc70d9449"],"Plank Shoulder Taps":["1240677076","2218529390-9fde6d6e9fdd16bdfd9635e4c3e672db9148aa4a207b00359e99ad606d272b71"],"Mountain Climber":["1239746387","2217368545-e47670fc8f38621fa0e7cbbc4b3a539e2c5b61b0b43637a20dcbbe3bd5830c03"],"Knee Push Ups":["1239746360","2217368492-322ab874a3eb2e47bf96125c28bc0e43f33b6139f119f6de6505710bf0fce287"],"Push Up":["1239746404","2217368498-cbbab05d61e1c99651b75b563aa6084101cb55cadf76a7ab8442020b20a7053a"],"High Plank":["1239746362","2217368363-a1a6127e381db1d569f5dcbb5221429db8e4431b5528112181310bb3374db480"],"Lunges Pulse":["1239746363","2217368471-24e101e89ae93cb3f96c2a5eb8a44a77bd91a5478520f7a9fafa6ca190f8bfdb"],"Glutes Bridge Hold":["1240677085","2218529313-e31143d61fef0819beb5cb0c5100d5f2fe246679128fb2817d3ad4411cb9f1ac"],"Arm Forward Circle":["1239746374","2217368306-85319da931ff2fe40d742f3728548870b77680c5abab0f873600f498480422c5"],"Arm Back Circle":["1239746390","2217368354-916e78f012682751707b88aec15346b4898d7e3e8864411c80d80176423c8cba"],"Cobra Stretch":["1240677075","2218543441-1e5c30bc7775f48c2e4628fef3e10a8a3591fe26d793add43549dd7e2a803be5"],"Knee to Chest":["1239746371","2217368352-40bf7ffa494a0ad9d59f4eb4da7851c2073cf71d4ee36a4f7d7071b4124b382e"],"Butterfly Stretch":["1239746391","2217368419-6f2518f63fc61f386e6ae4659895aaafeac677fffc0621b36e3402c7e219605d"],"Side Abs Stretch":["1239746378","2217368137-42bba8c38bb3d3fb3714d120a7df3977eaf9eae4d212dfe84c25aef602f83d27"],"Back Stretch":["1239746384","2217368190-59f65bc36dffe86478459b0afb5cf1e837762f80525e305d089484e0accab533"]};
+function vcPo(m,sz){ return 'https://i.vimeocdn.com/video/'+VC[m][1]+'-d_'+sz; }
 /* the training calendar (the program's own 30 days, from ladies30.js) */
 (function(){
   var D=[["Check-in & Fit Test","test",5,1,["Bodyweight Squat","Knee Push Ups","Hip Thrust","Crunch","Plank"],"Hari ini garisan permulaan anda. Rekod badan dahulu, kemudian fit test — atau langkau fit test jika belum bersedia."],["Full Body Basics","work",11,2,["Bodyweight Squat","Knee Push Ups","Hip Thrust","Reverse Crunch","Calf Raises"],"Perlahan dan belajar bentuk setiap gerakan. Laju datang kemudian."],["Glutes & Legs","work",11,2,["Bodyweight Squat","Reverse Lunges","Hip Thrust","Side Lunges","Squat Hold"],"Tolak lantai dengan tumit. Kaki dan punggung ialah enjin terbesar anda."],["Core Basics","work",10,2,["Glutes Bridge Hold","Crunch","Side Plank","Reverse Crunch","Plank"],"Tekan pinggang ke lantai. Perut yang rata bermula dengan teras yang kuat."],["Posture & Upper Body","work",10,2,["Knee Push Ups","High Plank","Glutes Bridge Hold","Side Plank","Plank"],"Bahu ke belakang, dada terbuka. Postur yang baik dilatih, bukan diharap."],["Low-Impact Burn","work",10,2,["Squat Pulse","Mountain Climber","Alternating Lunges","Bicycle Crunch","Calf Raises"],"Gerak berterusan tanpa lompat. Berpeluh tetap berpeluh."],["Stretch & Recover","recover",8,1,["Arm Forward Circle","Arm Back Circle","Cobra Stretch","Knee to Chest","Butterfly Stretch","Side Abs Stretch","Back Stretch"],"Hari pulih. Tambah jalan kaki 20 minit jika boleh."],["Full Body","work",16,3,["Bodyweight Squat","Knee Push Ups","Reverse Lunges","Mountain Climber","Hip Thrust"],"Tiga pusingan bermula hari ini. Rehat bila pemasa kata, bukan sebelum."],["Glute Focus","work",16,3,["Hip Thrust","Curtsy Lunges","Single Leg Glutes Bridge","Side Lunges","Squat Hold"],"Picit punggung di setiap ulangan. Rasa ototnya bekerja."],["Low-Impact Burn","work",16,3,["Squat Pulse","Mountain Climber","Alternating Lunges","Plank Shoulder Taps","Calf Raises"],"Lutut naik setinggi selesa. Senyap tetapi laju."],["Strong Core","work",15,3,["Crunch","Russian Twist","Reverse Crunch","Side Plank","Plank"],"Hembus nafas semasa mengecut perut. Jangan tahan nafas."],["Posture & Upper Body","work",15,3,["Knee Push Ups","Glutes Bridge Hold","High Plank","Plank Shoulder Taps","Side Plank"],"Push-up dari lutut sekarang. Dada ke lantai, siku 45 darjah."],["Glutes & Legs","work",16,3,["Bodyweight Squat","Lunges Pulse","Hip Thrust","Curtsy Lunges","Squat Hold"],"Turun perlahan, naik dengan kuat."],["Stretch & Recover","recover",8,1,["Arm Forward Circle","Arm Back Circle","Cobra Stretch","Knee to Chest","Butterfly Stretch","Side Abs Stretch","Back Stretch"],"Dua minggu siap. Esok pagi, Hari 15: rekod berat, pinggang dan pinggul sebelum sarapan."],["Full Body Burn","work",19,3,["Bodyweight Squat","Knee Push Ups","Alternating Lunges","Mountain Climber","Hip Thrust","Bicycle Crunch"],"Separuh jalan. Ambil gambar Hari 15 — cermin boleh menipu, pita ukur tidak."],["Glutes & Legs","work",19,3,["Squat Pulse","Reverse Lunges","Single Leg Glutes Bridge","Curtsy Lunges","Side Lunges","Single Leg Calf Raises"],"Satu kaki pada satu masa. Imbangan datang dengan ulangan."],["Core & Waist","work",18,3,["Reverse Crunch","Russian Twist","Bicycle Crunch","Leg Raises","Side Plank","Plank"],"Pinggang dan teras hari ini. Pusing dari dada, bukan dari leher."],["Stretch & Recover","recover",8,1,["Arm Forward Circle","Arm Back Circle","Cobra Stretch","Knee to Chest","Butterfly Stretch","Side Abs Stretch","Back Stretch"],"Hari pulih. Badan anda menjadi kuat semasa berehat."],["Posture & Upper Strength","work",18,3,["Knee Push Ups","Glutes Bridge Hold","Plank Shoulder Taps","High Plank","Side Plank","Plank"],"Kekuatan badan atas membantu kerja harian: angkat anak, angkat beg barang."],["Glute Burn","work",19,3,["Hip Thrust","Single Leg Glutes Bridge","Curtsy Lunges","Squat Hold","Side Lunges","Calf Raises"],"Fokus punggung. Picit di atas, turun perlahan."],["Stretch & Recover","recover",8,1,["Arm Forward Circle","Arm Back Circle","Cobra Stretch","Knee to Chest","Butterfly Stretch","Side Abs Stretch","Back Stretch"],"Tiga minggu siap. Ini sudah tabiat, bukan cabaran lagi."],["Strong Full Body","work",19,3,["Bodyweight Squat","Push Up","Lunges Pulse","Mountain Climber","Hip Thrust","Plank"],"Minggu terakhir, dan push-up penuh. Turun ke lutut bila perlu — itu tetap dikira."],["Low-Impact Burn","work",19,3,["Squat Pulse","Mountain Climber","Reverse Lunges","Plank Shoulder Taps","Bicycle Crunch","Calf Raises"],"Bakar tanpa lompat. Muzik kegemaran, dan teruskan bergerak."],["Glutes & Legs","work",19,3,["Bodyweight Squat","Curtsy Lunges","Single Leg Glutes Bridge","Side Lunges","Squat Hold","Single Leg Calf Raises"],"Kaki dan punggung. Tahan sekejap di bawah setiap lunge."],["Stretch & Recover","recover",8,1,["Arm Forward Circle","Arm Back Circle","Cobra Stretch","Knee to Chest","Butterfly Stretch","Side Abs Stretch","Back Stretch"],"Hari pulih. Tidur awal malam ini."],["Core Finisher","work",17,3,["Bicycle Crunch","Leg Raises","Russian Twist","Flutter Kick","Side Plank","Hollow Hold"],"Teras penamat. Kawal setiap ulangan, jangan terburu-buru."],["Posture & Upper Strength","work",19,3,["Push Up","Glutes Bridge Hold","Plank Shoulder Taps","High Plank","Knee Push Ups","Plank"],"Postur dan kekuatan. Berdiri tinggi selepas sesi ini."],["Full Body Challenge","work",19,3,["Bodyweight Squat","Push Up","Alternating Lunges","Mountain Climber","Hip Thrust","Plank"],"Sesi paling panjang program ini. Habiskan dengan kuat."],["Stretch & Recover","recover",8,1,["Arm Forward Circle","Arm Back Circle","Cobra Stretch","Knee to Chest","Butterfly Stretch","Side Abs Stretch","Back Stretch"],"Rehat dengan baik. Esok hari terakhir."],["Final Check-in & Fit Test","test",5,1,["Bodyweight Squat","Knee Push Ups","Hip Thrust","Crunch","Plank"],"Hari 30. Rekod badan anda, ulang fit test, dan lihat sejauh mana anda sudah pergi."]];
+  window.LBD=D;
   var WK=[['Start','Minggu 1',1,7],['Build','Minggu 2',8,14],['Glow','Minggu 3',15,21],['Strong','Minggu 4',22,30]];
   var T={full:['Seluruh badan','#E35CA6'],glute:['Punggung & kaki','#FF8FB8'],core:['Teras','#B44BC6'],post:['Postur & badan atas','#7A6CF0'],
          burn:['Bakar tanpa lompat','#FF8F7A'],rec:['Regangan & pulih','#5BBF9A'],test:['Check-in & fit test','#C9947F']};
@@ -1329,7 +1416,7 @@ document.querySelectorAll('.nums,.weeks,.feats,.tx-row,.bas,.qts').forEach(funct
     setTimeout(function(){
       box.innerHTML='<div class="h" style="color:'+T[k][1]+'"><i style="background:'+T[k][1]+'"></i>Hari '+i+' · '+w[1]+' '+w[0]+' · '+T[k][0]+'</div>'+
         '<h3>'+esc(d[0])+'</h3><div class="f"><span>⏱ '+d[2]+' minit</span><span>'+d[3]+' pusingan</span><span>'+d[4].length+' gerakan</span><span>0 lompatan</span></div>'+
-        '<ol>'+d[4].map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('')+'</ol>'+
+        '<ol>'+d[4].map(function(m){ return '<li>'+(VC[m]?'<img src="'+vcPo(m,'96x170')+'" alt="" loading="lazy">':'')+esc(m)+'</li>'; }).join('')+'</ol>'+
         '<q><b>Nota coach</b>'+esc(d[5])+'</q>';
       box.classList.remove('fade'); },180); }
   var tour=[1,2,5,8,12,15,22,28,30], ti=0, timer=null, touched=false;
@@ -1342,6 +1429,67 @@ document.querySelectorAll('.nums,.weeks,.feats,.tx-row,.bas,.qts').forEach(funct
   new IntersectionObserver(function(es){ if(es[0].isIntersecting){ if(!grown){ grown=true; grow(); }
       if(!touched && !still && !timer) timer=setInterval(function(){ ti=(ti+1)%tour.length; show(tour[ti]); },4200); }
     else { clearInterval(timer); timer=null; } },{threshold:.3}).observe(cal);
+})();
+/* the video course player (29 Oct 2026): a day of the program, as the app plays it, shortened */
+(function(){
+  var ph=document.getElementById('vc-ph'), D=window.LBD; if(!ph||!D) return;
+  var DAYS=[2,3,4], SECS=10, REST=2, $=function(i){ return document.getElementById(i); };
+  var po=$('vc-po'), seg=$('vc-seg'), arc=$('vc-arc'), rest=$('vc-rest'), tiles=$('vc-tiles');
+  var esc=function(t){ return String(t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  tiles.insertAdjacentHTML('afterbegin',DAYS.map(function(n){ var d=D[n-1];
+    return '<button type="button" class="vc-t" data-d="'+n+'"><img src="'+vcPo(d[4][0],'240x427')+'" alt="" loading="lazy"><i></i><span><small>HARI '+n+'</small>'+esc(d[0])+'<em>'+d[2]+' min · '+d[4].length+' gerakan</em></span></button>'; }).join(''));
+  /* two frames, as in the app's player: the one on screen and the next, loading behind it */
+  var src=function(m){ return 'https://player.vimeo.com/video/'+VC[m][0]+'?background=1&autoplay=1&loop=1&muted=1&controls=0&autopause=0&dnt=1&playsinline=1'; };
+  var fr=[0,1].map(function(){ var f=document.createElement('iframe'); f.className='vc-f'; f.setAttribute('allow','autoplay; fullscreen'); f.setAttribute('tabindex','-1'); f.setAttribute('aria-hidden','true'); ph.insertBefore(f,po.nextSibling); return f; });
+  function load(f,m){ if(f.getAttribute('data-m')===m) return; f.classList.remove('ready'); f.setAttribute('data-m',m); f.src=src(m); }
+  addEventListener('message',function(e){
+    if(!/vimeo\.com$/.test(String(e.origin).replace(/^https?:\/\//,''))) return;
+    var d; try{ d=typeof e.data==='string'?JSON.parse(e.data):e.data; }catch(x){ return; }
+    fr.forEach(function(f){ if(f.contentWindow!==e.source) return;
+      if(d&&d.event==='ready'){ ['play','playProgress'].forEach(function(v){ f.contentWindow.postMessage(JSON.stringify({method:'addEventListener',value:v}),'*'); }); }
+      if(d&&(d.event==='play'||d.event==='playProgress')) f.classList.add('ready'); });
+  });
+  var cur=0, day=DAYS[0], list=[], i=0, left=SECS, tick=null, live=false, started=false;
+  function setDay(n){ day=n; list=D[n-1][4]; i=0;
+    seg.innerHTML=list.map(function(){ return '<i><b></b></i>'; }).join('');
+    $('vc-day').textContent='Hari '+n+' · '+D[n-1][0];
+    [].forEach.call(tiles.querySelectorAll('.vc-t'),function(t){ t.classList.toggle('on',+t.getAttribute('data-d')===n); }); }
+  function paint(){
+    var m=list[i]; po.src=vcPo(m,'360x640');
+    var a=fr[cur], b=fr[1-cur];
+    if(b.getAttribute('data-m')===m){ cur=1-cur; a=fr[cur]; b=fr[1-cur]; } else load(a,m);
+    a.classList.add('cur'); b.classList.remove('cur');
+    $('vc-name').textContent=m;
+    $('vc-n').textContent=(i+1)+' / '+list.length;
+    $('vc-next').textContent=i<list.length-1?'Seterusnya: '+list[i+1]:'Gerakan terakhir pusingan ini';
+    [].forEach.call(seg.children,function(s,n){ s.firstChild.style.width=n<i?'100%':'0'; });
+    /* the next move loads behind this one */
+    var nx=next(); if(nx!==m) setTimeout(function(){ if(list[i]===m) load(fr[1-cur],nx); },1500);
+    left=SECS; clock();
+  }
+  /* after a day's last move, the next day on the tiles */
+  function next(){ if(i<list.length-1) return list[i+1]; var k=DAYS[(DAYS.indexOf(day)+1)%DAYS.length]; return D[k-1][4][0]; }
+  function clock(){ $('vc-sec').textContent=left; arc.style.strokeDashoffset=170*(1-left/SECS);
+    var s=seg.children[i]; if(s) s.firstChild.style.width=(100*(SECS-left)/SECS)+'%'; }
+  function step(){
+    if(!live) return;
+    if(left>0){ left--; clock(); return; }
+    var last=i>=list.length-1;
+    $('vc-rn').textContent=next(); rest.classList.add('on');
+    clearInterval(tick); tick=null;
+    setTimeout(function(){ rest.classList.remove('on');
+      if(last) setDay(DAYS[(DAYS.indexOf(day)+1)%DAYS.length]); else i++;
+      paint(); run(); },REST*1000);
+  }
+  function run(){ if(live && !tick) tick=setInterval(step,1000); }
+  function stop(){ clearInterval(tick); tick=null; }
+  tiles.addEventListener('click',function(e){ var t=e.target.closest('.vc-t'); if(!t) return;
+    var n=+t.getAttribute('data-d'); rest.classList.remove('on'); stop(); setDay(n); paint(); started=true; run();
+    if(typeof trackC==='function') trackC('VideoTap',{day:n}); });
+  setDay(day); po.src=vcPo(list[0],'360x640');
+  function go(){ if(!started){ started=true; paint(); } live=true; run(); }
+  if(!('IntersectionObserver' in window)){ go(); return; }
+  new IntersectionObserver(function(es){ if(es[0].isIntersecting) go(); else { live=false; stop(); } },{threshold:.25}).observe(ph);
 })();
 /* Real reviews only, given with permission; while empty the section stays hidden */
 var TESTI = [];
