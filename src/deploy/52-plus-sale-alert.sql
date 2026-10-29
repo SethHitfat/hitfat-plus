@@ -73,7 +73,7 @@ begin
                  'users', u,
                  'title', '💰 Jualan baru! RM' || coalesce(rm, '?'),
                  'body',  plus_sku_label(p_sku) || coalesce(' · ' || nullif(btrim(p_who), ''), '') || ' · ' || p_via,
-                 'url',   '/',
+                 'url',   '/os',
                  'tag',   'sale-' || coalesce(p_order, gen_random_uuid()::text)),
     timeout_milliseconds := 10000);
 exception when others then

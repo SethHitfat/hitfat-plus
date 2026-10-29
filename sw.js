@@ -23,6 +23,9 @@ self.addEventListener('push', function (e) {
 self.addEventListener('notificationclick', function (e) {
   e.notification.close();
   var url = (e.notification.data && e.notification.data.url) || '/';
+  /* a sale alert (30 Oct 2026, Seth): opens the HITFAT+ report in HITFAT OS,
+     not the app */
+  if (url === '/os') { e.waitUntil(self.clients.openWindow('https://os.hitfat.io/?v=apps')); return; }
   /* the app already open: bring it up and tell it where to go (a comment
      opens the class group); closed: open it at that address */
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (ws) {

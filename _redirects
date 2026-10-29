@@ -15,3 +15,6 @@
 # MAK2FIT 30 (26 Oct 2026): the new name's address; /ladies stays, so links and ads already out keep working
 /mak2fit    /ladies/        301
 /mak2fit/*  /ladies/:splat  301
+
+# A sale alert (30 Oct 2026): a phone whose service worker is older still lands in HITFAT OS
+/os    https://os.hitfat.io/?v=apps  302
