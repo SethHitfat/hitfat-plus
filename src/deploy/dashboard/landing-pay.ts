@@ -144,6 +144,8 @@ function isPaidStatus(s: unknown) {
    GET  ?action=status&order=…  the berjaya page asking; pending orders are
         looked up on Bayarcash (the pull path, so a late callback cannot
         strand her). Answers the status only, nothing personal.
+   GET  ?action=recent&sku=…  the landing page's "baru sertai" card: real
+        orders paid in the last 7 days, first name + initial and time only.
 
    Paid → a row of plus_landing_purchases, once; the app's claim (order
    number or email) opens the program on whichever account signs in.
@@ -160,6 +162,18 @@ function isPaidStatus(s: unknown) {
 const LANDING: Record<string, string> = {
   prog_lad4: '/ladies/berjaya/',            // Ladies Burn 30, RM39
 };
+
+/* the "baru sertai" card counts orders paid from here on (see ?action=recent) */
+const SHOW_FROM = '2026-10-29T00:00:00+08:00';
+
+/* "Nur Aisyah binti Ahmad" → "Nur A."; "SITI" → "Siti" */
+function shortName(full: string): string {
+  const cap = (w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+  const w = String(full || '').replace(/[^\p{L}\s'.-]/gu, ' ').trim().split(/\s+/).filter(Boolean);
+  if (!w.length) return '';
+  const next = w.slice(1).find((x) => !/^(bin|binti|bt|bte|bnt|a\/[pl]|al|el|@)$/i.test(x));
+  return cap(w[0]).slice(0, 14) + (next ? ' ' + next.charAt(0).toUpperCase() + '.' : '');
+}
 
 function admin() {
   return createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
@@ -392,6 +406,22 @@ Deno.serve(async (req: Request) => {
         } catch { /* stays pending; the callback may still come */ }
       }
       return json({ status: 'pending', sku: o.sku });
+    }
+
+    /* ── recent: the landing page's "baru sertai" card (29 Oct 2026, Seth).
+          Real paid orders only, never made up: the last 7 days, at most 10,
+          each as a first name and an initial ("Nur A.") with the time it was
+          paid. Nothing else about her leaves the server. Orders before
+          SHOW_FROM are left out: they were Seth's own tests, and buyers from
+          then on see the note in the checkout sheet. ── */
+    if (action === 'recent') {
+      const sku = (new URL(req.url).searchParams.get('sku') || '').trim();
+      if (!LANDING[sku]) return json({ recent: [] });
+      const since = new Date(Math.max(Date.now() - 7 * 864e5, Date.parse(SHOW_FROM))).toISOString();
+      const { data } = await admin().from('plus_landing_purchases').select('name, paid_at')
+        .eq('sku', sku).gte('paid_at', since).order('paid_at', { ascending: false }).limit(10);
+      const recent = (data || []).map((r: any) => ({ n: shortName(r.name), t: r.paid_at })).filter((r) => r.n);
+      return new Response(JSON.stringify({ recent }), { headers: { ...CORS, 'Cache-Control': 'public, max-age=120' } });
     }
 
     /* ── capi-test: a paid order's Purchase again, to Events Manager's Test

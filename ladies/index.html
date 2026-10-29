@@ -644,6 +644,16 @@ footer a{color:#fff;text-decoration:none;margin:0 6px}
 .ck-note{margin-top:10px;font-size:12.5px;color:var(--ink2);text-align:center}
 .ck-help{display:block;margin-top:8px;font-size:13px;font-weight:700;color:var(--m);text-align:center;text-decoration:none}
 
+/* "baru sertai": real paid orders only, from landing-pay ?action=recent (29 Oct 2026) */
+.rb{position:fixed;z-index:25;top:calc(env(safe-area-inset-top,0px) + 70px);left:12px;max-width:min(340px,calc(100vw - 24px));display:flex;align-items:center;gap:11px;padding:10px 34px 10px 10px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:0 18px 36px -16px rgba(80,10,50,.45);transform:translateY(-16px);opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.2,1.2,.4,1),opacity .3s}
+.rb.on{transform:none;opacity:1;pointer-events:auto}
+.rb-av{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--pink),var(--m2));color:#fff;font-weight:800;font-size:16px}
+.rb-t{min-width:0;font-size:13.5px;line-height:1.3;color:var(--ink)}
+.rb-t small{display:flex;align-items:center;gap:5px;margin-top:2px;font-size:11.5px;color:var(--ink2)}
+.rb-t small i{width:6px;height:6px;border-radius:50%;background:#2DB37A}
+.rb-x{position:absolute;top:4px;right:4px;width:28px;height:28px;border:0;background:none;color:var(--ink2);font-size:18px;line-height:1;cursor:pointer}
+@media(prefers-reduced-motion:reduce){ .rb{transition:opacity .3s;transform:none} }
+
 /* line icons (no emoji: they read cheap next to the photographs) */
 .ic{width:1.15em;height:1.15em;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em}
 .hpic span,.chips span,.pill,.wa{display:inline-flex;align-items:center;gap:6px}
@@ -686,6 +696,7 @@ details.more[open]>summary{margin-bottom:6px}
 <header><div class="w">
   <span class="logo"><img src="img/hf-mark.png" alt=""><span>HITFAT<i>+</i></span></span>
 </div></header>
+<div class="rb" id="rb" role="status" aria-live="polite"><span class="rb-av" id="rb-av"></span><span class="rb-t" id="rb-t"></span><button type="button" class="rb-x" id="rb-x" aria-label="Tutup">×</button></div>
 
 <main class="w">
 
@@ -1110,7 +1121,7 @@ details.more[open]>summary{margin-bottom:6px}
     <div class="ck-ch"><button type="button" class="on" data-ch="1">FPX Online Banking</button><button type="button" data-ch="6">DuitNow QR</button></div>
     <div class="ck-err" id="ck-err"></div>
     <button class="cta" id="ck-go" type="submit">Bayar RM39</button>
-    <div class="ck-note">Pembayaran selamat melalui Bayarcash. Guna emel Google yang anda akan log masuk app.</div>
+    <div class="ck-note">Pembayaran selamat melalui Bayarcash. Guna emel Google yang anda akan log masuk app. Nama pertama anda (cth. “Nur A.”) mungkin dipaparkan sebagai pembeli terkini.</div>
     <a class="ck-help" href="#" data-wa>Masalah bayaran? WhatsApp kami</a>
   </form>
 </div>
@@ -1226,6 +1237,28 @@ if('IntersectionObserver' in window){
   var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); },{threshold:0, rootMargin:'0px 0px 140px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 } else { bar.classList.add('on'); document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
+/* "baru sertai": the last 7 days' real paid orders from landing-pay, first name
+   and initial only (29 Oct 2026, Seth). Never made up: no orders, no card. Each
+   shows once per visit, never over the checkout; × stops them for the visit. */
+(function(){
+  var rb=document.getElementById('rb'), av=document.getElementById('rb-av'), tx=document.getElementById('rb-t'), stop=false, t=null;
+  if(!rb || !window.fetch) return;
+  var esc=function(v){ return String(v).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  function ago(iso){ var s=(Date.now()-Date.parse(iso))/1000;
+    if(!(s>=0) || s<60) return 'baru tadi'; if(s<3600) return Math.floor(s/60)+' minit lalu';
+    if(s<86400) return Math.floor(s/3600)+' jam lalu'; if(s<172800) return 'semalam'; return Math.floor(s/86400)+' hari lalu'; }
+  document.getElementById('rb-x').addEventListener('click',function(){ stop=true; clearTimeout(t); rb.classList.remove('on'); trackC('RecentClose'); });
+  function run(list, i){ if(stop || i>=list.length) return;
+    if(ck.classList.contains('on') || document.hidden){ t=setTimeout(function(){ run(list,i); },3000); return; }
+    var hb=document.querySelector('header').getBoundingClientRect().bottom; rb.style.top=Math.max(8,Math.round(hb)+10)+'px';   // under the header, wherever the strip above it has scrolled
+    var r=list[i]; av.textContent=r.n.charAt(0); tx.innerHTML='<b>'+esc(r.n)+'</b> baru sertai MAK2FIT 30<small><i></i>'+ago(r.t)+' · pembelian disahkan</small>';
+    rb.classList.add('on');
+    t=setTimeout(function(){ rb.classList.remove('on'); t=setTimeout(function(){ run(list,i+1); },10000); },5500); }
+  setTimeout(function(){
+    fetch(PAY_FN+'?action=recent&sku=prog_lad4').then(function(r){ return r.json(); })
+      .then(function(d){ var l=(d&&d.recent||[]).filter(function(r){ return r && r.n && r.t; }); if(l.length) run(l,0); })['catch'](function(){});
+  },5000);
+})();
 </script>
 <script>
 /* SCAN AI: the hero plays once when it comes into view; the phone follows the scroll */
