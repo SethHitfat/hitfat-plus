@@ -3937,7 +3937,10 @@ print("\n── MAK2FIT 30 ──");
      LB30.weeks.reduce(function(a,w){ return a+w.days.length; },0)===30);
   var moves=[]; LB30_DAYS.forEach(function(d){ moves=moves.concat(d.ex); });
   ok("nothing jumps", moves.every(function(n){ return !/jump|burpee|skip|tuck|skater|jack|hop|bound/i.test(n); }));
-  ok("every move is a filmed HITFAT clip, not an animation", moves.every(function(n){ var e=lbEx(n); return !!e.v && DB.some(function(x){ return x.n===n && x.v===e.v && x.eq==='Bodyweight'; }); }));
+  ok("every move is a filmed HITFAT clip, not an animation", moves.every(function(n){ var e=lbEx(n); return !!e.v && (LB30_DEMO[n]===e.v || DB.some(function(x){ return x.n===n && x.v===e.v && x.eq==='Bodyweight'; })); }));
+  /* 29 Oct 2026: Seth's library of a woman coach plays where it has the move */
+  ok("...hers where she has filmed it: squat, glute bridge, plank, the stretches", lbEx('Bodyweight Squat').v==='1239746361' && lbEx('Hip Thrust').v==='1239746393' &&
+     lbEx('Plank').v==='1239746407' && LB30_RECOVER.every(function(n){ return lbEx(n).v===LB30_DEMO[n] && lbEx(n).t==='mobility'; }) && lbEx('Dead Bug').v===DB.filter(function(x){ return x.n==='Dead Bug'; })[0].v);
   ok("no equipment beyond a wall", moves.every(function(n){ return !/chair|bench|dumbbell|kettlebell|bottle|backpack|band|step up/i.test(n); }));
   ok("no running on the spot either", moves.every(function(n){ var e=lbEx(n); return e.t!=='jump' && !/high knee|butt kick|fast feet|sprint/i.test(n); }));
   ok("every session is 20 minutes at most", LB30_DAYS.every(function(d){ return lbMinutes(d)<=20; }), LB30_DAYS.map(lbMinutes).join(','));
