@@ -15550,11 +15550,12 @@ var LB30_SETH={
 /* the women's demonstrations, by movement name: { 'Bodyweight Squat':'123456789/abcdef' }.
    Seth's own library of a woman coach (29 Oct 2026), public on Vimeo,
    portrait like the rest. Only the moves the program uses: nothing that
-   jumps, runs on the spot or needs a dumbbell. A move left out (Dead Bug,
-   Bird Dog, Wall Push Up, the chair, bottle and towel moves) still plays the
-   library clip. The same day, at Seth's word, the days swapped four moves
+   jumps, runs on the spot or needs a dumbbell. Only the chair, bottle and
+   towel moves a swap can bring still play the library clip. The same day, at Seth's word, the days swapped four moves
    she hasn't filmed for hers: Wall Sit → Squat Hold, Push Up Hold → High
-   Plank, Walking Lunges → Lunges Pulse, Squat Pause → Bodyweight Squat. */
+   Plank, Walking Lunges → Lunges Pulse, Squat Pause → Bodyweight Squat. Then
+   (Seth: "buang je") the three she has no clip of left the program
+   altogether: Dead Bug, Bird Dog and Wall Push Up. */
 var LB30_DEMO={
   'Bodyweight Squat':'1239746361', 'Squat Pulse':'1239746365', 'Squat Pulse 2':'1239746365', 'Squat Hold':'1239746406',
   'Reverse Lunges':'1239746364', 'Alternating Lunges':'1239746366', 'Curtsy Lunges':'1239746401', 'Side Lunges':'1239746397',
@@ -15564,7 +15565,7 @@ var LB30_DEMO={
   'Crunch':'1239746380', 'Reverse Crunch':'1240677061', 'Bicycle Crunch':'1239746377', 'Russian Twist':'1239746396',
   'Leg Raises':'1239746400', 'Flutter Kick':'1239746381', 'Hollow Hold':'1239746368', 'Sit Up':'1239746379',
   'Plank':'1239746407', 'Side Plank':'1239746370', 'Plank Shoulder Taps':'1240677076', 'Mountain Climber':'1239746387',
-  'Knee Push Ups':'1239746360', 'Push Up':'1239746404', 'High Plank':'1239746362', 'Lunges Pulse':'1239746363',
+  'Knee Push Ups':'1239746360', 'Push Up':'1239746404', 'High Plank':'1239746362', 'Lunges Pulse':'1239746363', 'Glutes Bridge Hold':'1240677085',
   /* the recovery days: her stretches, which the main library doesn't have */
   'Arm Forward Circle':'1239746374', 'Arm Back Circle':'1239746390', 'Cobra Stretch':'1240677075', 'Knee to Chest':'1239746371',
   'Butterfly Stretch':'1239746391', 'Side Abs Stretch':'1239746378', 'Back Stretch':'1239746384'
@@ -15572,7 +15573,7 @@ var LB30_DEMO={
 /* what the player shows under a move that is only in her library: [muscle, kind] */
 var LB30_DEMO_M={'Arm Forward Circle':['Mobility','mobility'],'Arm Back Circle':['Mobility','mobility'],'Cobra Stretch':['Mobility','mobility'],
   'Knee to Chest':['Mobility','mobility'],'Butterfly Stretch':['Mobility','mobility'],'Side Abs Stretch':['Mobility','mobility'],
-  'Back Stretch':['Mobility','mobility'],'High Plank':['Core','hold']};
+  'Back Stretch':['Mobility','mobility'],'High Plank':['Core','hold'],'Glutes Bridge Hold':['Glutes','hold']};
 /* ── the 30 days ──
    From HITFAT's filmed library only, and from what in it has no jump, no
    running on the spot and no equipment (a wall at most): quiet enough for
@@ -15589,26 +15590,26 @@ var LB30_WEEKS=[
 ];
 var LB30_DAYS=[
   {n:'Check-in & Fit Test',      k:'test',    r:1, ex:LB30_TEST},
-  {n:'Full Body Basics',        k:'work',    r:2, ex:['Bodyweight Squat','Wall Push Up','Hip Thrust','Dead Bug','Calf Raises']},
+  {n:'Full Body Basics',        k:'work',    r:2, ex:['Bodyweight Squat','Knee Push Ups','Hip Thrust','Reverse Crunch','Calf Raises']},
   {n:'Glutes & Legs',              k:'work',    r:2, ex:['Bodyweight Squat','Reverse Lunges','Hip Thrust','Side Lunges','Squat Hold']},
-  {n:'Core Basics',                k:'work',    r:2, ex:['Dead Bug','Crunch','Bird Dog','Reverse Crunch','Plank']},
-  {n:'Posture & Upper Body',       k:'work',    r:2, ex:['Wall Push Up','Bird Dog','Knee Push Ups','Dead Bug','Plank']},
+  {n:'Core Basics',                k:'work',    r:2, ex:['Glutes Bridge Hold','Crunch','Side Plank','Reverse Crunch','Plank']},
+  {n:'Posture & Upper Body',       k:'work',    r:2, ex:['Knee Push Ups','High Plank','Glutes Bridge Hold','Side Plank','Plank']},
   {n:'Low-Impact Burn',        k:'work',    r:2, ex:['Squat Pulse','Mountain Climber','Alternating Lunges','Bicycle Crunch','Calf Raises']},
   {n:'Stretch & Recover',          k:'recover', r:1, ex:LB30_RECOVER},
 
   {n:'Full Body',             k:'work',    r:3, ex:['Bodyweight Squat','Knee Push Ups','Reverse Lunges','Mountain Climber','Hip Thrust']},
   {n:'Glute Focus',               k:'work',    r:3, ex:['Hip Thrust','Curtsy Lunges','Single Leg Glutes Bridge','Side Lunges','Squat Hold']},
   {n:'Low-Impact Burn',        k:'work',    r:3, ex:['Squat Pulse','Mountain Climber','Alternating Lunges','Plank Shoulder Taps','Calf Raises']},
-  {n:'Strong Core',                k:'work',    r:3, ex:['Dead Bug','Russian Twist','Reverse Crunch','Side Plank','Plank']},
-  {n:'Posture & Upper Body',       k:'work',    r:3, ex:['Knee Push Ups','Bird Dog','High Plank','Plank Shoulder Taps','Dead Bug']},
+  {n:'Strong Core',                k:'work',    r:3, ex:['Crunch','Russian Twist','Reverse Crunch','Side Plank','Plank']},
+  {n:'Posture & Upper Body',       k:'work',    r:3, ex:['Knee Push Ups','Glutes Bridge Hold','High Plank','Plank Shoulder Taps','Side Plank']},
   {n:'Glutes & Legs',              k:'work',    r:3, ex:['Bodyweight Squat','Lunges Pulse','Hip Thrust','Curtsy Lunges','Squat Hold']},
   {n:'Stretch & Recover',          k:'recover', r:1, ex:LB30_RECOVER},
 
   {n:'Full Body Burn',       k:'work',    r:3, ex:['Bodyweight Squat','Knee Push Ups','Alternating Lunges','Mountain Climber','Hip Thrust','Bicycle Crunch']},
   {n:'Glutes & Legs',              k:'work',    r:3, ex:['Squat Pulse','Reverse Lunges','Single Leg Glutes Bridge','Curtsy Lunges','Side Lunges','Single Leg Calf Raises']},
-  {n:'Core & Waist',          k:'work',    r:3, ex:['Dead Bug','Russian Twist','Bicycle Crunch','Leg Raises','Side Plank','Plank']},
+  {n:'Core & Waist',          k:'work',    r:3, ex:['Reverse Crunch','Russian Twist','Bicycle Crunch','Leg Raises','Side Plank','Plank']},
   {n:'Stretch & Recover',          k:'recover', r:1, ex:LB30_RECOVER},
-  {n:'Posture & Upper Strength',    k:'work',    r:3, ex:['Knee Push Ups','Bird Dog','Plank Shoulder Taps','High Plank','Wall Push Up','Dead Bug']},
+  {n:'Posture & Upper Strength',    k:'work',    r:3, ex:['Knee Push Ups','Glutes Bridge Hold','Plank Shoulder Taps','High Plank','Side Plank','Plank']},
   {n:'Glute Burn',               k:'work',    r:3, ex:['Hip Thrust','Single Leg Glutes Bridge','Curtsy Lunges','Squat Hold','Side Lunges','Calf Raises']},
   {n:'Stretch & Recover',          k:'recover', r:1, ex:LB30_RECOVER},
 
@@ -15616,8 +15617,8 @@ var LB30_DAYS=[
   {n:'Low-Impact Burn',        k:'work',    r:3, ex:['Squat Pulse','Mountain Climber','Reverse Lunges','Plank Shoulder Taps','Bicycle Crunch','Calf Raises']},
   {n:'Glutes & Legs',              k:'work',    r:3, ex:['Bodyweight Squat','Curtsy Lunges','Single Leg Glutes Bridge','Side Lunges','Squat Hold','Single Leg Calf Raises']},
   {n:'Stretch & Recover',          k:'recover', r:1, ex:LB30_RECOVER},
-  {n:'Core Finisher',             k:'work',    r:3, ex:['Dead Bug','Leg Raises','Russian Twist','Flutter Kick','Side Plank','Hollow Hold']},
-  {n:'Posture & Upper Strength',    k:'work',    r:3, ex:['Push Up','Bird Dog','Plank Shoulder Taps','High Plank','Knee Push Ups','Plank']},
+  {n:'Core Finisher',             k:'work',    r:3, ex:['Bicycle Crunch','Leg Raises','Russian Twist','Flutter Kick','Side Plank','Hollow Hold']},
+  {n:'Posture & Upper Strength',    k:'work',    r:3, ex:['Push Up','Glutes Bridge Hold','Plank Shoulder Taps','High Plank','Knee Push Ups','Plank']},
   {n:'Full Body Challenge',     k:'work',    r:3, ex:['Bodyweight Squat','Push Up','Alternating Lunges','Mountain Climber','Hip Thrust','Plank']},
   {n:'Stretch & Recover',          k:'recover', r:1, ex:LB30_RECOVER},
   {n:'Final Check-in & Fit Test', k:'test',    r:1, ex:LB30_TEST}
@@ -15949,24 +15950,24 @@ var LB30_SWAP={
   lutut:{from:['Bodyweight Squat','Squat Pulse','Squat Pulse 2','Squat Pause','Squat Hold','Reverse Lunges','Walking Lunges','Lunges Pulse',
                'Alternating Lunges','Curtsy Lunges','Side Lunges','Wall Sit','Chair Squat','Step Up Box or Chair','Bulgarian Split Squat'],
          to:['Hip Thrust','Single Leg Glutes Bridge','Chair Assist Hip Abduction|kerusi','Chair Kick Back|kerusi','Bottle Hip Thrust|botol',
-             'Towel Glute Bridge','Towel Deadlift','Calf Raises','Single Leg Calf Raises','Dead Bug']},
+             'Towel Glute Bridge','Towel Deadlift','Calf Raises','Single Leg Calf Raises','Glutes Bridge Hold']},
   belakang:{from:['Cobra Stretch','Leg Raises','Flutter Kick','Russian Twist','Sit Up','Hollow Hold','Bicycle Crunch','V Sit Squat','Reverse Crunch'],
-         to:['Dead Bug','Bird Dog','Side Plank','Plank','Single Leg Glutes Bridge','Hip Thrust','Calf Raises']},
+         to:['Glutes Bridge Hold','Side Plank','Plank','Single Leg Glutes Bridge','Hip Thrust','Calf Raises']},
   tangan:{from:['Wall Push Up','Knee Push Ups','Push Up','Push Up Hold','High Plank','Plank Shoulder Taps','Mountain Climber','Bird Dog','Bear Walk','Incline Push Up (Chair)'],
          to:['Bottle Shoulder Press|botol','Bottle Upright Row|botol','Bottle Front Raises|botol','Towel Shoulder Back Pull','Towel Upright Row',
-             'Towel Front Raises','Dead Bug','Crunch','Hip Thrust','Squat Hold']},
+             'Towel Front Raises','Glutes Bridge Hold','Crunch','Reverse Crunch','Hip Thrust','Squat Hold']},
   bersalin:{from:['Cobra Stretch','Crunch','Sit Up','Bicycle Crunch','Russian Twist','Leg Raises','Flutter Kick','Hollow Hold','V Sit Squat','Reverse Crunch',
                'Plank Shoulder Taps','Mountain Climber','Push Up','Side Plank'],
-         to:['Dead Bug','Bird Dog','Hip Thrust','Single Leg Glutes Bridge','Chair Glute Bridge|kerusi','Knee Push Ups','Wall Push Up','Calf Raises']}
+         to:['Glutes Bridge Hold','Hip Thrust','Single Leg Glutes Bridge','Chair Glute Bridge|kerusi','Knee Push Ups','Squat Hold','Calf Raises','Bodyweight Squat']}
 };
 /* her level's ladders: [from, to…, weeks it applies (wi below), or all] */
 var LB30_LADDER={
-  baru:[['Push Up',['Knee Push Ups']],['Knee Push Ups',['Wall Push Up'],2],['High Plank',['Wall Push Up','Plank']],
+  baru:[['High Plank',['Plank']],['Push Up',['Knee Push Ups']],['Knee Push Ups',['High Plank'],2],
         ['Bodyweight Squat',['Chair Squat|kerusi'],2],
         ['Lunges Pulse',['Reverse Lunges','Squat Pulse']],['Alternating Lunges',['Reverse Lunges','Squat Pulse']],['Curtsy Lunges',['Reverse Lunges','Side Lunges']],
-        ['Leg Raises',['Reverse Crunch','Dead Bug']],['Flutter Kick',['Dead Bug','Crunch']],['Hollow Hold',['Dead Bug','Plank']],
-        ['Mountain Climber',['Seated High Knee|kerusi','Squat Pulse','Calf Raises']],['Plank Shoulder Taps',['Plank','Bird Dog']]],
-  aktif:[['Wall Push Up',['Knee Push Ups']],['Knee Push Ups',['Push Up'],-2],['Bodyweight Squat',['Squat Pulse'],-2]]
+        ['Leg Raises',['Reverse Crunch','Crunch']],['Flutter Kick',['Crunch','Reverse Crunch']],['Hollow Hold',['Plank','Glutes Bridge Hold']],
+        ['Mountain Climber',['Seated High Knee|kerusi','Squat Pulse','Calf Raises']],['Plank Shoulder Taps',['Plank','High Plank']]],
+  aktif:[['Knee Push Ups',['Push Up'],-2],['Bodyweight Squat',['Squat Pulse'],-2]]
 };
 var LB30_BOTTLE=[['High Plank','Bottle Shoulder Press'],['Plank Shoulder Taps','Bottle Upright Row']];
 

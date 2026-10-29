@@ -3940,7 +3940,8 @@ print("\n── MAK2FIT 30 ──");
   ok("every move is a filmed HITFAT clip, not an animation", moves.every(function(n){ var e=lbEx(n); return !!e.v && (LB30_DEMO[n]===e.v || DB.some(function(x){ return x.n===n && x.v===e.v && x.eq==='Bodyweight'; })); }));
   /* 29 Oct 2026: Seth's library of a woman coach plays where it has the move */
   ok("...hers where she has filmed it: squat, glute bridge, plank, the stretches", lbEx('Bodyweight Squat').v==='1239746361' && lbEx('Hip Thrust').v==='1239746393' &&
-     lbEx('Plank').v==='1239746407' && LB30_RECOVER.every(function(n){ return lbEx(n).v===LB30_DEMO[n] && lbEx(n).t==='mobility'; }) && lbEx('Dead Bug').v===DB.filter(function(x){ return x.n==='Dead Bug'; })[0].v);
+     lbEx('Plank').v==='1239746407' && LB30_RECOVER.every(function(n){ return lbEx(n).v===LB30_DEMO[n] && lbEx(n).t==='mobility'; }));
+  ok("...and every day's move is hers: no Dead Bug, Bird Dog or Wall Push Up (Seth: buang je)", moves.every(function(n){ return lbEx(n).v===LB30_DEMO[n]; }));
   ok("no equipment beyond a wall", moves.every(function(n){ return !/chair|bench|dumbbell|kettlebell|bottle|backpack|band|step up/i.test(n); }));
   ok("no running on the spot either", moves.every(function(n){ var e=lbEx(n); return e.t!=='jump' && !/high knee|butt kick|fast feet|sprint/i.test(n); }));
   ok("every session is 20 minutes at most", LB30_DAYS.every(function(d){ return lbMinutes(d)<=20; }), LB30_DAYS.map(lbMinutes).join(','));
@@ -4004,7 +4005,7 @@ print("\n── MAK2FIT 30 ──");
   ok("a sore knee: no squat, lunge or wall sit in 30 days", names(knee).every(function(n){ return LB30_SWAP.lutut.from.indexOf(n)<0; }));
   ok("...every move filmed, none twice in a day", names(knee).every(lbInDB) && knee.every(function(d){ return d.ex.every(function(n,i){ return d.ex.indexOf(n)===i; }); }));
   ok("...every day inside her 15 minutes, four moves at least", knee.every(function(d){ return d.k==='test' || (lbMinutes(d)<=15 && d.ex.length>=4); }));
-  ok("a beginner: 30 seconds, two rounds for two weeks, push-ups from the wall", knee[1].dur===30 && knee[8].r===2 && knee[1].ex.indexOf('Wall Push Up')>=0 && knee[21].ex.indexOf('Push Up')<0);
+  ok("a beginner: 30 seconds, two rounds for two weeks, push-ups held in a high plank first", knee[1].dur===30 && knee[8].r===2 && knee[1].ex.indexOf('High Plank')>=0 && knee[21].ex.indexOf('Push Up')<0);
   var mom=all({level:'pernah',pain:[],mom:'bersalin',clear:true,feed:true,mins:20,focus:'perut',equip:['kerusi']});
   ok("after a birth: no crunch, sit-up, leg raise or twist", names(mom).every(function(n){ return LB30_SWAP.bersalin.from.indexOf(n)<0; }));
   ok("her focus takes one day a week", mom.filter(function(d){ return /^Focus: Perut/.test(d.n); }).length===4);
