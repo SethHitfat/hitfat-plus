@@ -5758,6 +5758,15 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .lbx-h{font-size:21px;font-weight:800;letter-spacing:-.4px;line-height:1.2;}
 .lbx-p{font-size:14.5px;color:var(--dim);line-height:1.45;margin-top:4px;}
 .lbx-sell .lbx-h{margin-top:6px;}
+/* MAK2FIT: the line from the payment to Day 1 */
+.lbf-steps{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+.lbf-s{display:flex;align-items:center;gap:11px;font-size:14.5px;font-weight:700;color:var(--dim);}
+.lbf-s i{display:flex;align-items:center;justify-content:center;flex:none;width:26px;height:26px;border-radius:50%;background:var(--lbl2);color:var(--lr);font-style:normal;font-size:13px;font-weight:800;}
+.lbf-s i .gly{width:14px;height:14px;}
+.lbf-s span{flex:1;min-width:0;}
+.lbf-s small{font-size:12.5px;font-weight:600;color:var(--dim);}
+.lbf-s.on{color:inherit;}
+.lbf-s.on i{background:var(--lr);color:#fff;}
 .lbx-go{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:14px;padding:16px 18px;border:none;border-radius:16px;
   background:linear-gradient(135deg,var(--lr0,#F0509E),var(--lr) 55%,var(--lr2));color:#fff;font:inherit;font-size:16.5px;font-weight:800;cursor:pointer;
   box-shadow:0 10px 24px rgba(192,42,124,.32);}

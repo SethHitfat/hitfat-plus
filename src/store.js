@@ -616,7 +616,8 @@ function coConfirm(state){
   }[state];
   /* MAK2FIT 30 is sold in Malay, so its confirmation is too */
   if(state==='ok' && typeof LB30_ID!=='undefined' && _paySku==='prog_'+LB30_ID)
-    v=['co-ok','Pembayaran berjaya 🎉','MAK2FIT 30 dah terbuka. Jom mula Hari 1, cuma 20 minit.','Mula Hari 1','closeProduct();openProgram(LB30_ID)'];
+    v=lbFirst()==='plan' ? ['co-ok','Pembayaran berjaya 🎉','MAK2FIT 30 dah terbuka. Jom bina pelan anda dulu, 2 minit, lepas tu terus Hari 1.','Bina Pelan Saya','closeProduct();openProgram(LB30_ID);lbGo()']
+      : ['co-ok','Pembayaran berjaya 🎉','MAK2FIT 30 dah terbuka. Jom mula Hari 1.','Mula Hari 1','closeProduct();openProgram(LB30_ID);lbGo()'];
   if(!v || !$('pw-body')) return;
   $('pw-body').innerHTML='<div class="co co-done">'+
     (state==='wait'?'':'<div class="pwtop cotop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>')+

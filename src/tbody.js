@@ -3985,6 +3985,37 @@ print("\n── MAK2FIT 30 ──");
   ok("...each with its HITFAT video", got.e.every(function(e){ return !!e.v; }));
   lbPlay(3,'a'); ok("the morning half alone does not count the day", !got.m.pid && got.m.key==='lb30-d3-a');
   lbData().half[3]={a:true}; lbPlay(3,'b'); ok("...the evening half, after it, does", got.m.pid==='lad4' && got.m.gi===3);
+  /* the first five minutes (31 Oct 2026): plan, phone, Day 1 */
+  var keepMe=lbData().me, keepProg=HF.data.progress[LB30_ID], keepStart=startWorkout, keepPhone=hfPhone, keepAlone=pushStandalone, keepApp=hfInApp, keepInst=null;
+  try{ keepInst=localStorage.getItem('hf_lb_inst'); localStorage.removeItem('hf_lb_inst'); }catch(e){}
+  HF.data.progress[LB30_ID]=0; lbData().me=null;
+  ok("first comes her plan", lbFirst()==='plan');
+  hfPhone=function(){ return 'ios'; }; pushStandalone=function(){ return false; }; hfInApp=function(){ return ''; };
+  lbTab='plan'; renderLB30(); var fc=$('pgd-body').innerHTML;
+  ok("...on one card of three steps, with one button", fc.indexOf('lbf-steps')>0 && fc.indexOf('Letak app di telefon')>0 && fc.indexOf('onclick="lbGo()"')>0);
+  ok("...and no Start Day 1 before it", fc.indexOf('Start Day 1')<0);
+  lbData().me={done:true, level:'baru'};
+  ok("then the phone", lbFirst()==='phone');
+  lbInstLater(1); ok("\"Nanti dulu\" lets her go on to Day 1", lbFirst()==='day');
+  try{ localStorage.removeItem('hf_lb_inst'); }catch(e){}
+  hfInApp=function(){ return 'Facebook'; }; ok("Facebook's browser cannot add to the Home Screen, so it skips that", lbFirst()==='day');
+  hfInApp=function(){ return ''; }; pushStandalone=function(){ return true; }; ok("...and so does the app already on the Home Screen", lbFirst()==='day');
+  hfPhone=function(){ return ''; }; pushStandalone=function(){ return false; }; ok("...and a computer", lbFirst()==='day');
+  HF.data.progress[LB30_ID]=1; ok("a day done, the line is behind her", lbFirst()==='' && !lbHomeCard().match(/Bina Pelan/));
+  HF.data.progress[LB30_ID]=0; lbData().me=null; ok("Home's button leads to her plan first", lbHomeCard().indexOf('Bina Pelan Saya')>0 || !lbFull());
+  ok("the Malay steps cover every browser", ['safari','ios-other','chrome','samsung','android-other'].every(function(b){ return LB30_INST[b].length===hfInstallSteps(b).length; }));
+  /* Bara's reminders, asked when a day is done */
+  var keepState=pushState, keepAsk=null, keepUser=HF.userId, keepSb=sb, keepNotif=(typeof Notification!=='undefined')?Notification:undefined;
+  try{ keepAsk=localStorage.getItem('hf_push_ask'); localStorage.removeItem('hf_push_ask'); }catch(e){}
+  HF.userId='t'; sb=sb||{}; pushState=function(){ return 'install'; };
+  ok("an iPhone in Safari is shown how to add the app", lbPushDue()==='install');
+  hfInApp=function(){ return 'Facebook'; }; ok("...not inside Facebook, where it cannot", lbPushDue()==='');
+  hfInApp=function(){ return ''; }; pushState=function(){ return 'on'; }; ok("reminders on: nothing to ask", lbPushDue()==='');
+  try{ localStorage.setItem('hf_push_ask',JSON.stringify({n:3,t:0})); pushState=function(){ return 'install'; }; ok("three asks is the most", lbPushDue()===''); 
+       localStorage.setItem('hf_push_ask',JSON.stringify({n:1,t:Date.now()})); ok("...three days apart", lbPushDue()===''); localStorage.removeItem('hf_push_ask'); }catch(e){}
+  pushState=keepState; HF.userId=keepUser; sb=keepSb;
+  try{ if(keepAsk) localStorage.setItem('hf_push_ask',keepAsk); if(keepInst) localStorage.setItem('hf_lb_inst',keepInst); }catch(e){}
+  hfPhone=keepPhone; pushStandalone=keepAlone; hfInApp=keepApp; lbData().me=keepMe; HF.data.progress[LB30_ID]=keepProg; startWorkout=keepStart;
   /* Malay on its own pages */
   var html=''; var keepBody=$('pgd-body');
   ['plan','food','progress','guide'].forEach(function(tb){ lbTab=tb; renderLB30(); html+=$('pgd-body').innerHTML; });
@@ -3998,7 +4029,7 @@ print("\n── MAK2FIT 30 ──");
      d1.indexOf('Hips')>0 && d1.indexOf('lbSkipTest(0)')>0);
   /* her own plan (25 Oct 2026): the questionnaire rebuilds the 30 days */
   var lb=lbData(); delete lb.me;
-  ok("no answers: the template, as it was", lbDay(3)===LB30_DAYS[3] && (lbTab='plan', renderLB30(), $('pgd-body').innerHTML.indexOf('lbQuizOpen()')>0));
+  ok("no answers: the template, as it was", lbDay(3)===LB30_DAYS[3] && (lbTab='plan', renderLB30(), $('pgd-body').innerHTML.indexOf('lbGo()')>0 && lbFirst()==='plan'));
   var all=function(me){ lb.me=me; me.done=true; var o=[]; for(var i=0;i<30;i++) o.push(lbDayFor(i)); return o; };
   var names=function(ds){ return ds.reduce(function(a,d){ return a.concat(d.ex); },[]); };
   var knee=all({level:'baru',pain:['lutut'],mom:'tidak',mins:15,focus:'semua',equip:[]});

@@ -587,7 +587,99 @@ function lbQuizSave(){
   var d=lbData(); lbQA.done=true; lbQA.at=iso(0);
   d.me=lbQA; d.profile={wt:lbQA.wt, ht:lbQA.ht, age:lbQA.age};
   HF.save(); lbQ=-1; lbTab='plan'; lbWeek=-1; renderLB30(); $('screen').scrollTop=0; toast('Pelan anda sudah sedia');
+  if(lbFirst()==='phone') lbInstSheet();
 }
+/* ── the first five minutes (31 Oct 2026). Of the first 11 buyers in the app, 3
+   finished the questionnaire and 5 started a session, so one line runs from
+   the payment to Day 1: her plan, the app on her phone, then the day. The
+   plan comes first because it screens for pregnancy and sore joints; the
+   phone can wait ("Nanti dulu"), and a phone browser that cannot add to the
+   Home Screen, or a computer, skips it. Once a day is done none of this shows. ── */
+function lbInstDue(){
+  if(!hfPhone() || pushStandalone() || hfInApp()) return false;
+  try{ return !localStorage.getItem('hf_lb_inst'); }catch(e){ return false; }
+}
+/* the step she is on: 'plan' | 'phone' | 'day', or '' when the line is behind her */
+function lbFirst(){
+  if(!lbOwned() || lbDone()>0) return '';
+  if(!lbMe()) return 'plan';
+  return lbInstDue() ? 'phone' : 'day';
+}
+function lbGo(){
+  var s=lbFirst();
+  if(s==='plan') lbQuizOpen(); else if(s==='phone') lbInstSheet(); else lbOpenDay(lbNext());
+}
+function lbFirstCard(){
+  var st=lbFirst(), rows=[['plan','Bina pelan anda','2 minit']];
+  if(hfPhone() && !hfInApp()) rows.push(['phone','Letak app di telefon','1 minit']);
+  rows.push(['day','Mula Hari 1',lbMinutes(lbDay(0))+' minit']);
+  var at=rows.map(function(r){ return r[0]; }).indexOf(st);
+  return '<div class="lbx-card lbq-invite lbf"><div class="lbx-k">Before Day 1</div>'+
+    '<div class="lbx-h">'+(st==='plan'?'Jom bina pelan 30 hari anda.':'Pelan anda dah sedia.')+'</div>'+
+    '<div class="lbx-p">'+(st==='plan'?lbQCount(LB30_Q.length)+' soalan. Gerakan, minit dan kalori ikut tahap, badan dan masa anda.':
+      'Letak app di telefon supaya senang dibuka setiap hari.')+'</div>'+
+    '<div class="lbf-steps">'+rows.map(function(r,i){
+      return '<div class="lbf-s'+(i<at?' ok':i===at?' on':'')+'"><i>'+(i<at?glyph('check'):(i+1))+'</i><span>'+r[1]+'</span><small>'+r[2]+'</small></div>'; }).join('')+'</div>'+
+    '<button class="lbx-go" onclick="lbGo()">'+(st==='plan'?glyph('sliders')+'Bina Pelan Saya':glyph('share')+'Tunjuk Caranya')+'</button>'+
+    (st==='phone'?'<button class="lbx-ghost" onclick="lbInstLater()">Nanti dulu, terus ke Hari 1</button>':'')+'</div>';
+}
+/* pushInstallHelp's steps, in the Malay she bought in */
+var LB30_INST={
+  safari:['Tekan <b>Share</b> di bawah (petak dengan anak panah ke atas). Tak nampak? Tekan <b>···</b> dulu','Skrol ke bawah dan pilih <b>Add to Home Screen</b>',
+          'Pastikan <b>Open as Web App</b> dihidupkan, kemudian tekan <b>Add</b>','Buka HITFAT+ dari ikonnya dan log masuk sekali lagi'],
+  'ios-other':['Tekan <b>Share</b> di palang alamat','Pilih <b>Add to Home Screen</b>','Tekan <b>Add</b>','Buka HITFAT+ dari ikonnya dan log masuk sekali lagi'],
+  chrome:['Tekan <b>⋮</b> di atas sebelah kanan','Pilih <b>Add to Home screen</b> atau <b>Install app</b>','Tekan <b>Install</b>','Buka HITFAT+ dari ikonnya'],
+  samsung:['Tekan <b>≡</b> di bawah sebelah kanan','Pilih <b>Add page to</b>, kemudian <b>Home screen</b>','Tekan <b>Add</b>','Buka HITFAT+ dari ikonnya'],
+  'android-other':['Buka <b>app.hitfat.io</b> dalam <b>Google Chrome</b>','Tekan <b>⋮</b> dan pilih <b>Add to Home screen</b>','Tekan <b>Install</b>','Buka HITFAT+ dari ikonnya']
+};
+/* after: asked once a day is done, so "Nanti dulu" just closes it */
+function lbInstSheet(after){
+  var steps=LB30_INST[hfBrowser()]||LB30_INST.safari, ios=hfPhone()==='ios';
+  $('pw-body').innerHTML='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>'+
+    '<div class="sc-sh"><img class="hi-icon" src="/img/icon/icon-192.png?v=3" alt=""><div class="sc-sh-k">Letak di telefon anda</div>'+
+    '<div class="hi-t">Buka sekali tekan, skrin penuh, dan Bara boleh ingatkan anda</div>'+
+    '<div class="pu-steps">'+steps.map(function(t,i){ return '<div><b>'+(i+1)+'</b><span>'+t+'</span></div>'; }).join('')+'</div>'+
+    '<div class="sc-sh-f">'+(ios?'Pelan anda disimpan dalam akaun, jadi ia tetap ada lepas log masuk semula.':'Tak perlu Play Store. Beberapa saat sahaja.')+'</div>'+
+    '<button class="lbx-ghost" onclick="lbInstLater('+(after?1:0)+')">'+(after?'Nanti dulu':'Nanti dulu, terus ke Hari 1')+'</button></div>';
+  $('pwm').classList.add('on');
+}
+function lbInstLater(after){
+  try{ localStorage.setItem('hf_lb_inst','1'); }catch(e){}
+  closeProduct();
+  if(!after) openProgram(LB30_ID);
+}
+/* ── Bara's reminders, asked when a day is done (31 Oct 2026). Home's ask waits
+   for the app on the Home Screen and for Kenali Bara, which most buyers never
+   reach: 1 of 11 had them on. Same limits as Home: 3 times, 3 days apart, and
+   never after "no" or a phone that blocked them. An iPhone in Safari cannot
+   get them at all, so it is shown how to add the app. ── */
+function lbPushDue(){
+  try{
+    if(!sb || !HF.userId || localStorage.getItem('hf_push_no')==='1') return '';
+    var a=JSON.parse(localStorage.getItem('hf_push_ask')||'null');
+    if(a && (a.n>=3 || Date.now()-a.t<3*864e5)) return '';
+    var st=pushState();
+    if(st==='install') return hfInApp() ? '' : 'install';
+    return st==='off' && Notification.permission==='default' ? 'ask' : '';
+  }catch(e){ return ''; }
+}
+function lbPushAsk(n){
+  var due=lbPushDue(); if(!due || !$('scc') || $('scc').style.display==='flex') return false;
+  var a=null; try{ a=JSON.parse(localStorage.getItem('hf_push_ask')||'null'); }catch(e){}
+  try{ localStorage.setItem('hf_push_ask', JSON.stringify({n:((a&&a.n)||0)+1, t:Date.now()})); }catch(e){}
+  var pose=typeof scTone==='function'?scTone('cheer','w_cheer'):'aktif';
+  $('scc').className='scc scc-meet';
+  $('scc').innerHTML='<div class="scc-in">'+(typeof scMomentBell==='function'?scMomentBell(pose):'')+
+    '<div class="scc-t">Hari '+n+' siap! 🎉</div>'+
+    '<div class="scc-s">Boleh Bara ingatkan awak esok? Pagi untuk check-in, malam bila streak awak dalam bahaya. Paling banyak 3 sehari, bila ada sebab je.</div>'+
+    '<div class="scc-s" style="font-size:13px;opacity:.7;margin-top:6px">'+(due==='install'?'iPhone hanya benarkan peringatan bila app ada di skrin telefon.':'Lepas tekan, telefon akan tanya. Pilih <b>Allow</b>.')+'</div>'+
+    '<button class="bigbtn scc-share" onclick="'+(due==='install'?'lbPushInst()':'pushAskYes()')+'">'+(due==='install'?'Tunjuk caranya':'Hidupkan peringatan')+'</button>'+
+    '<button class="scc-x" onclick="scCelebrateClose()">Nanti dulu</button></div>';
+  $('scc').style.display='flex';
+  if(typeof scMomentPlay==='function') scMomentPlay(pose);
+  return true;
+}
+function lbPushInst(){ scCelebrateClose(); lbInstSheet(true); }
 /* the questions alone, without the facts between them */
 function lbQCount(upto){ var c=0; for(var i=0;i<Math.min(upto,LB30_Q.length);i++) if(LB30_Q[i].k!=='fact') c++; return c; }
 function lbQuiz(){
@@ -853,7 +945,7 @@ function renderLB30(){
   var owned=lbOwned(), done=lbDone(), tot=LB30_DAYS.length, nx=lbNext();
   if(lbWeek<0) lbWeek=lbWeekOf(Math.min(nx,tot-1));
   var pill=!owned ? {icon:'lock',label:'RM'+LB30_PRICE,go:'lbBuy()'}
-         : nx<tot ? {icon:'play',label:'Day '+(nx+1),go:'lbOpenDay('+nx+')'} : null;
+         : nx<tot ? {icon:'play',label:'Day '+(nx+1),go:'lbGo()'} : null;
   var h=pdxBar('program',pill)+
     '<div class="lbx-hero'+(LB30_COVER?' cover':'')+'" style="background-image:url(\''+lbTopImg()+'\')"><div class="lbx-hero-ov"></div>'+
     '<div class="lbx-hero-tx"><img class="lbx-mark" src="/img/brand/hfplus-mark.png" alt="HITFAT+">'+
@@ -866,8 +958,10 @@ function renderLB30(){
       '<div class="lbx-p">Workout tanpa lompat 20 minit sehari, sasaran kalori, menu makanan Malaysia, dan progres anda direkod.</div>'+
       '<button class="lbx-go" onclick="lbBuy()">'+glyph('lock')+'Get the Program · RM'+LB30_PRICE+'</button>'+
       '<button class="lbx-ghost" onclick="openPaywall(\'\')">'+glyph('star')+'Included in HITFAT+</button></div>';
+  } else if(lbFirst()==='plan' || lbFirst()==='phone'){
+    h+=lbFirstCard();
   } else if(nx<tot && !lbMe()){
-    /* before her first day: the questionnaire that builds her plan */
+    /* she started before the questionnaire: it can still build her plan */
     h+='<div class="lbx-card lbq-invite"><div class="lbx-k">'+(done?'New · your own plan':'Before Day 1')+'</div>'+
       '<div class="lbx-h">Jom bina pelan 30 hari anda.</div>'+
       '<div class="lbx-p">'+lbQCount(LB30_Q.length)+' soalan, 2 minit. Gerakan, minit dan kalori ikut tahap, badan dan masa anda.</div>'+
@@ -1080,7 +1174,8 @@ function lbAfterSession(m){
     if(lb.half[m.gi].a && lb.half[m.gi].b && progDone(LB30_ID)===m.gi){ HF.data.progress[LB30_ID]=m.gi+1; }
     HF.save();
   }
-  if(progDone(LB30_ID)>m.gi){ hidePanels(); $('progdetail').style.display='block'; lbTab='plan'; renderLB30(); $('screen').scrollTop=0; }
+  if(progDone(LB30_ID)>m.gi){ hidePanels(); $('progdetail').style.display='block'; lbTab='plan'; renderLB30(); $('screen').scrollTop=0;
+    if(progDone(LB30_ID)===m.gi+1) lbPushAsk(m.gi+1); }
   else lbOpenDay(m.gi);
 }
 function lbComplete(gi){
@@ -1554,9 +1649,9 @@ function lbTebusSheet(state,o){
 function lbFull(){ return lbOwned() && lbNext()<LB30_DAYS.length && (owns('prog_'+LB30_ID) || lbDone()>0); }
 function lbHomeCard(){
   if(!lbFull()) return '';
-  var done=lbDone(), tot=LB30_DAYS.length, nx=lbNext(), d=lbDay(nx), pct=Math.round(done/tot*100);
+  var done=lbDone(), tot=LB30_DAYS.length, nx=lbNext(), d=lbDay(nx), pct=Math.round(done/tot*100), first=lbFirst();
   return '<div class="wl-poster lb-card" onclick="openProgram(\''+LB30_ID+'\')">'+lbPoster('lb-card-poster')+
     '<div class="wl-poster-b"><div class="tx"><div class="k">Day '+(nx+1)+' · '+lbMinutes(d)+' min</div>'+
     '<div class="t">'+d.n+'</div><div class="pbar lb-bar"><i style="width:'+pct+'%"></i></div></div>'+
-    '<button class="bigbtn lb-btn" onclick="event.stopPropagation();lbOpenDay('+nx+')">'+glyph('play')+'Start Day '+(nx+1)+'</button></div></div>';
+    '<button class="bigbtn lb-btn" onclick="event.stopPropagation();lbGo()">'+(first==='plan'?glyph('sliders')+'Bina Pelan Saya':glyph('play')+'Start Day '+(nx+1))+'</button></div></div>';
 }
