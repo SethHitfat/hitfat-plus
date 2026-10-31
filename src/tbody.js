@@ -4004,6 +4004,21 @@ print("\n── MAK2FIT 30 ──");
   HF.data.progress[LB30_ID]=1; ok("a day done, the line is behind her", lbFirst()==='' && !lbHomeCard().match(/Bina Pelan/));
   HF.data.progress[LB30_ID]=0; lbData().me=null; ok("Home's button leads to her plan first", lbHomeCard().indexOf('Bina Pelan Saya')>0 || !lbFull());
   ok("the Malay steps cover every browser", ['safari','ios-other','chrome','samsung','android-other'].every(function(b){ return LB30_INST[b].length===hfInstallSteps(b).length; }));
+  /* her first scan, once a day is done */
+  var keepFrom=_ent.ladiesFrom, keepPlus=_ent.plusUntil, keepCoach=_ent.coachUntil, keepQuota=HF.data.scanQuota, keepScan1=lbData().scan1;
+  _ent.ladiesFrom=new Date().toISOString(); _ent.plusUntil=null; _ent.coachUntil=null; _ent.scanDaily=0; HF.data.scanQuota={}; delete lbData().scan1;
+  HF.data.progress[LB30_ID]=0; ok("no scan invite before a day is done", !lbScanFirst());
+  HF.data.progress[LB30_ID]=1;
+  var sameOwner=_ent.owned; _ent.owned={'prog_lad4':true}; _ent.skus={'prog_lad4':1};
+  ok("a day done and her 10 untouched, the next step is a scan", lbScanFirst());
+  lbData().me={done:true, level:'baru'}; lbTab='plan'; renderLB30(); var sc1=$('pgd-body').innerHTML;
+  ok("...above Day 2, in place of the strip", sc1.indexOf('Scan makanan anda yang seterusnya')>0 && sc1.indexOf('Scan makanan anda yang seterusnya')<sc1.indexOf('lbx-now') && sc1.indexOf('Snap makanan anda')<0);
+  ok("...and it says included, never free", lbScanFirstCard().toLowerCase().indexOf('percuma')<0 && lbScanFirstCard().indexOf('termasuk')>0);
+  HF.data.scanQuota={lbFrom:_ent.ladiesFrom, lb:1}; ok("one scan and it has done its job", !lbScanFirst());
+  HF.data.scanQuota={}; lbScanLater(); ok("\"Nanti dulu\" is not asked again", !lbScanFirst());
+  renderLB30(); ok("...and the strip comes back", $('pgd-body').innerHTML.indexOf('Snap makanan anda')>0);
+  delete lbData().scan1; _ent.ladiesFrom=null; ok("a member with no welcome scans is not invited", !lbScanFirst());
+  _ent.owned=sameOwner; _ent.ladiesFrom=keepFrom; _ent.plusUntil=keepPlus; _ent.coachUntil=keepCoach; HF.data.scanQuota=keepQuota; if(keepScan1) lbData().scan1=keepScan1;
   /* Bara's reminders, asked when a day is done */
   var keepState=pushState, keepAsk=null, keepUser=HF.userId, keepSb=sb, keepNotif=(typeof Notification!=='undefined')?Notification:undefined;
   try{ keepAsk=localStorage.getItem('hf_push_ask'); localStorage.removeItem('hf_push_ask'); }catch(e){}

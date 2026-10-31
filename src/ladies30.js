@@ -952,6 +952,8 @@ function renderLB30(){
     '<div class="lbx-name lb-logo">'+lbLogo('w')+'</div>'+
     '<div class="lbx-tags"><span>30 days</span><span>20 min a day</span><span>No jumping</span><span>At home</span></div></div></div>';
   h+='<div class="lbx">';
+  var scan1=lbScanFirst();
+  if(scan1) h+=lbScanFirstCard();
   if(!owned){
     h+='<div class="lbx-card lbx-sell"><div class="lbx-k">For women</div>'+
       '<div class="lbx-h">30 hari bakar lemak, dari rumah anda.</div>'+
@@ -984,7 +986,7 @@ function renderLB30(){
       '<div class="lbx-h">30 days complete</div><div class="lbx-p">Lihat sejauh mana anda sudah pergi.</div>'+
       '<button class="lbx-go" onclick="lbSetTab(\'progress\')">'+glyph('trophy')+'See Your Results</button></div>';
   }
-  if(owned) h+=lbScanHero();
+  if(owned && !scan1) h+=lbScanHero();
   h+='<div class="lbx-seg" id="lb-tabs">'+[['plan','Plan'],['food','Nutrition'],['learn','Learn'],['progress','Progress'],['guide','Start Here']]
     .map(function(t){ return '<button class="'+(lbTab===t[0]?'on':'')+'" onclick="lbSetTab(\''+t[0]+'\')">'+t[1]+'</button>'; }).join('')+'</div>';
   if(lbTab==='food') h+=lbFood();
@@ -1285,6 +1287,22 @@ function lbScanGo(){
   var a=typeof scanAccess==='function' ? scanAccess() : {left:0};
   if(a.left>0) openScan('meal'); else startCheckout('scan_d6');
 }
+/* ── her first scan (31 Oct 2026): none of the first 13 buyers had used one of
+   their 10, so with a day behind her, the next thing to do is scan a meal.
+   Only while those 10 are untouched; once she scans, or says "Nanti dulu",
+   the strip below takes over. ── */
+function lbScanFirst(){
+  if(!lbOwned() || lbDone()<1 || lbData().scan1 || typeof scanAccess!=='function') return false;
+  var a=scanAccess();
+  return !!(a.ladies && a.mode==='free' && ladiesScansUsed()===0);
+}
+function lbScanFirstCard(){
+  return '<div class="lbx-scanhero lbf-scan"><div class="ph" style="background-image:url(\'/ladies/img/menu/d11.jpg\')"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><i class="ln"></i></div>'+
+    '<div class="tx"><div class="k">'+glyph('spark')+'Langkah seterusnya</div><b>Scan makanan anda yang seterusnya.</b><span>'+LADIES_FREE_SCANS+' scan termasuk dalam '+LB30_NAME+'. Ambil gambar, AI anggarkan kalorinya.</span></div>'+
+    '<div class="lbf-scan-b"><button class="lbx-go" onclick="lbScanGo()">'+glyph('photo')+'Scan Sekarang</button>'+
+    '<button class="lbx-ghost" onclick="lbScanLater()">Nanti dulu</button></div></div>';
+}
+function lbScanLater(){ lbData().scan1='later'; HF.save(); renderLB30(); }
 function lbScanHero(){
   if(typeof scanAccess!=='function') return '';
   var a=scanAccess(), has=a.left>0;
