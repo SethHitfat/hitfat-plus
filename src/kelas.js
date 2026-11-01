@@ -946,7 +946,7 @@ function kelasPointsHTML(){
   /* how to earn */
   const linked=(P.history||[]).some(x=>x.t==='link');
   h+='<div class="kl-earn">'+
-     '<div class="kl-er"><span class="kl-eic">'+glyph('calendar')+'</span><div><b>Class at HQ</b><small>Once a day, from the kiosk</small></div><em>+100</em></div>'+
+     '<div class="kl-er"><span class="kl-eic">'+glyph('calendar')+'</span><div><b>Class at HQ</b><small>Scan at the kiosk. A second class the same day: +50</small></div><em>+100</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('chart')+'</span><div><b>Weekly bonus</b><small>3+ classes in a week: +25, then +50, +75, up to +100 a week in a row</small></div><em>+25↑</em></div>'+
      '<div class="kl-er"><span class="kl-eic">'+glyph('repeat')+'</span><div><b>Second class, same day</b><small>3 hours or more after the first</small></div><em>+50</em></div>'+
      (kelasPt()?'<div class="kl-er"><span class="kl-eic">'+glyph('workout')+'</span><div><b>PT session</b><small>Each session with your coach, once it is logged</small></div><em>+150</em></div>':'')+
