@@ -265,6 +265,43 @@ async function sendCapi(o: any, testCode = ''): Promise<{ ok: boolean; detail: s
   }
 }
 
+/* The welcome email (2 Nov 2026, Seth: buyers were lost after paying, and only
+   Bayarcash's receipt reached them). One email from the call that turns the
+   order paid. Silent until RESEND_API_KEY is set, and it never holds up a
+   purchase. RESEND_FROM names the sender, on a domain verified at Resend. */
+const WELCOME: Record<string, { name: string; tebus: string }> = { prog_lad4: { name: 'MAK2FIT 30', tebus: 'lad4' } };
+function esc(s: unknown): string {
+  return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
+}
+function welcomeHtml(o: any, name: string, go: string): string {
+  const first = esc(String(o.name || '').trim().split(/\s+/)[0]);
+  const step = (n: number, t: string) => '<tr><td style="padding:7px 12px 7px 0;vertical-align:top;font-weight:800;color:#C02A7C">' + n + '</td><td style="padding:7px 0;line-height:1.5">' + t + '</td></tr>';
+  return '<div style="font-family:Arial,sans-serif;font-size:16px;color:#1C0814;max-width:520px;margin:0 auto;padding:8px">' +
+    '<h2 style="margin:0 0 12px;color:#5E1A47">Selamat datang' + (first ? ', ' + first : '') + '!</h2>' +
+    '<p style="line-height:1.5;margin:0 0 14px">Bayaran anda berjaya. ' + name + ' milik anda selamanya, dan pelan 30 hari anda sedang menunggu.</p>' +
+    '<p style="margin:22px 0"><a href="' + go + '" style="background:#C02A7C;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 26px;border-radius:999px;display:inline-block">Buka ' + name + '</a></p>' +
+    '<table style="border-collapse:collapse;margin:0 0 16px">' +
+    step(1, 'Tekan butang di atas, dan log masuk dengan <b>' + esc(o.email) + '</b>.') +
+    step(2, 'Tekan <b>Bina Pelan Saya</b> dan jawab soalan, lebih kurang 2 minit.') +
+    step(3, 'Mula <b>Hari 1</b>: rekod berat dan pinggang, kemudian Fit Test.') +
+    '</table>' +
+    '<p style="line-height:1.5;margin:0 0 14px">Tak pasti? Tengok <a href="https://app.hitfat.io/panduan/" style="color:#C02A7C;font-weight:700">video panduan</a>: cara simpan app di telefon, dan cara guna langkah demi langkah.</p>' +
+    '<p style="line-height:1.5;margin:0;color:#6b5a64;font-size:14px">Nombor order anda: <b>' + esc(o.order_number) + '</b>. Simpan emel ini.</p></div>';
+}
+async function sendWelcome(o: any) {
+  const key = Deno.env.get('RESEND_API_KEY'), w = WELCOME[o.sku];
+  if (!key || !w || !o.email) return;
+  try {
+    const go = 'https://app.hitfat.io/?tebus=' + w.tebus + '&o=' + encodeURIComponent(o.order_number);
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST', signal: AbortSignal.timeout(8000), headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key },
+      body: JSON.stringify({ from: Deno.env.get('RESEND_FROM') || 'MAK2FIT 30 <hello@mail.hitfat.io>', to: [o.email],
+        subject: 'Selamat datang ke ' + w.name + ': mula di sini', html: welcomeHtml(o, w.name, go) }),
+    });
+    if (!r.ok) console.error('landing-pay: welcome refused', r.status, (await r.text().catch(() => '')).slice(0, 200));
+  } catch (e) { console.error('landing-pay: welcome failed', String(e)); }
+}
+
 /* An order Bayarcash says is paid, for at least its price: record it once.
    The purchase row is what the app claims; upsert so a retry is a no-op.
    Only the call that turns it paid tells Meta, so a callback and the
@@ -289,6 +326,7 @@ async function markPaid(db: any, o: any, tx: string, paid: number): Promise<bool
         p_sale: o.amount, p_ref: o.ref, p_email: o.email, p_phone: o.phone });
       if (cErr) console.error('landing-pay: commission failed', cErr.message);
     }
+    await sendWelcome(o);
     const c = await sendCapi(o);
     if (c.ok) await db.from('plus_landing_orders').update({ capi_sent_at: new Date().toISOString() }).eq('order_number', o.order_number);
   }
