@@ -9424,11 +9424,11 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 #play.a2f #pl-done .dk,#play.a2f #pl-done .hc-days{color:#EBD2A6;}
 #play.a2f #pl-done .dscore{background:linear-gradient(180deg,rgba(184,146,79,.24),rgba(140,110,58,.14));box-shadow:inset 0 0 0 1px rgba(212,175,124,.38);}
 #play.a2f #pl-done .dwrap::before{content:"";display:block;width:150px;height:23px;margin:0 auto 6px;
-  background:url(/img/p/ayah/logo-w.png) center/contain no-repeat;}
+  background:url(/img/p/ayah/logo-w.png?v=2) center/contain no-repeat;}
 #play.a2f #pl-why .wopts button:active{background:#B8924F;border-color:#B8924F;}
 #play.a2f #pl-ready{background:linear-gradient(180deg,rgba(7,26,47,.10) 0%,rgba(7,26,47,.5) 30%,rgba(7,26,47,.93) 55%,#071A2F 70%);}
 #play.a2f #pl-ready .rdwrap::before{content:"";display:block;width:168px;height:26px;margin:0 0 14px;
-  background:url(/img/p/ayah/logo-w.png) left center/contain no-repeat;}
+  background:url(/img/p/ayah/logo-w.png?v=2) left center/contain no-repeat;}
 #play.a2f.nomirror #pl-ready .rdk,#play.a2f #pl-ready .rdk{color:#EBD2A6;}
 #play.a2f .bigbtn,#play.a2f #pl-rest .rs{color:#0B2A4A;}
 
@@ -17324,7 +17324,7 @@ function lbHomeCard(){
 
 const AY30_ID='ay30', AY30_PRICE=39, AY30_KEY='ay30';
 const AY30_NAME='AYAH2FIT 30', AY30_SUB='30-Day Home Program for Dads';
-const AY30_PH='/img/p/ayah/', AY30_LOGO='/img/p/ayah/logo-w.png';
+const AY30_PH='/img/p/ayah/', AY30_LOGO='/img/p/ayah/logo-w.png?v=2';
 
 const AY_WEEKS=[
   {n:'Foundation', s:'Belajar gerakan, bina rutin. Tiga pusingan sehari.', from:1,  to:7},
@@ -25530,7 +25530,7 @@ function startWorkout(exs,meta){
      mak2fit … baru nampak special"): only a session started from her program */
   const m2f=!!(meta && meta.lb), a2f=!!(meta && meta.ay);
   $('play').classList.toggle('a2f', a2f);
-  if(a2f && $('pl-m2f')) $('pl-m2f').setAttribute('src','/img/p/ayah/logo-w.png');
+  if(a2f && $('pl-m2f')) $('pl-m2f').setAttribute('src','/img/p/ayah/logo-w.png?v=2');
   $('play').classList.toggle('m2f', m2f);
   if(m2f && $('pl-m2f')) $('pl-m2f').setAttribute('src','/ladies/img/mak2fit-logo-w.png');
   plCam.off=false; $('play').classList.remove('camoff');

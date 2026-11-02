@@ -7172,10 +7172,10 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 #play.a2f #pl-done .dk,#play.a2f #pl-done .hc-days{color:#EBD2A6;}
 #play.a2f #pl-done .dscore{background:linear-gradient(180deg,rgba(184,146,79,.24),rgba(140,110,58,.14));box-shadow:inset 0 0 0 1px rgba(212,175,124,.38);}
 #play.a2f #pl-done .dwrap::before{content:"";display:block;width:150px;height:23px;margin:0 auto 6px;
-  background:url(/img/p/ayah/logo-w.png) center/contain no-repeat;}
+  background:url(/img/p/ayah/logo-w.png?v=2) center/contain no-repeat;}
 #play.a2f #pl-why .wopts button:active{background:#B8924F;border-color:#B8924F;}
 #play.a2f #pl-ready{background:linear-gradient(180deg,rgba(7,26,47,.10) 0%,rgba(7,26,47,.5) 30%,rgba(7,26,47,.93) 55%,#071A2F 70%);}
 #play.a2f #pl-ready .rdwrap::before{content:"";display:block;width:168px;height:26px;margin:0 0 14px;
-  background:url(/img/p/ayah/logo-w.png) left center/contain no-repeat;}
+  background:url(/img/p/ayah/logo-w.png?v=2) left center/contain no-repeat;}
 #play.a2f.nomirror #pl-ready .rdk,#play.a2f #pl-ready .rdk{color:#EBD2A6;}
 #play.a2f .bigbtn,#play.a2f #pl-rest .rs{color:#0B2A4A;}

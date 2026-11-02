@@ -264,7 +264,7 @@ function startWorkout(exs,meta){
      mak2fit … baru nampak special"): only a session started from her program */
   const m2f=!!(meta && meta.lb), a2f=!!(meta && meta.ay);
   $('play').classList.toggle('a2f', a2f);
-  if(a2f && $('pl-m2f')) $('pl-m2f').setAttribute('src','/img/p/ayah/logo-w.png');
+  if(a2f && $('pl-m2f')) $('pl-m2f').setAttribute('src','/img/p/ayah/logo-w.png?v=2');
   $('play').classList.toggle('m2f', m2f);
   if(m2f && $('pl-m2f')) $('pl-m2f').setAttribute('src','/ladies/img/mak2fit-logo-w.png');
   plCam.off=false; $('play').classList.remove('camoff');

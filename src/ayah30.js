@@ -21,7 +21,7 @@
 
 const AY30_ID='ay30', AY30_PRICE=39, AY30_KEY='ay30';
 const AY30_NAME='AYAH2FIT 30', AY30_SUB='30-Day Home Program for Dads';
-const AY30_PH='/img/p/ayah/', AY30_LOGO='/img/p/ayah/logo-w.png';
+const AY30_PH='/img/p/ayah/', AY30_LOGO='/img/p/ayah/logo-w.png?v=2';
 
 const AY_WEEKS=[
   {n:'Foundation', s:'Belajar gerakan, bina rutin. Tiga pusingan sehari.', from:1,  to:7},
