@@ -197,7 +197,7 @@ function scPlanNext(){
 /* (16 Oct) with no plan of their own, a member who has BURN30 sees it as
    today's plan, and finding a plan steps back to a quiet link under it:
    two equal calls one above the other left a new member unsure which */
-function scBurnIsPlan(){ return !scPlanNext() && typeof wlOwned==='function' && wlOwned() && wlNext()<WL30_DAYS.length; }
+function scBurnIsPlan(){ return !scPlanNext() && typeof wlOwned==='function' && wlOwned() && wlKept() && wlNext()<WL30_DAYS.length; }
 function scPlanHTML(){
   var rows=[], dy=scDaily(), pn=scPlanNext(), p=pn&&pn.p, gi=pn&&pn.gi, at=pn&&pn.at;
   if(scBurnIsPlan())

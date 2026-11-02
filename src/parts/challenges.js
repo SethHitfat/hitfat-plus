@@ -70,7 +70,7 @@ function progMinutes(p){
 }
 /* Programs a member trains from: multi-week, not Recovery (which has its
    own tab, and whose clips are not all filmed yet). */
-function trainingPlans(){ return PROGRAMS.filter(function(p){ return p.weeks && !p.rehab; }); }
+function trainingPlans(){ if(typeof ayEnsure==='function') ayEnsure(); return PROGRAMS.filter(function(p){ return p.weeks && !p.rehab && (p.id!=='wl30' || wlKept()); }); }
 
 function pickEx(names,eq){
   return names.map(function(n){
@@ -110,6 +110,7 @@ const HF={
       d.challengeJoined=Object.assign({},o.challengeJoined||{}); d.badges=Object.assign({},o.badges||{});
       d.wl30=(o.wl30&&typeof o.wl30==='object')?JSON.parse(JSON.stringify(o.wl30)):{};
       d.lb30=(o.lb30&&typeof o.lb30==='object')?JSON.parse(JSON.stringify(o.lb30)):{};
+      d.ay30=(o.ay30&&typeof o.ay30==='object')?JSON.parse(JSON.stringify(o.ay30)):{};
       d.d6=(o.d6&&typeof o.d6==='object')?JSON.parse(JSON.stringify(o.d6)):{};
       d.coach=(o.coach&&typeof o.coach==='object')?JSON.parse(JSON.stringify(o.coach)):{};
       d.academy=(o.academy&&typeof o.academy==='object')?JSON.parse(JSON.stringify(o.academy)):{};

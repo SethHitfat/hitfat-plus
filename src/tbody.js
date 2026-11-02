@@ -3509,6 +3509,54 @@ ok("bottle workouts have pictures", ['bt1','bt2','p34'].every(function(id){retur
 ok("every activity tile uses a studio picture", ACTIVITIES.every(function(a){return /^\/img\/p\/act-/.test(a.img);}));
 ok("the activity row shows the picture", factCard(ACTIVITIES[0]).indexOf("/img/p/act-fatloss.jpg")>0);
 
+
+print("\n── AYAH2FIT 30 ──");
+(function(){
+  _guest(); HF.email=null; HF.data.wl30={}; HF.data.progress[WL30_ID]=0; ayEnsure();
+  ok("before launch, another account sees none of it: BURN30 stays on sale", !findProg(AY30_ID) && ayHomeCard()==='' && wlHomeCard().indexOf('New Program')>0 && trainingPlans().some(function(p){ return p.id===WL30_ID; }));
+  HF.email='SethNasser1991@gmail.com'; ayEnsure();
+  ok("the listed account sees AYAH2FIT 30, and BURN30 leaves its offers", !!findProg(AY30_ID) && ayHomeCard().indexOf('Program Baru')>0 && wlHomeCard()==='');
+  var keepEnt=_ent, keepSW=startWorkout, keepProg=HF.data.progress[AY30_ID], keepAy=HF.data.ay30, played=null;
+  startWorkout=function(e,m){ played={exs:e,meta:m}; };
+  var html=function(id){ return document.getElementById(id).innerHTML||''; };
+  var plan=function(a){ HF.data.ay30={me:Object.assign({done:true, umur:38, anak:'ya', kerja:'pejabat', alat:'tanpa', level:'aktif', sihat:['tiada'], pain:['tiada']},a||{})}; };
+  ok("thirty days in four weeks, tests on days 1, 15 and 30", AY_DAYS.length===30 && progDays(AY30)===30 && AY_WEEKS[3].to===30 && AY_TESTS.every(function(n){ return AY_DAYS[n-1].k==='test'; }));
+  ok("thirty lessons", AY_LESSON.length===30 && AY_LESSON.every(function(l){ return l[0] && l[1].length>40; }));
+  ok("sold for RM39", programPrice(AY30)===39 && isPaidProgram(AY30));
+  var bad=[]; ['tanpa','dumbbell'].forEach(function(m){ ['asas','aktif'].forEach(function(l){ [['tiada'],['lutut'],['belakang'],['tangan'],['lutut','belakang','tangan']].forEach(function(p){
+    plan({alat:m,level:l,pain:p});
+    for(var i=0;i<30;i++){ var d=ayDay(i); if(d.ex.length<(d.k==='test'?2:4)) bad.push(m+l+p+i+':'+d.ex.length); ayExercises(d).forEach(function(e){ if(!e.v) bad.push(e.n); }); }
+  }); }); });
+  ok("every day, every answer: enough moves, each one filmed", bad.length===0); if(bad.length) print(bad.slice(0,8).join(' | '));
+  plan({});
+  var names=[]; for(var i=0;i<30;i++) names=names.concat(ayDay(i).ex);
+  ok("no jumps", names.every(function(n){ return WL30_JUMPS.indexOf(n)<0; }));
+  plan({pain:['lutut']}); names=[]; for(i=0;i<30;i++) names=names.concat(ayDay(i).ex);
+  ok("a sore knee: no squats or lunges", names.every(function(n){ return AY_SWAP.lutut.from.indexOf(n)<0; }));
+  plan({}); ok("40 on, four rounds in week 2, 24 minutes", ayDay(8).dur===40 && ayDay(8).r===4 && ayMinutes(ayDay(8))===24);
+  ok("a busy day is 12 minutes", ayMinutes(ayDay(8,1))===12);
+  ayData().mode='dumbbell'; ok("the switch plays dumbbells", ayExercises(ayDay(8)).every(function(e){ return e.eq==='Dumbbell'; }));
+  plan({});
+  _guest(); HF.data.progress[AY30_ID]=0; ok("locked to a guest", !ownsProgram(AY30));
+  noThrow("its page opens for a guest", function(){ openProgram(AY30_ID); });
+  _guest(); _ent.skus['prog_ay30']=true; ok("bought on its own, it opens, Academy too", ownsProgram(AY30) && !contentOpen() && acLadies());
+  ayTab='hari'; noThrow("Hari Ini", function(){ openProgram(AY30_ID); });
+  ok("the greeting, the day and both buttons", html('pgd-body').indexOf('Assalamualaikum')>0 && html('pgd-body').indexOf('Hari sibuk?')<0 && html('pgd-body').indexOf('MULA AYAH TEST')>0);
+  HF.data.progress[AY30_ID]=8; renderAY30();
+  ok("...MULA 24 MINIT and Hari sibuk? 12 minit", html('pgd-body').indexOf('MULA 24 MINIT')>0 && html('pgd-body').indexOf('Hari sibuk? 12 minit')>0);
+  played=null; ayPlay(8,1); ok("a busy day still finishes the day", played && played.meta.pid===AY30_ID && played.meta.gi===8 && played.meta.rounds===2);
+  ['program','pinggan','belajar','progress'].forEach(function(t){ noThrow("tab "+t, function(){ aySetTab(t); }); });
+  ok("Pinggan counts no calories, and covers Malaysia and Kelantan", (aySetTab('pinggan'), html('pgd-body').indexOf('kcal')<0) && AY_PINGGAN.malaysia.length>=5 && AY_PINGGAN.kelantan.length>=3);
+  aySetTest(1,'waist',96); aySetTest(30,'waist',92); noThrow("the test compares", function(){ aySetTab('progress'); });
+  HF.data.progress[AY30_ID]=30; ayTab='hari'; noThrow("Day 30", function(){ renderAY30(); });
+  ok("graduation: certificate and the interest button", html('pgd-body').indexOf('TAMAT')>0 && html('pgd-body').indexOf('Daftar minat')>0);
+  ayQuizOpen(); ayQ=6; ayQA.sihat=['jantung']; renderAY30();
+  ok("a heart: the doctor before anything else", html('pgd-body').indexOf('Jumpa doktor')>0 && html('pgd-body').indexOf('ayQuizNext()')<0);
+  ayQA.clear=true; renderAY30(); ok("...and on once the doctor has cleared it", html('pgd-body').indexOf('ayQuizNext()')>0);
+  ayQ=-1; ayData(); ok("what he saves survives a reload", (HF.apply({ay30:{me:{done:true}}}), !!HF.data.ay30.me));
+  _ent=keepEnt; startWorkout=keepSW; HF.data.progress[AY30_ID]=keepProg; HF.data.ay30=keepAy||{};
+})();
+
 print("\n── 30-DAY WEIGHT LOSS ──");
 (function(){
   var keepEnt=_ent, keepSW=startWorkout, keepProg=HF.data.progress[WL30_ID], keepWl=HF.data.wl30, keepNut=HF.data.nutrition;
@@ -3527,7 +3575,7 @@ print("\n── 30-DAY WEIGHT LOSS ──");
      WL30_DAYS.slice(7,13).every(function(d){return d.r===3;}));
   ok("every day has a coach's note, in Malay", WL30_TIPS.length===30 && WL30_TIPS.every(function(t){ return t.length>20; }));
   ok("sold for RM39, the price the server knows", programPrice(WL30)===39 && isPaidProgram(WL30));
-  ok("it is one of the training plans", trainingPlans().some(function(p){ return p.id===WL30_ID; }));
+  ok("off sale: not in the plans until someone has started it", !trainingPlans().some(function(p){ return p.id===WL30_ID; }) && (HF.data.wl30={me:{done:true}}, trainingPlans().some(function(p){ return p.id===WL30_ID; }))); HF.data.wl30={};
 
   /* someone who has bought nothing */
   _guest(); HF.data.progress[WL30_ID]=0; HF.data.wl30={};
@@ -3543,12 +3591,12 @@ print("\n── 30-DAY WEIGHT LOSS ──");
   wlSetTab('guide'); ok("the guide is open to everyone", html('pgd-body').indexOf('How It Works')>0 && html('pgd-body').indexOf('wl-lock')<0);
   wlSetTab('plan');
   openDay(WL30_ID,4); ok("a day opens for a guest, locked", html('dd-body').indexOf('Unlock · RM39')>0 && html('dd-body').indexOf("Coach&rsquo;s note")>0);
-  played=null; wlPlay(4); ok("...and playing it sells the program instead", played===null && html('pw-body').indexOf('Buy for RM39')>0);
-  ok("the offer can be bought in the app", html('pw-body').indexOf("startCheckout('prog_wl30')")>0 && html('pw-body').indexOf('Nutrition Academy')>0);
-  ok("...or claimed with an order number from the website", html('pw-body').indexOf('wl-order')>0);
+  played=null; wlPlay(4); ok("...and playing it offers AYAH2FIT 30 instead", played===null && html('pw-body').indexOf('Beli RM39')>0);
+  ok("the offer can be bought in the app", html('pw-body').indexOf("startCheckout('prog_ay30')")>0 && html('pw-body').indexOf('Nutrition Academy')>0);
+  ok("...and BURN30 itself is no longer sold", html('pw-body').indexOf('prog_wl30')<0);
   ok("checkout knows what it is", checkoutItem('prog_wl30').price===39);
-  ok("an old product link lands on the same offer", (openProduct('prog_wl30'), html('pw-body').indexOf('Buy for RM39')>0));
-  ok("Home offers it to a guest, on its poster", wlHomeCard().indexOf('New Program')>0 && wlHomeCard().indexOf('RM39')>0 && wlHomeCard().indexOf('hpo hpo-w')>0);
+  ok("an old product link lands on the same offer", (openProduct('prog_wl30'), html('pw-body').indexOf('Beli RM39')>0));
+  ok("Home no longer offers it; AYAH2FIT 30 has the poster", wlHomeCard()==='' && ayHomeCard().indexOf('Program Baru')>0 && ayHomeCard().indexOf('RM39')>0 && ayHomeCard().indexOf('hpo hpo-w')>0);
   ok("it goes by its name, BURN30", WL30.name==='BURN30' && checkoutItem('prog_wl30').name==='BURN30' && html('pgd-body').indexOf('BURN30')>0);
 
   /* someone who bought only this */
@@ -3642,7 +3690,7 @@ print("\n── 30-DAY WEIGHT LOSS ──");
 
   /* a member has it as part of HITFAT+ */
   _member(); HF.data.progress[WL30_ID]=0;
-  ok("members have it included", ownsProgram(WL30) && wlHomeCard().indexOf('In HITFAT+')>0);
+  ok("members have it included, off Home until they start it", ownsProgram(WL30) && wlHomeCard()==='');
   ok("the player hands a BURN30 session back to it", /pl0\.wl && typeof wlAfterSession/.test(String(plCloseNow)));
 
   ok("the app claims website purchases when it loads what you own", /claimLandingPurchases/.test(String(loadEntitlement)));
@@ -3660,6 +3708,7 @@ print("\n── 30-DAY WEIGHT LOSS ──");
   wlTab='plan'; wlWeek=-1; wlMenuDay=-1; wlQ=-1; closeProduct();
 })();
 
+HF.email=null; ayEnsure();
 print("\n── MEAL SCAN: PORTION AND NAME ──");
 (function(){
   var keep=_scanData;

@@ -399,6 +399,7 @@ let _prod=null;
 function openProduct(sku){
   /* Programs, All Access and scan packs are part of the membership now.
      Every old way into a product sheet lands on the paywall instead. */
+  if(typeof AY30_ID!=='undefined' && sku==='prog_'+AY30_ID) return ayBuy();
   if(sku==='prog_'+WL30_ID) return wlBuy();
   if(typeof LB30_ID!=='undefined' && sku==='prog_'+LB30_ID) return lbBuy();
   if(typeof D6_ID!=='undefined' && sku==='prog_'+D6_ID) return d6Buy();
@@ -610,7 +611,7 @@ function coConfirm(state){
     wait:['co-wait','Confirming your payment','This usually takes a few seconds. You can keep this open.','',''],
     ok:['co-ok',(t==='coach'?'Welcome to HITFAT+ Coach':t?'Welcome to HITFAT+':'Payment confirmed'),
         (until?'Everything is open until '+fmtDate(until)+'.':'Your purchase is unlocked.'),
-        'Start training',(_paySku==='prog_'+WL30_ID?'closeProduct();openProgram(WL30_ID)':(typeof LB30_ID!=='undefined'&&_paySku==='prog_'+LB30_ID)?'closeProduct();openProgram(LB30_ID)':(typeof D6_ID!=='undefined'&&_paySku==='prog_'+D6_ID)?'closeProduct();openD6()':'closeProduct();switchTab(\'train\')')],
+        'Start training',(_paySku==='prog_'+WL30_ID?'closeProduct();openProgram(WL30_ID)':(typeof AY30_ID!=='undefined'&&_paySku==='prog_'+AY30_ID)?'closeProduct();openProgram(AY30_ID)':(typeof LB30_ID!=='undefined'&&_paySku==='prog_'+LB30_ID)?'closeProduct();openProgram(LB30_ID)':(typeof D6_ID!=='undefined'&&_paySku==='prog_'+D6_ID)?'closeProduct();openD6()':'closeProduct();switchTab(\'train\')')],
     late:['co-late','Not confirmed yet','Your bank has not told us yet. It unlocks by itself once it does — nothing to do but wait.',
         'OK','closeProduct()']
   }[state];
@@ -833,6 +834,7 @@ function coachUpsell(){
 /* Where a locked program sends someone: the one sold on its own to its own
    offer, everything else to the membership. */
 function lockedProgram(p){
+  if(p && p.hub==='ay' && typeof ayBuy==='function') return ayBuy();
   if(p && p.hub==='lb30' && typeof lbBuy==='function') return lbBuy();
   if(p && p.hub==='d6' && typeof d6Buy==='function') return d6Buy();
   if(p && p.hub==='hx' && typeof hxBuy==='function') return hxBuy(p.id);

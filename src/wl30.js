@@ -155,6 +155,8 @@ function wlData(){
   return d;
 }
 function wlOwned(){ return ownsProgram(WL30); }
+/* off sale since 2 Nov 2026 (AYAH2FIT 30 took its place): it stays for whoever owns or started it */
+function wlKept(){ if(typeof ayLive==='function' && !ayLive()) return true; const d=HF.data.wl30||{}; return !!(d.me || progDone(WL30_ID)>0 || (typeof owns==='function' && owns('prog_wl30'))); }
 function wlDone(){ return Math.min(progDone(WL30_ID), WL30_DAYS.length); }
 /* the day to do next, 0-based; 30 when the program is finished */
 function wlNext(){ return wlDone(); }
@@ -1108,6 +1110,7 @@ function wlLocked(icon,title,text){
 /* ── buying it ── */
 function wlBuy(){
   if(wlOwned()) return openProgram(WL30_ID);
+  if(typeof ayBuy==='function' && ayLive()) return ayBuy();
   $('pw-body').innerHTML=
     '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
     '<div class="wl-buy-poster wl-buy-art">'+hpoArt(WL30,{ar:1.4})+'<div class="tx"><b>'+WL30_NAME+'</b><span>30 DAYS · AT HOME · MEN & WOMEN</span></div></div>'+
@@ -1151,6 +1154,7 @@ async function claimLandingPurchases(){
 
 /* ── the Home card: the program for its owner, its offer for everyone else ── */
 function wlHomeCard(){
+  if(!wlKept()) return '';
   const owned=wlOwned(), done=wlDone(), tot=WL30_DAYS.length, nx=wlNext();
   if(owned && nx>=tot) return '';
   if(typeof hpoCard!=='function') return '';

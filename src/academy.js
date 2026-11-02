@@ -156,7 +156,7 @@ function acFree(e){ return acNum(e)<=AC_FREE; }
 /* MAK2FIT 30 opens the whole course (25 Oct 2026, Seth): it is the
    learning that goes with her 30 days */
 /* MAK2FIT 30 and BURN30 (28 Oct 2026) open every episode for their buyers */
-function acLadies(){ return typeof owns==='function' && (owns('prog_lad4') || owns('prog_wl30')); }
+function acLadies(){ return typeof owns==='function' && (owns('prog_lad4') || owns('prog_wl30') || owns('prog_ay30')); }
 function acLocked(e){ return !acFree(e) && !contentOpen() && !acLadies(); }
 function acDone(e){ return !!acData().done[e.id]; }
 function acCount(){ return AC_EPS.filter(acDone).length; }
@@ -276,6 +276,7 @@ let _acMod={};
 function acModOpen(mi){ if(mi in _acMod) return _acMod[mi]; const nx=acNext(); return nx?nx.m===mi:false; }
 function acModToggle(mi){ _acMod[mi]=!acModOpen(mi);
   if($('academy')&&$('academy').style.display==='block') renderAcademy();
+  else if(typeof AY30!=='undefined' && curProg===AY30 && ayTab==='belajar' && $('progdetail') && $('progdetail').style.display==='block') renderAY30();
   else if(typeof WL30!=='undefined' && curProg===WL30 && wlTab==='learn' && $('progdetail') && $('progdetail').style.display==='block') renderWL30();
   else if(typeof lbTab!=='undefined' && lbTab==='learn' && $('progdetail') && $('progdetail').style.display==='block') renderLB30();
   else renderEat(); }

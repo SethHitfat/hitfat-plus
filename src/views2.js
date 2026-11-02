@@ -54,7 +54,7 @@ const PHOTO=new Set([
   'kb2','kb3','lad4','m1','m2','m3','m4','mch','mdb','men6','min3','mkb','p1','p10','p11','p12','p13',
   'p14','p15','p16','p17','p18','p19','p2','p20','p21','p22','p23','p24','p25','p26','p27','p28',
   'p29','p30','p31','p32','p33','p4','p5','p6','p7','p9','reset12','rh1','rh2','rh3','rh4','rh5',
-  'rh6','sig1','sig2','sig3','sig4','tw1','tw2','bt1','bt2','p34','wl30','hx12','hx8','hxft']);
+  'rh6','sig1','sig2','sig3','sig4','tw1','tw2','bt1','bt2','p34','wl30','ay30','hx12','hx8','hxft']);
 function hasPhoto(p){ return !!(p && PHOTO.has(p.id)); }
 /* Where the person is in each picture: x is the middle of the body, y the
    face (or the middle of the body when it lies flat), both in %, then the
@@ -79,7 +79,7 @@ const FOCAL={
   p6:[50,22,0.593], p7:[40,46,1.859,1], p9:[55,36,0.593], reset12:[48,13,1], rh1:[65,25,1.34],
   rh2:[70,15,1.34], rh3:[63,32,1.898,1], rh4:[55,35,1.798], rh5:[65,10,1.34], rh6:[60,35,1.34],
   sig1:[47,13,1], sig2:[48,20,1], sig3:[47,15,1], sig4:[48,10,1], tw1:[55,15,0.593],
-  tw2:[60,44,0.634], bt1:[50,20,1.19], bt2:[60,35,1.196,1], p34:[50,50,1.192,1], wl30:[50,22,1]
+  tw2:[60,44,0.634], bt1:[50,20,1.19], bt2:[60,35,1.196,1], p34:[50,50,1.192,1], wl30:[50,22,1], ay30:[50,22,1]
 };
 const FA={wide:1.77, row:1.65, poster:1.5, hero:0.87, card:0.75, tall:0.67, join:0.6};
 /* Many studio pictures stand their person right of centre. A frame no
@@ -317,7 +317,7 @@ function renderHome(){
   $('home-week').innerHTML=(typeof kelasHomeCard==='function') ? kelasHomeCard() : '';   // a class member's door, at the top
 
   // 3) membership, then T42
-  if($('home-t42')) $('home-t42').innerHTML=((typeof scBurnIsPlan==='function'&&scBurnIsPlan())?'':wlHomeCard())+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard():'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
+  if($('home-t42')) $('home-t42').innerHTML=(typeof ayHomeCard==='function'?ayHomeCard():'')+((typeof scBurnIsPlan==='function'&&scBurnIsPlan())?'':wlHomeCard())+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard():'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
   // 4) Up Next went into Today's Plan (one row: the plan's next day, or find a plan)
@@ -529,7 +529,7 @@ function trainingDetails(p,exs){
 }
 function renderProgram(){
   const p=curProg; if(!p) return;
-  if(p.hub) return p.hub==='lb30' ? renderLB30() : p.hub==='d6' ? renderD6() : p.hub==='hx' ? renderHX() : renderWL30();
+  if(p.hub) return p.hub==='ay' ? renderAY30() : p.hub==='lb30' ? renderLB30() : p.hub==='d6' ? renderD6() : p.hub==='hx' ? renderHX() : renderWL30();
   const tot=progDays(p), done=progDone(p.id), pct=tot?Math.round(done/tot*100):0;
   const owned=ownsProgram(p), multi=!!(p.weeks&&p.weeks.length);
   const meta=[p.level, multi?planPerWeek(p)+' days a week':'', p.dur+' min'+(multi?' a day':'')].filter(Boolean).join(' · ');
@@ -632,7 +632,7 @@ let curDay=null;
 function openDay(pid,gi){
   const p=findProg(pid); if(!p) return;
   if(p.hub==='hx'){ curProg=p; return hxOpenDay(gi); }
-  if(p.hub) return p.hub==='lb30' ? lbOpenDay(gi) : p.hub==='d6' ? d6OpenDay(gi) : wlOpenDay(gi);
+  if(p.hub) return p.hub==='ay' ? ayOpenDay(gi) : p.hub==='lb30' ? lbOpenDay(gi) : p.hub==='d6' ? d6OpenDay(gi) : wlOpenDay(gi);
   if(!ownsProgram(p)) return lockedProgram(p);
   curProg=p;
   let c=0, day=null, wk=1, dn=1;
