@@ -34,7 +34,7 @@ const FREE_SCANS_PER_MONTH = 3;
    the 10, it is the usual 3 a month (and Scan 6 is offered). */
 const LADIES_FREE_SCANS = 10, LADIES_FREE_DAYS = 30;
 /* BURN30 (28 Oct 2026, Seth) gives its buyers the same welcome */
-const WELCOME_SKUS: Record<string, string> = { prog_lad4: 'MAK2FIT 30', prog_wl30: 'BURN30' };
+const WELCOME_SKUS: Record<string, string> = { prog_lad4: 'MAK2FIT 30', prog_wl30: 'BURN30', prog_ay30: 'AYAH2FIT 30' };
 
 /* Typed meals (20 Oct 2026, after Simple's "type what you ate"): the member
    writes "nasi lemak + teh tarik kurang manis" and gets the same estimate a

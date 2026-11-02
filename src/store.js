@@ -87,7 +87,7 @@ const SCAN_FREE_TIER=3, MEMBER_SCANS_DAY=3;
    instead of 3 a month; scan-food holds the real count (LADIES_* there) */
 const LADIES_FREE_SCANS=10, LADIES_FREE_DAYS=30;
 /* the programs whose buyers get them (BURN30 since 28 Oct 2026), and what the count is called */
-const WELCOME_SCAN_SKUS={prog_lad4:'MAK2FIT 30', prog_wl30:'BURN30'};
+const WELCOME_SCAN_SKUS={prog_lad4:'MAK2FIT 30', prog_wl30:'BURN30', prog_ay30:'AYAH2FIT 30'};
 /* how many scans a day a live pass gives */
 function scanDailyFor(sku){
   if(String(sku).indexOf('sub_')===0) return MEMBER_SCANS_DAY;
