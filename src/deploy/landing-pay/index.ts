@@ -29,7 +29,7 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { CATALOGUE, CHANNELS, BC_API, SITE, CORS, json, isPaidStatus } from '../_shared/catalogue.ts';
+import { CATALOGUE, CHANNELS, BC_API, SITE, CORS, json, isPaidStatus, isFailedStatus } from '../_shared/catalogue.ts';
 
 /* the programs sold on their own, and the page each comes back to */
 const LANDING: Record<string, string> = {
@@ -281,7 +281,7 @@ Deno.serve(async (req: Request) => {
       if (!o) return json({ ok: false }, 404);                        // not an order we made
       if (o.status === 'paid') return json({ ok: true, already: true });
       if (!isPaidStatus(p.status)) {
-        await db.from('plus_landing_orders').update({ status: 'failed', note: 'status=' + String(p.status) })
+        if (isFailedStatus(p.status)) await db.from('plus_landing_orders').update({ status: 'failed', note: 'status=' + String(p.status) })
           .eq('order_number', o.order_number).neq('status', 'paid');
         return json({ ok: true });
       }
@@ -309,7 +309,7 @@ Deno.serve(async (req: Request) => {
             const won = list.find((t) => isPaidStatus(t.status));
             if (won && await markPaid(db, o, String(won.id || won.transaction_id || ''), Number(String(won.amount ?? '').replace(/[^\d.]/g, ''))))
               return json({ status: 'paid', sku: o.sku });
-            if (list.length && list.every((t) => ['2', '4'].includes(String(t.status)))) {
+            if (list.length && list.every((t) => isFailedStatus(t.status))) {
               await db.from('plus_landing_orders').update({ status: 'failed', note: 'bayarcash status' }).eq('order_number', order).eq('status', 'pending');
               return json({ status: 'failed', sku: o.sku });
             }

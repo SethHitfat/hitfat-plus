@@ -20,7 +20,7 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { CORS, json, isPaidStatus } from '../_shared/catalogue.ts';
+import { CORS, json, isPaidStatus, isFailedStatus } from '../_shared/catalogue.ts';
 import { grant } from '../_shared/grant.ts';
 
 /* What Bayarcash signs: HMAC-SHA256 over field values sorted by key and
@@ -108,7 +108,7 @@ Deno.serve(async (req: Request) => {
     if (!order) { console.warn('callback for unknown order', order_number); return json({ ok: false }, 404); }
 
     if (!isPaidStatus(p.status)) {
-      await admin.from('plus_orders')
+      if (isFailedStatus(p.status)) await admin.from('plus_orders')
         .update({ status: 'failed', note: 'status=' + String(p.status) })
         .eq('order_number', order_number).neq('status', 'paid');
       return json({ ok: true });

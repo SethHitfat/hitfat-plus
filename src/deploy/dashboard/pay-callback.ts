@@ -129,6 +129,11 @@ function isPaidStatus(s: unknown) {
   return String(s) === '3' || String(s).toLowerCase() === 'success';
 }
 
+/* A final no. 0 and 1 are not: DuitNow QR sends 1 before the buyer has paid. */
+function isFailedStatus(s: unknown) {
+  return ['2', '4', 'failed', 'cancelled'].includes(String(s).toLowerCase());
+}
+
 /* ── inlined from _shared/grant.ts ── */
 /* One place that turns a settled order into an entitlement, so the push path
    (pay-callback) and the pull path (pay-status) can never grant differently.
@@ -306,7 +311,7 @@ Deno.serve(async (req: Request) => {
     if (!order) { console.warn('callback for unknown order', order_number); return json({ ok: false }, 404); }
 
     if (!isPaidStatus(p.status)) {
-      await admin.from('plus_orders')
+      if (isFailedStatus(p.status)) await admin.from('plus_orders')
         .update({ status: 'failed', note: 'status=' + String(p.status) })
         .eq('order_number', order_number).neq('status', 'paid');
       return json({ ok: true });

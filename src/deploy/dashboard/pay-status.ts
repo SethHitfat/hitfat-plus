@@ -128,6 +128,11 @@ function isPaidStatus(s: unknown) {
   return String(s) === '3' || String(s).toLowerCase() === 'success';
 }
 
+/* A final no. 0 and 1 are not: DuitNow QR sends 1 before the buyer has paid. */
+function isFailedStatus(s: unknown) {
+  return ['2', '4', 'failed', 'cancelled'].includes(String(s).toLowerCase());
+}
+
 /* ── inlined from _shared/grant.ts ── */
 /* One place that turns a settled order into an entitlement, so the push path
    (pay-callback) and the pull path (pay-status) can never grant differently.

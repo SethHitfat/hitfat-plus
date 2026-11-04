@@ -129,6 +129,11 @@ function isPaidStatus(s: unknown) {
   return String(s) === '3' || String(s).toLowerCase() === 'success';
 }
 
+/* A final no. 0 and 1 are not: DuitNow QR sends 1 before the buyer has paid. */
+function isFailedStatus(s: unknown) {
+  return ['2', '4', 'failed', 'cancelled'].includes(String(s).toLowerCase());
+}
+
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · landing-pay
    A program bought straight from its landing page, on Bayarcash itself
@@ -409,7 +414,7 @@ Deno.serve(async (req: Request) => {
       if (!o) return json({ ok: false }, 404);                        // not an order we made
       if (o.status === 'paid') return json({ ok: true, already: true });
       if (!isPaidStatus(p.status)) {
-        await db.from('plus_landing_orders').update({ status: 'failed', note: 'status=' + String(p.status) })
+        if (isFailedStatus(p.status)) await db.from('plus_landing_orders').update({ status: 'failed', note: 'status=' + String(p.status) })
           .eq('order_number', o.order_number).neq('status', 'paid');
         return json({ ok: true });
       }
@@ -437,7 +442,7 @@ Deno.serve(async (req: Request) => {
             const won = list.find((t) => isPaidStatus(t.status));
             if (won && await markPaid(db, o, String(won.id || won.transaction_id || ''), Number(String(won.amount ?? '').replace(/[^\d.]/g, ''))))
               return json({ status: 'paid', sku: o.sku });
-            if (list.length && list.every((t) => ['2', '4'].includes(String(t.status)))) {
+            if (list.length && list.every((t) => isFailedStatus(t.status))) {
               await db.from('plus_landing_orders').update({ status: 'failed', note: 'bayarcash status' }).eq('order_number', order).eq('status', 'pending');
               return json({ status: 'failed', sku: o.sku });
             }
