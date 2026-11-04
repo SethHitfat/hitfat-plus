@@ -486,6 +486,10 @@ function trForYou(){
     .map((p,i)=>[p,i]).sort((a,b)=>(Math.abs((lvR[a[0].level]??1)-(lvR[lvl]??0))-Math.abs((lvR[b[0].level]??1)-(lvR[lvl]??0)))||(a[1]-b[1])).map(x=>x[0]).slice(0,9);
 
   let h='';
+  /* (4 Nov 2026, Seth) a MAK2FIT buyer came to Train first and found only
+     locked programs: hers goes above the HITFAT+ offer */
+  const lbc=typeof lbHomeCard==='function'?lbHomeCard():'';
+  if(lbc) h+=fsec('Program Anda','MAK2FIT 30 milik anda. Mula di sini.')+lbc;
   if(!contentOpen()) h+=fyJoinCard();
   if(t42InTrain()) h+=t42HomeCard();
 

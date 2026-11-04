@@ -15553,7 +15553,18 @@ async function wlClaim(){
    when there is nothing to claim. */
 async function claimLandingPurchases(){
   if(!sb||!HF.userId) return;
-  try{ await sb.rpc('plus_claim_landing',{p_order:null}); }catch(e){}
+  try{
+    const r=await sb.rpc('plus_claim_landing',{p_order:null});
+    /* (4 Nov 2026, Seth: a buyer opened the app on her own, her MAK2FIT
+       opened quietly, and she wandered into Train's locked programs). A
+       program that opens here opens on screen too, as ?tebus= does, once
+       boot reaches handleBuyParam. A ?tebus= already waiting goes first. */
+    const got=(r&&r.data&&r.data.claimed)||[];
+    for(const s of got){
+      const k='tebus_'+String(s).replace(/^prog_/,'');
+      if(typeof BUY_GO!=='undefined' && BUY_GO[k]){ if(!localStorage.getItem('hf_buy')) localStorage.setItem('hf_buy',k); break; }
+    }
+  }catch(e){}
 }
 
 /* ── the Home card: the program for its owner, its offer for everyone else ── */
@@ -39581,6 +39592,10 @@ function trForYou(){
     .map((p,i)=>[p,i]).sort((a,b)=>(Math.abs((lvR[a[0].level]??1)-(lvR[lvl]??0))-Math.abs((lvR[b[0].level]??1)-(lvR[lvl]??0)))||(a[1]-b[1])).map(x=>x[0]).slice(0,9);
 
   let h='';
+  /* (4 Nov 2026, Seth) a MAK2FIT buyer came to Train first and found only
+     locked programs: hers goes above the HITFAT+ offer */
+  const lbc=typeof lbHomeCard==='function'?lbHomeCard():'';
+  if(lbc) h+=fsec('Program Anda','MAK2FIT 30 milik anda. Mula di sini.')+lbc;
   if(!contentOpen()) h+=fyJoinCard();
   if(t42InTrain()) h+=t42HomeCard();
 

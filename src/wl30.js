@@ -1149,7 +1149,18 @@ async function wlClaim(){
    when there is nothing to claim. */
 async function claimLandingPurchases(){
   if(!sb||!HF.userId) return;
-  try{ await sb.rpc('plus_claim_landing',{p_order:null}); }catch(e){}
+  try{
+    const r=await sb.rpc('plus_claim_landing',{p_order:null});
+    /* (4 Nov 2026, Seth: a buyer opened the app on her own, her MAK2FIT
+       opened quietly, and she wandered into Train's locked programs). A
+       program that opens here opens on screen too, as ?tebus= does, once
+       boot reaches handleBuyParam. A ?tebus= already waiting goes first. */
+    const got=(r&&r.data&&r.data.claimed)||[];
+    for(const s of got){
+      const k='tebus_'+String(s).replace(/^prog_/,'');
+      if(typeof BUY_GO!=='undefined' && BUY_GO[k]){ if(!localStorage.getItem('hf_buy')) localStorage.setItem('hf_buy',k); break; }
+    }
+  }catch(e){}
 }
 
 /* ── the Home card: the program for its owner, its offer for everyone else ── */

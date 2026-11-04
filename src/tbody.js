@@ -4061,6 +4061,14 @@ print("\n── MAK2FIT 30 ──");
   hfPhone=function(){ return ''; }; pushStandalone=function(){ return false; }; ok("...and a computer", lbFirst()==='day');
   HF.data.progress[LB30_ID]=1; ok("a day done, the line is behind her", lbFirst()==='' && !lbHomeCard().match(/Bina Pelan/));
   HF.data.progress[LB30_ID]=0; lbData().me=null; ok("Home's button leads to her plan first", lbHomeCard().indexOf('Bina Pelan Saya')>0 || !lbFull());
+  /* (4 Nov 2026) a buyer who goes to Train first finds her own program on top */
+  var keepSkus=_ent.skus, keepPlusU=_ent.plusUntil, keepCoachU=_ent.coachUntil, keepPass=_ent.passUntil;
+  _ent.skus={'prog_lad4':1}; _ent.plusUntil=null; _ent.coachUntil=null; _ent.passUntil=null;
+  trForYou(); var tf=$('tr-body')?$('tr-body').innerHTML:'';
+  ok("Train opens with her MAK2FIT 30, above the HITFAT+ offer", tf.indexOf('Program Anda')>=0 && tf.indexOf('lb-card')>tf.indexOf('Program Anda') && (contentOpen() || tf.indexOf('lb-card')<tf.indexOf('fyjoin')||tf.indexOf('fyjoin')<0));
+  _ent.skus={}; trForYou(); ok("...and not for someone who has not bought it", ($('tr-body')?$('tr-body').innerHTML:'').indexOf('Program Anda')<0);
+  _ent.skus=keepSkus; _ent.plusUntil=keepPlusU; _ent.coachUntil=keepCoachU; _ent.passUntil=keepPass;
+  ok("a program claimed on opening the app opens on screen, after a ?tebus= waiting", /hf_buy/.test(String(claimLandingPurchases)) && /tebus_/.test(String(claimLandingPurchases)));
   ok("the Malay steps cover every browser", ['safari','ios-other','chrome','samsung','android-other'].every(function(b){ return LB30_INST[b].length===hfInstallSteps(b).length; }));
   /* her first scan, once a day is done */
   var keepFrom=_ent.ladiesFrom, keepPlus=_ent.plusUntil, keepCoach=_ent.coachUntil, keepQuota=HF.data.scanQuota, keepScan1=lbData().scan1;
