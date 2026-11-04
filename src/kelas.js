@@ -120,19 +120,23 @@ async function kelasLoad(){
   if(Kelas.state==='idle') kelasRestore();
   Kelas.state='loading'; _kelasAt=Date.now();
   try{
-    const was=kelasLinked();
+    const was=kelasLinked(), wasAct=kelasActive();
     const st=await kelasCall('status');
     Kelas.data=st&&st.linked?st:null; kelasSave(); Kelas.state='ready';
     /* waiting for the counter, and now approved: the request is done */
     if(kelasLinked() && kelasWaitGet()){ kelasWaitSet(null); Kelas.step='phone'; Kelas.found=null; Kelas.phone='';
       toast('Connected. HITFAT+ All Access is yours with your class.'); }
+    /* renewed at the counter (4 Nov 2026, Seth: "orang renew dia terus
+       boleh detect terus"): the phone said ended, the counter says it runs */
+    else if(was && !wasAct && kelasActive()){ const rm=kelasMain();
+      toast('Renewed. Your class runs until '+kelasDate(rm&&rm.end_date)+'.'); }
     kelasSyncDays();
     kelasPhotoSync();
     /* the pass may have moved (renewed, ended, released at the counter):
        read it again so the app opens or closes with it */
     if(was || kelasLinked()) await loadEntitlement();
   }catch(e){ Kelas.state='error'; }
-  kelasRepaint();
+  kelasRepaint(); kelasQRRepaint();
   setTimeout(function(){ if($('splash') && $('splash').style.display!=='none') return;
     if(typeof kbCheck==='function' && kbCheck()) return;      /* a new badge first, the reward moment another time */
     kelasRewardMoment(); },1500);
@@ -141,12 +145,19 @@ async function kelasLoad(){
    pocket): read the class again, at most every five minutes, so Bara on
    Home counts this morning's class without a restart */
 var _kelasAt=0;
+/* ended, or ending within a week: the member may be renewing at the
+   counter right now, so the phone should not sit on "ended" for minutes */
+function kelasMayRenew(){
+  if(!kelasLinked()) return false;
+  const m=kelasMain(), left=m?kelasDaysLeft(m.end_date):null;
+  return !kelasActive() || (left!==null && left<=7);
+}
 if(typeof document!=='undefined' && document.addEventListener) document.addEventListener('visibilitychange',function(){
   if(document.visibilityState!=='visible' || Kelas.state==='loading') return;
   /* waiting for the counter: back from the counter, look again sooner */
   const waiting=!kelasLinked() && !!kelasWaitGet();
   if(!kelasLinked() && !waiting) return;
-  if(Date.now()-_kelasAt<(waiting?20e3:5*60e3)) return;
+  if(Date.now()-_kelasAt<((waiting||kelasMayRenew())?20e3:5*60e3)) return;
   kelasLoad();
 });
 /* the profile photo (Me), to HITFAT OS for the boards, posts and comments:
@@ -330,7 +341,7 @@ function kelasTodayTab(){
      (its card, My plan, the timetable) and Check in twice; FIRST 30 listed
      all seven missions. Now today is one card, the rest folds away. */
   h+='<div class="kl-greet">'+kelasGreet()+(first?', '+hesc(first):'')+'</div>'+kelasCardHTML()+
-     '<div class="kl-card-act"><button class="kl-card-ci" onclick="kelasQRFull()">'+glyph('qr')+(act?' Check in':' Renew first')+'</button>'+
+     '<div class="kl-card-act"><button class="kl-card-ci" onclick="kelasQRFull()">'+glyph('qr')+(act?' Check in':' Renewed? Show QR')+'</button>'+
      '<button class="kl-card-sh" onclick="kelasShareCard()">'+glyph('share')+' Share my card</button></div>'+
      '<div class="kl-bara-lite'+(hxs?' hx':lxs?' lx':mxs?' mx':pts?' pt':'')+(act?'':' off')+'">'+kelasBaraHTML()+'</div>';
   h+=kelasGiftHTML();
@@ -1805,19 +1816,33 @@ function kelasRenew(){
     'Hi HITFAT, I would like to renew my '+kelasCat(m&&m.category)+' membership.'),'_blank');
 }
 
-/* the QR, full screen and white, for a kiosk camera in a dim lobby */
+/* the QR, full screen and white, for a kiosk camera in a dim lobby.
+   The kiosk reads the status live from HITFAT OS at every scan, so the QR
+   is the same before and after a renewal; what was stale was the phone.
+   Ended on the phone: open the QR anyway and ask OS again, so a member
+   just renewed at the counter sees the new date and can scan at once. */
 function kelasQRFull(){
   if(!kelasLinked()) return;
   let o=$('klqr');
   if(!o){ o=document.createElement('div'); o.id='klqr'; document.body.appendChild(o); }
-  const d=Kelas.data, m=kelasMain();
+  o.classList.add('on');
+  if(!kelasActive() && Kelas.state!=='loading') kelasLoad();
+  kelasQRPaint();
+}
+function kelasQRPaint(){
+  const o=$('klqr'); if(!o || !kelasLinked()) return;
+  const d=Kelas.data, m=kelasMain(), act=kelasActive();
+  const st=act ? (m?hesc(kelasCat(m.category))+' · until '+kelasDate(m.end_date):'')
+    : Kelas.state==='loading' ? 'Checking your membership…'
+    : Kelas.state==='error' ? 'Could not check right now. The counter can still scan this.'
+    : (m?hesc(kelasCat(m.category))+' · ended '+kelasDate(m.end_date)+' · renew at the counter':'Renew at the counter');
   o.innerHTML='<button class="klqr-x" aria-label="Close" onclick="kelasQRClose()">✕</button>'+
     '<div class="klqr-k">HITFAT Class · check in</div>'+
     '<div class="klqr-q">'+kelasQR(280)+'</div>'+
     '<div class="klqr-n">'+hesc(d.name||'')+'</div>'+
-    '<div class="klqr-s">'+(m?hesc(kelasCat(m.category))+' · until '+kelasDate(m.end_date):'')+'</div>';
-  o.classList.add('on');
+    '<div class="klqr-s">'+st+'</div>';
 }
+function kelasQRRepaint(){ const o=$('klqr'); if(o && o.classList && o.classList.contains('on')) kelasQRPaint(); }
 function kelasQRClose(){ const o=$('klqr'); if(o) o.classList.remove('on'); }
 
 function kelasUnlink(){
@@ -1953,7 +1978,7 @@ function kelasHomeCard(){
     '<div class="klp-bot"><div class="klp-st"><span><b>'+c.n+'</b><small>'+(c.sp==='pt'?'sessions':'classes')+'</small></span>'+
       (c.sp==='pt'?'':'<span><b>'+c.wk+'</b><small>week streak</small></span>')+
       (c.pts!==null?'<span><b>'+c.pts.toLocaleString()+'</b><small>points</small></span>':'')+'</div>'+
-    (act?'<button class="klp-ci" onclick="event.stopPropagation();kelasQRFull()">'+glyph('qr')+' Check in</button>':'')+'</div>'+
+    '<button class="klp-ci" onclick="event.stopPropagation();kelasQRFull()">'+glyph('qr')+(act?' Check in':' Renewed? Show QR')+'</button>'+'</div>'+
     (gift?'<div class="klp-gift">'+glyph('star')+' A reward is ready for you</div>':'')+'</div>';
 }
 /* Me: connected, the screen; not connected, the way in */
