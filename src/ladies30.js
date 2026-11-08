@@ -1285,7 +1285,9 @@ function lbLearn(){
    above the tabs, and a Scan button on every meal of her menu */
 function lbScanGo(){
   var a=typeof scanAccess==='function' ? scanAccess() : {left:0};
-  if(a.left>0) openScan('meal'); else startCheckout('scan_d6');
+  /* (9 Nov 2026) her 10 used: the scan sheet says so first, instead of going
+     straight to a payment */
+  if(a.left>0) openScan('meal'); else openScanPlans('');
 }
 /* ── her first scan (31 Oct 2026): none of the first 13 buyers had used one of
    their 10, so with a day behind her, the next thing to do is scan a meal.
@@ -1306,7 +1308,7 @@ function lbScanLater(){ lbData().scan1='later'; HF.save(); renderLB30(); }
 function lbScanHero(){
   if(typeof scanAccess!=='function') return '';
   var a=scanAccess(), has=a.left>0;
-  var sub=has ? (a.mode==='pass' ? a.left+' of '+a.daily+' scans left today' : a.label) : 'Scan 6 · 6 sehari, 30 hari · RM14.90';
+  var sub=has ? (a.mode==='pass' ? a.left+' of '+a.daily+' scans left today' : a.label) : LADIES_FREE_SCANS+' scan anda dah digunakan · '+SCAN_FREE_TIER+' lagi bulan depan';
   return '<div class="lbx-scanhero" role="button" tabindex="0" onclick="lbScanGo()">'+
     '<div class="ph" style="background-image:url(\'/ladies/img/menu/d11.jpg\')"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><i class="ln"></i></div>'+
     '<div class="tx"><div class="k">'+glyph('spark')+'AI Meal Scan</div><b>Snap makanan anda, tahu kalorinya.</b><span>'+sub+'</span></div>'+

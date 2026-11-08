@@ -1112,7 +1112,7 @@ function wlBuy(){
   if(wlOwned()) return openProgram(WL30_ID);
   if(typeof ayBuy==='function' && ayLive()) return ayBuy();
   $('pw-body').innerHTML=
-    '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
+    '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+(typeof packNote==='function'?packNote():'')+
     '<div class="wl-buy-poster wl-buy-art">'+hpoArt(WL30,{ar:1.4})+'<div class="tx"><b>'+WL30_NAME+'</b><span>30 DAYS · AT HOME · MEN & WOMEN</span></div></div>'+
     '<div class="pwlist">'+[
       ['sliders','Pelan anda sendiri','2 minit soal jawab: tahap, sakit, lompat atau tidak, alat dan masa anda'],

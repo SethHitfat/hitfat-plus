@@ -39,11 +39,12 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 const MODEL = 'claude-sonnet-5-5';
 
 const FREE_SCANS_PER_MONTH = 3;
-/* MAK2FIT 30 (25 Oct 2026, Seth): whoever owns it gets 10 free scans in
-   the 30 days from when it opened on her account, instead of 3 a month, so
-   she can try scanning her meals while she starts. After the 30 days, or
-   the 10, it is the usual 3 a month (and Scan 6 is offered). */
-const LADIES_FREE_SCANS = 10, LADIES_FREE_DAYS = 30;
+/* MAK2FIT 30 (25 Oct 2026, Seth): whoever owns it gets 10 free scans from
+   when it opened on her account, before the usual 3 a month. Since 9 Nov
+   2026 they are kept until she uses them (the landing page promises 10,
+   with no end date); they used to lapse after 30 days. Once the 10 are used
+   it is the usual 3 a month, then credits. */
+const LADIES_FREE_SCANS = 10;
 /* BURN30 (28 Oct 2026, Seth) gives its buyers the same welcome */
 const WELCOME_SKUS: Record<string, string> = { prog_lad4: 'MAK2FIT 30', prog_wl30: 'BURN30', prog_ay30: 'AYAH2FIT 30' };
 
@@ -229,9 +230,10 @@ Deno.serve(async (req: Request) => {
       .filter((e) => e.kind === 'pass' && e.expires_at && new Date(e.expires_at).getTime() > now)
       .reduce((m, e) => Math.max(m, dailyFor(String(e.sku))), 0);
 
-    /* when their MAK2FIT 30 or BURN30 opened, if that was in the last 30 days */
+    /* when their MAK2FIT 30, BURN30 or AYAH2FIT 30 opened (9 Nov 2026: the 10
+       are kept until used, as the landing page says; they lapsed after 30 days) */
     const welcome = (ents || [])
-      .filter((e) => WELCOME_SKUS[e.sku] && e.created_at && now - new Date(e.created_at).getTime() < LADIES_FREE_DAYS * 864e5)
+      .filter((e) => WELCOME_SKUS[e.sku] && e.created_at)
       .sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))).pop();
     const ladiesFrom = welcome ? String(welcome.created_at) : '';
 
@@ -265,29 +267,20 @@ Deno.serve(async (req: Request) => {
         }
         mode = 'credits';
       }
-    } else if (ladiesFrom) {
-      /* the program welcome: 10 in the 30 days since it opened */
+    }
+    /* the program's 10, counted from the day it opened */
+    let welcomeLeft = false;
+    if (daily <= 0 && ladiesFrom) {
       const { count, error: lErr } = await admin
         .from('plus_scans')
         .select('id', { count: 'exact', head: true })
         .eq('user_id', user.id)
         .gte('created_at', ladiesFrom);
       if (lErr) return json({ error: 'Could not verify your scan quota. Try again shortly.' }, 503);
-      if ((count ?? 0) < LADIES_FREE_SCANS) {
-        mode = 'free';
-      } else {
-        creditRow = pickCredit();
-        if (!creditRow) {
-          return json({
-            error: `You have used your ${LADIES_FREE_SCANS} ${WELCOME_SKUS[welcome.sku]} scans.`,
-            code: 'quota_exceeded',
-            used: count,
-            limit: LADIES_FREE_SCANS,
-          }, 402);
-        }
-        mode = 'credits';
-      }
-    } else {
+      if ((count ?? 0) < LADIES_FREE_SCANS) { mode = 'free'; welcomeLeft = true; }
+    }
+    /* once the 10 are used (or there never were any): the 3 a month, then credits */
+    if (daily <= 0 && !welcomeLeft) {
       const month = new Date().toISOString().slice(0, 7);
       const { count, error: cErr } = await admin
         .from('plus_scans')
@@ -303,7 +296,9 @@ Deno.serve(async (req: Request) => {
 
         if (!creditRow) {
           return json({
-            error: 'You have used all 3 free scans this month.',
+            error: ladiesFrom
+              ? `You have used your ${LADIES_FREE_SCANS} ${WELCOME_SKUS[welcome.sku]} scans. 3 more next month.`
+              : 'You have used all 3 free scans this month.',
             code: 'quota_exceeded',
             used: count,
             limit: FREE_SCANS_PER_MONTH,

@@ -83,9 +83,10 @@ const SCAN_PRODUCTS=[
   {sku:'scan_y',    kind:'pass',    days:365,    price:99, daily:15, name:'1-year pass', note:'a year', legacy:true}
 ];
 const SCAN_FREE_TIER=3, MEMBER_SCANS_DAY=3;
-/* MAK2FIT 30 (25 Oct 2026): 10 free scans in the 30 days after it opens,
-   instead of 3 a month; scan-food holds the real count (LADIES_* there) */
-const LADIES_FREE_SCANS=10, LADIES_FREE_DAYS=30;
+/* MAK2FIT 30 (25 Oct 2026): 10 scans from the day it opens, before the 3 a
+   month (9 Nov 2026: kept until used, no longer 30 days); scan-food holds
+   the real count (LADIES_* there) */
+const LADIES_FREE_SCANS=10;
 /* the programs whose buyers get them (BURN30 since 28 Oct 2026), and what the count is called */
 const WELCOME_SCAN_SKUS={prog_lad4:'MAK2FIT 30', prog_wl30:'BURN30', prog_ay30:'AYAH2FIT 30'};
 /* how many scans a day a live pass gives */
@@ -173,21 +174,25 @@ function scanAccess(){
       return {mode:'pass', daily, left, label:left+' of '+daily+' scans left today'};
     return {mode:'credits', daily, label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
   }
-  /* her MAK2FIT 30 welcome, while it lasts */
+  /* her program's 10 (9 Nov 2026: kept until she uses them, as the landing
+     page says "10 scan", with no end date; they used to lapse after 30 days) */
+  let lbUsed=false;
   if(ladiesScanWindow()){
     const lu=ladiesScansUsed(), ll=Math.max(0, LADIES_FREE_SCANS-lu);
     const wn=_ent.welcomeName||'MAK2FIT 30';
     if(ll>0) return {mode:'free', ladies:true, label:ll+' of '+LADIES_FREE_SCANS+' '+wn+' scans left', left:ll};
-    if(_ent.credits>0) return {mode:'credits', label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
-    return {mode:'none', ladies:true, label:'Your '+LADIES_FREE_SCANS+' '+wn+' scans are used', left:0};
+    lbUsed=wn;
   }
+  /* then the 3 a month everyone has (her 10 count towards the month they were used in) */
   const used=scanUsed(), freeLeft=Math.max(0, SCAN_FREE_TIER-used);
   if(freeLeft>0)   return {mode:'free',    label:freeLeft+' of '+SCAN_FREE_TIER+' free scans left this month', left:freeLeft};
   if(_ent.credits>0) return {mode:'credits', label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
+  if(lbUsed) return {mode:'none', ladies:true, label:'Your '+LADIES_FREE_SCANS+' '+lbUsed+' scans are used · '+SCAN_FREE_TIER+' more next month', left:0};
   return {mode:'none', label:'No scans left — free resets next month', left:0};
 }
 function canScan(){ return scanAccess().left>0; }
-function ladiesScanWindow(){ return !!(_ent && _ent.ladiesFrom && Date.now()-new Date(_ent.ladiesFrom).getTime()<LADIES_FREE_DAYS*864e5); }
+/* (9 Nov 2026) no longer 30 days: from the day her program opened until the 10 are used */
+function ladiesScanWindow(){ return !!(_ent && _ent.ladiesFrom); }
 /* this phone's count of scans since her MAK2FIT 30 opened (the server keeps the real one) */
 function ladiesScansUsed(){ const q=HF.data.scanQuota||{}; return (q.lbFrom && _ent && q.lbFrom===_ent.ladiesFrom) ? (q.lb||0) : 0; }
 
@@ -230,7 +235,7 @@ async function loadEntitlement(){
         return;
       }
       ne.skus[e.sku]=true;         // programs, the bundle, the bar
-      if(WELCOME_SCAN_SKUS[e.sku] && e.created_at && Date.now()-new Date(e.created_at).getTime()<LADIES_FREE_DAYS*864e5 &&
+      if(WELCOME_SCAN_SKUS[e.sku] && e.created_at &&
          (!ne.ladiesFrom || e.created_at>ne.ladiesFrom)){ ne.ladiesFrom=e.created_at; ne.welcomeName=WELCOME_SCAN_SKUS[e.sku]; }
     });
     _ent=ne; entCacheSet(ne);
@@ -339,7 +344,7 @@ function prodCard(p){
 function openScanPlans(reason){
   const a=scanAccess(), member=hasPlus();
   const plans=SCAN_PRODUCTS.filter(s=>!s.legacy && !(member && s.daily<=MEMBER_SCANS_DAY));
-  let h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
+  let h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+packNote()+
     '<div class="sp-head">'+ic('photo')+'<div class="t">AI Meal Scan</div>'+
     '<div class="s">'+(reason?hesc(reason)+' ':'')+'Photograph a plate and get its calories and macros.</div>'+
     '<div class="sp-now">'+hesc(a.label)+'</div></div>';
@@ -399,6 +404,7 @@ let _prod=null;
 function openProduct(sku){
   /* Programs, All Access and scan packs are part of the membership now.
      Every old way into a product sheet lands on the paywall instead. */
+  if(typeof MF_ID!=='undefined' && sku==='prog_'+MF_ID) return mfBuy();
   if(typeof AY30_ID!=='undefined' && sku==='prog_'+AY30_ID) return ayBuy();
   if(sku==='prog_'+WL30_ID) return wlBuy();
   if(typeof LB30_ID!=='undefined' && sku==='prog_'+LB30_ID) return lbBuy();
@@ -611,7 +617,7 @@ function coConfirm(state){
     wait:['co-wait','Confirming your payment','This usually takes a few seconds. You can keep this open.','',''],
     ok:['co-ok',(t==='coach'?'Welcome to HITFAT+ Coach':t?'Welcome to HITFAT+':'Payment confirmed'),
         (until?'Everything is open until '+fmtDate(until)+'.':'Your purchase is unlocked.'),
-        'Start training',(_paySku==='prog_'+WL30_ID?'closeProduct();openProgram(WL30_ID)':(typeof AY30_ID!=='undefined'&&_paySku==='prog_'+AY30_ID)?'closeProduct();openProgram(AY30_ID)':(typeof LB30_ID!=='undefined'&&_paySku==='prog_'+LB30_ID)?'closeProduct();openProgram(LB30_ID)':(typeof D6_ID!=='undefined'&&_paySku==='prog_'+D6_ID)?'closeProduct();openD6()':'closeProduct();switchTab(\'train\')')],
+        'Start training',(_paySku==='prog_'+WL30_ID?'closeProduct();openProgram(WL30_ID)':(typeof AY30_ID!=='undefined'&&_paySku==='prog_'+AY30_ID)?'closeProduct();openProgram(AY30_ID)':(typeof MF_ID!=='undefined'&&_paySku==='prog_'+MF_ID)?'closeProduct();mfEnsure();openProgram(MF_ID)':(typeof LB30_ID!=='undefined'&&_paySku==='prog_'+LB30_ID)?'closeProduct();openProgram(LB30_ID)':(typeof D6_ID!=='undefined'&&_paySku==='prog_'+D6_ID)?'closeProduct();openD6()':'closeProduct();switchTab(\'train\')')],
     late:['co-late','Not confirmed yet','Your bank has not told us yet. It unlocks by itself once it does — nothing to do but wait.',
         'OK','closeProduct()']
   }[state];
@@ -755,7 +761,7 @@ function paywallHTML(sheet){
   let pics=[]; try{ pics=Object.values(IMG).slice(0,6); }catch(e){}
   const col=pics.length ? '<div class="pwcol" aria-hidden="true">'+pics.map(u=>'<div style="background-image:url(\''+u+'\')"></div>').join('')+'</div>' : '';
   if(sheet){
-    h+='<div class="pwtop"><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+col;
+    h+='<div class="pwtop"><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+packNote()+col;
     h+='<div class="sub-hero pwhero2"><div class="pw-mark">HITFAT<span>+</span></div>'+
        '<div class="sub-h">'+(pwReason?'Unlock with HITFAT+':'Train with everything')+'</div>'+
        '<div class="sub-s">'+hesc(pwReason||info.line)+'</div></div>';
@@ -835,6 +841,7 @@ function coachUpsell(){
    offer, everything else to the membership. */
 function lockedProgram(p){
   if(p && p.hub==='ay' && typeof ayBuy==='function') return ayBuy();
+  if(p && p.hub==='mf' && typeof mfBuy==='function') return mfBuy();
   if(p && p.hub==='lb30' && typeof lbBuy==='function') return lbBuy();
   if(p && p.hub==='d6' && typeof d6Buy==='function') return d6Buy();
   if(p && p.hub==='hx' && typeof hxBuy==='function') return hxBuy(p.id);
@@ -842,7 +849,53 @@ function lockedProgram(p){
   openPaywall(p.name+' is part of HITFAT+.');
 }
 function lockTag(p){
-  return (p && !ownsProgram(p)) ? '<span class="lockt" aria-label="HITFAT+">'+glyph('lock')+'</span>' : '';
+  if(!p) return '';
+  const pk=packProg();
+  if(ownsProgram(p)) return (pk && p.oneTime) ? packTag('own') : '';
+  if(pk) return packTag(p.oneTime && p.price ? 'RM'+p.price : 'lock');
+  return '<span class="lockt" aria-label="HITFAT+">'+glyph('lock')+'</span>';
+}
+/* ── her own program, named as hers (9 Nov 2026, Seth) ──
+   A MAK2FIT 30 buyer said in a comment that the app looked like "all access",
+   then asked her to pay for this and pay for that: she lands in the whole
+   HITFAT+ app, with every program and course around hers and nothing to say
+   which were hers. Someone who owns a program bought on its own, without
+   HITFAT+, now sees it called hers, a "Milik anda" tick on it, HITFAT+ (or the
+   price) on everything else, and every offer starts by saying her program
+   stays whole. Members see nothing of this. */
+function packProg(){
+  if(contentOpen()) return null;
+  const c=[typeof LB30!=='undefined'?LB30:null, typeof WL30!=='undefined'?WL30:null, typeof D6!=='undefined'?D6:null];
+  for(const p of c) if(p && owns('prog_'+p.id)) return p;
+  return null;
+}
+function packTag(k){
+  if(!packProg()) return '';
+  if(k==='own') return '<span class="ownt">'+glyph('check')+'Milik anda</span>';
+  return '<span class="lockt lockt-p">'+glyph('lock')+(k==='lock'?'HITFAT+':hesc(k))+'</span>';
+}
+/* the tag on a poster that is not a program (a course tile) */
+function packTile(html,k){ const t=packTag(k); return t ? String(html).replace(/^(<div[^>]*>)/,'$1'+t) : html; }
+function packScans(p){ return !!(p && WELCOME_SCAN_SKUS['prog_'+p.id]); }
+/* the line that says what is hers: full on Home, short on Train and Eat */
+function packStrip(where){
+  const p=packProg(); if(!p) return '';
+  const go="openProgram('"+p.id+"')";
+  if(where==='home') return '<div class="pack" onclick="'+go+'"><span class="pack-ic">'+glyph('check')+'</span><div class="pack-tx">'+
+      '<b>Pakej anda: '+hesc(p.name)+'</b>'+
+      '<span>Semua dalam program anda dah terbuka: latihan, menu'+(packScans(p)?', '+LADIES_FREE_SCANS+' scan makanan AI':'')+' dan Learn. '+
+      'Yang bertanda <i class="pack-l">'+glyph('lock')+'HITFAT+</i> ialah pilihan tambahan, bukan sebahagian pakej anda.</span></div></div>';
+  const w=where==='eat' ? 'Menu dan sasaran kalori anda ada dalam '+hesc(p.name)+'.' : 'Latihan anda ada dalam '+hesc(p.name)+'.';
+  return '<div class="pack pack-s" onclick="'+go+'"><span class="pack-ic">'+glyph('check')+'</span><div class="pack-tx">'+
+      '<b>'+w+'</b><span>Tanda <i class="pack-l">'+glyph('lock')+'HITFAT+</i> = pilihan tambahan.</span></div><span class="pack-ch">›</span></div>';
+}
+/* the top of every offer she meets: her program stays whole */
+function packNote(){
+  const p=packProg(); if(!p) return '';
+  return '<div class="pw-pack"><span class="pack-ic">'+glyph('check')+'</span><div class="pack-tx">'+
+    '<b>'+hesc(p.name)+' anda tetap penuh dan terbuka.</b>'+
+    '<span>Yang ini bukan sebahagian pakej anda. Ia pilihan tambahan, dan anda tak perlukannya untuk habiskan '+hesc(p.name)+'.</span>'+
+    '<button onclick="closeProduct();'+"openProgram('"+p.id+"')"+'">Kembali ke '+hesc(p.name)+'</button></div></div>';
 }
 /* Anything that plays: gated here, so every door is covered. T42 does not
    come through these — it plays its own day directly. */

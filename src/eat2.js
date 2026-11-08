@@ -232,7 +232,7 @@ function eatToday(){
   const over=t.kcal>budget;
   const bar=(l,v,tg,c)=>{ const p=Math.min(100,Math.round(v/(tg||1)*100));
     return '<div class="emb"><div class="emb-h"><span>'+l+'</span><b>'+v+'<i> / '+(tg||0)+' g</i></b></div><div class="emb-t"><i style="width:'+p+'%;background:'+c+'"></i></div></div>'; };
-  let h='<div class="ehero">'+
+  let h=(typeof packStrip==='function'?packStrip('eat'):'')+'<div class="ehero">'+
       '<div class="ehero-top">'+nRing(pct,(over?'+':'')+(over?t.kcal-budget:left).toLocaleString(),over?'kcal over':'kcal left',132)+
       '<div class="ehero-m">'+bar('Protein',t.p,n.pt,'#E30613')+bar('Carbs',t.c,n.ct,'#FFC20E')+bar('Fat',t.f,n.ft,'#A1A1AA')+'</div></div>'+
       '<div class="ehero-f"><span>'+t.kcal.toLocaleString()+' eaten · '+budget.toLocaleString()+' target</span><span class="nstat2 '+st.c+'"><i></i>'+st.t+'</span></div>'+
@@ -262,7 +262,7 @@ function eatToday(){
     h+=hpoTile({cls:'hpo-w hpo-tool',t:'Scan a Meal',kick:'AI · reads the plate',lv:canScan()?(sa&&sa.label?sa.label:'Snap, check, log'):'Get more scans',
       pal:'red',img:'/img/p/scanmeal.jpg',pic:'scanmeal',pos:'78% 50%',go:'openScan()',btn:{ic:'photo',go:'openScan()',label:'Scan a meal'}});
     h+='<div class="hpo-grid etools2">'+
-      hpoTile({t:'Meal Plan',kick:contentOpen()?'Malaysian menus':'With HITFAT+',lv:'1–14 days · 51 menus',cls:'hpo-sq hpo-br hpo-mp',pal:'gold',img:'/img/p/mealplan.jpg',pic:'mealplan',pos:'130% 125%',go:"setEatSeg('plan')"})+
+      (typeof packTile==='function'?x=>packTile(x,'lock'):x=>x)(hpoTile({t:'Meal Plan',kick:contentOpen()?'Malaysian menus':'With HITFAT+',lv:'1–14 days · 51 menus',cls:'hpo-sq hpo-br hpo-mp',pal:'gold',img:'/img/p/mealplan.jpg',pic:'mealplan',pos:'130% 125%',go:"setEatSeg('plan')"}))+
       hpoTile({t:'Log Exercise',kick:'Earn calories back',lv:'Steps, runs, classes',pal:'charcoal',img:'/img/p/br-quick.jpg',pic:'br-quick',pos:'88% 30%',go:'openBurn()'})+
       '</div>';
   }
@@ -399,7 +399,7 @@ function dayName(){ return new Date().toLocaleDateString('en-MY',{weekday:'long'
 /* ── PLAN ── */
 function eatPlan(){
   const mpl=(HF.data.mealPlans||[]), n=HF.data.nutrition||{};
-  let h='';
+  let h=(typeof packStrip==='function'?packStrip('eat'):'');
   h+=fsec('Made For You','A full Malaysian menu, worked out for you.');
   /* the studio food shot on the right, the words on the left (16 Oct) */
   h+='<div class="fmade fmp emade2"><div class="fm-ph" style="background-image:url(\'/img/p/mealplan.jpg\')"></div>'+

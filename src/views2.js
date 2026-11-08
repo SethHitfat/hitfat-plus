@@ -317,7 +317,10 @@ function renderHome(){
   $('home-week').innerHTML=(typeof kelasHomeCard==='function') ? kelasHomeCard() : '';   // a class member's door, at the top
 
   // 3) membership, then T42
-  if($('home-t42')) $('home-t42').innerHTML=(typeof ayHomeCard==='function'?ayHomeCard():'')+((typeof scBurnIsPlan==='function'&&scBurnIsPlan())?'':wlHomeCard())+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard():'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
+  /* (9 Nov 2026) someone with one program and no HITFAT+: her own card first,
+     no other program's offer above it, then the line that says what is hers */
+  const pk=(typeof packProg==='function')?packProg():null, mine=id=>!pk||owns('prog_'+id);
+  if($('home-t42')) $('home-t42').innerHTML=(typeof mfHomeCard==='function'&&mine(typeof MF_ID!=='undefined'?MF_ID:'')?mfHomeCard():'')+(typeof ayHomeCard==='function'&&mine(typeof AY30_ID!=='undefined'?AY30_ID:'')?ayHomeCard():'')+((typeof scBurnIsPlan==='function'&&scBurnIsPlan())||!mine(WL30_ID)?'':wlHomeCard())+(typeof lbHomeCard==='function'&&mine(LB30_ID)?lbHomeCard():'')+(typeof d6HomeCard==='function'&&mine(D6_ID)?d6HomeCard():'')+(pk?packStrip('home'):'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
   // 4) Up Next went into Today's Plan (one row: the plan's next day, or find a plan)
@@ -343,13 +346,15 @@ function renderHome(){
 function homeCourses(){
   /* (16 Oct) the courses as posters, like Train after FIIT */
   const t=[], P=o=>typeof hpoTile==='function'?hpoTile(o):'';
+  /* (9 Nov 2026) for someone with one program and no HITFAT+, each says whose it is */
+  const T=(h,own)=>typeof packTile==='function'&&own!==null?packTile(h,own?'own':'lock'):h;
   if(typeof lbFull==='function' && !lbFull() && lbNext()<LB30_DAYS.length)
-    t.push(P({t:LB30_NAME,kick:'30 hari',lv:'Khas wanita · di rumah',pal:'magenta',img:'/img/p/lad4.jpg',pic:'lad4',pos:'50% 15%',go:"openProgram('"+LB30_ID+"')"}));
-  if(typeof d6Full==='function' && !d6Full() && d6Next()<D6_TOT) t.push(d6LearnCard());
-  if(typeof ifLearnTile==='function') t.push(ifLearnTile());
+    t.push(T(P({t:LB30_NAME,kick:'30 hari',lv:'Khas wanita · di rumah',pal:'magenta',img:'/img/p/lad4.jpg',pic:'lad4',pos:'50% 15%',go:"openProgram('"+LB30_ID+"')"}),lbOwned()));
+  if(typeof d6Full==='function' && !d6Full() && d6Next()<D6_TOT) t.push(typeof packTile==='function'?packTile(d6LearnCard(),d6Owned()?'own':'RM'+D6_PRICE):d6LearnCard());
+  if(typeof ifLearnTile==='function') t.push(T(ifLearnTile(),ifOwned()));
   if(typeof acHomeCard==='function' && acHomeCard()){
     const nx=acNext(), n=acCount();
-    t.push(P({t:'Nutrition Academy',kick:'Ep '+String(acNum(nx)).padStart(2,'0'),lv:n?n+' / '+AC_EPS.length+' selesai':nx.t,pal:'green',glyph:'play',go:"acOpen('"+nx.id+"')"}));
+    t.push(T(P({t:'Nutrition Academy',kick:'Ep '+String(acNum(nx)).padStart(2,'0'),lv:n?n+' / '+AC_EPS.length+' selesai':nx.t,pal:'green',glyph:'play',go:"acOpen('"+nx.id+"')"}),acLadies()?true:acLocked(nx)?false:null));
   }
   if(!t.length) return '';
   return fsec('Courses','Follow along, day by day.')+'<div class="hpo-grid hcourses">'+t.join('')+'</div>';
@@ -378,7 +383,12 @@ function nextUp(){
 
 /* ── PROGRAM DETAIL ── */
 let curProg=null, curWeek=1;
-function findProg(id){ return PROGRAMS.find(p=>p.id===id)||CHALLENGES.find(c=>c.id===id); }
+function findProg(id){
+  /* the programs shown only to some accounts join the list on demand, so a direct link finds them */
+  if(typeof MF_ID!=='undefined' && id===MF_ID && typeof mfEnsure==='function') mfEnsure();
+  if(typeof AY30_ID!=='undefined' && id===AY30_ID && typeof ayEnsure==='function') ayEnsure();
+  return PROGRAMS.find(p=>p.id===id)||CHALLENGES.find(c=>c.id===id);
+}
 function openProgram(id){
   const p=findProg(id); if(!p) return;
   if(!progClipsReady(p)){ toast(p.name+' is coming soon — its videos are being filmed.'); return; }
@@ -529,7 +539,7 @@ function trainingDetails(p,exs){
 }
 function renderProgram(){
   const p=curProg; if(!p) return;
-  if(p.hub) return p.hub==='ay' ? renderAY30() : p.hub==='lb30' ? renderLB30() : p.hub==='d6' ? renderD6() : p.hub==='hx' ? renderHX() : renderWL30();
+  if(p.hub) return p.hub==='mf' ? renderMF() : p.hub==='ay' ? renderAY30() : p.hub==='lb30' ? renderLB30() : p.hub==='d6' ? renderD6() : p.hub==='hx' ? renderHX() : renderWL30();
   const tot=progDays(p), done=progDone(p.id), pct=tot?Math.round(done/tot*100):0;
   const owned=ownsProgram(p), multi=!!(p.weeks&&p.weeks.length);
   const meta=[p.level, multi?planPerWeek(p)+' days a week':'', p.dur+' min'+(multi?' a day':'')].filter(Boolean).join(' · ');
@@ -632,7 +642,7 @@ let curDay=null;
 function openDay(pid,gi){
   const p=findProg(pid); if(!p) return;
   if(p.hub==='hx'){ curProg=p; return hxOpenDay(gi); }
-  if(p.hub) return p.hub==='ay' ? ayOpenDay(gi) : p.hub==='lb30' ? lbOpenDay(gi) : p.hub==='d6' ? d6OpenDay(gi) : wlOpenDay(gi);
+  if(p.hub) return p.hub==='mf' ? mfOpenSession(gi) : p.hub==='ay' ? ayOpenDay(gi) : p.hub==='lb30' ? lbOpenDay(gi) : p.hub==='d6' ? d6OpenDay(gi) : wlOpenDay(gi);
   if(!ownsProgram(p)) return lockedProgram(p);
   curProg=p;
   let c=0, day=null, wk=1, dn=1;

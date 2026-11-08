@@ -9432,6 +9432,84 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 #play.a2f.nomirror #pl-ready .rdk,#play.a2f #pl-ready .rdk{color:#EBD2A6;}
 #play.a2f .bigbtn,#play.a2f #pl-rest .rs{color:#0B2A4A;}
 
+/* ── MulaFIT (8 Nov 2026): green, "mula", its own until the photographs come ── */
+.lbx.mf,.lbq.mf{--lr:#0F7A4A; --lr2:#0A5A36; --lr0:#36D884; --lbl:rgba(15,122,74,.09); --lbl2:rgba(15,122,74,.16); --lcream:#EEF8F2;}
+:root:not([data-theme="light"]) .lbx.mf,:root:not([data-theme="light"]) .lbq.mf{--lr:#1C9459; --lr2:#13703F; --lr0:#36D884; --lbl:rgba(54,216,132,.12); --lbl2:rgba(54,216,132,.2); --lcream:#122019;}
+#pgd-body:has(.lbx.mf) .pdx-pill,#dd-body:has(.lbx.mf) .pdx-pill,#pgd-body:has(.lbq.mf) .pdx-pill{background:#0F7A4A !important;color:#FFFFFF !important;}
+.mf .lbx-go{box-shadow:0 10px 24px rgba(15,122,74,.22);}
+.mf .lbx-badge{background:#FFE14D;color:#073F26;}
+.mf-hero{position:relative;margin:-6px -18px 0;padding:56px 22px 26px;color:#fff;overflow:hidden;
+  background:radial-gradient(120% 90% at 85% 0%,#36D884 0%,rgba(54,216,132,0) 55%),linear-gradient(160deg,#0F7A4A 0%,#073F26 100%);}
+.mf-hero::after{content:"";position:absolute;right:-60px;top:-40px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,225,77,.16);}
+.mf-hero > *{position:relative;z-index:1;}
+.mf-hero-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#C9F5DC;}
+.mf-hero-t{margin-top:6px;font-family:'Oswald','Inter',sans-serif;font-size:58px;font-weight:700;line-height:.95;letter-spacing:-1px;}
+.mf-hero-t b{color:#FFE14D;font-weight:700;}
+.mf-hero-t.sm{font-family:inherit;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.1;}
+.mf-hero-s{margin-top:8px;font-size:16px;font-weight:650;line-height:1.35;color:#EAFBF1;max-width:28ch;}
+.mf-hero .lbx-tags{margin-top:16px;}
+.mf-hero.mf-qhero{margin:0;border-radius:24px;padding:28px 20px 22px;}
+.mf-hero.mf-day{padding-top:64px;}
+.mf-hero.mf-B{background:radial-gradient(120% 90% at 85% 0%,#3FD3C9 0%,rgba(63,211,201,0) 55%),linear-gradient(160deg,#0E7C6A 0%,#063F37 100%);}
+.mf-hero.mf-C{background:radial-gradient(120% 90% at 85% 0%,#FFE14D 0%,rgba(255,225,77,0) 50%),linear-gradient(160deg,#0F7A4A 0%,#073F26 100%);}
+.mf-ph{display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#0F7A4A,#073F26);}
+.mf-ph b{font-family:'Oswald','Inter',sans-serif;font-size:64px;font-weight:700;color:rgba(255,225,77,.9);}
+.mf-ph.mf-B{background:linear-gradient(160deg,#0E7C6A,#063F37);}
+.mf-wcover{display:flex;flex-direction:column;gap:4px;padding:18px;border-radius:24px;color:#fff;background:linear-gradient(160deg,#0F7A4A,#073F26);}
+.mf-wcover small{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;opacity:.85;}
+.mf-wcover b{font-size:28px;font-weight:800;letter-spacing:-.6px;line-height:1.05;}
+.mf-wcover span{font-size:13.5px;line-height:1.4;opacity:.9;}
+.mf-wcover em{align-self:flex-start;margin-top:8px;padding:5px 10px;border-radius:99px;background:rgba(255,225,77,.18);color:#FFE14D;font-style:normal;font-size:12px;font-weight:800;}
+.mf-safe{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:var(--surface2);font-size:13.5px;line-height:1.4;color:var(--txt);}
+.mf-safe .gly{flex:none;width:18px;height:18px;stroke:#D93A2B;margin-top:1px;}
+.mf-cue{margin-top:6px;} .mf-cue div{display:flex;flex-direction:column;gap:2px;}
+.mf-cue span{font-size:12.5px;line-height:1.35;color:var(--txt);} .mf-cue span::before{content:"✓ ";color:var(--lr);font-weight:800;}
+.mf-cue small{display:block;margin-top:4px;font-size:12px;line-height:1.35;color:var(--dim);}
+.mf-ladder{display:grid;gap:6px;margin-top:12px;}
+.mf-ladder div{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:12px;background:var(--surface2);font-size:13.5px;}
+.mf-ladder span{color:var(--dim);font-weight:650;} .mf-ladder b{text-align:right;}
+.mf-path{grid-template-columns:repeat(3,1fr);margin-top:12px;}
+.mf-path button:disabled{opacity:.35;cursor:default;}
+.mf-rec .esfields,.mf-lesson p{margin-top:10px;}
+.mf-lesson p{font-size:15px;line-height:1.55;color:var(--txt);margin:10px 0 12px;}
+.mf-tech{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;}
+.mf-tech .lbx-card{padding:15px;margin:0;} .mf-tech b{display:block;font-size:16.5px;font-weight:800;margin-top:2px;color:var(--txt);}
+.mf-tech ol{margin:8px 0 6px;padding-left:20px;font-size:14px;line-height:1.45;color:var(--txt);}
+.mf-tech .no,.mf-tech .ez{font-size:12.5px;line-height:1.4;margin-top:3px;} .mf-tech .no{color:#C0392B;} .mf-tech .ez{color:var(--lr);font-weight:650;}
+.mf-feel{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.mf-feel div{padding:14px 6px;border-radius:16px;background:var(--lbl);text-align:center;}
+.mf-feel b{display:block;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt);} .mf-feel span{font-size:12px;color:var(--dim);font-weight:650;}
+.mf-recs{padding:6px 15px;} .mf-recs > div{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px;gap:6px;padding:10px 0;border-top:1px solid var(--line,rgba(0,0,0,.08));font-size:14px;}
+.mf-recs > div.h{border-top:0;color:var(--dim);font-size:12px;} .mf-recs b{text-align:right;font-variant-numeric:tabular-nums;}
+.mf-buy{margin:6px 16px 10px;padding:26px 18px;border-radius:20px;text-align:center;color:#fff;background:linear-gradient(160deg,#0F7A4A,#073F26);}
+.mf-buy span{display:block;margin-top:8px;font-size:11px;font-weight:800;letter-spacing:1.6px;color:#FFE14D;}
+
+/* ── one program, no HITFAT+ (9 Nov 2026): what is hers, what is extra ── */
+.lockt.lockt-p{width:auto;height:auto;border-radius:99px;padding:5px 9px 5px 7px;gap:4px;display:inline-flex;align-items:center;
+  font-size:11px;font-weight:700;letter-spacing:.02em;}
+.lockt.lockt-p .gly{width:12px;height:12px;}
+.ownt{position:absolute;top:9px;right:9px;z-index:3;display:inline-flex;align-items:center;gap:4px;padding:5px 9px 5px 7px;border-radius:99px;
+  background:#16884F;color:#FFFFFF;font-size:11px;font-weight:700;letter-spacing:.02em;}
+.ownt .gly{width:12px;height:12px;stroke-width:2.6;}
+.hpo .ownt{right:10px;}
+.fweek .ownt,.plr .ownt{position:static;}
+.pack,.pw-pack{display:flex;gap:12px;align-items:flex-start;margin:12px 0 4px;padding:14px 14px 14px 12px;border-radius:var(--r-card);
+  background:var(--surface);border:1.5px solid rgba(22,136,79,.45);color:var(--txt);cursor:pointer;}
+.pack-ic{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#16884F;color:#FFFFFF;}
+.pack-ic .gly{width:15px;height:15px;stroke-width:2.6;}
+.pack-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;}
+.pack-tx b{font-size:15px;line-height:1.3;}
+.pack-tx span{font-size:13px;line-height:1.45;color:var(--dim);}
+.pack-l{display:inline-flex;align-items:center;gap:3px;padding:1px 7px 1px 5px;border-radius:99px;background:rgba(10,10,12,.72);color:#FFFFFF;
+  font-style:normal;font-size:11px;font-weight:700;white-space:nowrap;vertical-align:1px;}
+.pack-l .gly{width:10px;height:10px;}
+.pack-s{padding:11px 12px;align-items:center;}
+.pack-s .pack-tx b{font-size:14px;}
+.pack-ch{flex:none;font-size:22px;color:var(--dim);}
+.pw-pack{cursor:default;margin:58px 16px 12px;}
+.pw-pack button{align-self:flex-start;margin-top:6px;padding:9px 14px;border:none;border-radius:var(--r-ctl);background:#16884F;color:#FFFFFF;
+  font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -11505,7 +11583,8 @@ function scPlanHTML(){
   var strip=pn?scWeekStrip(p,gi):'';
   if(pn && !strip)
     rows.push({ic:'workout', t:(at.day.name||'Workout'), s:'Day '+(gi+1)+' of '+progDays(p)+' · '+p.name+' · '+p.dur+' min', done:scWorkouts(iso(0))>0, go:"openDay('"+p.id+"',"+gi+")", b:'Start'});
-  else if(!pn) rows.push({ic:'target', t:'Find your first plan', s:'Four questions, matched to your goal and level', done:scWorkouts(iso(0))>0, go:(typeof openFinder==='function'?'openFinder()':"switchTab('train')"), b:'Find'});
+  /* (9 Nov 2026) not for someone with one program and no HITFAT+: her program's card is right below, and the finder leads to HITFAT+ */
+  else if(!pn && !(typeof packProg==='function' && packProg())) rows.push({ic:'target', t:'Find your first plan', s:'Four questions, matched to your goal and level', done:scWorkouts(iso(0))>0, go:(typeof openFinder==='function'?'openFinder()':"switchTab('train')"), b:'Find'});
   if(!SC_FAST_LIVE){}
   else if(scRamadan()) rows.push({ic:'moon', t:dy.ram?'Fasting today ✓':'Ramadan fast', s:'Sahur, iftar, and water in between', done:!!dy.ram, go:'scRamToggle()', b:dy.ram?'':'Mark'});
   else if(scHasIF() && typeof ifWindow==='function'){
@@ -15516,7 +15595,7 @@ function wlBuy(){
   if(wlOwned()) return openProgram(WL30_ID);
   if(typeof ayBuy==='function' && ayLive()) return ayBuy();
   $('pw-body').innerHTML=
-    '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
+    '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+(typeof packNote==='function'?packNote():'')+
     '<div class="wl-buy-poster wl-buy-art">'+hpoArt(WL30,{ar:1.4})+'<div class="tx"><b>'+WL30_NAME+'</b><span>30 DAYS · AT HOME · MEN & WOMEN</span></div></div>'+
     '<div class="pwlist">'+[
       ['sliders','Pelan anda sendiri','2 minit soal jawab: tahap, sakit, lompat atau tidak, alat dan masa anda'],
@@ -16923,7 +17002,9 @@ function lbLearn(){
    above the tabs, and a Scan button on every meal of her menu */
 function lbScanGo(){
   var a=typeof scanAccess==='function' ? scanAccess() : {left:0};
-  if(a.left>0) openScan('meal'); else startCheckout('scan_d6');
+  /* (9 Nov 2026) her 10 used: the scan sheet says so first, instead of going
+     straight to a payment */
+  if(a.left>0) openScan('meal'); else openScanPlans('');
 }
 /* ── her first scan (31 Oct 2026): none of the first 13 buyers had used one of
    their 10, so with a day behind her, the next thing to do is scan a meal.
@@ -16944,7 +17025,7 @@ function lbScanLater(){ lbData().scan1='later'; HF.save(); renderLB30(); }
 function lbScanHero(){
   if(typeof scanAccess!=='function') return '';
   var a=scanAccess(), has=a.left>0;
-  var sub=has ? (a.mode==='pass' ? a.left+' of '+a.daily+' scans left today' : a.label) : 'Scan 6 · 6 sehari, 30 hari · RM14.90';
+  var sub=has ? (a.mode==='pass' ? a.left+' of '+a.daily+' scans left today' : a.label) : LADIES_FREE_SCANS+' scan anda dah digunakan · '+SCAN_FREE_TIER+' lagi bulan depan';
   return '<div class="lbx-scanhero" role="button" tabindex="0" onclick="lbScanGo()">'+
     '<div class="ph" style="background-image:url(\'/ladies/img/menu/d11.jpg\')"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><i class="ln"></i></div>'+
     '<div class="tx"><div class="k">'+glyph('spark')+'AI Meal Scan</div><b>Snap makanan anda, tahu kalorinya.</b><span>'+sub+'</span></div>'+
@@ -18216,6 +18297,549 @@ const AY_PINGGAN={
     ['Nasi Dagang',['Ikan tongkol, nasi separuh','Timun acar'],['Kuah gulai banyak','Tambah nasi']],
     ['Nasi Berlauk',['Ikan atau ayam, sayur','Nasi segenggam dua'],['Lauk berminyak dua tiga jenis','Kuah santan banyak']]]
 };
+/* ═══════════════ MulaFIT ═══════════════
+   8 Nov 2026 (Seth: "aku nak mula program baru dalam hitfat+. Program ni untuk
+   beginner", then "kita buat dlu"). Four weeks, three whole-body sessions a
+   week, twelve in all, 15–25 minutes each, at home, for men and women. RM39
+   once, like MAK2FIT. The brief and the draft are the Claude Doc
+   "MulaFIT — Draf 12 Sesi".
+
+   What makes it MulaFIT and not another Beginner list: every session has the
+   same warm-up, main circuit and cool-down; every main move carries a
+   technique card; every session ends with a one-minute lesson (six on
+   training, six on Malaysian eating, rice allowed, no calorie targets); and
+   sessions 1 and 12 ask for a self-check inside the session itself, never a
+   separate test day (69 of 96 MAK2FIT buyers stalled at its Day 0 Fit Test).
+
+   Seth's choices (8 Nov): sold on its own at RM39; the videos already in the
+   app; MAK2FIT's way of asking questions; no door anchors for pulling, so
+   the towel and the water bottle (Superman and Y-T raises have no video).
+   Warm-up arm circles and the cool-down stretches are MAK2FIT's woman-coach
+   clips (LB30_DEMO); the main moves are the main library's.
+
+   Not here yet: its own photographs (green palette until then), the landing
+   page, prog_mula in the deployed edge functions.                        */
+
+const MF_ID='mula', MF_KEY='mf', MF_PRICE=39;
+const MF_NAME='MulaFIT', MF_SUB='4 Minggu Asas Kecergasan';
+/* Before launch only the listed accounts (and anyone who owns it) see it. */
+const MF_LIVE=false, MF_TESTERS=['sethnasser1991@gmail.com','hitfat91@gmail.com'];
+
+const MF_WEEKS=[
+  {n:'Kenal Asas',        s:'Teknik, pernafasan dan susunan sesi. Dua pusingan.'},
+  {n:'Ulang Rutin',       s:'Gerakan sama, satu pusingan lagi.'},
+  {n:'Cabaran Sesuai',    s:'Kerja 40 saat, rehat 20. Bezakan penat dengan sakit.'},
+  {n:'Semak dan Sambung', s:'Kekalkan rentak, kemudian semak sejauh mana anda pergi.'}
+];
+/* by week: seconds of work, seconds of rest, rounds */
+const MF_LOAD=[[30,30,2],[30,30,3],[40,20,3],[40,20,3]];
+/* the movement patterns, each a ladder: Mudah, Asas, Beransur */
+const MF_PAT={
+  squat: {n:'Duduk-bangun',     l:['Sit To Stand','Chair Squat','Bodyweight Squat']},
+  push:  {n:'Tolak',            l:['Wall Push Up','Incline Push Up (Chair)','Knee Push Ups']},
+  bridge:{n:'Jambatan pinggul', l:['Hip Thrust','Hip Thrust','Hip Thrust'], late:[null,null,'Single Leg Glutes Bridge']},
+  hinge: {n:'Bengkok pinggul',  l:['Towel Deadlift','Towel Deadlift','Towel Deadlift']},
+  pull:  {n:'Tarik',            l:['Towel Shoulder Back Pull','Towel Shoulder Back Pull','Bottle Bent Over Row']},
+  core:  {n:'Kawalan badan',    l:['Dead Bug','Bird Dog','Plank']},
+  bal:   {n:'Imbangan',         l:['Chair Assist Hip Abduction','Chair Calf Raises','Single Leg Calf Raises']},
+  cardio:{n:'Stamina',          l:['Seated High Knee','Seated High Knee','High Knee'], late:[null,'Fast Seated High Knee',null]}
+};
+const MF_TYPES={
+  A:{n:'Duduk-Bangun & Tolak', p:['squat','push','bridge','core']},
+  B:{n:'Pinggul & Imbangan',   p:['hinge','pull','bal','core']},
+  C:{n:'Gabung & Stamina',     p:['squat','push','pull','cardio']}
+};
+const MF_ORDER=['A','B','C','A','B','C','A','B','C','A','B','C'];
+const MF_N=MF_ORDER.length, MF_RECS=[0,11];
+const MF_WARM=['Arm Forward Circle','Arm Back Circle','Seated High Knee','Calf Raises','Chair Squat','IC Warm'];
+const MF_COOL=['Knee to Chest','Back Stretch','Butterfly Stretch','Side Abs Stretch','Cobra Stretch'];
+const MF_PATHS=['Mudah','Asas','Beransur'];
+
+/* the technique card for each pattern: three cues, the usual mistake, the easier way */
+const MF_TECH={
+  squat: [['Kaki selebar bahu.','Tolak punggung ke belakang seperti nak duduk.','Bangun dengan menolak lantai.'],'Lutut masuk ke dalam','Kerusi lebih tinggi, tangan pada peha'],
+  push:  [['Badan lurus dari kepala ke tumit.','Siku 45°, bukan terkeluar ke tepi.','Hembus nafas semasa menolak.'],'Pinggang jatuh','Berdiri lebih dekat dinding'],
+  bridge:[['Tumit dekat punggung.','Ketatkan punggung, angkat pinggul.','Tahan 1 saat di atas.'],'Melengkungkan pinggang','Angkat separuh sahaja'],
+  hinge: [['Lutut bengkok sedikit.','Tolak punggung ke belakang, belakang lurus.','Rasa tarikan di belakang peha.'],'Membongkok belakang','Gerak lebih pendek'],
+  pull:  [['Bahu turun, jauh dari telinga.','Rapatkan bilah bahu.','Gerak perlahan.'],'Mengangkat bahu','Buat tanpa tuala atau botol'],
+  core:  [['Pinggang rapat ke lantai, atau belakang neutral.','Gerak perlahan.','Bernafas biasa, jangan tahan.'],'Menahan nafas','Gerakkan tangan sahaja, atau kaki sahaja'],
+  bal:   [['Pegang kerusi.','Pandang satu titik di depan.','Gerak terkawal.'],'Bersandar ke tepi','Dua tangan pada kerusi'],
+  cardio:[['Duduk atau berdiri tegak.','Ikut rentak sendiri.','Boleh bercakap, tapi tak boleh menyanyi.'],'Terlalu laju di awal','Lebih perlahan, separuh masa']
+};
+/* one lesson after each session: training on 1,3,5,7,11, eating on 2,4,6,8,9,10, the review on 12 */
+const MF_LESSON=[
+  ['Cara bernafas','Hembus nafas semasa usaha: bangun, tolak, angkat. Tarik nafas semasa turun. Jangan tahan nafas, walaupun gerakan terasa berat.'],
+  ['Pinggan seimbang','Ikut Pinggan Sihat Malaysia: separuh pinggan sayur dan buah, suku nasi, suku lauk protein. Nasi tetap ada. Yang kita jaga ialah berapa banyak.'],
+  ['Skala usaha 1–10','Sasaran MulaFIT ialah 5 hingga 7: penat, tapi masih boleh bercakap satu ayat. Tahap 9–10 tak perlu. Rutin yang boleh diulang lebih penting daripada sesi yang menyeksa.'],
+  ['Sukatan guna tangan','Lauk protein setapak tangan. Nasi segenggam. Sayur dua genggam. Minyak atau kuah sebesar ibu jari. Tangan anda sentiasa ada, di rumah atau di kedai.'],
+  ['Rehat dan lenguh biasa','Lenguh 1 hingga 3 hari selepas sesi adalah biasa, terutama minggu pertama. Hari rehat ialah masa badan membina. Jalan santai membantu lenguh hilang lebih cepat.'],
+  ['Protein lauk harian','Ayam, ikan kembung, telur, tempe, tauhu, dhal. Cuba ada satu lauk protein setiap kali makan. Ia bantu anda kenyang lebih lama.'],
+  ['Mencabar atau sakit?','Penat, berpeluh dan lenguh otot: teruskan. Sakit tajam di sendi, pening, sakit dada atau sesak nafas luar biasa: berhenti terus. Jangan paksa untuk cukupkan rekod.'],
+  ['Makan di luar','Nasi campur: satu lauk protein, dua jenis sayur, kuah sedikit. Di mamak: pilih yang dibakar atau berkuah jernih, dan teh o kurang manis.'],
+  ['Air dan minuman manis','Bawa botol air ke mana-mana. Teh tarik "kurang manis" atau "kosong" ialah langkah pertama. Tak perlu berhenti terus.'],
+  ['Snek dan gorengan','Buah, kacang atau telur rebus sebagai snek biasa. Kuih dan gorengan sekali-sekala, bukan setiap hari. Tiada makanan yang haram dalam MulaFIT.'],
+  ['Naik tahap sendiri','Tukar satu perkara sahaja pada satu masa: ulangan, masa, julat atau versi gerakan. Teknik dahulu, baru tambah. Kalau teknik merosot, undur semula.'],
+  ['Semak dan sambung','Bandingkan rekod anda dengan sesi 1. Pilih dua tabiat untuk diteruskan. Kemudian ulang MulaFIT pada laluan seterusnya, atau teruskan dengan program HITFAT+.']
+];
+const MF_DAYS=[['isn','Isnin'],['sel','Selasa'],['rab','Rabu'],['kha','Khamis'],['jum','Jumaat'],['sab','Sabtu'],['ahd','Ahad']];
+
+const MF=(function(){
+  const weeks=MF_WEEKS.map((w,wi)=>({days:[0,1,2].map(j=>{ const t=MF_TYPES[MF_ORDER[wi*3+j]]; return {name:t.n, ex:MF_PAT.squat.l.slice(0,1).concat(['Wall Push Up']), r:MF_LOAD[wi][2], k:'train'}; })}));
+  return {id:MF_ID, name:MF_NAME, sub:MF_SUB, goal:'Strength', level:'Beginner', dur:20, rounds:2,
+    c1:'#0F7A4A', c2:'#073F26', ac:'#36D884', icon:'✦', weeks, hub:'mf', len:'12 sesi', oneTime:true, price:MF_PRICE, wk:4,
+    desc:'Program asas 4 minggu untuk lelaki dan wanita yang baru mula atau mahu aktif semula. '+
+         '12 sesi seluruh badan di rumah, 15–25 minit, dengan teknik setiap gerakan, pelajaran ringkas dan pemakanan Malaysia.'};
+})();
+function mfLive(){
+  return MF_LIVE || MF_TESTERS.indexOf(String(HF.email||'').toLowerCase())>=0 || (typeof owns==='function' && owns('prog_'+MF_ID));
+}
+function mfEnsure(){
+  const i=PROGRAMS.indexOf(MF), on=mfLive();
+  if(on && i<0) PROGRAMS.unshift(MF); else if(!on && i>=0) PROGRAMS.splice(i,1);
+}
+
+/* ── state ── */
+function mfData(){ const d=HF.data.mf||(HF.data.mf={}); d.rec=d.rec||{}; d.lesson=d.lesson||{}; return d; }
+function mfOwned(){ return ownsProgram(MF); }
+function mfDone(){ return Math.min(progDone(MF_ID), MF_N); }
+function mfMe(){ const m=mfData().me; return m&&m.done ? m : null; }
+function mfWeekOf(gi){ return Math.min(3, Math.floor(gi/3)); }
+function mfFirst(){ return ((HF.data.prefs&&HF.data.prefs.name)||'').trim().split(/\s+/)[0]; }
+
+/* ── the path: Mudah 0, Asas 1, Beransur 2 ── */
+function mfRiskOf(me){ const s=(me&&me.sihat)||[]; return s.length>0 && s.indexOf('tiada')<0; }
+function mfPathOf(me){
+  if(!me) return 1;
+  if(typeof me.path==='number') return me.path;
+  return mfAutoPath(me);
+}
+function mfAutoPath(me){
+  if(mfRiskOf(me) || (me.pain||[]).indexOf('lutut')>=0 || (me.act==='tiada' && me.exp==='tak')) return 0;
+  if(me.act==='aktif' && me.exp==='program') return 2;
+  return 1;
+}
+function mfPath(){ return mfPathOf(mfMe()); }
+
+/* the move a pattern gives this person in this week */
+function mfMove(pat,wi,me){
+  const P=MF_PAT[pat], path=mfPathOf(me), pain=(me&&me.pain)||[];
+  let n=(wi>=2 && P.late && P.late[path]) || P.l[path];
+  if(pain.indexOf('lutut')>=0 && pat==='squat') n='Sit To Stand';
+  if(pain.indexOf('lutut')>=0 && pat==='bal' && n==='Single Leg Calf Raises') n='Chair Calf Raises';
+  if(pain.indexOf('bahu')>=0 && pat==='push') n='Wall Push Up';
+  if(pain.indexOf('pinggang')>=0 && pat==='hinge') n='Hip Thrust';
+  if(pain.indexOf('pinggang')>=0 && pat==='pull') n='Towel Shoulder Back Pull';
+  if(pain.indexOf('lantai')>=0){
+    if(pat==='bridge') n='Towel Deadlift';
+    if(pat==='core') n=wi%2?'Seated Twist':'Seated Knee To Chest';
+    if(pat==='push' && n==='Knee Push Ups') n='Incline Push Up (Chair)';
+  }
+  return n;
+}
+/* a session: its type, its four moves, the load of its week */
+function mfSession(gi,meArg){
+  if(gi<0 || gi>=MF_N) return null;
+  const me=meArg===undefined?mfMe():meArg, wi=mfWeekOf(gi), t=MF_TYPES[MF_ORDER[gi]], L=MF_LOAD[wi];
+  let r=L[2];
+  if(me && me.masa===15) r=Math.min(r,2);
+  if(wi===3 && ((me && me.masa===25) || mfPathOf(me)===2) && !(me && me.masa===15)) r=4;
+  const main=[]; t.p.forEach(p=>{ let n=mfMove(p,wi,me); if(main.some(x=>x.n===n)) n=MF_PAT[p].l[1]; main.push({n, p}); });
+  return {gi, type:MF_ORDER[gi], n:t.n, wi, w:L[0], rest:L[1], r, main, warm:MF_WARM, cool:MF_COOL};
+}
+/* a move as the player plays it: the main library's clip, or MAK2FIT's woman coach for the stretches */
+function mfEx(n,dur,rest,cue){
+  let e=DB.filter(x=>x.n===n && x.v)[0] || null, v='', h='', m='Full Body', t='full';
+  if(e){ v=e.v; m=e.m; t=e.t; }
+  else if(typeof LB30_DEMO!=='undefined' && LB30_DEMO[n]){
+    const p=String(LB30_DEMO[n]).split('/'); v=p[0]||''; h=p[1]||'';
+    const mm=(typeof LB30_DEMO_M!=='undefined' && LB30_DEMO_M[n])||['Mobility','mobility']; m=mm[0]; t=mm[1];
+  }
+  const o={n, v, m, t, dur, rest, eq:'Bodyweight'};
+  if(h) o.h=h; if(cue) o.cue=cue;
+  return o;
+}
+function mfCue(p){ const c=MF_TECH[p]; return c ? c[0].join(' ')+' Elak: '+c[1].toLowerCase()+'.' : ''; }
+/* the whole session, warm-up to cool-down, in one list (rounds unrolled) */
+function mfExercises(s){
+  const out=[];
+  s.warm.forEach((n,i)=>out.push(mfEx(n,30,i===s.warm.length-1?15:0)));
+  for(let r=0;r<s.r;r++) s.main.forEach((x,i)=>{
+    const last=r===s.r-1 && i===s.main.length-1;
+    out.push(mfEx(x.n,s.w,last?15:s.rest,mfCue(x.p)));
+  });
+  s.cool.forEach((n,i)=>out.push(mfEx(n,40,0)));
+  return out;
+}
+function mfSecs(s){ return mfExercises(s).reduce((a,e)=>a+e.dur+(e.rest||0),0); }
+function mfMinutes(s){ return Math.max(1,Math.round(mfSecs(s)/60)); }
+function mfInDB(n){ return DB.some(x=>x.n===n && x.v) || (typeof LB30_DEMO!=='undefined' && !!LB30_DEMO[n]); }
+
+/* ── the program's home ── */
+let mfTab='plan', mfWeek=-1, mfLsOpen=-1;
+function mfScrollTabs(){ try{ const s=$('screen'), a=$('mf-tabs'); if(s&&a&&a.offsetTop) s.scrollTop=Math.max(0,a.offsetTop-70); }catch(e){} }
+function mfSetTab(t){ mfTab=t; renderMF(); mfScrollTabs(); }
+function mfHero(){
+  return '<div class="mf-hero"><div class="mf-hero-k">Program Asas · Lelaki & Wanita</div>'+
+    '<div class="mf-hero-t">Mula<b>FIT</b></div><div class="mf-hero-s">Belajar asas. Ikut pelan. Bina rutin.</div>'+
+    '<div class="lbx-tags"><span>4 minggu</span><span>12 sesi</span><span>15–25 min</span><span>Di rumah</span></div></div>';
+}
+function renderMF(){
+  if(mfQ>=0){ $('pgd-body').innerHTML=mfQuiz(); return; }
+  const owned=mfOwned(), done=mfDone(), nx=done;
+  if(mfWeek<0) mfWeek=mfWeekOf(Math.min(nx,MF_N-1));
+  const pill=!owned ? {icon:'lock',label:'RM'+MF_PRICE,go:'mfBuy()'}
+           : nx<MF_N ? {icon:'play',label:'Sesi '+(nx+1),go:'mfOpenSession('+nx+')'} : null;
+  let h=pdxBar('program',pill)+mfHero()+'<div class="lbx mf">';
+  if(!owned){
+    h+='<div class="lbx-card lbx-sell"><div class="lbx-k">Untuk yang baru mula</div>'+
+      '<div class="lbx-h">Tak tahu nak mula dari mana? Mula di sini.</div>'+
+      '<div class="lbx-p">12 sesi berpandu di rumah, setiap gerakan diajar, ada versi lebih mudah, dan pelajaran makan cara Malaysia. Tanpa gym, tanpa diet ekstrem.</div>'+
+      '<button class="lbx-go" onclick="mfBuy()">'+glyph('lock')+'Dapatkan MulaFIT · RM'+MF_PRICE+'</button>'+
+      '<button class="lbx-ghost" onclick="openPaywall(\'MulaFIT is included in HITFAT+.\')">'+glyph('star')+'Included in HITFAT+</button></div>';
+  } else if(!mfMe()){
+    h+='<div class="lbx-card lbq-invite"><div class="lbx-k">'+(done?'Pelan anda':'Sebelum Sesi 1')+'</div>'+
+      '<div class="lbx-h">Jom pilih laluan anda.</div>'+
+      '<div class="lbx-p">'+mfQCount()+' soalan, 2 minit. Jawapan anda memilih versi gerakan dan masa setiap sesi.</div>'+
+      '<button class="lbx-go" onclick="mfQuizOpen()">'+glyph('sliders')+'Bina Pelan Saya</button>'+
+      (done?'<button class="lbx-ghost" onclick="mfOpenSession('+Math.min(nx,MF_N-1)+')">'+glyph('play')+'Teruskan Sesi '+(Math.min(nx,MF_N-1)+1)+'</button>':'')+'</div>';
+  } else if(nx<MF_N){
+    const s=mfSession(nx), st=typeof liveStreak==='function'?liveStreak():0, nm=mfFirst();
+    h+='<div class="lbx-card lbx-now">'+
+      '<div class="lbx-now-top">'+lbRing(done/MF_N,84,done+'<i>/'+MF_N+'</i>','sesi')+
+        '<div class="lbx-now-tx"><div class="lbx-hello">'+(nm?'Hai, '+hesc(nm):'Hai')+'</div>'+
+        '<div class="lbx-h">Sesi '+(nx+1)+' · Minggu '+(s.wi+1)+'</div>'+
+        '<div class="lbx-p">'+MF_WEEKS[s.wi].n+'. '+(st>1?st+' hari berturut 🔥':'Satu sesi pada satu masa.')+'</div></div></div>'+
+      '<div class="lbx-today mf-today" onclick="mfOpenSession('+nx+')">'+
+        '<div class="lbx-today-ph mf-ph mf-'+s.type+'"><span class="lbx-badge">Seterusnya</span><b>'+s.type+'</b></div>'+
+        '<div class="lbx-today-b"><div class="lbx-k">'+mfMinutes(s)+' min · '+s.main.length+' gerakan · '+s.r+' pusingan</div>'+
+        '<div class="lbx-t">'+s.n+'</div></div></div>'+
+      '<button class="lbx-go" onclick="mfPlay('+nx+')">'+glyph('play')+'Mula · '+mfMinutes(s)+' min</button></div>';
+  } else {
+    h+='<div class="lbx-card lbx-now lbx-fin">'+lbRing(1,84,'12','sesi')+
+      '<div class="lbx-h">MulaFIT selesai</div><div class="lbx-p">12 sesi. Tengok sejauh mana anda pergi.</div>'+
+      '<button class="lbx-go" onclick="mfSetTab(\'progress\')">'+glyph('trophy')+'Lihat Kemajuan</button></div>';
+  }
+  if(owned) h+=mfRecDue()+mfLessonDue();
+  h+='<div class="lbx-seg" id="mf-tabs">'+[['plan','Pelan'],['learn','Belajar'],['progress','Kemajuan']]
+    .map(t=>'<button class="'+(mfTab===t[0]?'on':'')+'" onclick="mfSetTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>';
+  if(mfTab==='learn') h+=mfLearn();
+  else if(mfTab==='progress') h+=mfProgress();
+  else h+=mfPlan();
+  h+='</div>';
+  $('pgd-body').innerHTML=h;
+}
+
+/* ── the questionnaire (MAK2FIT's way: one question a screen) ── */
+const MF_Q=[
+  {k:'why', t:'Kenapa anda mula?', s:'Tiada jawapan salah.', o:[
+    ['mula','Baru nak mula bersenam','','sunrise'],['semula','Nak aktif semula','Pernah, tapi dah lama berhenti','flame'],
+    ['tenaga','Nak lebih bertenaga','','bolt'],['kuat','Nak kuat untuk kerja harian','Angkat barang, naik tangga, main dengan anak','workout']]},
+  {k:'act', t:'Seberapa aktif anda sekarang?', s:'Jujur. Boleh ubah kemudian.', o:[
+    ['tiada','Hampir tiada','Banyak duduk','home'],['jalan','Jalan kadang-kadang','','steps'],['aktif','Aktif sikit','Bergerak atau bersenam 1–2 kali seminggu','flame']]},
+  {k:'exp', t:'Pengalaman bersenam?', s:'', o:[
+    ['tak','Tak pernah','','sunrise'],['dulu','Pernah, dah lama berhenti','','clock'],['program','Pernah ikut program','','check']]},
+  {k:'masa', t:'Berapa lama setiap sesi?', s:'Pemanasan dan penyejukan sudah termasuk.', o:[
+    [15,'15 minit','Dua pusingan sahaja','clock'],[20,'20 minit','Ikut pelan','clock'],[25,'25 minit','Satu pusingan lagi di minggu 4','clock']]},
+  {k:'alat', multi:true, t:'Apa yang ada di rumah?', s:'Kerusi diperlukan. Tuala dan botol air untuk gerakan tarik.', o:[
+    ['kerusi','Kerusi yang stabil','Tidak beroda, tidak bergoyang','chair'],['tuala','Tuala','','mat'],['botol','Botol air','','bottle']]},
+  {k:'pain', multi:true, t:'Ada bahagian yang kurang selesa?', s:'Kami tukar gerakan yang membebankannya.', o:[
+    ['lutut','Lutut','','person'],['bahu','Bahu','','person'],['pinggang','Pinggang atau belakang bawah','','person'],
+    ['lantai','Sukar turun dan bangun dari lantai','','person'],['tiada','Tiada','Badan okey','check']]},
+  {k:'sihat', multi:true, t:'Saringan kesihatan', s:'Pilih semua yang berkaitan. Disimpan dalam akaun anda sahaja.', o:[
+    ['dada','Sakit dada ketika aktif','','heart'],['pening','Pening atau pernah pitam','','heart'],
+    ['jantung','Doktor pernah kata ada masalah jantung atau tekanan darah','','heart'],['hamil','Mengandung atau baru bersalin','','heart'],
+    ['cedera','Pembedahan atau kecederaan baru','','heart'],['kronik','Sakit berpanjangan atau penyakit kronik','','heart'],['tiada','Tiada','Setakat yang saya tahu','check']]},
+  {k:'days', multi:true, max:3, t:'Hari latihan pilihan?', s:'Pilih 3 hari, dengan satu hari rehat di antaranya jika boleh.', grid:true,
+    o:MF_DAYS.map(d=>[d[0],d[1],'','calendar'])},
+  {k:'makan', t:'Selalu makan di mana?', s:'Untuk tip pemakanan yang sesuai.', o:[
+    ['rumah','Rumah','','home'],['kedai','Kedai','','food'],['campur','Campur','','food']]}
+];
+let mfQ=-1, mfQA=null;
+function mfQuizOpen(at){
+  mfQA=JSON.parse(JSON.stringify(mfData().me||{})); delete mfQA.path;
+  mfQ=at||0; hidePanels(); $('progdetail').style.display='block'; renderMF(); $('screen').scrollTop=0;
+}
+function mfQuizNext(){ mfQ++; renderMF(); $('screen').scrollTop=0; }
+function mfQuizBack(){ if(mfQ<=0){ mfQ=-1; renderMF(); return; } mfQ--; renderMF(); $('screen').scrollTop=0; }
+function mfQPick(k,v,multi){
+  if(multi){
+    const q=MF_Q.filter(x=>x.k===k)[0]||{};
+    let l=(mfQA[k]||[]).slice(); const i=l.indexOf(v);
+    if(v==='tiada') l=i>=0?[]:['tiada'];
+    else { l=l.filter(x=>x!=='tiada'); if(i>=0) l.splice(i,1); else { if(q.max && l.length>=q.max) l.shift(); l.push(v); } }
+    mfQA[k]=l; if(k==='sihat' && !mfRiskOf(mfQA)) delete mfQA.clear; renderMF(); return;
+  }
+  mfQA[k]=v; mfQuizNext();
+}
+function mfQCount(){ return MF_Q.length; }
+function mfQOk(q){
+  const v=mfQA[q.k];
+  if(q.multi) return !!(v && v.length) && (!q.max || v.length===q.max) && !(q.k==='sihat' && mfRiskOf(mfQA) && !mfQA.clear);
+  return v!==undefined && v!==null && v!=='';
+}
+function mfQuiz(){
+  const n=MF_Q.length;
+  let h='<div class="lbq mf">';
+  const bar='<div class="lbq-top"><button class="pdx-back" aria-label="Back" onclick="mfQuizBack()">'+glyph('chevleft')+'</button>'+
+    '<div class="lbq-bar"><i style="width:'+Math.round(Math.min(mfQ,n)/n*100)+'%"></i></div><span class="lbq-n">'+Math.min(mfQ,n)+'/'+n+'</span></div>';
+  if(mfQ===0){
+    const nm=mfFirst();
+    return h+bar+'<div class="mf-hero mf-qhero"><div class="mf-hero-t">Mula<b>FIT</b></div>'+
+      '<div class="mf-hero-s">Jom pilih laluan anda'+(nm?', '+hesc(nm):'')+'.</div></div>'+
+      '<div class="lbq-p">'+n+' soalan, lebih kurang 2 minit. Jawapan anda memilih laluan Mudah, Asas atau Beransur, dan masa setiap sesi.</div>'+
+      '<div class="lbq-list">'+[['person','Tahap dan pengalaman anda'],['clock','Masa dan alat di rumah'],['heart','Keselesaan badan dan saringan kesihatan'],['calendar','Hari latihan']]
+        .map(x=>'<div><span>'+glyph(x[0])+'</span>'+x[1]+'</div>').join('')+'</div>'+
+      '<button class="lbx-go" onclick="mfQuizNext()">'+glyph('play')+'Mula</button></div>';
+  }
+  if(mfQ>n) return h+mfQuizResult()+'</div>';
+  const q=MF_Q[mfQ-1], v=mfQA[q.k];
+  h+=bar+'<div class="lbq-q">'+hesc(q.t)+'</div>'+(q.s?'<div class="lbq-s">'+hesc(q.s)+'</div>':'');
+  h+='<div class="lbq-opts'+(q.grid?' grid':'')+'">'+q.o.map(o=>{
+    const on=q.multi ? (v||[]).indexOf(o[0])>=0 : v===o[0];
+    return '<button class="lbq-o'+(on?' on':'')+'" onclick="mfQPick(\''+q.k+'\','+(typeof o[0]==='number'?o[0]:'\''+o[0]+'\'')+(q.multi?',1':'')+')">'+
+      '<span class="ic">'+glyph(o[3])+'</span><span class="tx"><b>'+hesc(o[1])+'</b>'+(o[2]?'<small>'+hesc(o[2])+'</small>':'')+'</span>'+
+      '<span class="tk">'+(on?glyph('check'):'')+'</span></button>';
+  }).join('')+'</div>';
+  if(q.k==='sihat' && mfRiskOf(mfQA)){
+    const preg=(mfQA.sihat||[]).indexOf('hamil')>=0;
+    h+='<div class="lbq-warn">'+glyph('heart')+'<div><b>Dapatkan nasihat dahulu.</b> '+
+      (preg?'Semasa mengandung atau selepas bersalin, senaman perlu disesuaikan oleh doktor atau fisioterapis anda. ':'Jumpa doktor atau fisioterapis sebelum mula, dan tunjukkan program ini kepada mereka. ')+
+      'MulaFIT akan guna laluan Mudah. Berhenti terus jika sakit tajam, pening, sakit dada atau sesak nafas luar biasa.</div></div>'+
+      '<div class="lbq-ticks"><div class="obrow obtick'+(mfQA.clear?' on':'')+'" onclick="mfQA.clear=!mfQA.clear;renderMF()"><span class="box">'+(mfQA.clear?'✓':'')+'</span><span>Saya faham, dan akan dapatkan nasihat</span></div></div>';
+  }
+  if(q.multi){
+    const ok=mfQOk(q);
+    h+=(q.max && (v||[]).length && (v||[]).length<q.max?'<div class="lbq-hint">Pilih '+q.max+' hari ('+(v||[]).length+' dipilih).</div>':'')+
+      '<button class="lbx-go'+(ok?'':' off')+'" onclick="'+(ok?'mfQuizNext()':'')+'">Seterusnya</button>';
+  } else if(v!==undefined && v!==null && v!=='') h+='<button class="lbx-go" onclick="mfQuizNext()">Seterusnya</button>';
+  return h+'</div>';
+}
+function mfQuizResult(){
+  const me=Object.assign({},mfQA,{done:true}), path=mfAutoPath(me), s1=mfSession(0,me), s12=mfSession(11,me), nm=mfFirst();
+  const lines=[]; (me.pain||[]).forEach(p=>{ const t={lutut:'Lutut: duduk-bangun kekal versi kerusi.',bahu:'Bahu: tolak kekal di dinding.',
+    pinggang:'Pinggang: bengkok pinggul ditukar kepada jambatan pinggul.',lantai:'Lantai: gerakan lantai ditukar kepada versi duduk atau berdiri.'}[p]; if(t) lines.push(t); });
+  if(mfRiskOf(me)) lines.push('Saringan: laluan Mudah, dan dapatkan nasihat sebelum mula.');
+  const al=me.alat||[]; if(al.indexOf('tuala')<0) lines.push('Tiada tuala? Gerakan tarik boleh dibuat tanpa tuala, gerak sahaja.');
+  const days=(me.days||[]).map(d=>(MF_DAYS.filter(x=>x[0]===d)[0]||['',''])[1]).filter(Boolean);
+  return '<div class="lbq-res"><div class="mf-hero mf-qhero"><div class="mf-hero-k">Pelan anda sedia</div><div class="mf-hero-s">12 sesi, untuk '+(nm?hesc(nm):'anda')+'.</div></div>'+
+    '<div class="lbq-card"><div class="lbq-ch">'+glyph('workout')+'<b>Laluan</b><span>'+MF_PATHS[path]+'</span></div>'+
+      '<div class="lbq-stats"><div><b>'+mfMinutes(s1)+'</b><span>min minggu 1</span></div><div><b>'+mfMinutes(s12)+'</b><span>min minggu 4</span></div><div><b>3</b><span>sesi seminggu</span></div></div>'+
+      '<div class="mf-ladder">'+['squat','push','pull','core'].map(p=>'<div><span>'+MF_PAT[p].n+'</span><b>'+mfMove(p,0,me)+'</b></div>').join('')+'</div></div>'+
+    (days.length?'<div class="lbq-chips">'+days.map(x=>'<span>'+x+'</span>').join('')+'</div>':'')+
+    (lines.length?'<div class="lbq-lines">'+lines.map(l=>'<div><span>'+glyph('check')+'</span><p>'+l+'</p></div>').join('')+'</div>':'')+
+    '<div class="lbq-fine">Bukan rawatan atau program pemulihan. Berhenti jika sakit tajam, pening, sakit dada atau sesak nafas luar biasa.</div>'+
+    '<button class="lbx-go" onclick="mfQuizSave()">'+glyph('play')+'Lihat Pelan Saya</button>'+
+    '<button class="lbx-ghost" onclick="mfQ=1;renderMF()">Tukar jawapan</button></div>';
+}
+function mfQuizSave(){
+  const d=mfData(); mfQA.done=true; mfQA.at=iso(0); d.me=mfQA;
+  HF.save(); mfQ=-1; mfTab='plan'; mfWeek=-1; renderMF(); $('screen').scrollTop=0; toast('Pelan MulaFIT sudah sedia');
+}
+/* the plan in one card, with the path the person can move up or down */
+function mfSetPath(p){ const me=mfMe(); if(!me) return; me.path=p; HF.save(); renderMF(); }
+function mfMeCard(){
+  const me=mfMe(); if(!me) return '';
+  const p=mfPath(), auto=mfAutoPath(me);
+  const days=(me.days||[]).map(d=>(MF_DAYS.filter(x=>x[0]===d)[0]||['',''])[1]).filter(Boolean);
+  return '<div class="lbx-card lbq-me"><div class="h"><span class="ic">'+glyph('sliders')+'</span><div class="tt"><div class="lbx-k">Pelan anda</div><b>Laluan '+MF_PATHS[p]+'</b></div>'+
+    '<button onclick="mfQuizOpen()">'+glyph('pencil')+'Edit</button></div>'+
+    '<div class="lbx-split mf-path" role="radiogroup" aria-label="Laluan">'+MF_PATHS.map((x,i)=>
+      '<button class="'+(p===i?'on':'')+'" role="radio" aria-checked="'+(p===i)+'" '+(mfRiskOf(me)&&i>0?'disabled ':'')+'onclick="mfSetPath('+i+')">'+x+(i===auto?' ·':'')+'</button>').join('')+'</div>'+
+    (days.length?'<div class="lbq-chips row">'+days.map(x=>'<span>'+x+'</span>').join('')+'</div>':'')+
+    (mfRiskOf(me)?'<div class="lb-fine">Saringan kesihatan anda: laluan Mudah sehingga doktor atau fisioterapis benarkan lebih.</div>':'')+'</div>';
+}
+
+/* ── Plan: the four weeks as session tiles ── */
+function mfPlan(){
+  const owned=mfOwned(), done=mfDone(), nx=done;
+  let h=owned?mfMeCard():'';
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">12 Sesi Anda</div><div class="lbx-ss">'+done+' daripada 12 siap · 3 sesi seminggu</div></div></div>';
+  h+='<div class="lbx-dots">'+MF_ORDER.map((t,i)=>'<i class="'+(i<done?'d':i===nx&&owned?'n':'')+(i&&i%3===0?' gap':'')+'"></i>').join('')+'</div>';
+  h+='<div class="lbx-weeks">'+MF_WEEKS.map((x,i)=>
+    '<button class="'+(i===mfWeek?'on':'')+'" onclick="mfWeek='+i+';renderMF()"><small>Minggu '+(i+1)+'</small><b>'+(done>=(i+1)*3?'✓ ':'')+x.n+'</b></button>').join('')+'</div>';
+  const w=MF_WEEKS[mfWeek]||MF_WEEKS[0], L=MF_LOAD[mfWeek]||MF_LOAD[0];
+  h+='<div class="mf-wcover"><small>Minggu '+(mfWeek+1)+' · Sesi '+(mfWeek*3+1)+'–'+(mfWeek*3+3)+'</small><b>'+w.n+'</b><span>'+w.s+'</span>'+
+    '<em>Kerja '+L[0]+' s · rehat '+L[1]+' s</em></div>';
+  h+='<div class="lbx-days">'+[0,1,2].map(j=>{
+    const gi=mfWeek*3+j, s=mfSession(gi), isDone=gi<done, now=gi===nx&&owned;
+    return '<div class="lbx-day'+(isDone?' done':'')+(now?' now':'')+'" onclick="mfOpenSession('+gi+')">'+
+      '<div class="lbx-day-n"><small>SESI</small><b>'+(gi+1)+'</b>'+(isDone?'<span class="ck">'+glyph('check')+'</span>':'')+'</div>'+
+      '<div class="lbx-day-t">'+s.n+'</div>'+
+      '<div class="lbx-day-m">'+s.type+' · '+mfMinutes(s)+' min'+(MF_RECS.indexOf(gi)>=0?' · Rekod':'')+'</div>'+
+      (now?'<span class="lbx-day-now">Seterusnya</span>':'')+'</div>';
+  }).join('')+'</div>';
+  h+='<div class="lbx-note leaf"><div class="q">'+glyph('leaf')+'</div><div><div class="k">Hari lain</div><div class="t">Jalan santai 10–20 minit jika mahu. Tiada cabaran. Rehat juga sebahagian latihan.</div></div></div>';
+  return h;
+}
+
+/* ── a session: what it is, one big button, the three parts ── */
+function mfOpenSession(gi){
+  const s=mfSession(gi); if(!s) return;
+  const owned=mfOwned(), done=gi<mfDone();
+  curProg=MF; curDay={p:MF, day:MF.weeks[s.wi].days[gi%3], gi};
+  const row=(n,meta,i,cue)=>'<div class="lbx-move" onclick="'+(owned?'mfPlayOne(\''+n.replace(/'/g,"\\'")+'\','+gi+')':'mfBuy()')+'">'+
+    '<span class="n">'+i+'</span><div class="tx"><div class="t">'+n+'</div><div class="m">'+meta+'</div>'+(cue||'')+'</div>'+
+    '<span class="pl">'+glyph(owned?'play':'lock')+'</span></div>';
+  let h=pdxBar('day', owned?{icon:'play',label:'Mula',go:'mfPlay('+gi+')'}:{icon:'lock',label:'RM'+MF_PRICE,go:'mfBuy()'})+
+    '<div class="mf-hero mf-day mf-'+s.type+'"><div class="mf-hero-k">Sesi '+(gi+1)+' daripada 12 · Minggu '+(s.wi+1)+': '+MF_WEEKS[s.wi].n+(done?' · ✓ Siap':'')+'</div>'+
+    '<div class="mf-hero-t sm">'+s.n+'</div></div><div class="lbx mf">';
+  h+='<div class="lbx-facts">'+[[mfMinutes(s)+'','minit'],[s.main.length+'','gerakan'],[s.r+'','pusingan'],[s.w+'/'+s.rest,'kerja/rehat']]
+    .map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
+  if(!owned) h+='<button class="lbx-go" onclick="mfBuy()">'+glyph('lock')+'Buka · RM'+MF_PRICE+'</button>';
+  else {
+    h+='<button class="lbx-go" onclick="mfPlay('+gi+')">'+glyph('play')+'Mula · '+mfMinutes(s)+' min</button>';
+    h+='<button class="lbx-ghost" onclick="mfComplete('+gi+')">'+glyph('check')+'Tanda siap tanpa main</button>';
+  }
+  h+='<div class="mf-safe">'+glyph('heart')+'<span>Berhenti jika sakit tajam, pening, sakit dada atau sesak nafas luar biasa.</span></div>';
+  if(MF_RECS.indexOf(gi)>=0) h+='<div class="lbx-note"><div class="q">'+glyph('chart')+'</div><div><div class="k">Sesi rekod</div><div class="t">Kira berapa kali anda buat duduk-bangun dan tolak dalam 30 saat pertama. Selepas sesi, app akan tanya.</div></div></div>';
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">1 · Pemanasan</div><div class="lbx-ss">4 minit · tanpa rehat</div></div></div>'+
+    '<div class="lbx-moves">'+s.warm.map((n,i)=>row(n,'30 saat',i+1)).join('')+'</div>';
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">2 · Latihan Utama</div><div class="lbx-ss">'+s.r+' pusingan · kerja '+s.w+' s, rehat '+s.rest+' s</div></div></div>'+
+    '<div class="lbx-moves">'+s.main.map((x,i)=>{ const c=MF_TECH[x.p];
+      return row(x.n,MF_PAT[x.p].n+' · '+s.w+' saat',i+1,
+        '<div class="mf-cue"><div>'+c[0].map(t=>'<span>'+t+'</span>').join('')+'</div><small>Elak: '+c[1]+'. Jika susah: '+c[2].toLowerCase()+'.</small></div>'); }).join('')+'</div>';
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">3 · Penyejukan</div><div class="lbx-ss">'+Math.round(s.cool.length*40/60*10)/10+' minit · regangan</div></div></div>'+
+    '<div class="lbx-moves">'+s.cool.map((n,i)=>row(n,'40 saat',i+1)).join('')+'</div>';
+  const ls=MF_LESSON[gi];
+  h+='<div class="lbx-note"><div class="q">'+glyph('doc')+'</div><div><div class="k">Pelajaran selepas sesi</div><div class="t"><b>'+ls[0]+'</b></div></div></div>';
+  const kit=['ruang selamat','kerusi stabil']; if(s.main.some(x=>/Towel/.test(x.n))) kit.push('tuala'); if(s.main.some(x=>/Bottle/.test(x.n))) kit.push('botol air'); if(s.main.some(x=>/Wall/.test(x.n))) kit.push('dinding');
+  h+='<div class="lbx-need"><span>'+glyph('mat')+'</span>Anda perlukan: '+kit.join(', ')+'</div></div>';
+  $('dd-body').innerHTML=h;
+  hidePanels(); $('daydetail').style.display='block'; $('screen').scrollTop=0;
+}
+function mfPlay(gi){
+  const s=mfSession(gi); if(!s) return;
+  if(!mfOwned()) return mfBuy();
+  if(!mfMe()) return mfQuizOpen();
+  startWorkout(mfExercises(s),{rounds:1, name:'MulaFIT · Sesi '+(gi+1), mf:{gi}, key:MF_KEY+'-s'+gi, pid:MF_ID, gi});
+}
+function mfPlayOne(n,gi){
+  if(!mfOwned()) return mfBuy();
+  const s=mfSession(gi), x=s.main.filter(m=>m.n===n)[0];
+  startWorkout([mfEx(n,x?s.w:30,0,x?mfCue(x.p):'')],{rounds:1, name:n, mf:{gi:-1,back:gi}});
+}
+function mfAfterSession(m){
+  if(m.gi<0) return mfOpenSession(m.back);
+  hidePanels(); $('progdetail').style.display='block'; mfTab='plan';
+  if(m.gi<mfDone()) mfLsOpen=m.gi;
+  renderMF(); $('screen').scrollTop=0;
+}
+function mfComplete(gi){
+  const s=mfSession(gi);
+  HF.markDone(MF_KEY+'-s'+gi,{name:'MulaFIT · Sesi '+(gi+1), mins:mfMinutes(s)});
+  if(progDone(MF_ID)===gi) HF.data.progress[MF_ID]=gi+1;
+  HF.save(); toast('Sesi siap 🔥'); mfLsOpen=gi;
+  hidePanels(); $('progdetail').style.display='block'; renderMF(); $('screen').scrollTop=0;
+}
+
+/* ── after a session: the record (sessions 1 and 12), then the lesson ── */
+const MF_REC=[['sq','Duduk-bangun','kali'],['pu','Tolak','kali'],['yk','Yakin (1–5)','/ 5']];
+function mfRecKey(gi){ return 's'+(gi+1); }
+function mfRecDue(){
+  const done=mfDone(), d=mfData();
+  const gi=MF_RECS.filter(g=>g<done && !d.rec[mfRecKey(g)])[0];
+  if(gi===undefined) return '';
+  return '<div class="lbx-card mf-rec"><div class="lbx-k">Rekod sesi '+(gi+1)+'</div>'+
+    '<div class="lbx-h">'+(gi===0?'Rekod permulaan anda':'Bandingkan dengan sesi 1')+'</div>'+
+    '<div class="lbx-p">Ikut ingatan, dalam 30 saat pertama latihan utama. Tak ingat? Langkau.</div>'+
+    '<div class="esfields">'+MF_REC.map(x=>'<label class="esf"><span>'+x[1]+'</span><input class="inp" id="mfr-'+x[0]+'" inputmode="numeric" placeholder="0" aria-label="'+x[1]+'"><em>'+x[2]+'</em></label>').join('')+'</div>'+
+    '<button class="lbx-go" onclick="mfRecSave('+gi+')">'+glyph('check')+'Simpan</button>'+
+    '<button class="lbx-ghost" onclick="mfRecSkip('+gi+')">Langkau</button></div>';
+}
+function mfRecSave(gi){
+  const g=k=>parseInt(($('mfr-'+k)||{}).value,10)||0, yk=Math.max(0,Math.min(5,g('yk')));
+  mfData().rec[mfRecKey(gi)]={sq:g('sq'), pu:g('pu'), yk, at:iso(0)}; HF.save(); toast('Rekod disimpan'); renderMF();
+}
+function mfRecSkip(gi){ mfData().rec[mfRecKey(gi)]={skip:true, at:iso(0)}; HF.save(); renderMF(); }
+/* the lesson of the session just done, until it is read */
+function mfLessonDue(){
+  const done=mfDone(), d=mfData();
+  let gi=mfLsOpen>=0 && mfLsOpen<done ? mfLsOpen : -1;
+  if(gi<0) for(let i=done-1;i>=Math.max(0,done-1);i--) if(!d.lesson[i]) gi=i;
+  if(gi<0 || (d.lesson[gi] && mfLsOpen!==gi)) return '';
+  const ls=MF_LESSON[gi];
+  return '<div class="lbx-card mf-lesson"><div class="lbx-k">Pelajaran · Sesi '+(gi+1)+'</div><div class="lbx-h">'+ls[0]+'</div>'+
+    '<p>'+ls[1]+'</p><button class="lbx-go" onclick="mfLsDone('+gi+')">'+glyph('check')+(d.lesson[gi]?'Tutup':'Faham')+'</button></div>';
+}
+function mfLsDone(gi){ mfData().lesson[gi]=true; mfLsOpen=-1; HF.save(); renderMF(); }
+function mfLsShow(gi){ mfLsOpen=gi; mfTab='plan'; renderMF(); $('screen').scrollTop=0; }
+
+/* ── Belajar: the technique cards and the lessons so far ── */
+function mfLearn(){
+  if(!mfOwned()) return mfLocked('doc','Belajar Asas','Kad teknik untuk setiap gerakan dan 12 pelajaran ringkas tentang latihan dan makan cara Malaysia.');
+  const done=mfDone(), me=mfMe();
+  let h='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Kad Teknik</div><div class="lbx-ss">Tiga isyarat, satu kesilapan biasa, satu cara lebih mudah</div></div></div>';
+  h+='<div class="mf-tech">'+Object.keys(MF_TECH).map(p=>{ const c=MF_TECH[p];
+    return '<div class="lbx-card"><div class="lbx-k">'+MF_PAT[p].n+'</div><b>'+mfMove(p,mfWeekOf(Math.min(done,MF_N-1)),me)+'</b>'+
+      '<ol>'+c[0].map(t=>'<li>'+t+'</li>').join('')+'</ol><div class="no">Elak: '+c[1]+'</div><div class="ez">Jika susah: '+c[2]+'</div></div>'; }).join('')+'</div>';
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Pelajaran</div><div class="lbx-ss">Terbuka selepas setiap sesi</div></div></div>';
+  h+='<div class="lbx-card lbx-cl">'+MF_LESSON.map((l,i)=>{
+    const open=i<done;
+    return '<div class="lbx-cr'+(mfData().lesson[i]?' on':'')+'"'+(open?' onclick="mfLsShow('+i+')"':'')+'><span class="ck'+(mfData().lesson[i]?' on':'')+'">'+glyph(open?(mfData().lesson[i]?'check':'doc'):'lock')+'</span>'+
+      '<div class="tx"><span class="k">Sesi '+(i+1)+(i%2===0&&i!==11?' · Latihan':i===11?' · Semak':' · Makan')+'</span><b class="w">'+(open?l[0]:'Selepas sesi '+(i+1))+'</b></div>'+(open?'<span class="pdx-chev">›</span>':'')+'</div>';
+  }).join('')+'</div>';
+  return h;
+}
+
+/* ── Kemajuan: sessions, how they felt, the two records side by side ── */
+function mfProgress(){
+  if(!mfOwned()) return mfLocked('chart','Kemajuan','Sesi siap, rasa setiap sesi, dan rekod sesi 1 berbanding sesi 12.');
+  const done=mfDone(), S=HF.data.sessions||{}, d=mfData(), f={easy:0,right:0,hard:0};
+  for(let i=0;i<MF_N;i++){ const x=S[MF_KEY+'-s'+i]; if(x && f[x.feel]!==undefined) f[x.feel]++; }
+  const mins=MF_ORDER.reduce((a,t,i)=>{ const x=S[MF_KEY+'-s'+i]; return a+(x&&x.mins||0); },0);
+  let h='<div class="lbx-facts">'+[[done+'/12','sesi siap'],[mins+'','minit'],[(typeof liveStreak==='function'?liveStreak():0)+'','hari berturut']]
+    .map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Macam mana sesi anda?</div><div class="lbx-ss">Dari jawapan selepas setiap sesi</div></div></div>'+
+    '<div class="mf-feel">'+[['easy','Mudah'],['right','Ngam'],['hard','Susah']].map(x=>'<div><b>'+f[x[0]]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
+  if(f.hard>=2) h+='<div class="lbx-note"><div class="q">'+glyph('heart')+'</div><div><div class="k">Nasihat</div><div class="t">Beberapa sesi terasa susah. Tak apa: tukar ke laluan lebih mudah di tab Pelan, atau ulang minggu ini sebelum naik.</div></div></div>';
+  const a=d.rec.s1||{}, b=d.rec.s12||{}, cell=(o,k)=>o.skip||o[k]===undefined?'–':o[k];
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Rekod Anda</div><div class="lbx-ss">Sesi 1 berbanding sesi 12</div></div></div>'+
+    '<div class="lbx-card mf-recs"><div class="h"><span></span><b>Sesi 1</b><b>Sesi 12</b></div>'+
+    MF_REC.map(x=>'<div><span>'+x[1]+'</span><b>'+cell(a,x[0])+'</b><b>'+cell(b,x[0])+'</b></div>').join('')+'</div>'+
+    '<div class="lb-fine">Berat, ukuran dan gambar tidak diperlukan dalam MulaFIT. Jangan bandingkan diri dengan orang lain; bandingkan dengan anda pada sesi 1.</div>';
+  if(done>=MF_N) h+='<div class="lbx-card mf-next"><div class="lbx-k">Selepas MulaFIT</div><div class="lbx-h">Pilih dua tabiat untuk diteruskan.</div>'+
+    '<div class="lbx-p">Ulang MulaFIT pada laluan seterusnya, atau teruskan dengan program HITFAT+ yang lain.</div>'+
+    '<button class="lbx-go" onclick="mfRestart()">'+glyph('play')+'Ulang MulaFIT</button>'+
+    '<button class="lbx-ghost" onclick="switchTab(\'train\')">'+glyph('workout')+'Lihat program lain</button></div>';
+  return h;
+}
+function mfRestart(){
+  const me=mfMe(); if(me && !mfRiskOf(me)) me.path=Math.min(2,mfPath()+1);
+  HF.data.progress[MF_ID]=0; const d=mfData(); d.lesson={}; d.rec={}; HF.save(); mfTab='plan'; mfWeek=-1; renderMF(); $('screen').scrollTop=0;
+  toast('MulaFIT bermula semula · laluan '+MF_PATHS[mfPath()]);
+}
+function mfLocked(icon,title,text){
+  return '<div class="wl-lock">'+ic(icon)+'<div class="t">'+title+'</div><div class="s">'+text+'</div>'+
+    '<button class="lbx-go" onclick="mfBuy()">Dapatkan MulaFIT · RM'+MF_PRICE+'</button></div>';
+}
+
+/* ── buying it ── */
+function mfBuy(){
+  if(mfOwned()) return openProgram(MF_ID);
+  $('pw-body').innerHTML='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
+    '<div class="mf-buy"><div class="mf-hero-t">Mula<b>FIT</b></div><span>4 MINGGU · 12 SESI · DI RUMAH</span></div>'+
+    '<div class="pwlist">'+[
+      ['sliders','Laluan anda sendiri','Mudah, Asas atau Beransur, ikut tahap dan keselesaan badan'],
+      ['workout','12 sesi berpandu','Pemanasan, latihan utama, penyejukan. Video setiap gerakan'],
+      ['target','Teknik setiap gerakan','Tiga isyarat, kesilapan biasa dan versi lebih mudah'],
+      ['food','Makan cara Malaysia','6 pelajaran ringkas. Nasi tetap ada'],
+      ['chart','Semak kemajuan','Rekod sesi 1 dan sesi 12, tanpa wajib timbang'],
+      ['trophy','Milik anda','Bayar sekali. Tiada langganan']]
+      .map(b=>'<div class="pwf"><div class="ic"><span class="wl-kic">'+glyph(b[0])+'</span></div><div><div class="t">'+b[1]+'</div><div class="m">'+b[2]+'</div></div></div>').join('')+'</div>'+
+    '<div class="pwprice"><div class="p">RM'+MF_PRICE+'</div><div class="per">sekali bayar</div></div>'+
+    '<button class="bigbtn" onclick="startCheckout(\'prog_'+MF_ID+'\')">Beli RM'+MF_PRICE+'</button>'+
+    '<button class="authalt" onclick="openPaywall(\'MulaFIT is included in HITFAT+.\')">Atau dapatkan semua dengan HITFAT+</button>';
+  $('pwm').classList.add('on');
+  try{ $('pwm').scrollTop=0; }catch(e){}
+}
+function mfHomeCard(){
+  mfEnsure(); if(!mfLive() || typeof hpoCard!=='function') return '';
+  const owned=mfOwned(), done=mfDone();
+  if(owned && done>=MF_N) return '';
+  if(owned && done) return hpoCard(MF,{wide:true,kick:'Sesi '+(done+1)+' · '+mfMinutes(mfSession(done))+' min',go:'mfOpenSession('+done+')'});
+  if(owned) return hpoCard(MF,{wide:true,kick:'Baru · Sedia bila anda sedia',go:"openProgram('"+MF_ID+"')"});
+  return hpoCard(MF,{wide:true,kick:'Program Baru · RM'+MF_PRICE,go:"openProgram('"+MF_ID+"')"});
+}
 /* DIET 6 MINGGU 6KG: the program's content, exactly as Coach Seth wrote it
    (diet-6-minggu-6kg-content.json, 14 Oct 2026). Not edited here: change the
    JSON and copy it in again. The logic that reads it is diet6.js. */
@@ -21125,7 +21749,7 @@ function d6Poster(cls){
 function d6Buy(){
   if(d6Owned()) return openD6();
   $('pw-body').innerHTML=
-    '<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>'+
+    '<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>'+(typeof packNote==='function'?packNote():'')+
     d6Poster('lb-buy')+
     '<div class="pwlist">'+[
       ['food','Bajet kalori anda sendiri','Nasi kekal, ikut senduk. Tidak pernah bawah 1,200 kcal (wanita) / 1,500 kcal (lelaki)'],
@@ -21390,7 +22014,7 @@ function hxBuy(id){
   var p=hxProg(def.id);
   if(p && ownsProgram(p)){ closeProduct(); return openProgram(def.id); }
   $('pw-body').innerHTML=
-    '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
+    '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+(typeof packNote==='function'?packNote():'')+
     hxPoster(def,'hx-buy')+
     '<div class="pwlist">'+[
       ['workout',def.kick+(def.kind==='race'?', three levels':''),def.kind==='race'?'Beginner, OPEN or PRO, each with its own sessions':'Hybrid basics, engine, stations, a mini simulation'],
@@ -22838,9 +23462,10 @@ const SCAN_PRODUCTS=[
   {sku:'scan_y',    kind:'pass',    days:365,    price:99, daily:15, name:'1-year pass', note:'a year', legacy:true}
 ];
 const SCAN_FREE_TIER=3, MEMBER_SCANS_DAY=3;
-/* MAK2FIT 30 (25 Oct 2026): 10 free scans in the 30 days after it opens,
-   instead of 3 a month; scan-food holds the real count (LADIES_* there) */
-const LADIES_FREE_SCANS=10, LADIES_FREE_DAYS=30;
+/* MAK2FIT 30 (25 Oct 2026): 10 scans from the day it opens, before the 3 a
+   month (9 Nov 2026: kept until used, no longer 30 days); scan-food holds
+   the real count (LADIES_* there) */
+const LADIES_FREE_SCANS=10;
 /* the programs whose buyers get them (BURN30 since 28 Oct 2026), and what the count is called */
 const WELCOME_SCAN_SKUS={prog_lad4:'MAK2FIT 30', prog_wl30:'BURN30', prog_ay30:'AYAH2FIT 30'};
 /* how many scans a day a live pass gives */
@@ -22928,21 +23553,25 @@ function scanAccess(){
       return {mode:'pass', daily, left, label:left+' of '+daily+' scans left today'};
     return {mode:'credits', daily, label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
   }
-  /* her MAK2FIT 30 welcome, while it lasts */
+  /* her program's 10 (9 Nov 2026: kept until she uses them, as the landing
+     page says "10 scan", with no end date; they used to lapse after 30 days) */
+  let lbUsed=false;
   if(ladiesScanWindow()){
     const lu=ladiesScansUsed(), ll=Math.max(0, LADIES_FREE_SCANS-lu);
     const wn=_ent.welcomeName||'MAK2FIT 30';
     if(ll>0) return {mode:'free', ladies:true, label:ll+' of '+LADIES_FREE_SCANS+' '+wn+' scans left', left:ll};
-    if(_ent.credits>0) return {mode:'credits', label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
-    return {mode:'none', ladies:true, label:'Your '+LADIES_FREE_SCANS+' '+wn+' scans are used', left:0};
+    lbUsed=wn;
   }
+  /* then the 3 a month everyone has (her 10 count towards the month they were used in) */
   const used=scanUsed(), freeLeft=Math.max(0, SCAN_FREE_TIER-used);
   if(freeLeft>0)   return {mode:'free',    label:freeLeft+' of '+SCAN_FREE_TIER+' free scans left this month', left:freeLeft};
   if(_ent.credits>0) return {mode:'credits', label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
+  if(lbUsed) return {mode:'none', ladies:true, label:'Your '+LADIES_FREE_SCANS+' '+lbUsed+' scans are used · '+SCAN_FREE_TIER+' more next month', left:0};
   return {mode:'none', label:'No scans left — free resets next month', left:0};
 }
 function canScan(){ return scanAccess().left>0; }
-function ladiesScanWindow(){ return !!(_ent && _ent.ladiesFrom && Date.now()-new Date(_ent.ladiesFrom).getTime()<LADIES_FREE_DAYS*864e5); }
+/* (9 Nov 2026) no longer 30 days: from the day her program opened until the 10 are used */
+function ladiesScanWindow(){ return !!(_ent && _ent.ladiesFrom); }
 /* this phone's count of scans since her MAK2FIT 30 opened (the server keeps the real one) */
 function ladiesScansUsed(){ const q=HF.data.scanQuota||{}; return (q.lbFrom && _ent && q.lbFrom===_ent.ladiesFrom) ? (q.lb||0) : 0; }
 
@@ -22985,7 +23614,7 @@ async function loadEntitlement(){
         return;
       }
       ne.skus[e.sku]=true;         // programs, the bundle, the bar
-      if(WELCOME_SCAN_SKUS[e.sku] && e.created_at && Date.now()-new Date(e.created_at).getTime()<LADIES_FREE_DAYS*864e5 &&
+      if(WELCOME_SCAN_SKUS[e.sku] && e.created_at &&
          (!ne.ladiesFrom || e.created_at>ne.ladiesFrom)){ ne.ladiesFrom=e.created_at; ne.welcomeName=WELCOME_SCAN_SKUS[e.sku]; }
     });
     _ent=ne; entCacheSet(ne);
@@ -23094,7 +23723,7 @@ function prodCard(p){
 function openScanPlans(reason){
   const a=scanAccess(), member=hasPlus();
   const plans=SCAN_PRODUCTS.filter(s=>!s.legacy && !(member && s.daily<=MEMBER_SCANS_DAY));
-  let h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
+  let h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+packNote()+
     '<div class="sp-head">'+ic('photo')+'<div class="t">AI Meal Scan</div>'+
     '<div class="s">'+(reason?hesc(reason)+' ':'')+'Photograph a plate and get its calories and macros.</div>'+
     '<div class="sp-now">'+hesc(a.label)+'</div></div>';
@@ -23154,6 +23783,7 @@ let _prod=null;
 function openProduct(sku){
   /* Programs, All Access and scan packs are part of the membership now.
      Every old way into a product sheet lands on the paywall instead. */
+  if(typeof MF_ID!=='undefined' && sku==='prog_'+MF_ID) return mfBuy();
   if(typeof AY30_ID!=='undefined' && sku==='prog_'+AY30_ID) return ayBuy();
   if(sku==='prog_'+WL30_ID) return wlBuy();
   if(typeof LB30_ID!=='undefined' && sku==='prog_'+LB30_ID) return lbBuy();
@@ -23366,7 +23996,7 @@ function coConfirm(state){
     wait:['co-wait','Confirming your payment','This usually takes a few seconds. You can keep this open.','',''],
     ok:['co-ok',(t==='coach'?'Welcome to HITFAT+ Coach':t?'Welcome to HITFAT+':'Payment confirmed'),
         (until?'Everything is open until '+fmtDate(until)+'.':'Your purchase is unlocked.'),
-        'Start training',(_paySku==='prog_'+WL30_ID?'closeProduct();openProgram(WL30_ID)':(typeof AY30_ID!=='undefined'&&_paySku==='prog_'+AY30_ID)?'closeProduct();openProgram(AY30_ID)':(typeof LB30_ID!=='undefined'&&_paySku==='prog_'+LB30_ID)?'closeProduct();openProgram(LB30_ID)':(typeof D6_ID!=='undefined'&&_paySku==='prog_'+D6_ID)?'closeProduct();openD6()':'closeProduct();switchTab(\'train\')')],
+        'Start training',(_paySku==='prog_'+WL30_ID?'closeProduct();openProgram(WL30_ID)':(typeof AY30_ID!=='undefined'&&_paySku==='prog_'+AY30_ID)?'closeProduct();openProgram(AY30_ID)':(typeof MF_ID!=='undefined'&&_paySku==='prog_'+MF_ID)?'closeProduct();mfEnsure();openProgram(MF_ID)':(typeof LB30_ID!=='undefined'&&_paySku==='prog_'+LB30_ID)?'closeProduct();openProgram(LB30_ID)':(typeof D6_ID!=='undefined'&&_paySku==='prog_'+D6_ID)?'closeProduct();openD6()':'closeProduct();switchTab(\'train\')')],
     late:['co-late','Not confirmed yet','Your bank has not told us yet. It unlocks by itself once it does — nothing to do but wait.',
         'OK','closeProduct()']
   }[state];
@@ -23510,7 +24140,7 @@ function paywallHTML(sheet){
   let pics=[]; try{ pics=Object.values(IMG).slice(0,6); }catch(e){}
   const col=pics.length ? '<div class="pwcol" aria-hidden="true">'+pics.map(u=>'<div style="background-image:url(\''+u+'\')"></div>').join('')+'</div>' : '';
   if(sheet){
-    h+='<div class="pwtop"><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+col;
+    h+='<div class="pwtop"><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+packNote()+col;
     h+='<div class="sub-hero pwhero2"><div class="pw-mark">HITFAT<span>+</span></div>'+
        '<div class="sub-h">'+(pwReason?'Unlock with HITFAT+':'Train with everything')+'</div>'+
        '<div class="sub-s">'+hesc(pwReason||info.line)+'</div></div>';
@@ -23590,6 +24220,7 @@ function coachUpsell(){
    offer, everything else to the membership. */
 function lockedProgram(p){
   if(p && p.hub==='ay' && typeof ayBuy==='function') return ayBuy();
+  if(p && p.hub==='mf' && typeof mfBuy==='function') return mfBuy();
   if(p && p.hub==='lb30' && typeof lbBuy==='function') return lbBuy();
   if(p && p.hub==='d6' && typeof d6Buy==='function') return d6Buy();
   if(p && p.hub==='hx' && typeof hxBuy==='function') return hxBuy(p.id);
@@ -23597,7 +24228,53 @@ function lockedProgram(p){
   openPaywall(p.name+' is part of HITFAT+.');
 }
 function lockTag(p){
-  return (p && !ownsProgram(p)) ? '<span class="lockt" aria-label="HITFAT+">'+glyph('lock')+'</span>' : '';
+  if(!p) return '';
+  const pk=packProg();
+  if(ownsProgram(p)) return (pk && p.oneTime) ? packTag('own') : '';
+  if(pk) return packTag(p.oneTime && p.price ? 'RM'+p.price : 'lock');
+  return '<span class="lockt" aria-label="HITFAT+">'+glyph('lock')+'</span>';
+}
+/* ── her own program, named as hers (9 Nov 2026, Seth) ──
+   A MAK2FIT 30 buyer said in a comment that the app looked like "all access",
+   then asked her to pay for this and pay for that: she lands in the whole
+   HITFAT+ app, with every program and course around hers and nothing to say
+   which were hers. Someone who owns a program bought on its own, without
+   HITFAT+, now sees it called hers, a "Milik anda" tick on it, HITFAT+ (or the
+   price) on everything else, and every offer starts by saying her program
+   stays whole. Members see nothing of this. */
+function packProg(){
+  if(contentOpen()) return null;
+  const c=[typeof LB30!=='undefined'?LB30:null, typeof WL30!=='undefined'?WL30:null, typeof D6!=='undefined'?D6:null];
+  for(const p of c) if(p && owns('prog_'+p.id)) return p;
+  return null;
+}
+function packTag(k){
+  if(!packProg()) return '';
+  if(k==='own') return '<span class="ownt">'+glyph('check')+'Milik anda</span>';
+  return '<span class="lockt lockt-p">'+glyph('lock')+(k==='lock'?'HITFAT+':hesc(k))+'</span>';
+}
+/* the tag on a poster that is not a program (a course tile) */
+function packTile(html,k){ const t=packTag(k); return t ? String(html).replace(/^(<div[^>]*>)/,'$1'+t) : html; }
+function packScans(p){ return !!(p && WELCOME_SCAN_SKUS['prog_'+p.id]); }
+/* the line that says what is hers: full on Home, short on Train and Eat */
+function packStrip(where){
+  const p=packProg(); if(!p) return '';
+  const go="openProgram('"+p.id+"')";
+  if(where==='home') return '<div class="pack" onclick="'+go+'"><span class="pack-ic">'+glyph('check')+'</span><div class="pack-tx">'+
+      '<b>Pakej anda: '+hesc(p.name)+'</b>'+
+      '<span>Semua dalam program anda dah terbuka: latihan, menu'+(packScans(p)?', '+LADIES_FREE_SCANS+' scan makanan AI':'')+' dan Learn. '+
+      'Yang bertanda <i class="pack-l">'+glyph('lock')+'HITFAT+</i> ialah pilihan tambahan, bukan sebahagian pakej anda.</span></div></div>';
+  const w=where==='eat' ? 'Menu dan sasaran kalori anda ada dalam '+hesc(p.name)+'.' : 'Latihan anda ada dalam '+hesc(p.name)+'.';
+  return '<div class="pack pack-s" onclick="'+go+'"><span class="pack-ic">'+glyph('check')+'</span><div class="pack-tx">'+
+      '<b>'+w+'</b><span>Tanda <i class="pack-l">'+glyph('lock')+'HITFAT+</i> = pilihan tambahan.</span></div><span class="pack-ch">›</span></div>';
+}
+/* the top of every offer she meets: her program stays whole */
+function packNote(){
+  const p=packProg(); if(!p) return '';
+  return '<div class="pw-pack"><span class="pack-ic">'+glyph('check')+'</span><div class="pack-tx">'+
+    '<b>'+hesc(p.name)+' anda tetap penuh dan terbuka.</b>'+
+    '<span>Yang ini bukan sebahagian pakej anda. Ia pilihan tambahan, dan anda tak perlukannya untuk habiskan '+hesc(p.name)+'.</span>'+
+    '<button onclick="closeProduct();'+"openProgram('"+p.id+"')"+'">Kembali ke '+hesc(p.name)+'</button></div></div>';
 }
 /* Anything that plays: gated here, so every door is covered. T42 does not
    come through these — it plays its own day directly. */
@@ -25429,7 +26106,7 @@ function plTotalLeft(){
   if(pl.resting&&pl.rest&&pl.rest.n){ i=pl.rest.n.i; r=pl.rest.n.round; t+=pl.exs[i].dur||45; }
   for(;;){
     if(i+1<pl.exs.length) i++; else if(r<pl.rounds){ i=0; r++; } else break;
-    t+=REST_SECS+(pl.exs[i].dur||45);
+    t+=plRestOf(pl.exs[i>0?i-1:pl.exs.length-1])+(pl.exs[i].dur||45);
   }
   return t;
 }
@@ -25503,6 +26180,7 @@ const PL_CUE_N=[
   [/swing/i,'Snap your hips forward; your arms just guide the weight.'],
   [/high knee|butt kick|fast feet|sprint/i,'Stay on the balls of your feet, pump your arms.']];
 function plCue(ex){
+  if(ex && ex.cue) return ex.cue;
   const n=String(ex&&ex.n||'');
   for(const c of PL_CUE_N) if(c[0].test(n)) return c[1];
   return PL_CUE[ex&&ex.t]||'Move with control and keep breathing.';
@@ -25628,6 +26306,8 @@ function plPause(){ plUnwait(); stopTick(); plSetPlayIcon(false); plTime(); plWa
 function plToggle(){ if(!pl) return; (pl.running||pl.waiting)?plPause():plResume(); }
 function plAdjust(d){ if(!pl) return; const was=pl.left; pl.left=Math.max(5,pl.left+d); pl.len=(pl.len||was)+(pl.left-was); plTime(); }
 
+/* the rest after a move: its own (MulaFIT's warm-up has none, its weeks 1–2 have 30), else REST_SECS */
+function plRestOf(ex){ return ex && typeof ex.rest==='number' ? ex.rest : REST_SECS; }
 function plNextIndex(){
   if(!pl) return null;
   if(pl.i+1 < pl.exs.length) return {i:pl.i+1, round:pl.round};
@@ -25640,7 +26320,7 @@ function plNext(auto){
   pl.done++;
   const nxt=plNextIndex();
   if(!nxt){ plFinish(); return; }
-  if(auto) plRest(nxt); else plGo(nxt);
+  if(auto && plRestOf(pl.exs[pl.i])>0) plRest(nxt); else plGo(nxt, auto?'rest':undefined);
 }
 function plPrev(){
   if(!pl) return;
@@ -25681,7 +26361,8 @@ function plRest(n){
   /* the rest is the time to learn the next move */
   if($('pl-resttip')) $('pl-resttip').innerHTML='<b>Form tip</b>'+plCue(nx);
   $('pl-rest').classList.add('on');
-  pl.rest={left:REST_SECS, total:REST_SECS, n};
+  const rs=plRestOf(pl.exs[pl.i]);
+  pl.rest={left:rs, total:rs, n};
   if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
   plRestPaint();
   /* "And rest! Next up: Lunges" — and a new round, or the last move, said so */
@@ -25827,6 +26508,7 @@ function plCloseNow(){
   exitPlayer();
   if(lb && typeof lbAfterSession==='function') return lbAfterSession(lb);
   if(pl0&&pl0.ay && typeof ayAfterSession==='function') return ayAfterSession(pl0.ay);
+  if(pl0&&pl0.mf && typeof mfAfterSession==='function') return mfAfterSession(pl0.mf);
   if(pl0&&pl0.wl && typeof wlAfterSession==='function') return wlAfterSession(pl0.wl);
   if(pl0&&pl0.kp && typeof kpAfterSession==='function') return kpAfterSession();
   const d6=pl0&&pl0.d6;
@@ -25946,7 +26628,7 @@ function plReadyText(){
   const r=$('pl-ready'); if(r) r.classList.remove('busy');
   if(!pl) return;
   const n=pl.exs.length, rd=pl.rounds||1;
-  const secs=pl.exs.reduce((t,e)=>t+(e.dur||45),0)*rd + REST_SECS*Math.max(0,n*rd-1);
+  const secs=pl.exs.reduce((t,e)=>t+(e.dur||45),0)*rd + (pl.exs.some(e=>typeof e.rest==='number') ? pl.exs.slice(0,-1).reduce((t,e)=>t+plRestOf(e),0) : REST_SECS*Math.max(0,n*rd-1));
   $('pl-rdt').textContent=(pl.meta&&pl.meta.name)||pl.exs[0].n;
   if($('pl-rdm')) $('pl-rdm').textContent=n+(n===1?' exercise':' exercises')+(rd>1?' · '+rd+' rounds':'')+' · about '+Math.max(1,Math.round(secs/60))+' min';
   $('pl-rds').textContent=PL_MIRROR?'Choose Your View':'';
@@ -26096,7 +26778,7 @@ function progEq(p){
    that plays for 19. Recovery keeps its own (its clips are still being
    filmed) and so does the plan a member builds, which they set themselves. */
 function progMinutes(p){
-  if(!p || p.rehab || p.id==='custom' || p.hub==='lb30' || p.hub==='d6') return null;   /* MAK2FIT 30 counts its own */
+  if(!p || p.rehab || p.id==='custom' || p.hub==='lb30' || p.hub==='d6' || p.hub==='mf') return null;   /* MAK2FIT 30 (and MulaFIT) count their own */
   var rest=(typeof REST_SECS!=='undefined')?REST_SECS:20, rounds=p.rounds||3, eq=progEq(p), tot=0, n=0;
   var day=function(names){
     if(!names || !names.length) return;
@@ -26108,7 +26790,7 @@ function progMinutes(p){
 }
 /* Programs a member trains from: multi-week, not Recovery (which has its
    own tab, and whose clips are not all filmed yet). */
-function trainingPlans(){ if(typeof ayEnsure==='function') ayEnsure(); return PROGRAMS.filter(function(p){ return p.weeks && !p.rehab && (p.id!=='wl30' || wlKept()); }); }
+function trainingPlans(){ if(typeof ayEnsure==='function') ayEnsure(); if(typeof mfEnsure==='function') mfEnsure(); return PROGRAMS.filter(function(p){ return p.weeks && !p.rehab && (p.id!=='wl30' || wlKept()); }); }
 
 function pickEx(names,eq){
   return names.map(function(n){
@@ -26149,6 +26831,7 @@ const HF={
       d.wl30=(o.wl30&&typeof o.wl30==='object')?JSON.parse(JSON.stringify(o.wl30)):{};
       d.lb30=(o.lb30&&typeof o.lb30==='object')?JSON.parse(JSON.stringify(o.lb30)):{};
       d.ay30=(o.ay30&&typeof o.ay30==='object')?JSON.parse(JSON.stringify(o.ay30)):{};
+      d.mf=(o.mf&&typeof o.mf==='object')?JSON.parse(JSON.stringify(o.mf)):{};
       d.d6=(o.d6&&typeof o.d6==='object')?JSON.parse(JSON.stringify(o.d6)):{};
       d.coach=(o.coach&&typeof o.coach==='object')?JSON.parse(JSON.stringify(o.coach)):{};
       d.academy=(o.academy&&typeof o.academy==='object')?JSON.parse(JSON.stringify(o.academy)):{};
@@ -36639,7 +37322,10 @@ function renderHome(){
   $('home-week').innerHTML=(typeof kelasHomeCard==='function') ? kelasHomeCard() : '';   // a class member's door, at the top
 
   // 3) membership, then T42
-  if($('home-t42')) $('home-t42').innerHTML=(typeof ayHomeCard==='function'?ayHomeCard():'')+((typeof scBurnIsPlan==='function'&&scBurnIsPlan())?'':wlHomeCard())+(typeof lbHomeCard==='function'?lbHomeCard():'')+(typeof d6HomeCard==='function'?d6HomeCard():'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
+  /* (9 Nov 2026) someone with one program and no HITFAT+: her own card first,
+     no other program's offer above it, then the line that says what is hers */
+  const pk=(typeof packProg==='function')?packProg():null, mine=id=>!pk||owns('prog_'+id);
+  if($('home-t42')) $('home-t42').innerHTML=(typeof mfHomeCard==='function'&&mine(typeof MF_ID!=='undefined'?MF_ID:'')?mfHomeCard():'')+(typeof ayHomeCard==='function'&&mine(typeof AY30_ID!=='undefined'?AY30_ID:'')?ayHomeCard():'')+((typeof scBurnIsPlan==='function'&&scBurnIsPlan())||!mine(WL30_ID)?'':wlHomeCard())+(typeof lbHomeCard==='function'&&mine(LB30_ID)?lbHomeCard():'')+(typeof d6HomeCard==='function'&&mine(D6_ID)?d6HomeCard():'')+(pk?packStrip('home'):'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
   // 4) Up Next went into Today's Plan (one row: the plan's next day, or find a plan)
@@ -36665,13 +37351,15 @@ function renderHome(){
 function homeCourses(){
   /* (16 Oct) the courses as posters, like Train after FIIT */
   const t=[], P=o=>typeof hpoTile==='function'?hpoTile(o):'';
+  /* (9 Nov 2026) for someone with one program and no HITFAT+, each says whose it is */
+  const T=(h,own)=>typeof packTile==='function'&&own!==null?packTile(h,own?'own':'lock'):h;
   if(typeof lbFull==='function' && !lbFull() && lbNext()<LB30_DAYS.length)
-    t.push(P({t:LB30_NAME,kick:'30 hari',lv:'Khas wanita · di rumah',pal:'magenta',img:'/img/p/lad4.jpg',pic:'lad4',pos:'50% 15%',go:"openProgram('"+LB30_ID+"')"}));
-  if(typeof d6Full==='function' && !d6Full() && d6Next()<D6_TOT) t.push(d6LearnCard());
-  if(typeof ifLearnTile==='function') t.push(ifLearnTile());
+    t.push(T(P({t:LB30_NAME,kick:'30 hari',lv:'Khas wanita · di rumah',pal:'magenta',img:'/img/p/lad4.jpg',pic:'lad4',pos:'50% 15%',go:"openProgram('"+LB30_ID+"')"}),lbOwned()));
+  if(typeof d6Full==='function' && !d6Full() && d6Next()<D6_TOT) t.push(typeof packTile==='function'?packTile(d6LearnCard(),d6Owned()?'own':'RM'+D6_PRICE):d6LearnCard());
+  if(typeof ifLearnTile==='function') t.push(T(ifLearnTile(),ifOwned()));
   if(typeof acHomeCard==='function' && acHomeCard()){
     const nx=acNext(), n=acCount();
-    t.push(P({t:'Nutrition Academy',kick:'Ep '+String(acNum(nx)).padStart(2,'0'),lv:n?n+' / '+AC_EPS.length+' selesai':nx.t,pal:'green',glyph:'play',go:"acOpen('"+nx.id+"')"}));
+    t.push(T(P({t:'Nutrition Academy',kick:'Ep '+String(acNum(nx)).padStart(2,'0'),lv:n?n+' / '+AC_EPS.length+' selesai':nx.t,pal:'green',glyph:'play',go:"acOpen('"+nx.id+"')"}),acLadies()?true:acLocked(nx)?false:null));
   }
   if(!t.length) return '';
   return fsec('Courses','Follow along, day by day.')+'<div class="hpo-grid hcourses">'+t.join('')+'</div>';
@@ -36700,7 +37388,12 @@ function nextUp(){
 
 /* ── PROGRAM DETAIL ── */
 let curProg=null, curWeek=1;
-function findProg(id){ return PROGRAMS.find(p=>p.id===id)||CHALLENGES.find(c=>c.id===id); }
+function findProg(id){
+  /* the programs shown only to some accounts join the list on demand, so a direct link finds them */
+  if(typeof MF_ID!=='undefined' && id===MF_ID && typeof mfEnsure==='function') mfEnsure();
+  if(typeof AY30_ID!=='undefined' && id===AY30_ID && typeof ayEnsure==='function') ayEnsure();
+  return PROGRAMS.find(p=>p.id===id)||CHALLENGES.find(c=>c.id===id);
+}
 function openProgram(id){
   const p=findProg(id); if(!p) return;
   if(!progClipsReady(p)){ toast(p.name+' is coming soon — its videos are being filmed.'); return; }
@@ -36851,7 +37544,7 @@ function trainingDetails(p,exs){
 }
 function renderProgram(){
   const p=curProg; if(!p) return;
-  if(p.hub) return p.hub==='ay' ? renderAY30() : p.hub==='lb30' ? renderLB30() : p.hub==='d6' ? renderD6() : p.hub==='hx' ? renderHX() : renderWL30();
+  if(p.hub) return p.hub==='mf' ? renderMF() : p.hub==='ay' ? renderAY30() : p.hub==='lb30' ? renderLB30() : p.hub==='d6' ? renderD6() : p.hub==='hx' ? renderHX() : renderWL30();
   const tot=progDays(p), done=progDone(p.id), pct=tot?Math.round(done/tot*100):0;
   const owned=ownsProgram(p), multi=!!(p.weeks&&p.weeks.length);
   const meta=[p.level, multi?planPerWeek(p)+' days a week':'', p.dur+' min'+(multi?' a day':'')].filter(Boolean).join(' · ');
@@ -36954,7 +37647,7 @@ let curDay=null;
 function openDay(pid,gi){
   const p=findProg(pid); if(!p) return;
   if(p.hub==='hx'){ curProg=p; return hxOpenDay(gi); }
-  if(p.hub) return p.hub==='ay' ? ayOpenDay(gi) : p.hub==='lb30' ? lbOpenDay(gi) : p.hub==='d6' ? d6OpenDay(gi) : wlOpenDay(gi);
+  if(p.hub) return p.hub==='mf' ? mfOpenSession(gi) : p.hub==='ay' ? ayOpenDay(gi) : p.hub==='lb30' ? lbOpenDay(gi) : p.hub==='d6' ? d6OpenDay(gi) : wlOpenDay(gi);
   if(!ownsProgram(p)) return lockedProgram(p);
   curProg=p;
   let c=0, day=null, wk=1, dn=1;
@@ -37586,7 +38279,7 @@ function eatToday(){
   const over=t.kcal>budget;
   const bar=(l,v,tg,c)=>{ const p=Math.min(100,Math.round(v/(tg||1)*100));
     return '<div class="emb"><div class="emb-h"><span>'+l+'</span><b>'+v+'<i> / '+(tg||0)+' g</i></b></div><div class="emb-t"><i style="width:'+p+'%;background:'+c+'"></i></div></div>'; };
-  let h='<div class="ehero">'+
+  let h=(typeof packStrip==='function'?packStrip('eat'):'')+'<div class="ehero">'+
       '<div class="ehero-top">'+nRing(pct,(over?'+':'')+(over?t.kcal-budget:left).toLocaleString(),over?'kcal over':'kcal left',132)+
       '<div class="ehero-m">'+bar('Protein',t.p,n.pt,'#E30613')+bar('Carbs',t.c,n.ct,'#FFC20E')+bar('Fat',t.f,n.ft,'#A1A1AA')+'</div></div>'+
       '<div class="ehero-f"><span>'+t.kcal.toLocaleString()+' eaten · '+budget.toLocaleString()+' target</span><span class="nstat2 '+st.c+'"><i></i>'+st.t+'</span></div>'+
@@ -37616,7 +38309,7 @@ function eatToday(){
     h+=hpoTile({cls:'hpo-w hpo-tool',t:'Scan a Meal',kick:'AI · reads the plate',lv:canScan()?(sa&&sa.label?sa.label:'Snap, check, log'):'Get more scans',
       pal:'red',img:'/img/p/scanmeal.jpg',pic:'scanmeal',pos:'78% 50%',go:'openScan()',btn:{ic:'photo',go:'openScan()',label:'Scan a meal'}});
     h+='<div class="hpo-grid etools2">'+
-      hpoTile({t:'Meal Plan',kick:contentOpen()?'Malaysian menus':'With HITFAT+',lv:'1–14 days · 51 menus',cls:'hpo-sq hpo-br hpo-mp',pal:'gold',img:'/img/p/mealplan.jpg',pic:'mealplan',pos:'130% 125%',go:"setEatSeg('plan')"})+
+      (typeof packTile==='function'?x=>packTile(x,'lock'):x=>x)(hpoTile({t:'Meal Plan',kick:contentOpen()?'Malaysian menus':'With HITFAT+',lv:'1–14 days · 51 menus',cls:'hpo-sq hpo-br hpo-mp',pal:'gold',img:'/img/p/mealplan.jpg',pic:'mealplan',pos:'130% 125%',go:"setEatSeg('plan')"}))+
       hpoTile({t:'Log Exercise',kick:'Earn calories back',lv:'Steps, runs, classes',pal:'charcoal',img:'/img/p/br-quick.jpg',pic:'br-quick',pos:'88% 30%',go:'openBurn()'})+
       '</div>';
   }
@@ -37753,7 +38446,7 @@ function dayName(){ return new Date().toLocaleDateString('en-MY',{weekday:'long'
 /* ── PLAN ── */
 function eatPlan(){
   const mpl=(HF.data.mealPlans||[]), n=HF.data.nutrition||{};
-  let h='';
+  let h=(typeof packStrip==='function'?packStrip('eat'):'');
   h+=fsec('Made For You','A full Malaysian menu, worked out for you.');
   /* the studio food shot on the right, the words on the left (16 Oct) */
   h+='<div class="fmade fmp emade2"><div class="fm-ph" style="background-image:url(\'/img/p/mealplan.jpg\')"></div>'+
@@ -39304,7 +39997,7 @@ const HPO_PAL={red:['#FF4A3D','#B3121B','#5E070C','#FFC21A'], orange:['#FF8A2A',
   blue:['#4D78FF','#1B2FA8','#0E1A60','#3EE6CF'], purple:['#8A5CFF','#3A1C9C','#1E0F55','#FF4D8D'],
   teal:['#3FD3C9','#0E7C86','#073F44','#FF4D8D'], green:['#36D884','#0F7A4A','#073F26','#FFE14D'],
   gold:['#F5C042','#B5790A','#5A3A03','#E30613']};
-const HPO_OF={hx12:'charcoal',hx8:'charcoal',hxft:'charcoal',c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
+const HPO_OF={mula:'green',hx12:'charcoal',hx8:'charcoal',hxft:'charcoal',c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
   sig2:'charcoal',men6:'blue',f40:'purple',bws8:'charcoal',min3:'blue',reset12:'purple',mkb:'charcoal',mdb:'blue',m2:'purple',core14:'teal'};
 const HPO_GOAL={'Fat Loss':['red','orange','magenta'],'Strength':['charcoal','blue','purple'],'Core':['teal','green']};
 function hpoPal(p){
@@ -39317,7 +40010,7 @@ const HPO_MASK=new Set(('wl30 sig1 sig2 sig3 sig4 fl30 lad4 men6 f40 core14 bws8
   'kb1 kb2 kb3 db1 db2 db3 bt1 bt2 ch1 ch2 tw1 tw2 p1 p2 p4 p5 p6 p7 p9 p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 p20 '+
   'p21 p22 p23 p24 p25 p26 p27 p28 p29 p30 p31 p32 p33 p34 c1 c2 c3 hx12 hx8 hxft').split(' '));
 function hpoPic(p){ return String(progImg(p)).split('/').pop().replace(/\.\w+(\?.*)?$/,''); }
-function hpoLen(p){ return typeof p.days==='number' ? p.days+' days' : p.oneTime ? progDays(p)+' days' : p.weeks ? (p.weeks.length===1?'1 week':p.weeks.length+' weeks') : p.dur+' min'; }
+function hpoLen(p){ return p.len ? p.len : typeof p.days==='number' ? p.days+' days' : p.oneTime ? progDays(p)+' days' : p.weeks ? (p.weeks.length===1?'1 week':p.weeks.length+' weeks') : p.dur+' min'; }
 function hpoCard(p,o){
   o=o||{};
   const c=hpoPal(p), pic=hpoPic(p), cut=hasPhoto(p) && HPO_MASK.has(pic);
@@ -39621,6 +40314,10 @@ function trForYou(){
      locked programs: hers goes above the HITFAT+ offer */
   const lbc=typeof lbHomeCard==='function'?lbHomeCard():'';
   if(lbc) h+=fsec('Program Anda','MAK2FIT 30 milik anda. Mula di sini.')+lbc;
+  /* (9 Nov 2026) another program bought on its own gets the same place */
+  const pk=typeof packProg==='function'?packProg():null;
+  if(pk && !lbc && pk.id!==LB30_ID) h+=fsec('Program Anda',pk.name+' milik anda. Mula di sini.')+hpoCard(pk,{wide:true});
+  if(pk) h+=packStrip('train');
   if(!contentOpen()) h+=fyJoinCard();
   if(t42InTrain()) h+=t42HomeCard();
 
@@ -39667,7 +40364,7 @@ function trExplore(){
   const fresh=Object.keys(HF.data.sessions||{}).length<3;
   if(fresh){ const lv={Beginner:0,Intermediate:1,Advanced:2}; rotated=rotated.map((p,i)=>[p,i]).sort((a,b)=>((lv[a[0].level]??1)-(lv[b[0].level]??1))||(a[1]-b[1])).map(x=>x[0]); }
 
-  let h=(contentOpen()?'':fyJoinCard())+(t42InTrain()?t42HomeCard():'');
+  let h=(typeof packStrip==='function'?packStrip('train'):'')+(contentOpen()?'':fyJoinCard())+(t42InTrain()?t42HomeCard():'');
   h+=fsec('This Week',fresh?'New here? The easy ones come first.':'A new set of sessions every week.');
   h+='<div class="hscroll hpo-row">'+take(rotated,6).map((p,i)=>hpoCard(p,{badge:i<2?'New':'',start:true})).join('')+'</div>';
 

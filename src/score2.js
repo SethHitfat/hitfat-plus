@@ -209,7 +209,8 @@ function scPlanHTML(){
   var strip=pn?scWeekStrip(p,gi):'';
   if(pn && !strip)
     rows.push({ic:'workout', t:(at.day.name||'Workout'), s:'Day '+(gi+1)+' of '+progDays(p)+' · '+p.name+' · '+p.dur+' min', done:scWorkouts(iso(0))>0, go:"openDay('"+p.id+"',"+gi+")", b:'Start'});
-  else if(!pn) rows.push({ic:'target', t:'Find your first plan', s:'Four questions, matched to your goal and level', done:scWorkouts(iso(0))>0, go:(typeof openFinder==='function'?'openFinder()':"switchTab('train')"), b:'Find'});
+  /* (9 Nov 2026) not for someone with one program and no HITFAT+: her program's card is right below, and the finder leads to HITFAT+ */
+  else if(!pn && !(typeof packProg==='function' && packProg())) rows.push({ic:'target', t:'Find your first plan', s:'Four questions, matched to your goal and level', done:scWorkouts(iso(0))>0, go:(typeof openFinder==='function'?'openFinder()':"switchTab('train')"), b:'Find'});
   if(!SC_FAST_LIVE){}
   else if(scRamadan()) rows.push({ic:'moon', t:dy.ram?'Fasting today ✓':'Ramadan fast', s:'Sahur, iftar, and water in between', done:!!dy.ram, go:'scRamToggle()', b:dy.ram?'':'Mark'});
   else if(scHasIF() && typeof ifWindow==='function'){

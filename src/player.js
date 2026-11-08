@@ -152,7 +152,7 @@ function plTotalLeft(){
   if(pl.resting&&pl.rest&&pl.rest.n){ i=pl.rest.n.i; r=pl.rest.n.round; t+=pl.exs[i].dur||45; }
   for(;;){
     if(i+1<pl.exs.length) i++; else if(r<pl.rounds){ i=0; r++; } else break;
-    t+=REST_SECS+(pl.exs[i].dur||45);
+    t+=plRestOf(pl.exs[i>0?i-1:pl.exs.length-1])+(pl.exs[i].dur||45);
   }
   return t;
 }
@@ -226,6 +226,7 @@ const PL_CUE_N=[
   [/swing/i,'Snap your hips forward; your arms just guide the weight.'],
   [/high knee|butt kick|fast feet|sprint/i,'Stay on the balls of your feet, pump your arms.']];
 function plCue(ex){
+  if(ex && ex.cue) return ex.cue;
   const n=String(ex&&ex.n||'');
   for(const c of PL_CUE_N) if(c[0].test(n)) return c[1];
   return PL_CUE[ex&&ex.t]||'Move with control and keep breathing.';
@@ -351,6 +352,8 @@ function plPause(){ plUnwait(); stopTick(); plSetPlayIcon(false); plTime(); plWa
 function plToggle(){ if(!pl) return; (pl.running||pl.waiting)?plPause():plResume(); }
 function plAdjust(d){ if(!pl) return; const was=pl.left; pl.left=Math.max(5,pl.left+d); pl.len=(pl.len||was)+(pl.left-was); plTime(); }
 
+/* the rest after a move: its own (MulaFIT's warm-up has none, its weeks 1–2 have 30), else REST_SECS */
+function plRestOf(ex){ return ex && typeof ex.rest==='number' ? ex.rest : REST_SECS; }
 function plNextIndex(){
   if(!pl) return null;
   if(pl.i+1 < pl.exs.length) return {i:pl.i+1, round:pl.round};
@@ -363,7 +366,7 @@ function plNext(auto){
   pl.done++;
   const nxt=plNextIndex();
   if(!nxt){ plFinish(); return; }
-  if(auto) plRest(nxt); else plGo(nxt);
+  if(auto && plRestOf(pl.exs[pl.i])>0) plRest(nxt); else plGo(nxt, auto?'rest':undefined);
 }
 function plPrev(){
   if(!pl) return;
@@ -404,7 +407,8 @@ function plRest(n){
   /* the rest is the time to learn the next move */
   if($('pl-resttip')) $('pl-resttip').innerHTML='<b>Form tip</b>'+plCue(nx);
   $('pl-rest').classList.add('on');
-  pl.rest={left:REST_SECS, total:REST_SECS, n};
+  const rs=plRestOf(pl.exs[pl.i]);
+  pl.rest={left:rs, total:rs, n};
   if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
   plRestPaint();
   /* "And rest! Next up: Lunges" — and a new round, or the last move, said so */
@@ -550,6 +554,7 @@ function plCloseNow(){
   exitPlayer();
   if(lb && typeof lbAfterSession==='function') return lbAfterSession(lb);
   if(pl0&&pl0.ay && typeof ayAfterSession==='function') return ayAfterSession(pl0.ay);
+  if(pl0&&pl0.mf && typeof mfAfterSession==='function') return mfAfterSession(pl0.mf);
   if(pl0&&pl0.wl && typeof wlAfterSession==='function') return wlAfterSession(pl0.wl);
   if(pl0&&pl0.kp && typeof kpAfterSession==='function') return kpAfterSession();
   const d6=pl0&&pl0.d6;
@@ -669,7 +674,7 @@ function plReadyText(){
   const r=$('pl-ready'); if(r) r.classList.remove('busy');
   if(!pl) return;
   const n=pl.exs.length, rd=pl.rounds||1;
-  const secs=pl.exs.reduce((t,e)=>t+(e.dur||45),0)*rd + REST_SECS*Math.max(0,n*rd-1);
+  const secs=pl.exs.reduce((t,e)=>t+(e.dur||45),0)*rd + (pl.exs.some(e=>typeof e.rest==='number') ? pl.exs.slice(0,-1).reduce((t,e)=>t+plRestOf(e),0) : REST_SECS*Math.max(0,n*rd-1));
   $('pl-rdt').textContent=(pl.meta&&pl.meta.name)||pl.exs[0].n;
   if($('pl-rdm')) $('pl-rdm').textContent=n+(n===1?' exercise':' exercises')+(rd>1?' · '+rd+' rounds':'')+' · about '+Math.max(1,Math.round(secs/60))+' min';
   $('pl-rds').textContent=PL_MIRROR?'Choose Your View':'';

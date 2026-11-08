@@ -173,7 +173,7 @@ const HPO_PAL={red:['#FF4A3D','#B3121B','#5E070C','#FFC21A'], orange:['#FF8A2A',
   blue:['#4D78FF','#1B2FA8','#0E1A60','#3EE6CF'], purple:['#8A5CFF','#3A1C9C','#1E0F55','#FF4D8D'],
   teal:['#3FD3C9','#0E7C86','#073F44','#FF4D8D'], green:['#36D884','#0F7A4A','#073F26','#FFE14D'],
   gold:['#F5C042','#B5790A','#5A3A03','#E30613']};
-const HPO_OF={hx12:'charcoal',hx8:'charcoal',hxft:'charcoal',c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
+const HPO_OF={mula:'green',hx12:'charcoal',hx8:'charcoal',hxft:'charcoal',c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
   sig2:'charcoal',men6:'blue',f40:'purple',bws8:'charcoal',min3:'blue',reset12:'purple',mkb:'charcoal',mdb:'blue',m2:'purple',core14:'teal'};
 const HPO_GOAL={'Fat Loss':['red','orange','magenta'],'Strength':['charcoal','blue','purple'],'Core':['teal','green']};
 function hpoPal(p){
@@ -186,7 +186,7 @@ const HPO_MASK=new Set(('wl30 sig1 sig2 sig3 sig4 fl30 lad4 men6 f40 core14 bws8
   'kb1 kb2 kb3 db1 db2 db3 bt1 bt2 ch1 ch2 tw1 tw2 p1 p2 p4 p5 p6 p7 p9 p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 p20 '+
   'p21 p22 p23 p24 p25 p26 p27 p28 p29 p30 p31 p32 p33 p34 c1 c2 c3 hx12 hx8 hxft').split(' '));
 function hpoPic(p){ return String(progImg(p)).split('/').pop().replace(/\.\w+(\?.*)?$/,''); }
-function hpoLen(p){ return typeof p.days==='number' ? p.days+' days' : p.oneTime ? progDays(p)+' days' : p.weeks ? (p.weeks.length===1?'1 week':p.weeks.length+' weeks') : p.dur+' min'; }
+function hpoLen(p){ return p.len ? p.len : typeof p.days==='number' ? p.days+' days' : p.oneTime ? progDays(p)+' days' : p.weeks ? (p.weeks.length===1?'1 week':p.weeks.length+' weeks') : p.dur+' min'; }
 function hpoCard(p,o){
   o=o||{};
   const c=hpoPal(p), pic=hpoPic(p), cut=hasPhoto(p) && HPO_MASK.has(pic);
@@ -490,6 +490,10 @@ function trForYou(){
      locked programs: hers goes above the HITFAT+ offer */
   const lbc=typeof lbHomeCard==='function'?lbHomeCard():'';
   if(lbc) h+=fsec('Program Anda','MAK2FIT 30 milik anda. Mula di sini.')+lbc;
+  /* (9 Nov 2026) another program bought on its own gets the same place */
+  const pk=typeof packProg==='function'?packProg():null;
+  if(pk && !lbc && pk.id!==LB30_ID) h+=fsec('Program Anda',pk.name+' milik anda. Mula di sini.')+hpoCard(pk,{wide:true});
+  if(pk) h+=packStrip('train');
   if(!contentOpen()) h+=fyJoinCard();
   if(t42InTrain()) h+=t42HomeCard();
 
@@ -536,7 +540,7 @@ function trExplore(){
   const fresh=Object.keys(HF.data.sessions||{}).length<3;
   if(fresh){ const lv={Beginner:0,Intermediate:1,Advanced:2}; rotated=rotated.map((p,i)=>[p,i]).sort((a,b)=>((lv[a[0].level]??1)-(lv[b[0].level]??1))||(a[1]-b[1])).map(x=>x[0]); }
 
-  let h=(contentOpen()?'':fyJoinCard())+(t42InTrain()?t42HomeCard():'');
+  let h=(typeof packStrip==='function'?packStrip('train'):'')+(contentOpen()?'':fyJoinCard())+(t42InTrain()?t42HomeCard():'');
   h+=fsec('This Week',fresh?'New here? The easy ones come first.':'A new set of sessions every week.');
   h+='<div class="hscroll hpo-row">'+take(rotated,6).map((p,i)=>hpoCard(p,{badge:i<2?'New':'',start:true})).join('')+'</div>';
 

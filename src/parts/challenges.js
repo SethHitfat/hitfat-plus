@@ -58,7 +58,7 @@ function progEq(p){
    that plays for 19. Recovery keeps its own (its clips are still being
    filmed) and so does the plan a member builds, which they set themselves. */
 function progMinutes(p){
-  if(!p || p.rehab || p.id==='custom' || p.hub==='lb30' || p.hub==='d6') return null;   /* MAK2FIT 30 counts its own */
+  if(!p || p.rehab || p.id==='custom' || p.hub==='lb30' || p.hub==='d6' || p.hub==='mf') return null;   /* MAK2FIT 30 (and MulaFIT) count their own */
   var rest=(typeof REST_SECS!=='undefined')?REST_SECS:20, rounds=p.rounds||3, eq=progEq(p), tot=0, n=0;
   var day=function(names){
     if(!names || !names.length) return;
@@ -70,7 +70,7 @@ function progMinutes(p){
 }
 /* Programs a member trains from: multi-week, not Recovery (which has its
    own tab, and whose clips are not all filmed yet). */
-function trainingPlans(){ if(typeof ayEnsure==='function') ayEnsure(); return PROGRAMS.filter(function(p){ return p.weeks && !p.rehab && (p.id!=='wl30' || wlKept()); }); }
+function trainingPlans(){ if(typeof ayEnsure==='function') ayEnsure(); if(typeof mfEnsure==='function') mfEnsure(); return PROGRAMS.filter(function(p){ return p.weeks && !p.rehab && (p.id!=='wl30' || wlKept()); }); }
 
 function pickEx(names,eq){
   return names.map(function(n){
@@ -111,6 +111,7 @@ const HF={
       d.wl30=(o.wl30&&typeof o.wl30==='object')?JSON.parse(JSON.stringify(o.wl30)):{};
       d.lb30=(o.lb30&&typeof o.lb30==='object')?JSON.parse(JSON.stringify(o.lb30)):{};
       d.ay30=(o.ay30&&typeof o.ay30==='object')?JSON.parse(JSON.stringify(o.ay30)):{};
+      d.mf=(o.mf&&typeof o.mf==='object')?JSON.parse(JSON.stringify(o.mf)):{};
       d.d6=(o.d6&&typeof o.d6==='object')?JSON.parse(JSON.stringify(o.d6)):{};
       d.coach=(o.coach&&typeof o.coach==='object')?JSON.parse(JSON.stringify(o.coach)):{};
       d.academy=(o.academy&&typeof o.academy==='object')?JSON.parse(JSON.stringify(o.academy)):{};

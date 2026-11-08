@@ -192,7 +192,7 @@ function hxBuy(id){
   var p=hxProg(def.id);
   if(p && ownsProgram(p)){ closeProduct(); return openProgram(def.id); }
   $('pw-body').innerHTML=
-    '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
+    '<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+(typeof packNote==='function'?packNote():'')+
     hxPoster(def,'hx-buy')+
     '<div class="pwlist">'+[
       ['workout',def.kick+(def.kind==='race'?', three levels':''),def.kind==='race'?'Beginner, OPEN or PRO, each with its own sessions':'Hybrid basics, engine, stations, a mini simulation'],

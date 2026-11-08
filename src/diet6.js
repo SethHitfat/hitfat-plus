@@ -546,7 +546,7 @@ function d6Poster(cls){
 function d6Buy(){
   if(d6Owned()) return openD6();
   $('pw-body').innerHTML=
-    '<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>'+
+    '<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>'+(typeof packNote==='function'?packNote():'')+
     d6Poster('lb-buy')+
     '<div class="pwlist">'+[
       ['food','Bajet kalori anda sendiri','Nasi kekal, ikut senduk. Tidak pernah bawah 1,200 kcal (wanita) / 1,500 kcal (lelaki)'],
