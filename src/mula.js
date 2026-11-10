@@ -29,18 +29,20 @@ const MF_LIVE=false, MF_TESTERS=['sethnasser1991@gmail.com','hitfat91@gmail.com'
 const MF_WEEKS=[
   {n:'Kenal Asas',        s:'Teknik, pernafasan dan susunan sesi. Dua pusingan.'},
   {n:'Ulang Rutin',       s:'Gerakan sama, satu pusingan lagi.'},
-  {n:'Cabaran Sesuai',    s:'Kerja 40 saat, rehat 20. Bezakan penat dengan sakit.'},
-  {n:'Semak dan Sambung', s:'Kekalkan rentak, kemudian semak sejauh mana anda pergi.'}
+  {n:'Cabaran Sesuai',    s:'Kerja 40 saat, rehat kekal 30. Bezakan penat dengan sakit.'},
+  {n:'Semak dan Sambung', s:'Rehat dipendekkan ke 20 saat. Kemudian semak sejauh mana anda pergi.'}
 ];
-/* by week: seconds of work, seconds of rest, rounds */
-const MF_LOAD=[[30,30,2],[30,30,3],[40,20,3],[40,20,3]];
+/* by week: seconds of work, seconds of rest, rounds. (10 Nov 2026) one thing
+   changes each week, as StartFIT's own lesson says: rounds, then work, then
+   rest; week 3 changed work and rest at once and week 4 changed nothing. */
+const MF_LOAD=[[30,30,2],[30,30,3],[40,30,3],[40,20,3]];
 /* the movement patterns, each a ladder: Mudah, Asas, Beransur */
 const MF_PAT={
   squat: {n:'Duduk-bangun',     l:['Sit To Stand','Chair Squat','Bodyweight Squat']},
   push:  {n:'Tolak',            l:['Wall Push Up','Incline Push Up (Chair)','Knee Push Ups']},
   bridge:{n:'Jambatan pinggul', l:['Hip Thrust','Hip Thrust','Hip Thrust'], late:[null,null,'Single Leg Glutes Bridge']},
   hinge: {n:'Bengkok pinggul',  l:['Towel Deadlift','Towel Deadlift','Towel Deadlift']},
-  pull:  {n:'Tarik',            l:['Towel Shoulder Back Pull','Towel Shoulder Back Pull','Bottle Bent Over Row']},
+  pull:  {n:'Tarik',            l:['Towel Shoulder Back Pull','Towel Shoulder Back Pull','Bottle Bent Over Row'], late:[null,'Bottle Bent Over Row',null]},
   core:  {n:'Kawalan badan',    l:['Dead Bug','Bird Dog','Plank']},
   bal:   {n:'Imbangan',         l:['Chair Assist Hip Abduction','Chair Calf Raises','Single Leg Calf Raises']},
   cardio:{n:'Stamina',          l:['Seated High Knee','Seated High Knee','High Knee'], late:[null,'Fast Seated High Knee',null]}
@@ -143,9 +145,10 @@ function mfSession(gi,meArg){
   const me=meArg===undefined?mfMe():meArg, wi=mfWeekOf(gi), t=MF_TYPES[MF_ORDER[gi]], L=MF_LOAD[wi];
   let r=L[2];
   if(me && me.masa===15) r=Math.min(r,2);
-  if(wi===3 && ((me && me.masa===25) || mfPathOf(me)===2) && !(me && me.masa===15)) r=4;
+  let rest=L[1];
+  if(wi===3 && ((me && me.masa===25) || mfPathOf(me)===2) && !(me && me.masa===15)){ r=4; rest=MF_LOAD[2][1]; }
   const main=[]; t.p.forEach(p=>{ let n=mfMove(p,wi,me); if(main.some(x=>x.n===n)) n=MF_PAT[p].l[1]; main.push({n, p}); });
-  return {gi, type:MF_ORDER[gi], n:t.n, wi, w:L[0], rest:L[1], r, main, warm:MF_WARM, cool:MF_COOL};
+  return {gi, type:MF_ORDER[gi], n:t.n, wi, w:L[0], rest, r, main, warm:MF_WARM, cool:MF_COOL};
 }
 /* a move as the player plays it: the main library's clip, or MAK2FIT's woman coach for the stretches */
 function mfEx(n,dur,rest,cue){
@@ -209,7 +212,8 @@ function renderMF(){
       '<div class="lbx-now-top">'+lbRing(done/MF_N,84,done+'<i>/'+MF_N+'</i>','sesi')+
         '<div class="lbx-now-tx"><div class="lbx-hello">'+(nm?'Hai, '+hesc(nm):'Hai')+'</div>'+
         '<div class="lbx-h">Sesi '+(nx+1)+' · Minggu '+(s.wi+1)+'</div>'+
-        '<div class="lbx-p">'+MF_WEEKS[s.wi].n+'. '+(st>1?st+' hari berturut 🔥':'Satu sesi pada satu masa.')+'</div></div></div>'+
+        '<div class="lbx-p">'+MF_WEEKS[s.wi].n+'. '+(st>1?st+' hari berturut 🔥':'Satu sesi pada satu masa.')+'</div>'+
+        (mfMe()?'<div class="mf-stepln">'+glyph('steps')+'Langkah hari ini <b>'+mfFmt(scDaily().steps)+'</b> / '+mfFmt(mfStepGoal(s.wi))+'</div>':'')+'</div></div>'+
       '<div class="lbx-today mf-today" onclick="mfOpenSession('+nx+')">'+
         '<div class="lbx-today-ph mf-ph mf-'+s.type+'"><span class="lbx-badge">Seterusnya</span><b>'+s.type+'</b></div>'+
         '<div class="lbx-today-b"><div class="lbx-k">'+mfMinutes(s)+' min · '+s.main.length+' gerakan · '+s.r+' pusingan</div>'+
@@ -218,7 +222,7 @@ function renderMF(){
   } else {
     h+='<div class="lbx-card lbx-now lbx-fin">'+lbRing(1,84,'12','sesi')+
       '<div class="lbx-h">StartFIT selesai</div><div class="lbx-p">12 sesi. Tengok sejauh mana anda pergi.</div>'+
-      '<button class="lbx-go" onclick="mfSetTab(\'progress\')">'+glyph('trophy')+'Lihat Kemajuan</button></div>';
+      '<button class="lbx-ghost" onclick="mfSetTab(\'progress\')">'+glyph('trophy')+'Lihat Kemajuan</button></div>'+mfNextCard();
   }
   if(owned) h+=mfRecDue()+mfLessonDue();
   h+='<div class="lbx-seg" id="mf-tabs">'+[['plan','Pelan'],['learn','Belajar'],['progress','Kemajuan']]
@@ -350,6 +354,41 @@ function mfMeCard(){
     (mfRiskOf(me)?'<div class="lb-fine">Saringan kesihatan anda: laluan Mudah sehingga doktor atau fisioterapis benarkan lebih.</div>':'')+'</div>';
 }
 
+/* ── walking (10 Nov 2026) ──
+   Three sessions of about 20 minutes are an hour a week; WHO asks 150
+   minutes of moderate activity, and 29.9% of Malaysian adults do not reach
+   it (NHMS 2023). So StartFIT also walks: a daily step goal that starts near
+   where the person is and climbs 1,000 a week to 7,000, where most of the
+   benefit is reached (Ding et al., Lancet Public Health 2025). The start is
+   their own last week of steps when the app has it, else their answer to
+   "Seberapa aktif anda sekarang?", and it is kept, so the goal never drifts. */
+const MF_STEP_TOP=7000, MF_STEP_FROM={tiada:3000, jalan:4500, aktif:6000};
+function mfFmt(n){ return Number(n||0).toLocaleString('en-US'); }
+function mfStepBase(){
+  const d=mfData(); if(d.stepBase) return d.stepBase;
+  const all=HF.data.daily||{}, v=[];
+  for(let i=1;i<=7;i++){ const x=all[iso(-i)]; if(x && x.steps>0) v.push(x.steps); }
+  const me=mfMe()||{};
+  let b=v.length>=3 ? v.reduce((a,c)=>a+c,0)/v.length : (MF_STEP_FROM[me.act]||3000);
+  b=Math.max(2000,Math.round(b/500)*500);
+  if(mfMe()){ d.stepBase=b; HF.save(); }
+  return b;
+}
+function mfStepGoal(wi){
+  const b=mfStepBase();
+  return b>=MF_STEP_TOP ? Math.round(b/500)*500 : Math.min(MF_STEP_TOP, b+1000*(Math.max(0,Math.min(3,wi))+1));
+}
+function mfStepCard(wi){
+  const g=mfStepGoal(wi), now=scDaily().steps, pct=Math.min(100,Math.round(now/g*100)), top=mfStepBase()>=MF_STEP_TOP;
+  return '<div class="lbx-card mf-steps"><div class="lbx-k">'+glyph('steps')+'Langkah harian · Minggu '+(wi+1)+'</div>'+
+    '<div class="lbx-h">'+mfFmt(g)+' langkah sehari</div>'+
+    '<div class="pbar mf-bar"><i style="width:'+pct+'%"></i></div>'+
+    '<div class="mf-steps-n"><span>Hari ini <b>'+mfFmt(now)+'</b></span><span>'+(now>=g?'✓ Sasaran capai':mfFmt(g-now)+' lagi')+'</span></div>'+
+    '<div class="lbx-p">'+(top?'Anda dah aktif. Kekalkan langkah ini setiap hari.':'Naik 1,000 setiap minggu, sampai 7,000.')+
+      ' Pada hari tanpa sesi, jalan 10–20 minit: laju sedikit, masih boleh bercakap.</div>'+
+    '<button class="lbx-ghost" onclick="scSheet(\'steps\')">'+glyph('steps')+'Kemas kini langkah</button></div>';
+}
+
 /* ── Plan: the four weeks as session tiles ── */
 function mfPlan(){
   const owned=mfOwned(), done=mfDone(), nx=done;
@@ -358,7 +397,7 @@ function mfPlan(){
   h+='<div class="lbx-dots">'+MF_ORDER.map((t,i)=>'<i class="'+(i<done?'d':i===nx&&owned?'n':'')+(i&&i%3===0?' gap':'')+'"></i>').join('')+'</div>';
   h+='<div class="lbx-weeks">'+MF_WEEKS.map((x,i)=>
     '<button class="'+(i===mfWeek?'on':'')+'" onclick="mfWeek='+i+';renderMF()"><small>Minggu '+(i+1)+'</small><b>'+(done>=(i+1)*3?'✓ ':'')+x.n+'</b></button>').join('')+'</div>';
-  const w=MF_WEEKS[mfWeek]||MF_WEEKS[0], L=MF_LOAD[mfWeek]||MF_LOAD[0];
+  const w=MF_WEEKS[mfWeek]||MF_WEEKS[0], ws=mfSession(mfWeek*3)||{}, L=[ws.w,ws.rest];
   h+='<div class="mf-wcover"><small>Minggu '+(mfWeek+1)+' · Sesi '+(mfWeek*3+1)+'–'+(mfWeek*3+3)+'</small><b>'+w.n+'</b><span>'+w.s+'</span>'+
     '<em>Kerja '+L[0]+' s · rehat '+L[1]+' s</em></div>';
   h+='<div class="lbx-days">'+[0,1,2].map(j=>{
@@ -369,7 +408,7 @@ function mfPlan(){
       '<div class="lbx-day-m">'+s.type+' · '+mfMinutes(s)+' min'+(MF_RECS.indexOf(gi)>=0?' · Rekod':'')+'</div>'+
       (now?'<span class="lbx-day-now">Seterusnya</span>':'')+'</div>';
   }).join('')+'</div>';
-  h+='<div class="lbx-note leaf"><div class="q">'+glyph('leaf')+'</div><div><div class="k">Hari lain</div><div class="t">Jalan santai 10–20 minit jika mahu. Tiada cabaran. Rehat juga sebahagian latihan.</div></div></div>';
+  h+=owned?mfStepCard(mfWeek):'<div class="lbx-note leaf"><div class="q">'+glyph('leaf')+'</div><div><div class="k">Hari lain</div><div class="t">Jalan kaki 10–20 minit, dengan sasaran langkah yang naik sedikit setiap minggu.</div></div></div>';
   return h;
 }
 
@@ -498,15 +537,35 @@ function mfProgress(){
     '<div class="lbx-card mf-recs"><div class="h"><span></span><b>Sesi 1</b><b>Sesi 12</b></div>'+
     MF_REC.map(x=>'<div><span>'+x[1]+'</span><b>'+cell(a,x[0])+'</b><b>'+cell(b,x[0])+'</b></div>').join('')+'</div>'+
     '<div class="lb-fine">Berat, ukuran dan gambar tidak diperlukan dalam StartFIT. Jangan bandingkan diri dengan orang lain; bandingkan dengan anda pada sesi 1.</div>';
-  if(done>=MF_N) h+='<div class="lbx-card mf-next"><div class="lbx-k">Selepas StartFIT</div><div class="lbx-h">Pilih dua tabiat untuk diteruskan.</div>'+
-    '<div class="lbx-p">Ulang StartFIT pada laluan seterusnya, atau teruskan dengan program HITFAT+ yang lain.</div>'+
-    '<button class="lbx-go" onclick="mfRestart()">'+glyph('play')+'Ulang StartFIT</button>'+
-    '<button class="lbx-ghost" onclick="switchTab(\'train\')">'+glyph('workout')+'Lihat program lain</button></div>';
+  if(done>=MF_N) h+=mfNextCard();
+  return h;
+}
+/* (10 Nov 2026) after session 12, the next step by name. Four weeks start a
+   habit, they do not finish one: in the studies a new habit took a median of
+   about two months, and most app beginners stop within the year, so the end
+   of StartFIT points somewhere at once. First its next path (the same twelve
+   sessions, each move one step up), then a HITFAT+ program with no jumps:
+   Fit After 40, chair-assisted, six weeks. */
+const MF_NEXT='f40';
+function mfNextCard(){
+  const me=mfMe(), p=mfPath(), up=me && !mfRiskOf(me) && p<2, risk=me && mfRiskOf(me);
+  const np=typeof findProg==='function'?findProg(MF_NEXT):null, round=mfData().round||1;
+  let h='<div class="lbx-card mf-next"><div class="lbx-k">Langkah seterusnya</div><div class="lbx-h">Teruskan rentak ini.</div>'+
+    '<div class="lbx-p">Empat minggu baru permulaan: tabiat baru biasanya ambil kira-kira dua bulan. Pilih dua tabiat untuk diteruskan, dan sambung minggu depan.</div>';
+  h+='<div class="mf-nx" onclick="mfRestart()"><span class="n">1</span><div class="tx"><b>'+(up?'StartFIT · Laluan '+MF_PATHS[p+1]:'Ulang StartFIT'+(round>1?' (pusingan '+(round+1)+')':''))+'</b>'+
+    '<span>'+(up?'12 sesi sama, setiap gerakan naik satu tahap.':risk?'Kekal laluan Mudah sehingga doktor atau fisioterapis benarkan lebih.':'Anda dah di laluan tertinggi. Ulang untuk kukuhkan rutin.')+'</span></div><span class="pdx-chev">›</span></div>';
+  if(np) h+='<div class="mf-nx" onclick="openProgram(\''+MF_NEXT+'\')"><span class="n">2</span><div class="tx"><b>'+hesc(np.name)+(contentOpen()?'':' · HITFAT+')+'</b>'+
+    '<span>Tiada lompat, guna kerusi, 6 minggu. Lunge, step-up dan beg galas untuk beban.</span></div><span class="pdx-chev">›</span></div>';
+  h+='<button class="lbx-ghost" onclick="switchTab(\'train\')">'+glyph('workout')+'Lihat semua program</button></div>';
   return h;
 }
 function mfRestart(){
-  const me=mfMe(); if(me && !mfRiskOf(me)) me.path=Math.min(2,mfPath()+1);
-  HF.data.progress[MF_ID]=0; const d=mfData(); d.lesson={}; d.rec={}; HF.save(); mfTab='plan'; mfWeek=-1; renderMF(); $('screen').scrollTop=0;
+  const me=mfMe(), d=mfData();
+  /* the finished round is kept, so a second round can be compared with the first */
+  d.hist=(d.hist||[]).concat([{round:d.round||1, path:mfPath(), rec:d.rec, at:iso(0)}]);
+  d.round=(d.round||1)+1;
+  if(me && !mfRiskOf(me)) me.path=Math.min(2,mfPath()+1);
+  HF.data.progress[MF_ID]=0; d.lesson={}; d.rec={}; HF.save(); mfTab='plan'; mfWeek=-1; renderMF(); $('screen').scrollTop=0;
   toast('StartFIT bermula semula · laluan '+MF_PATHS[mfPath()]);
 }
 function mfLocked(icon,title,text){
