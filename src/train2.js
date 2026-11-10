@@ -172,8 +172,8 @@ const HPO_PAL={red:['#FF4A3D','#B3121B','#5E070C','#FFC21A'], orange:['#FF8A2A',
   magenta:['#F0509E','#9C1A72','#4A0A36','#3EE6CF'], charcoal:['#4A4A50','#151517','#000000','#E30613'],
   blue:['#4D78FF','#1B2FA8','#0E1A60','#3EE6CF'], purple:['#8A5CFF','#3A1C9C','#1E0F55','#FF4D8D'],
   teal:['#3FD3C9','#0E7C86','#073F44','#FF4D8D'], green:['#36D884','#0F7A4A','#073F26','#FFE14D'],
-  gold:['#F5C042','#B5790A','#5A3A03','#E30613'], volt:['#8B6CFF','#4F2BD8','#1C0E5C','#D4FF3A']};
-const HPO_OF={mula:'volt',hx12:'charcoal',hx8:'charcoal',hxft:'charcoal',c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
+  gold:['#F5C042','#B5790A','#5A3A03','#E30613'], start:['#FF7A35','#EE4E12','#5C1A03','#FFF1E2']};
+const HPO_OF={mula:'start',hx12:'charcoal',hx8:'charcoal',hxft:'charcoal',c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
   sig2:'charcoal',men6:'blue',f40:'purple',bws8:'charcoal',min3:'blue',reset12:'purple',mkb:'charcoal',mdb:'blue',m2:'purple',core14:'teal'};
 const HPO_GOAL={'Fat Loss':['red','orange','magenta'],'Strength':['charcoal','blue','purple'],'Core':['teal','green']};
 function hpoPal(p){

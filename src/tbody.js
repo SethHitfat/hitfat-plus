@@ -3728,7 +3728,7 @@ print("\n── StartFIT ──");
   startWorkout=function(e,m){ played={exs:e,meta:m}; };
   var html=function(id){ return document.getElementById(id).innerHTML||''; };
   var plan=function(a){ HF.data.mf={me:Object.assign({done:true, why:'mula', act:'jalan', exp:'dulu', masa:20, alat:['kerusi','tuala','botol'], pain:['tiada'], sihat:['tiada'], days:['isn','rab','jum'], makan:'campur'},a||{})}; };
-  ok("twelve sessions in four weeks, twelve lessons", MF_N===12 && progDays(MF)===12 && MF_LESSON.length===12 && MF_LESSON.every(function(l){ return l[0] && l[1].length>60; }));
+  ok("THE START: eighteen sessions in six weeks, eighteen lessons, training and eating by turns, the review last", MF_NAME==='THE START' && MF_N===18 && MF_WK===6 && progDays(MF)===18 && MF_LESSON.length===18 && MF_LESSON.every(function(l){ return l[0] && l[1].length>60 && /^[LMS]$/.test(l[2]); }) && MF_LESSON[17][2]==='S' && MF_RECS[1]===17);
   ok("sold for RM39 on its own", programPrice(MF)===39 && isPaidProgram(MF));
   var bad=[]; [['tiada'],['lutut'],['bahu'],['pinggang'],['lantai'],['lutut','bahu','pinggang','lantai']].forEach(function(p){ [15,20,25].forEach(function(m){ [0,1,2].forEach(function(path){
     plan({pain:p, masa:m, path:path});
@@ -3740,9 +3740,12 @@ print("\n── StartFIT ──");
   ok("every session, every answer: four moves, 14–26 minutes, each one filmed", bad.length===0); if(bad.length) print(bad.slice(0,8).join(' | '));
   plan({}); var s=mfSession(0), e=mfExercises(s);
   ok("week 1: warm-up, 2 rounds of 30 on 30 off, cool-down", s.w===30 && s.rest===30 && s.r===2 && e.length===6+8+5 && e[0].rest===0 && e[6].rest===30 && e[e.length-1].rest===0);
-  ok("one thing changes each week: rounds, then work, then rest", mfSession(3).r===3 && mfSession(3).w===30 && mfSession(6).w===40 && mfSession(6).rest===30 && mfSession(6).r===3 && mfSession(9).rest===20 && mfSession(9).r===3);
-  plan({masa:25}); ok("...a fourth round in week 4 keeps the 30 s rest", mfSession(9).r===4 && mfSession(9).rest===30); plan({});
-  plan({path:1}); ok("Asas rows with the bottle from week 3", mfSession(4).main.some(function(x){ return x.n==='Towel Shoulder Back Pull'; }) && mfSession(7).main.some(function(x){ return x.n==='Bottle Bent Over Row'; }));
+  ok("one thing changes each week: rounds, then work, then rest, then the moves", mfSession(3).r===3 && mfSession(3).w===30 && mfSession(6).w===40 && mfSession(6).rest===30 && mfSession(6).r===3 && mfSession(9).rest===20 && mfSession(9).r===3 &&
+    mfSession(12).w===40 && mfSession(12).rest===20 && mfSession(12).r===3 && mfSession(15).r===3);
+  plan({masa:25}); ok("...a fourth round only in week 6, for 25 minutes", mfSession(12).r===3 && mfSession(15).r===4 && mfSession(15).rest===20); plan({});
+  plan({path:0}); ok("week 5 steps Mudah up too: chair squat, push-up on the chair", mfSession(9).main[0].n==='Sit To Stand' && mfSession(12).main[0].n==='Chair Squat' && mfSession(12).main[1].n==='Incline Push Up (Chair)');
+  plan({path:0, sihat:['jantung']}); ok("...but not someone whose health answer keeps them on Mudah", mfSession(12).main[0].n==='Sit To Stand' && mfSession(12).main[1].n==='Wall Push Up');
+  plan({path:1}); ok("Asas rows with the bottle from week 5, the week the moves step up", mfSession(10).main.some(function(x){ return x.n==='Towel Shoulder Back Pull'; }) && mfSession(13).main.some(function(x){ return x.n==='Bottle Bent Over Row'; }));
   (function(){ var keepD=HF.data.daily; HF.data.daily={};
     plan({act:'tiada'}); ok("walking: the step goal starts from the answer, climbs 1,000 a week to 7,000", mfStepGoal(0)===4000 && mfStepGoal(3)===7000);
     ok("...and is kept, so it does not drift", mfData().stepBase===3000);
