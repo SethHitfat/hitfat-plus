@@ -46,7 +46,11 @@ const FREE_SCANS_PER_MONTH = 3;
    it is the usual 3 a month, then credits. */
 const LADIES_FREE_SCANS = 10;
 /* BURN30 (28 Oct 2026, Seth) gives its buyers the same welcome */
-const WELCOME_SKUS: Record<string, string> = { prog_lad4: 'MAK2FIT 30', prog_wl30: 'BURN30', prog_ay30: 'AYAH2FIT 30' };
+const WELCOME_SKUS: Record<string, string> = { prog_lad4: 'MAK2FIT 30', prog_wl30: 'BURN30', prog_ay30: 'AYAH2FIT 30', prog_mula: 'THE START' };
+/* THE START (11 Nov 2026, Seth: "scan 20x untuk 6 minggu tu. mcm style
+   mak2fit") gives 20, kept until used the same way; the rest give 10 */
+const WELCOME_N: Record<string, number> = { prog_mula: 20 };
+const welcomeN = (sku: string) => WELCOME_N[sku] ?? LADIES_FREE_SCANS;
 
 /* Typed meals (20 Oct 2026, after Simple's "type what you ate"): the member
    writes "nasi lemak + teh tarik kurang manis" and gets the same estimate a
@@ -236,6 +240,7 @@ Deno.serve(async (req: Request) => {
       .filter((e) => WELCOME_SKUS[e.sku] && e.created_at)
       .sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))).pop();
     const ladiesFrom = welcome ? String(welcome.created_at) : '';
+    const welcomeMax = welcome ? welcomeN(String(welcome.sku)) : LADIES_FREE_SCANS;
 
     let creditRow: any = null;
     let mode: 'free' | 'pass' | 'credits' = 'free';
@@ -277,7 +282,7 @@ Deno.serve(async (req: Request) => {
         .eq('user_id', user.id)
         .gte('created_at', ladiesFrom);
       if (lErr) return json({ error: 'Could not verify your scan quota. Try again shortly.' }, 503);
-      if ((count ?? 0) < LADIES_FREE_SCANS) { mode = 'free'; welcomeLeft = true; }
+      if ((count ?? 0) < welcomeMax) { mode = 'free'; welcomeLeft = true; }
     }
     /* once the 10 are used (or there never were any): the 3 a month, then credits */
     if (daily <= 0 && !welcomeLeft) {
@@ -297,7 +302,7 @@ Deno.serve(async (req: Request) => {
         if (!creditRow) {
           return json({
             error: ladiesFrom
-              ? `You have used your ${LADIES_FREE_SCANS} ${WELCOME_SKUS[welcome.sku]} scans. 3 more next month.`
+              ? `You have used your ${welcomeMax} ${WELCOME_SKUS[welcome.sku]} scans. 3 more next month.`
               : 'You have used all 3 free scans this month.',
             code: 'quota_exceeded',
             used: count,

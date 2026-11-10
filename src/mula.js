@@ -47,26 +47,61 @@ const MF_WK=MF_WEEKS.length;
    then rest, then the moves themselves (week 5), then a fourth round for
    those who chose 25 minutes or Beransur (week 6). */
 const MF_LOAD=[[30,30,2],[30,30,3],[40,30,3],[40,20,3],[40,20,3],[40,20,3]];
-/* the movement patterns, each a ladder: Mudah, Asas, Beransur */
+/* the movement patterns. (11 Nov 2026) each path holds a few versions of
+   the same pattern at the same level, so a session looks different every
+   time the pattern comes back (Seth: "nampak berbeza selalu setiap hari dan
+   setiap minggu") while the body learns one pattern: the pattern stays, the
+   version turns. "late" are the versions from week 5, one step up. Paths:
+   Mudah, Asas, Beransur. */
 const MF_PAT={
-  squat: {n:'Duduk-bangun',     l:['Sit To Stand','Chair Squat','Bodyweight Squat'], late:['Chair Squat','Bodyweight Squat',null]},
-  push:  {n:'Tolak',            l:['Wall Push Up','Incline Push Up (Chair)','Knee Push Ups'], late:['Incline Push Up (Chair)','Knee Push Ups',null]},
-  bridge:{n:'Jambatan pinggul', l:['Hip Thrust','Hip Thrust','Hip Thrust'], late:[null,null,'Single Leg Glutes Bridge']},
-  hinge: {n:'Bengkok pinggul',  l:['Towel Deadlift','Towel Deadlift','Towel Deadlift']},
-  pull:  {n:'Tarik',            l:['Towel Shoulder Back Pull','Towel Shoulder Back Pull','Bottle Bent Over Row'], late:[null,'Bottle Bent Over Row',null]},
-  core:  {n:'Kawalan badan',    l:['Dead Bug','Bird Dog','Plank']},
-  bal:   {n:'Imbangan',         l:['Chair Assist Hip Abduction','Chair Calf Raises','Single Leg Calf Raises']},
-  cardio:{n:'Stamina',          l:['Seated High Knee','Seated High Knee','High Knee'], late:[null,'Fast Seated High Knee',null]}
+  squat: {n:'Duduk-bangun',
+    l:[['Sit To Stand','Chair Assist Squat Hold','Chair Assist Squat Calf Raise'],['Chair Squat','Chair Squat Pause','Towel Squat Front Raises'],['Bodyweight Squat','Squat Pause','Towel Squat Press']],
+    late:[['Chair Squat','Chair Squat Pause','Chair Squat Calf Raises'],['Bodyweight Squat','Squat Pause','Towel Squat Overhead'],null]},
+  push:  {n:'Tolak',
+    l:[['Wall Push Up','Towel Shoulder Press','Towel Shoulder Press 2'],['Incline Push Up (Chair)','Incline Wide Push Up','Towel Shoulder Press'],['Knee Push Ups','Incline Wide Push Up','Towel Shoulder Press 2']],
+    late:[['Incline Push Up (Chair)','Incline Wide Push Up','Towel Shoulder Press 2'],['Knee Push Ups','Incline Wide Push Up','Towel Shoulder Press 2'],null]},
+  bridge:{n:'Jambatan pinggul',
+    l:[['Hip Thrust','Towel Glute Bridge'],['Hip Thrust','Towel Glute Bridge','Chair Glute Bridge'],['Hip Thrust','Chair Glute Bridge','Towel Glute Bridge']],
+    late:[null,null,['Single Leg Glutes Bridge','Chair Single Leg Glute Bridge']]},
+  hinge: {n:'Bengkok pinggul',
+    l:[['Towel Deadlift','Hip Thrust'],['Towel Deadlift','Backpack Deadlift'],['Towel Deadlift','Backpack Deadlift','Backpack Good Morning']]},
+  pull:  {n:'Tarik',
+    l:[['Towel Shoulder Back Pull','Towel Rotation Shoulder','Towel Upright Row'],['Towel Shoulder Back Pull','Towel Rotation Shoulder','Towel Upright Row'],['Bottle Bent Over Row','Towel Shoulder Back Pull','Towel Rotation Shoulder']],
+    late:[null,['Bottle Bent Over Row','Towel Shoulder Back Pull','Towel Rotation Shoulder'],null]},
+  core:  {n:'Kawalan badan',
+    l:[['Dead Bug','Seated Knee To Chest','Seated Twist'],['Bird Dog','Dead Bug','Towel Side Bend'],['Plank','Bird Dog','Dead Bug','Side Plank']]},
+  bal:   {n:'Imbangan',
+    l:[['Chair Assist Hip Abduction','Chair Calf Raises','Chair Kick Back'],['Chair Calf Raises','Chair Assist Hip Abduction','Chair Kick Back','Lateral Step Over'],['Single Leg Calf Raises','Lateral Step Over','Chair Kick Back','Chair Assist Hip Abduction']]},
+  cardio:{n:'Stamina',
+    l:[['Seated High Knee','Seated Jack'],['Seated High Knee','Seated Jack','High Knee Tap Chair'],['High Knee','Butt Kick','Jumping Jack','Fast Feet']],
+    late:[null,['Fast Seated High Knee','High Knee Tap Chair','Butt Kick'],null]}
 };
+/* what a sore spot or the floor rules out, and what stands in */
+const MF_FLOOR=['Hip Thrust','Towel Glute Bridge','Chair Glute Bridge','Chair Single Leg Glute Bridge','Single Leg Glutes Bridge','Dead Bug','Bird Dog','Plank','Side Plank','Knee Push Ups'];
+const MF_SEATED_CORE=['Seated Twist','Seated Knee To Chest','Towel Side Bend','Chair Russian Twist'];
 const MF_TYPES={
   A:{n:'Duduk-Bangun & Tolak', p:['squat','push','bridge','core']},
   B:{n:'Pinggul & Imbangan',   p:['hinge','pull','bal','core']},
   C:{n:'Gabung & Stamina',     p:['squat','push','pull','cardio']}
 };
+/* each session's name turns with the week too, so the list never repeats */
+const MF_NAMES={
+  A:['Duduk-Bangun & Tolak','Kaki & Dada','Punggung & Bahu','Kaki Tegap','Naik Setingkat: Kaki & Dada','Kuat Seluruh Badan'],
+  B:['Pinggul & Imbangan','Belakang & Postur','Imbangan & Kawalan','Pinggul Kuat','Naik Setingkat: Belakang','Berdiri Tegak'],
+  C:['Gabung & Stamina','Nafas & Rentak','Litar Penuh','Stamina Bertambah','Naik Setingkat: Stamina','Pusingan Akhir']
+};
 const MF_ORDER=[].concat.apply([],MF_WEEKS.map(()=>['A','B','C']));
 const MF_N=MF_ORDER.length, MF_RECS=[0,MF_N-1];
-const MF_WARM=['Arm Forward Circle','Arm Back Circle','Seated High Knee','Calf Raises','Chair Squat','IC Warm'];
-const MF_COOL=['Knee to Chest','Back Stretch','Butterfly Stretch','Side Abs Stretch','Cobra Stretch'];
+/* three warm-ups and three cool-downs, turning by session and week */
+const MF_WARMS=[
+  ['Arm Forward Circle','Arm Back Circle','Seated High Knee','Calf Raises','Chair Squat','IC Warm'],
+  ['Arm Back Circle','Towel Rotation Shoulder','Seated Jack','Calf Raises','Seated Twist','Sit To Stand'],
+  ['Arm Forward Circle','Towel Side Bend','High Knee Tap Chair','Chair Calf Raises','Chair Squat','IC Warm']];
+const MF_COOLS=[
+  ['Knee to Chest','Back Stretch','Butterfly Stretch','Side Abs Stretch','Cobra Stretch'],
+  ['Cobra Stretch','Side Abs Stretch','Knee to Chest','Butterfly Stretch','Seated Twist'],
+  ['Back Stretch','Seated Twist','Butterfly Stretch','Knee to Chest','Side Abs Stretch']];
+const MF_WARM=MF_WARMS[0], MF_COOL=MF_COOLS[0];
 const MF_PATHS=['Mudah','Asas','Beransur'];
 
 /* the technique card for each pattern: three cues, the usual mistake, the easier way */
@@ -105,9 +140,9 @@ const MF_LESSON=[
 const MF_DAYS=[['isn','Isnin'],['sel','Selasa'],['rab','Rabu'],['kha','Khamis'],['jum','Jumaat'],['sab','Sabtu'],['ahd','Ahad']];
 
 const MF=(function(){
-  const weeks=MF_WEEKS.map((w,wi)=>({days:[0,1,2].map(j=>{ const t=MF_TYPES[MF_ORDER[wi*3+j]]; return {name:t.n, ex:MF_PAT.squat.l.slice(0,1).concat(['Wall Push Up']), r:MF_LOAD[wi][2], k:'train'}; })}));
+  const weeks=MF_WEEKS.map((w,wi)=>({days:[0,1,2].map(j=>{ const t=MF_TYPES[MF_ORDER[wi*3+j]]; return {name:MF_NAMES[MF_ORDER[wi*3+j]][wi], ex:[MF_PAT.squat.l[0][0],'Wall Push Up'], r:MF_LOAD[wi][2], k:'train'}; })}));
   return {id:MF_ID, name:MF_NAME, sub:MF_SUB, goal:'Strength', level:'Beginner', dur:20, rounds:2,
-    c1:'#F0531C', c2:'#5C1A03', ac:'#FFF1E2', icon:'✦', weeks, hub:'mf', len:MF_N+' sesi', oneTime:true, price:MF_PRICE, wk:MF_WK,
+    packHas:'latihan, langkah harian, 20 scan makanan AI dan Belajar', c1:'#F0531C', c2:'#5C1A03', ac:'#FFF1E2', icon:'✦', weeks, hub:'mf', len:MF_N+' sesi', oneTime:true, price:MF_PRICE, wk:MF_WK,
     desc:'Program asas 6 minggu untuk lelaki dan wanita yang baru mula atau mahu aktif semula. '+
          MF_N+' sesi seluruh badan di rumah, 15–25 minit, dengan teknik setiap gerakan, pelajaran ringkas dan pemakanan Malaysia.'};
 })();
@@ -141,23 +176,30 @@ function mfAutoPath(me){
 }
 function mfPath(){ return mfPathOf(mfMe()); }
 
-/* the move a pattern gives this person in this week */
-function mfMove(pat,wi,me){
-  const P=MF_PAT[pat], path=mfPathOf(me), pain=(me&&me.pain)||[];
+/* how many sessions before this one already had the pattern */
+function mfOcc(gi,pat){ let k=0; for(let g=0;g<gi;g++) if(MF_TYPES[MF_ORDER[g]].p.indexOf(pat)>=0) k++; return k; }
+/* the move a pattern gives this person in this week; k turns the version */
+function mfMove(pat,wi,me,k){
+  const P=MF_PAT[pat], path=mfPathOf(me), pain=(me&&me.pain)||[], has=x=>pain.indexOf(x)>=0;
   /* week 5 steps the moves up one, but not for someone whose health answer
      keeps them on Mudah until a doctor or physio says more */
-  let n=(wi>=4 && !mfRiskOf(me) && P.late && P.late[path]) || P.l[path];
-  if(pain.indexOf('lutut')>=0 && pat==='squat') n='Sit To Stand';
-  if(pain.indexOf('lutut')>=0 && pat==='bal' && n==='Single Leg Calf Raises') n='Chair Calf Raises';
-  if(pain.indexOf('bahu')>=0 && pat==='push') n='Wall Push Up';
-  if(pain.indexOf('pinggang')>=0 && pat==='hinge') n='Hip Thrust';
-  if(pain.indexOf('pinggang')>=0 && pat==='pull') n='Towel Shoulder Back Pull';
-  if(pain.indexOf('lantai')>=0){
-    if(pat==='bridge') n='Towel Deadlift';
-    if(pat==='core') n=wi%2?'Seated Twist':'Seated Knee To Chest';
-    if(pat==='push' && n==='Knee Push Ups') n='Incline Push Up (Chair)';
+  let pool=((wi>=4 && !mfRiskOf(me) && P.late && P.late[path]) || P.l[path]).slice();
+  if(has('lutut') && pat==='squat') pool=['Sit To Stand'];
+  if(has('lutut') && pat==='bal') pool=pool.filter(n=>n!=='Single Leg Calf Raises' && n!=='Lateral Step Over');
+  if(has('lutut') && pat==='cardio') pool=['Seated High Knee','Seated Jack'];
+  if(has('bahu') && pat==='push') pool=['Wall Push Up'];
+  if(has('bahu') && pat==='pull') pool=['Towel Shoulder Back Pull'];
+  if(has('pinggang') && pat==='hinge') pool=['Hip Thrust'];
+  if(has('pinggang') && pat==='pull') pool=['Towel Shoulder Back Pull'];
+  if(has('lantai')){
+    /* a sore back with the floor ruled out: the standing kick-back, not a deadlift */
+    const hip=has('pinggang')?'Chair Kick Back':'Towel Deadlift';
+    if(pat==='bridge') pool=[hip];
+    if(pat==='core') pool=MF_SEATED_CORE;
+    pool=pool.map(n=>MF_FLOOR.indexOf(n)<0?n:(pat==='push'?'Incline Push Up (Chair)':pat==='hinge'?hip:n));
   }
-  return n;
+  if(!pool.length) pool=[P.l[path][0]];
+  return pool[(k||0)%pool.length];
 }
 /* a session: its type, its four moves, the load of its week */
 function mfSession(gi,meArg){
@@ -167,8 +209,15 @@ function mfSession(gi,meArg){
   if(me && me.masa===15) r=Math.min(r,2);
   const rest=L[1];
   if(wi===MF_WK-1 && ((me && me.masa===25) || mfPathOf(me)===2) && !(me && me.masa===15)) r=4;
-  const main=[]; t.p.forEach(p=>{ let n=mfMove(p,wi,me); if(main.some(x=>x.n===n)) n=MF_PAT[p].l[1]; main.push({n, p}); });
-  return {gi, type:MF_ORDER[gi], n:t.n, wi, w:L[0], rest, r, main, warm:MF_WARM, cool:MF_COOL};
+  /* the first and last sessions hold the record, so their squat and push are
+     the same move as session 1, for a fair count */
+  const rec=MF_RECS.indexOf(gi)>=0;
+  const main=[]; t.p.forEach(p=>{
+    let n=rec && (p==='squat'||p==='push') ? mfMove(p,0,me,0) : mfMove(p,wi,me,mfOcc(gi,p));
+    if(main.some(x=>x.n===n)) n=mfMove(p,wi,me,mfOcc(gi,p)+1);
+    if(main.some(x=>x.n===n)) n=MF_PAT[p].l[1][0];
+    main.push({n, p}); });
+  return {gi, type:MF_ORDER[gi], n:MF_NAMES[MF_ORDER[gi]][wi], wi, w:L[0], rest, r, main, warm:MF_WARMS[(gi+wi)%3], cool:MF_COOLS[(gi+wi+1)%3]};
 }
 /* a move as the player plays it: the main library's clip, or MAK2FIT's woman coach for the stretches */
 function mfEx(n,dur,rest,cue){
@@ -215,6 +264,9 @@ const MF_EN={
   'Duduk-bangun':'Sit-to-stand','Tolak':'Push','Jambatan pinggul':'Hip bridge','Bengkok pinggul':'Hip hinge','Tarik':'Pull',
   'Kawalan badan':'Core control','Imbangan':'Balance','Stamina':'Stamina',
   'Duduk-Bangun & Tolak':'Sit-to-Stand & Push','Pinggul & Imbangan':'Hips & Balance','Gabung & Stamina':'Combo & Stamina',
+  'Kaki & Dada':'Legs & Chest','Punggung & Bahu':'Glutes & Shoulders','Kaki Tegap':'Steady Legs','Naik Setingkat: Kaki & Dada':'Step Up: Legs & Chest','Kuat Seluruh Badan':'Full-Body Strength',
+  'Belakang & Postur':'Back & Posture','Imbangan & Kawalan':'Balance & Control','Pinggul Kuat':'Strong Hips','Naik Setingkat: Belakang':'Step Up: Back','Berdiri Tegak':'Stand Tall',
+  'Nafas & Rentak':'Breath & Rhythm','Litar Penuh':'Full Circuit','Stamina Bertambah':'More Stamina','Naik Setingkat: Stamina':'Step Up: Stamina','Pusingan Akhir':'Final Round',
   'Mudah':'Easy','Asas':'Basic','Beransur':'Build',
   /* technique cards */
   'Kaki selebar bahu.':'Feet shoulder-width apart.','Tolak punggung ke belakang seperti nak duduk.':'Push your hips back as if to sit.','Bangun dengan menolak lantai.':'Stand up by pushing the floor away.',
@@ -339,7 +391,7 @@ function renderMF(){
       mfL(MF_N+' sesi. Tengok sejauh mana anda pergi.',MF_N+' sessions. See how far you have come.')+'</div>'+
       '<button class="mf-link" onclick="mfSetTab(\'progress\')">'+mfL('Lihat Kemajuan','See Progress')+' ›</button></div></div>'+mfNextCard();
   }
-  if(owned) h+=(mfRecDue()||mfLessonDue());
+  if(owned) h+=(mfRecDue()||mfLessonDue()||mfScanCard());
   h+='<div class="lbx-seg" id="mf-tabs">'+[['plan',mfL('Pelan','Plan')],['learn',mfL('Belajar','Learn')],['progress',mfL('Kemajuan','Progress')]]
     .map(t=>'<button class="'+(mfTab===t[0]?'on':'')+'" onclick="mfSetTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>';
   if(mfTab==='learn') h+=mfLearn();
@@ -627,6 +679,24 @@ function mfLessonDue(){
 function mfLsDone(gi){ mfData().lesson[gi]=true; mfLsOpen=-1; HF.save(); renderMF(); }
 function mfLsShow(gi){ mfLsOpen=gi; mfTab='plan'; renderMF(); $('screen').scrollTop=0; }
 
+/* ── the meal scan (11 Nov 2026, Seth: "scan 20x untuk 6 minggu tu. mcm style
+   mak2fit"): 20 scans kept until used, the same welcome MAK2FIT gives. One
+   quiet strip, shown when there is no record or lesson waiting. ── */
+function mfScanN(){ return typeof welcomeScanN==='function' ? welcomeScanN('prog_mula') : 20; }
+function mfScanCard(){
+  if(typeof scanAccess!=='function') return '';
+  const a=scanAccess(), has=a.left>0, N=mfScanN();
+  const sub=!has ? mfL(N+' scan anda dah digunakan · 3 lagi bulan depan','Your '+N+' scans are used · 3 more next month')
+    : a.mode==='pass' ? mfL(a.left+' daripada '+a.daily+' scan lagi hari ini',a.left+' of '+a.daily+' scans left today')
+    : a.ladies ? mfL(a.left+' daripada '+(a.of||N)+' scan lagi',a.left+' of '+(a.of||N)+' scans left')
+    : a.label;
+  return '<div class="lbx-scanhero mf-scan" role="button" tabindex="0" onclick="mfScanGo()">'+
+    '<div class="ph" style="background-image:url(\'/ladies/img/menu/d11.jpg\')"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><i class="ln"></i></div>'+
+    '<div class="tx"><div class="k">'+glyph('spark')+mfL('Scan Makanan AI','AI Meal Scan')+'</div><b>'+mfL('Ambil gambar, tahu kalorinya.','Snap it, know its calories.')+'</b><span>'+sub+'</span></div>'+
+    '<span class="go">'+glyph('photo')+'</span></div>';
+}
+function mfScanGo(){ const a=typeof scanAccess==='function' ? scanAccess() : {left:0}; if(a.left>0) openScan('meal'); else openScanPlans(''); }
+
 /* ── Belajar: the technique cards and the lessons so far ── */
 function mfLearn(){
   if(!mfOwned()) return mfLocked('doc',mfL('Belajar Asas','Learn the Basics'),mfL('Kad teknik untuk setiap gerakan dan '+MF_N+' pelajaran ringkas tentang latihan dan makan cara Malaysia.',
@@ -713,6 +783,7 @@ function mfBuy(){
       ['workout',MF_N+mfL(' sesi berpandu',' guided sessions'),mfL('Pemanasan, latihan utama, penyejukan. Video setiap gerakan','Warm-up, main workout, cool-down. A video for every move')],
       ['target',mfL('Teknik setiap gerakan','Technique for every move'),mfL('Tiga isyarat, kesilapan biasa dan versi lebih mudah','Three cues, the common mistake and an easier version')],
       ['steps',mfL('Langkah harian','Daily steps'),mfL('Sasaran naik sedikit setiap minggu, sampai 7,000','A goal that rises a little each week, to 7,000')],
+      ['photo',mfScanN()+mfL(' scan makanan AI',' AI meal scans'),mfL('Ambil gambar makanan, AI anggarkan kalorinya. Simpan sampai anda guna','Snap a meal and AI estimates its calories. Kept until you use them')],
       ['food',mfL('Makan cara Malaysia','Eating the Malaysian way'),mfL('Pelajaran ringkas. Nasi tetap ada','Short lessons. Rice stays')],
       ['trophy',mfL('Milik anda','Yours to keep'),mfL('Bayar sekali. Tiada langganan','Pay once. No subscription')]]
       .map(b=>'<div class="pwf"><div class="ic"><span class="wl-kic">'+glyph(b[0])+'</span></div><div><div class="t">'+b[1]+'</div><div class="m">'+b[2]+'</div></div></div>').join('')+'</div>'+

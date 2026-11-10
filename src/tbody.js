@@ -3732,8 +3732,9 @@ print("\n── StartFIT ──");
   ok("sold for RM39 on its own", programPrice(MF)===39 && isPaidProgram(MF));
   var bad=[]; [['tiada'],['lutut'],['bahu'],['pinggang'],['lantai'],['lutut','bahu','pinggang','lantai']].forEach(function(p){ [15,20,25].forEach(function(m){ [0,1,2].forEach(function(path){
     plan({pain:p, masa:m, path:path});
-    for(var i=0;i<12;i++){ var x=mfSession(i), mins=mfMinutes(x);
+    for(var i=0;i<MF_N;i++){ var x=mfSession(i), mins=mfMinutes(x);
       if(x.main.length!==4) bad.push('moves'+i);
+      if(x.main.some(function(m,j){ return x.main.some(function(o,q){ return q!==j && o.n===m.n; }); })) bad.push('twice'+i);
       if(mins<14 || mins>26) bad.push(p+m+path+'#'+i+':'+mins+'min');
       mfExercises(x).forEach(function(e){ if(!e.v) bad.push('no video: '+e.n); }); }
   }); }); });
@@ -3743,9 +3744,10 @@ print("\n── StartFIT ──");
   ok("one thing changes each week: rounds, then work, then rest, then the moves", mfSession(3).r===3 && mfSession(3).w===30 && mfSession(6).w===40 && mfSession(6).rest===30 && mfSession(6).r===3 && mfSession(9).rest===20 && mfSession(9).r===3 &&
     mfSession(12).w===40 && mfSession(12).rest===20 && mfSession(12).r===3 && mfSession(15).r===3);
   plan({masa:25}); ok("...a fourth round only in week 6, for 25 minutes", mfSession(12).r===3 && mfSession(15).r===4 && mfSession(15).rest===20); plan({});
-  plan({path:0}); ok("week 5 steps Mudah up too: chair squat, push-up on the chair", mfSession(9).main[0].n==='Sit To Stand' && mfSession(12).main[0].n==='Chair Squat' && mfSession(12).main[1].n==='Incline Push Up (Chair)');
-  plan({path:0, sihat:['jantung']}); ok("...but not someone whose health answer keeps them on Mudah", mfSession(12).main[0].n==='Sit To Stand' && mfSession(12).main[1].n==='Wall Push Up');
-  plan({path:1}); ok("Asas rows with the bottle from week 5, the week the moves step up", mfSession(10).main.some(function(x){ return x.n==='Towel Shoulder Back Pull'; }) && mfSession(13).main.some(function(x){ return x.n==='Bottle Bent Over Row'; }));
+  plan({path:0}); ok("week 5 steps Mudah up too: chair squat, push-up on the chair", MF_PAT.squat.l[0].indexOf(mfSession(9).main[0].n)>=0 && MF_PAT.squat.late[0].indexOf(mfSession(12).main[0].n)>=0 && MF_PAT.push.late[0].indexOf(mfSession(12).main[1].n)>=0);
+  plan({path:0, sihat:['jantung']}); ok("...but not someone whose health answer keeps them on Mudah", MF_PAT.squat.l[0].indexOf(mfSession(12).main[0].n)>=0 && MF_PAT.push.l[0].indexOf(mfSession(12).main[1].n)>=0 && mfSession(12).main[1].n!=='Incline Push Up (Chair)');
+  plan({path:1}); ok("Asas rows with the bottle from week 5, the week the moves step up", [0,1,2,3,4,5,6,7,8,9,10,11].every(function(i){ return !mfSession(i).main.some(function(x){ return x.n==='Bottle Bent Over Row'; }); }) &&
+    [12,13,14,15,16,17].some(function(i){ return mfSession(i).main.some(function(x){ return x.n==='Bottle Bent Over Row'; }); }));
   (function(){ var keepD=HF.data.daily; HF.data.daily={};
     plan({act:'tiada'}); ok("walking: the step goal starts from the answer, climbs 1,000 a week to 7,000", mfStepGoal(0)===4000 && mfStepGoal(3)===7000);
     ok("...and is kept, so it does not drift", mfData().stepBase===3000);
@@ -3760,10 +3762,29 @@ print("\n── StartFIT ──");
   ok("the player rests as each move says", plRestOf(e[0])===0 && plRestOf(e[6])===30 && plRestOf({n:'x'})===REST_SECS);
   ok("an easy start: Mudah for someone inactive and new", mfAutoPath({act:'tiada',exp:'tak'})===0 && mfAutoPath({act:'aktif',exp:'program',sihat:['tiada']})===2 && mfAutoPath({act:'jalan',exp:'dulu'})===1);
   ok("a health answer means Mudah", mfAutoPath({act:'aktif',exp:'program',sihat:['jantung']})===0);
-  plan({pain:['lantai']}); var names=[]; for(var i=0;i<12;i++) names=names.concat(mfSession(i).main.map(function(x){ return x.n; }));
-  ok("hard to get down to the floor: no floor moves", ['Hip Thrust','Dead Bug','Bird Dog','Plank','Knee Push Ups'].every(function(n){ return names.indexOf(n)<0; }));
-  plan({pain:['lutut'], path:2}); names=[]; for(i=0;i<12;i++) names=names.concat(mfSession(i).main.map(function(x){ return x.n; }));
+  var allN=function(){ var o=[]; for(var i=0;i<MF_N;i++) o=o.concat(mfSession(i).main.map(function(x){ return x.n; })); return o; }, names;
+  [0,1,2].forEach(function(path){ plan({pain:['lantai'], path:path}); names=allN(); if(MF_FLOOR.some(function(n){ return names.indexOf(n)>=0; })) bad.push('floor'+path);
+    plan({pain:['lantai','pinggang'], path:path}); names=allN(); if(names.indexOf('Hip Thrust')>=0 || names.indexOf('Towel Deadlift')>=0 || names.indexOf('Backpack Deadlift')>=0) bad.push('back'+path); });
+  ok("hard to get down to the floor: no floor moves on any path, and a sore back gets no deadlift", bad.length===0 && MF_FLOOR.indexOf('Knee Push Ups')>=0); if(bad.length) print(bad.join(' '));
+  plan({pain:['lutut'], path:2}); names=allN();
   ok("a sore knee: the chair version", names.indexOf('Bodyweight Squat')<0 && names.indexOf('Sit To Stand')>=0);
+  (function(){
+    var pools=[]; Object.keys(MF_PAT).forEach(function(k){ (MF_PAT[k].l||[]).concat(MF_PAT[k].late||[]).forEach(function(p){ if(p) pools=pools.concat(p); }); });
+    pools=pools.concat(MF_SEATED_CORE,[].concat.apply([],MF_WARMS),[].concat.apply([],MF_COOLS),['Chair Kick Back']);
+    ok("every version of every move, warm-up and stretch has its video", pools.every(mfInDB)); pools.filter(function(n){ return !mfInDB(n); }).forEach(function(n){ print('no video: '+n); });
+    [0,1,2].forEach(function(path){ plan({path:path});
+      var key=function(i){ return mfSession(i).main.map(function(x){ return x.n; }).join('|'); }, k=[]; for(var i=0;i<MF_N;i++) k.push(key(i));
+      var same=0; for(i=3;i<MF_N;i++) if(k[i]===k[i-3]) same++;
+      var wk=0; for(i=0;i<MF_N;i+=3) if(k[i]===k[i+1]||k[i+1]===k[i+2]||k[i]===k[i+2]) wk++;
+      if(same>1 || wk) bad.push('path'+path+': '+same+' repeats week on week, '+wk+' weeks with a twin'); });
+    ok("each session looks different from the same session last week, and from the others that week", bad.length===0); if(bad.length) print(bad.join(' | '));
+    plan({}); var w=[], c=[], n=[]; for(var i=0;i<MF_N;i++){ var x=mfSession(i); w.push(x.warm.join()); c.push(x.cool.join()); n.push(x.n); }
+    ok("warm-ups and cool-downs turn: no session has the same warm-up as the one before, the names never repeat", w.every(function(v,i){ return !i || v!==w[i-1]; }) && c.every(function(v,i){ return !i || v!==c[i-1]; }) &&
+      n.every(function(v,i){ return n.indexOf(v)===i; }) && mfSession(0).warm.length===6 && mfSession(5).cool.length===5);
+    ok("...and the record sessions keep session 1's squat and push, for a fair count", [0,1,2].every(function(path){ plan({path:path}); var a=mfSession(0).main, b=mfSession(MF_N-1).main;
+      return a[0].n===b[0].n && a[1].n===b[1].n; }));
+    plan({}); var nm=mfSession(4).n; mfData().lang='en'; ok("...the names in English too", mfT(nm)!==nm && /^[A-Z][A-Za-z :&-]+$/.test(mfT(nm))); mfData().lang='ms';
+  })();
   _guest(); HF.data.progress[MF_ID]=0; ok("locked to a guest", !ownsProgram(MF));
   noThrow("its page opens for a guest", function(){ openProgram(MF_ID); });
   ok("the offer can be bought in the app", (mfBuy(), html('pw-body').indexOf("startCheckout('prog_mula')")>0));
@@ -3849,7 +3870,13 @@ print("\n── MEAL SCAN PLANS ──");
   _ent.ladiesFrom=new Date(Date.now()-2*864e5).toISOString(); _ent.welcomeName='BURN30'; HF.data.scanQuota={month:thisMonth(), used:0};
   ok("BURN30 gives the same 10, under its own name", scanAccess().left===10 && scanAccess().label.indexOf('BURN30 scans left')>0);
   ok("...and the app reads it from either program", WELCOME_SCAN_SKUS.prog_wl30==='BURN30' && WELCOME_SCAN_SKUS.prog_lad4==='MAK2FIT 30');
-  _ent.ladiesFrom=null; _ent.welcomeName=null;
+  /* THE START: 20, the same way (11 Nov 2026) */
+  _ent.ladiesFrom=new Date(Date.now()-2*864e5).toISOString(); _ent.welcomeName='THE START'; _ent.welcomeN=20; HF.data.scanQuota={month:thisMonth(), used:3};
+  ok("THE START gives 20 scans, past the monthly 3, under its own name", welcomeScanN('prog_mula')===20 && welcomeScanN('prog_lad4')===10 && WELCOME_SCAN_SKUS.prog_mula==='THE START' &&
+    scanAccess().left===20 && scanAccess().label.indexOf('20 of 20 THE START')===0);
+  scanBump(); ok("...counted down", scanAccess().left===19 && mfScanCard().indexOf('19 daripada 20')>0 && mfScanCard().indexOf('mfScanGo()')>0);
+  HF.data.scanQuota.lb=20; ok("...and when the 20 are used, it says when more come", scanAccess().left===0 && scanAccess().label.indexOf('Your 20 THE START scans')===0 && mfScanCard().indexOf('20 scan anda dah digunakan')>0);
+  _ent.ladiesFrom=null; _ent.welcomeName=null; _ent.welcomeN=null;
   /* one program, no HITFAT+ (9 Nov 2026): what is hers, what is extra */
   _guest(); _ent.skus={prog_lad4:true};
   ok("a MAK2FIT buyer without HITFAT+ has a pack", packProg()===LB30);
@@ -3858,6 +3885,9 @@ print("\n── MEAL SCAN PLANS ──");
   ok("...another program bought alone shows its price", lockTag(WL30).indexOf('RM39')>0);
   ok("...every offer starts by saying hers stays whole", packNote().indexOf('MAK2FIT 30 anda tetap penuh')>0 && packNote().indexOf('Kembali ke MAK2FIT 30')>0);
   ok("...the Home line names her pack and its 10 scans", packStrip('home').indexOf('Pakej anda: MAK2FIT 30')>0 && packStrip('home').indexOf('10 scan')>0);
+  _guest(); _ent.skus={prog_mula:true};
+  ok("a THE START buyer has a pack too, with its 20 scans and no menu", packProg()===MF && packStrip('home').indexOf('Pakej anda: THE START')>0 && packStrip('home').indexOf('20 scan makanan AI')>0 && packStrip('home').indexOf('menu')<0);
+  _guest(); ok("...and its offer lists the 20 scans", (mfBuy(), (document.getElementById('pw-body').innerHTML||'').indexOf('20 scan makanan AI')>0)); closeProduct();
   _ent.plusUntil=new Date(Date.now()+864e7).toISOString();
   ok("a HITFAT+ member sees none of it", !packProg() && packStrip('home')==='' && packNote()==='' && lockTag(LB30)==='');
   _guest();

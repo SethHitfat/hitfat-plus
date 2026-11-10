@@ -7210,6 +7210,8 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .lbx.mf,.lbq.mf{--lr:#E8480F; --lr2:#B8380A; --lr0:#FF7A35; --lbl:rgba(232,72,15,.09); --lbl2:rgba(232,72,15,.16); --lcream:#FFF4EA;}
 :root:not([data-theme="light"]) .lbx.mf,:root:not([data-theme="light"]) .lbq.mf{--lr:#FF6A2B; --lr2:#E8480F; --lr0:#FF9A63; --lbl:rgba(255,106,43,.14); --lbl2:rgba(255,106,43,.22); --lcream:#24160D;}
 #pgd-body:has(.lbx.mf) .pdx-pill,#dd-body:has(.lbx.mf) .pdx-pill,#pgd-body:has(.lbq.mf) .pdx-pill{background:#141414 !important;color:#FFFFFF !important;}
+/* THE START's meal scan strip (11 Nov 2026): MAK2FIT's, in orange */
+.lbx.mf .mf-scan{margin:0 0 14px;box-shadow:0 10px 24px rgba(232,72,15,.26);}
 .mf .lbx-go{box-shadow:0 10px 24px rgba(232,72,15,.28);}
 .mf .lbx-badge{background:#141414;color:#FFFFFF;}
 /* the top of the program: the photograph, then the name on cream */

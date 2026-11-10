@@ -88,7 +88,11 @@ const SCAN_FREE_TIER=3, MEMBER_SCANS_DAY=3;
    the real count (LADIES_* there) */
 const LADIES_FREE_SCANS=10;
 /* the programs whose buyers get them (BURN30 since 28 Oct 2026), and what the count is called */
-const WELCOME_SCAN_SKUS={prog_lad4:'MAK2FIT 30', prog_wl30:'BURN30', prog_ay30:'AYAH2FIT 30'};
+const WELCOME_SCAN_SKUS={prog_lad4:'MAK2FIT 30', prog_wl30:'BURN30', prog_ay30:'AYAH2FIT 30', prog_mula:'THE START'};
+/* (11 Nov 2026, Seth: "scan 20x untuk 6 minggu tu. mcm style mak2fit") THE
+   START gives 20, kept until used like MAK2FIT's 10; scan-food holds the same map */
+const WELCOME_SCAN_N={prog_mula:20};
+function welcomeScanN(sku){ return WELCOME_SCAN_N[sku]||LADIES_FREE_SCANS; }
 /* how many scans a day a live pass gives */
 function scanDailyFor(sku){
   if(String(sku).indexOf('sub_')===0) return MEMBER_SCANS_DAY;
@@ -178,16 +182,16 @@ function scanAccess(){
      page says "10 scan", with no end date; they used to lapse after 30 days) */
   let lbUsed=false;
   if(ladiesScanWindow()){
-    const lu=ladiesScansUsed(), ll=Math.max(0, LADIES_FREE_SCANS-lu);
+    const wN=_ent.welcomeN||LADIES_FREE_SCANS, lu=ladiesScansUsed(), ll=Math.max(0, wN-lu);
     const wn=_ent.welcomeName||'MAK2FIT 30';
-    if(ll>0) return {mode:'free', ladies:true, label:ll+' of '+LADIES_FREE_SCANS+' '+wn+' scans left', left:ll};
+    if(ll>0) return {mode:'free', ladies:true, label:ll+' of '+wN+' '+wn+' scans left', left:ll, of:wN};
     lbUsed=wn;
   }
   /* then the 3 a month everyone has (her 10 count towards the month they were used in) */
   const used=scanUsed(), freeLeft=Math.max(0, SCAN_FREE_TIER-used);
   if(freeLeft>0)   return {mode:'free',    label:freeLeft+' of '+SCAN_FREE_TIER+' free scans left this month', left:freeLeft};
   if(_ent.credits>0) return {mode:'credits', label:_ent.credits+' scan credit'+(_ent.credits>1?'s':'')+' left', left:_ent.credits};
-  if(lbUsed) return {mode:'none', ladies:true, label:'Your '+LADIES_FREE_SCANS+' '+lbUsed+' scans are used · '+SCAN_FREE_TIER+' more next month', left:0};
+  if(lbUsed) return {mode:'none', ladies:true, label:'Your '+(_ent.welcomeN||LADIES_FREE_SCANS)+' '+lbUsed+' scans are used · '+SCAN_FREE_TIER+' more next month', left:0};
   return {mode:'none', label:'No scans left — free resets next month', left:0};
 }
 function canScan(){ return scanAccess().left>0; }
@@ -236,7 +240,7 @@ async function loadEntitlement(){
       }
       ne.skus[e.sku]=true;         // programs, the bundle, the bar
       if(WELCOME_SCAN_SKUS[e.sku] && e.created_at &&
-         (!ne.ladiesFrom || e.created_at>ne.ladiesFrom)){ ne.ladiesFrom=e.created_at; ne.welcomeName=WELCOME_SCAN_SKUS[e.sku]; }
+         (!ne.ladiesFrom || e.created_at>ne.ladiesFrom)){ ne.ladiesFrom=e.created_at; ne.welcomeName=WELCOME_SCAN_SKUS[e.sku]; ne.welcomeN=welcomeScanN(e.sku); }
     });
     _ent=ne; entCacheSet(ne);
   }catch(e){ /* offline, or the table is not deployed yet: the last pass this phone saw, else free */
@@ -865,7 +869,7 @@ function lockTag(p){
    stays whole. Members see nothing of this. */
 function packProg(){
   if(contentOpen()) return null;
-  const c=[typeof LB30!=='undefined'?LB30:null, typeof WL30!=='undefined'?WL30:null, typeof D6!=='undefined'?D6:null];
+  const c=[typeof LB30!=='undefined'?LB30:null, typeof WL30!=='undefined'?WL30:null, typeof D6!=='undefined'?D6:null, typeof MF!=='undefined'?MF:null];
   for(const p of c) if(p && owns('prog_'+p.id)) return p;
   return null;
 }
@@ -883,7 +887,7 @@ function packStrip(where){
   const go="openProgram('"+p.id+"')";
   if(where==='home') return '<div class="pack" onclick="'+go+'"><span class="pack-ic">'+glyph('check')+'</span><div class="pack-tx">'+
       '<b>Pakej anda: '+hesc(p.name)+'</b>'+
-      '<span>Semua dalam program anda dah terbuka: latihan, menu'+(packScans(p)?', '+LADIES_FREE_SCANS+' scan makanan AI':'')+' dan Learn. '+
+      '<span>Semua dalam program anda dah terbuka: '+(p.packHas||('latihan, menu'+(packScans(p)?', '+welcomeScanN('prog_'+p.id)+' scan makanan AI':'')+' dan Learn'))+'. '+
       'Yang bertanda <i class="pack-l">'+glyph('lock')+'HITFAT+</i> ialah pilihan tambahan, bukan sebahagian pakej anda.</span></div></div>';
   const w=where==='eat' ? 'Menu dan sasaran kalori anda ada dalam '+hesc(p.name)+'.' : 'Latihan anda ada dalam '+hesc(p.name)+'.';
   return '<div class="pack pack-s" onclick="'+go+'"><span class="pack-ic">'+glyph('check')+'</span><div class="pack-tx">'+
