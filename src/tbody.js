@@ -3780,7 +3780,15 @@ print("\n── StartFIT ──");
   ok("session 1 ready to start", html('pgd-body').indexOf('mfPlay(0)')>0 && ['Pelan','Belajar','Kemajuan'].every(function(x){ return html('pgd-body').indexOf('>'+x+'<')>0; }));
   mfPlay(0); ok("it plays the whole session as one", played && played.meta.mf && played.meta.pid===MF_ID && played.exs.length===19);
   HF.data.progress[MF_ID]=1; mfAfterSession({gi:0}); 
-  ok("after session 1: the record and the lesson", html('pgd-body').indexOf('Rekod permulaan')>0 && html('pgd-body').indexOf('Cara bernafas')>0);
+  ok("after session 1: one task at a time, the record first", html('pgd-body').indexOf('Rekod permulaan')>0 && html('pgd-body').indexOf('Cara bernafas')<0);
+  mfRecSkip(0); ok("...then the lesson", html('pgd-body').indexOf('Cara bernafas')>0);
+  mfSetLang('en'); ok("BM | EN: the whole page in English", html('pgd-body').indexOf('How to breathe')>0 && html('pgd-body').indexOf('>Plan<')>0 && html('pgd-body').indexOf('Cara bernafas')<0 && html('pgd-body').indexOf('mfSetLang(')>0);
+  ok("...every lesson, technique card, week and question has its English", MF_LESSON.every(function(l){ return MF_EN[l[0]] && MF_EN[l[1]]; }) && MF_WEEKS.every(function(w){ return MF_EN[w.n] && MF_EN[w.s]; }) &&
+    Object.keys(MF_TECH).every(function(k){ var c=MF_TECH[k]; return c[0].every(function(t){ return MF_EN[t]; }) && MF_EN[c[1]] && MF_EN[c[2]] && MF_EN[MF_PAT[k].n]; }) &&
+    MF_Q.every(function(q){ return MF_EN[q.t] && (!q.s || MF_EN[q.s]) && q.o.every(function(o){ return MF_EN[o[1]] && (!o[2] || MF_EN[o[2]]); }); }));
+  ok("...the player's technique line too", mfCue('squat').indexOf('Feet shoulder-width')===0);
+  mfOpenSession(0); ok("...and the session page", html('dd-body').indexOf('Warm-up')>0 && html('dd-body').indexOf('Main Workout')>0);
+  mfSetLang('ms'); ok("...and back to Malay", mfCue('squat').indexOf('Kaki selebar')===0);
   noThrow("a session page", function(){ mfOpenSession(0); });
   ok("Home's Today's Plan opens its own session page", (openDay(MF_ID,0), html('dd-body').indexOf('Latihan Utama')>0) && progMinutes(MF)===null);
   ok("...warm-up, main, cool-down, the safety line", ['Pemanasan','Latihan Utama','Penyejukan','sakit dada'].every(function(x){ return html('dd-body').indexOf(x)>0; }));
