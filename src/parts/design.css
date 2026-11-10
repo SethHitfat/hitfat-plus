@@ -3769,6 +3769,14 @@ html,body{overscroll-behavior:none;}
 .hpo-gly{position:absolute;right:-14px;bottom:-14px;z-index:1;width:62%;opacity:.18;color:#FFFFFF;}
 .hpo-gly .gly{width:100%;height:auto;stroke:#FFFFFF;stroke-width:1.4;}
 .hcourses{margin-top:4px;}
+/* (10 Nov 2026) Home: every program not started and every course, one row to swipe */
+.hrow{display:flex;gap:10px;overflow-x:auto;margin:4px -16px 0;padding:0 16px 6px;scroll-snap-type:x mandatory;scroll-padding:0 16px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.hrow::-webkit-scrollbar{display:none;}
+.hrow>.hpo{flex:none;width:150px;scroll-snap-align:start;}
+.hrow>.hpo.hpo-br{aspect-ratio:4/5;}
+.hrow .hpo-br .hpo-t{font-size:21px;padding:0 10px;}
+.hrow .hpo-br .hpo-t.sm{font-size:18px;}
+.hrow .hpo-br .hpo-ph{background-size:auto 112%;-webkit-mask-size:auto 112%;mask-size:auto 112%;}
 
 
 /* ── Filter, after FIIT (16 Oct) ── see LF_SECS in train2.js */
@@ -7180,34 +7188,34 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 #play.a2f.nomirror #pl-ready .rdk,#play.a2f #pl-ready .rdk{color:#EBD2A6;}
 #play.a2f .bigbtn,#play.a2f #pl-rest .rs{color:#0B2A4A;}
 
-/* ── MulaFIT (8 Nov 2026): green, "mula", its own until the photographs come ── */
-.lbx.mf,.lbq.mf{--lr:#0F7A4A; --lr2:#0A5A36; --lr0:#36D884; --lbl:rgba(15,122,74,.09); --lbl2:rgba(15,122,74,.16); --lcream:#EEF8F2;}
-:root:not([data-theme="light"]) .lbx.mf,:root:not([data-theme="light"]) .lbq.mf{--lr:#1C9459; --lr2:#13703F; --lr0:#36D884; --lbl:rgba(54,216,132,.12); --lbl2:rgba(54,216,132,.2); --lcream:#122019;}
-#pgd-body:has(.lbx.mf) .pdx-pill,#dd-body:has(.lbx.mf) .pdx-pill,#pgd-body:has(.lbq.mf) .pdx-pill{background:#0F7A4A !important;color:#FFFFFF !important;}
-.mf .lbx-go{box-shadow:0 10px 24px rgba(15,122,74,.22);}
-.mf .lbx-badge{background:#FFE14D;color:#073F26;}
+/* ── StartFIT (was MulaFIT; 10 Nov 2026 Seth: a rarer colour): electric violet + volt, until the photographs come ── */
+.lbx.mf,.lbq.mf{--lr:#4F2BD8; --lr2:#2E14A0; --lr0:#8B6CFF; --lbl:rgba(79,43,216,.09); --lbl2:rgba(79,43,216,.16); --lcream:#F4F1FF;}
+:root:not([data-theme="light"]) .lbx.mf,:root:not([data-theme="light"]) .lbq.mf{--lr:#7B5CFF; --lr2:#5A3AE6; --lr0:#A48FFF; --lbl:rgba(139,108,255,.14); --lbl2:rgba(139,108,255,.22); --lcream:#16122A;}
+#pgd-body:has(.lbx.mf) .pdx-pill,#dd-body:has(.lbx.mf) .pdx-pill,#pgd-body:has(.lbq.mf) .pdx-pill{background:#4F2BD8 !important;color:#FFFFFF !important;}
+.mf .lbx-go{box-shadow:0 10px 24px rgba(79,43,216,.28);}
+.mf .lbx-badge{background:#D4FF3A;color:#1C0E5C;}
 .mf-hero{position:relative;margin:-6px -18px 0;padding:56px 22px 26px;color:#fff;overflow:hidden;
-  background:radial-gradient(120% 90% at 85% 0%,#36D884 0%,rgba(54,216,132,0) 55%),linear-gradient(160deg,#0F7A4A 0%,#073F26 100%);}
-.mf-hero::after{content:"";position:absolute;right:-60px;top:-40px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,225,77,.16);}
+  background:radial-gradient(120% 90% at 85% 0%,#8B6CFF 0%,rgba(139,108,255,0) 55%),linear-gradient(160deg,#4F2BD8 0%,#1C0E5C 100%);}
+.mf-hero::after{content:"";position:absolute;right:-60px;top:-40px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(212,255,58,.2);}
 .mf-hero > *{position:relative;z-index:1;}
-.mf-hero-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#C9F5DC;}
+.mf-hero-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#E2DBFF;}
 .mf-hero-t{margin-top:6px;font-family:'Oswald','Inter',sans-serif;font-size:58px;font-weight:700;line-height:.95;letter-spacing:-1px;}
-.mf-hero-t b{color:#FFE14D;font-weight:700;}
+.mf-hero-t b{color:#D4FF3A;font-weight:700;}
 .mf-hero-t.sm{font-family:inherit;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.1;}
-.mf-hero-s{margin-top:8px;font-size:16px;font-weight:650;line-height:1.35;color:#EAFBF1;max-width:28ch;}
+.mf-hero-s{margin-top:8px;font-size:16px;font-weight:650;line-height:1.35;color:#F1EDFF;max-width:28ch;}
 .mf-hero .lbx-tags{margin-top:16px;}
 .mf-hero.mf-qhero{margin:0;border-radius:24px;padding:28px 20px 22px;}
 .mf-hero.mf-day{padding-top:64px;}
-.mf-hero.mf-B{background:radial-gradient(120% 90% at 85% 0%,#3FD3C9 0%,rgba(63,211,201,0) 55%),linear-gradient(160deg,#0E7C6A 0%,#063F37 100%);}
-.mf-hero.mf-C{background:radial-gradient(120% 90% at 85% 0%,#FFE14D 0%,rgba(255,225,77,0) 50%),linear-gradient(160deg,#0F7A4A 0%,#073F26 100%);}
-.mf-ph{display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#0F7A4A,#073F26);}
-.mf-ph b{font-family:'Oswald','Inter',sans-serif;font-size:64px;font-weight:700;color:rgba(255,225,77,.9);}
-.mf-ph.mf-B{background:linear-gradient(160deg,#0E7C6A,#063F37);}
-.mf-wcover{display:flex;flex-direction:column;gap:4px;padding:18px;border-radius:24px;color:#fff;background:linear-gradient(160deg,#0F7A4A,#073F26);}
+.mf-hero.mf-B{background:radial-gradient(120% 90% at 85% 0%,#FF5FA8 0%,rgba(255,95,168,0) 55%),linear-gradient(160deg,#4527C4 0%,#1A0C55 100%);}
+.mf-hero.mf-C{background:radial-gradient(120% 90% at 85% 0%,#D4FF3A 0%,rgba(212,255,58,0) 50%),linear-gradient(160deg,#4F2BD8 0%,#1C0E5C 100%);}
+.mf-ph{display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#4F2BD8,#1C0E5C);}
+.mf-ph b{font-family:'Oswald','Inter',sans-serif;font-size:64px;font-weight:700;color:rgba(212,255,58,.92);}
+.mf-ph.mf-B{background:linear-gradient(160deg,#4527C4,#1A0C55);}
+.mf-wcover{display:flex;flex-direction:column;gap:4px;padding:18px;border-radius:24px;color:#fff;background:linear-gradient(160deg,#4F2BD8,#1C0E5C);}
 .mf-wcover small{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;opacity:.85;}
 .mf-wcover b{font-size:28px;font-weight:800;letter-spacing:-.6px;line-height:1.05;}
 .mf-wcover span{font-size:13.5px;line-height:1.4;opacity:.9;}
-.mf-wcover em{align-self:flex-start;margin-top:8px;padding:5px 10px;border-radius:99px;background:rgba(255,225,77,.18);color:#FFE14D;font-style:normal;font-size:12px;font-weight:800;}
+.mf-wcover em{align-self:flex-start;margin-top:8px;padding:5px 10px;border-radius:99px;background:rgba(212,255,58,.18);color:#D4FF3A;font-style:normal;font-size:12px;font-weight:800;}
 .mf-safe{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:var(--surface2);font-size:13.5px;line-height:1.4;color:var(--txt);}
 .mf-safe .gly{flex:none;width:18px;height:18px;stroke:#D93A2B;margin-top:1px;}
 .mf-cue{margin-top:6px;} .mf-cue div{display:flex;flex-direction:column;gap:2px;}
@@ -7229,8 +7237,8 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mf-feel b{display:block;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt);} .mf-feel span{font-size:12px;color:var(--dim);font-weight:650;}
 .mf-recs{padding:6px 15px;} .mf-recs > div{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px;gap:6px;padding:10px 0;border-top:1px solid var(--line,rgba(0,0,0,.08));font-size:14px;}
 .mf-recs > div.h{border-top:0;color:var(--dim);font-size:12px;} .mf-recs b{text-align:right;font-variant-numeric:tabular-nums;}
-.mf-buy{margin:6px 16px 10px;padding:26px 18px;border-radius:20px;text-align:center;color:#fff;background:linear-gradient(160deg,#0F7A4A,#073F26);}
-.mf-buy span{display:block;margin-top:8px;font-size:11px;font-weight:800;letter-spacing:1.6px;color:#FFE14D;}
+.mf-buy{margin:6px 16px 10px;padding:26px 18px;border-radius:20px;text-align:center;color:#fff;background:linear-gradient(160deg,#4F2BD8,#1C0E5C);}
+.mf-buy span{display:block;margin-top:8px;font-size:11px;font-weight:800;letter-spacing:1.6px;color:#D4FF3A;}
 
 /* ── one program, no HITFAT+ (9 Nov 2026): what is hers, what is extra ── */
 .lockt.lockt-p{width:auto;height:auto;border-radius:99px;padding:5px 9px 5px 7px;gap:4px;display:inline-flex;align-items:center;

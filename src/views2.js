@@ -320,7 +320,10 @@ function renderHome(){
   /* (9 Nov 2026) someone with one program and no HITFAT+: her own card first,
      no other program's offer above it, then the line that says what is hers */
   const pk=(typeof packProg==='function')?packProg():null, mine=id=>!pk||owns('prog_'+id);
-  if($('home-t42')) $('home-t42').innerHTML=(typeof mfHomeCard==='function'&&mine(typeof MF_ID!=='undefined'?MF_ID:'')?mfHomeCard():'')+(typeof ayHomeCard==='function'&&mine(typeof AY30_ID!=='undefined'?AY30_ID:'')?ayHomeCard():'')+((typeof scBurnIsPlan==='function'&&scBurnIsPlan())||!mine(WL30_ID)?'':wlHomeCard())+(typeof lbHomeCard==='function'&&mine(LB30_ID)?lbHomeCard():'')+(typeof d6HomeCard==='function'&&mine(D6_ID)?d6HomeCard():'')+(pk?packStrip('home'):'')+homeCourses()+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
+  /* (10 Nov 2026, Seth: StartFIT, AYAH2FIT and MAK2FIT each as a big card
+     looked "serabut" for All Access) everyone else: one big card for each
+     program under way, every other program and course in one swipe row */
+  if($('home-t42')) $('home-t42').innerHTML=(pk?homePack(mine):homeGoing()+homeRow())+(typeof aicHomeCard==='function'?aicHomeCard():'')+(contentOpen()?'':fyJoinCard())+renewCard()+
     ((typeof t42HomeCard==='function') ? t42HomeCard() : '');
 
   // 4) Up Next went into Today's Plan (one row: the plan's next day, or find a plan)
@@ -340,6 +343,56 @@ function renderHome(){
       $('home-quick').innerHTML += clubPromoHTML();
   }catch(e){}
   if(typeof mascotRender==='function') mascotRender();
+}
+/* Home for someone with one program and no HITFAT+ (9 Nov): unchanged */
+function homePack(mine){
+  return (typeof mfHomeCard==='function'&&mine(typeof MF_ID!=='undefined'?MF_ID:'')?mfHomeCard():'')+(typeof ayHomeCard==='function'&&mine(typeof AY30_ID!=='undefined'?AY30_ID:'')?ayHomeCard():'')+((typeof scBurnIsPlan==='function'&&scBurnIsPlan())||!mine(WL30_ID)?'':wlHomeCard())+(typeof lbHomeCard==='function'&&mine(LB30_ID)?lbHomeCard():'')+(typeof d6HomeCard==='function'&&mine(D6_ID)?d6HomeCard():'')+packStrip('home')+homeCourses();
+}
+/* (10 Nov 2026) Home for everyone else. "Sambung": a big card for each
+   program under way, so the one she is doing is the first thing she sees.
+   "Program & Kursus": every program not started yet and every course, as one
+   row of small posters to swipe. A man does not get MAK2FIT 30 in the row and
+   a woman does not get AYAH2FIT 30, once Eat knows which (Train still lists
+   both). A program finished drops out, as before. */
+function homeSex(){ const n=(HF.data&&HF.data.nutrition)||{}; return n.gender==='male'||n.gender==='female'?n.gender:''; }
+function homeGoing(){
+  /* the plan Today's Plan already shows is not shown again here */
+  const c=[], tp=(typeof scPlanNext==='function'&&scPlanNext()||{}).p, on=id=>!(tp&&tp.id===id);
+  if(typeof mfLive==='function'){ mfEnsure();
+    const d=mfDone(); if(on(MF_ID) && mfLive() && mfOwned() && d>0 && d<MF_N)
+      c.push(hpoCard(MF,{wide:true,ms:'Sesi',len:'',kick:'Sesi '+(d+1)+' · '+mfMinutes(mfSession(d))+' min',go:'mfOpenSession('+d+')'})); }
+  if(typeof ayLive==='function'){ ayEnsure();
+    const nx=ayNext(); if(on(AY30_ID) && ayLive() && ayOwned() && ayDone()>0 && nx<AY_DAYS.length)
+      c.push(hpoCard(AY30,{wide:true,ms:true,len:'',kick:'Hari '+(nx+1)+' · '+ayMinutes(ayDay(nx))+' min',go:'ayOpenDay('+nx+')'})); }
+  if(typeof wlKept==='function' && !(typeof scBurnIsPlan==='function'&&scBurnIsPlan())){
+    const nx=wlNext(), tot=WL30_DAYS.length; if(on(WL30_ID) && wlKept() && wlOwned() && wlDone()>0 && nx<tot)
+      c.push(hpoCard(WL30,{wide:true,ms:true,len:'',kick:'Hari '+(nx+1)+' · '+wlMinutes(wlDay(nx))+' min',go:'wlOpenDay('+nx+')'})); }
+  if(typeof lbHomeCard==='function' && on(LB30_ID)) c.push(lbHomeCard());
+  if(typeof d6HomeCard==='function') c.push(d6HomeCard());
+  const h=c.join('');
+  return h ? fsec('Sambung','Program yang anda sedang buat.')+h : '';
+}
+function homeRow(){
+  const t=[], sex=homeSex(), P=o=>typeof hpoTile==='function'?hpoTile(o):'';
+  const sq=(p,kick,len,go)=>hpoCard(p,{cls:'hpo-sq hpo-br',kick:kick,len:len,go:go});
+  if(typeof mfLive==='function'){ mfEnsure();
+    if(mfLive() && !mfDone()) t.push(sq(MF,mfOwned()?'Baru':'RM'+MF_PRICE,MF.len||'12 sesi')); }
+  if(typeof ayLive==='function' && sex!=='female'){ ayEnsure();
+    if(ayLive() && !ayDone()) t.push(sq(AY30,ayOwned()?'Baru':'RM'+AY30_PRICE,AY_DAYS.length+' hari')); }
+  if(typeof wlKept==='function' && !(typeof scBurnIsPlan==='function'&&scBurnIsPlan()) && wlKept() && !wlDone())
+    t.push(sq(WL30,wlOwned()?'':'RM'+WL30_PRICE,WL30_DAYS.length+' hari'));
+  if(typeof lbFull==='function' && sex!=='male' && !lbFull() && lbNext()<LB30_DAYS.length)
+    t.push(P({t:LB30_NAME,kick:'30 hari',lv:'Khas wanita · di rumah',pal:'magenta',img:'/img/p/lad4.jpg',pic:'lad4',pos:'50% 15%',go:"openProgram('"+LB30_ID+"')"}));
+  if(typeof d6Full==='function' && !d6Full() && d6Next()<D6_TOT) t.push(d6LearnCard());
+  if(typeof ifLearnTile==='function') t.push(ifLearnTile());
+  if(typeof acHomeCard==='function' && acHomeCard()){
+    const nx=acNext(), n=acCount();
+    t.push(P({t:'Nutrition Academy',kick:'Ep '+String(acNum(nx)).padStart(2,'0'),lv:n?n+' / '+AC_EPS.length+' selesai':nx.t,pal:'green',glyph:'play',go:"acOpen('"+nx.id+"')"}));
+  }
+  const tl=t.filter(Boolean);
+  if(!tl.length) return '';
+  return fsec('Program & Kursus',tl.length>2?'Leret untuk tengok semua.'+(contentOpen()?' Semua termasuk dalam HITFAT+ anda.':''):'')+
+    '<div class="hrow">'+tl.join('')+'</div>';
 }
 /* Home: the courses not yet started (a course under way shows its own
    full card above) and IF and the Academy, as the Learn tab's colour tiles */

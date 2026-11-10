@@ -43,7 +43,7 @@ const CATALOGUE: Record<string, Sku> = {
   "prog_rh6": { price: 19, kind: "program" },       // Post-Workout Recovery · 2wk
   "prog_lad4": { price: 39, kind: "program" },      // Ladies Burn 30 (RM39 from 19 Oct 2026)
   "prog_ay30": { price: 39, kind: "program" },      // AYAH2FIT 30
-  "prog_mula": { price: 39, kind: "program" },      // MulaFIT
+  "prog_mula": { price: 39, kind: "program" },      // StartFIT
   "prog_men6": { price: 39, kind: "program" },      // Men's Body Reset
   "prog_f40": { price: 39, kind: "program" },       // Fit After 40
   "prog_bws8": { price: 39, kind: "program" },      // Bodyweight Strength

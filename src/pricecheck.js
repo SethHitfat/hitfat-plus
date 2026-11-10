@@ -6,7 +6,7 @@ out[BUNDLE_SKU] = String(BUNDLE_PRICE);
 PROGRAMS.concat(RECOVERY_LIVE?[]:REHAB_PLANS).filter(isPaidProgram).forEach(function(p){ out['prog_'+p.id] = String(programPrice(p)); });
 /* AYAH2FIT 30 joins PROGRAMS only for the accounts that can see it (ayEnsure) */
 out['prog_'+AY30_ID] = String(programPrice(AY30));
-/* MulaFIT the same way (mfEnsure) */
+/* StartFIT the same way (mfEnsure) */
 out['prog_'+MF_ID] = String(programPrice(MF));
 /* a course sold on its own is not among PROGRAMS (it is not a training plan) */
 if (typeof D6 !== 'undefined') out['prog_'+D6.id] = String(D6.price);

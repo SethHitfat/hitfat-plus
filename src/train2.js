@@ -172,8 +172,8 @@ const HPO_PAL={red:['#FF4A3D','#B3121B','#5E070C','#FFC21A'], orange:['#FF8A2A',
   magenta:['#F0509E','#9C1A72','#4A0A36','#3EE6CF'], charcoal:['#4A4A50','#151517','#000000','#E30613'],
   blue:['#4D78FF','#1B2FA8','#0E1A60','#3EE6CF'], purple:['#8A5CFF','#3A1C9C','#1E0F55','#FF4D8D'],
   teal:['#3FD3C9','#0E7C86','#073F44','#FF4D8D'], green:['#36D884','#0F7A4A','#073F26','#FFE14D'],
-  gold:['#F5C042','#B5790A','#5A3A03','#E30613']};
-const HPO_OF={mula:'green',hx12:'charcoal',hx8:'charcoal',hxft:'charcoal',c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
+  gold:['#F5C042','#B5790A','#5A3A03','#E30613'], volt:['#8B6CFF','#4F2BD8','#1C0E5C','#D4FF3A']};
+const HPO_OF={mula:'volt',hx12:'charcoal',hx8:'charcoal',hxft:'charcoal',c1:'red',c2:'teal',c3:'charcoal',wl30:'red',sig1:'red',sig3:'orange',sig4:'magenta',fl30:'red',lad4:'magenta',hiit4:'orange',am21:'red',mch:'orange',m1:'magenta',m3:'red',m4:'orange',
   sig2:'charcoal',men6:'blue',f40:'purple',bws8:'charcoal',min3:'blue',reset12:'purple',mkb:'charcoal',mdb:'blue',m2:'purple',core14:'teal'};
 const HPO_GOAL={'Fat Loss':['red','orange','magenta'],'Strength':['charcoal','blue','purple'],'Core':['teal','green']};
 function hpoPal(p){
@@ -197,9 +197,9 @@ function hpoCard(p,o){
   const tot=typeof p.days==='number'?p.days:(p.weeks||p.oneTime)?progDays(p):0, done=tot?progDone(p.id):0, going=done>0&&done<tot, fin=tot>0&&done>=tot;
   return '<div class="hpo'+(o.wide?' hpo-w':'')+(o.cls?' '+o.cls:'')+(cut?'':' hpo-flat')+'" onclick="openProgram(\''+p.id+'\')" style="--a:'+c[0]+';--b:'+c[1]+';--rim:'+c[3]+'">'+
     (hasPhoto(p)?'<div class="hpo-fig"><div class="hpo-ph" style="background-image:url(\''+progImg(p)+'\'),linear-gradient('+c[2]+','+c[2]+')'+(pos?';'+pos:'')+msk+'"></div></div>':'')+
-    '<span class="hpo-len">'+(o.kick?o.kick+' · ':'')+hpoLen(p)+'</span>'+lockTag(p)+(o.badge?'<span class="hpo-new">'+o.badge+'</span>':'')+
+    (function(){ const L=o.len!==undefined?o.len:hpoLen(p), k=[o.kick,L].filter(Boolean).join(' · '); return k?'<span class="hpo-len">'+hesc(k)+'</span>':''; })()+lockTag(p)+(o.badge?'<span class="hpo-new">'+o.badge+'</span>':'')+
     '<div class="hpo-t'+(p.name.length>14?' sm':'')+'">'+hesc(p.name)+'</div>'+
-    (going?'<div class="hpo-go"><span>Day '+(done+1)+' of '+tot+'</span><i><b style="width:'+Math.round(done/tot*100)+'%"></b></i></div>'
+    (going?'<div class="hpo-go"><span>'+(o.ms?(o.ms===true?'Hari':o.ms)+' '+(done+1)+' / '+tot:'Day '+(done+1)+' of '+tot)+'</span><i><b style="width:'+Math.round(done/tot*100)+'%"></b></i></div>'
           :'<span class="hpo-lv">'+(fin?'✓ Completed':(p.level||''))+'</span>')+
     (o.start||o.go?'<button class="hpo-play" aria-label="Start '+hesc(p.name)+'" onclick="event.stopPropagation();'+(o.go||'playSingle(\''+p.id+'\')')+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button>':'')+'</div>';
 }

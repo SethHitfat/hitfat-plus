@@ -352,7 +352,7 @@ function plPause(){ plUnwait(); stopTick(); plSetPlayIcon(false); plTime(); plWa
 function plToggle(){ if(!pl) return; (pl.running||pl.waiting)?plPause():plResume(); }
 function plAdjust(d){ if(!pl) return; const was=pl.left; pl.left=Math.max(5,pl.left+d); pl.len=(pl.len||was)+(pl.left-was); plTime(); }
 
-/* the rest after a move: its own (MulaFIT's warm-up has none, its weeks 1–2 have 30), else REST_SECS */
+/* the rest after a move: its own (StartFIT's warm-up has none, its weeks 1–2 have 30), else REST_SECS */
 function plRestOf(ex){ return ex && typeof ex.rest==='number' ? ex.rest : REST_SECS; }
 function plNextIndex(){
   if(!pl) return null;

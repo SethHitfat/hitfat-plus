@@ -3718,7 +3718,7 @@ print("\n── 30-DAY WEIGHT LOSS ──");
 })();
 
 HF.email=null; ayEnsure();
-print("\n── MulaFIT ──");
+print("\n── StartFIT ──");
 (function(){
   _guest(); HF.email=null; mfEnsure();
   ok("before launch, another account sees none of it", !findProg(MF_ID) && mfHomeCard()==='');
@@ -4598,6 +4598,19 @@ print("\n── BELL'S POSES, MOVING ──");
   ok("Bell in ice plays as it is, on the white screen", BELL_PLAIN.frozen===true);
   ok("water and meals play Bell's own clip", String(scRender).indexOf("water:'water', meal:'meal'")>0);
   ok("no canvas, no clip: the poster stays", bellMini(null,'gold')===false);
+})();
+print("\n── HOME · SAMBUNG + PROGRAM & KURSUS (10 Nov) ──");
+(function(){
+  var n=HF.data.nutrition, keepG=n&&n.gender; HF.data.nutrition=n||{};
+  HF.data.nutrition.gender='male'; var m=homeRow();
+  HF.data.nutrition.gender='female'; var f=homeRow();
+  HF.data.nutrition.gender=keepG; if(!n) delete HF.data.nutrition;
+  ok("everything not started is one swipe row, not a stack of big cards", m.indexOf('class="hrow"')>0 && m.indexOf('Program & Kursus')>0);
+  ok("...a man does not get MAK2FIT 30 in it, a woman does", m.indexOf(LB30_NAME)<0 && (lbFull()||f.indexOf(LB30_NAME)>0));
+  ok("...a woman does not get AYAH2FIT 30", f.indexOf('AYAH2FIT')<0);
+  ok("Sambung: big cards only for a program under way, not the one Today's Plan shows", String(homeGoing).indexOf('scPlanNext')>0 && String(homeGoing).indexOf("fsec('Sambung'")>0);
+  ok("someone with one program and no HITFAT+ keeps her Home as it was", String(renderHome).indexOf('pk?homePack(mine)')>0 && String(homePack).indexOf("packStrip('home')")>0);
+  ok("a card can say Hari or Sesi, with no length after the kicker", hpoCard(MF,{wide:true,ms:'Sesi',len:'',kick:'Sesi 2'}).indexOf('Sesi 2</span>')>0);
 })();
 print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, MEET ──");
 (function(){

@@ -1,11 +1,11 @@
-/* ═══════════════ MulaFIT ═══════════════
+/* ═══════════════ StartFIT ═══════════════
    8 Nov 2026 (Seth: "aku nak mula program baru dalam hitfat+. Program ni untuk
    beginner", then "kita buat dlu"). Four weeks, three whole-body sessions a
    week, twelve in all, 15–25 minutes each, at home, for men and women. RM39
    once, like MAK2FIT. The brief and the draft are the Claude Doc
-   "MulaFIT — Draf 12 Sesi".
+   "StartFIT — Draf 12 Sesi".
 
-   What makes it MulaFIT and not another Beginner list: every session has the
+   What makes it StartFIT and not another Beginner list: every session has the
    same warm-up, main circuit and cool-down; every main move carries a
    technique card; every session ends with a one-minute lesson (six on
    training, six on Malaysian eating, rice allowed, no calorie targets); and
@@ -22,7 +22,7 @@
    page, prog_mula in the deployed edge functions.                        */
 
 const MF_ID='mula', MF_KEY='mf', MF_PRICE=39;
-const MF_NAME='MulaFIT', MF_SUB='4 Minggu Asas Kecergasan';
+const MF_NAME='StartFIT', MF_SUB='4 Minggu Asas Kecergasan';
 /* Before launch only the listed accounts (and anyone who owns it) see it. */
 const MF_LIVE=false, MF_TESTERS=['sethnasser1991@gmail.com','hitfat91@gmail.com'];
 
@@ -71,23 +71,23 @@ const MF_TECH={
 const MF_LESSON=[
   ['Cara bernafas','Hembus nafas semasa usaha: bangun, tolak, angkat. Tarik nafas semasa turun. Jangan tahan nafas, walaupun gerakan terasa berat.'],
   ['Pinggan seimbang','Ikut Pinggan Sihat Malaysia: separuh pinggan sayur dan buah, suku nasi, suku lauk protein. Nasi tetap ada. Yang kita jaga ialah berapa banyak.'],
-  ['Skala usaha 1–10','Sasaran MulaFIT ialah 5 hingga 7: penat, tapi masih boleh bercakap satu ayat. Tahap 9–10 tak perlu. Rutin yang boleh diulang lebih penting daripada sesi yang menyeksa.'],
+  ['Skala usaha 1–10','Sasaran StartFIT ialah 5 hingga 7: penat, tapi masih boleh bercakap satu ayat. Tahap 9–10 tak perlu. Rutin yang boleh diulang lebih penting daripada sesi yang menyeksa.'],
   ['Sukatan guna tangan','Lauk protein setapak tangan. Nasi segenggam. Sayur dua genggam. Minyak atau kuah sebesar ibu jari. Tangan anda sentiasa ada, di rumah atau di kedai.'],
   ['Rehat dan lenguh biasa','Lenguh 1 hingga 3 hari selepas sesi adalah biasa, terutama minggu pertama. Hari rehat ialah masa badan membina. Jalan santai membantu lenguh hilang lebih cepat.'],
   ['Protein lauk harian','Ayam, ikan kembung, telur, tempe, tauhu, dhal. Cuba ada satu lauk protein setiap kali makan. Ia bantu anda kenyang lebih lama.'],
   ['Mencabar atau sakit?','Penat, berpeluh dan lenguh otot: teruskan. Sakit tajam di sendi, pening, sakit dada atau sesak nafas luar biasa: berhenti terus. Jangan paksa untuk cukupkan rekod.'],
   ['Makan di luar','Nasi campur: satu lauk protein, dua jenis sayur, kuah sedikit. Di mamak: pilih yang dibakar atau berkuah jernih, dan teh o kurang manis.'],
   ['Air dan minuman manis','Bawa botol air ke mana-mana. Teh tarik "kurang manis" atau "kosong" ialah langkah pertama. Tak perlu berhenti terus.'],
-  ['Snek dan gorengan','Buah, kacang atau telur rebus sebagai snek biasa. Kuih dan gorengan sekali-sekala, bukan setiap hari. Tiada makanan yang haram dalam MulaFIT.'],
+  ['Snek dan gorengan','Buah, kacang atau telur rebus sebagai snek biasa. Kuih dan gorengan sekali-sekala, bukan setiap hari. Tiada makanan yang haram dalam StartFIT.'],
   ['Naik tahap sendiri','Tukar satu perkara sahaja pada satu masa: ulangan, masa, julat atau versi gerakan. Teknik dahulu, baru tambah. Kalau teknik merosot, undur semula.'],
-  ['Semak dan sambung','Bandingkan rekod anda dengan sesi 1. Pilih dua tabiat untuk diteruskan. Kemudian ulang MulaFIT pada laluan seterusnya, atau teruskan dengan program HITFAT+.']
+  ['Semak dan sambung','Bandingkan rekod anda dengan sesi 1. Pilih dua tabiat untuk diteruskan. Kemudian ulang StartFIT pada laluan seterusnya, atau teruskan dengan program HITFAT+.']
 ];
 const MF_DAYS=[['isn','Isnin'],['sel','Selasa'],['rab','Rabu'],['kha','Khamis'],['jum','Jumaat'],['sab','Sabtu'],['ahd','Ahad']];
 
 const MF=(function(){
   const weeks=MF_WEEKS.map((w,wi)=>({days:[0,1,2].map(j=>{ const t=MF_TYPES[MF_ORDER[wi*3+j]]; return {name:t.n, ex:MF_PAT.squat.l.slice(0,1).concat(['Wall Push Up']), r:MF_LOAD[wi][2], k:'train'}; })}));
   return {id:MF_ID, name:MF_NAME, sub:MF_SUB, goal:'Strength', level:'Beginner', dur:20, rounds:2,
-    c1:'#0F7A4A', c2:'#073F26', ac:'#36D884', icon:'✦', weeks, hub:'mf', len:'12 sesi', oneTime:true, price:MF_PRICE, wk:4,
+    c1:'#4F2BD8', c2:'#1C0E5C', ac:'#D4FF3A', icon:'✦', weeks, hub:'mf', len:'12 sesi', oneTime:true, price:MF_PRICE, wk:4,
     desc:'Program asas 4 minggu untuk lelaki dan wanita yang baru mula atau mahu aktif semula. '+
          '12 sesi seluruh badan di rumah, 15–25 minit, dengan teknik setiap gerakan, pelajaran ringkas dan pemakanan Malaysia.'};
 })();
@@ -181,7 +181,7 @@ function mfScrollTabs(){ try{ const s=$('screen'), a=$('mf-tabs'); if(s&&a&&a.of
 function mfSetTab(t){ mfTab=t; renderMF(); mfScrollTabs(); }
 function mfHero(){
   return '<div class="mf-hero"><div class="mf-hero-k">Program Asas · Lelaki & Wanita</div>'+
-    '<div class="mf-hero-t">Mula<b>FIT</b></div><div class="mf-hero-s">Belajar asas. Ikut pelan. Bina rutin.</div>'+
+    '<div class="mf-hero-t">Start<b>FIT</b></div><div class="mf-hero-s">Belajar asas. Ikut pelan. Bina rutin.</div>'+
     '<div class="lbx-tags"><span>4 minggu</span><span>12 sesi</span><span>15–25 min</span><span>Di rumah</span></div></div>';
 }
 function renderMF(){
@@ -195,8 +195,8 @@ function renderMF(){
     h+='<div class="lbx-card lbx-sell"><div class="lbx-k">Untuk yang baru mula</div>'+
       '<div class="lbx-h">Tak tahu nak mula dari mana? Mula di sini.</div>'+
       '<div class="lbx-p">12 sesi berpandu di rumah, setiap gerakan diajar, ada versi lebih mudah, dan pelajaran makan cara Malaysia. Tanpa gym, tanpa diet ekstrem.</div>'+
-      '<button class="lbx-go" onclick="mfBuy()">'+glyph('lock')+'Dapatkan MulaFIT · RM'+MF_PRICE+'</button>'+
-      '<button class="lbx-ghost" onclick="openPaywall(\'MulaFIT is included in HITFAT+.\')">'+glyph('star')+'Included in HITFAT+</button></div>';
+      '<button class="lbx-go" onclick="mfBuy()">'+glyph('lock')+'Dapatkan StartFIT · RM'+MF_PRICE+'</button>'+
+      '<button class="lbx-ghost" onclick="openPaywall(\'StartFIT is included in HITFAT+.\')">'+glyph('star')+'Included in HITFAT+</button></div>';
   } else if(!mfMe()){
     h+='<div class="lbx-card lbq-invite"><div class="lbx-k">'+(done?'Pelan anda':'Sebelum Sesi 1')+'</div>'+
       '<div class="lbx-h">Jom pilih laluan anda.</div>'+
@@ -217,7 +217,7 @@ function renderMF(){
       '<button class="lbx-go" onclick="mfPlay('+nx+')">'+glyph('play')+'Mula · '+mfMinutes(s)+' min</button></div>';
   } else {
     h+='<div class="lbx-card lbx-now lbx-fin">'+lbRing(1,84,'12','sesi')+
-      '<div class="lbx-h">MulaFIT selesai</div><div class="lbx-p">12 sesi. Tengok sejauh mana anda pergi.</div>'+
+      '<div class="lbx-h">StartFIT selesai</div><div class="lbx-p">12 sesi. Tengok sejauh mana anda pergi.</div>'+
       '<button class="lbx-go" onclick="mfSetTab(\'progress\')">'+glyph('trophy')+'Lihat Kemajuan</button></div>';
   }
   if(owned) h+=mfRecDue()+mfLessonDue();
@@ -285,7 +285,7 @@ function mfQuiz(){
     '<div class="lbq-bar"><i style="width:'+Math.round(Math.min(mfQ,n)/n*100)+'%"></i></div><span class="lbq-n">'+Math.min(mfQ,n)+'/'+n+'</span></div>';
   if(mfQ===0){
     const nm=mfFirst();
-    return h+bar+'<div class="mf-hero mf-qhero"><div class="mf-hero-t">Mula<b>FIT</b></div>'+
+    return h+bar+'<div class="mf-hero mf-qhero"><div class="mf-hero-t">Start<b>FIT</b></div>'+
       '<div class="mf-hero-s">Jom pilih laluan anda'+(nm?', '+hesc(nm):'')+'.</div></div>'+
       '<div class="lbq-p">'+n+' soalan, lebih kurang 2 minit. Jawapan anda memilih laluan Mudah, Asas atau Beransur, dan masa setiap sesi.</div>'+
       '<div class="lbq-list">'+[['person','Tahap dan pengalaman anda'],['clock','Masa dan alat di rumah'],['heart','Keselesaan badan dan saringan kesihatan'],['calendar','Hari latihan']]
@@ -305,7 +305,7 @@ function mfQuiz(){
     const preg=(mfQA.sihat||[]).indexOf('hamil')>=0;
     h+='<div class="lbq-warn">'+glyph('heart')+'<div><b>Dapatkan nasihat dahulu.</b> '+
       (preg?'Semasa mengandung atau selepas bersalin, senaman perlu disesuaikan oleh doktor atau fisioterapis anda. ':'Jumpa doktor atau fisioterapis sebelum mula, dan tunjukkan program ini kepada mereka. ')+
-      'MulaFIT akan guna laluan Mudah. Berhenti terus jika sakit tajam, pening, sakit dada atau sesak nafas luar biasa.</div></div>'+
+      'StartFIT akan guna laluan Mudah. Berhenti terus jika sakit tajam, pening, sakit dada atau sesak nafas luar biasa.</div></div>'+
       '<div class="lbq-ticks"><div class="obrow obtick'+(mfQA.clear?' on':'')+'" onclick="mfQA.clear=!mfQA.clear;renderMF()"><span class="box">'+(mfQA.clear?'✓':'')+'</span><span>Saya faham, dan akan dapatkan nasihat</span></div></div>';
   }
   if(q.multi){
@@ -334,7 +334,7 @@ function mfQuizResult(){
 }
 function mfQuizSave(){
   const d=mfData(); mfQA.done=true; mfQA.at=iso(0); d.me=mfQA;
-  HF.save(); mfQ=-1; mfTab='plan'; mfWeek=-1; renderMF(); $('screen').scrollTop=0; toast('Pelan MulaFIT sudah sedia');
+  HF.save(); mfQ=-1; mfTab='plan'; mfWeek=-1; renderMF(); $('screen').scrollTop=0; toast('Pelan StartFIT sudah sedia');
 }
 /* the plan in one card, with the path the person can move up or down */
 function mfSetPath(p){ const me=mfMe(); if(!me) return; me.path=p; HF.save(); renderMF(); }
@@ -412,7 +412,7 @@ function mfPlay(gi){
   const s=mfSession(gi); if(!s) return;
   if(!mfOwned()) return mfBuy();
   if(!mfMe()) return mfQuizOpen();
-  startWorkout(mfExercises(s),{rounds:1, name:'MulaFIT · Sesi '+(gi+1), mf:{gi}, key:MF_KEY+'-s'+gi, pid:MF_ID, gi});
+  startWorkout(mfExercises(s),{rounds:1, name:'StartFIT · Sesi '+(gi+1), mf:{gi}, key:MF_KEY+'-s'+gi, pid:MF_ID, gi});
 }
 function mfPlayOne(n,gi){
   if(!mfOwned()) return mfBuy();
@@ -427,7 +427,7 @@ function mfAfterSession(m){
 }
 function mfComplete(gi){
   const s=mfSession(gi);
-  HF.markDone(MF_KEY+'-s'+gi,{name:'MulaFIT · Sesi '+(gi+1), mins:mfMinutes(s)});
+  HF.markDone(MF_KEY+'-s'+gi,{name:'StartFIT · Sesi '+(gi+1), mins:mfMinutes(s)});
   if(progDone(MF_ID)===gi) HF.data.progress[MF_ID]=gi+1;
   HF.save(); toast('Sesi siap 🔥'); mfLsOpen=gi;
   hidePanels(); $('progdetail').style.display='block'; renderMF(); $('screen').scrollTop=0;
@@ -497,28 +497,28 @@ function mfProgress(){
   h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">Rekod Anda</div><div class="lbx-ss">Sesi 1 berbanding sesi 12</div></div></div>'+
     '<div class="lbx-card mf-recs"><div class="h"><span></span><b>Sesi 1</b><b>Sesi 12</b></div>'+
     MF_REC.map(x=>'<div><span>'+x[1]+'</span><b>'+cell(a,x[0])+'</b><b>'+cell(b,x[0])+'</b></div>').join('')+'</div>'+
-    '<div class="lb-fine">Berat, ukuran dan gambar tidak diperlukan dalam MulaFIT. Jangan bandingkan diri dengan orang lain; bandingkan dengan anda pada sesi 1.</div>';
-  if(done>=MF_N) h+='<div class="lbx-card mf-next"><div class="lbx-k">Selepas MulaFIT</div><div class="lbx-h">Pilih dua tabiat untuk diteruskan.</div>'+
-    '<div class="lbx-p">Ulang MulaFIT pada laluan seterusnya, atau teruskan dengan program HITFAT+ yang lain.</div>'+
-    '<button class="lbx-go" onclick="mfRestart()">'+glyph('play')+'Ulang MulaFIT</button>'+
+    '<div class="lb-fine">Berat, ukuran dan gambar tidak diperlukan dalam StartFIT. Jangan bandingkan diri dengan orang lain; bandingkan dengan anda pada sesi 1.</div>';
+  if(done>=MF_N) h+='<div class="lbx-card mf-next"><div class="lbx-k">Selepas StartFIT</div><div class="lbx-h">Pilih dua tabiat untuk diteruskan.</div>'+
+    '<div class="lbx-p">Ulang StartFIT pada laluan seterusnya, atau teruskan dengan program HITFAT+ yang lain.</div>'+
+    '<button class="lbx-go" onclick="mfRestart()">'+glyph('play')+'Ulang StartFIT</button>'+
     '<button class="lbx-ghost" onclick="switchTab(\'train\')">'+glyph('workout')+'Lihat program lain</button></div>';
   return h;
 }
 function mfRestart(){
   const me=mfMe(); if(me && !mfRiskOf(me)) me.path=Math.min(2,mfPath()+1);
   HF.data.progress[MF_ID]=0; const d=mfData(); d.lesson={}; d.rec={}; HF.save(); mfTab='plan'; mfWeek=-1; renderMF(); $('screen').scrollTop=0;
-  toast('MulaFIT bermula semula · laluan '+MF_PATHS[mfPath()]);
+  toast('StartFIT bermula semula · laluan '+MF_PATHS[mfPath()]);
 }
 function mfLocked(icon,title,text){
   return '<div class="wl-lock">'+ic(icon)+'<div class="t">'+title+'</div><div class="s">'+text+'</div>'+
-    '<button class="lbx-go" onclick="mfBuy()">Dapatkan MulaFIT · RM'+MF_PRICE+'</button></div>';
+    '<button class="lbx-go" onclick="mfBuy()">Dapatkan StartFIT · RM'+MF_PRICE+'</button></div>';
 }
 
 /* ── buying it ── */
 function mfBuy(){
   if(mfOwned()) return openProgram(MF_ID);
   $('pw-body').innerHTML='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
-    '<div class="mf-buy"><div class="mf-hero-t">Mula<b>FIT</b></div><span>4 MINGGU · 12 SESI · DI RUMAH</span></div>'+
+    '<div class="mf-buy"><div class="mf-hero-t">Start<b>FIT</b></div><span>4 MINGGU · 12 SESI · DI RUMAH</span></div>'+
     '<div class="pwlist">'+[
       ['sliders','Laluan anda sendiri','Mudah, Asas atau Beransur, ikut tahap dan keselesaan badan'],
       ['workout','12 sesi berpandu','Pemanasan, latihan utama, penyejukan. Video setiap gerakan'],
@@ -529,7 +529,7 @@ function mfBuy(){
       .map(b=>'<div class="pwf"><div class="ic"><span class="wl-kic">'+glyph(b[0])+'</span></div><div><div class="t">'+b[1]+'</div><div class="m">'+b[2]+'</div></div></div>').join('')+'</div>'+
     '<div class="pwprice"><div class="p">RM'+MF_PRICE+'</div><div class="per">sekali bayar</div></div>'+
     '<button class="bigbtn" onclick="startCheckout(\'prog_'+MF_ID+'\')">Beli RM'+MF_PRICE+'</button>'+
-    '<button class="authalt" onclick="openPaywall(\'MulaFIT is included in HITFAT+.\')">Atau dapatkan semua dengan HITFAT+</button>';
+    '<button class="authalt" onclick="openPaywall(\'StartFIT is included in HITFAT+.\')">Atau dapatkan semua dengan HITFAT+</button>';
   $('pwm').classList.add('on');
   try{ $('pwm').scrollTop=0; }catch(e){}
 }
