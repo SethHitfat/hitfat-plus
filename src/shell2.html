@@ -1291,6 +1291,8 @@ let sb=null;
    test login was the one place login was switched off. */
 const LOCAL_DEV=(location.protocol==='file:'||location.hostname==='');
 const SUPA_READY=!LOCAL_DEV && !!(/^https:\/\/[^\/\s]+\.[^\/\s]+/.test(SUPA_URL)&&SUPA_KEY&&window.supabase);
+/* a password-reset link: read it before the client takes the tokens out of the address bar */
+const HF_LINK=(function(){ try{ return authLinkState(location.hash); }catch(e){ return ''; } })();
 if(SUPA_READY){ try{ sb=window.supabase.createClient(SUPA_URL,SUPA_KEY); }catch(e){ console.error('Supabase init failed',e); } }
 function localBadge(){
   if(!LOCAL_DEV) return;
@@ -1506,8 +1508,17 @@ function boot(){
     console.warn('[HITFAT+] local (no-login) mode — data stays in this browser.');
     localBadge(); setTimeout(startApp,700); return;
   }
-  sb.auth.getSession().then(({data})=>{ if(data&&data.session) onSignedIn(data.session); else showAuth(); }).catch(()=>showAuth());
-  sb.auth.onAuthStateChange((ev,session)=>{ if(session) onSignedIn(session); else if(ev==='SIGNED_OUT') showAuth(); });
+  if(HF_LINK==='expired') authLinkExpired();
+  sb.auth.getSession().then(({data})=>{
+    if(data&&data.session){ if(HF_LINK==='recovery') authResetShow(data.session); else onSignedIn(data.session); }
+    else if(HF_LINK!=='expired') showAuth();
+  }).catch(()=>showAuth());
+  sb.auth.onAuthStateChange((ev,session)=>{
+    /* every event a reset link raises (INITIAL_SESSION, SIGNED_IN, PASSWORD_RECOVERY) waits
+       for the new password; after it is saved, the app opens as usual */
+    if(!authResetSaved && (ev==='PASSWORD_RECOVERY' || HF_LINK==='recovery') && session){ authResetShow(session); return; }
+    if(session) onSignedIn(session); else if(ev==='SIGNED_OUT') showAuth();
+  });
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
 </script>
