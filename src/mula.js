@@ -34,9 +34,9 @@ const MF_LIVE=true, MF_TESTERS=['sethnasser1991@gmail.com','hitfat91@gmail.com']
 /* (10 Nov 2026, Seth: "buat 6 minggu", with the poster "6 WEEKS OF THE START.")
    six weeks, eighteen sessions; still one change a week */
 const MF_WEEKS=[
-  {n:'Kenal Asas',        s:'Teknik, pernafasan dan susunan sesi. Dua pusingan.'},
-  {n:'Ulang Rutin',       s:'Gerakan sama, satu pusingan lagi.'},
-  {n:'Lebih Lama',        s:'Kerja 40 saat, rehat kekal 30. Bezakan penat dengan sakit.'},
+  {n:'Belajar Gerakan',        s:'Teknik, pernafasan dan cara sesi berjalan. Setiap set gerakan dibuat 2 kali.'},
+  {n:'Tambah Satu Kali',       s:'Gerakan sama, ulang satu kali lagi.'},
+  {n:'Lebih Lama',        s:'Buat 40 saat, rehat masih 30 saat. Kenal beza penat dengan sakit.'},
   {n:'Rehat Pendek',      s:'Rehat dipendekkan ke 20 saat. Rentak sama.'},
   {n:'Naik Tahap',        s:'Masa sama. Beberapa gerakan naik satu tahap.'},
   {n:'Semak dan Sambung', s:'Kekalkan rentak, kemudian semak sejauh mana anda pergi.'}
@@ -135,7 +135,7 @@ const MF_LESSON=[
   ['Hari susah','Akan ada hari tak larat. Pada hari itu, buat dua gerakan atau jalan 10 minit. Sedikit lebih baik daripada kosong, dan rutin tak putus.','L'],
   ['Kenduri dan hujung minggu','Ambil satu pinggan, mula dengan sayur dan lauk. Tiada makanan yang perlu ditinggal. Esoknya, sambung rutin seperti biasa.','M'],
   ['Bina tabiat','Latih pada hari dan masa yang sama setiap minggu. Letak kasut atau tuala di tempat yang nampak. Tabiat dibina dengan ulangan, bukan semangat.','L'],
-  ['Semak dan sambung','Bandingkan rekod anda dengan sesi 1. Pilih dua tabiat untuk diteruskan. Kemudian ulang THE START pada laluan seterusnya, atau teruskan dengan program HITFAT+.','S']
+  ['Semak dan sambung','Bandingkan rekod anda dengan sesi 1. Pilih dua tabiat untuk diteruskan. Kemudian ulang THE START pada tahap seterusnya, atau teruskan dengan program HITFAT+.','S']
 ];
 const MF_DAYS=[['isn','Isnin'],['sel','Selasa'],['rab','Rabu'],['kha','Khamis'],['jum','Jumaat'],['sab','Sabtu'],['ahd','Ahad']];
 
@@ -254,9 +254,9 @@ function mfInDB(n){ return DB.some(x=>x.n===n && x.v) || (typeof LB30_DEMO!=='un
    takes the two for a line that is built with numbers. */
 const MF_EN={
   /* weeks */
-  'Kenal Asas':'The Basics','Teknik, pernafasan dan susunan sesi. Dua pusingan.':'Technique, breathing and how a session runs. Two rounds.',
-  'Ulang Rutin':'Repeat','Gerakan sama, satu pusingan lagi.':'Same moves, one more round.',
-  'Lebih Lama':'Longer','Kerja 40 saat, rehat kekal 30. Bezakan penat dengan sakit.':'Work 40 seconds, rest stays 30. Know tired from pain.',
+  'Belajar Gerakan':'The Basics','Teknik, pernafasan dan cara sesi berjalan. Setiap set gerakan dibuat 2 kali.':'Technique, breathing and how a session runs. Each set of moves done twice.',
+  'Tambah Satu Kali':'One More Time','Gerakan sama, ulang satu kali lagi.':'Same moves, one more round.',
+  'Lebih Lama':'Longer','Buat 40 saat, rehat masih 30 saat. Kenal beza penat dengan sakit.':'Work 40 seconds, rest stays 30. Know tired from pain.',
   'Rehat Pendek':'Shorter Rest','Rehat dipendekkan ke 20 saat. Rentak sama.':'Rest drops to 20 seconds. Same pace.',
   'Naik Tahap':'Step Up','Masa sama. Beberapa gerakan naik satu tahap.':'Same timing. Some moves step up one level.',
   'Semak dan Sambung':'Check and Carry On','Kekalkan rentak, kemudian semak sejauh mana anda pergi.':'Keep the pace, then see how far you have come.',
@@ -303,7 +303,7 @@ const MF_EN={
   'Hari susah':'The hard day','Akan ada hari tak larat. Pada hari itu, buat dua gerakan atau jalan 10 minit. Sedikit lebih baik daripada kosong, dan rutin tak putus.':'Some days you will not feel up to it. On those days, do two moves or walk 10 minutes. A little beats nothing, and the routine holds.',
   'Kenduri dan hujung minggu':'Weddings and weekends','Ambil satu pinggan, mula dengan sayur dan lauk. Tiada makanan yang perlu ditinggal. Esoknya, sambung rutin seperti biasa.':'Take one plate, start with vegetables and protein. No food has to be skipped. The next day, carry on as usual.',
   'Bina tabiat':'Build the habit','Latih pada hari dan masa yang sama setiap minggu. Letak kasut atau tuala di tempat yang nampak. Tabiat dibina dengan ulangan, bukan semangat.':'Train on the same days and times each week. Leave your shoes or towel where you can see them. Habits come from repetition, not motivation.',
-  'Semak dan sambung':'Check and carry on','Bandingkan rekod anda dengan sesi 1. Pilih dua tabiat untuk diteruskan. Kemudian ulang THE START pada laluan seterusnya, atau teruskan dengan program HITFAT+.':'Compare your record with session 1. Pick two habits to keep. Then repeat THE START on the next path, or carry on with a HITFAT+ program.',
+  'Semak dan sambung':'Check and carry on','Bandingkan rekod anda dengan sesi 1. Pilih dua tabiat untuk diteruskan. Kemudian ulang THE START pada tahap seterusnya, atau teruskan dengan program HITFAT+.':'Compare your record with session 1. Pick two habits to keep. Then repeat THE START on the next path, or carry on with a HITFAT+ program.',
   /* days */
   'Isnin':'Monday','Selasa':'Tuesday','Rabu':'Wednesday','Khamis':'Thursday','Jumaat':'Friday','Sabtu':'Saturday','Ahad':'Sunday',
   /* the questions */
@@ -314,7 +314,7 @@ const MF_EN={
   'Hampir tiada':'Hardly at all','Banyak duduk':'I sit a lot','Jalan kadang-kadang':'I walk sometimes','Aktif sikit':'A little active','Bergerak atau bersenam 1–2 kali seminggu':'Moving or exercising 1–2 times a week',
   'Pengalaman bersenam?':'Exercise experience?','Tak pernah':'Never','Pernah, dah lama berhenti':'Yes, but stopped a while ago','Pernah ikut program':'I have followed a program',
   'Berapa lama setiap sesi?':'How long for each session?','Pemanasan dan penyejukan sudah termasuk.':'Warm-up and cool-down included.',
-  '15 minit':'15 minutes','Dua pusingan sahaja':'Two rounds only','20 minit':'20 minutes','Ikut pelan':'As planned','25 minit':'25 minutes','Satu pusingan lagi di minggu 6':'One more round in week 6',
+  '15 minit':'15 minutes','Setiap set gerakan 2 kali sahaja':'Two rounds only','20 minit':'20 minutes','Ikut pelan':'As planned','25 minit':'25 minutes','Ulang sekali lagi di minggu 6':'One more round in week 6',
   'Apa yang ada di rumah?':'What do you have at home?','Kerusi diperlukan. Tuala dan botol air untuk gerakan tarik.':'A chair is needed. A towel and a water bottle for the pulling moves.',
   'Kerusi yang stabil':'A sturdy chair','Tidak beroda, tidak bergoyang':'No wheels, does not wobble','Tuala':'Towel','Botol air':'Water bottle',
   'Ada bahagian yang kurang selesa?':'Anywhere that feels uncomfortable?','Kami tukar gerakan yang membebankannya.':'We swap the moves that load it.',
@@ -360,6 +360,7 @@ function renderMF(){
   const owned=mfOwned(), done=mfDone(), nx=done;
   if(mfWeek<0) mfWeek=mfWeekOf(Math.min(nx,MF_N-1));
   const pill=!owned ? {icon:'lock',label:'RM'+MF_PRICE,go:'mfBuy()'}
+           : !mfMe() && !nx ? null
            : nx<MF_N ? {icon:'play',label:mfL('Sesi ','Session ')+(nx+1),go:'mfOpenSession('+nx+')'} : null;
   let h=pdxBar('program',pill)+mfHero()+'<div class="lbx mf">';
   if(!owned){
@@ -369,8 +370,19 @@ function renderMF(){
         MF_N+' guided sessions at home, every move taught with an easier version, and lessons on eating the Malaysian way.')+'</div>'+
       '<button class="lbx-go" onclick="mfBuy()">'+glyph('lock')+mfL('Dapatkan THE START · RM','Get THE START · RM')+MF_PRICE+'</button>'+
       '<button class="lbx-ghost" onclick="openPaywall(\'THE START is included in HITFAT+.\')">'+glyph('star')+mfL('Termasuk dalam HITFAT+','Included in HITFAT+')+'</button></div>';
+  } else if(!mfMe() && !done){
+    /* (11 Nov 2026, Seth: "kalau kau beginner, kau faham tak?") a first-timer
+       sees how THE START runs and one button, nothing else, until the plan is built */
+    h+='<div class="lbx-card mf-how"><div class="lbx-k">'+mfL('Macam mana ia berjalan','How it works')+'</div>'+
+      '<div class="lbx-h">'+mfL('Tiga langkah. Mula dengan yang pertama.','Three steps. Start with the first.')+'</div>'+
+      [[mfL('Jawab '+mfQCount()+' soalan','Answer '+mfQCount()+' questions'),mfL('2 minit. Pelan anda ikut tahap dan keselesaan badan anda.','2 minutes. Your plan fits your level and how your body feels.')],
+       [mfL('3 sesi seminggu di rumah','3 sessions a week at home'),mfL('15–25 minit. Video setiap gerakan, dan versi lebih mudah. Cuma perlu kerusi.','15–25 minutes. A video for every move, and an easier version. You only need a chair.')],
+       [mfL('Hari lain: jalan kaki dan satu tabiat makan','Other days: walk, and one eating habit'),mfL('Tak perlu kira kalori. Nasi tetap ada.','No calorie counting. Rice stays.')]]
+      .map((x,i)=>'<div class="mf-how-s"><span class="n">'+(i+1)+'</span><div class="tx"><b>'+x[0]+'</b><span>'+x[1]+'</span></div></div>').join('')+
+      '<button class="lbx-go" onclick="mfQuizOpen()">'+glyph('sliders')+mfL('Bina Pelan Saya','Build My Plan')+'</button></div>';
+    h+='</div>'; $('pgd-body').innerHTML=h; return;
   } else if(!mfMe()){
-    h+='<div class="lbx-card lbq-invite"><div class="lbx-h">'+mfL('Jom pilih laluan anda.','Let us pick your path.')+'</div>'+
+    h+='<div class="lbx-card lbq-invite"><div class="lbx-h">'+mfL('Jom pilih tahap anda.','Let us pick your path.')+'</div>'+
       '<div class="lbx-p">'+mfL(mfQCount()+' soalan, 2 minit. Jawapan anda memilih versi gerakan dan masa setiap sesi.',
         mfQCount()+' questions, 2 minutes. Your answers choose the version of each move and the length of each session.')+'</div>'+
       '<button class="lbx-go" onclick="mfQuizOpen()">'+glyph('sliders')+mfL('Bina Pelan Saya','Build My Plan')+'</button>'+
@@ -379,9 +391,9 @@ function renderMF(){
     const s=mfSession(nx), g=mfStepGoal(s.wi), now=scDaily().steps;
     h+='<div class="lbx-card mf-now">'+
       '<div class="mf-now-top">'+lbRing(done/MF_N,64,done+'<i>/'+MF_N+'</i>','')+
-        '<div class="tx"><div class="lbx-k">'+mfL('Minggu ','Week ')+(s.wi+1)+' · '+mfT(MF_WEEKS[s.wi].n)+'</div>'+
+        '<div class="tx"><div class="lbx-k">'+mfL('Seterusnya · Minggu ','Up next · Week ')+(s.wi+1)+'</div>'+
         '<div class="lbx-h">'+mfL('Sesi ','Session ')+(nx+1)+': '+mfT(s.n)+'</div>'+
-        '<div class="lbx-p">'+mfMinutes(s)+' min · '+s.main.length+' '+mfL('gerakan','moves')+' · '+s.r+' '+mfL('pusingan','rounds')+'</div></div></div>'+
+        '<div class="lbx-p">'+mfMinutes(s)+' min · '+s.main.length+' '+mfL('gerakan','moves')+' · '+mfL('ulang '+s.r+' kali',s.r+' rounds')+'</div></div></div>'+
       '<button class="lbx-go" onclick="mfPlay('+nx+')">'+glyph('play')+mfL('Mula · ','Start · ')+mfMinutes(s)+' min</button>'+
       '<button class="mf-link" onclick="mfOpenSession('+nx+')">'+mfL('Lihat gerakan sesi ini','See this session’s moves')+' ›</button>'+
       '<div class="mf-stepln">'+glyph('steps')+mfL('Langkah hari ini ','Steps today ')+'<b>'+mfFmt(now)+'</b> / '+mfFmt(g)+(now>=g?' ✓':'')+'</div></div>';
@@ -412,7 +424,7 @@ const MF_Q=[
   {k:'exp', t:'Pengalaman bersenam?', s:'', o:[
     ['tak','Tak pernah','','sunrise'],['dulu','Pernah, dah lama berhenti','','clock'],['program','Pernah ikut program','','check']]},
   {k:'masa', t:'Berapa lama setiap sesi?', s:'Pemanasan dan penyejukan sudah termasuk.', o:[
-    [15,'15 minit','Dua pusingan sahaja','clock'],[20,'20 minit','Ikut pelan','clock'],[25,'25 minit','Satu pusingan lagi di minggu 6','clock']]},
+    [15,'15 minit','Setiap set gerakan 2 kali sahaja','clock'],[20,'20 minit','Ikut pelan','clock'],[25,'25 minit','Ulang sekali lagi di minggu 6','clock']]},
   {k:'alat', multi:true, t:'Apa yang ada di rumah?', s:'Kerusi diperlukan. Tuala dan botol air untuk gerakan tarik.', o:[
     ['kerusi','Kerusi yang stabil','Tidak beroda, tidak bergoyang','chair'],['tuala','Tuala','','mat'],['botol','Botol air','','bottle']]},
   {k:'pain', multi:true, t:'Ada bahagian yang kurang selesa?', s:'Kami tukar gerakan yang membebankannya.', o:[
@@ -458,8 +470,8 @@ function mfQuiz(){
   if(mfQ===0){
     const nm=mfFirst();
     return h+bar+'<div class="mf-qhero"><div class="mf-top-t">THE <b>START.</b></div>'+mfLangBtn()+
-      '<div class="mf-top-s">'+mfL('Jom pilih laluan anda','Let us pick your path')+(nm?', '+hesc(nm):'')+'.</div></div>'+
-      '<div class="lbq-p">'+mfL(n+' soalan, lebih kurang 2 minit. Jawapan anda memilih laluan Mudah, Asas atau Beransur, dan masa setiap sesi.',
+      '<div class="mf-top-s">'+mfL('Jom pilih tahap anda','Let us pick your path')+(nm?', '+hesc(nm):'')+'.</div></div>'+
+      '<div class="lbq-p">'+mfL(n+' soalan, lebih kurang 2 minit. Jawapan anda memilih tahap Mudah, Asas atau Beransur, dan masa setiap sesi.',
         n+' questions, about 2 minutes. Your answers choose the Easy, Basic or Build path, and the length of each session.')+'</div>'+
       '<div class="lbq-list">'+[['person',mfL('Tahap dan pengalaman anda','Your level and experience')],['clock',mfL('Masa dan alat di rumah','Time and kit at home')],
         ['heart',mfL('Keselesaan badan dan saringan kesihatan','How your body feels, and a health check')],['calendar',mfL('Hari latihan','Training days')]]
@@ -480,7 +492,7 @@ function mfQuiz(){
     h+='<div class="lbq-warn">'+glyph('heart')+'<div><b>'+mfL('Dapatkan nasihat dahulu.','Get advice first.')+'</b> '+
       (preg?mfL('Semasa mengandung atau selepas bersalin, senaman perlu disesuaikan oleh doktor atau fisioterapis anda. ','During pregnancy or after giving birth, exercise should be adjusted by your doctor or physiotherapist. ')
            :mfL('Jumpa doktor atau fisioterapis sebelum mula, dan tunjukkan program ini kepada mereka. ','See a doctor or physiotherapist before you start, and show them this program. '))+
-      mfL('THE START akan guna laluan Mudah. Berhenti terus jika sakit tajam, pening, sakit dada atau sesak nafas luar biasa.','THE START will use the Easy path. Stop at once with sharp pain, dizziness, chest pain or unusual breathlessness.')+'</div></div>'+
+      mfL('THE START akan guna tahap Mudah. Berhenti terus jika sakit tajam, pening, sakit dada atau sesak nafas luar biasa.','THE START will use the Easy path. Stop at once with sharp pain, dizziness, chest pain or unusual breathlessness.')+'</div></div>'+
       '<div class="lbq-ticks"><div class="obrow obtick'+(mfQA.clear?' on':'')+'" onclick="mfQA.clear=!mfQA.clear;renderMF()"><span class="box">'+(mfQA.clear?'✓':'')+'</span><span>'+
       mfL('Saya faham, dan akan dapatkan nasihat','I understand, and will get advice')+'</span></div></div>';
   }
@@ -499,12 +511,12 @@ function mfQuizResult(){
     bahu:mfL('Bahu: tolak kekal di dinding.','Shoulders: push-ups stay on the wall.'),
     pinggang:mfL('Pinggang: bengkok pinggul ditukar kepada jambatan pinggul.','Lower back: the hip hinge becomes a hip bridge.'),
     lantai:mfL('Lantai: gerakan lantai ditukar kepada versi duduk atau berdiri.','Floor: floor moves become seated or standing versions.')}[p]; if(t) lines.push(t); });
-  if(mfRiskOf(me)) lines.push(mfL('Saringan: laluan Mudah, dan dapatkan nasihat sebelum mula.','Health check: the Easy path, and get advice before you start.'));
+  if(mfRiskOf(me)) lines.push(mfL('Saringan: tahap Mudah, dan dapatkan nasihat sebelum mula.','Health check: the Easy path, and get advice before you start.'));
   const al=me.alat||[]; if(al.indexOf('tuala')<0) lines.push(mfL('Tiada tuala? Gerakan tarik boleh dibuat tanpa tuala, gerak sahaja.','No towel? The pulling moves work without one; just make the movement.'));
   const days=mfDayNames(me);
   return '<div class="lbq-res"><div class="mf-qhero"><div class="lbx-k">'+mfL('Pelan anda sedia','Your plan is ready')+'</div><div class="mf-top-s">'+
       mfL(MF_N+' sesi, untuk '+(nm?hesc(nm):'anda')+'.',MF_N+' sessions, for '+(nm?hesc(nm):'you')+'.')+'</div></div>'+
-    '<div class="lbq-card"><div class="lbq-ch">'+glyph('workout')+'<b>'+mfL('Laluan','Path')+'</b><span>'+mfT(MF_PATHS[path])+'</span></div>'+
+    '<div class="lbq-card"><div class="lbq-ch">'+glyph('workout')+'<b>'+mfL('Tahap','Path')+'</b><span>'+mfT(MF_PATHS[path])+'</span></div>'+
       '<div class="lbq-stats"><div><b>'+mfMinutes(s1)+'</b><span>'+mfL('min minggu 1','min week 1')+'</span></div><div><b>'+mfMinutes(sN)+'</b><span>'+mfL('min minggu ','min week ')+MF_WK+'</span></div><div><b>3</b><span>'+mfL('sesi seminggu','a week')+'</span></div></div>'+
       '<div class="mf-ladder">'+['squat','push','pull','core'].map(p=>'<div><span>'+mfT(MF_PAT[p].n)+'</span><b>'+mfMove(p,0,me)+'</b></div>').join('')+'</div></div>'+
     (days.length?'<div class="lbq-chips">'+days.map(x=>'<span>'+x+'</span>').join('')+'</div>':'')+
@@ -522,12 +534,12 @@ function mfSetPath(p){ const me=mfMe(); if(!me) return; me.path=p; HF.save(); re
 function mfMeCard(){
   const me=mfMe(); if(!me) return '';
   const p=mfPath(), auto=mfAutoPath(me), days=mfDayNames(me);
-  return '<div class="lbx-card mf-me"><div class="h"><div class="tt"><b>'+mfL('Laluan ','Path: ')+mfT(MF_PATHS[p])+'</b>'+
+  return '<div class="lbx-card mf-me"><div class="h"><div class="tt"><b>'+mfL('Tahap ','Path: ')+mfT(MF_PATHS[p])+'</b>'+
       (days.length?'<span>'+days.join(' · ')+'</span>':'')+'</div>'+
     '<button onclick="mfQuizOpen()">'+glyph('pencil')+mfL('Ubah','Edit')+'</button></div>'+
-    '<div class="lbx-split mf-path" role="radiogroup" aria-label="'+mfL('Laluan','Path')+'">'+MF_PATHS.map((x,i)=>
+    '<div class="lbx-split mf-path" role="radiogroup" aria-label="'+mfL('Tahap','Path')+'">'+MF_PATHS.map((x,i)=>
       '<button class="'+(p===i?'on':'')+'" role="radio" aria-checked="'+(p===i)+'" '+(mfRiskOf(me)&&i>0?'disabled ':'')+'onclick="mfSetPath('+i+')">'+mfT(x)+(i===auto?' ·':'')+'</button>').join('')+'</div>'+
-    (mfRiskOf(me)?'<div class="lb-fine">'+mfL('Saringan kesihatan anda: laluan Mudah sehingga doktor atau fisioterapis benarkan lebih.','Your health check: the Easy path until a doctor or physiotherapist says more.')+'</div>':'')+'</div>';
+    (mfRiskOf(me)?'<div class="lb-fine">'+mfL('Saringan kesihatan anda: tahap Mudah sehingga doktor atau fisioterapis benarkan lebih.','Your health check: the Easy path until a doctor or physiotherapist says more.')+'</div>':'')+'</div>';
 }
 
 /* ── walking (10 Nov 2026) ──
@@ -574,13 +586,14 @@ function mfPlan(){
     '<button role="tab" aria-selected="'+(i===mfWeek)+'" class="'+(i===mfWeek?'on':'')+(done>=(i+1)*3?' ok':'')+'" onclick="mfWeek='+i+';renderMF()">'+
       (done>=(i+1)*3?'✓ ':'')+mfL('Minggu ','Week ')+(i+1)+'</button>').join('')+'</div>';
   const w=MF_WEEKS[mfWeek]||MF_WEEKS[0], ws=mfSession(mfWeek*3)||{};
-  h+='<div class="mf-wk"><b>'+mfT(w.n)+'</b><span>'+mfT(w.s)+'</span><em>'+mfL('Kerja ','Work ')+ws.w+' s · '+mfL('rehat ','rest ')+ws.rest+' s</em></div>';
+  h+='<div class="mf-wk"><b>'+mfT(w.n)+'</b><span>'+mfT(w.s)+'</span><em>'+mfL('Buat '+ws.w+' saat · rehat '+ws.rest+' saat','Work '+ws.w+' s · rest '+ws.rest+' s')+'</em></div>';
   h+='<div class="lbx-days">'+[0,1,2].map(j=>{
     const gi=mfWeek*3+j, s=mfSession(gi), isDone=gi<done, now=gi===nx&&owned;
     return '<div class="lbx-day'+(isDone?' done':'')+(now?' now':'')+'" onclick="mfOpenSession('+gi+')">'+
       '<div class="lbx-day-n"><small>'+mfL('SESI','SESSION')+'</small><b>'+(gi+1)+'</b>'+(isDone?'<span class="ck">'+glyph('check')+'</span>':'')+'</div>'+
       '<div class="lbx-day-t">'+mfT(s.n)+'</div>'+
-      '<div class="lbx-day-m">'+mfMinutes(s)+' min'+(MF_RECS.indexOf(gi)>=0?' · '+mfL('Rekod','Record'):'')+'</div></div>';
+      '<div class="lbx-day-m">'+mfMinutes(s)+' min'+(MF_RECS.indexOf(gi)>=0?' · '+mfL('Rekod','Record'):'')+'</div>'+
+      '<div class="lbx-day-k">'+s.main.length+' '+mfL('gerakan','moves')+' · '+mfL('kerusi','chair')+(s.main.some(x=>x.p==='pull')?' · '+mfL('tuala','towel'):'')+'</div></div>';
   }).join('')+'</div>';
   if(owned) h+=mfStepCard(mfWeek);
   return h;
@@ -597,13 +610,13 @@ function mfOpenSession(gi){
   let h=pdxBar('day', owned?{icon:'play',label:mfL('Mula','Start'),go:'mfPlay('+gi+')'}:{icon:'lock',label:'RM'+MF_PRICE,go:'mfBuy()'})+
     '<div class="mf-hero mf-day mf-'+s.type+'"><div class="mf-hero-k">'+mfL('Sesi ','Session ')+(gi+1)+' / '+MF_N+' · '+mfL('Minggu ','Week ')+(s.wi+1)+(done?' · ✓':'')+'</div>'+
     '<div class="mf-hero-t sm">'+mfT(s.n)+'</div>'+mfLangBtn()+'</div><div class="lbx mf">';
-  h+='<div class="lbx-facts">'+[[mfMinutes(s)+'',mfL('minit','min')],[s.main.length+'',mfL('gerakan','moves')],[s.r+'',mfL('pusingan','rounds')],[s.w+'/'+s.rest,mfL('kerja/rehat','work/rest')]]
+  h+='<div class="lbx-facts">'+[[mfMinutes(s)+'',mfL('minit','min')],[s.main.length+'',mfL('gerakan','moves')],[s.r+'',mfL('kali ulang','rounds')],[s.w+'/'+s.rest,mfL('saat buat/rehat','work/rest s')]]
     .map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
   h+=owned?'<button class="lbx-go" onclick="mfPlay('+gi+')">'+glyph('play')+mfL('Mula · ','Start · ')+mfMinutes(s)+' min</button>'
           :'<button class="lbx-go" onclick="mfBuy()">'+glyph('lock')+mfL('Buka · RM','Unlock · RM')+MF_PRICE+'</button>';
   if(MF_RECS.indexOf(gi)>=0) h+='<div class="mf-note">'+glyph('chart')+'<span>'+mfL('Sesi rekod: kira duduk-bangun dan tolak dalam 30 saat pertama. App akan tanya selepas sesi.','Record session: count your sit-to-stands and push-ups in the first 30 seconds. The app asks after the session.')+'</span></div>';
   h+=part(1,mfL('Pemanasan','Warm-up'),mfL('4 minit','4 min'),s.warm);
-  h+='<div class="mf-part main"><div class="h"><b>2 · '+mfL('Latihan Utama','Main Workout')+'</b><span>'+s.r+' '+mfL('pusingan','rounds')+' · '+s.w+' / '+s.rest+' s</span></div>'+
+  h+='<div class="mf-part main"><div class="h"><b>2 · '+mfL('Latihan Utama','Main Workout')+'</b><span>'+mfL('ulang '+s.r+' kali · buat '+s.w+' saat, rehat '+s.rest+' saat',s.r+' rounds · '+s.w+' / '+s.rest+' s')+'</span></div>'+
     '<div class="lbx-moves">'+s.main.map((x,i)=>{ const c=MF_TECH[x.p];
       return '<div class="lbx-move mf-mv"><span class="n">'+(i+1)+'</span><div class="tx" onclick="'+(owned?'mfPlayOne(\''+x.n.replace(/'/g,"\\'")+'\','+gi+')':'mfBuy()')+'">'+
         '<div class="t">'+x.n+'</div><div class="m">'+mfT(MF_PAT[x.p].n)+' · '+s.w+' s</div></div>'+
@@ -879,7 +892,7 @@ function mfProgress(){
   h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">'+mfL('Macam mana sesi anda?','How did your sessions feel?')+'</div><div class="lbx-ss">'+mfL('Dari jawapan selepas setiap sesi','From your answer after each session')+'</div></div></div>'+
     '<div class="mf-feel">'+[['easy',mfL('Mudah','Easy')],['right',mfL('Ngam','Just right')],['hard',mfL('Susah','Hard')]].map(x=>'<div><b>'+f[x[0]]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
   if(f.hard>=2) h+='<div class="lbx-note"><div class="q">'+glyph('heart')+'</div><div><div class="k">'+mfL('Nasihat','Advice')+'</div><div class="t">'+
-    mfL('Beberapa sesi terasa susah. Tak apa: tukar ke laluan lebih mudah di tab Pelan, atau ulang minggu ini sebelum naik.','Some sessions felt hard. That is fine: switch to an easier path in the Plan tab, or repeat this week before moving on.')+'</div></div></div>';
+    mfL('Beberapa sesi terasa susah. Tak apa: tukar ke tahap lebih mudah di tab Pelan, atau ulang minggu ini sebelum naik.','Some sessions felt hard. That is fine: switch to an easier path in the Plan tab, or repeat this week before moving on.')+'</div></div></div>';
   const a=d.rec.s1||{}, b=d.rec['s'+MF_N]||{}, cell=(o,k)=>o.skip||o[k]===undefined?'–':o[k];
   h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">'+mfL('Rekod Anda','Your Records')+'</div><div class="lbx-ss">'+mfL('Sesi 1 berbanding sesi ','Session 1 against session ')+MF_N+'</div></div></div>'+
     '<div class="lbx-card mf-recs"><div class="h"><span></span><b>'+mfL('Sesi','Session')+' 1</b><b>'+mfL('Sesi','Session')+' '+MF_N+'</b></div>'+
@@ -902,10 +915,10 @@ function mfNextCard(){
   let h='<div class="lbx-card mf-next"><div class="lbx-k">'+mfL('Langkah seterusnya','What next')+'</div><div class="lbx-h">'+mfL('Teruskan rentak ini.','Keep this going.')+'</div>'+
     '<div class="lbx-p">'+mfL('Enam minggu ialah permulaan yang kukuh. Tabiat baru biasanya ambil kira-kira dua bulan, jadi jangan berhenti di sini.',
       'Six weeks is a strong start. A new habit usually takes about two months, so do not stop here.')+'</div>';
-  h+='<div class="mf-nx" onclick="mfRestart()"><span class="n">1</span><div class="tx"><b>'+(up?'THE START · '+mfL('Laluan ','Path: ')+mfT(MF_PATHS[p+1]):mfL('Ulang THE START','Repeat THE START')+(round>1?' ('+mfL('pusingan ','round ')+(round+1)+')':''))+'</b>'+
+  h+='<div class="mf-nx" onclick="mfRestart()"><span class="n">1</span><div class="tx"><b>'+(up?'THE START · '+mfL('Tahap ','Path: ')+mfT(MF_PATHS[p+1]):mfL('Ulang THE START','Repeat THE START')+(round>1?' ('+mfL('pusingan ','round ')+(round+1)+')':''))+'</b>'+
     '<span>'+(up?mfL(MF_N+' sesi sama, setiap gerakan naik satu tahap.','The same '+MF_N+' sessions, each move one step up.')
-      :risk?mfL('Kekal laluan Mudah sehingga doktor atau fisioterapis benarkan lebih.','Stay on the Easy path until a doctor or physiotherapist says more.')
-      :mfL('Anda dah di laluan tertinggi. Ulang untuk kukuhkan rutin.','You are on the top path. Repeat it to lock in the routine.'))+'</span></div><span class="pdx-chev">›</span></div>';
+      :risk?mfL('Kekal tahap Mudah sehingga doktor atau fisioterapis benarkan lebih.','Stay on the Easy path until a doctor or physiotherapist says more.')
+      :mfL('Anda dah di tahap tertinggi. Ulang untuk kukuhkan rutin.','You are on the top path. Repeat it to lock in the routine.'))+'</span></div><span class="pdx-chev">›</span></div>';
   if(np) h+='<div class="mf-nx" onclick="openProgram(\''+MF_NEXT+'\')"><span class="n">2</span><div class="tx"><b>'+hesc(np.name)+(contentOpen()?'':' · HITFAT+')+'</b>'+
     '<span>'+mfL('Tiada lompat, guna kerusi, 6 minggu. Lunge, step-up dan beg galas untuk beban.','No jumping, chair-assisted, 6 weeks. Lunges, step-ups and a backpack for load.')+'</span></div><span class="pdx-chev">›</span></div>';
   h+='<button class="lbx-ghost" onclick="switchTab(\'train\')">'+glyph('workout')+mfL('Lihat semua program','See all programs')+'</button></div>';
@@ -918,7 +931,7 @@ function mfRestart(){
   d.round=(d.round||1)+1;
   if(me && !mfRiskOf(me)) me.path=Math.min(2,mfPath()+1);
   HF.data.progress[MF_ID]=0; d.lesson={}; d.rec={}; HF.save(); mfTab='plan'; mfWeek=-1; renderMF(); $('screen').scrollTop=0;
-  toast(mfL('THE START bermula semula · laluan ','THE START starts again · path: ')+mfT(MF_PATHS[mfPath()]));
+  toast(mfL('THE START bermula semula · tahap ','THE START starts again · path: ')+mfT(MF_PATHS[mfPath()]));
 }
 function mfLocked(icon,title,text){
   return '<div class="wl-lock">'+ic(icon)+'<div class="t">'+title+'</div><div class="s">'+text+'</div>'+
@@ -931,7 +944,7 @@ function mfBuy(){
   $('pw-body').innerHTML='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
     '<div class="mf-buy"><div class="mf-top-t">THE <b>START.</b></div><span>'+MF_WK+mfL(' MINGGU · ',' WEEKS · ')+MF_N+mfL(' SESI · DI RUMAH',' SESSIONS · AT HOME')+'</span></div>'+
     '<div class="pwlist">'+[
-      ['sliders',mfL('Laluan anda sendiri','Your own path'),mfL('Mudah, Asas atau Beransur, ikut tahap dan keselesaan badan','Easy, Basic or Build, by your level and how your body feels')],
+      ['sliders',mfL('Tahap anda sendiri','Your own path'),mfL('Mudah, Asas atau Beransur, ikut tahap dan keselesaan badan','Easy, Basic or Build, by your level and how your body feels')],
       ['workout',MF_N+mfL(' sesi berpandu',' guided sessions'),mfL('Pemanasan, latihan utama, penyejukan. Video setiap gerakan','Warm-up, main workout, cool-down. A video for every move')],
       ['target',mfL('Teknik setiap gerakan','Technique for every move'),mfL('Tiga isyarat, kesilapan biasa dan versi lebih mudah','Three cues, the common mistake and an easier version')],
       ['steps',mfL('Langkah harian','Daily steps'),mfL('Sasaran naik sedikit setiap minggu, sampai 7,000','A goal that rises a little each week, to 7,000')],
