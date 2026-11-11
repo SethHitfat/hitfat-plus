@@ -9606,6 +9606,16 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mf-ml .ph{display:block;aspect-ratio:1;background:var(--surface2) center/cover no-repeat;}
 .mf-ml .k{padding:6px 9px 0;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--lr);}
 .mf-ml b{padding:0 9px;font-size:12.5px;font-weight:750;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+/* THE START: Coach Seth's welcome video (11 Nov 2026) */
+.mf-wel{display:flex;gap:14px;align-items:center;width:100%;padding:12px;border:0;text-align:left;font:inherit;color:var(--txt);cursor:pointer;}
+.mf-wel .ph{position:relative;flex:none;width:84px;aspect-ratio:9/16;border-radius:14px;background:#1A0A03 center/cover no-repeat;overflow:hidden;}
+.mf-wel .ph i{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.28);color:#fff;}
+.mf-wel .ph i .gly{width:30px;height:30px;padding:8px;border-radius:50%;background:var(--lr);}
+.mf-wel .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.mf-wel .tx b{font-size:17px;font-weight:850;line-height:1.2;} .mf-wel .tx > span:last-child{font-size:13.5px;line-height:1.4;color:var(--dim);}
+#mfvov{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;}
+#mfvov video{width:100%;height:100%;object-fit:contain;background:#000;}
+#mfvov .x{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);right:14px;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:18px;cursor:pointer;}
 /* THE START before the questionnaire (11 Nov 2026): how it runs, in three steps */
 .mf-how{display:flex;flex-direction:column;gap:12px;}
 .mf-how .lbx-h{font-size:19px;line-height:1.2;}
@@ -19062,6 +19072,7 @@ function renderMF(){
   } else if(!mfMe() && !done){
     /* (11 Nov 2026, Seth: "kalau kau beginner, kau faham tak?") a first-timer
        sees how THE START runs and one button, nothing else, until the plan is built */
+    h+=mfWelcome();
     h+='<div class="lbx-card mf-how"><div class="lbx-k">'+mfL('Macam mana ia berjalan','How it works')+'</div>'+
       '<div class="lbx-h">'+mfL('Tiga langkah. Mula dengan yang pertama.','Three steps. Start with the first.')+'</div>'+
       [[mfL('Jawab '+mfQCount()+' soalan','Answer '+mfQCount()+' questions'),mfL('2 minit. Pelan anda ikut tahap dan keselesaan badan anda.','2 minutes. Your plan fits your level and how your body feels.')],
@@ -19094,6 +19105,28 @@ function renderMF(){
   h+='</div>';
   $('pgd-body').innerHTML=h;
 }
+
+/* ── Coach Seth's welcome (11 Nov 2026, Seth: "video sambutan coach seth",
+   then "buang je terus avatar aku tu, teruskan voiceover je", then "ok on"):
+   33 s, his voice over THE START's graphics, for a first visit. A small
+   card; a tap plays it full screen, with sound, and ✕ closes it. ── */
+const MF_WELCOME='/img/p/mula/sambutan.mp4?v=1', MF_WELCOME_PIC='/img/p/mula/sambutan.jpg?v=1';
+function mfWelcome(){
+  return '<button class="lbx-card mf-wel" onclick="mfWelcomePlay()"><span class="ph" style="background-image:url(\''+MF_WELCOME_PIC+'\')"><i>'+glyph('play')+'</i></span>'+
+    '<span class="tx"><span class="lbx-k">'+mfL('Mula di sini','Start here')+'</span><b>'+mfL('Tonton Coach Seth','Watch Coach Seth')+'</b>'+
+    '<span>'+mfL('33 saat: macam mana THE START berjalan.','33 seconds on how THE START works (in Malay).')+'</span></span></button>';
+}
+function mfWelcomePlay(){
+  mfWelcomeClose();
+  const o=document.createElement('div'); o.id='mfvov';
+  o.innerHTML='<video id="mfv" src="'+MF_WELCOME+'" poster="'+MF_WELCOME_PIC+'" playsinline controls autoplay></video>'+
+    '<button class="x" aria-label="'+mfL('Tutup','Close')+'" onclick="mfWelcomeClose()">✕</button>';
+  document.body.appendChild(o);
+  const v=$('mfv');
+  if(v){ try{ const pr=v.play(); if(pr && pr['catch']) pr['catch'](function(){}); }catch(e){}
+    v.onended=function(){ mfWelcomeClose(); const d=mfData(); d.welcome=1; HF.save(); }; }
+}
+function mfWelcomeClose(){ const o=$('mfvov'); if(o){ try{ const v=$('mfv'); if(v) v.pause(); }catch(e){} if(o.parentNode) o.parentNode.removeChild(o); } }
 
 /* ── the questionnaire (MAK2FIT's way: one question a screen) ── */
 const MF_Q=[

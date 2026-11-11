@@ -441,6 +441,7 @@ function renderMF(){
   } else if(!mfMe() && !done){
     /* (11 Nov 2026, Seth: "kalau kau beginner, kau faham tak?") a first-timer
        sees how THE START runs and one button, nothing else, until the plan is built */
+    h+=mfWelcome();
     h+='<div class="lbx-card mf-how"><div class="lbx-k">'+mfL('Macam mana ia berjalan','How it works')+'</div>'+
       '<div class="lbx-h">'+mfL('Tiga langkah. Mula dengan yang pertama.','Three steps. Start with the first.')+'</div>'+
       [[mfL('Jawab '+mfQCount()+' soalan','Answer '+mfQCount()+' questions'),mfL('2 minit. Pelan anda ikut tahap dan keselesaan badan anda.','2 minutes. Your plan fits your level and how your body feels.')],
@@ -473,6 +474,28 @@ function renderMF(){
   h+='</div>';
   $('pgd-body').innerHTML=h;
 }
+
+/* ── Coach Seth's welcome (11 Nov 2026, Seth: "video sambutan coach seth",
+   then "buang je terus avatar aku tu, teruskan voiceover je", then "ok on"):
+   33 s, his voice over THE START's graphics, for a first visit. A small
+   card; a tap plays it full screen, with sound, and ✕ closes it. ── */
+const MF_WELCOME='/img/p/mula/sambutan.mp4?v=1', MF_WELCOME_PIC='/img/p/mula/sambutan.jpg?v=1';
+function mfWelcome(){
+  return '<button class="lbx-card mf-wel" onclick="mfWelcomePlay()"><span class="ph" style="background-image:url(\''+MF_WELCOME_PIC+'\')"><i>'+glyph('play')+'</i></span>'+
+    '<span class="tx"><span class="lbx-k">'+mfL('Mula di sini','Start here')+'</span><b>'+mfL('Tonton Coach Seth','Watch Coach Seth')+'</b>'+
+    '<span>'+mfL('33 saat: macam mana THE START berjalan.','33 seconds on how THE START works (in Malay).')+'</span></span></button>';
+}
+function mfWelcomePlay(){
+  mfWelcomeClose();
+  const o=document.createElement('div'); o.id='mfvov';
+  o.innerHTML='<video id="mfv" src="'+MF_WELCOME+'" poster="'+MF_WELCOME_PIC+'" playsinline controls autoplay></video>'+
+    '<button class="x" aria-label="'+mfL('Tutup','Close')+'" onclick="mfWelcomeClose()">✕</button>';
+  document.body.appendChild(o);
+  const v=$('mfv');
+  if(v){ try{ const pr=v.play(); if(pr && pr['catch']) pr['catch'](function(){}); }catch(e){}
+    v.onended=function(){ mfWelcomeClose(); const d=mfData(); d.welcome=1; HF.save(); }; }
+}
+function mfWelcomeClose(){ const o=$('mfvov'); if(o){ try{ const v=$('mfv'); if(v) v.pause(); }catch(e){} if(o.parentNode) o.parentNode.removeChild(o); } }
 
 /* ── the questionnaire (MAK2FIT's way: one question a screen) ── */
 const MF_Q=[

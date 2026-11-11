@@ -3865,6 +3865,8 @@ print("\n── THE START: MAKAN ──");
   mfOwned=function(){ return true; }; renderMF=keepRender; HF.data.mf={rec:{},lesson:{}}; var kp=HF.data.progress[MF_ID]; HF.data.progress[MF_ID]=0;
   renderMF(); var B=document.getElementById('pgd-body').innerHTML;
   ok("a first-timer sees how THE START runs and one button: no tabs, no session to skip the questions", B.indexOf('mf-how')>0 && B.indexOf('mfQuizOpen()')>0 && B.indexOf('mf-tabs')<0 && B.indexOf('mfOpenSession(')<0 && B.indexOf('mfScanGo')<0);
+  ok("a first-timer also sees Coach Seth's welcome video, a tap away", B.indexOf('mfWelcomePlay()')>0 && B.indexOf('sambutan.jpg')>0 && B.indexOf('mfWelcomePlay()')<B.indexOf('mf-how') &&
+    String(mfWelcomePlay).indexOf('playsinline')>0 && String(mfWelcomePlay).indexOf('mfWelcomeClose')>0);
   ok("...in plain words: no 'laluan', no 'pusingan' on the weeks", JSON.stringify(MF_WEEKS).indexOf('pusingan')<0 && String(renderMF).indexOf('laluan')<0);
   var all=['isn','sel','rab','kha','jum','sab','ahd'], keepS=HF.data.sessions; HF.data.sessions={};
   HF.data.mf={me:{done:true, makan:'campur', path:1, days:all}, rec:{}, lesson:{}}; HF.data.progress[MF_ID]=2;
