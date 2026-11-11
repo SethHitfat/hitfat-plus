@@ -9587,7 +9587,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mf-today .lbx-h{font-size:21px;line-height:1.12;margin-top:2px;} .mf-today .lbx-p{margin-top:4px;font-size:13px;}
 .mf-today .lbx-go{margin:12px 0 0;padding:12px 14px;font-size:15px;} .mf-today .mf-link{margin-top:6px;text-align:left;padding:4px 0;}
 .mf-today .mf-today-alt{margin:12px 0 0;font-size:13.5px;}
-.mf-today-ph{min-height:190px;background:#E8602A center 25%/cover no-repeat;}
+.mf-today-ph{min-height:200px;background:#E8602A center 30%/cover no-repeat;}
 .mf-today.done .lbx-h{color:var(--lr);}
 .mf-ticks{padding:6px 16px 8px;}
 .mf-ticks-h{display:flex;justify-content:space-between;align-items:center;padding:10px 0 4px;}
@@ -9606,6 +9606,33 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mf-ml .ph{display:block;aspect-ratio:1;background:var(--surface2) center/cover no-repeat;}
 .mf-ml .k{padding:6px 9px 0;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--lr);}
 .mf-ml b{padding:0 9px;font-size:12.5px;font-weight:750;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+/* THE START's first session: three pointers before the count (11 Nov 2026) */
+#mfgd{position:absolute;inset:0;z-index:40;background:rgba(10,6,4,.62);display:flex;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 70px) 18px 0;}
+#mfgd .c{position:relative;width:100%;max-width:380px;padding:20px 20px 16px;border-radius:24px;background:#FFF4EA;color:#141414;box-shadow:0 20px 50px rgba(0,0,0,.4);font-family:'Inter',sans-serif;}
+#mfgd .e{font-size:40px;line-height:1;}
+#mfgd .k{margin-top:10px;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E8480F;}
+#mfgd b{display:block;margin-top:4px;font-size:20px;font-weight:900;line-height:1.2;}
+#mfgd p{margin:6px 0 0;font-size:14.5px;line-height:1.45;color:#5A4334;}
+#mfgd .d{display:flex;gap:6px;margin-top:14px;} #mfgd .d i{width:8px;height:8px;border-radius:50%;background:rgba(232,72,15,.25);display:block;} #mfgd .d i.on{width:22px;border-radius:99px;background:#E8480F;}
+#mfgd .go{display:block;width:100%;margin-top:14px;padding:13px 0;border:0;border-radius:14px;background:#E8480F;color:#fff;font:800 16px/1 'Inter',sans-serif;cursor:pointer;}
+#mfgd .sk{display:block;width:100%;margin-top:6px;padding:8px 0;border:0;background:transparent;color:#7A5A46;font:700 13px/1 'Inter',sans-serif;cursor:pointer;}
+#mfgd.s1{align-items:flex-start;}
+#play.tst .mfk-e.mf-glow{position:relative;z-index:41;background:#FF6A2B;border-color:#FF6A2B;color:#fff;box-shadow:0 0 0 6px rgba(255,106,43,.35);}
+/* THE START: each session card is a poster (11 Nov 2026) */
+.mf-hero.mf-dpic{min-height:340px;display:flex;flex-direction:column;justify-content:flex-end;background-size:cover !important;background-position:center 30% !important;color:#fff;}
+.mf-hero.mf-dpic .mf-hero-k,.mf-hero.mf-dpic .mf-hero-t{color:#fff;text-shadow:0 3px 14px rgba(0,0,0,.45);}
+.lbx.mf .lbx-days{grid-auto-columns:46%;}
+.lbx.mf .lbx-day.mf-pc{min-height:0;aspect-ratio:4/5;overflow:hidden;justify-content:flex-end;color:#fff;background:#1E1A18;padding:12px;}
+.lbx.mf .mf-pc .pc-ph{position:absolute;inset:0;background:#1E1A18 center 30%/cover no-repeat;}
+.lbx.mf .mf-pc .pc-ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.38) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,0) 45%,rgba(0,0,0,.82) 100%);}
+.lbx.mf .mf-pc > *:not(.pc-ph){position:relative;}
+.lbx.mf .mf-pc .lbx-day-n{position:absolute;top:10px;left:12px;right:12px;}
+.lbx.mf .mf-pc .lbx-day-n small{opacity:.85;}
+.lbx.mf .mf-pc .lbx-day-t{font-size:16px;font-weight:900;font-style:italic;line-height:1.1;text-transform:uppercase;letter-spacing:-.2px;color:#fff;}
+.lbx.mf .mf-pc .lbx-day-m{color:rgba(255,255,255,.85);}
+.lbx.mf .mf-pc .lbx-day-k{color:#FFB48A;}
+.lbx.mf .mf-pc.now{box-shadow:0 0 0 3px #FF6A2B,0 10px 24px rgba(232,72,15,.35);}
+.lbx.mf .mf-pc.done .pc-ph{filter:grayscale(.6) brightness(.8);}
 /* THE START: Coach Seth's welcome video (11 Nov 2026) */
 .mf-wel{display:flex;gap:14px;align-items:center;width:100%;padding:12px;border:0;text-align:left;font:inherit;color:var(--txt);cursor:pointer;}
 .mf-wel .ph{position:relative;flex:none;width:84px;aspect-ratio:9/16;border-radius:14px;background:#1A0A03 center/cover no-repeat;overflow:hidden;}
@@ -19013,7 +19040,7 @@ function mfHead(){
 function mfToday(){
   const nx=mfDone(), dt=mfDoneToday(), train=mfTrainDay();
   if(nx>=MF_N) return '';
-  const s=mfSession(nx), p=s.main[0].p, img='/img/p/mula/tk/'+p+'-ok.jpg?v=1';
+  const s=mfSession(nx), img=mfSessPic(nx);
   let k, t, m, btn;
   if(dt>=0){
     k=mfL('Latihan hari ini','Today’s workout'); t=mfL('Sesi '+(dt+1)+' selesai ✓','Session '+(dt+1)+' done ✓');
@@ -19303,7 +19330,8 @@ function mfPlan(){
   h+='<div class="mf-wk"><b>'+mfT(w.n)+'</b><span>'+mfT(w.s)+'</span><em>'+mfL('Buat '+ws.w+' saat · rehat '+ws.rest+' saat','Work '+ws.w+' s · rest '+ws.rest+' s')+'</em></div>';
   h+='<div class="lbx-days">'+[0,1,2].map(j=>{
     const gi=mfWeek*3+j, s=mfSession(gi), isDone=gi<done, now=gi===nx&&owned;
-    return '<div class="lbx-day'+(isDone?' done':'')+(now?' now':'')+'" onclick="mfOpenSession('+gi+')">'+
+    return '<div class="lbx-day mf-pc'+(isDone?' done':'')+(now?' now':'')+'" onclick="mfOpenSession('+gi+')">'+
+      '<span class="pc-ph" style="background-image:url(\''+mfSessPic(gi)+'\')"></span>'+
       '<div class="lbx-day-n"><small>'+mfL('SESI','SESSION')+'</small><b>'+(gi+1)+'</b>'+(isDone?'<span class="ck">'+glyph('check')+'</span>':'')+'</div>'+
       '<div class="lbx-day-t">'+mfT(s.n)+'</div>'+
       '<div class="lbx-day-m">'+mfMinutes(s)+' min'+(MF_RECS.indexOf(gi)>=0?' · '+mfL('Rekod','Record'):'')+'</div>'+
@@ -19313,6 +19341,9 @@ function mfPlan(){
   return h;
 }
 
+/* (11 Nov 2026, Seth: "setiap session ni ade gambar training mcm poster") each of
+   the 18 sessions has its own studio poster photo, the move it is built on */
+function mfSessPic(gi){ return '/img/p/mula/s/s'+(gi<9?'0':'')+(gi+1)+'.jpg?v=2'; }
 /* ── a session: what it is, one big button; warm-up and cool-down as one
    line each, the four main moves with their technique folded away ── */
 function mfOpenSession(gi){
@@ -19322,7 +19353,7 @@ function mfOpenSession(gi){
   const part=(no,t,meta,names)=>'<div class="mf-part"><div class="h"><b>'+no+' · '+t+'</b><span>'+meta+'</span></div>'+
     '<div class="mf-chips">'+names.map(n=>'<span>'+hesc(n)+'</span>').join('')+'</div></div>';
   let h=pdxBar('day', owned?{icon:'play',label:mfL('Mula','Start'),go:'mfPlay('+gi+')'}:{icon:'lock',label:'RM'+MF_PRICE,go:'mfBuy()'})+
-    '<div class="mf-hero mf-day mf-'+s.type+'"><div class="mf-hero-k">'+mfL('Sesi ','Session ')+(gi+1)+' / '+MF_N+' · '+mfL('Minggu ','Week ')+(s.wi+1)+(done?' · ✓':'')+'</div>'+
+    '<div class="mf-hero mf-day mf-'+s.type+' mf-dpic" style="background-image:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,0) 35%,rgba(0,0,0,.78)),url(\''+mfSessPic(gi)+'\')"><div class="mf-hero-k">'+mfL('Sesi ','Session ')+(gi+1)+' / '+MF_N+' · '+mfL('Minggu ','Week ')+(s.wi+1)+(done?' · ✓':'')+'</div>'+
     '<div class="mf-hero-t sm">'+mfT(s.n)+'</div>'+mfLangBtn()+'</div><div class="lbx mf">';
   h+='<div class="lbx-facts">'+[[mfMinutes(s)+'',mfL('minit','min')],[s.main.length+'',mfL('gerakan','moves')],[s.r+'',mfL('kali ulang','rounds')],[s.w+'/'+s.rest,mfL('saat buat/rehat','work/rest s')]]
     .map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
@@ -19726,6 +19757,37 @@ function mfPlLabels(on){
   set('#pl-done .dgrid > div:nth-child(1) > span',mfL('Masa','Time')); set('#pl-done .dgrid > div:nth-child(2) > span',mfL('Dibakar','Burned'));
   set('#pl-done .dgrid > div:nth-child(3) > span',mfL('Gerakan','Moves')); set('#pl-done .dgrid > div:nth-child(4) > span',mfL('Berturut','Streak'));
   set('#pl-done .dshare',mfL('Kongsi','Share')); set('#pl-done .dbtns .bigbtn',mfL('Siap','Done'));
+}
+/* (11 Nov 2026, Seth picked "Sesi pertama berpandu") the first time THE
+   START's Sesi 1 starts, three pointers over the player before the count:
+   where pause is, the easier version, follow the video at your own pace.
+   Once only (mfData().guide1); "Langkau" skips them. */
+const MF_GUIDE=[
+  ['👆','Ketik skrin untuk jeda','Butang jeda, ulang dan langkau keluar bila anda ketik skrin. Rehat bila perlu.',
+   'Tap the screen to pause','Pause, back and skip appear when you tap the screen. Rest whenever you need to.'],
+  ['🪜','Terlalu susah? Ada versi mudah','Pada setiap gerakan utama, tekan “Versi mudah” dalam kad Kunci teknik di bawah. Ia tunjuk cara yang lebih ringan.',
+   'Too hard? There is an easier version','On every main move, tap “Easier version” on the Technique card below. It shows a lighter way.'],
+  ['🎥','Ikut video, ikut rentak sendiri','Video tunjuk contoh gerakan. Tak perlu sama laju. Teknik dulu, laju kemudian.',
+   'Follow the video, at your own pace','The video shows the move. You do not need to match its speed. Technique first.']];
+function mfPlGuide(go){
+  if(!pl || !pl.meta || !pl.meta.mf || pl.meta.mf.gi!==0) return false;
+  const d=mfData(); if(d.guide1) return false;
+  const host=$('play'); if(!host || !document.createElement) return false;
+  let i=0; const o=document.createElement('div'); o.id='mfgd';
+  const end=()=>{ d.guide1=1; HF.save(); const e=document.querySelector('#pl-learn .mfk-e'); if(e) e.classList.remove('mf-glow'); if(o.parentNode) o.parentNode.removeChild(o); go(); };
+  const draw=()=>{
+    const x=MF_GUIDE[i], e=document.querySelector('#pl-learn .mfk-e');
+    if(e) e.classList.toggle('mf-glow', i===1);
+    o.className='s'+i;
+    o.innerHTML='<div class="c"><div class="e">'+x[0]+'</div><div class="k">'+mfL('Sesi pertama · ','First session · ')+(i+1)+' / '+MF_GUIDE.length+'</div>'+
+      '<b>'+mfL(x[1],x[3])+'</b><p>'+mfL(x[2],x[4])+'</p><div class="d">'+MF_GUIDE.map((_,k)=>'<i class="'+(k===i?'on':'')+'"></i>').join('')+'</div>'+
+      '<button class="go">'+(i<MF_GUIDE.length-1?mfL('Seterusnya','Next'):mfL('Faham, jom mula!','Got it, let’s go!'))+'</button>'+
+      '<button class="sk">'+mfL('Langkau','Skip')+'</button></div>';
+    o.querySelector('.go').onclick=ev=>{ ev.stopPropagation(); if(i<MF_GUIDE.length-1){ i++; draw(); } else end(); };
+    o.querySelector('.sk').onclick=ev=>{ ev.stopPropagation(); end(); };
+  };
+  draw(); host.appendChild(o);
+  return true;
 }
 function mfPlEasy(){ const x=$('mfk-x'); if(x && x.classList) x.classList.toggle('on'); }
 function mfPl(stage,arg){
@@ -27671,6 +27733,11 @@ function plBegin(){
   plAskCam(()=>plStart());
 }
 function plStart(){
+  /* (11 Nov 2026) THE START's first session: three short pointers first */
+  if(typeof mfPlGuide==='function' && mfPlGuide(plStartGo)){ $('pl-ready').classList.remove('on','busy'); $('play').classList.remove('rdy'); return; }
+  plStartGo();
+}
+function plStartGo(){
   if(pl) pl.started=true;
   if(typeof coUnlock==='function'){ coUnlock(); coSession(true); }
   $('pl-ready').classList.remove('on','busy');

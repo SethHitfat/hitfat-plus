@@ -3842,6 +3842,9 @@ print("\n── THE START: ITS OWN PLAYER ──");
   startWorkout(e.slice(0,2),{rounds:1, name:'Morning Kickstart', key:'other'});
   ok("every other program keeps the HITFAT player", !play.classList.contains('tst') && document.getElementById('pl-learn').innerHTML.indexOf('Form tip')>0 && plLeftWord()===' left');
   plClose(); if(pl) plCloseNow();
+  var P=mfPlan(); ok("every session card is a poster with its own photo", mfSessPic(0)==='/img/p/mula/s/s01.jpg?v=2' && mfSessPic(17)==='/img/p/mula/s/s18.jpg?v=2' && P.indexOf('mf-pc')>0 && P.indexOf('/img/p/mula/s/s')>0);
+  ok("the first session starts with three pointers, once: pause, the easier version, the video", MF_GUIDE.length===3 && String(plStart).indexOf('mfPlGuide(plStartGo)')>0 &&
+    String(mfPlGuide).indexOf('gi!==0')>0 && String(mfPlGuide).indexOf('guide1')>0 && MF_GUIDE[1][1].indexOf('versi mudah')>0);
   ok("Semak Teknik sits in THE START: squat and push-up open the AI check, the banner opens its home", MF_TK.squat==='squat' && MF_TK.push==='pushup' &&
     mfTkBtn('squat').indexOf("mfTk('squat')")>0 && mfTkBanner().indexOf("mfTk('')")>0 && !MF_TK.hinge);
   ok("...in a frame over the app, camera allowed, straight to the move, and it closes back to the app", String(mfTk).indexOf("/teknik/?app=1")>0 && String(mfTk).indexOf("'#'+move")>0 &&

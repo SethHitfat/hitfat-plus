@@ -382,7 +382,7 @@ function mfHead(){
 function mfToday(){
   const nx=mfDone(), dt=mfDoneToday(), train=mfTrainDay();
   if(nx>=MF_N) return '';
-  const s=mfSession(nx), p=s.main[0].p, img='/img/p/mula/tk/'+p+'-ok.jpg?v=1';
+  const s=mfSession(nx), img=mfSessPic(nx);
   let k, t, m, btn;
   if(dt>=0){
     k=mfL('Latihan hari ini','Today’s workout'); t=mfL('Sesi '+(dt+1)+' selesai ✓','Session '+(dt+1)+' done ✓');
@@ -672,7 +672,8 @@ function mfPlan(){
   h+='<div class="mf-wk"><b>'+mfT(w.n)+'</b><span>'+mfT(w.s)+'</span><em>'+mfL('Buat '+ws.w+' saat · rehat '+ws.rest+' saat','Work '+ws.w+' s · rest '+ws.rest+' s')+'</em></div>';
   h+='<div class="lbx-days">'+[0,1,2].map(j=>{
     const gi=mfWeek*3+j, s=mfSession(gi), isDone=gi<done, now=gi===nx&&owned;
-    return '<div class="lbx-day'+(isDone?' done':'')+(now?' now':'')+'" onclick="mfOpenSession('+gi+')">'+
+    return '<div class="lbx-day mf-pc'+(isDone?' done':'')+(now?' now':'')+'" onclick="mfOpenSession('+gi+')">'+
+      '<span class="pc-ph" style="background-image:url(\''+mfSessPic(gi)+'\')"></span>'+
       '<div class="lbx-day-n"><small>'+mfL('SESI','SESSION')+'</small><b>'+(gi+1)+'</b>'+(isDone?'<span class="ck">'+glyph('check')+'</span>':'')+'</div>'+
       '<div class="lbx-day-t">'+mfT(s.n)+'</div>'+
       '<div class="lbx-day-m">'+mfMinutes(s)+' min'+(MF_RECS.indexOf(gi)>=0?' · '+mfL('Rekod','Record'):'')+'</div>'+
@@ -682,6 +683,9 @@ function mfPlan(){
   return h;
 }
 
+/* (11 Nov 2026, Seth: "setiap session ni ade gambar training mcm poster") each of
+   the 18 sessions has its own studio poster photo, the move it is built on */
+function mfSessPic(gi){ return '/img/p/mula/s/s'+(gi<9?'0':'')+(gi+1)+'.jpg?v=2'; }
 /* ── a session: what it is, one big button; warm-up and cool-down as one
    line each, the four main moves with their technique folded away ── */
 function mfOpenSession(gi){
@@ -691,7 +695,7 @@ function mfOpenSession(gi){
   const part=(no,t,meta,names)=>'<div class="mf-part"><div class="h"><b>'+no+' · '+t+'</b><span>'+meta+'</span></div>'+
     '<div class="mf-chips">'+names.map(n=>'<span>'+hesc(n)+'</span>').join('')+'</div></div>';
   let h=pdxBar('day', owned?{icon:'play',label:mfL('Mula','Start'),go:'mfPlay('+gi+')'}:{icon:'lock',label:'RM'+MF_PRICE,go:'mfBuy()'})+
-    '<div class="mf-hero mf-day mf-'+s.type+'"><div class="mf-hero-k">'+mfL('Sesi ','Session ')+(gi+1)+' / '+MF_N+' · '+mfL('Minggu ','Week ')+(s.wi+1)+(done?' · ✓':'')+'</div>'+
+    '<div class="mf-hero mf-day mf-'+s.type+' mf-dpic" style="background-image:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,0) 35%,rgba(0,0,0,.78)),url(\''+mfSessPic(gi)+'\')"><div class="mf-hero-k">'+mfL('Sesi ','Session ')+(gi+1)+' / '+MF_N+' · '+mfL('Minggu ','Week ')+(s.wi+1)+(done?' · ✓':'')+'</div>'+
     '<div class="mf-hero-t sm">'+mfT(s.n)+'</div>'+mfLangBtn()+'</div><div class="lbx mf">';
   h+='<div class="lbx-facts">'+[[mfMinutes(s)+'',mfL('minit','min')],[s.main.length+'',mfL('gerakan','moves')],[s.r+'',mfL('kali ulang','rounds')],[s.w+'/'+s.rest,mfL('saat buat/rehat','work/rest s')]]
     .map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('')+'</div>';
@@ -1095,6 +1099,37 @@ function mfPlLabels(on){
   set('#pl-done .dgrid > div:nth-child(1) > span',mfL('Masa','Time')); set('#pl-done .dgrid > div:nth-child(2) > span',mfL('Dibakar','Burned'));
   set('#pl-done .dgrid > div:nth-child(3) > span',mfL('Gerakan','Moves')); set('#pl-done .dgrid > div:nth-child(4) > span',mfL('Berturut','Streak'));
   set('#pl-done .dshare',mfL('Kongsi','Share')); set('#pl-done .dbtns .bigbtn',mfL('Siap','Done'));
+}
+/* (11 Nov 2026, Seth picked "Sesi pertama berpandu") the first time THE
+   START's Sesi 1 starts, three pointers over the player before the count:
+   where pause is, the easier version, follow the video at your own pace.
+   Once only (mfData().guide1); "Langkau" skips them. */
+const MF_GUIDE=[
+  ['👆','Ketik skrin untuk jeda','Butang jeda, ulang dan langkau keluar bila anda ketik skrin. Rehat bila perlu.',
+   'Tap the screen to pause','Pause, back and skip appear when you tap the screen. Rest whenever you need to.'],
+  ['🪜','Terlalu susah? Ada versi mudah','Pada setiap gerakan utama, tekan “Versi mudah” dalam kad Kunci teknik di bawah. Ia tunjuk cara yang lebih ringan.',
+   'Too hard? There is an easier version','On every main move, tap “Easier version” on the Technique card below. It shows a lighter way.'],
+  ['🎥','Ikut video, ikut rentak sendiri','Video tunjuk contoh gerakan. Tak perlu sama laju. Teknik dulu, laju kemudian.',
+   'Follow the video, at your own pace','The video shows the move. You do not need to match its speed. Technique first.']];
+function mfPlGuide(go){
+  if(!pl || !pl.meta || !pl.meta.mf || pl.meta.mf.gi!==0) return false;
+  const d=mfData(); if(d.guide1) return false;
+  const host=$('play'); if(!host || !document.createElement) return false;
+  let i=0; const o=document.createElement('div'); o.id='mfgd';
+  const end=()=>{ d.guide1=1; HF.save(); const e=document.querySelector('#pl-learn .mfk-e'); if(e) e.classList.remove('mf-glow'); if(o.parentNode) o.parentNode.removeChild(o); go(); };
+  const draw=()=>{
+    const x=MF_GUIDE[i], e=document.querySelector('#pl-learn .mfk-e');
+    if(e) e.classList.toggle('mf-glow', i===1);
+    o.className='s'+i;
+    o.innerHTML='<div class="c"><div class="e">'+x[0]+'</div><div class="k">'+mfL('Sesi pertama · ','First session · ')+(i+1)+' / '+MF_GUIDE.length+'</div>'+
+      '<b>'+mfL(x[1],x[3])+'</b><p>'+mfL(x[2],x[4])+'</p><div class="d">'+MF_GUIDE.map((_,k)=>'<i class="'+(k===i?'on':'')+'"></i>').join('')+'</div>'+
+      '<button class="go">'+(i<MF_GUIDE.length-1?mfL('Seterusnya','Next'):mfL('Faham, jom mula!','Got it, let’s go!'))+'</button>'+
+      '<button class="sk">'+mfL('Langkau','Skip')+'</button></div>';
+    o.querySelector('.go').onclick=ev=>{ ev.stopPropagation(); if(i<MF_GUIDE.length-1){ i++; draw(); } else end(); };
+    o.querySelector('.sk').onclick=ev=>{ ev.stopPropagation(); end(); };
+  };
+  draw(); host.appendChild(o);
+  return true;
 }
 function mfPlEasy(){ const x=$('mfk-x'); if(x && x.classList) x.classList.toggle('on'); }
 function mfPl(stage,arg){

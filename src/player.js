@@ -718,6 +718,11 @@ function plBegin(){
   plAskCam(()=>plStart());
 }
 function plStart(){
+  /* (11 Nov 2026) THE START's first session: three short pointers first */
+  if(typeof mfPlGuide==='function' && mfPlGuide(plStartGo)){ $('pl-ready').classList.remove('on','busy'); $('play').classList.remove('rdy'); return; }
+  plStartGo();
+}
+function plStartGo(){
   if(pl) pl.started=true;
   if(typeof coUnlock==='function'){ coUnlock(); coSession(true); }
   $('pl-ready').classList.remove('on','busy');

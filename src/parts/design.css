@@ -7335,7 +7335,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mf-today .lbx-h{font-size:21px;line-height:1.12;margin-top:2px;} .mf-today .lbx-p{margin-top:4px;font-size:13px;}
 .mf-today .lbx-go{margin:12px 0 0;padding:12px 14px;font-size:15px;} .mf-today .mf-link{margin-top:6px;text-align:left;padding:4px 0;}
 .mf-today .mf-today-alt{margin:12px 0 0;font-size:13.5px;}
-.mf-today-ph{min-height:190px;background:#E8602A center 25%/cover no-repeat;}
+.mf-today-ph{min-height:200px;background:#E8602A center 30%/cover no-repeat;}
 .mf-today.done .lbx-h{color:var(--lr);}
 .mf-ticks{padding:6px 16px 8px;}
 .mf-ticks-h{display:flex;justify-content:space-between;align-items:center;padding:10px 0 4px;}
@@ -7354,6 +7354,33 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mf-ml .ph{display:block;aspect-ratio:1;background:var(--surface2) center/cover no-repeat;}
 .mf-ml .k{padding:6px 9px 0;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--lr);}
 .mf-ml b{padding:0 9px;font-size:12.5px;font-weight:750;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+/* THE START's first session: three pointers before the count (11 Nov 2026) */
+#mfgd{position:absolute;inset:0;z-index:40;background:rgba(10,6,4,.62);display:flex;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 70px) 18px 0;}
+#mfgd .c{position:relative;width:100%;max-width:380px;padding:20px 20px 16px;border-radius:24px;background:#FFF4EA;color:#141414;box-shadow:0 20px 50px rgba(0,0,0,.4);font-family:'Inter',sans-serif;}
+#mfgd .e{font-size:40px;line-height:1;}
+#mfgd .k{margin-top:10px;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E8480F;}
+#mfgd b{display:block;margin-top:4px;font-size:20px;font-weight:900;line-height:1.2;}
+#mfgd p{margin:6px 0 0;font-size:14.5px;line-height:1.45;color:#5A4334;}
+#mfgd .d{display:flex;gap:6px;margin-top:14px;} #mfgd .d i{width:8px;height:8px;border-radius:50%;background:rgba(232,72,15,.25);display:block;} #mfgd .d i.on{width:22px;border-radius:99px;background:#E8480F;}
+#mfgd .go{display:block;width:100%;margin-top:14px;padding:13px 0;border:0;border-radius:14px;background:#E8480F;color:#fff;font:800 16px/1 'Inter',sans-serif;cursor:pointer;}
+#mfgd .sk{display:block;width:100%;margin-top:6px;padding:8px 0;border:0;background:transparent;color:#7A5A46;font:700 13px/1 'Inter',sans-serif;cursor:pointer;}
+#mfgd.s1{align-items:flex-start;}
+#play.tst .mfk-e.mf-glow{position:relative;z-index:41;background:#FF6A2B;border-color:#FF6A2B;color:#fff;box-shadow:0 0 0 6px rgba(255,106,43,.35);}
+/* THE START: each session card is a poster (11 Nov 2026) */
+.mf-hero.mf-dpic{min-height:340px;display:flex;flex-direction:column;justify-content:flex-end;background-size:cover !important;background-position:center 30% !important;color:#fff;}
+.mf-hero.mf-dpic .mf-hero-k,.mf-hero.mf-dpic .mf-hero-t{color:#fff;text-shadow:0 3px 14px rgba(0,0,0,.45);}
+.lbx.mf .lbx-days{grid-auto-columns:46%;}
+.lbx.mf .lbx-day.mf-pc{min-height:0;aspect-ratio:4/5;overflow:hidden;justify-content:flex-end;color:#fff;background:#1E1A18;padding:12px;}
+.lbx.mf .mf-pc .pc-ph{position:absolute;inset:0;background:#1E1A18 center 30%/cover no-repeat;}
+.lbx.mf .mf-pc .pc-ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.38) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,0) 45%,rgba(0,0,0,.82) 100%);}
+.lbx.mf .mf-pc > *:not(.pc-ph){position:relative;}
+.lbx.mf .mf-pc .lbx-day-n{position:absolute;top:10px;left:12px;right:12px;}
+.lbx.mf .mf-pc .lbx-day-n small{opacity:.85;}
+.lbx.mf .mf-pc .lbx-day-t{font-size:16px;font-weight:900;font-style:italic;line-height:1.1;text-transform:uppercase;letter-spacing:-.2px;color:#fff;}
+.lbx.mf .mf-pc .lbx-day-m{color:rgba(255,255,255,.85);}
+.lbx.mf .mf-pc .lbx-day-k{color:#FFB48A;}
+.lbx.mf .mf-pc.now{box-shadow:0 0 0 3px #FF6A2B,0 10px 24px rgba(232,72,15,.35);}
+.lbx.mf .mf-pc.done .pc-ph{filter:grayscale(.6) brightness(.8);}
 /* THE START: Coach Seth's welcome video (11 Nov 2026) */
 .mf-wel{display:flex;gap:14px;align-items:center;width:100%;padding:12px;border:0;text-align:left;font:inherit;color:var(--txt);cursor:pointer;}
 .mf-wel .ph{position:relative;flex:none;width:84px;aspect-ratio:9/16;border-radius:14px;background:#1A0A03 center/cover no-repeat;overflow:hidden;}
