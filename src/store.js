@@ -647,6 +647,9 @@ const BUY_GO={lad4:function(){ openProgram(LB30_ID); if(typeof lbBuy==='function
               /* ?tebus=lad4 (24 Oct 2026): paid on the landing page already, back
                  through ladies/berjaya: open what she bought (ladies30.js lbTebus) */
               tebus_lad4:function(){ if(typeof lbTebus==='function') lbTebus(0); },
+              /* THE START (11 Nov 2026): app.hitfat.io/start, paid there (?tebus=mula, mula.js mfTebus) or bought in the app (?beli=mula) */
+              mula:function(){ if(typeof mfBuy==='function'){ openProgram(MF_ID); mfBuy(); } },
+              tebus_mula:function(){ if(typeof mfTebus==='function') mfTebus(0); },
               /* ?beli=affiliate (26 Oct 2026): the /affiliate page's Mohon button. Me, and
                  the ask if she is not one yet (her status and links are on Me otherwise) */
               affiliate:function(){ switchTab('me'); _aff=undefined; affLoad();
@@ -657,7 +660,13 @@ function captureBuyParam(){
        itself, not to ladies/berjaya: an order from a landing page (HL…) on
        the app's address goes on to its "Pembayaran berjaya" page */
     const lo=String(new URLSearchParams(location.search.replace(/^\?/,'').replace(/\?/g,'&')).get('order_number')||'');
-    if(/^HL[A-Z0-9]+/.test(lo) && location.pathname==='/'){ location.replace('/ladies/berjaya/'+location.search); return; }
+    if(/^HL[A-Z0-9]+/.test(lo) && location.pathname==='/'){
+      /* (11 Nov 2026) THE START sells from /start too: landing-pay says which program the order was for */
+      const go=p=>location.replace(p+location.search), hl=/^HL[A-Z0-9]+/.exec(lo)[0];
+      fetch(SUPA_URL+'/functions/v1/landing-pay?action=status&order='+encodeURIComponent(hl)).then(r=>r.json())
+        .then(d=>go(d && d.sku==='prog_mula' ? '/start/berjaya/' : '/ladies/berjaya/'), ()=>go('/ladies/berjaya/'));
+      return;
+    }
     const q=new URLSearchParams(location.search), b=q.get('beli'), t=q.get('tebus');
     let k='';
     if(b && BUY_GO[b]){ k=b; q.delete('beli'); }
@@ -917,7 +926,7 @@ function needPlus(reason){
    days and goes with the order; the rules (approved, not her own purchase,
    the rate) are in the database (51-plus-affiliates.sql). */
 var AFF_LIVE=true;
-var AFF_RATES=[['MAK2FIT 30','RM10'],['HITFAT+ 6 bulan','RM30'],['HITFAT+ 12 bulan','RM40']];
+var AFF_RATES=[['MAK2FIT 30','RM10'],['THE START','RM10'],['HITFAT+ 6 bulan','RM30'],['HITFAT+ 12 bulan','RM40']];
 var _aff, _affBusy=false;
 function affRef(){
   try{
@@ -939,7 +948,7 @@ function affLoad(){
   },function(){ _affBusy=false; _aff=false; });
 }
 function affLinks(code){
-  return [['MAK2FIT 30','https://app.hitfat.io/ladies/?ref='+code],['HITFAT+','https://app.hitfat.io/?ref='+code]];
+  return [['MAK2FIT 30','https://app.hitfat.io/ladies/?ref='+code],['THE START','https://app.hitfat.io/start/?ref='+code],['HITFAT+','https://app.hitfat.io/?ref='+code]];
 }
 function affSection(){
   if(!AFF_LIVE || !sb || !HF.userId) return '';

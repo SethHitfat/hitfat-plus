@@ -34,6 +34,7 @@ import { CATALOGUE, CHANNELS, BC_API, SITE, CORS, json, isPaidStatus, isFailedSt
 /* the programs sold on their own, and the page each comes back to */
 const LANDING: Record<string, string> = {
   prog_lad4: '/ladies/berjaya/',            // Ladies Burn 30, RM39
+  prog_mula: '/start/berjaya/',             // THE START, RM49 (11 Nov 2026)
 };
 
 /* the "baru sertai" card counts orders paid from here on (see ?action=recent) */
@@ -88,8 +89,8 @@ function verify(p: Record<string, unknown>, secret: string): boolean {
    phone go hashed (SHA-256); no health, meal or body data. Without the
    META_CAPI_TOKEN secret this does nothing. */
 const PIXEL_ID = '1860516742038949';                  // HITFAT+ Pixel, as ladies/index.html
-const EVENT_ID: Record<string, string> = { prog_lad4: 'lad4-' };   // as ladies/berjaya's eventID
-const LANDING_PAGE: Record<string, string> = { prog_lad4: '/ladies/' };
+const EVENT_ID: Record<string, string> = { prog_lad4: 'lad4-', prog_mula: 'mula-' };   // as each berjaya page's eventID
+const LANDING_PAGE: Record<string, string> = { prog_lad4: '/ladies/', prog_mula: '/start/' };
 async function sha256(s: string): Promise<string> {
   const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
   return Array.from(new Uint8Array(d), (x) => x.toString(16).padStart(2, '0')).join('');
@@ -141,23 +142,32 @@ async function sendCapi(o: any, testCode = ''): Promise<{ ok: boolean; detail: s
    Bayarcash's receipt reached them). One email from the call that turns the
    order paid. Silent until RESEND_API_KEY is set, and it never holds up a
    purchase. RESEND_FROM names the sender, on a domain verified at Resend. */
-const WELCOME: Record<string, { name: string; tebus: string }> = { prog_lad4: { name: 'MAK2FIT 30', tebus: 'lad4' } };
+type Welcome = { name: string; tebus: string; color: string; ink: string; from: string; lead: string; steps: string[] };
+const WELCOME: Record<string, Welcome> = {
+  prog_lad4: { name: 'MAK2FIT 30', tebus: 'lad4', color: '#C02A7C', ink: '#5E1A47', from: 'MAK2FIT 30 <hello@mail.hitfat.io>',
+    lead: 'pelan 30 hari anda sedang menunggu.',
+    steps: ['Tekan <b>Bina Pelan Saya</b> dan jawab soalan, lebih kurang 2 minit.', 'Mula <b>Hari 1</b>: rekod berat dan pinggang, kemudian Fit Test.'] },
+  /* THE START (11 Nov 2026): its own colour and first steps */
+  prog_mula: { name: 'THE START', tebus: 'mula', color: '#E8480F', ink: '#141414', from: 'THE START <hello@mail.hitfat.io>',
+    lead: '18 sesi anda sedang menunggu.',
+    steps: ['Jawab <b>9 soalan</b>, lebih kurang 2 minit. App pilih laluan anda: Mudah, Asas atau Beransur.', 'Mula <b>Sesi 1</b>: lebih kurang 15 minit, di rumah. Sediakan kerusi yang stabil.'] },
+};
 function esc(s: unknown): string {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
 }
-function welcomeHtml(o: any, name: string, go: string): string {
-  const first = esc(String(o.name || '').trim().split(/\s+/)[0]);
-  const step = (n: number, t: string) => '<tr><td style="padding:7px 12px 7px 0;vertical-align:top;font-weight:800;color:#C02A7C">' + n + '</td><td style="padding:7px 0;line-height:1.5">' + t + '</td></tr>';
+function welcomeHtml(o: any, w: Welcome, go: string): string {
+  const first = esc(String(o.name || '').trim().split(/\s+/)[0]), name = w.name;
+  const step = (n: number, t: string) => '<tr><td style="padding:7px 12px 7px 0;vertical-align:top;font-weight:800;color:' + w.color + '">' + n + '</td><td style="padding:7px 0;line-height:1.5">' + t + '</td></tr>';
   return '<div style="font-family:Arial,sans-serif;font-size:16px;color:#1C0814;max-width:520px;margin:0 auto;padding:8px">' +
-    '<h2 style="margin:0 0 12px;color:#5E1A47">Selamat datang' + (first ? ', ' + first : '') + '!</h2>' +
-    '<p style="line-height:1.5;margin:0 0 14px">Bayaran anda berjaya. ' + name + ' milik anda selamanya, dan pelan 30 hari anda sedang menunggu.</p>' +
-    '<p style="margin:22px 0"><a href="' + go + '" style="background:#C02A7C;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 26px;border-radius:999px;display:inline-block">Buka ' + name + '</a></p>' +
+    '<h2 style="margin:0 0 12px;color:' + w.ink + '">Selamat datang' + (first ? ', ' + first : '') + '!</h2>' +
+    '<p style="line-height:1.5;margin:0 0 14px">Bayaran anda berjaya. ' + name + ' milik anda selamanya, dan ' + w.lead + '</p>' +
+    '<p style="margin:22px 0"><a href="' + go + '" style="background:' + w.color + ';color:#ffffff;text-decoration:none;font-weight:700;padding:14px 26px;border-radius:999px;display:inline-block">Buka ' + name + '</a></p>' +
     '<table style="border-collapse:collapse;margin:0 0 16px">' +
     step(1, 'Tekan butang di atas, dan log masuk dengan <b>' + esc(o.email) + '</b>.') +
-    step(2, 'Tekan <b>Bina Pelan Saya</b> dan jawab soalan, lebih kurang 2 minit.') +
-    step(3, 'Mula <b>Hari 1</b>: rekod berat dan pinggang, kemudian Fit Test.') +
+    step(2, w.steps[0]) +
+    step(3, w.steps[1]) +
     '</table>' +
-    '<p style="line-height:1.5;margin:0 0 14px">Tak pasti? Tengok <a href="https://app.hitfat.io/panduan/" style="color:#C02A7C;font-weight:700">video panduan</a>: cara simpan app di telefon, dan cara guna langkah demi langkah.</p>' +
+    '<p style="line-height:1.5;margin:0 0 14px">Tak pasti? Tengok <a href="https://app.hitfat.io/panduan/" style="color:' + w.color + ';font-weight:700">video panduan</a>: cara simpan app di telefon, dan cara guna langkah demi langkah.</p>' +
     '<p style="line-height:1.5;margin:0;color:#6b5a64;font-size:14px">Nombor order anda: <b>' + esc(o.order_number) + '</b>. Simpan emel ini.</p></div>';
 }
 async function sendWelcome(o: any) {
@@ -167,8 +177,8 @@ async function sendWelcome(o: any) {
     const go = 'https://app.hitfat.io/?tebus=' + w.tebus + '&o=' + encodeURIComponent(o.order_number);
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST', signal: AbortSignal.timeout(8000), headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key },
-      body: JSON.stringify({ from: Deno.env.get('RESEND_FROM') || 'MAK2FIT 30 <hello@mail.hitfat.io>', to: [o.email],
-        subject: 'Selamat datang ke ' + w.name + ': mula di sini', html: welcomeHtml(o, w.name, go) }),
+      body: JSON.stringify({ from: o.sku === 'prog_lad4' ? (Deno.env.get('RESEND_FROM') || w.from) : w.from, to: [o.email],
+        subject: 'Selamat datang ke ' + w.name + ': mula di sini', html: welcomeHtml(o, w, go) }),
     });
     if (!r.ok) console.error('landing-pay: welcome refused', r.status, (await r.text().catch(() => '')).slice(0, 200));
   } catch (e) { console.error('landing-pay: welcome failed', String(e)); }

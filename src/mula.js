@@ -26,10 +26,10 @@
    Not here yet: its own photographs (green palette until then), the landing
    page, prog_mula in the deployed edge functions.                        */
 
-const MF_ID='mula', MF_KEY='mf', MF_PRICE=39;
+const MF_ID='mula', MF_KEY='mf', MF_PRICE=49;   /* RM49 since 11 Nov 2026 (Seth: "buat harga rm 49") */
 const MF_NAME='THE START', MF_SUB='6 Minggu Asas Kecergasan';
 /* Before launch only the listed accounts (and anyone who owns it) see it. */
-const MF_LIVE=false, MF_TESTERS=['sethnasser1991@gmail.com','hitfat91@gmail.com'];
+const MF_LIVE=true, MF_TESTERS=['sethnasser1991@gmail.com','hitfat91@gmail.com'];
 
 /* (10 Nov 2026, Seth: "buat 6 minggu", with the poster "6 WEEKS OF THE START.")
    six weeks, eighteen sessions; still one change a week */
@@ -696,6 +696,49 @@ function mfScanCard(){
     '<span class="go">'+glyph('photo')+'</span></div>';
 }
 function mfScanGo(){ const a=typeof scanAccess==='function' ? scanAccess() : {left:0}; if(a.left>0) openScan('meal'); else openScanPlans(''); }
+
+/* ── ?tebus=mula (11 Nov 2026): paid on app.hitfat.io/start and back through
+   /start/berjaya. Signed in, it opens: by the order number when that page had
+   one (any account), else by the email paid with. The webhook can land a few
+   seconds later, so two more looks before asking for the order number. As
+   MAK2FIT's lbTebus. ── */
+function mfTebus(tries){
+  tries=tries||0;
+  let o=''; try{ o=localStorage.getItem('hf_tebus_o')||''; }catch(e){}
+  const hl=/^HL[A-Z0-9]+/i.exec(o); if(hl) o=hl[0].toUpperCase();
+  const claim=(sb && HF.userId) ? sb.rpc('plus_claim_landing', o?{p_order:o}:{}) : Promise.resolve(null);
+  const after=function(){
+    if(owns('prog_'+MF_ID)){
+      try{ localStorage.removeItem('hf_tebus_o'); }catch(e){}
+      _paySku='prog_'+MF_ID; openProgram(MF_ID); coConfirm('ok');
+      return;
+    }
+    if(tries<2){ if(!tries) mfTebusSheet('wait',o); setTimeout(function(){ mfTebus(tries+1); },4000); return; }
+    mfTebusSheet('miss',o);
+  };
+  Promise.resolve(claim).then(function(){ return loadEntitlement(); }, function(){ return loadEntitlement(); }).then(after, after);
+}
+function mfTebusSheet(state,o){
+  let h='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="closeProduct()">✕</button></div>';
+  if(state==='wait') h+='<div class="co co-done"><div class="co-badge co-wait"><span class="co-dot"></span><span class="co-dot"></span><span class="co-dot"></span></div>'+
+    '<div class="coh">'+mfL('Menyemak pembayaran anda','Checking your payment')+'</div><div class="co-s">'+mfL('Biasanya beberapa saat sahaja.','Usually just a few seconds.')+'</div></div>';
+  else h+='<div class="co co-done"><div class="co-badge co-late">'+glyph('clock')+'</div>'+
+    '<div class="coh">'+mfL('Kami belum jumpa pembayaran anda','We have not found your payment yet')+'</div>'+
+    '<div class="co-s">'+mfL('Kalau anda bayar guna emel lain, masukkan nombor pesanan dari resit Bayarcash.','If you paid with another email, enter the order number from your Bayarcash receipt.')+'</div></div>'+
+    '<div class="wl-claim"><div class="wl-claim-f"><input id="mf-order" placeholder="'+mfL('Nombor pesanan','Order number')+'" autocomplete="off" value="'+hesc(o||'')+'"><button onclick="mfClaim()">'+mfL('Buka','Open')+'</button></div></div>'+
+    '<button class="bigbtn lb-btn" onclick="mfTebus(1)">'+mfL('Cuba lagi','Try again')+'</button>'+
+    '<button class="authalt" onclick="window.open(\'https://wa.me/60189174656?text='+encodeURIComponent('Hai HITFAT, saya dah bayar THE START tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">'+mfL('Masih tak terbuka? <b>WhatsApp kami</b>','Still locked? <b>WhatsApp us</b>')+'</button>';
+  $('pw-body').innerHTML=h; $('pwm').classList.add('on');
+}
+function mfClaim(){
+  let o=String((($('mf-order')||{}).value)||'').trim(); const hl=/^HL[A-Z0-9]+/i.exec(o); if(hl) o=hl[0].toUpperCase();
+  if(!o) return toast(mfL('Masukkan nombor pesanan dari resit anda','Enter the order number from your receipt'));
+  if(!sb||!HF.userId) return toast(mfL('Log masuk dahulu','Sign in first'));
+  sb.rpc('plus_claim_landing',{p_order:o}).then(function(r){ if(r.error) throw r.error; return loadEntitlement(); }).then(function(){
+    if(owns('prog_'+MF_ID)){ closeProduct(); toast(mfL('Dibuka. Selamat datang ke THE START','Unlocked. Welcome to THE START')); openProgram(MF_ID); }
+    else toast(mfL('Tiada pesanan berbayar dengan nombor itu. Semak resit, atau mesej kami.','No paid order with that number. Check the receipt, or message us.'));
+  })['catch'](function(){ toast(mfL('Pesanan itu tidak dapat disemak. Cuba lagi sebentar.','That order could not be checked. Try again shortly.')); });
+}
 
 /* ── Belajar: the technique cards and the lessons so far ── */
 function mfLearn(){

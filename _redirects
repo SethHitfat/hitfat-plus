@@ -18,3 +18,7 @@
 
 # A sale alert (30 Oct 2026): a phone whose service worker is older still lands in HITFAT OS
 /os    https://os.hitfat.io/?v=apps  302
+
+# THE START (11 Nov 2026): its landing page lives at /start; the program's full name finds it too
+/thestart    /start/        301
+/thestart/*  /start/:splat  301

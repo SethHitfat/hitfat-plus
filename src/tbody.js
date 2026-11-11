@@ -503,7 +503,7 @@ ok("no unverifiable 'Top 10 in Malaysia' claim", _ph.indexOf('Top 10 in Malaysia
 ok("Recovery stays in its own tab, not in Plans", _ph.indexOf('Knee Prehab')<0 && _ph.indexOf('Desk Reset')<0);
 ok("...and the billboard is a training plan", trainingPlans().every(function(p){ return !p.rehab; }));
 /* The minutes on a card are what the player runs. */
-ok("every plan's minutes match its content", trainingPlans().filter(function(p){ return p.id!=='custom' && p.hub!=='lb30' && p.hub!=='d6' && p.hub!=='hx'; })
+ok("every plan's minutes match its content", trainingPlans().filter(function(p){ return p.id!=='custom' && p.hub!=='lb30' && p.hub!=='d6' && p.hub!=='hx' && p.hub!=='mf'; })
    .every(function(p){ return p.dur===progMinutes(p); }));
 ok("Morning 10 is about ten minutes", Math.abs(PROGRAMS.filter(function(p){ return p.id==='am21'; })[0].dur-10)<=1);
 ok("names are written one way", PROGRAMS.every(function(p){ return !/^\d+ (Day|Week|Minutes?) /.test(p.name); }));
@@ -3718,10 +3718,10 @@ print("\n── 30-DAY WEIGHT LOSS ──");
 })();
 
 HF.email=null; ayEnsure();
-print("\n── StartFIT ──");
+print("\n── THE START ──");
 (function(){
   _guest(); HF.email=null; mfEnsure();
-  ok("before launch, another account sees none of it", !findProg(MF_ID) && mfHomeCard()==='');
+  ok("live since 11 Nov 2026: any account sees it in Train, at RM49", MF_LIVE===true && !!findProg(MF_ID) && trainingPlans().some(function(p){ return p.id===MF_ID; }) && programPrice(MF)===49);
   HF.email='SethNasser1991@gmail.com'; mfEnsure();
   ok("the listed account sees it on Home and in Train", !!findProg(MF_ID) && mfHomeCard().indexOf('Program Baru')>0 && trainingPlans().some(function(p){ return p.id===MF_ID; }));
   var keepEnt=_ent, keepSW=startWorkout, keepMf=HF.data.mf, played=null;
@@ -3729,7 +3729,7 @@ print("\n── StartFIT ──");
   var html=function(id){ return document.getElementById(id).innerHTML||''; };
   var plan=function(a){ HF.data.mf={me:Object.assign({done:true, why:'mula', act:'jalan', exp:'dulu', masa:20, alat:['kerusi','tuala','botol'], pain:['tiada'], sihat:['tiada'], days:['isn','rab','jum'], makan:'campur'},a||{})}; };
   ok("THE START: eighteen sessions in six weeks, eighteen lessons, training and eating by turns, the review last", MF_NAME==='THE START' && MF_N===18 && MF_WK===6 && progDays(MF)===18 && MF_LESSON.length===18 && MF_LESSON.every(function(l){ return l[0] && l[1].length>60 && /^[LMS]$/.test(l[2]); }) && MF_LESSON[17][2]==='S' && MF_RECS[1]===17);
-  ok("sold for RM39 on its own", programPrice(MF)===39 && isPaidProgram(MF));
+  ok("sold for RM49 on its own", programPrice(MF)===49 && isPaidProgram(MF));
   var bad=[]; [['tiada'],['lutut'],['bahu'],['pinggang'],['lantai'],['lutut','bahu','pinggang','lantai']].forEach(function(p){ [15,20,25].forEach(function(m){ [0,1,2].forEach(function(path){
     plan({pain:p, masa:m, path:path});
     for(var i=0;i<MF_N;i++){ var x=mfSession(i), mins=mfMinutes(x);
@@ -3788,6 +3788,9 @@ print("\n── StartFIT ──");
   _guest(); HF.data.progress[MF_ID]=0; ok("locked to a guest", !ownsProgram(MF));
   noThrow("its page opens for a guest", function(){ openProgram(MF_ID); });
   ok("the offer can be bought in the app", (mfBuy(), html('pw-body').indexOf("startCheckout('prog_mula')")>0));
+  ok("bought on app.hitfat.io/start: ?tebus=mula claims the order and opens it, ?beli=mula opens the offer, an order back on / goes to its own berjaya page",
+    String(BUY_GO.tebus_mula).indexOf('mfTebus(0)')>0 && String(mfTebus).indexOf("plus_claim_landing")>0 && String(mfTebus).indexOf("hf_tebus_o")>0 &&
+    String(BUY_GO.mula).indexOf('mfBuy()')>0 && String(captureBuyParam).indexOf("'/start/berjaya/'")>0 && String(captureBuyParam).indexOf("prog_mula")>0);
   closeProduct();
   _guest(); _ent.skus['prog_mula']=true; HF.data.mf={};
   ok("bought on its own, it opens", ownsProgram(MF) && !contentOpen());

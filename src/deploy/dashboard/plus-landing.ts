@@ -42,7 +42,7 @@ const CATALOGUE: Record<string, Sku> = {
   "prog_rh6": { price: 19, kind: "program" },       // Post-Workout Recovery · 2wk
   "prog_lad4": { price: 39, kind: "program" },      // Ladies Burn 30 (RM39 from 19 Oct 2026)
   "prog_ay30": { price: 39, kind: "program" },      // AYAH2FIT 30
-  "prog_mula": { price: 39, kind: "program" },      // StartFIT
+  "prog_mula": { price: 49, kind: "program" },      // THE START (RM49 since 11 Nov 2026)
   "prog_men6": { price: 39, kind: "program" },      // Men's Body Reset
   "prog_f40": { price: 39, kind: "program" },       // Fit After 40
   "prog_bws8": { price: 39, kind: "program" },      // Bodyweight Strength
@@ -155,7 +155,7 @@ function isFailedStatus(s: unknown) {
 
 
 /* the programs sold on their own — the same list as plus_landing_sku() */
-const LANDING_SKUS = ['prog_wl30', 'prog_d6', 'prog_lad4'];   // prog_lad4: Ladies Burn 30, RM39 (19 Oct 2026)
+const LANDING_SKUS = ['prog_wl30', 'prog_d6', 'prog_lad4', 'prog_mula'];   // prog_lad4: Ladies Burn 30, RM39 (19 Oct 2026); prog_mula: THE START, RM49 (11 Nov 2026)
 
 /* First non-empty value among several possible field names, nested too. */
 function pick(o: Record<string, unknown>, keys: string[]): string {

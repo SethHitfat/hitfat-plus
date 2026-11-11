@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Affiliate HITFAT+ · Jual & Dapat Komisen</title>
-<meta name="description" content="Kongsi HITFAT+ dan MAK2FIT 30 dengan pautan anda sendiri. RM10 hingga RM40 setiap jualan, dibayar setiap bulan.">
+<meta name="description" content="Kongsi HITFAT+, MAK2FIT 30 dan THE START dengan pautan anda sendiri. RM10 hingga RM40 setiap jualan, dibayar setiap bulan.">
 <meta name="theme-color" content="#E30613">
 <link rel="icon" href="/img/icon/favicon-64.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -115,6 +115,7 @@ form .cta{width:100%;margin-top:18px}
     <p class="lead">Untuk setiap pembelian melalui pautan anda. Pembeli bayar harga biasa.</p>
     <div class="rates">
       <div class="rate"><div><b>MAK2FIT 30</b><span>Program 30 hari khas wanita · RM39</span></div><em>RM10</em></div>
+      <div class="rate"><div><b>THE START</b><span>Program 6 minggu untuk yang baru mula · RM49</span></div><em>RM10</em></div>
       <div class="rate"><div><b>HITFAT+ 6 bulan</b><span>Keahlian penuh · RM179</span></div><em>RM30</em></div>
       <div class="rate"><div><b>HITFAT+ 12 bulan</b><span>Keahlian penuh · RM249</span></div><em>RM40</em></div>
     </div>
@@ -160,7 +161,7 @@ const $=id=>document.getElementById(id);
 function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2600); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function rm(n){ return 'RM'+(Math.round(Number(n||0)*100)/100).toLocaleString(); }
-const SKU={prog_lad4:'MAK2FIT 30',sub_plus_6m:'HITFAT+ 6 bulan',sub_plus_12m:'HITFAT+ 12 bulan'};
+const SKU={prog_lad4:'MAK2FIT 30',prog_mula:'THE START',sub_plus_6m:'HITFAT+ 6 bulan',sub_plus_12m:'HITFAT+ 12 bulan'};
 let A=null;
 const links=c=>[['MAK2FIT 30','https://app.hitfat.io/ladies/?ref='+c],['HITFAT+','https://app.hitfat.io/?ref='+c]];
 
