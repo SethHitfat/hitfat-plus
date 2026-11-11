@@ -100,6 +100,40 @@ TK.say = function (t) {
     speechSynthesis.speak(u);
   } catch (e) {}
 };
+/* ── Suara Coach Seth: klip pendek dimuat sekali selepas klik pertama, dimainkan
+   melalui Web Audio (iOS benarkan bila AudioContext dibuka dalam klik). Satu suara
+   pada satu masa; isyarat lama yang belum sempat dimain dibuang, bukan beratur. ── */
+TK.V = { buf: {}, loading: false, cur: null, busyUntil: 0 };
+TK.V.load = function () {
+  if (TK.V.loading || !TK.ac || !window.fetch) return;
+  TK.V.loading = true;
+  TK.CLIPS.forEach(function (k) {
+    fetch('v/' + k + '.m4a').then(function (r) { if (!r.ok) throw 0; return r.arrayBuffer(); })
+      .then(function (ab) { return new Promise(function (res, rej) { TK.ac.decodeAudioData(ab, res, rej); }); })
+      .then(function (b) { TK.V.buf[k] = b; })['catch'](function () {});
+  });
+};
+/* pri: 2 = mesti (mula, keputusan), 1 = teguran, 0 = kiraan/pujian (boleh dilangkau) */
+TK.V.play = function (k, pri, fallbackText) {
+  if (!TK.st.sound) return false;
+  var now = Date.now(), b = TK.V.buf[k];
+  if (now < TK.V.busyUntil && (pri || 0) < 2 && (pri || 0) <= (TK.V.curPri || 0)) return false;
+  if (!b) { if (fallbackText) TK.say(fallbackText); return false; }
+  try {
+    if (TK.V.cur) { try { TK.V.cur.stop(); } catch (e) {} }
+    var s = TK.ac.createBufferSource(), g = TK.ac.createGain();
+    g.gain.value = 1.0; s.buffer = b; s.connect(g); g.connect(TK.ac.destination); s.start();
+    TK.V.cur = s; TK.V.curPri = pri || 0; TK.V.busyUntil = now + b.duration * 1000;
+    return true;
+  } catch (e) { return false; }
+};
+/* dua klip berturut (contoh "Fokus seterusnya!" kemudian teguran) */
+TK.V.chain = function (a, b, pri) {
+  if (!TK.V.play(a, pri)) { if (b) TK.V.play(b, pri); return; }
+  var d = TK.V.buf[a] ? TK.V.buf[a].duration * 1000 + 150 : 0;
+  if (b) setTimeout(function () { TK.V.play(b, pri); }, d);
+};
+
 TK.beep = function (good) {
   if (!TK.st.sound) return;
   try {
@@ -123,9 +157,10 @@ TK.setStatus = function (big, small, cls) {
   TK.$('camBig').className = 'big' + (cls ? ' ' + cls : '');
   TK.$('camCue').textContent = small || '';
 };
+TK.total = function () { var ex = TK.EX[TK.st.key]; return TK.TARGET + ((ex && ex.front) || 0); };
 TK.paintDots = function () {
   var h = '', i, r;
-  for (i = 0; i < TK.TARGET; i++) {
+  for (i = 0; i < TK.total(); i++) {
     r = TK.st.reps[i];
     h += '<s class="' + (r ? (r.issues.length ? 'warn' : 'good') : '') + '"></s>';
   }
@@ -137,9 +172,12 @@ TK.start = function () {
   var k = TK.st.key, ex = TK.EX[k];
   if (TK.st.busy) return;
   TK.st.busy = true; TK.st.reps = []; TK.st.armed = false; TK.st.done = false;
+  TK.st.phase = 'side'; TK.st.sq = (k === 'squat') ? TK.SQ.create('side') : null; TK.st.faceRun = 0; TK.st.lostAt = 0; TK.st.saidTegak = false;
+  TK.paintGauge(0, false);
   /* iOS: kamera, audio dan suara mesti "dibuka" di dalam klik ini. */
   try { if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance('')); } catch (e) {}
   try { if (!TK.ac) TK.ac = new (window.AudioContext || window.webkitAudioContext)(); if (TK.ac.resume) TK.ac.resume(); } catch (e) {}
+  TK.V.load();
   TK.show('cam');
   TK.$('camName').textContent = ex.nama + (k === 'pushup' ? (TK.st.variant === 'lutut' ? ' · lutut' : ' · biasa') : '');
   TK.$('camErr').hidden = true;
@@ -158,6 +196,8 @@ TK.start = function () {
     TR.Calib.reset();
     TK.st.det = TR.Detector.create(k);
     TK.setStatus('Berdiri tegak', ex.sedia);
+    TK.$('camPhase').textContent = k === 'squat' ? 'Dari tepi' : '';
+    TK.$('camGauge').hidden = (k !== 'squat');
     TR.Pose.start(TK.onFrame);
   })['catch'](function (e) {
     TK.st.busy = false;
@@ -181,44 +221,95 @@ TK.fail = function (e) {
 TK.onFrame = function (j) {
   var st = TK.st;
   if (!st.det || st.done) return;
-  TR.Pose.draw(j, st.armed ? '#FF7A35' : '#FFF4EA');
+  var tint = st.flashUntil && Date.now() < st.flashUntil ? st.flashCol : (st.armed ? '#FF7A35' : '#FFF4EA');
+  TR.Pose.draw(j, tint);
+  if (st.phase === 'turn') return TK.onTurn(j);
+  var inRep = !!st.det.cyc;
   var evs = st.det.feed(j), i, e;
+  if (st.sq && st.armed) {
+    var live = TK.SQ.frame(st.sq, j, !!st.det.cyc || inRep);
+    for (i = 0; i < live.length; i++) {
+      if (live[i].k === 'cukup') { TK.V.play('cukup', 0); TK.flash('#5BE394'); }
+      else { TK.V.play(live[i].k, 1); TK.setStatus(TK.$('camBig').textContent, TK.ISU[live[i].k].cue, 'warn'); }
+    }
+    if (st.phase === 'side') { var dp = TK.SQ.depth(st.sq, j); TK.paintGauge(dp, dp >= 1); }
+  }
   for (i = 0; i < evs.length; i++) {
     e = evs[i];
     if (e.t === 'calib') {
+      if (!st.saidTegak) { st.saidTegak = true; TK.V.play('s_tegak', 2, TK.EX[st.key].sedia); }
       if (e.done && !st.armed) {
         st.armed = true;
         TK.setStatus('Mula!', TK.EX[st.key].mula, 'good');
-        TK.say(TK.EX[st.key].mula);
+        TK.V.play(TK.EX[st.key].clipSedia, 2, TK.EX[st.key].mula);
       } else if (!e.done) {
         var p = Math.round((TR.Calib.frames.length / TR.CFG.calibFrames) * 100);
         TK.setStatus('Berdiri tegak' + (p ? ' · ' + p + '%' : ''), TK.bm(e.text));
       }
     } else if (e.t === 'lost') {
       TK.setStatus('Cari anda…', TK.bm(e.text), 'warn');
+      if (Date.now() - st.lostAt > 7000) { st.lostAt = Date.now(); TK.V.play(/side-on|full body/.test(e.text) ? 'kaki' : 'hilang', 1); }
     } else if (e.t === 'rep') {
       TK.onRep(e.rep);
     }
   }
 };
 
-TK.onRep = function (rep) {
+TK.flash = function (col) { TK.st.flashCol = col; TK.st.flashUntil = Date.now() + 600; };
+TK.paintGauge = function (d, deep) {
+  var g = TK.$('camGaugeFill'); if (!g) return;
+  g.style.height = Math.round(Math.min(1.15, d) / 1.15 * 100) + '%';
+  TK.$('camGauge').className = 'gauge' + (deep ? ' deep' : '');
+};
+
+/* Squat: lepas 5 rep dari tepi, pusing menghadap kamera untuk 3 rep (lutut) */
+TK.toFront = function () {
   var st = TK.st;
-  if (st.done || st.reps.length >= TK.TARGET) return;
-  if (!TK.accept(st.key, rep)) return;
-  rep.issues = TK.check(st.key, rep);
+  st.phase = 'turn'; st.faceRun = 0;
+  TK.$('camGauge').hidden = true;
+  TK.$('camPhase').textContent = 'Dari depan';
+  TK.setStatus('Pusing!', 'Menghadap kamera untuk 3 squat lagi. AI nak tengok lutut anda.', 'good');
+  setTimeout(function () { TK.V.play('s_depan', 2, 'Sekarang pusing, menghadap kamera. Tiga squat lagi.'); }, 700);
+};
+TK.onTurn = function (j) {
+  var st = TK.st;
+  if (!j || !j.lsh || !j.rsh || !j.lknee || !j.rknee || !j.lank || !j.rank) { st.faceRun = 0; return; }
+  var T = TR.Calib.torso || 0.25, sw = Math.abs(j.lsh.x - j.rsh.x) / T;
+  var hip = TR.G.mid(j.lhip, j.rhip), up = hip && TR.Calib.standHipY != null ? Math.abs(hip.y - TR.Calib.standHipY) / T < 0.15 : true;
+  if (sw > 0.45 && up) st.faceRun++; else st.faceRun = 0;
+  if (st.faceRun >= 20) {
+    TK.tuneFront();
+    st.det = TR.Detector.create('squatfront');
+    st.sq = TK.SQ.create('front');
+    st.phase = 'front';
+    TK.setStatus('Mula!', 'Tiga squat, menghadap kamera.', 'good');
+    TK.V.play('s_depan_mula', 2, 'Tiga squat. Mula.');
+  }
+};
+
+TK.onRep = function (rep) {
+  var st = TK.st, total = TK.total();
+  if (st.done || st.reps.length >= total) return;
+  if (!TK.accept(st.key, rep)) { if (st.sq) st.sq.acc = null; return; }
+  rep.view = st.phase;
+  rep.issues = st.sq ? TK.SQ.issues(st.sq, rep) : TK.check(st.key, rep);
   st.reps.push(rep);
   TK.paintDots();
-  var n = st.reps.length;
+  var n = st.reps.length, inPhase = st.phase === 'front' ? n - TK.TARGET : n;
+  var phaseTotal = st.phase === 'front' ? TK.EX[st.key].front : TK.TARGET;
   if (!rep.issues.length) {
-    TK.setStatus('Cantik! ' + n + '/' + TK.TARGET, n < TK.TARGET ? 'Teruskan, macam tu.' : '', 'good');
-    TK.beep(true); TK.say(n < TK.TARGET ? 'Cantik.' : 'Cantik. Siap!');
+    TK.setStatus('Cantik! ' + inPhase + '/' + phaseTotal, 'Teruskan, macam tu.', 'good');
+    TK.flash('#5BE394'); TK.beep(true);
+    setTimeout(function () { TK.V.play('c' + Math.min(5, inPhase), 0, 'Cantik.'); }, 250);
   } else {
-    var cue = TK.ISU[rep.issues[0]].cue;
-    TK.setStatus('Rep ' + n + '/' + TK.TARGET, cue, 'warn');
-    TK.beep(false); TK.say(cue);
+    var c = rep.issues[0];
+    TK.setStatus('Rep ' + inPhase + '/' + phaseTotal, TK.ISU[c].cue, 'warn');
+    TK.flash('#FF7A35'); TK.beep(false);
+    var clip = TK.CLIP[c];
+    setTimeout(function () { if (clip) TK.V.play(clip, 1, TK.ISU[c].cue); else TK.say(TK.ISU[c].cue); }, 250);
   }
-  if (n >= TK.TARGET) { st.done = true; setTimeout(TK.finish, 1600); }
+  if (st.phase === 'side' && n >= TK.TARGET && TK.EX[st.key].front) { setTimeout(TK.toFront, 1500); return; }
+  if (n >= total) { st.done = true; setTimeout(TK.finish, 1600); }
 };
 
 TK.stop = function () {
@@ -254,7 +345,14 @@ TK.finish = function () {
     : 'Semua kunci teknik dah betul. Sekarang cuba turun lebih perlahan (kira 3 saat), atau tambah rep dalam sesi latihan anda.';
   TK.$('rsName').textContent = TK.EX[k].nama;
   TK.show('result');
-  TK.say(f ? 'Fokus seterusnya: ' + f.title + '.' : 'Teknik cantik!');
+  var lv = { cantik: 'r_cantik', hampir: 'r_hampir', betulkan: 'r_betul' }[s.level];
+  setTimeout(function () {
+    if (!lv) return;
+    if (!s.focus) { TK.V.play(lv, 2, 'Teknik cantik!'); return; }
+    TK.V.play(lv, 2, f.title);
+    var d = TK.V.buf[lv] ? TK.V.buf[lv].duration * 1000 + 250 : 1500;
+    setTimeout(function () { TK.V.chain('fokus', TK.CLIP[s.focus], 2); }, d);
+  }, 400);
 };
 
 /* ── Pendawaian ───────────────────────────────────────────────────────── */

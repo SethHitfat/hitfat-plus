@@ -91,8 +91,15 @@ body.on-cam{background:#000}
 .cam-top{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 30px;background:linear-gradient(rgba(0,0,0,.6),transparent)}
 .cam-top .nm{flex:1;min-width:0;font:italic 900 16px/1 var(--f);font-stretch:112%;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rbtn{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:18px;display:grid;place-items:center}
+.cam-top .nm small{display:block;margin-top:3px;font:800 10.5px/1 var(--f);letter-spacing:.12em;text-transform:uppercase;color:var(--o3);font-style:normal}
+.cam-top .nm small:empty{display:none}
+.gauge{position:absolute;right:14px;top:30%;z-index:3;width:16px;height:34vh;border-radius:99px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.55);overflow:visible}
+.gauge i{position:absolute;left:0;right:0;bottom:0;height:0;border-radius:99px;background:var(--o3);transition:height .12s linear}
+.gauge.deep i{background:#3DD07A}
+.gauge b{position:absolute;left:-6px;right:-6px;bottom:87%;height:3px;border-radius:2px;background:#fff;box-shadow:0 0 8px rgba(0,0,0,.5)}
+.gauge span{position:absolute;right:24px;bottom:calc(87% - 12px);font:800 10.5px/1.1 var(--f);text-transform:uppercase;letter-spacing:.06em;text-align:right;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.7);white-space:nowrap}
 .dots{display:flex;gap:6px}
-.dots s{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.6)}
+.dots s{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.6)}
 .dots s.good{background:#3DD07A;border-color:#3DD07A}
 .dots s.warn{background:var(--o3);border-color:var(--o3)}
 .cam-bot{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:40px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.78) 40%);text-align:center}
@@ -212,10 +219,11 @@ body.on-cam{background:#000}
   </div>
   <div class="cam-top">
     <button class="rbtn" onclick="TK.teardown();TK.open(TK.st.key)" aria-label="Tutup">✕</button>
-    <span class="nm" id="camName"></span>
+    <span class="nm"><span id="camName"></span><small id="camPhase"></small></span>
     <span class="dots" id="camDots"></span>
     <button class="rbtn" id="camSound" onclick="TK.toggleSound()" aria-label="Bunyi">🔊</button>
   </div>
+  <div class="gauge" id="camGauge" hidden><i id="camGaugeFill"></i><b></b><span>Paha<br>selari</span></div>
   <div class="cam-bot">
     <div class="big" id="camBig"></div>
     <div class="cue" id="camCue"></div>

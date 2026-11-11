@@ -91,8 +91,15 @@ body.on-cam{background:#000}
 .cam-top{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 30px;background:linear-gradient(rgba(0,0,0,.6),transparent)}
 .cam-top .nm{flex:1;min-width:0;font:italic 900 16px/1 var(--f);font-stretch:112%;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rbtn{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:18px;display:grid;place-items:center}
+.cam-top .nm small{display:block;margin-top:3px;font:800 10.5px/1 var(--f);letter-spacing:.12em;text-transform:uppercase;color:var(--o3);font-style:normal}
+.cam-top .nm small:empty{display:none}
+.gauge{position:absolute;right:14px;top:30%;z-index:3;width:16px;height:34vh;border-radius:99px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.55);overflow:visible}
+.gauge i{position:absolute;left:0;right:0;bottom:0;height:0;border-radius:99px;background:var(--o3);transition:height .12s linear}
+.gauge.deep i{background:#3DD07A}
+.gauge b{position:absolute;left:-6px;right:-6px;bottom:87%;height:3px;border-radius:2px;background:#fff;box-shadow:0 0 8px rgba(0,0,0,.5)}
+.gauge span{position:absolute;right:24px;bottom:calc(87% - 12px);font:800 10.5px/1.1 var(--f);text-transform:uppercase;letter-spacing:.06em;text-align:right;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.7);white-space:nowrap}
 .dots{display:flex;gap:6px}
-.dots s{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.6)}
+.dots s{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.6)}
 .dots s.good{background:#3DD07A;border-color:#3DD07A}
 .dots s.warn{background:var(--o3);border-color:var(--o3)}
 .cam-bot{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:40px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.78) 40%);text-align:center}
@@ -212,10 +219,11 @@ body.on-cam{background:#000}
   </div>
   <div class="cam-top">
     <button class="rbtn" onclick="TK.teardown();TK.open(TK.st.key)" aria-label="Tutup">✕</button>
-    <span class="nm" id="camName"></span>
+    <span class="nm"><span id="camName"></span><small id="camPhase"></small></span>
     <span class="dots" id="camDots"></span>
     <button class="rbtn" id="camSound" onclick="TK.toggleSound()" aria-label="Bunyi">🔊</button>
   </div>
+  <div class="gauge" id="camGauge" hidden><i id="camGaugeFill"></i><b></b><span>Paha<br>selari</span></div>
   <div class="cam-bot">
     <div class="big" id="camBig"></div>
     <div class="cue" id="camCue"></div>
@@ -283,7 +291,7 @@ body.on-cam{background:#000}
    lain. Kalau kau tergoda untuk hardcode satu ambang dalam detektor, itu
    tanda medan baharu patut ditambah di sini.
    ═══════════════════════════════════════════════════════════════════════ */
-var TR = { build: '20261111-1331' };
+var TR = { build: '20261111-1533' };
 
 /* Satu sumber masa, supaya ujian boleh memalsukan jam. Rep ditakrifkan oleh
    TEMPOH — get minRepMs ialah pertahanan utama terhadap rep hantu — jadi
@@ -2037,9 +2045,12 @@ TK.EX = {
             'Tolak punggung ke belakang, macam nak duduk kerusi',
             'Dada naik, pandang ke depan',
             'Turun 2 saat, naik 1 saat'],
-    sedia: 'Berdiri tegak, sisi badan menghadap kamera.',
+    sedia: 'Berdiri tegak, sisi badan menghadap kamera. Lepas 5 squat, pusing menghadap kamera untuk 3 squat lagi.',
     mula: 'Sedia! Buat 5 squat perlahan.',
-    rows: [['Kedalaman', ['dalam', 'dalam_sikit']], ['Dada naik', ['dada']], ['Kawalan turun', ['laju']]]
+    /* 5 rep dari tepi, kemudian 3 dari depan untuk lutut (11 Nov) */
+    rows: [['Kedalaman', ['dalam', 'dalam_sikit']], ['Dada naik', ['dada']], ['Tumit di lantai', ['tumit']],
+           ['Naik serentak', ['pinggul_naik']], ['Kawalan turun', ['laju']], ['Lutut tak masuk', ['lutut_masuk']]],
+    front: 3, clipSedia: 's_sedia_sq'
   },
   pushup: {
     nama: 'Push Up', sub: 'Push up lutut atau biasa', vid: '1183277738', vidFull: '1183253182',
@@ -2049,7 +2060,8 @@ TK.EX = {
             'Turun sampai siku lebih kurang 90°'],
     sedia: 'Berdiri tegak dulu, sisi badan menghadap kamera. Bila AI dah sedia, baru turun.',
     mula: 'Sedia! Turun ke posisi push up, kemudian buat 5 rep.',
-    rows: [['Siku sampai 90°', ['siku', 'siku_sikit']], ['Badan lurus', ['pinggul']], ['Kawalan turun', ['laju']]]
+    rows: [['Siku sampai 90°', ['siku', 'siku_sikit']], ['Badan lurus', ['pinggul']], ['Kawalan turun', ['laju']]],
+    clipSedia: 's_sedia_pu'
   },
   lunge: {
     nama: 'Lunge', sub: 'Reverse Lunge', vid: '1183237088',
@@ -2059,7 +2071,8 @@ TK.EX = {
             'Tukar kaki setiap rep. Pegang kerusi kalau perlu'],
     sedia: 'Berdiri tegak, sisi badan menghadap kamera.',
     mula: 'Sedia! Buat 5 lunge, tukar kaki setiap rep.',
-    rows: [['Lutut turun', ['lutut', 'lutut_sikit']], ['Badan tegak', ['badan']], ['Kawalan turun', ['laju']]]
+    rows: [['Lutut turun', ['lutut', 'lutut_sikit']], ['Badan tegak', ['badan']], ['Kawalan turun', ['laju']]],
+    clipSedia: 's_sedia_lu'
   },
   burpee: {
     nama: 'Burpee', sub: 'Burpee beginner, langkah ke belakang', vid: '1183253168',
@@ -2071,7 +2084,8 @@ TK.EX = {
     mula: 'Sedia! Buat 5 burpee ikut rentak anda.',
     /* "Bangun penuh" tiada kod: enjin hanya menutup rep bila pinggul kembali
        ke paras berdiri, jadi setiap rep yang wujud SUDAH bangun penuh. */
-    rows: [['Sampai plank', ['plank']], ['Bangun penuh', []]]
+    rows: [['Sampai plank', ['plank']], ['Bangun penuh', []]],
+    clipSedia: 's_sedia_bu'
   }
 };
 TK.ORDER = ['squat', 'pushup', 'lunge', 'burpee'];
@@ -2103,7 +2117,13 @@ TK.ISU = {
   plank:       { cue: 'Kaki ke belakang sampai badan lurus.', title: 'Sampai posisi plank',
                  body: 'Langkah kaki ke belakang sampai badan lurus dari bahu ke kaki, baru langkah balik ke depan.' },
   tangan:      { cue: 'Bangun penuh, tangan ke atas.', title: 'Bangun penuh',
-                 body: 'Habiskan setiap burpee dengan berdiri tegak dan angkat tangan ke atas kepala.' }
+                 body: 'Habiskan setiap burpee dengan berdiri tegak dan angkat tangan ke atas kepala.' },
+  tumit:       { cue: 'Tumit di lantai.', title: 'Tumit kekal di lantai',
+                 body: 'Tumit anda terangkat masa turun. Tolak punggung ke belakang dan biar berat badan di tengah tapak kaki hingga ke tumit.' },
+  pinggul_naik:{ cue: 'Naik sama-sama, dada dengan punggung.', title: 'Naik serentak',
+                 body: 'Masa bangun, punggung naik dulu dan dada tertinggal. Tolak lantai, dan biar dada serta punggung naik bersama-sama.' },
+  lutut_masuk: { cue: 'Tolak lutut keluar.', title: 'Lutut ikut arah jari kaki',
+                 body: 'Lutut anda masuk ke dalam masa squat. Tolak lutut keluar sedikit supaya ia selari dengan jari kaki. Kalau susah, turun separuh dulu.' }
 };
 
 /* Penyesuaian enjin untuk beginner. Get kekal (ia yang menghalang rep
@@ -2241,6 +2261,135 @@ TK.bm = function (t) {
   };
   return M[t] || t;
 };
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SQUAT, SEMAKAN PENUH (11 Nov, Seth: "kalau boleh kita buat betul-betul ...
+   check orang squat tu betul ke tak").
+
+   Enjin mengesan BILA rep berlaku. Penjejak ini membaca setiap bingkai di
+   dalam rep itu dan menjawab soalan yang coach tanya:
+     dari tepi  — cukup dalam? dada jatuh lebih daripada kaki bawah? tumit
+                  terangkat? punggung naik dulu (dada tertinggal)? turun laju?
+     dari depan — lutut masuk ke dalam?
+   Ia juga bercakap SEMASA rep: "Cukup! Naik!" bila paha sampai selari,
+   "Tumit di lantai!" bila tumit naik, "Tolak lutut keluar!" bila lutut masuk.
+   Tulen: masuk bingkai + keadaan detektor, keluar ukuran dan isyarat.
+   ═══════════════════════════════════════════════════════════════════════ */
+TK.SQ_DEPTH = -0.15;          // hipKneeU: 0 = pinggul sama paras lutut; -0.15 ≈ paha selari
+TK.SQ = {
+  create: function (view) {
+    return { view: view || 'side', acc: null, stand: [], hkStand: null, heelBase: null, ratioBase: null, heelRun: 0 };
+  },
+  /* sudut dari menegak, darjah: kaki bawah (buku lali → lutut) */
+  shin: function (s) {
+    if (!s || !s.knee || !s.ank) return null;
+    return Math.atan2(Math.abs(s.knee.x - s.ank.x), Math.abs(s.ank.y - s.knee.y)) * 180 / Math.PI;
+  },
+  heelU: function (j, s, T) {
+    var h = j[s.k + 'heel'], t = j[s.k + 'foot'];
+    if (!h || !t || h.s < 0.5 || t.s < 0.5) return null;
+    return (t.y - h.y) / T;                       // positif = tumit lebih tinggi daripada hujung kaki
+  },
+  kneeRatio: function (j) {
+    if (!j.lknee || !j.rknee || !j.lank || !j.rank) return null;
+    var aw = Math.abs(j.lank.x - j.rank.x);
+    if (aw < 0.02) return null;
+    return Math.abs(j.lknee.x - j.rknee.x) / aw;  // < 1 = lutut lebih rapat daripada buku lali
+  },
+  median: function (a) { var b = a.slice().sort(function (x, y) { return x - y; }); return b.length ? b[Math.floor(b.length / 2)] : null; },
+
+  /* Satu bingkai. inRep = detektor sedang dalam kitaran. Pulang senarai isyarat hidup. */
+  frame: function (t, j, inRep) {
+    var out = [];
+    if (!TR.Calib.ready || !j) return out;
+    var m = TR.measure(j), s = m.side, T = m.torso;
+    var hk = m.hipKneeU, lean = m.lean, shin = TK.SQ.shin(s), heel = TK.SQ.heelU(j, s, T), ratio = TK.SQ.kneeRatio(j);
+    if (!inRep) {
+      if (t.acc) t.acc = null;
+      /* garis dasar berdiri, dikemas kini setiap kali atlet berehat di atas */
+      t.stand.push({ hk: hk, heel: heel, ratio: ratio });
+      if (t.stand.length > 15) t.stand.shift();
+      var hs = [], he = [], ra = [], i;
+      for (i = 0; i < t.stand.length; i++) {
+        if (t.stand[i].hk != null) hs.push(t.stand[i].hk);
+        if (t.stand[i].heel != null) he.push(t.stand[i].heel);
+        if (t.stand[i].ratio != null) ra.push(t.stand[i].ratio);
+      }
+      if (hs.length) t.hkStand = TK.SQ.median(hs);
+      if (he.length) t.heelBase = TK.SQ.median(he);
+      if (ra.length) t.ratioBase = TK.SQ.median(ra);
+      t.heelRun = 0;
+      return out;
+    }
+    var a = t.acc;
+    if (!a) a = t.acc = { hkMax: -9, leanBot: null, shinBot: null, leanAsc: null, deep: false, heel: false, valgus: false, ratioMin: 9, asc: false };
+    if (hk != null && hk > a.hkMax) { a.hkMax = hk; a.leanBot = lean; a.shinBot = shin; a.asc = false; a.leanAsc = null; }
+    else if (hk != null && hk < a.hkMax - 0.06) {
+      a.asc = true;
+      /* separuh pertama naik: kalau dada makin condong sedangkan pinggul naik, punggung naik dulu */
+      if (hk > a.hkMax - 0.5 && lean != null) a.leanAsc = (a.leanAsc == null) ? lean : Math.max(a.leanAsc, lean);
+    }
+    if (!a.deep && hk != null && hk >= TK.SQ_DEPTH) { a.deep = true; out.push({ t: 'say', k: 'cukup', deep: true }); }
+    if (t.view === 'side' && heel != null && t.heelBase != null && heel - t.heelBase > 0.10) {
+      if (++t.heelRun >= 3 && !a.heel) { a.heel = true; out.push({ t: 'say', k: 'tumit' }); }
+    } else t.heelRun = 0;
+    if (t.view === 'front' && ratio != null) {
+      a.ratioMin = Math.min(a.ratioMin, ratio);
+      var base = t.ratioBase || 1;
+      if (!a.valgus && a.hkMax > -0.6 && (ratio < base * 0.75 || ratio < 0.8)) { a.valgus = true; out.push({ t: 'say', k: 'lutut_masuk' }); }
+    }
+    return out;
+  },
+  /* kedalaman untuk tolok di skrin: 0 = berdiri, 1 = paha selari */
+  depth: function (t, j) {
+    if (!TR.Calib.ready || !j || t.hkStand == null) return 0;
+    var hk = TR.measure(j).hipKneeU; if (hk == null) return 0;
+    var d = (hk - t.hkStand) / (TK.SQ_DEPTH - t.hkStand);
+    return Math.max(0, Math.min(1.15, d));
+  },
+  /* rep selesai → isu */
+  issues: function (t, rep) {
+    var a = t.acc || {}, is = [];
+    if (t.view === 'front') {
+      if (a.valgus) is.push('lutut_masuk');
+      t.acc = null; return is;
+    }
+    var hk = rep.hipKnee, k = rep.kneeMin;
+    var ok = a.deep || (hk != null && hk >= TK.SQ_DEPTH) || (k != null && k <= 110);
+    var near = (hk != null && hk >= -0.35) || (k != null && k <= 135);
+    if (!ok) is.push(near ? 'dalam_sikit' : 'dalam');
+    var lb = a.leanBot != null ? a.leanBot : rep.lean, sb = a.shinBot;
+    if (lb != null && (lb > 52 || (sb != null && lb - sb > 22 && lb > 40))) is.push('dada');
+    if (a.heel) is.push('tumit');
+    if (a.leanAsc != null && lb != null && a.leanAsc - lb > 12) is.push('pinggul_naik');
+    if (rep.ecc != null && rep.ecc < 0.5) is.push('laju');
+    t.acc = null;
+    return is;
+  }
+};
+
+/* Dari depan, lutut membengkok KE ARAH kamera, jadi sudut lutut 2D hampir tidak
+   berubah. Detektor depan hanya membaca pinggul jatuh dan naik. */
+TK.tuneFront = function () {
+  if (TR.EX.squatfront) return;
+  var b = TR.EX.squat, f = {}, k;
+  for (k in b) if (b.hasOwnProperty(k)) f[k] = b[k];
+  f.name = 'Squat (depan)'; f.view = 'front';
+  f.need = [['lhip', 'rhip', 'lknee', 'rknee', 'lank', 'rank']];
+  f.open = { kneeAngle: 0, hipDrop: 0.22 };
+  f.close = { kneeAngle: 0, hipRise: 0.12 };
+  f.gate = { minMs: 300, minBend: 0, minDrop: 0.28 };
+  TR.EX.squatfront = f;
+  TR.STEP.squatfront = TR.STEP.squat;
+};
+
+/* Klip suara Coach Seth untuk setiap isu (sfx dalam /teknik/v/). */
+TK.CLIP = { dalam: 'dalam', dalam_sikit: 'sikit', siku_sikit: 'sikit', lutut_sikit: 'sikit', dada: 'dada', laju: 'laju',
+  siku: 'siku', pinggul: 'pinggul', lutut: 'lutut', badan: 'badan', plank: 'plank', tumit: 'tumit',
+  pinggul_naik: 'pinggul_naik', lutut_masuk: 'lutut_masuk' };
+TK.CLIPS = ['s_tegak', 's_sedia_sq', 's_depan', 's_depan_mula', 's_sedia_pu', 's_sedia_lu', 's_sedia_bu', 'c1', 'c2', 'c3', 'c4', 'c5',
+  'cukup', 'cantik', 'mantap', 'dalam', 'sikit', 'dada', 'tumit', 'pinggul_naik', 'laju', 'lutut_masuk', 'berdiri', 'siku', 'pinggul',
+  'lutut', 'badan', 'plank', 'hilang', 'kaki', 'r_cantik', 'r_hampir', 'r_betul', 'fokus', 'siap'];
 /* ═══════════════════════════════════════════════════════════════════════
    t_ui.js — skrin Semak Teknik: Pilih → Tonton → Kamera → Keputusan.
    Satu kamera dipegang sepanjang satu percubaan dan dilepaskan di skrin
@@ -2343,6 +2492,40 @@ TK.say = function (t) {
     speechSynthesis.speak(u);
   } catch (e) {}
 };
+/* ── Suara Coach Seth: klip pendek dimuat sekali selepas klik pertama, dimainkan
+   melalui Web Audio (iOS benarkan bila AudioContext dibuka dalam klik). Satu suara
+   pada satu masa; isyarat lama yang belum sempat dimain dibuang, bukan beratur. ── */
+TK.V = { buf: {}, loading: false, cur: null, busyUntil: 0 };
+TK.V.load = function () {
+  if (TK.V.loading || !TK.ac || !window.fetch) return;
+  TK.V.loading = true;
+  TK.CLIPS.forEach(function (k) {
+    fetch('v/' + k + '.m4a').then(function (r) { if (!r.ok) throw 0; return r.arrayBuffer(); })
+      .then(function (ab) { return new Promise(function (res, rej) { TK.ac.decodeAudioData(ab, res, rej); }); })
+      .then(function (b) { TK.V.buf[k] = b; })['catch'](function () {});
+  });
+};
+/* pri: 2 = mesti (mula, keputusan), 1 = teguran, 0 = kiraan/pujian (boleh dilangkau) */
+TK.V.play = function (k, pri, fallbackText) {
+  if (!TK.st.sound) return false;
+  var now = Date.now(), b = TK.V.buf[k];
+  if (now < TK.V.busyUntil && (pri || 0) < 2 && (pri || 0) <= (TK.V.curPri || 0)) return false;
+  if (!b) { if (fallbackText) TK.say(fallbackText); return false; }
+  try {
+    if (TK.V.cur) { try { TK.V.cur.stop(); } catch (e) {} }
+    var s = TK.ac.createBufferSource(), g = TK.ac.createGain();
+    g.gain.value = 1.0; s.buffer = b; s.connect(g); g.connect(TK.ac.destination); s.start();
+    TK.V.cur = s; TK.V.curPri = pri || 0; TK.V.busyUntil = now + b.duration * 1000;
+    return true;
+  } catch (e) { return false; }
+};
+/* dua klip berturut (contoh "Fokus seterusnya!" kemudian teguran) */
+TK.V.chain = function (a, b, pri) {
+  if (!TK.V.play(a, pri)) { if (b) TK.V.play(b, pri); return; }
+  var d = TK.V.buf[a] ? TK.V.buf[a].duration * 1000 + 150 : 0;
+  if (b) setTimeout(function () { TK.V.play(b, pri); }, d);
+};
+
 TK.beep = function (good) {
   if (!TK.st.sound) return;
   try {
@@ -2366,9 +2549,10 @@ TK.setStatus = function (big, small, cls) {
   TK.$('camBig').className = 'big' + (cls ? ' ' + cls : '');
   TK.$('camCue').textContent = small || '';
 };
+TK.total = function () { var ex = TK.EX[TK.st.key]; return TK.TARGET + ((ex && ex.front) || 0); };
 TK.paintDots = function () {
   var h = '', i, r;
-  for (i = 0; i < TK.TARGET; i++) {
+  for (i = 0; i < TK.total(); i++) {
     r = TK.st.reps[i];
     h += '<s class="' + (r ? (r.issues.length ? 'warn' : 'good') : '') + '"></s>';
   }
@@ -2380,9 +2564,12 @@ TK.start = function () {
   var k = TK.st.key, ex = TK.EX[k];
   if (TK.st.busy) return;
   TK.st.busy = true; TK.st.reps = []; TK.st.armed = false; TK.st.done = false;
+  TK.st.phase = 'side'; TK.st.sq = (k === 'squat') ? TK.SQ.create('side') : null; TK.st.faceRun = 0; TK.st.lostAt = 0; TK.st.saidTegak = false;
+  TK.paintGauge(0, false);
   /* iOS: kamera, audio dan suara mesti "dibuka" di dalam klik ini. */
   try { if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance('')); } catch (e) {}
   try { if (!TK.ac) TK.ac = new (window.AudioContext || window.webkitAudioContext)(); if (TK.ac.resume) TK.ac.resume(); } catch (e) {}
+  TK.V.load();
   TK.show('cam');
   TK.$('camName').textContent = ex.nama + (k === 'pushup' ? (TK.st.variant === 'lutut' ? ' · lutut' : ' · biasa') : '');
   TK.$('camErr').hidden = true;
@@ -2401,6 +2588,8 @@ TK.start = function () {
     TR.Calib.reset();
     TK.st.det = TR.Detector.create(k);
     TK.setStatus('Berdiri tegak', ex.sedia);
+    TK.$('camPhase').textContent = k === 'squat' ? 'Dari tepi' : '';
+    TK.$('camGauge').hidden = (k !== 'squat');
     TR.Pose.start(TK.onFrame);
   })['catch'](function (e) {
     TK.st.busy = false;
@@ -2424,44 +2613,95 @@ TK.fail = function (e) {
 TK.onFrame = function (j) {
   var st = TK.st;
   if (!st.det || st.done) return;
-  TR.Pose.draw(j, st.armed ? '#FF7A35' : '#FFF4EA');
+  var tint = st.flashUntil && Date.now() < st.flashUntil ? st.flashCol : (st.armed ? '#FF7A35' : '#FFF4EA');
+  TR.Pose.draw(j, tint);
+  if (st.phase === 'turn') return TK.onTurn(j);
+  var inRep = !!st.det.cyc;
   var evs = st.det.feed(j), i, e;
+  if (st.sq && st.armed) {
+    var live = TK.SQ.frame(st.sq, j, !!st.det.cyc || inRep);
+    for (i = 0; i < live.length; i++) {
+      if (live[i].k === 'cukup') { TK.V.play('cukup', 0); TK.flash('#5BE394'); }
+      else { TK.V.play(live[i].k, 1); TK.setStatus(TK.$('camBig').textContent, TK.ISU[live[i].k].cue, 'warn'); }
+    }
+    if (st.phase === 'side') { var dp = TK.SQ.depth(st.sq, j); TK.paintGauge(dp, dp >= 1); }
+  }
   for (i = 0; i < evs.length; i++) {
     e = evs[i];
     if (e.t === 'calib') {
+      if (!st.saidTegak) { st.saidTegak = true; TK.V.play('s_tegak', 2, TK.EX[st.key].sedia); }
       if (e.done && !st.armed) {
         st.armed = true;
         TK.setStatus('Mula!', TK.EX[st.key].mula, 'good');
-        TK.say(TK.EX[st.key].mula);
+        TK.V.play(TK.EX[st.key].clipSedia, 2, TK.EX[st.key].mula);
       } else if (!e.done) {
         var p = Math.round((TR.Calib.frames.length / TR.CFG.calibFrames) * 100);
         TK.setStatus('Berdiri tegak' + (p ? ' · ' + p + '%' : ''), TK.bm(e.text));
       }
     } else if (e.t === 'lost') {
       TK.setStatus('Cari anda…', TK.bm(e.text), 'warn');
+      if (Date.now() - st.lostAt > 7000) { st.lostAt = Date.now(); TK.V.play(/side-on|full body/.test(e.text) ? 'kaki' : 'hilang', 1); }
     } else if (e.t === 'rep') {
       TK.onRep(e.rep);
     }
   }
 };
 
-TK.onRep = function (rep) {
+TK.flash = function (col) { TK.st.flashCol = col; TK.st.flashUntil = Date.now() + 600; };
+TK.paintGauge = function (d, deep) {
+  var g = TK.$('camGaugeFill'); if (!g) return;
+  g.style.height = Math.round(Math.min(1.15, d) / 1.15 * 100) + '%';
+  TK.$('camGauge').className = 'gauge' + (deep ? ' deep' : '');
+};
+
+/* Squat: lepas 5 rep dari tepi, pusing menghadap kamera untuk 3 rep (lutut) */
+TK.toFront = function () {
   var st = TK.st;
-  if (st.done || st.reps.length >= TK.TARGET) return;
-  if (!TK.accept(st.key, rep)) return;
-  rep.issues = TK.check(st.key, rep);
+  st.phase = 'turn'; st.faceRun = 0;
+  TK.$('camGauge').hidden = true;
+  TK.$('camPhase').textContent = 'Dari depan';
+  TK.setStatus('Pusing!', 'Menghadap kamera untuk 3 squat lagi. AI nak tengok lutut anda.', 'good');
+  setTimeout(function () { TK.V.play('s_depan', 2, 'Sekarang pusing, menghadap kamera. Tiga squat lagi.'); }, 700);
+};
+TK.onTurn = function (j) {
+  var st = TK.st;
+  if (!j || !j.lsh || !j.rsh || !j.lknee || !j.rknee || !j.lank || !j.rank) { st.faceRun = 0; return; }
+  var T = TR.Calib.torso || 0.25, sw = Math.abs(j.lsh.x - j.rsh.x) / T;
+  var hip = TR.G.mid(j.lhip, j.rhip), up = hip && TR.Calib.standHipY != null ? Math.abs(hip.y - TR.Calib.standHipY) / T < 0.15 : true;
+  if (sw > 0.45 && up) st.faceRun++; else st.faceRun = 0;
+  if (st.faceRun >= 20) {
+    TK.tuneFront();
+    st.det = TR.Detector.create('squatfront');
+    st.sq = TK.SQ.create('front');
+    st.phase = 'front';
+    TK.setStatus('Mula!', 'Tiga squat, menghadap kamera.', 'good');
+    TK.V.play('s_depan_mula', 2, 'Tiga squat. Mula.');
+  }
+};
+
+TK.onRep = function (rep) {
+  var st = TK.st, total = TK.total();
+  if (st.done || st.reps.length >= total) return;
+  if (!TK.accept(st.key, rep)) { if (st.sq) st.sq.acc = null; return; }
+  rep.view = st.phase;
+  rep.issues = st.sq ? TK.SQ.issues(st.sq, rep) : TK.check(st.key, rep);
   st.reps.push(rep);
   TK.paintDots();
-  var n = st.reps.length;
+  var n = st.reps.length, inPhase = st.phase === 'front' ? n - TK.TARGET : n;
+  var phaseTotal = st.phase === 'front' ? TK.EX[st.key].front : TK.TARGET;
   if (!rep.issues.length) {
-    TK.setStatus('Cantik! ' + n + '/' + TK.TARGET, n < TK.TARGET ? 'Teruskan, macam tu.' : '', 'good');
-    TK.beep(true); TK.say(n < TK.TARGET ? 'Cantik.' : 'Cantik. Siap!');
+    TK.setStatus('Cantik! ' + inPhase + '/' + phaseTotal, 'Teruskan, macam tu.', 'good');
+    TK.flash('#5BE394'); TK.beep(true);
+    setTimeout(function () { TK.V.play('c' + Math.min(5, inPhase), 0, 'Cantik.'); }, 250);
   } else {
-    var cue = TK.ISU[rep.issues[0]].cue;
-    TK.setStatus('Rep ' + n + '/' + TK.TARGET, cue, 'warn');
-    TK.beep(false); TK.say(cue);
+    var c = rep.issues[0];
+    TK.setStatus('Rep ' + inPhase + '/' + phaseTotal, TK.ISU[c].cue, 'warn');
+    TK.flash('#FF7A35'); TK.beep(false);
+    var clip = TK.CLIP[c];
+    setTimeout(function () { if (clip) TK.V.play(clip, 1, TK.ISU[c].cue); else TK.say(TK.ISU[c].cue); }, 250);
   }
-  if (n >= TK.TARGET) { st.done = true; setTimeout(TK.finish, 1600); }
+  if (st.phase === 'side' && n >= TK.TARGET && TK.EX[st.key].front) { setTimeout(TK.toFront, 1500); return; }
+  if (n >= total) { st.done = true; setTimeout(TK.finish, 1600); }
 };
 
 TK.stop = function () {
@@ -2497,7 +2737,14 @@ TK.finish = function () {
     : 'Semua kunci teknik dah betul. Sekarang cuba turun lebih perlahan (kira 3 saat), atau tambah rep dalam sesi latihan anda.';
   TK.$('rsName').textContent = TK.EX[k].nama;
   TK.show('result');
-  TK.say(f ? 'Fokus seterusnya: ' + f.title + '.' : 'Teknik cantik!');
+  var lv = { cantik: 'r_cantik', hampir: 'r_hampir', betulkan: 'r_betul' }[s.level];
+  setTimeout(function () {
+    if (!lv) return;
+    if (!s.focus) { TK.V.play(lv, 2, 'Teknik cantik!'); return; }
+    TK.V.play(lv, 2, f.title);
+    var d = TK.V.buf[lv] ? TK.V.buf[lv].duration * 1000 + 250 : 1500;
+    setTimeout(function () { TK.V.chain('fokus', TK.CLIP[s.focus], 2); }, d);
+  }, 400);
 };
 
 /* ── Pendawaian ───────────────────────────────────────────────────────── */

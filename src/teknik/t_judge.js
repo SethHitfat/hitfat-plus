@@ -20,9 +20,12 @@ TK.EX = {
             'Tolak punggung ke belakang, macam nak duduk kerusi',
             'Dada naik, pandang ke depan',
             'Turun 2 saat, naik 1 saat'],
-    sedia: 'Berdiri tegak, sisi badan menghadap kamera.',
+    sedia: 'Berdiri tegak, sisi badan menghadap kamera. Lepas 5 squat, pusing menghadap kamera untuk 3 squat lagi.',
     mula: 'Sedia! Buat 5 squat perlahan.',
-    rows: [['Kedalaman', ['dalam', 'dalam_sikit']], ['Dada naik', ['dada']], ['Kawalan turun', ['laju']]]
+    /* 5 rep dari tepi, kemudian 3 dari depan untuk lutut (11 Nov) */
+    rows: [['Kedalaman', ['dalam', 'dalam_sikit']], ['Dada naik', ['dada']], ['Tumit di lantai', ['tumit']],
+           ['Naik serentak', ['pinggul_naik']], ['Kawalan turun', ['laju']], ['Lutut tak masuk', ['lutut_masuk']]],
+    front: 3, clipSedia: 's_sedia_sq'
   },
   pushup: {
     nama: 'Push Up', sub: 'Push up lutut atau biasa', vid: '1183277738', vidFull: '1183253182',
@@ -32,7 +35,8 @@ TK.EX = {
             'Turun sampai siku lebih kurang 90°'],
     sedia: 'Berdiri tegak dulu, sisi badan menghadap kamera. Bila AI dah sedia, baru turun.',
     mula: 'Sedia! Turun ke posisi push up, kemudian buat 5 rep.',
-    rows: [['Siku sampai 90°', ['siku', 'siku_sikit']], ['Badan lurus', ['pinggul']], ['Kawalan turun', ['laju']]]
+    rows: [['Siku sampai 90°', ['siku', 'siku_sikit']], ['Badan lurus', ['pinggul']], ['Kawalan turun', ['laju']]],
+    clipSedia: 's_sedia_pu'
   },
   lunge: {
     nama: 'Lunge', sub: 'Reverse Lunge', vid: '1183237088',
@@ -42,7 +46,8 @@ TK.EX = {
             'Tukar kaki setiap rep. Pegang kerusi kalau perlu'],
     sedia: 'Berdiri tegak, sisi badan menghadap kamera.',
     mula: 'Sedia! Buat 5 lunge, tukar kaki setiap rep.',
-    rows: [['Lutut turun', ['lutut', 'lutut_sikit']], ['Badan tegak', ['badan']], ['Kawalan turun', ['laju']]]
+    rows: [['Lutut turun', ['lutut', 'lutut_sikit']], ['Badan tegak', ['badan']], ['Kawalan turun', ['laju']]],
+    clipSedia: 's_sedia_lu'
   },
   burpee: {
     nama: 'Burpee', sub: 'Burpee beginner, langkah ke belakang', vid: '1183253168',
@@ -54,7 +59,8 @@ TK.EX = {
     mula: 'Sedia! Buat 5 burpee ikut rentak anda.',
     /* "Bangun penuh" tiada kod: enjin hanya menutup rep bila pinggul kembali
        ke paras berdiri, jadi setiap rep yang wujud SUDAH bangun penuh. */
-    rows: [['Sampai plank', ['plank']], ['Bangun penuh', []]]
+    rows: [['Sampai plank', ['plank']], ['Bangun penuh', []]],
+    clipSedia: 's_sedia_bu'
   }
 };
 TK.ORDER = ['squat', 'pushup', 'lunge', 'burpee'];
@@ -86,7 +92,13 @@ TK.ISU = {
   plank:       { cue: 'Kaki ke belakang sampai badan lurus.', title: 'Sampai posisi plank',
                  body: 'Langkah kaki ke belakang sampai badan lurus dari bahu ke kaki, baru langkah balik ke depan.' },
   tangan:      { cue: 'Bangun penuh, tangan ke atas.', title: 'Bangun penuh',
-                 body: 'Habiskan setiap burpee dengan berdiri tegak dan angkat tangan ke atas kepala.' }
+                 body: 'Habiskan setiap burpee dengan berdiri tegak dan angkat tangan ke atas kepala.' },
+  tumit:       { cue: 'Tumit di lantai.', title: 'Tumit kekal di lantai',
+                 body: 'Tumit anda terangkat masa turun. Tolak punggung ke belakang dan biar berat badan di tengah tapak kaki hingga ke tumit.' },
+  pinggul_naik:{ cue: 'Naik sama-sama, dada dengan punggung.', title: 'Naik serentak',
+                 body: 'Masa bangun, punggung naik dulu dan dada tertinggal. Tolak lantai, dan biar dada serta punggung naik bersama-sama.' },
+  lutut_masuk: { cue: 'Tolak lutut keluar.', title: 'Lutut ikut arah jari kaki',
+                 body: 'Lutut anda masuk ke dalam masa squat. Tolak lutut keluar sedikit supaya ia selari dengan jari kaki. Kalau susah, turun separuh dulu.' }
 };
 
 /* Penyesuaian enjin untuk beginner. Get kekal (ia yang menghalang rep
@@ -224,3 +236,132 @@ TK.bm = function (t) {
   };
   return M[t] || t;
 };
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SQUAT, SEMAKAN PENUH (11 Nov, Seth: "kalau boleh kita buat betul-betul ...
+   check orang squat tu betul ke tak").
+
+   Enjin mengesan BILA rep berlaku. Penjejak ini membaca setiap bingkai di
+   dalam rep itu dan menjawab soalan yang coach tanya:
+     dari tepi  — cukup dalam? dada jatuh lebih daripada kaki bawah? tumit
+                  terangkat? punggung naik dulu (dada tertinggal)? turun laju?
+     dari depan — lutut masuk ke dalam?
+   Ia juga bercakap SEMASA rep: "Cukup! Naik!" bila paha sampai selari,
+   "Tumit di lantai!" bila tumit naik, "Tolak lutut keluar!" bila lutut masuk.
+   Tulen: masuk bingkai + keadaan detektor, keluar ukuran dan isyarat.
+   ═══════════════════════════════════════════════════════════════════════ */
+TK.SQ_DEPTH = -0.15;          // hipKneeU: 0 = pinggul sama paras lutut; -0.15 ≈ paha selari
+TK.SQ = {
+  create: function (view) {
+    return { view: view || 'side', acc: null, stand: [], hkStand: null, heelBase: null, ratioBase: null, heelRun: 0 };
+  },
+  /* sudut dari menegak, darjah: kaki bawah (buku lali → lutut) */
+  shin: function (s) {
+    if (!s || !s.knee || !s.ank) return null;
+    return Math.atan2(Math.abs(s.knee.x - s.ank.x), Math.abs(s.ank.y - s.knee.y)) * 180 / Math.PI;
+  },
+  heelU: function (j, s, T) {
+    var h = j[s.k + 'heel'], t = j[s.k + 'foot'];
+    if (!h || !t || h.s < 0.5 || t.s < 0.5) return null;
+    return (t.y - h.y) / T;                       // positif = tumit lebih tinggi daripada hujung kaki
+  },
+  kneeRatio: function (j) {
+    if (!j.lknee || !j.rknee || !j.lank || !j.rank) return null;
+    var aw = Math.abs(j.lank.x - j.rank.x);
+    if (aw < 0.02) return null;
+    return Math.abs(j.lknee.x - j.rknee.x) / aw;  // < 1 = lutut lebih rapat daripada buku lali
+  },
+  median: function (a) { var b = a.slice().sort(function (x, y) { return x - y; }); return b.length ? b[Math.floor(b.length / 2)] : null; },
+
+  /* Satu bingkai. inRep = detektor sedang dalam kitaran. Pulang senarai isyarat hidup. */
+  frame: function (t, j, inRep) {
+    var out = [];
+    if (!TR.Calib.ready || !j) return out;
+    var m = TR.measure(j), s = m.side, T = m.torso;
+    var hk = m.hipKneeU, lean = m.lean, shin = TK.SQ.shin(s), heel = TK.SQ.heelU(j, s, T), ratio = TK.SQ.kneeRatio(j);
+    if (!inRep) {
+      if (t.acc) t.acc = null;
+      /* garis dasar berdiri, dikemas kini setiap kali atlet berehat di atas */
+      t.stand.push({ hk: hk, heel: heel, ratio: ratio });
+      if (t.stand.length > 15) t.stand.shift();
+      var hs = [], he = [], ra = [], i;
+      for (i = 0; i < t.stand.length; i++) {
+        if (t.stand[i].hk != null) hs.push(t.stand[i].hk);
+        if (t.stand[i].heel != null) he.push(t.stand[i].heel);
+        if (t.stand[i].ratio != null) ra.push(t.stand[i].ratio);
+      }
+      if (hs.length) t.hkStand = TK.SQ.median(hs);
+      if (he.length) t.heelBase = TK.SQ.median(he);
+      if (ra.length) t.ratioBase = TK.SQ.median(ra);
+      t.heelRun = 0;
+      return out;
+    }
+    var a = t.acc;
+    if (!a) a = t.acc = { hkMax: -9, leanBot: null, shinBot: null, leanAsc: null, deep: false, heel: false, valgus: false, ratioMin: 9, asc: false };
+    if (hk != null && hk > a.hkMax) { a.hkMax = hk; a.leanBot = lean; a.shinBot = shin; a.asc = false; a.leanAsc = null; }
+    else if (hk != null && hk < a.hkMax - 0.06) {
+      a.asc = true;
+      /* separuh pertama naik: kalau dada makin condong sedangkan pinggul naik, punggung naik dulu */
+      if (hk > a.hkMax - 0.5 && lean != null) a.leanAsc = (a.leanAsc == null) ? lean : Math.max(a.leanAsc, lean);
+    }
+    if (!a.deep && hk != null && hk >= TK.SQ_DEPTH) { a.deep = true; out.push({ t: 'say', k: 'cukup', deep: true }); }
+    if (t.view === 'side' && heel != null && t.heelBase != null && heel - t.heelBase > 0.10) {
+      if (++t.heelRun >= 3 && !a.heel) { a.heel = true; out.push({ t: 'say', k: 'tumit' }); }
+    } else t.heelRun = 0;
+    if (t.view === 'front' && ratio != null) {
+      a.ratioMin = Math.min(a.ratioMin, ratio);
+      var base = t.ratioBase || 1;
+      if (!a.valgus && a.hkMax > -0.6 && (ratio < base * 0.75 || ratio < 0.8)) { a.valgus = true; out.push({ t: 'say', k: 'lutut_masuk' }); }
+    }
+    return out;
+  },
+  /* kedalaman untuk tolok di skrin: 0 = berdiri, 1 = paha selari */
+  depth: function (t, j) {
+    if (!TR.Calib.ready || !j || t.hkStand == null) return 0;
+    var hk = TR.measure(j).hipKneeU; if (hk == null) return 0;
+    var d = (hk - t.hkStand) / (TK.SQ_DEPTH - t.hkStand);
+    return Math.max(0, Math.min(1.15, d));
+  },
+  /* rep selesai → isu */
+  issues: function (t, rep) {
+    var a = t.acc || {}, is = [];
+    if (t.view === 'front') {
+      if (a.valgus) is.push('lutut_masuk');
+      t.acc = null; return is;
+    }
+    var hk = rep.hipKnee, k = rep.kneeMin;
+    var ok = a.deep || (hk != null && hk >= TK.SQ_DEPTH) || (k != null && k <= 110);
+    var near = (hk != null && hk >= -0.35) || (k != null && k <= 135);
+    if (!ok) is.push(near ? 'dalam_sikit' : 'dalam');
+    var lb = a.leanBot != null ? a.leanBot : rep.lean, sb = a.shinBot;
+    if (lb != null && (lb > 52 || (sb != null && lb - sb > 22 && lb > 40))) is.push('dada');
+    if (a.heel) is.push('tumit');
+    if (a.leanAsc != null && lb != null && a.leanAsc - lb > 12) is.push('pinggul_naik');
+    if (rep.ecc != null && rep.ecc < 0.5) is.push('laju');
+    t.acc = null;
+    return is;
+  }
+};
+
+/* Dari depan, lutut membengkok KE ARAH kamera, jadi sudut lutut 2D hampir tidak
+   berubah. Detektor depan hanya membaca pinggul jatuh dan naik. */
+TK.tuneFront = function () {
+  if (TR.EX.squatfront) return;
+  var b = TR.EX.squat, f = {}, k;
+  for (k in b) if (b.hasOwnProperty(k)) f[k] = b[k];
+  f.name = 'Squat (depan)'; f.view = 'front';
+  f.need = [['lhip', 'rhip', 'lknee', 'rknee', 'lank', 'rank']];
+  f.open = { kneeAngle: 0, hipDrop: 0.22 };
+  f.close = { kneeAngle: 0, hipRise: 0.12 };
+  f.gate = { minMs: 300, minBend: 0, minDrop: 0.28 };
+  TR.EX.squatfront = f;
+  TR.STEP.squatfront = TR.STEP.squat;
+};
+
+/* Klip suara Coach Seth untuk setiap isu (sfx dalam /teknik/v/). */
+TK.CLIP = { dalam: 'dalam', dalam_sikit: 'sikit', siku_sikit: 'sikit', lutut_sikit: 'sikit', dada: 'dada', laju: 'laju',
+  siku: 'siku', pinggul: 'pinggul', lutut: 'lutut', badan: 'badan', plank: 'plank', tumit: 'tumit',
+  pinggul_naik: 'pinggul_naik', lutut_masuk: 'lutut_masuk' };
+TK.CLIPS = ['s_tegak', 's_sedia_sq', 's_depan', 's_depan_mula', 's_sedia_pu', 's_sedia_lu', 's_sedia_bu', 'c1', 'c2', 'c3', 'c4', 'c5',
+  'cukup', 'cantik', 'mantap', 'dalam', 'sikit', 'dada', 'tumit', 'pinggul_naik', 'laju', 'lutut_masuk', 'berdiri', 'siku', 'pinggul',
+  'lutut', 'badan', 'plank', 'hilang', 'kaki', 'r_cantik', 'r_hampir', 'r_betul', 'fokus', 'siap'];

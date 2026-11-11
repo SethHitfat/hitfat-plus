@@ -57,5 +57,30 @@ ok('engine cues silenced (no English)', TK.ORDER.every(function (k) { return Obj
 ok('knee pushup line uses the knee', (function () { TK.setVariant('lutut'); var m = { sh: P(0.3, 0.5), hip: P(0.5, 0.55), knee: P(0.7, 0.6), ank: P(0.8, 0.4), torso: 0.2 }; var v = TR.sag(m); TK.setVariant(''); return v < 0.05 && TR.sag(m) > 0.3; })());
 ok('getting down to the floor is not a push up', !TK.accept('pushup', { lean: 27 }) && TK.accept('pushup', { lean: 108 }) && TK.accept('squat', { lean: 27 }));
 ok('burpee: arms overhead not required', TR.EX.burpee.judge.requireReach === false);
+
+/* ── squat penuh: penjejak bingkai ── */
+function runSq(depth, downMs, n, lean, view, valgus) {
+  TR.Calib.reset(); if (view === 'front') TK.tuneFront();
+  var d = TR.Detector.create(view === 'front' ? 'squatfront' : 'squat'), t = TK.SQ.create(view || 'side'), reps = [], said = [], i, f, ev, k;
+  var body = function (x) { var b = bodySquat(x, lean); if (valgus) { b.lknee.x += 0.05 * x; b.rknee.x -= 0.05 * x; } return b; };
+  var step = function (x) { var j = body(x), inRep = !!d.cyc; ev = d.feed(j); var live = TK.SQ.frame(t, j, !!d.cyc || inRep); live.forEach(function (l) { said.push(l.k); });
+    ev.forEach(function (e) { if (e.t === 'rep') { e.rep.issues = TK.SQ.issues(t, e.rep); reps.push(e.rep); } }); CLOCK += 33; };
+  for (i = 0; i < 25; i++) step(0);
+  var fr = Math.round(downMs / 33);
+  for (k = 0; k < n; k++) { for (f = 0; f <= fr; f++) step(depth * f / fr); for (f = fr; f >= 0; f--) step(depth * f / fr); for (f = 0; f < 15; f++) step(0); }
+  return { reps: reps, said: said };
+}
+var q = runSq(1, 1500, 5);
+ok('full squat: 5 clean reps, and "Cukup! Naik!" said at depth each time', q.reps.length === 5 && q.reps.every(function (r) { return !r.issues.length; }) && q.said.filter(function (k) { return k === 'cukup'; }).length === 5, JSON.stringify(q.reps.map(function (r) { return r.issues; })) + ' ' + q.said.join());
+q = runSq(0.55, 1500, 3);
+ok('half squat: never told "cukup", told to go lower', q.reps.length === 3 && q.said.indexOf('cukup') < 0 && q.reps[0].issues[0].indexOf('dalam') === 0, JSON.stringify(q.reps.map(function (r) { return r.issues; })));
+q = runSq(1, 1500, 3, 0.25);
+ok('chest falling forward is caught', q.reps.length === 3 && q.reps[0].issues.indexOf('dada') > -1, JSON.stringify(q.reps.map(function (r) { return [r.issues, r.lean]; })));
+q = runSq(1, 1500, 3, 0, 'front', true);
+ok('front: knees caving in are caught and called out live', q.reps.length === 3 && q.reps[0].issues.indexOf('lutut_masuk') > -1 && q.said.indexOf('lutut_masuk') > -1, q.reps.length + ' ' + JSON.stringify(q.reps.map(function (r) { return r.issues; })) + ' ' + q.said.join());
+q = runSq(1, 1500, 3, 0, 'front', false);
+ok('front: knees over toes pass', q.reps.length === 3 && q.reps.every(function (r) { return !r.issues.length; }), q.reps.length + ' ' + JSON.stringify(q.reps.map(function (r) { return r.issues; })));
+ok('every squat row and live call has words and a clip', TK.EX.squat.rows.every(function (r) { return r[1].every(function (c) { return TK.ISU[c] && TK.CLIP[c] && TK.CLIPS.indexOf(TK.CLIP[c]) > -1; }); }));
+ok('every move starts with its own clip', TK.ORDER.every(function (k) { return TK.CLIPS.indexOf(TK.EX[k].clipSedia) > -1; }));
 print((fail ? 'UJIAN GAGAL ' : 'LULUS ') + pass + '/' + (pass + fail));
 F.forEach(function (x) { print('  ✗ ' + x); });
