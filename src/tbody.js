@@ -3878,6 +3878,8 @@ print("\n── THE START: MAKAN ──");
   ok("a session done today says so, and ticks itself", mfToday().indexOf('Sesi 3 selesai')>0 && mfTicks().indexOf('Sesi 3')>0 && mfDoneToday()===2);
   HF.data.sessions=keepS;
   HF.data.progress[MF_ID]=kp;
+  var opened=''; var keepOP=openProgram; openProgram=function(id){ opened=id; }; pushGo('mula'); openProgram=keepOP;
+  ok("Bara's training-day reminder opens THE START", opened===MF_ID);
   mfOwned=keepOwn; renderMF=keepRender; HF.data.mf=keepMf;
 })();
 print("\n── MEAL SCAN: PORTION AND NAME ──");

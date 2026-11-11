@@ -12815,6 +12815,8 @@ function pushGo(v){
     if(v==='checkin'){ if(typeof switchTab==='function') switchTab('home'); if(typeof ckOpen==='function') ckOpen(); }
     else if(v==='eat'){ if(typeof switchTab==='function') switchTab('eat'); }
     else if(v==='home'){ if(typeof switchTab==='function') switchTab('home'); }
+    /* (11 Nov 2026) THE START's training-day reminder opens the program */
+    else if(v==='mula'){ if(typeof switchTab==='function') switchTab('home'); if(typeof openProgram==='function') openProgram('mula'); }
   }catch(e){}
 }
 function pushGoUrl(u){ var m=String(u||'').match(/[?&]go=([a-z]+)/); if(m) pushGo(m[1]); }

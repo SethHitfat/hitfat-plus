@@ -28,6 +28,8 @@
      ?slot=siang   1 pm   no meal logged yet today     → Eat
      (no slot)     8 pm   class first, then the habits below
      ?slot=tidur  10 pm   a score of 25–49: what is left to turn Bara red
+   On a THE START training day the 9 am message is that day's session
+   (startMessage, 11 Nov 2026).
    Each kind has its own Bara picture (icon; Android and desktop show it,
    an iPhone shows the app's own icon) and calls the member by first name.
 
@@ -94,7 +96,7 @@ function scoreOf(d: Data, day: string, wdays: Record<string, number>): number {
 
 const PUSH_MAX = 3;
 /* each kind's Bara (img/mascot/push/, 192 px on its own colour) */
-const ICON: Record<string, string> = { pagi: 'pagi', siang: 'makan', tidur: 'tidur', streak: 'streak', weekly: 'minggu', reward: 'minggu',
+const ICON: Record<string, string> = { mula: 'streak', pagi: 'pagi', siang: 'makan', tidur: 'tidur', streak: 'streak', weekly: 'minggu', reward: 'minggu',
   dust: 'kusut', rust: 'kusut', rust7: 'kusut', rust14: 'kusut', ended: 'kusut', class7: 'kusut', class14: 'kusut' };
 function iconFor(kind: string): string { return '/img/mascot/push/' + (ICON[kind] || 'kelas') + '.png'; }
 /* the member's first name, as the app's check-in says it */
@@ -118,9 +120,32 @@ function activeLately(d: Data, wdays: Record<string, number>): boolean {
    lock screen whole: a short title with no name (one line, about 26
    characters), a body of two lines (under about 70); the name, when used,
    opens the body */
+/* (11 Nov 2026, Seth: "buat peringatan") THE START: at 9 am on the days the
+   member chose in its questions, the session waiting, until it is done.
+   Not when today's session is done already, not after the 18th, and not
+   for someone gone three weeks (the 8 pm messages speak to them). */
+const MF_N = 18, MF_DAYCODE = ['ahd', 'isn', 'sel', 'rab', 'kha', 'jum', 'sab'];
+export function startMessage(d: Data, today: string, name: string): Msg | null {
+  const me = d.mf && d.mf.me;
+  if (!me || !me.done) return null;
+  const done = Math.min(MF_N, Number((d.progress || {}).mula) || 0);
+  if (done >= MF_N) return null;
+  if (!(me.days || []).includes(MF_DAYCODE[new Date(Date.parse(today + 'T12:00:00Z')).getUTCDay()])) return null;
+  let last = typeof me.at === 'string' ? me.at : '';
+  for (let i = 0; i < MF_N; i++) {
+    const s = (d.sessions || {})['mf-s' + i];
+    if (s && s.date) { const dd = dayOf(s.date); if (dd === today) return null; if (dd > last) last = dd; }
+  }
+  if (!last || daysBetween(last, today) > 21) return null;
+  const mins = me.masa === 15 ? 15 : me.masa === 25 ? 25 : 20;
+  return { kind: 'mula', title: 'Hari latihan 💪',
+    body: (name ? name + ', s' : 'S') + 'esi ' + (done + 1) + ' THE START hari ni. ' + mins + ' minit je, jom!', url: '/?go=mula' };
+}
+
 /* 9 am, 1 pm and 10 pm */
 export function slotMessage(d: Data, slot: string): Msg | null {
   const wdays = workoutDays(d), today = dayBack(0), name = firstName(d);
+  if (slot === 'pagi') { const m = startMessage(d, today, name); if (m) return m; }
   if (!activeLately(d, wdays)) return null;
   const dy = (d.daily && d.daily[today]) || {};
   if (slot === 'pagi') {
