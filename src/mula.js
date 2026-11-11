@@ -235,12 +235,12 @@ function mfCue(p){ const c=MF_TECH[p]; return c ? c[0].map(mfT).join(' ')+' '+mf
 /* the whole session, warm-up to cool-down, in one list (rounds unrolled) */
 function mfExercises(s){
   const out=[];
-  s.warm.forEach((n,i)=>out.push(mfEx(n,30,i===s.warm.length-1?15:0)));
+  s.warm.forEach((n,i)=>{ const e=mfEx(n,30,i===s.warm.length-1?15:0); e.mfw='warm'; out.push(e); });
   for(let r=0;r<s.r;r++) s.main.forEach((x,i)=>{
     const last=r===s.r-1 && i===s.main.length-1;
-    out.push(mfEx(x.n,s.w,last?15:s.rest,mfCue(x.p)));
+    const e=mfEx(x.n,s.w,last?15:s.rest,mfCue(x.p)); e.mfp=x.p; out.push(e);
   });
-  s.cool.forEach((n,i)=>out.push(mfEx(n,40,0)));
+  s.cool.forEach((n,i)=>{ const e=mfEx(n,40,0); e.mfw='cool'; out.push(e); });
   return out;
 }
 function mfSecs(s){ return mfExercises(s).reduce((a,e)=>a+e.dur+(e.rest||0),0); }
@@ -843,4 +843,100 @@ function mfHomeCard(){
   if(owned && done) return hpoCard(MF,{wide:true,kick:mfL('Sesi ','Session ')+(done+1)+' · '+mfMinutes(mfSession(done))+' min',go:'mfOpenSession('+done+')'});
   if(owned) return hpoCard(MF,{wide:true,kick:mfL('Baru · Sedia bila anda sedia','New · Ready when you are'),go:"openProgram('"+MF_ID+"')"});
   return hpoCard(MF,{wide:true,kick:mfL('Program Baru · RM','New Program · RM')+MF_PRICE,go:"openProgram('"+MF_ID+"')"});
+}
+
+/* ── THE START in the player (11 Nov 2026, Seth: "kita nak hidup vibe color the start ... dia tak
+   boleh sama dengan Mark Taufik. Dia kena lain. Style lain. Khas untuk orang beginner") ──
+   Not MAK2FIT's recolour of the same screens: a poster player that teaches. On the move, the
+   three technique cues one at a time and the easier version a tap away; the rest is a cream
+   breathing screen; Ready and Done show where this session sits in the 18; every word in
+   THE START's own language (BM, or English when the member chose it). Only meta.mf sessions;
+   every other program keeps the HITFAT player as it was. */
+const MF_PL_WARM=[['Gerak perlahan, badan masih sejuk.','Ikut julat yang selesa.','Bernafas biasa.'],
+                  ['Regang perlahan, jangan melantun.','Tahan dan bernafas.','Rasa tarikan, bukan sakit.']];
+const MF_PL_LBL=[['#pl-rest .rph','Rest'],['#pl-rest .rnk','→ Up next'],['#pl-rest .rs','Skip'],
+                 ['#pl-cd .cdk','Get ready!'],['#pl-ready .rdk','Ready?'],['#pl-done .dk','Workout Complete'],
+                 ['#pl-done .dgrid > div:nth-child(1) > span','Time'],['#pl-done .dgrid > div:nth-child(2) > span','Burned'],
+                 ['#pl-done .dgrid > div:nth-child(3) > span','Moves'],['#pl-done .dgrid > div:nth-child(4) > span','Streak'],
+                 ['#pl-done .dshare','Share'],['#pl-done .dbtns .bigbtn','Done']];
+function mfPlCues(ex){
+  const c=ex&&ex.mfp&&MF_TECH[ex.mfp];
+  if(c) return c[0].map(mfT);
+  return MF_PL_WARM[ex&&ex.mfw==='cool'?1:0].map(mfT);
+}
+/* the 18 sessions as dots: done, this one, the two record sessions ringed */
+function mfPlJourney(gi,justDone){
+  if(typeof gi!=='number' || gi<0) return '';
+  const done=Math.max(mfDone(), justDone?gi+1:0);
+  let d='';
+  for(let i=0;i<MF_N;i++) d+='<i class="'+[i<done?'on':'',i===gi?'now':'',MF_RECS.indexOf(i)>=0?'rec':''].join(' ').trim()+'"></i>';
+  const wk=mfWeekOf(gi)+1, left=MF_N-done;
+  const line=justDone
+    ? (left>0 ? mfL(done+' daripada '+MF_N+' sesi siap. Lagi '+left+' sesi.', done+' of '+MF_N+' sessions done. '+left+' to go.')
+              : mfL('Semua '+MF_N+' sesi siap. Tahniah!','All '+MF_N+' sessions done. Well done!'))
+    : mfL('Minggu '+wk+' daripada '+MF_WK+' · sesi '+(gi+1)+' daripada '+MF_N,'Week '+wk+' of '+MF_WK+' · session '+(gi+1)+' of '+MF_N);
+  return '<div class="mfj"><div class="mfj-d">'+d+'</div><div class="mfj-l">'+line+'</div></div>';
+}
+/* On: THE START's words over the player's English labels. Off: the labels put back. */
+function mfPlLabels(on){
+  MF_PL_LBL.forEach(x=>{ const e=document.querySelector(x[0]); if(e) e.textContent=on?'':x[1]; });
+  ['mfj-rd','mfj-dn'].forEach(id=>{ const e=$(id); if(e && !on) e.innerHTML=''; });
+  const rk=document.querySelector('#pl-rest .rk');
+  if(rk) rk.innerHTML=on?'<span class="b1">'+mfL('Tarik nafas','Breathe in')+'</span><span class="b2">'+mfL('Hembus','Breathe out')+'</span>':'Rest';
+  if(!on) return;
+  const set=(s,v)=>{ const e=document.querySelector(s); if(e) e.textContent=v; };
+  set('#pl-rest .rph',mfL('Rehat','Rest')); set('#pl-rest .rnk',mfL('Seterusnya','Up next'));
+  set('#pl-rest .rs',mfL('Langkau','Skip')); set('#pl-cd .cdk',mfL('Bersedia!','Get ready!'));
+  set('#pl-done .dgrid > div:nth-child(1) > span',mfL('Masa','Time')); set('#pl-done .dgrid > div:nth-child(2) > span',mfL('Dibakar','Burned'));
+  set('#pl-done .dgrid > div:nth-child(3) > span',mfL('Gerakan','Moves')); set('#pl-done .dgrid > div:nth-child(4) > span',mfL('Berturut','Streak'));
+  set('#pl-done .dshare',mfL('Kongsi','Share')); set('#pl-done .dbtns .bigbtn',mfL('Siap','Done'));
+}
+function mfPlEasy(){ const x=$('mfk-x'); if(x && x.classList) x.classList.toggle('on'); }
+function mfPl(stage,arg){
+  if(!pl || !pl.meta || !pl.meta.mf) return;
+  const gi=pl.meta.mf.gi, ex=pl.exs[pl.i];
+  if(stage==='work'){
+    if($('pl-ph')) $('pl-ph').textContent=ex.mfw==='warm'?mfL('Pemanasan','Warm-up'):ex.mfw==='cool'?mfL('Regangan','Cool-down'):mfL('Gerak','Move');
+    if($('pl-mv')) $('pl-mv').textContent=mfL('Gerakan ','Move ')+(pl.i+1)+'/'+pl.exs.length;
+    const n=plNextIndex();
+    if($('pl-next')) $('pl-next').innerHTML=n?(mfL('Seterusnya: ','Next: ')+'<b>'+pl.exs[n.i].n+'</b>'):mfL('Gerakan terakhir!','Last one!');
+    const c=ex.mfp&&MF_TECH[ex.mfp], cues=mfPlCues(ex);
+    if($('pl-learn')) $('pl-learn').innerHTML='<div class="mfk"><div class="mfk-h">'+mfL('Kunci teknik','Technique')+'</div><div class="mfk-c">'+
+      cues.map((t,i)=>'<span class="k'+i+'"><em>'+(i+1)+'</em>'+t+'</span>').join('')+'</div>'+
+      (c?'<button class="mfk-e" onclick="event.stopPropagation();mfPlEasy()">'+mfL('Terlalu susah? Versi mudah','Too hard? Easier version')+'</button>'+
+         '<div class="mfk-x" id="mfk-x">'+mfT(c[2])+'. <i>'+mfL('Elak: ','Avoid: ')+mfT(c[1]).toLowerCase()+'.</i></div>':'')+'</div>';
+  } else if(stage==='rest'){
+    const n=arg, nx=n&&pl.exs[n.i]; if(!nx) return;
+    if($('pl-restmeta')) $('pl-restmeta').textContent=mfL('Gerakan ','Move ')+(n.i+1)+'/'+pl.exs.length;
+    if($('pl-resttip')) $('pl-resttip').innerHTML='<b>'+mfL('Kunci teknik','Technique')+'</b>'+mfPlCues(nx).join(' ');
+  } else if(stage==='count'){
+    if($('pl-cdx')) $('pl-cdx').innerHTML='<span>'+mfL('Mula dengan','First up')+'</span><b>'+ex.n+'</b>';
+  } else if(stage==='ready'){
+    const secs=pl.exs.reduce((t,e)=>t+(e.dur||45)+plRestOf(e),0), mins=Math.max(1,Math.round(secs/60)), nm=pl.exs.length;
+    if(document.querySelector('#pl-ready .rdk')) document.querySelector('#pl-ready .rdk').textContent=gi>=0?mfL('Sesi '+(gi+1)+' / '+MF_N,'Session '+(gi+1)+' / '+MF_N):mfL('Cuba gerakan','Try the move');
+    const ss=gi>=0&&mfSession(gi); if($('pl-rdt') && ss && ss.n) $('pl-rdt').textContent=mfT(ss.n);
+    if($('pl-rdm')) $('pl-rdm').textContent=nm+mfL(' gerakan · lebih kurang ',' moves · about ')+mins+mfL(' minit',' min');
+    if($('pl-rds')) $('pl-rds').innerHTML='<div class="pl-chips"><span><b>'+mins+'</b> '+mfL('minit','min')+'</span><span><b>'+nm+'</b> '+mfL('gerakan','moves')+'</span><span>'+mfL('Ikut rentak anda','Your own pace')+'</span></div>';
+    if($('pl-rdgo')) $('pl-rdgo').textContent=mfL('Mula sesi','Start session');
+    if($('pl-rdf')) $('pl-rdf').innerHTML=mfPlJourney(gi)+'<div class="mf-rdf">'+mfL('Mula dengan: ','First up: ')+pl.exs[0].n+'</div>';
+  } else if(stage==='done'){
+    const dk=document.querySelector('#pl-done .dk');
+    if(dk) dk.textContent=gi>=0?mfL('Sesi '+(gi+1)+' siap!','Session '+(gi+1)+' done!'):mfL('Siap!','Done!');
+    if($('pl-dn-date')) $('pl-dn-date').textContent=new Date().toLocaleDateString(mfEn()?'en-GB':'ms-MY',{weekday:'long',day:'numeric',month:'long'});
+    let j=$('mfj-dn');
+    if(!j){ const at=$('pl-dn-date'); if(at && at.insertAdjacentHTML){ at.insertAdjacentHTML('afterend','<div id="mfj-dn"></div>'); j=$('mfj-dn'); } }
+    if(j) j.innerHTML=mfPlJourney(gi,true);
+    /* how it felt, in THE START's own three words (the Pelan tab counts them the same way) */
+    const fk=document.querySelector('#pl-dn-feel .fk'); if(fk) fk.textContent=mfL('Macam mana sesi tadi?','How was it?');
+    const fw={easy:mfL('Mudah','Easy'),right:mfL('Ngam','Just right'),hard:mfL('Susah','Hard')};
+    Array.prototype.forEach.call(document.querySelectorAll('#pl-dn-feel button'),b=>{ const w=fw[b.getAttribute('data-f')]; if(w) b.textContent=w; });
+    const su=$('pl-dn-streak-u'); if(su) su.textContent=mfL('HARI',su.textContent);
+    try{
+      const days=daysThisWeek(), wg=HF.data.weekGoal||5, wm=weekMinutes();
+      const wh=document.querySelector('#pl-dn-week .wkh');
+      if(wh) wh.innerHTML='<b>'+mfL('Minggu ini','This week')+'</b><span>'+mfL(days+' daripada '+wg+' hari · '+wm+' minit',days+' of '+wg+' days · '+wm+' min')+'</span>';
+      const wl=document.querySelector('#pl-dn-week .wkl');
+      if(wl) wl.textContent=days>=wg?mfL('Sasaran minggu ini tercapai 🎉','Weekly goal reached 🎉'):mfL('Lagi '+(wg-days)+' hari untuk sasaran anda.',(wg-days)+' more day'+(wg-days===1?'':'s')+' to your goal.');
+    }catch(e){}
+  }
 }

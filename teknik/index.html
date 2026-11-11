@@ -1,0 +1,2518 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#E8480F">
+<title>Semak Teknik · THE START</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&display=swap" rel="stylesheet">
+<style>
+:root{--o:#E8480F;--o2:#B8380A;--o3:#FF7A35;--cream:#FFF4EA;--peach:#FFE0CC;--ink:#141414;--ink2:#5A4A40;--line:#F0DCCB;--good:#1F8A4C;--warn:#E8A10F;
+  --f:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--cream);color:var(--ink);font:400 16px/1.45 var(--f);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px calc(28px + env(safe-area-inset-bottom))}
+.muted{color:var(--ink2)}
+h1,h2,.disp{font-family:var(--f);font-style:italic;font-weight:900;font-stretch:122%;letter-spacing:-.01em;line-height:.98;text-transform:uppercase;margin:0;text-wrap:balance}
+
+/* Poster: oren pepejal + titik halftone, seperti landing THE START */
+.poster{position:relative;isolation:isolate;overflow:hidden;background:var(--cream);border-radius:0 0 28px 28px;margin:0 -16px;padding:calc(18px + env(safe-area-inset-top)) 20px 26px}
+.poster::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(150deg,var(--o3),var(--o) 45%,var(--o2))}
+.poster::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle,rgba(255,244,234,.5) 0 1.6px,transparent 2.1px) 0 0/7px 7px;
+  -webkit-mask:linear-gradient(100deg,transparent 35%,#000 85%);mask:linear-gradient(100deg,transparent 35%,#000 85%)}
+.ghost{position:absolute;right:-6px;bottom:-14px;z-index:-1;font:italic 900 108px/.8 var(--f);font-stretch:125%;color:rgba(255,244,234,.16);text-transform:uppercase;pointer-events:none;white-space:nowrap}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}
+.brand{font:italic 900 13px/1 var(--f);font-stretch:118%;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:#fff;padding:7px 10px;border-radius:999px}
+.tagAi{font:800 11px/1 var(--f);letter-spacing:.12em;text-transform:uppercase;background:#fff;color:var(--o2);padding:7px 10px;border-radius:999px;box-shadow:0 6px 16px -8px rgba(92,26,3,.5)}
+.poster h1{font-size:clamp(40px,12vw,58px)}
+.poster h1{color:var(--ink)}
+.poster h1 em{font-style:italic;color:var(--cream);display:block}
+.lead{margin:18px 2px 0;font-size:16px;max-width:32em}
+
+/* Kad gerakan */
+.sec{margin-top:26px}
+.sec-h{font:800 12px/1 var(--f);letter-spacing:.14em;text-transform:uppercase;color:var(--o2);margin:0 0 12px}
+.mvs{display:grid;gap:10px}
+.mv{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:#fff;border-radius:20px;padding:14px 16px;box-shadow:0 10px 24px -18px rgba(92,26,3,.6);border:1.5px solid var(--line)}
+.mv:active{transform:scale(.99)}
+.mv-n{font:italic 900 26px/1 var(--f);font-stretch:122%;color:var(--o);min-width:40px}
+.mv-t{flex:1;min-width:0;display:flex;flex-direction:column}
+.mv-t b{font:italic 900 21px/1.05 var(--f);font-stretch:118%;text-transform:uppercase}
+.mv-t small{color:var(--ink2);font-size:13px;margin-top:2px}
+.mv-go{font-size:26px;color:var(--o);line-height:1}
+.chip{font:800 11.5px/1 var(--f);padding:6px 9px;border-radius:999px;white-space:nowrap;background:var(--peach);color:var(--o2)}
+.chip.baru{background:var(--cream);color:var(--ink2);border:1px solid var(--line)}
+.chip.cantik{background:#DDF3E6;color:var(--good)}
+.chip.hampir{background:#FFF0CC;color:#8A5A00}
+.how{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.how li{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:16px;padding:12px 14px;border:1px solid var(--line);font-size:14.5px}
+.how li b{font:italic 900 18px/1.1 var(--f);color:var(--o);min-width:22px}
+.priv{margin-top:18px;font-size:13px;color:var(--ink2);background:rgba(255,255,255,.7);border-radius:14px;padding:11px 13px;border:1px dashed var(--line)}
+
+/* Skrin gerakan */
+.bar{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 0 12px}
+.back{width:40px;height:40px;border-radius:50%;background:#fff;border:1.5px solid var(--line);font-size:22px;line-height:1;display:grid;place-items:center}
+.bar .disp{font-size:24px}
+.bar small{display:block;color:var(--ink2);font-size:13px;font-style:normal;font-weight:500;text-transform:none;letter-spacing:0;font-stretch:100%}
+.vid{position:relative;aspect-ratio:9/16;max-height:62vh;width:100%;border-radius:24px;overflow:hidden;background:var(--ink);margin:0 auto;box-shadow:0 18px 36px -22px rgba(92,26,3,.7)}
+.vid iframe{position:absolute;top:50%;left:50%;width:100%;height:100%;transform:translate(-50%,-50%) scale(1.02);border:0;pointer-events:none}
+.vid .lbl{position:absolute;left:12px;top:12px;z-index:2;font:800 11px/1 var(--f);letter-spacing:.1em;text-transform:uppercase;background:rgba(20,20,20,.72);color:#fff;padding:7px 9px;border-radius:999px}
+.seg{display:flex;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:4px;margin:14px 0 0}
+.seg button{flex:1;padding:10px 8px;border-radius:999px;font-weight:700;font-size:14px;color:var(--ink2)}
+.seg button.on{background:var(--ink);color:#fff}
+.kunci{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.kunci li{display:flex;gap:12px;align-items:flex-start;font-size:15px;background:#fff;border-radius:14px;padding:11px 13px;border:1px solid var(--line)}
+.kunci li span{flex:none;width:24px;height:24px;border-radius:50%;background:var(--o);color:#fff;font:italic 900 13px/24px var(--f);text-align:center}
+.place{display:flex;gap:14px;align-items:center;background:var(--ink);color:#fff;border-radius:20px;padding:14px 16px}
+.place svg{flex:none}
+.place p{margin:0;font-size:14px}
+.place b{color:var(--o3)}
+.cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:58px;border-radius:999px;background:var(--o);color:#fff;font:italic 900 19px/1 var(--f);font-stretch:118%;text-transform:uppercase;letter-spacing:.01em;box-shadow:0 14px 28px -14px rgba(184,56,10,.9)}
+.cta:active{transform:translateY(1px)}
+.cta.ghostb{background:#fff;color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+.sticky{position:sticky;bottom:0;padding:14px 0 calc(10px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--cream) 30%)}
+.pr-h{margin:0 0 8px;font-size:14px}
+.pl{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.pl li{display:grid;grid-template-columns:1fr auto;grid-template-areas:"d g" "f g";gap:2px 10px;background:#fff;border-radius:14px;padding:10px 13px;border:1px solid var(--line)}
+.pd{grid-area:d;font-size:12.5px;color:var(--ink2)}
+.pf{grid-area:f;font-weight:700;font-size:14px}
+.pg{grid-area:g;align-self:center;font:italic 900 22px/1 var(--f);color:var(--o2)}
+.pg.cantik{color:var(--good)}
+
+/* Kamera */
+body.on-cam{background:#000}
+#v-cam{position:fixed;inset:0;background:#000;color:#fff;z-index:5}
+.stage{position:absolute;inset:0}
+.stage video,.stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.cam-top{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 30px;background:linear-gradient(rgba(0,0,0,.6),transparent)}
+.cam-top .nm{flex:1;min-width:0;font:italic 900 16px/1 var(--f);font-stretch:112%;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rbtn{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:18px;display:grid;place-items:center}
+.dots{display:flex;gap:6px}
+.dots s{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.6)}
+.dots s.good{background:#3DD07A;border-color:#3DD07A}
+.dots s.warn{background:var(--o3);border-color:var(--o3)}
+.cam-bot{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:40px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.78) 40%);text-align:center}
+.big{font:italic 900 clamp(30px,9vw,44px)/1 var(--f);font-stretch:120%;text-transform:uppercase;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.big.good{color:#5BE394}.big.warn{color:var(--o3)}
+.cue{min-height:2.8em;margin:10px auto 14px;max-width:24em;font-size:17px;font-weight:600;line-height:1.35}
+.end{display:inline-flex;min-height:48px;align-items:center;padding:0 26px;border-radius:999px;background:#fff;color:var(--ink);font:italic 900 16px/1 var(--f);text-transform:uppercase}
+.end:disabled{opacity:.45}
+.cam-err{position:absolute;inset:0;z-index:4;display:grid;place-items:center;padding:24px;background:rgba(20,20,20,.94);text-align:center}
+.cam-err p{max-width:22em;font-size:16px}
+.cam-err small{display:block;margin-top:8px;color:#999;font-size:11px;word-break:break-word}
+
+/* Keputusan */
+.rs{padding-top:calc(14px + env(safe-area-inset-top))}
+.rs-card{position:relative;isolation:isolate;overflow:hidden;border-radius:28px;padding:22px 20px 24px;background:var(--ink);color:#fff;margin-top:8px}
+.rs-card::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle,rgba(232,72,15,.55) 0 1.6px,transparent 2.1px) 0 0/7px 7px;
+  -webkit-mask:linear-gradient(200deg,#000,transparent 60%);mask:linear-gradient(200deg,#000,transparent 60%)}
+.rs-name{font:800 12px/1 var(--f);letter-spacing:.14em;text-transform:uppercase;color:var(--o3)}
+.rs-level{font:italic 900 clamp(28px,8.4vw,40px)/1 var(--f);font-stretch:122%;text-transform:uppercase;margin-top:10px}
+.rs-level.cantik{color:#5BE394}.rs-level.hampir{color:#FFD166}.rs-level.betulkan{color:var(--o3)}
+.rs-big{display:flex;align-items:baseline;gap:4px;margin-top:14px}
+.rs-big b{font:italic 900 76px/.9 var(--f);font-stretch:118%}
+.rs-big span{font:italic 900 34px/1 var(--f);color:rgba(255,255,255,.55)}
+.rs-lbl{font-size:14px;color:rgba(255,255,255,.75)}
+.rows{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:8px}
+.rows li{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:12px 14px;border:1.5px solid var(--line)}
+.rows .ic{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;background:var(--good)}
+.rows li.miss .ic{background:var(--o)}
+.rows .lb{flex:1;font-weight:700}
+.rows .vl{font-size:13.5px;color:var(--ink2)}
+.focus{margin-top:14px;background:var(--o);color:#fff;border-radius:22px;padding:18px 18px 20px;position:relative;isolation:isolate;overflow:hidden}
+.focus::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle,rgba(255,244,234,.35) 0 1.5px,transparent 2px) 0 0/7px 7px;-webkit-mask:linear-gradient(90deg,transparent 40%,#000);mask:linear-gradient(90deg,transparent 40%,#000)}
+.focus small{font:800 11.5px/1 var(--f);letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.focus h3{font:italic 900 24px/1.02 var(--f);font-stretch:118%;text-transform:uppercase;margin:8px 0 6px}
+.focus p{margin:0;font-size:15px}
+.acts{display:grid;gap:10px;margin-top:18px}
+.note{font-size:12.5px;color:var(--ink2);text-align:center;margin-top:14px}
+</style>
+</head>
+<body class="on-home">
+
+<!-- ═══ HOME ═══ -->
+<section id="v-home">
+  <div class="wrap">
+    <header class="poster">
+      <div class="top"><span class="brand">THE START</span><span class="tagAi">AI Coach · Uji</span></div>
+      <h1>Semak<em>Teknik.</em></h1>
+      <span class="ghost" aria-hidden="true">Teknik</span>
+    </header>
+    <p class="lead">AI tengok gerakan anda melalui kamera telefon, kemudian beritahu apa yang dah betul dan <b>satu benda</b> untuk dibetulkan. Tiada markah, tiada "gagal".</p>
+
+    <div class="sec">
+      <p class="sec-h">Pilih gerakan</p>
+      <div class="mvs" id="mvList"></div>
+    </div>
+
+    <div class="sec">
+      <p class="sec-h">Cara ia berjalan</p>
+      <ol class="how">
+        <li><b>1</b><span>Tonton video coach dan baca 4 kunci teknik.</span></li>
+        <li><b>2</b><span>Letak telefon di lantai, bersandar pada dinding, 2 hingga 3 meter dari anda.</span></li>
+        <li><b>3</b><span>Berdiri tegak sekejap supaya AI kenal badan anda, kemudian buat 5 rep perlahan.</span></li>
+        <li><b>4</b><span>Dapat keputusan dan satu fokus. Setiap percubaan disimpan, jadi anda nampak teknik bertambah baik.</span></li>
+      </ol>
+      <p class="priv">🔒 Video tidak dirakam dan tidak dihantar ke mana-mana. AI berjalan dalam telefon anda sahaja. Yang disimpan cuma keputusan (contoh: 4/5 cantik).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SATU GERAKAN ═══ -->
+<section id="v-move" hidden>
+  <div class="wrap">
+    <div class="bar">
+      <button class="back" onclick="TK.home()" aria-label="Kembali">‹</button>
+      <div><div class="disp" id="mvTitle"></div><small id="mvSub"></small></div>
+    </div>
+
+    <div class="vid"><span class="lbl">Video coach</span><div id="mvVid"></div></div>
+
+    <div class="seg" id="mvVar" hidden>
+      <button data-v="lutut" onclick="TK.setVar('lutut')">Push up lutut</button>
+      <button data-v="biasa" onclick="TK.setVar('biasa')">Push up biasa</button>
+    </div>
+
+    <div class="sec">
+      <p class="sec-h">Kunci teknik</p>
+      <ol class="kunci" id="mvKunci"></ol>
+    </div>
+
+    <div class="sec">
+      <div class="place">
+        <svg width="74" height="62" viewBox="0 0 74 62" aria-hidden="true">
+          <rect x="3" y="18" width="14" height="24" rx="3" fill="none" stroke="#FF7A35" stroke-width="2.4" transform="rotate(-8 10 30)"/>
+          <path d="M2 50h70" stroke="#FFF4EA" stroke-opacity=".35" stroke-width="2"/>
+          <path d="M22 30h14" stroke="#FFF4EA" stroke-opacity=".5" stroke-width="1.6" stroke-dasharray="3 3"/>
+          <circle cx="56" cy="12" r="5" fill="#FFF4EA"/>
+          <path d="M56 17v15m0 0l-6 17m6-17l5 17M56 22l-8 6m8-6l7 5" stroke="#FFF4EA" stroke-width="3" stroke-linecap="round" fill="none"/>
+        </svg>
+        <p>Telefon di lantai, bersandar pada dinding, <b>2–3 meter</b> dari anda. Berdiri dengan <b>sisi badan</b> menghadap kamera, dan pastikan kepala hingga kaki nampak.</p>
+      </div>
+    </div>
+
+    <div class="sec">
+      <p class="sec-h">Kemajuan anda</p>
+      <div id="mvProg"></div>
+    </div>
+
+    <div class="sticky"><button class="cta" onclick="TK.start()">Buka kamera &amp; mula</button></div>
+  </div>
+</section>
+
+<!-- ═══ KAMERA ═══ -->
+<section id="v-cam" hidden>
+  <div class="stage">
+    <video id="camVideo" playsinline webkit-playsinline muted></video>
+    <canvas id="camCanvas"></canvas>
+  </div>
+  <div class="cam-top">
+    <button class="rbtn" onclick="TK.teardown();TK.open(TK.st.key)" aria-label="Tutup">✕</button>
+    <span class="nm" id="camName"></span>
+    <span class="dots" id="camDots"></span>
+    <button class="rbtn" id="camSound" onclick="TK.toggleSound()" aria-label="Bunyi">🔊</button>
+  </div>
+  <div class="cam-bot">
+    <div class="big" id="camBig"></div>
+    <div class="cue" id="camCue"></div>
+    <button class="end" id="camEnd" onclick="TK.stop()" disabled>Selesai</button>
+  </div>
+  <div class="cam-err" id="camErr" hidden>
+    <div>
+      <p id="camErrMsg"></p>
+      <button class="end" onclick="TK.start()">Cuba lagi</button>
+      <small id="camErrTech"></small>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ KEPUTUSAN ═══ -->
+<section id="v-result" hidden>
+  <div class="wrap rs">
+    <div class="rs-card">
+      <div class="rs-name" id="rsName"></div>
+      <div class="rs-level" id="rsLevel"></div>
+      <div class="rs-big" id="rsBig"></div>
+      <div class="rs-lbl" id="rsBigLbl"></div>
+    </div>
+    <ul class="rows" id="rsRows"></ul>
+    <div class="focus">
+      <small>Fokus seterusnya</small>
+      <h3 id="rsFocusT"></h3>
+      <p id="rsFocusB"></p>
+    </div>
+    <div class="acts">
+      <button class="cta" onclick="TK.start()">Cuba lagi</button>
+      <button class="cta ghostb" onclick="TK.open(TK.st.key)">Video &amp; kemajuan</button>
+      <button class="cta ghostb" onclick="TK.home()">Pilih gerakan lain</button>
+    </div>
+    <p class="note">Keputusan ini disimpan dalam telefon anda.</p>
+  </div>
+</section>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   b_config.js — SATU sumber kebenaran untuk setiap nombor dalam app ini.
+
+   SEBAB FAIL INI WUJUD (tiga pepijat sebenar daripada app HITFAT terdahulu):
+
+   1. AI Trainer menyimpan ambang skrin "Detection Test" BERASINGAN daripada
+      ambang workout — pushup lulus ujian pada 80 darjah tetapi memerlukan 95
+      semasa bersenam, dan ujian itu berjalan pada model yang lebih ringan.
+      Atlet melihat "Detection Works!" lalu tidak dikira. Di sini ujian,
+      workout dan analisis membaca objek yang SAMA. Tiada pengecualian.
+
+   2. Ambang jarak ditulis sebagai pecahan skrin (0.12, 0.18). Budak kecil
+      berdiri jauh menghasilkan pergerakan yang lebih kecil pada skrin dan
+      tidak pernah mencetuskan rep. HitFatMON menampalnya dengan mendarab
+      ambang; di sini kita BAHAGIKAN ukuran dengan torso atlet sendiri, jadi
+      setiap jarak dinyatakan dalam "unit torso" dan bebas skala sejak awal.
+
+   3. Rep dicetuskan oleh satu ambang sahaja. Anggaran lutut bergoyang lebih
+      kurang 15 darjah pada figura jauh berseluar longgar, dan setiap goyangan
+      yang melintasi garisan menjadi rep — Wall Ball Lab pernah mengira 8 rep
+      dalam 4 saat daripada atlet yang berdiri diam. Setiap pergerakan di sini
+      mengisytiharkan `gate`: tempoh minimum, perjalanan minimum, bengkokan
+      minimum. Kitaran dibuka dengan murah hati, disahkan dengan ketat.
+
+   Tukar nilai DI SINI = tertukar di mana-mana. Jangan salin nombor ke tempat
+   lain. Kalau kau tergoda untuk hardcode satu ambang dalam detektor, itu
+   tanda medan baharu patut ditambah di sini.
+   ═══════════════════════════════════════════════════════════════════════ */
+var TR = { build: '20261111-1331' };
+
+/* Satu sumber masa, supaya ujian boleh memalsukan jam. Rep ditakrifkan oleh
+   TEMPOH — get minRepMs ialah pertahanan utama terhadap rep hantu — jadi
+   logik itu mesti boleh dibuktikan tanpa menunggu masa sebenar berlalu. */
+TR.now = function () { return Date.now(); };
+
+TR.CFG = {
+  debug: false,
+
+  /* ── Keyakinan & masa ──────────────────────────────────────────────── */
+  minScore: 0.4,         // keyakinan sendi minimum sebelum ia dipercayai
+  cooldownMs: 350,       // jeda lalai antara rep (pergerakan boleh mengatasi)
+  smoothAlpha: 0.35,     // EMA atas isyarat pengesanan sahaja
+
+  /* Pengesanan berjalan atas isyarat yang dilicinkan (kurang jitter), tetapi
+     TITIK TERDALAM diukur atas isyarat mentah. EMA ketinggalan pada pusingan
+     dan sentiasa under-read paras paling dalam — kalau kedalaman dihakimi
+     atas isyarat licin, squat yang betul-betul dalam dilaporkan cetek. */
+
+  /* ── Kalibrasi ─────────────────────────────────────────────────────────
+     Atlet berdiri tegak selama beberapa frame sebelum set bermula. Kita
+     rakam torso mereka SEKALI dan bekukan untuk set itu.
+
+     Kenapa bukan torso setiap frame: dalam pushup dan plank badan mendatar,
+     jadi jarak menegak bahu→pinggul pada skrin hampir sifar. Membahagi
+     dengannya meletup. Torso semasa BERDIRI ialah unit saiz badan yang sah
+     untuk mana-mana kedudukan, jadi rakam ia sekali sahaja. */
+  calibFrames: 18,          // frame tegak diperlukan sebelum ARMED
+  calibUprightMin: 0.16,    // jarak bahu→pinggul (pecahan skrin) yang dikira "tegak"
+  torsoMin: 0.08,           // torso lebih kecil daripada ini = atlet terlalu jauh
+  torsoMax: 0.60,           // lebih besar = terlalu dekat, sendi keluar bingkai
+
+  /* ── Lantai pengesahan sejagat ─────────────────────────────────────────
+     Pergerakan boleh menaikkan nilai ini, tidak boleh menurunkannya. */
+  /* Lantai ini mesti muat pergerakan TERPANTAS yang dikenali app, bukan yang
+     biasa. Satu langkah high knee ialah kira-kira 250ms sekaki; meletakkan
+     lantai sejagat pada 600 membunuh setiap high knee dalam app. Pertahanan
+     sebenar terhadap rep hantu ialah `gate.minMs` setiap pergerakan (squat
+     700, pushup 700, burpee 1200) — ini hanya menangkap yang mustahil. */
+  minRepMs: 120,
+  maxRepMs: 20000,          // lebih lama daripada ini = atlet berhenti, buang kitaran
+  lostFrameWarn: 30,        // ~1s badan hilang → beri amaran
+  lostFrameReset: 90,       // ~3s → buang kitaran yang sedang berjalan
+
+  /* ── Gred set ──────────────────────────────────────────────────────────
+     Skor = peratus rep yang sah, ditolak penalti bentuk. Nombor di sini
+     supaya skrin keputusan, kad kongsi dan log semuanya bersetuju. */
+  gradeA: 90, gradeB: 75, gradeC: 60,
+
+  /* ── Rehat ─────────────────────────────────────────────────────────────
+     Rehat antara SENAMAN lebih panjang daripada antara set kerana atlet perlu
+     bangun, membaca isyarat kedudukan seterusnya dan menyusun semula diri
+     mereka di hadapan kamera. Rehat antara set hanya untuk bernafas. */
+  restSetSecs: 30,
+  restExSecs: 45,
+
+  /* ── Suara ─────────────────────────────────────────────────────────── */
+  voiceGapMs: 2600,         // isyarat teknik jarang; jangan meleter
+  voiceRate: 1.05,
+  voicePitch: 1.0
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PERGERAKAN
+
+   Setiap pergerakan mengisytiharkan dirinya sepenuhnya. Menambah senaman
+   baharu = satu entri di sini + satu fungsi step() dalam e_detect.js.
+   Tiada fail lain perlu disentuh.
+
+   Medan:
+     need     sendi yang mesti kelihatan. Array-dalam-array = "kiri ATAU kanan".
+     view     'side' | 'front' — dipakai untuk mengajar atlet meletak telefon.
+     open     ambang murah hati yang MEMBUKA kitaran
+     close    ambang yang MENUTUP kitaran (histeresis; sengaja lebih tinggi)
+     judge    apa yang menjadikan rep SAH, dan di mana zon kelabu
+     gate     lantai yang mesti dilepasi kitaran sebelum ia dikira langsung
+     form     apa yang diperiksa selepas rep, dengan sasarannya
+     cue      ayat jurulatih, dipilih oleh sebab
+     standard ayat yang memberitahu atlet apa yang dikira, dalam bahasa mereka.
+              Ia hidup di sini bersama nombor yang menguatkuasakannya, supaya
+              teks dan ambang tidak boleh hanyut berasingan. Versi pertama
+              meneka ayat daripada NAMA pergerakan ("kalau ia bermula dengan
+              Push...") — yang memberi lunge teks lalai generik, dan akan pecah
+              secara senyap pada kali pertama sesiapa menamakan semula sesuatu.
+     report   baris MANA yang muncul dalam bacaan penuh. Enjin merekod setiap
+              sendi yang dilihatnya, jadi tanpa senarai ini skrin keputusan
+              memaparkan apa sahaja yang bukan null — dan sebuah squat berakhir
+              melaporkan "sudut siku terdalam 171 darjah". Nombor yang tiada
+              kaitan mengajar orang berhenti membaca laporan itu.
+   Semua JARAK dalam unit torso (1.0 = satu torso berdiri). Semua SUDUT dalam
+   darjah, dan sudut memang bebas skala jadi ia tidak pernah diskala.
+   ═══════════════════════════════════════════════════════════════════════ */
+TR.EX = {
+
+  squat: {
+    name: 'Squat', short: 'SQUAT', icon: '🦵', kind: 'rep', view: 'side',
+    need: [['lhip','lknee','lank'], ['rhip','rknee','rank']],
+    states: ['STANDING','DOWN'],
+    open:  { kneeAngle: 155, hipDrop: 0.22 },   // salah satu memadai — buka murah hati
+    close: { kneeAngle: 162, hipRise: 0.12 },
+    judge: { hipBelowKnee: 0.00, greyBelow: -0.12, deepAngle: 100, greyAngle: 125 },
+    gate:  { minMs: 300, minBend: 25, minDrop: 0.35 },
+    form:  { leanMax: 45, symMax: 12 },
+    cue: { shallow: 'Go lower — hips below the knee.',
+           up: 'Stand all the way up between reps.',
+           lean: 'Chest up. You are folding forward.',
+           sym: 'You are favouring one leg. Even it out.' },
+    standard: 'Hips have to finish below the knee. Anything higher shows in amber and does not add to your count.',
+    report: ['counted','time','rhythm','knee','lean','sym','tempo'],
+    kcal: 0.32
+  },
+
+  pushup: {
+    name: 'Push-Up', short: 'PUSH-UP', icon: '💪', kind: 'rep', view: 'side',
+    need: [['lsh','lel','lwr'], ['rsh','rel','rwr']],
+    states: ['UP','DOWN'],
+    open:  { elbowAngle: 130 },
+    close: { elbowAngle: 145 },
+    judge: { deepAngle: 95, greyAngle: 115 },
+    /* 500ms, bukan 700: seorang atlet berirama pantas menyiapkan pushup dalam
+       kira-kira 600ms, dan lantai yang menolaknya menghukum kelajuan. Yang
+       melindungi pushup daripada goyangan bukan tempoh, tetapi minBend 30
+       darjah diukur dari lengan lurus SEBENAR mereka, ditambah histeresis
+       130/145 di antara buka dan tutup — kedua-duanya amplitud, jadi
+       kedua-duanya adil terhadap pushup separuh. */
+    gate:  { minMs: 300, minBend: 30, minDrop: 0 },
+    form:  { sagMax: 0.22, symMax: 15 },              // pinggul jatuh/naik berbanding garis bahu→buku lali
+    cue: { shallow: 'Chest lower. Elbows to 90.',
+           up: 'Lock the arms out at the top.',
+           sag: 'Hips are sagging — squeeze the glutes.',
+           sym: 'One arm is doing more work than the other.' },
+    standard: 'Elbows have to bend past 95 degrees. Half reps show in amber and do not add to your count.',
+    report: ['counted','time','rhythm','elbow','sag','sym','tempo'],
+    kcal: 0.30
+  },
+
+  lunge: {
+    name: 'Reverse Lunge', short: 'LUNGE', icon: '🦶', kind: 'rep', view: 'side',
+    need: [['lhip','lknee','lank'], ['rhip','rknee','rank']],
+    states: ['STANDING','DOWN'],
+    alternating: true,
+    open:  { kneeAngle: 150 },
+    close: { kneeAngle: 158 },
+    judge: { deepAngle: 105, greyAngle: 130 },
+    gate:  { minMs: 350, minBend: 25, minDrop: 0.20 },
+    form:  { leanMax: 40 },
+    cue: { shallow: 'Drop the back knee closer to the floor.',
+           up: 'Stand tall before the next one.',
+           lean: 'Stay upright — do not lean over the front leg.' },
+    standard: 'The back knee has to drop until the front knee passes 105 degrees. Short reps show in amber.',
+    report: ['counted','time','rhythm','knee','lean','tempo'],
+    kcal: 0.30
+  },
+
+  jumpjack: {
+    name: 'Jumping Jack', short: 'JACK', icon: '⚡', kind: 'rep', view: 'front',
+    need: [['lsh','rsh','lwr','rwr','lhip','rhip']],
+    states: ['CLOSED','OPEN'],
+    open:  { wristAboveShoulder: 0.20, armSpread: 1.10 },  // kedua-dua dalam unit torso
+    close: { wristBelowHip: -0.10 },                       // pergelangan tangan turun melepasi pinggul
+    judge: { fullSpread: 1.30 },
+    gate:  { minMs: 400, minBend: 0, minDrop: 0 },
+    cooldownMs: 250,
+    cue: { shallow: 'Arms all the way overhead.',
+           up: 'Hands back down past the hips.' },
+    standard: 'Hands all the way overhead, then all the way back down past the hips.',
+    report: ['counted','time','rhythm','spread'],
+    kcal: 0.16
+  },
+
+  highknee: {
+    name: 'High Knees', short: 'HIGH KNEE', icon: '🏃', kind: 'rep', view: 'front',
+    need: [['lhip','rhip','lknee','rknee']],
+    states: ['DOWN','UP'],
+    alternating: true,
+    /* Unit torso, sifar = lutut betul-betul pada paras pinggul (paha melintang).
+       HitFatMON memakai 0.12 unit skrin di sini, iaitu kira-kira setengah
+       torso DI ATAS pinggul — lebih tinggi daripada yang mana-mana pelari
+       capai. Piawaian sebenar ialah paha melintang, jadi itulah garisannya. */
+    open:  { kneeLift: -0.10 },
+    close: { kneeLift: -0.45 },
+    judge: { fullLift: 0.05, greyLift: -0.15 },
+    gate:  { minMs: 180, minBend: 0, minDrop: 0 },
+    cooldownMs: 200,
+    cue: { shallow: 'Knees higher — hip height.' },
+    standard: 'The knee has to reach hip height. Lower than that shows in amber and does not add to your count.',
+    report: ['counted','time','rhythm','lift'],
+    kcal: 0.14
+  },
+
+  jumpsquat: {
+    name: 'Jump Squat', short: 'JUMP SQUAT', icon: '🚀', kind: 'rep', view: 'side',
+    need: [['lhip','lknee','lank'], ['rhip','rknee','rank']],
+    states: ['STANDING','DOWN'],
+    open:  { kneeAngle: 150, hipDrop: 0.25 },
+    close: { kneeAngle: 150, hipRise: 0.10 },
+    judge: { hipBelowKnee: -0.05, greyBelow: -0.18, deepAngle: 110, greyAngle: 130, minAirRise: 0.10 },  // pinggul mesti naik pantas = lompatan
+    gate:  { minMs: 300, minBend: 25, minDrop: 0.30 },
+    form:  { leanMax: 45 },
+    cue: { shallow: 'Squat deeper before you jump.',
+           air: 'Drive off the floor — that was a stand, not a jump.',
+           lean: 'Chest up on the landing.' },
+    standard: 'Hips below the knee AND both feet off the floor. A deep squat without the jump counts as a half rep.',
+    report: ['counted','time','rhythm','knee','lean','tempo'],
+    kcal: 0.45
+  },
+
+  burpee: {
+    name: 'Burpee', short: 'BURPEE', icon: '🔥', kind: 'rep', view: 'side',
+    need: [['lsh','rsh','lhip','rhip']],
+    /* Kitaran: BERDIRI → CANGKUNG → PLANK → BANGUN (tangan atas kepala).
+       Pengesanan lompatan sengaja TIDAK diwajibkan — ia yang paling kerap
+       gagal pada kamera telefon, dan sebuah rep yang hilang kerana kamera
+       terlepas 80ms di udara mengajar atlet bahawa app itu pembohong.
+       Tangan atas kepala dipakai sebagai pengesahan berdiri penuh. */
+    states: ['STANDING','CROUCH','PLANK','RECOVER'],
+    open:  { hipDrop: 0.45 },
+    close: { hipRise: 0.20 },
+    judge: { plankLevel: 0.70, requireReach: true, reachGap: 0.02 },
+    gate:  { minMs: 700, minBend: 0, minDrop: 0.60 },
+    cooldownMs: 600,
+    cue: { plank: 'Get all the way to plank.',
+           stand: 'Stand up, hands overhead.',
+           shallow: 'You did not get low enough.' },
+    standard: 'Chest down to plank, then stand all the way up with hands overhead. Miss the plank and it is a no rep.',
+    report: ['counted','time','rhythm','drop','tempo'],
+    kcal: 0.55
+  },
+
+  plank: {
+    name: 'Plank Hold', short: 'PLANK', icon: '🧱', kind: 'hold', view: 'side',
+    need: [['lsh','rsh','lhip','rhip']],
+    states: ['OUT','HOLD'],
+    /* Tahan masa, bukan rep. `level` = jarak menegak bahu→pinggul dalam unit
+       torso; kecil bermakna badan mendatar. */
+    judge: { level: 0.55, wristBelow: 0.05 },
+    form:  { sagMax: 0.30 },
+    cue: { sag: 'Hips are dropping — squeeze the glutes.',
+           pike: 'Hips too high — drop into a straight line.',
+           out: 'Get into a plank position.' },
+    standard: 'The clock only runs while your shoulders, hips and ankles hold a straight line.',
+    report: ['counted','time','sag'],
+    kcal: 0.06         // sesaat, bukan serep
+  }
+,
+  /* ═══════════════════════════════════════════════════════════════════
+     LAPAN PERGERAKAN YANG DIPORT DARIPADA AI TRAINER LAMA
+
+     Ambang asal ditulis dalam unit SKRIN (0.18, 0.08, 0.06). Ia ditukar
+     kepada unit torso di sini dengan membahagi dengan 0.25 — torso tipikal
+     dalam bingkai yang ambang asal ditala. Itu menjadikannya adil merentas
+     saiz badan dan jarak kamera, yang versi asal tidak pernah.
+
+     Keluarga squat lama memakai nisbah kedalaman (kneeY-hipY)/(ankleY-hipY).
+     Di sini semuanya memakai pinggul-berbanding-lutut yang sama dengan squat
+     biasa, supaya "cukup dalam" bermakna perkara yang SAMA merentas setiap
+     pergerakan squat dalam app. Sumo yang dikira dalam pada 0.52 sedangkan
+     squat biasa memerlukan sudut 100 darjah ialah dua piawaian berbeza yang
+     memakai perkataan yang sama.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  sumosquat: {
+    name: 'Sumo Squat', short: 'SUMO', icon: '🦿', kind: 'rep', view: 'front',
+    need: [['lhip','rhip','lknee','rknee']],
+    states: ['STANDING','DOWN'],
+    open:  { hipDrop: 0.22, kneeAngle: 150 },
+    close: { hipRise: 0.12, kneeAngle: 158 },
+    judge: { hipBelowKnee: -0.05, greyBelow: -0.18, deepAngle: 105, greyAngle: 130, wideStance: 0.90 },
+    gate:  { minMs: 300, minBend: 22, minDrop: 0.32 },
+    form:  { symMax: 14 },
+    cue: { shallow: 'Sink deeper — hips to knee level.',
+           narrow: 'Feet wider, toes turned out.',
+           sym: 'One side is dropping further than the other.' },
+    standard: 'Feet wider than your shoulders, and hips down to knee level. Narrow or high reps show in amber.',
+    report: ['counted','time','rhythm','knee','sym','tempo'],
+    kcal: 0.30
+  },
+
+  squathold: {
+    name: 'Squat Hold', short: 'SQUAT HOLD', icon: '⏱', kind: 'hold', view: 'side',
+    need: [['lhip','lknee','lank'], ['rhip','rknee','rank']],
+    states: ['OUT','HOLD'],
+    judge: { hipBelowKnee: -0.15, kneeAngle: 120 },
+    form:  { leanMax: 45 },
+    cue: { out: 'Sit down into the squat and hold.',
+           lean: 'Chest up while you hold.' },
+    standard: 'The clock only runs while you stay down at or below parallel.',
+    report: ['counted','time','knee'],
+    kcal: 0.08
+  },
+
+  squatjack: {
+    name: 'Squat Jack', short: 'SQUAT JACK', icon: '💥', kind: 'rep', view: 'front',
+    need: [['lhip','rhip','lknee','rknee','lank','rank']],
+    states: ['UP','DOWN'],
+    open:  { hipDrop: 0.20, footSpread: 0.72 },   // kedua-dua diperlukan: jatuh DAN kaki melebar
+    close: { hipRise: 0.12 },
+    judge: { hipBelowKnee: -0.20, greyBelow: -0.35, fullSpread: 0.72 },
+    gate:  { minMs: 300, minBend: 0, minDrop: 0.28 },
+    cooldownMs: 300,
+    cue: { shallow: 'Sit lower when your feet land wide.',
+           narrow: 'Jump the feet wider.' },
+    standard: 'Jump the feet wide and sit into a squat, then jump them back together.',
+    report: ['counted','time','rhythm','drop'],
+    kcal: 0.28
+  },
+
+  squatside: {
+    name: 'Squat Side to Side', short: 'SQUAT SIDE', icon: '↔️', kind: 'rep', view: 'front',
+    need: [['lhip','rhip','lknee','rknee']],
+    states: ['CENTRE','SHIFTED'],
+    alternating: true,
+    /* Kekal rendah ialah SYARAT, bukan penghakiman: berjalan sisi-ke-sisi
+       sambil berdiri tegak bukan pergerakan ini langsung, jadi anjakan tidak
+       dikira melainkan pinggul sudah turun. */
+    open:  { minDrop: 0.30, shift: 0.24 },
+    close: { shift: 0.10 },
+    judge: { fullShift: 0.34, greyShift: 0.20 },
+    gate:  { minMs: 250, minBend: 0, minDrop: 0 },
+    cooldownMs: 250,
+    cue: { shallow: 'Travel further across.',
+           high: 'Stay low between sides.' },
+    standard: 'Stay down in the squat and travel side to side. Standing up between sides does not count.',
+    report: ['counted','time','rhythm'],
+    kcal: 0.26
+  },
+
+  tricepspushup: {
+    name: 'Triceps Push-Up', short: 'TRICEPS', icon: '🔺', kind: 'rep', view: 'side',
+    need: [['lsh','lel','lwr'], ['rsh','rel','rwr']],
+    states: ['UP','DOWN'],
+    open:  { elbowAngle: 125 },
+    close: { elbowAngle: 145 },
+    /* KEDUDUKAN SIKU TIDAK DIHAKIMI, DENGAN SENGAJA.
+
+       Enjin lama menolak bingkai apabila siku melebar ("Keep elbows in!") dan
+       berhenti mengesan sepenuhnya — jadi pushup lebar tidak dikira DAN tidak
+       dilaporkan. Pembetulan pertama aku ialah mengira lalu melabelnya 'wide'.
+       Ujian mendedahkan mengapa itu pun salah: dari pandangan sisi kau tidak
+       boleh membengkokkan siku tanpa menggerakkannya ke tepi dalam imej, jadi
+       "sudut siku" dan "siku keluar" ialah SATU ukuran yang sama diambil dua
+       kali. Melabel rep sebagai lebar berdasarkan itu ialah tekaan yang
+       kelihatan seperti pengukuran.
+
+       Wall Ball Lab sampai ke kesimpulan yang sama dan menyenaraikan "elbows
+       in" antara perkara yang sengaja tidak dipaparkan. Jadi pergerakan ini
+       menghakimi apa yang boleh dilihatnya — kedalaman, lebih ketat daripada
+       pushup biasa — dan `standard` memberitahu atlet bahawa kedudukan siku
+       adalah tanggungjawab mereka. */
+    judge: { deepAngle: 90, greyAngle: 110 },
+    gate:  { minMs: 300, minBend: 30, minDrop: 0 },
+    form:  { sagMax: 0.22 },
+    cue: { shallow: 'Lower further — chest to the floor.',
+           sag: 'Hips are sagging — squeeze the glutes.' },
+    standard: 'Elbows bend past 90 degrees — deeper than a normal push-up. Keep them tucked to your ribs: the camera cannot check that from one angle, so that part is on you.',
+    report: ['counted','time','rhythm','elbow','sag','tempo'],
+    kcal: 0.30
+  },
+
+  pushuptap: {
+    name: 'Push-Up Shoulder Tap', short: 'SHOULDER TAP', icon: '👋', kind: 'rep', view: 'front',
+    need: [['lsh','rsh','lwr','rwr']],
+    states: ['PLANK','TAP'],
+    alternating: true,
+    open:  { tapDist: 0.45 },      // pergelangan tangan dalam jarak ini dari bahu bertentangan
+    close: { tapDist: 0.75 },
+    judge: { fullTap: 0.38, greyTap: 0.55 },
+    gate:  { minMs: 250, minBend: 0, minDrop: 0 },
+    cooldownMs: 300,
+    form:  { sagMax: 0.28 },
+    cue: { shallow: 'Reach all the way to the shoulder.',
+           sag: 'Stop the hips rocking — squeeze everything.' },
+    standard: 'From a plank, the hand has to reach the opposite shoulder. Left and right count separately.',
+    report: ['counted','time','rhythm','sag'],
+    kcal: 0.22
+  },
+
+  staticrun: {
+    name: 'Static Run', short: 'STATIC RUN', icon: '🏃‍♂️', kind: 'rep', view: 'front',
+    need: [['lhip','rhip','lknee','rknee']],
+    states: ['DOWN','UP'],
+    alternating: true,
+    /* Sama seperti high knee tetapi pada irama berlari: garisan lebih rendah,
+       cooldown lebih pendek. Ini pergerakan kelajuan, bukan pergerakan julat. */
+    open:  { kneeLift: -0.25 },
+    close: { kneeLift: -0.55 },
+    judge: { fullLift: -0.10, greyLift: -0.30 },
+    gate:  { minMs: 140, minBend: 0, minDrop: 0 },
+    cooldownMs: 130,
+    cue: { shallow: 'Drive the knees up.' },
+    standard: 'Fast alternating knee drive. Each knee counts as one, so the pace is what makes it hard.',
+    report: ['counted','time','rhythm','lift'],
+    kcal: 0.12
+  },
+
+  sidehop: {
+    name: 'Side Hop', short: 'SIDE HOP', icon: '⤢', kind: 'rep', view: 'front',
+    need: [['lhip','rhip']],
+    states: ['CENTRE','SHIFTED'],
+    alternating: true,
+    open:  { shift: 0.32 },
+    close: { shift: 0.12 },
+    judge: { fullShift: 0.40, greyShift: 0.26 },
+    gate:  { minMs: 200, minBend: 0, minDrop: 0 },
+    cooldownMs: 220,
+    cue: { shallow: 'Cover more ground each hop.' },
+    standard: 'Hop side to side. Each landing counts, and short hops show in amber.',
+    report: ['counted','time','rhythm'],
+    kcal: 0.20
+  }
+};
+
+TR.EX_ORDER = ['squat','pushup','lunge','jumpjack','highknee','jumpsquat','burpee','plank',
+               'sumosquat','squathold','squatjack','squatside','tricepspushup','pushuptap',
+               'staticrun','sidehop'];
+
+/* Ujian pergerakan: rep SAH yang diperlukan sebelum app bersetuju bahawa
+   kamera benar-benar melihat pergerakan itu. Ia menggunakan ambang di atas —
+   objek yang sama dengan workout. Itulah keseluruhan maksudnya. */
+TR.TEST_REPS = 3;
+/* ═══════════════════════════════════════════════════════════════════════
+   c_pose.js — kamera, enjin pose, dan LAPISAN PENYESUAI.
+
+   Ini pembaikan seni bina terbesar berbanding AI Trainer lama.
+
+   Yang lama menulis `lm[23]` terus dalam setiap detektor. Indeks itu milik
+   satu model tertentu, jadi menukar model bermakna menulis semula setiap
+   detektor — dan itulah sebabnya AI Trainer masih terkunci pada
+   `@mediapipe/pose`, sebuah API yang Google sudah tidak sokong.
+
+   Di sini enjin memulangkan SENDI BERNAMA:
+       j.lknee.x   j.lknee.y   j.lknee.s
+   Detektor tidak pernah melihat nombor indeks dan tidak tahu model mana yang
+   sedang berjalan. Menukar enjin ialah menukar satu peta.
+
+   Dua enjin dimuatkan, dengan sebab:
+     MediaPipe Tasks Vision (PoseLandmarker)  — 33 titik, GPU, API semasa.
+     TensorFlow.js MoveNet Lightning          — 17 titik, sandaran.
+   MoveNet ialah satu-satunya enjin yang pernah disahkan berjalan pada telefon
+   Seth (lihat Wall Ball Lab: BlazePose dinyahkan sebagai lalai pada 20 Ogos
+   selepas ia tersangkut pada MOVE INTO FRAME di lapangan). Jadi Tasks dicuba
+   dahulu kerana ia lebih baik, tetapi kegagalan memuat TIDAK pernah mematikan
+   app — ia jatuh ke MoveNet dan MENGATAKANNYA pada skrin, supaya sandaran
+   senyap tidak boleh menyamar sebagai penjejakan 33 titik.
+
+   Tiga pelajaran iOS yang mahal, dikekalkan dengan sengaja:
+   1. play() MESTI di dalam gerak isyarat pengguna, jika tidak iOS membekukan
+      video (currentTime kekal 0 walaupun readyState 4).
+   2. Kanvas mesti diselaraskan dengan dimensi VIDEO sebenar, bukan CSS.
+   3. Trek mesti dihentikan bila halaman disembunyikan, jika tidak kamera
+      kekal dikunci dan skrin seterusnya tergantung.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Peta sendi. Kiri/kanan ialah kiri/kanan ATLET, bukan penonton — kedua-dua
+   model memberi label begitu, dan menukarnya di sini bermakna setiap isyarat
+   "guna kaki kiri" akan menyebut kaki yang salah. */
+TR.MAP_TASKS = {   // MediaPipe Pose (33 titik)
+  nose:0, lsh:11, rsh:12, lel:13, rel:14, lwr:15, rwr:16,
+  lhip:23, rhip:24, lknee:25, rknee:26, lank:27, rank:28,
+  lheel:29, rheel:30, lfoot:31, rfoot:32
+};
+TR.MAP_MOVENET = { // MoveNet / COCO (17 titik) — tiada tumit atau tapak kaki
+  nose:0, lsh:5, rsh:6, lel:7, rel:8, lwr:9, rwr:10,
+  lhip:11, rhip:12, lknee:13, rknee:14, lank:15, rank:16
+};
+TR.JOINTS = ['nose','lsh','rsh','lel','rel','lwr','rwr','lhip','rhip',
+             'lknee','rknee','lank','rank','lheel','rheel','lfoot','rfoot'];
+
+/* Tulang untuk melukis. Dinyatakan dalam NAMA, jadi satu senarai berfungsi
+   untuk kedua-dua model; segmen yang sendinya tiada dilangkau sendiri. */
+TR.BONES = [
+  ['lsh','rsh'], ['lsh','lel'], ['lel','lwr'], ['rsh','rel'], ['rel','rwr'],
+  ['lsh','lhip'], ['rsh','rhip'], ['lhip','rhip'],
+  ['lhip','lknee'], ['lknee','lank'], ['rhip','rknee'], ['rknee','rank'],
+  ['lank','lheel'], ['lheel','lfoot'], ['rank','rheel'], ['rheel','rfoot']
+];
+
+TR.Pose = {
+  stream: null, video: null, canvas: null, ctx: null,
+  engine: null, kind: '', map: null,
+  looping: false, rafId: null, lastTs: 0,
+  onFrame: null, lostFrames: 0, err: '',
+
+  /* ── Kamera ─────────────────────────────────────────────────────────── */
+
+  /* Dipanggil DI DALAM pengendali klik. Merampas kamera awal supaya iOS
+     tidak membekukan strim kemudian. */
+  grab: function (facing) {
+    var self = this;
+    if (self.stream) return Promise.resolve(self.stream);
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+      return Promise.reject(new Error('Camera not supported by this browser.'));
+    return navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facing || 'user', width: { ideal: 960 }, height: { ideal: 720 } },
+      audio: false
+    }).then(function (s) { self.stream = s; return s; });
+  },
+
+  attach: function (videoEl) {
+    var self = this;
+    self.video = videoEl;
+    if (videoEl.srcObject !== self.stream) videoEl.srcObject = self.stream;
+    videoEl.setAttribute('playsinline', '');
+    videoEl.setAttribute('webkit-playsinline', '');
+    videoEl.muted = true;
+    var p = videoEl.play();
+    return (p && p['catch'] ? p['catch'](function () { return videoEl.play()['catch'](function () {}); })
+                            : Promise.resolve())
+      .then(function () {
+        return new Promise(function (res) {
+          if (videoEl.readyState >= 1) { res(); return; }
+          videoEl.addEventListener('loadedmetadata', res, { once: true });
+          setTimeout(res, 3000);        // fail-safe: loadedmetadata kadang tidak fire pada iOS
+        });
+      });
+  },
+
+  syncCanvas: function (canvasEl) {
+    this.canvas = canvasEl;
+    this.ctx = canvasEl.getContext('2d');
+    var v = this.video;
+    canvasEl.width  = (v && v.videoWidth)  || 640;
+    canvasEl.height = (v && v.videoHeight) || 480;
+  },
+
+  release: function () {
+    this.stop();
+    if (this.stream) {
+      var t = this.stream.getTracks();
+      for (var i = 0; i < t.length; i++) { try { t[i].stop(); } catch (e) {} }
+      this.stream = null;
+    }
+    if (this.video) { try { this.video.srcObject = null; } catch (e) {} }
+  },
+
+  /* ── Memuat pustaka ────────────────────────────────────────────────────
+     Tasks Vision ialah modul ES. Daripada menulis import() dalam fail ini
+     (yang mengunci keseluruhan sumber kepada penghurai yang menyokongnya),
+     satu <script type="module"> kecil disuntik dan hasilnya diletakkan pada
+     window. Sumber di sini kekal ES5 dan boleh disemak dengan jsc. */
+  loadTasks: function () {
+    if (window.__TRV) return Promise.resolve(!!window.__TRV.PoseLandmarker);
+    return new Promise(function (res) {
+      var URL_ = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+      var done = false;
+      var finish = function () { if (!done) { done = true; res(!!(window.__TRV && window.__TRV.PoseLandmarker)); } };
+      var s = document.createElement('script');
+      s.type = 'module';
+      s.textContent =
+        'import("' + URL_ + '").then(function(m){window.__TRV=m;})' +
+        '.catch(function(e){window.__TRV={};window.__TRVERR=String(e);})' +
+        '.then(function(){window.dispatchEvent(new Event("trv-ready"));});';
+      window.addEventListener('trv-ready', finish, { once: true });
+      document.head.appendChild(s);
+      setTimeout(finish, 12000);        // rangkaian mati tidak boleh menggantung app
+    });
+  },
+
+  loadScript: function (src) {
+    return new Promise(function (res) {
+      var el = document.createElement('script');
+      el.src = src; el.crossOrigin = 'anonymous';
+      el.onload = function () { res(true); };
+      el.onerror = function () { res(false); };   // jangan sekat; kesediaan diperiksa selepas
+      document.head.appendChild(el);
+      setTimeout(function () { res(typeof window.poseDetection !== 'undefined'); }, 12000);
+    });
+  },
+
+  loadMoveNet: function () {
+    var self = this;
+    if (typeof window.poseDetection !== 'undefined') return Promise.resolve(true);
+    return self.loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@4.20.0/dist/tf-core.min.js')
+      .then(function () { return self.loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@4.20.0/dist/tf-converter.min.js'); })
+      .then(function () { return self.loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4.20.0/dist/tf-backend-webgl.min.js'); })
+      .then(function () { return self.loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js'); })
+      .then(function () { return typeof window.poseDetection !== 'undefined'; });
+  },
+
+  /* Muatan yang tergantung selama-lamanya ialah kegagalan yang paling teruk
+     kerana ia tidak kelihatan seperti kegagalan — ia kelihatan seperti app
+     yang lambat, jadi tiada siapa melaporkannya. Setiap percubaan enjin
+     mendapat siling; melepasinya bermakna cuba yang seterusnya. */
+  withTimeout: function (promise, ms, label) {
+    return new Promise(function (res, rej) {
+      var done = false;
+      var timer = setTimeout(function () {
+        if (!done) { done = true; rej(new Error(label + ' timed out after ' + Math.round(ms / 1000) + 's')); }
+      }, ms);
+      promise.then(function (v) { if (!done) { done = true; clearTimeout(timer); res(v); } },
+                   function (e) { if (!done) { done = true; clearTimeout(timer); rej(e); } });
+    });
+  },
+
+  /* ── Memulakan enjin ───────────────────────────────────────────────────
+     Kembalikan nama enjin yang BENAR-BENAR berjalan. Pemanggil memaparkannya
+     pada skrin; sandaran senyap ialah pembohongan yang mahal untuk dikesan.
+
+     PILIHAN MODEL, diukur bukan diteka (26 Ogos 2026, desktop, cache sejuk):
+         pose_landmarker_full   29.0s   33 titik
+         MoveNet Lightning      13.7s   17 titik
+         pose_landmarker_lite    7.4s   33 titik
+     `lite` menang pada kedua-dua paksi — separuh masa muat MoveNet dan dua
+     kali ganda bilangan titiknya — jadi ia yang menjadi lalai. `full` kekal
+     di belakang ?model=full untuk sesiapa yang mahu menukar 20 saat tambahan
+     dengan ketepatan sendi yang lebih baik. Nombor ini dari desktop; ukur
+     semula pada telefon sebelum mengubah lalai. */
+  initEngine: function (prefer) {
+    var self = this;
+    self.err = '';
+    var q = String(location.search || '');
+    var wantMove = (prefer === 'movenet') || q.indexOf('engine=movenet') > -1;
+    var wantFull = q.indexOf('model=full') > -1;
+    var MODEL = wantFull ? 'full' : 'lite';
+    var LIMIT = 25000;
+
+    var startTasks = function () {
+      return self.loadTasks().then(function (okv) {
+        if (!okv) throw new Error(window.__TRVERR || 'tasks-vision unavailable');
+        var V = window.__TRV;
+        var asset = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_' +
+                    MODEL + '/float16/1/pose_landmarker_' + MODEL + '.task';
+        return self.withTimeout(V.FilesetResolver.forVisionTasks(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
+        ), LIMIT, 'pose runtime').then(function (fileset) {
+          var make = function (delegate) {
+            return V.PoseLandmarker.createFromOptions(fileset, {
+              baseOptions: { modelAssetPath: asset, delegate: delegate },
+              runningMode: 'VIDEO', numPoses: 1,
+              minPoseDetectionConfidence: 0.5, minPosePresenceConfidence: 0.5, minTrackingConfidence: 0.5
+            });
+          };
+          /* GPU ditolak oleh sesetengah pelayar dalam-app dan mod jimat kuasa.
+             Kegagalan itu dahulunya muncul sebagai ralat kamera, yang menghantar
+             penyahpepijatan ke arah yang salah sepenuhnya. */
+          return self.withTimeout(make('GPU'), LIMIT, 'pose model')['catch'](function () {
+            return self.withTimeout(make('CPU'), LIMIT, 'pose model (CPU)');
+          });
+        }).then(function (lm) {
+          self.engine = lm; self.kind = 'tasks'; self.map = TR.MAP_TASKS;
+          return 'MediaPipe Pose · 33 points' + (MODEL === 'full' ? ' (full)' : '');
+        });
+      });
+    };
+
+    var startMove = function () {
+      return self.loadMoveNet().then(function (okv) {
+        if (!okv) throw new Error('MoveNet unavailable');
+        return window.tf.setBackend('webgl')['catch'](function () { return window.tf.setBackend('cpu'); })
+          .then(function () { return window.tf.ready(); })
+          .then(function () {
+            return self.withTimeout(window.poseDetection.createDetector(
+              window.poseDetection.SupportedModels.MoveNet,
+              { modelType: window.poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING }), LIMIT, 'MoveNet');
+          }).then(function (det) {
+            self.engine = det; self.kind = 'movenet'; self.map = TR.MAP_MOVENET;
+            return 'TensorFlow MoveNet · 17 points';
+          });
+      });
+    };
+
+    var first  = wantMove ? startMove : startTasks;
+    var second = wantMove ? startTasks : startMove;
+    return first()['catch'](function (e) {
+      self.err = String(e && (e.message || e));
+      return second()['catch'](function (e2) {
+        throw new Error('No pose engine could load. ' + self.err + ' · ' + String(e2 && (e2.message || e2)));
+      });
+    });
+  },
+
+  /* ── Menormalkan keluaran ──────────────────────────────────────────────
+     Tasks memberi x,y sudah dinormalkan 0..1. MoveNet memberi PIKSEL, jadi ia
+     dibahagi dengan dimensi video. Selepas fungsi ini tiada kod hiliran yang
+     boleh mengetahui perbezaannya — itulah gunanya.
+
+     Nota keyakinan: Tasks kadang meninggalkan `visibility` sebagai undefined,
+     dan `undefined > 0.4` ialah false — yang menandakan setiap sendi ghaib dan
+     memaku app pada "MOVE INTO FRAME" sedangkan pose berjalan dengan baik.
+     Skor yang hilang bermakna KELIHATAN. Pepijat ini sudah memakan sehari
+     penuh dalam Wall Ball Lab; ia tidak akan berulang di sini. */
+  normalise: function (raw, w, h) {
+    var j = {}, i, name, p, m = this.map, isTasks = (this.kind === 'tasks');
+    for (i = 0; i < TR.JOINTS.length; i++) {
+      name = TR.JOINTS[i];
+      if (!(name in m)) { j[name] = null; continue; }
+      p = raw[m[name]];
+      if (!p) { j[name] = null; continue; }
+      j[name] = {
+        x: isTasks ? p.x : (p.x / (w || 1)),
+        y: isTasks ? p.y : (p.y / (h || 1)),
+        s: (typeof p.visibility === 'number') ? p.visibility
+           : (typeof p.score === 'number') ? p.score : 1
+      };
+    }
+    return j;
+  },
+
+  /* ── Gelung frame ──────────────────────────────────────────────────── */
+  start: function (cb) {
+    var self = this;
+    if (self.looping) { self.onFrame = cb; return; }
+    self.looping = true; self.onFrame = cb; self.lostFrames = 0;
+    var vid = self.video;
+
+    var step = function () {
+      if (!self.looping) return;
+      self.rafId = requestAnimationFrame(step);
+      if (!vid || vid.readyState < 2 || !self.engine) return;
+      var w = vid.videoWidth, h = vid.videoHeight;
+      if (!w || !h) return;
+      if (self.canvas && (self.canvas.width !== w || self.canvas.height !== h)) self.syncCanvas(self.canvas);
+
+      var pts = null;
+      try {
+        if (self.kind === 'tasks') {
+          var ts = performance.now();
+          if (ts <= self.lastTs) ts = self.lastTs + 1;   // Tasks menolak cap masa yang tidak menaik
+          self.lastTs = ts;
+          var r = self.engine.detectForVideo(vid, ts);
+          if (r && r.landmarks && r.landmarks.length) pts = r.landmarks[0];
+        } else {
+          // MoveNet tidak segerak dari segi API tetapi mengembalikan promise;
+          // frame diproses pada kadarnya sendiri supaya gelung tidak beratur.
+          if (!self.busy) {
+            self.busy = true;
+            self.engine.estimatePoses(vid, { flipHorizontal: false }).then(function (poses) {
+              self.busy = false;
+              var kp = (poses && poses[0] && poses[0].keypoints) ? poses[0].keypoints : null;
+              self.deliver(kp, w, h);
+            })['catch'](function () { self.busy = false; });
+          }
+          return;
+        }
+      } catch (e) { return; }
+      self.deliver(pts, w, h);
+    };
+    self.rafId = requestAnimationFrame(step);
+  },
+
+  deliver: function (pts, w, h) {
+    if (!pts) {
+      this.lostFrames++;
+      if (this.onFrame) this.onFrame(null, this.lostFrames);
+      return;
+    }
+    this.lostFrames = 0;
+    var j = this.normalise(pts, w, h);
+    if (this.onFrame) this.onFrame(j, 0);
+  },
+
+  stop: function () {
+    this.looping = false; this.busy = false;
+    if (this.rafId) { cancelAnimationFrame(this.rafId); this.rafId = null; }
+  },
+
+  /* ── Melukis ───────────────────────────────────────────────────────── */
+  draw: function (j, tint) {
+    var ctx = this.ctx, c = this.canvas;
+    if (!ctx || !c) return;
+    ctx.clearRect(0, 0, c.width, c.height);
+    if (!j) return;
+    var i, a, b, col = tint || '#F0392B';
+    ctx.strokeStyle = col; ctx.lineWidth = Math.max(2, c.width / 220);
+    ctx.lineCap = 'round';
+    for (i = 0; i < TR.BONES.length; i++) {
+      a = j[TR.BONES[i][0]]; b = j[TR.BONES[i][1]];
+      if (!a || !b || a.s < TR.CFG.minScore || b.s < TR.CFG.minScore) continue;
+      ctx.beginPath();
+      ctx.moveTo(a.x * c.width, a.y * c.height);
+      ctx.lineTo(b.x * c.width, b.y * c.height);
+      ctx.stroke();
+    }
+    ctx.fillStyle = '#fff';
+    for (i = 0; i < TR.JOINTS.length; i++) {
+      a = j[TR.JOINTS[i]];
+      if (!a || a.s < TR.CFG.minScore) continue;
+      ctx.beginPath();
+      ctx.arc(a.x * c.width, a.y * c.height, Math.max(2.5, c.width / 260), 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+};
+/* ═══════════════════════════════════════════════════════════════════════
+   d_geom.js — geometri, kalibrasi, dan ukuran sebingkai.
+
+   Detektor tidak mengira sudut sendiri. Mereka membaca objek `m` yang dibina
+   sekali setiap bingkai di sini. Sebabnya praktikal: dalam AI Trainer lama
+   fungsi ang() disalin ke dalam tiga tempat berbeza dan salah satu daripada
+   salinan itu terlupa mengapit acos kepada [-1,1], jadi ia memulangkan NaN
+   pada sendi yang lurus sempurna dan rep hilang tanpa sebab yang kelihatan.
+   Satu salinan sahaja, dikira sekali, dibaca oleh semua.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+TR.G = {
+
+  vis: function (p) { return !!p && p.s >= TR.CFG.minScore; },
+
+  /* Sudut dalam pada b, dalam darjah. Apitan itu bukan hiasan: ralat titik
+     terapung membuatkan dot/mag menjadi 1.0000000002 pada anggota yang lurus,
+     dan acos daripada itu ialah NaN. */
+  ang: function (a, b, c) {
+    if (!a || !b || !c) return null;
+    var abx = a.x - b.x, aby = a.y - b.y, cbx = c.x - b.x, cby = c.y - b.y;
+    var mag = Math.sqrt(abx * abx + aby * aby) * Math.sqrt(cbx * cbx + cby * cby);
+    if (!mag) return null;
+    var d = (abx * cbx + aby * cby) / mag;
+    return Math.acos(Math.max(-1, Math.min(1, d))) * 180 / Math.PI;
+  },
+
+  mid: function (a, b) {
+    if (!a && !b) return null;
+    if (!a) return b; if (!b) return a;
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, s: Math.min(a.s, b.s) };
+  },
+
+  /* 0 darjah = batang tubuh tegak sempurna. */
+  lean: function (hip, sh) {
+    if (!hip || !sh) return null;
+    return Math.abs(Math.atan2(sh.x - hip.x, -(sh.y - hip.y)) * 180 / Math.PI);
+  },
+
+  dist: function (a, b) {
+    if (!a || !b) return null;
+    return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+  },
+
+  /* Sisi yang lebih dipercayai kamera. Squat dan lunge dilihat dari tepi,
+     jadi satu sisi sentiasa separa terlindung; memaksa purata dua-dua sisi
+     bermakna anggota yang terlindung menarik sudut ke arah karut. */
+  bestSide: function (j) {
+    var l = ((j.lhip ? j.lhip.s : 0) + (j.lknee ? j.lknee.s : 0)) / 2;
+    var r = ((j.rhip ? j.rhip.s : 0) + (j.rknee ? j.rknee.s : 0)) / 2;
+    return r > l
+      ? { k: 'r', hip: j.rhip, knee: j.rknee, ank: j.rank, sh: j.rsh, wr: j.rwr, el: j.rel, foot: j.rfoot }
+      : { k: 'l', hip: j.lhip, knee: j.lknee, ank: j.lank, sh: j.lsh, wr: j.lwr, el: j.lel, foot: j.lfoot };
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   KALIBRASI
+
+   Atlet berdiri tegak beberapa bingkai. Kita merakam torso mereka SEKALI dan
+   membekukannya untuk set itu, lalu setiap ambang jarak dibahagi dengannya.
+
+   Kenapa dibekukan dan bukan diukur setiap bingkai: dalam pushup dan plank
+   badan mendatar, jadi jarak MENEGAK bahu→pinggul pada skrin hampir sifar.
+   Membahagi dengan angka itu meletup — dan itulah sebabnya HitFatMON perlu
+   mengapit skala torsonya kepada [0.6, 1.6]. Apitan itu menyembunyikan gejala.
+   Mengukur sekali semasa berdiri membuang puncanya: torso berdiri ialah unit
+   saiz badan yang sah untuk mana-mana kedudukan badan seterusnya.
+
+   Ia juga memberi kita dua garis dasar percuma yang detektor perlukan:
+   ketinggian pinggul semasa berdiri, dan sudut lutut semasa berdiri (bukan
+   semua orang mengunci lutut pada 180).
+   ═══════════════════════════════════════════════════════════════════════ */
+TR.Calib = {
+  frames: [], hips: [], knees: [],
+  torso: null, standHipY: null, standKnee: null, ready: false, msg: '',
+
+  reset: function () {
+    this.frames = []; this.hips = []; this.knees = [];
+    this.torso = null; this.standHipY = null; this.standKnee = null;
+    this.ready = false; this.msg = '';
+  },
+
+  /* Pulangkan true bila kalibrasi selesai. */
+  feed: function (j) {
+    if (this.ready) return true;
+    var G = TR.G;
+    var sh = G.mid(j.lsh, j.rsh), hip = G.mid(j.lhip, j.rhip);
+    if (!G.vis(j.lsh) && !G.vis(j.rsh)) { this.msg = 'Show your shoulders'; return false; }
+    if (!G.vis(j.lhip) && !G.vis(j.rhip)) { this.msg = 'Show your hips'; return false; }
+
+    var t = Math.abs(hip.y - sh.y);
+    if (t < TR.CFG.calibUprightMin) { this.msg = 'Stand up straight'; this.frames = []; return false; }
+    if (t < TR.CFG.torsoMin) { this.msg = 'Step closer to the camera'; return false; }
+    if (t > TR.CFG.torsoMax) { this.msg = 'Step back — full body in frame'; return false; }
+
+    this.frames.push(t);
+    this.hips.push(hip.y);
+    var s = G.bestSide(j);
+    var ka = G.ang(s.hip, s.knee, s.ank);
+    if (ka != null) this.knees.push(ka);
+
+    this.msg = 'Hold still — ' + this.frames.length + '/' + TR.CFG.calibFrames;
+    if (this.frames.length < TR.CFG.calibFrames) return false;
+
+    /* Median, bukan purata: satu bingkai di mana model meletakkan pinggul pada
+       bahu merosakkan purata sepenuhnya dan mendiamkan detektor untuk
+       keseluruhan set. Median tidak peduli. */
+    this.torso     = this.median(this.frames);
+    this.standHipY = this.median(this.hips);
+    this.standKnee = this.knees.length ? this.median(this.knees) : 175;
+    this.ready = true; this.msg = '';
+    return true;
+  },
+
+  median: function (a) {
+    var b = a.slice().sort(function (x, y) { return x - y; });
+    var n = b.length;
+    if (!n) return 0;
+    return n % 2 ? b[(n - 1) / 2] : (b[n / 2 - 1] + b[n / 2]) / 2;
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UKURAN SEBINGKAI
+
+   Segala-galanya yang lebih daripada satu detektor perlukan, dikira sekali.
+   Setiap medan berakhir dengan U ialah UNIT TORSO — bahagikan sekali di sini
+   dan tiada detektor perlu ingat untuk melakukannya.
+   ═══════════════════════════════════════════════════════════════════════ */
+TR.measure = function (j) {
+  var G = TR.G, C = TR.Calib;
+  var T = C.torso || 0.25;
+
+  var sh  = G.mid(j.lsh, j.rsh);
+  var hip = G.mid(j.lhip, j.rhip);
+  var kne = G.mid(j.lknee, j.rknee);
+  var ank = G.mid(j.lank, j.rank);
+  var wr  = G.mid(j.lwr, j.rwr);
+  var s   = G.bestSide(j);
+
+  var lKnee = G.ang(j.lhip, j.lknee, j.lank);
+  var rKnee = G.ang(j.rhip, j.rknee, j.rank);
+  var lElb  = G.ang(j.lsh, j.lel, j.lwr);
+  var rElb  = G.ang(j.rsh, j.rel, j.rwr);
+
+  var m = {
+    j: j, side: s, sh: sh, hip: hip, knee: kne, ank: ank, wrist: wr,
+    torso: T,
+
+    kneeAngle: (lKnee != null && rKnee != null) ? Math.min(lKnee, rKnee)
+             : (lKnee != null ? lKnee : rKnee),
+    lKnee: lKnee, rKnee: rKnee,
+    elbowAngle: (lElb != null && rElb != null) ? (lElb + rElb) / 2
+              : (lElb != null ? lElb : rElb),
+    lElb: lElb, rElb: rElb,
+    hipAngle: G.ang(s.sh, s.hip, s.knee),
+    lean: G.lean(hip, sh),
+
+    /* Simetri: berapa banyak kedua-dua belah tidak bersetuju. Hanya bermakna
+       apabila kedua-dua belah benar-benar kelihatan, jadi null bila tidak —
+       melaporkan 0 akan berbohong bahawa atlet seimbang sempurna. */
+    kneeSym: (lKnee != null && rKnee != null && G.vis(j.lknee) && G.vis(j.rknee))
+             ? Math.abs(lKnee - rKnee) : null,
+    elbowSym: (lElb != null && rElb != null && G.vis(j.lel) && G.vis(j.rel))
+             ? Math.abs(lElb - rElb) : null,
+
+    /* Semua di bawah dalam unit torso. y skrin bertambah ke BAWAH, jadi
+       "jatuh" ialah positif. */
+    hipDropU:  (hip && C.standHipY != null) ? (hip.y - C.standHipY) / T : null,
+    kneeLiftU: null, kneeLiftLU: null, kneeLiftRU: null,
+    shHipU:    (sh && hip) ? Math.abs(hip.y - sh.y) / T : null,
+    wristShU:  (wr && sh)  ? (sh.y - wr.y) / T : null,     // positif = tangan atas bahu
+    wristHipU: (wr && hip) ? (hip.y - wr.y) / T : null,
+    spreadU:   (j.lwr && j.rwr) ? Math.abs(j.lwr.x - j.rwr.x) / T : null,
+    footSpreadU: (j.lank && j.rank) ? Math.abs(j.lank.x - j.rank.x) / T : null,
+
+    /* PINGGUL BERBANDING LUTUT — piawaian kedalaman sebenar.
+       y skrin bertambah ke bawah, jadi positif bermakna pinggul berada DI
+       BAWAH lutut, iaitu rumusan yang setiap rulebook squat pakai. Sudut
+       lutut hanya berkorelasi dengannya: seseorang berpaha panjang boleh
+       mencapai 95 darjah dan masih tinggi, dan seseorang berpaha pendek
+       boleh berada jauh di bawah paralel pada 105. Menghakimi ukuran yang
+       betul bermakna app dan pengadil bersetuju. */
+    hipKneeU: (hip && kne) ? (hip.y - kne.y) / T : null,
+
+    /* Pergelangan tangan ke bahu BERTENTANGAN — tepukan bahu. */
+    tapLU: null, tapRU: null,
+    /* Kedudukan pinggul mendatar, untuk pergerakan sisi-ke-sisi. */
+    hipX: hip ? hip.x : null,
+
+    visible: true, lostReason: ''
+  };
+
+  if (j.lwr && j.rsh) m.tapLU = G.dist(j.lwr, j.rsh) / T;
+  if (j.rwr && j.lsh) m.tapRU = G.dist(j.rwr, j.lsh) / T;
+
+  if (j.lknee && hip) m.kneeLiftLU = (hip.y - j.lknee.y) / T;
+  if (j.rknee && hip) m.kneeLiftRU = (hip.y - j.rknee.y) / T;
+  if (m.kneeLiftLU != null || m.kneeLiftRU != null)
+    m.kneeLiftU = Math.max(m.kneeLiftLU == null ? -9 : m.kneeLiftLU,
+                           m.kneeLiftRU == null ? -9 : m.kneeLiftRU);
+
+  return m;
+};
+
+/* Adakah sendi yang pergerakan ini perlukan benar-benar kelihatan?
+   `need` ialah array-dalam-array: mana-mana kumpulan dalam yang lengkap
+   memadai, jadi "kiri ATAU kanan" ditulis sekali dalam config dan tidak
+   pernah diulang dalam kod detektor. */
+TR.needsMet = function (def, j) {
+  var G = TR.G, i, k, group, allOk;
+  for (i = 0; i < def.need.length; i++) {
+    group = def.need[i]; allOk = true;
+    for (k = 0; k < group.length; k++) {
+      if (!G.vis(j[group[k]])) { allOk = false; break; }
+    }
+    if (allOk) return true;
+  }
+  return false;
+};
+/* ═══════════════════════════════════════════════════════════════════════
+   e_detect.js — mesin keadaan, get rep, dan penghakiman bentuk.
+
+   PRINSIP TERAS, dan ia bertentangan dengan cara AI Trainer lama bekerja:
+
+       MENGESAN rep dan MENGHAKIMI rep ialah dua kerja berasingan.
+
+   Dalam enjin lama, satu squat yang berhenti di atas paralel tidak pernah
+   memasuki fasa 'down', jadi ia tidak dikira LANGSUNG. Atlet melihat kaunter
+   kekal pada 4 sedangkan mereka baru sahaja bergerak — tiada maklum balas,
+   tiada sebab, hanya app yang kelihatan rosak. Itu bertentangan sepenuhnya
+   dengan tujuan alat ini.
+
+   Di sini setiap kitaran yang selesai menghasilkan rekod. Rekod itu membawa
+   satu KEPUTUSAN — valid, grey (di sempadan), atau norep — dan SEBAB yang
+   boleh diucapkan kepada atlet. Kaunter menunjukkan rep sah berbanding
+   sasaran, tetapi tiada usaha yang hilang senyap.
+
+   Kitaran dibuka dengan MURAH HATI dan disahkan dengan KETAT. Membuka pada
+   satu ambang sahaja pernah menghasilkan 8 rep dalam 4 saat daripada atlet
+   yang berdiri diam, kerana anggaran lutut bergoyang ~15 darjah pada figura
+   jauh dan setiap goyangan melintasi garisan. Jadi kitaran yang selesai mesti
+   melepasi ketiga-tiga get — tempoh, perjalanan, bengkokan — sebelum ia wujud
+   sebagai rep langsung.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+TR.STEP = {};
+
+TR.Detector = {};
+
+TR.Detector.create = function (key) {
+  var def = TR.EX[key];
+  if (!def) throw new Error('unknown exercise: ' + key);
+
+  var d = {
+    key: key, def: def,
+    state: def.states[0],
+    n: 0, valid: 0, grey: 0, norep: 0,
+    lastRepAt: 0, lastCueAt: 0, lastCueText: '',
+    extKnee: null, extElbow: null,
+    cyc: null,                 // kitaran yang sedang berjalan
+    flags: { l: false, r: false }, legs: { l: null, r: null },
+    hipHist: [],               // untuk mengesan lompatan
+    holdMs: 0, holdFrom: 0,    // pergerakan tahan-masa
+    burpee: { sawPlank: false, sawReach: false },
+    lost: 0
+  };
+
+  d.cool = function () { return def.cooldownMs || TR.CFG.cooldownMs; };
+
+  /* GARIS DASAR ANGGOTA TERBUKA.
+
+     Get `minBend` bertanya "adakah sendi ini benar-benar membengkok?", dan
+     jawapan itu memerlukan titik permulaan. Versi pertama merakamnya pada
+     saat kitaran DIBUKA — tetapi kitaran dibuka kerana sendi sudah pun
+     membengkok melepasi ambang, jadi bengkokan yang diukur bermula dari
+     ambang itu dan bukan dari lengan lurus atlet. Pushup penuh 175→100
+     dilaporkan sebagai bengkokan 30 darjah dan gagal getnya sendiri.
+
+     Sebaliknya, pelajari kedudukan terbuka semasa mereka BEREHAT: naik pantas
+     ke maksimum baharu, hanyut turun perlahan. Tidak semua orang mengunci
+     lutut pada 180, dan sesiapa yang tidak tidak patut dihukum untuknya. */
+  d.baseline = function (m) {
+    if (m.kneeAngle != null)
+      d.extKnee = (d.extKnee == null) ? m.kneeAngle
+                : Math.max(d.extKnee * 0.97 + m.kneeAngle * 0.03, m.kneeAngle);
+    if (m.elbowAngle != null)
+      d.extElbow = (d.extElbow == null) ? m.elbowAngle
+                 : Math.max(d.extElbow * 0.97 + m.elbowAngle * 0.03, m.elbowAngle);
+  };
+
+  /* Isyarat teknik jarang dan tidak berulang. Seorang jurulatih yang menyebut
+     "turun lagi" tiga kali sesaat bukan jurulatih, ia penggera. */
+  d.cue = function (text) {
+    var now = TR.now();
+    if (!text) return null;
+    if (text === d.lastCueText && now - d.lastCueAt < TR.CFG.voiceGapMs * 2) return null;
+    if (now - d.lastCueAt < TR.CFG.voiceGapMs) return null;
+    d.lastCueAt = now; d.lastCueText = text;
+    return { t: 'cue', text: text };
+  };
+
+  d.go = function (to) {
+    if (d.state === to) return null;
+    var from = d.state; d.state = to;
+    return { t: 'state', from: from, to: to };
+  };
+
+  /* ── Membuka kitaran ───────────────────────────────────────────────── */
+  d.open = function (m, side) {
+    d.cyc = {
+      t0: TR.now(), tBottom: TR.now(), side: side || null,
+      kneeStart: (d.extKnee != null ? d.extKnee : (TR.Calib.standKnee || 175)),
+      elbowStart: (d.extElbow != null ? d.extElbow : 180),
+      kneeMin: m.kneeAngle == null ? 180 : m.kneeAngle,
+      elbowMin: m.elbowAngle == null ? 180 : m.elbowAngle,
+      dropMax: m.hipDropU == null ? 0 : m.hipDropU,
+      liftMax: m.kneeLiftU == null ? -9 : m.kneeLiftU,
+      spreadMax: m.spreadU == null ? 0 : m.spreadU,
+      hipKneeMax: m.hipKneeU == null ? -9 : m.hipKneeU,
+      leanMax: m.lean == null ? 0 : m.lean,
+      symMax: m.kneeSym == null ? 0 : m.kneeSym,
+      sagMax: 0, levelMin: 9,
+      tapMin: 9, shiftMax: 0, footMax: 0,
+      hipY: []
+    };
+    return d.go(def.states[1]);
+  };
+
+  /* ── Mengumpul semasa kitaran berjalan ─────────────────────────────── */
+  d.track = function (m) {
+    var c = d.cyc; if (!c) return;
+    var now = TR.now();
+    if (m.kneeAngle  != null && m.kneeAngle  < c.kneeMin)  { c.kneeMin  = m.kneeAngle; c.tBottom = now; }
+    if (m.elbowAngle != null && m.elbowAngle < c.elbowMin) { c.elbowMin = m.elbowAngle; c.tBottom = now; }
+    if (m.hipDropU   != null && m.hipDropU   > c.dropMax)  { c.dropMax  = m.hipDropU;  c.tBottom = now; }
+    if (m.kneeLiftU  != null && m.kneeLiftU  > c.liftMax)  c.liftMax  = m.kneeLiftU;
+    if (m.hipKneeU   != null && m.hipKneeU   > c.hipKneeMax) { c.hipKneeMax = m.hipKneeU; c.tBottom = now; }
+    if (m.spreadU    != null && m.spreadU    > c.spreadMax) c.spreadMax = m.spreadU;
+    if (m.lean       != null && m.lean       > c.leanMax)  c.leanMax  = m.lean;
+    if (m.kneeSym    != null && m.kneeSym    > c.symMax)   c.symMax   = m.kneeSym;
+    if (m.shHipU     != null && m.shHipU     < c.levelMin) c.levelMin = m.shHipU;
+    if (m.footSpreadU!= null && m.footSpreadU> c.footMax)  c.footMax  = m.footSpreadU;
+    var tapNow = Math.min(m.tapLU == null ? 9 : m.tapLU, m.tapRU == null ? 9 : m.tapRU);
+    if (tapNow < c.tapMin) { c.tapMin = tapNow; c.tBottom = now; }
+    if (m.hip) { c.hipY.push(m.hip.y); if (c.hipY.length > 10) c.hipY.shift(); }
+  };
+
+  /* ── Menutup kitaran: get dahulu, penghakiman kemudian ─────────────────
+     Pulangan:
+       null            bukan rep — bunyi bising, dibuang dengan senyap
+       {t:'rep', rep}  rep wujud; rep.verdict memberitahu ia sah atau tidak
+     Kitaran yang gagal get TIDAK menjadi 'norep' yang kelihatan, kerana ia
+     bukan percubaan — ia goyangan model. Yang kelihatan hanyalah percubaan
+     sebenar yang tidak memenuhi piawaian. */
+  d.close = function (m, judgeFn) {
+    var c = d.cyc; if (!c) return null;
+    d.cyc = null;
+    var now = TR.now(), ms = now - c.t0;
+    var g = def.gate || {};
+
+    if (ms < Math.max(TR.CFG.minRepMs, g.minMs || 0)) return null;
+    if (ms > TR.CFG.maxRepMs) return null;
+    if ((g.minDrop || 0) > 0 && c.dropMax < g.minDrop) return null;
+    if ((g.minBend || 0) > 0) {
+      var bendK = (c.kneeStart  != null && c.kneeMin  != null) ? (c.kneeStart  - c.kneeMin)  : 0;
+      var bendE = (c.elbowStart != null && c.elbowMin != null) ? (c.elbowStart - c.elbowMin) : 0;
+      if (Math.max(bendK, bendE) < g.minBend) return null;
+    }
+    if (now - d.lastRepAt < d.cool()) return null;
+    d.lastRepAt = now;
+
+    var v = judgeFn(c, m);           // {verdict, reason, cue}
+    var rep = {
+      n: ++d.n, verdict: v.verdict, reason: v.reason || '',
+      ms: ms, ecc: (c.tBottom - c.t0) / 1000, con: (now - c.tBottom) / 1000,
+      kneeMin: c.kneeMin < 180 ? Math.round(c.kneeMin) : null,
+      elbowMin: c.elbowMin < 180 ? Math.round(c.elbowMin) : null,
+      drop: c.dropMax, lift: c.liftMax, spread: c.spreadMax,
+      tap: c.tapMin < 9 ? c.tapMin : null, shift: c.shiftMax || null,
+      footSpread: c.footMax || null,
+      hipKnee: c.hipKneeMax > -9 ? c.hipKneeMax : null,
+      lean: c.leanMax != null ? Math.round(c.leanMax) : null,
+      sym: c.symMax ? Math.round(c.symMax) : null,
+      side: c.side, score: v.score == null ? 0 : v.score
+    };
+    if (v.verdict === 'valid') d.valid++;
+    else if (v.verdict === 'grey') d.grey++;
+    else d.norep++;
+    return { t: 'rep', rep: rep, cue: v.cue || '' };
+  };
+
+  /* ── Masukan sebingkai ─────────────────────────────────────────────── */
+  d.feed = function (j) {
+    if (!j) {
+      d.lost++;
+      if (d.lost > TR.CFG.lostFrameReset && d.cyc) { d.cyc = null; d.state = def.states[0]; }
+      if (d.lost === TR.CFG.lostFrameWarn) return [{ t: 'lost', text: 'Step back into frame' }];
+      return [];
+    }
+    d.lost = 0;
+
+    if (!TR.needsMet(def, j)) {
+      return [{ t: 'lost', text: def.view === 'side' ? 'Turn side-on to the camera' : 'Show your full body' }];
+    }
+    if (!TR.Calib.ready) {
+      var okc = TR.Calib.feed(j);
+      return [{ t: 'calib', done: okc, text: TR.Calib.msg }];
+    }
+
+    var m = TR.measure(j);
+    if (d.state === def.states[0]) d.baseline(m);
+    var out = TR.STEP[key](d, m) || [];
+    if (!out.length && out.t) out = [out];
+    /* d.cue() dan d.go() memulangkan null apabila mereka menahan diri (isyarat
+       berulang, keadaan tidak berubah). Menapis di SATU tempat bermakna setiap
+       detektor boleh menolak hasilnya tanpa memeriksa dahulu. */
+    var clean = [], i;
+    for (i = 0; i < out.length; i++) if (out[i]) clean.push(out[i]);
+    return clean;
+  };
+
+  d.reset = function () {
+    d.state = def.states[0]; d.n = 0; d.valid = 0; d.grey = 0; d.norep = 0;
+    d.cyc = null; d.lastRepAt = 0; d.lastCueAt = 0; d.lastCueText = '';
+    d.extKnee = null; d.extElbow = null;
+    d.flags = { l: false, r: false }; d.legs = { l: null, r: null };
+    d.holdMs = 0; d.holdFrom = 0; d.lastTick = 0;
+    d.burpee = { sawPlank: false, sawReach: false }; d.lost = 0;
+  };
+
+  return d;
+};
+
+/* ── Pembantu dikongsi ─────────────────────────────────────────────────── */
+
+/* Jarak pinggul dari garis lurus bahu→buku lali, dalam unit torso.
+   Inilah "sag" dalam pushup dan plank: badan yang lurus meletakkan pinggul
+   pada garis itu, pinggul yang jatuh atau terjungkit menyimpang darinya. */
+TR.sag = function (m) {
+  var sh = m.sh, hip = m.hip, ank = m.ank;
+  if (!sh || !hip || !ank) return null;
+  var vx = ank.x - sh.x, vy = ank.y - sh.y;
+  var len = Math.sqrt(vx * vx + vy * vy);
+  if (len < 0.01) return null;
+  var cross = Math.abs((hip.x - sh.x) * vy - (hip.y - sh.y) * vx) / len;
+  return cross / m.torso;
+};
+
+/* Skor rep 0–100 daripada satu ukuran berbanding sasarannya. Digunakan supaya
+   setiap pergerakan melaporkan pada skala yang sama dan kad keputusan tidak
+   perlu tahu senaman mana yang dilakukan. */
+TR.scoreFrom = function (val, full, none) {
+  if (val == null) return 0;
+  var t = (val - none) / (full - none);
+  return Math.max(0, Math.min(100, Math.round(t * 100)));
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PERGERAKAN
+   Setiap satu ialah satu fungsi. Ia membaca `m` dan config, tidak menyentuh
+   DOM, tidak bercakap, tidak menyimpan apa-apa. Itu yang membuatkan
+   pergerakan yang sama boleh dipakai oleh ujian, workout dan analisis.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* HISTERESIS: buka atas MANA-MANA isyarat, tutup hanya apabila SETIAP isyarat
+   yang tersedia kembali berehat.
+
+   Versi pertama memakai OR pada kedua-dua hujung, dan ia rosak dengan cara
+   yang hanya kelihatan pada jarak bingkai tertentu. Squat membuka pada
+   pinggul-jatuh 0.22 torso semasa lutut masih 170 darjah hampir lurus; satu
+   bingkai kemudian lutut melepasi ambang tutup 162 darjah — sudut yang tidak
+   pernah membuka kitaran itu — dan menutupnya. Kitaran 45ms itu kemudian
+   gagal get tempohnya dan dibuang dengan senyap, jadi atlet melakukan squat
+   penuh dan kaunter kekal pada sifar.
+
+   Ujian meja terlepas ini kerana jarak bingkainya kebetulan melangkau tetingkap
+   yang rosak. Peraturan yang betul ialah: mana-mana isyarat boleh membukanya,
+   tetapi setiap isyarat mesti bersetuju sebelum ia ditutup. Isyarat yang tiada
+   (buku lali terlindung, jadi tiada sudut) diabaikan dan bukan dianggap
+   berehat — jika tidak satu sendi yang hilang menutup setiap kitaran. */
+TR.restingAll = function (m, closeCfg) {
+  var any = false, all = true;
+  if (closeCfg.kneeAngle != null && m.kneeAngle != null) {
+    any = true; if (!(m.kneeAngle > closeCfg.kneeAngle)) all = false;
+  }
+  if (closeCfg.hipRise != null && m.hipDropU != null) {
+    any = true; if (!(m.hipDropU < closeCfg.hipRise)) all = false;
+  }
+  return any && all;
+};
+
+/* Kedalaman squat, sekali sahaja, dipakai oleh squat DAN jump squat.
+
+   Ukuran utama ialah pinggul berbanding lutut. Sudut lutut hanya digunakan
+   apabila buku lali tidak kelihatan — kejadian biasa dari tepi apabila kaki
+   belakang menutup kaki depan — kerana sudut memerlukan tiga sendi sedangkan
+   pinggul-berbanding-lutut hanya memerlukan dua. Alat yang senyap kerana satu
+   buku lali hilang ialah alat yang atlet berhenti percaya. */
+TR.judgeSquat = function (cy, def, jd) {
+  var byHip = (cy.hipKneeMax != null && cy.hipKneeMax > -9);
+  if (byHip) {
+    if (cy.hipKneeMax >= jd.hipBelowKnee)
+      return { verdict: 'valid', score: TR.scoreFrom(cy.hipKneeMax, jd.hipBelowKnee + 0.10, jd.greyBelow) };
+    if (cy.hipKneeMax >= jd.greyBelow)
+      return { verdict: 'grey', reason: 'shallow', cue: def.cue.shallow,
+               score: TR.scoreFrom(cy.hipKneeMax, jd.hipBelowKnee, jd.greyBelow) };
+    return { verdict: 'norep', reason: 'shallow', cue: def.cue.shallow, score: 0 };
+  }
+  if (cy.kneeMin <= jd.deepAngle)
+    return { verdict: 'valid', score: TR.scoreFrom(cy.kneeMin, jd.deepAngle - 15, jd.greyAngle) };
+  if (cy.kneeMin <= jd.greyAngle)
+    return { verdict: 'grey', reason: 'shallow', cue: def.cue.shallow,
+             score: TR.scoreFrom(cy.kneeMin, jd.deepAngle, jd.greyAngle) };
+  return { verdict: 'norep', reason: 'shallow', cue: def.cue.shallow, score: 0 };
+};
+
+TR.STEP.squat = function (d, m) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  if (d.state === 'STANDING') {
+    var byAngle = (m.kneeAngle != null && m.kneeAngle < o.kneeAngle);
+    var byDrop  = (m.hipDropU  != null && m.hipDropU  > o.hipDrop);
+    if (byAngle || byDrop) { ev.push(d.open(m)); }
+  } else {
+    d.track(m);
+    if (TR.restingAll(m, c)) {
+      d.state = 'STANDING';
+      var r = d.close(m, function (cy) { return TR.judgeSquat(cy, def, jd); });
+      if (r) {
+        ev.push(r);
+        if (r.rep.lean != null && r.rep.lean > def.form.leanMax) ev.push(d.cue(def.cue.lean));
+        else if (r.rep.sym != null && r.rep.sym > def.form.symMax) ev.push(d.cue(def.cue.sym));
+      }
+    }
+  }
+  return ev;
+};
+
+TR.STEP.pushup = function (d, m) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  if (d.state === 'UP') {
+    if (m.elbowAngle != null && m.elbowAngle < o.elbowAngle) ev.push(d.open(m));
+  } else {
+    d.track(m);
+    var s = TR.sag(m); if (s != null && s > d.cyc.sagMax) d.cyc.sagMax = s;
+    if (m.elbowAngle != null && m.elbowAngle > c.elbowAngle) {
+      d.state = 'UP';
+      var sagMax = d.cyc ? d.cyc.sagMax : 0;
+      var r = d.close(m, function (cy) {
+        if (cy.elbowMin <= jd.deepAngle)
+          return { verdict: 'valid', score: TR.scoreFrom(cy.elbowMin, jd.deepAngle - 15, jd.greyAngle) };
+        if (cy.elbowMin <= jd.greyAngle)
+          return { verdict: 'grey', reason: 'shallow', cue: def.cue.shallow,
+                   score: TR.scoreFrom(cy.elbowMin, jd.deepAngle, jd.greyAngle) };
+        return { verdict: 'norep', reason: 'shallow', cue: def.cue.shallow, score: 0 };
+      });
+      if (r) {
+        r.rep.sag = sagMax;
+        ev.push(r);
+        if (sagMax > def.form.sagMax) ev.push(d.cue(def.cue.sag));
+        else if (m.elbowSym != null && m.elbowSym > def.form.symMax) ev.push(d.cue(def.cue.sym));
+      }
+    }
+  }
+  return ev;
+};
+
+TR.STEP.lunge = function (d, m) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  var lo = (m.lKnee != null && m.lKnee < o.kneeAngle);
+  var ro = (m.rKnee != null && m.rKnee < o.kneeAngle);
+  if (d.state === 'STANDING') {
+    if (lo || ro) {
+      /* Sisi ialah kaki yang membengkok LEBIH — itulah lutut belakang yang
+         jatuh, dan itu yang atlet fikir mereka sedang lakukan. */
+      var side = (m.lKnee != null && m.rKnee != null) ? (m.lKnee < m.rKnee ? 'l' : 'r') : (lo ? 'l' : 'r');
+      ev.push(d.open(m, side));
+    }
+  } else {
+    d.track(m);
+    if (m.kneeAngle != null && m.kneeAngle > c.kneeAngle) {
+      d.state = 'STANDING';
+      var r = d.close(m, function (cy) {
+        if (cy.kneeMin <= jd.deepAngle)
+          return { verdict: 'valid', score: TR.scoreFrom(cy.kneeMin, jd.deepAngle - 15, jd.greyAngle) };
+        if (cy.kneeMin <= jd.greyAngle)
+          return { verdict: 'grey', reason: 'shallow', cue: def.cue.shallow,
+                   score: TR.scoreFrom(cy.kneeMin, jd.deepAngle, jd.greyAngle) };
+        return { verdict: 'norep', reason: 'shallow', cue: def.cue.shallow, score: 0 };
+      });
+      if (r) {
+        ev.push(r);
+        if (r.rep.lean != null && r.rep.lean > def.form.leanMax) ev.push(d.cue(def.cue.lean));
+      }
+    }
+  }
+  return ev;
+};
+
+TR.STEP.jumpjack = function (d, m) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  if (d.state === 'CLOSED') {
+    var up = (m.wristShU != null && m.wristShU > o.wristAboveShoulder) &&
+             (m.spreadU  != null && m.spreadU  > o.armSpread);
+    if (up) ev.push(d.open(m));
+  } else {
+    d.track(m);
+    if (m.wristHipU != null && m.wristHipU < c.wristBelowHip) {
+      d.state = 'CLOSED';
+      var r = d.close(m, function (cy) {
+        if (cy.spreadMax >= jd.fullSpread)
+          return { verdict: 'valid', score: TR.scoreFrom(cy.spreadMax, jd.fullSpread, 0.6) };
+        return { verdict: 'grey', reason: 'narrow', cue: def.cue.shallow,
+                 score: TR.scoreFrom(cy.spreadMax, jd.fullSpread, 0.6) };
+      });
+      if (r) ev.push(r);
+    }
+  }
+  return ev;
+};
+
+/* Berselang-seli: kiri dan kanan ialah rep berasingan dengan bendera
+   berasingan, jadi satu kaki yang tersangkut di udara tidak menghalang kaki
+   yang satu lagi daripada dikira. */
+TR.STEP.highknee = function (d, m) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  var sides = [['l', m.kneeLiftLU], ['r', m.kneeLiftRU]];
+  if (!d.legs) d.legs = { l: null, r: null };
+
+  for (var i = 0; i < sides.length; i++) {
+    var k = sides[i][0], lift = sides[i][1];
+    if (lift == null) continue;
+    var cyc = d.legs[k];
+
+    if (!cyc && lift > o.kneeLift) {
+      /* Setiap kaki membawa kitarannya sendiri. Berkongsi satu bermakna kaki
+         kanan yang naik semasa kaki kiri masih di udara akan menulis ganti
+         kitaran kiri, dan salah satu rep hilang pada setiap langkah. */
+      d.legs[k] = { t0: TR.now(), tBottom: TR.now(), side: k,
+                    kneeMin: 180, elbowMin: 180, kneeStart: 180, elbowStart: 180,
+                    dropMax: 0, liftMax: lift, spreadMax: 0,
+                    leanMax: m.lean || 0, symMax: 0, sagMax: 0, levelMin: 9, hipY: [] };
+      continue;
+    }
+    if (!cyc) continue;
+    if (lift > cyc.liftMax) { cyc.liftMax = lift; cyc.tBottom = TR.now(); }
+
+    if (lift < c.kneeLift) {
+      d.legs[k] = null;
+      d.cyc = cyc;                        // d.close() menilai kitaran semasa
+      var r = d.close(m, function (cy) {
+        if (cy.liftMax >= jd.fullLift)
+          return { verdict: 'valid', score: TR.scoreFrom(cy.liftMax, jd.fullLift, jd.greyLift) };
+        if (cy.liftMax >= jd.greyLift)
+          return { verdict: 'grey', reason: 'low', cue: def.cue.shallow,
+                   score: TR.scoreFrom(cy.liftMax, jd.fullLift, jd.greyLift) };
+        return { verdict: 'norep', reason: 'low', cue: def.cue.shallow, score: 0 };
+      });
+      if (r) ev.push(r);
+    }
+  }
+  return ev;
+};
+
+TR.STEP.jumpsquat = function (d, m) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  if (d.state === 'STANDING') {
+    var byAngle = (m.kneeAngle != null && m.kneeAngle < o.kneeAngle);
+    var byDrop  = (m.hipDropU  != null && m.hipDropU  > o.hipDrop);
+    if (byAngle || byDrop) ev.push(d.open(m));
+  } else {
+    d.track(m);
+    if (TR.restingAll(m, c)) {
+      d.state = 'STANDING';
+      /* Kelajuan naik pinggul merentas bingkai terakhir = adakah mereka
+         benar-benar meninggalkan lantai, atau hanya berdiri semula. */
+      var hy = d.cyc ? d.cyc.hipY : [];
+      var rise = hy.length >= 4 ? (hy[hy.length - 4] - hy[hy.length - 1]) / m.torso : 0;
+      var r = d.close(m, function (cy) {
+        var deep = TR.judgeSquat(cy, def, jd).verdict === 'valid';
+        var flew = rise >= jd.minAirRise;
+        if (deep && flew) return { verdict: 'valid', score: TR.scoreFrom(cy.kneeMin, jd.deepAngle - 15, jd.greyAngle) };
+        if (!flew) return { verdict: 'grey', reason: 'no-jump', cue: def.cue.air,
+                            score: Math.round(TR.judgeSquat(cy, def, jd).score * 0.6) };
+        var js = TR.judgeSquat(cy, def, jd);
+        return { verdict: js.verdict === 'valid' ? 'grey' : js.verdict,
+                 reason: 'shallow', cue: def.cue.shallow, score: js.score };
+      });
+      if (r) { r.rep.rise = rise; ev.push(r); }
+    }
+  }
+  return ev;
+};
+
+/* Burpee memakai garis dasar pinggul daripada kalibrasi, jadi ia tidak lagi
+   memerlukan 20 bingkai kalibrasinya sendiri seperti dalam HitFatMON — satu
+   kalibrasi melayani semua pergerakan. */
+TR.STEP.burpee = function (d, m) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  if (m.hipDropU == null) return ev;
+
+  if (d.state === 'STANDING') {
+    if (m.hipDropU > o.hipDrop) {
+      d.burpee = { sawPlank: false, sawReach: false };
+      ev.push(d.open(m)); d.state = 'CROUCH';
+    }
+  } else {
+    d.track(m);
+    if (!d.burpee.sawPlank && m.shHipU != null && m.shHipU < jd.plankLevel) {
+      d.burpee.sawPlank = true; ev.push(d.go('PLANK'));
+    }
+    if (!d.burpee.sawReach && m.wristShU != null && m.wristShU > jd.reachGap) d.burpee.sawReach = true;
+
+    if (m.hipDropU < c.hipRise) {
+      d.state = 'STANDING';
+      var sawPlank = d.burpee.sawPlank, sawReach = d.burpee.sawReach;
+      var r = d.close(m, function (cy) {
+        if (!sawPlank) return { verdict: 'norep', reason: 'no-plank', cue: def.cue.plank, score: 0 };
+        if (jd.requireReach && !sawReach)
+          return { verdict: 'grey', reason: 'no-reach', cue: def.cue.stand, score: 60 };
+        return { verdict: 'valid', score: TR.scoreFrom(cy.dropMax, 0.9, 0.5) };
+      });
+      if (r) ev.push(r);
+    } else if (!d.burpee.sawPlank) {
+      var cu = d.cue(def.cue.plank); if (cu) ev.push(cu);
+    }
+  }
+  return ev;
+};
+
+/* Tahan masa, bukan rep. Kaunter melaporkan saat. */
+TR.STEP.plank = function (d, m) {
+  var def = d.def, jd = def.judge, ev = [];
+  var level = m.shHipU, wristLow = (m.wristShU != null && m.wristShU < jd.wristBelow);
+  var flat = (level != null && level < jd.level);
+  var s = TR.sag(m);
+  var now = TR.now();
+
+  if (flat && wristLow) {
+    if (d.state !== 'HOLD') { d.state = 'HOLD'; d.holdFrom = now; ev.push({ t: 'state', to: 'HOLD' }); }
+    d.holdMs += (now - (d.lastTick || now));
+    d.lastTick = now;
+    if (s != null && s > def.form.sagMax) {
+      var which = (m.hip && m.sh && m.ank && m.hip.y > (m.sh.y + m.ank.y) / 2) ? def.cue.sag : def.cue.pike;
+      var cu = d.cue(which); if (cu) ev.push(cu);
+    }
+    ev.push({ t: 'hold', ms: d.holdMs, sag: s });
+  } else {
+    d.lastTick = now;
+    if (d.state === 'HOLD') { d.state = 'OUT'; ev.push({ t: 'state', to: 'OUT' }); }
+    var c2 = d.cue(def.cue.out); if (c2) ev.push(c2);
+    ev.push({ t: 'hold', ms: d.holdMs, sag: s, broken: true });
+  }
+  return ev;
+};
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LAPAN PERGERAKAN YANG DIPORT DARIPADA AI TRAINER LAMA
+
+   Setiap satu ditulis semula pada seni bina yang sama seperti lapan yang
+   pertama: buka murah hati, tutup apabila setiap isyarat berehat, lulus get
+   amplitud, kemudian dihakimi dengan sebab. Tiada satu pun daripadanya
+   memulangkan awal apabila borang buruk — itu perkara paling merosakkan yang
+   dilakukan enjin lama, kerana ia bermakna rep yang buruk tidak pernah
+   dikira DAN tidak pernah dilaporkan, jadi atlet hanya melihat kaunter yang
+   diam dan tiada sebab.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Pergerakan sisi-ke-sisi berkongsi satu bentuk: pinggul mengembara keluar
+   dari pusat, mendarat, kembali. Setiap perjalanan keluar ialah satu rep.
+   Pusat itu dipelajari dan HANYUT — atlet merentasi bilik semasa mereka
+   melakukannya, dan pusat tetap akan berhenti mengira selepas empat hop. */
+TR.lateral = function (d, m, requireLow) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  if (m.hipX == null) return ev;
+  if (d.centreX == null) { d.centreX = m.hipX; return ev; }
+
+  var u = (m.hipX - d.centreX) / m.torso;
+  var away = Math.abs(u);
+
+  if (d.state === def.states[0]) {
+    d.centreX = d.centreX * 0.93 + m.hipX * 0.07;      // hanyut hanya semasa di tengah
+    var lowOk = !requireLow || (m.hipDropU != null && m.hipDropU > o.minDrop);
+    if (away > o.shift) {
+      if (!lowOk) { var cu = d.cue(def.cue.high); if (cu) ev.push(cu); return ev; }
+      ev.push(d.open(m, u > 0 ? 'r' : 'l'));
+      d.cyc.shiftMax = away;
+    }
+  } else {
+    d.track(m);
+    if (away > d.cyc.shiftMax) d.cyc.shiftMax = away;
+    if (away < c.shift) {
+      d.state = def.states[0];
+      var r = d.close(m, function (cy) {
+        if (cy.shiftMax >= jd.fullShift)
+          return { verdict: 'valid', score: TR.scoreFrom(cy.shiftMax, jd.fullShift, jd.greyShift) };
+        if (cy.shiftMax >= jd.greyShift)
+          return { verdict: 'grey', reason: 'short', cue: def.cue.shallow,
+                   score: TR.scoreFrom(cy.shiftMax, jd.fullShift, jd.greyShift) };
+        return { verdict: 'norep', reason: 'short', cue: def.cue.shallow, score: 0 };
+      });
+      if (r) ev.push(r);
+    }
+  }
+  return ev;
+};
+
+TR.STEP.sumosquat = function (d, m) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  if (d.state === 'STANDING') {
+    var byAngle = (m.kneeAngle != null && m.kneeAngle < o.kneeAngle);
+    var byDrop  = (m.hipDropU  != null && m.hipDropU  > o.hipDrop);
+    if (byAngle || byDrop) ev.push(d.open(m));
+  } else {
+    d.track(m);
+    if (TR.restingAll(m, c)) {
+      d.state = 'STANDING';
+      var r = d.close(m, function (cy) {
+        var base = TR.judgeSquat(cy, def, jd);
+        /* Kaki rapat menjadikannya squat biasa, bukan sumo. Ia masih dikira
+           sebagai percubaan — cuma bukan pergerakan yang diminta. */
+        if (base.verdict === 'valid' && cy.footMax && cy.footMax < jd.wideStance)
+          return { verdict: 'grey', reason: 'narrow', cue: def.cue.narrow, score: Math.round(base.score * 0.7) };
+        return base;
+      });
+      if (r) {
+        ev.push(r);
+        if (r.rep.sym != null && r.rep.sym > def.form.symMax) ev.push(d.cue(def.cue.sym));
+      }
+    }
+  }
+  return ev;
+};
+
+/* Tahan masa. Ambang kedalaman yang sama seperti squat, jadi "cukup rendah"
+   bermakna perkara yang sama sama ada kau mengira atau menahan. */
+TR.STEP.squathold = function (d, m) {
+  var def = d.def, jd = def.judge, ev = [], now = TR.now();
+  var deep = (m.hipKneeU != null && m.hipKneeU >= jd.hipBelowKnee) ||
+             (m.hipKneeU == null && m.kneeAngle != null && m.kneeAngle < jd.kneeAngle);
+  if (deep) {
+    if (d.state !== 'HOLD') { d.state = 'HOLD'; ev.push({ t: 'state', to: 'HOLD' }); }
+    d.holdMs += (now - (d.lastTick || now));
+    d.lastTick = now;
+    if (m.lean != null && m.lean > def.form.leanMax) { var cu = d.cue(def.cue.lean); if (cu) ev.push(cu); }
+    ev.push({ t: 'hold', ms: d.holdMs });
+  } else {
+    d.lastTick = now;
+    if (d.state === 'HOLD') { d.state = 'OUT'; ev.push({ t: 'state', to: 'OUT' }); }
+    var c2 = d.cue(def.cue.out); if (c2) ev.push(c2);
+    ev.push({ t: 'hold', ms: d.holdMs, broken: true });
+  }
+  return ev;
+};
+
+TR.STEP.squatjack = function (d, m) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  if (d.state === 'UP') {
+    /* Kedua-duanya diperlukan di sini, bukan salah satu: squat dengan kaki
+       rapat ialah squat, dan melompat kaki melebar sambil berdiri tegak ialah
+       jumping jack. Pergerakan ini ialah kedua-duanya sekali. */
+    var low  = (m.hipDropU != null && m.hipDropU > o.hipDrop);
+    var wide = (m.footSpreadU != null && m.footSpreadU > o.footSpread);
+    if (low && wide) ev.push(d.open(m));
+  } else {
+    d.track(m);
+    if (m.hipDropU != null && m.hipDropU < c.hipRise) {
+      d.state = 'UP';
+      var r = d.close(m, function (cy) {
+        if (cy.hipKneeMax > -9 && cy.hipKneeMax >= jd.hipBelowKnee)
+          return { verdict: 'valid', score: TR.scoreFrom(cy.hipKneeMax, jd.hipBelowKnee + 0.10, jd.greyBelow) };
+        if (cy.hipKneeMax > -9 && cy.hipKneeMax >= jd.greyBelow)
+          return { verdict: 'grey', reason: 'shallow', cue: def.cue.shallow,
+                   score: TR.scoreFrom(cy.hipKneeMax, jd.hipBelowKnee, jd.greyBelow) };
+        return { verdict: 'grey', reason: 'shallow', cue: def.cue.shallow,
+                 score: TR.scoreFrom(cy.dropMax, 0.55, 0.25) };
+      });
+      if (r) ev.push(r);
+    }
+  }
+  return ev;
+};
+
+TR.STEP.squatside = function (d, m) { return TR.lateral(d, m, true); };
+TR.STEP.sidehop   = function (d, m) { return TR.lateral(d, m, false); };
+
+TR.STEP.tricepspushup = function (d, m) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  if (d.state === 'UP') {
+    if (m.elbowAngle != null && m.elbowAngle < o.elbowAngle) ev.push(d.open(m));
+  } else {
+    d.track(m);
+    var sg = TR.sag(m); if (sg != null && sg > d.cyc.sagMax) d.cyc.sagMax = sg;
+    if (m.elbowAngle != null && m.elbowAngle > c.elbowAngle) {
+      d.state = 'UP';
+      var sagMax = d.cyc ? d.cyc.sagMax : 0;
+      var r = d.close(m, function (cy) {
+        if (cy.elbowMin <= jd.deepAngle)
+          return { verdict: 'valid', score: TR.scoreFrom(cy.elbowMin, jd.deepAngle - 15, jd.greyAngle) };
+        if (cy.elbowMin <= jd.greyAngle)
+          return { verdict: 'grey', reason: 'shallow', cue: def.cue.shallow,
+                   score: TR.scoreFrom(cy.elbowMin, jd.deepAngle, jd.greyAngle) };
+        return { verdict: 'norep', reason: 'shallow', cue: def.cue.shallow, score: 0 };
+      });
+      if (r) { r.rep.sag = sagMax; ev.push(r); if (sagMax > def.form.sagMax) ev.push(d.cue(def.cue.sag)); }
+    }
+  }
+  return ev;
+};
+
+TR.STEP.pushuptap = function (d, m) {
+  var def = d.def, o = def.open, c = def.close, jd = def.judge, ev = [];
+  var near = Math.min(m.tapLU == null ? 9 : m.tapLU, m.tapRU == null ? 9 : m.tapRU);
+  if (near > 8) return ev;
+  if (d.state === 'PLANK') {
+    if (near < o.tapDist) {
+      var side = ((m.tapLU == null ? 9 : m.tapLU) <= (m.tapRU == null ? 9 : m.tapRU)) ? 'l' : 'r';
+      ev.push(d.open(m, side));
+      d.cyc.tapMin = near;
+    }
+  } else {
+    d.track(m);
+    var sg = TR.sag(m); if (sg != null && sg > d.cyc.sagMax) d.cyc.sagMax = sg;
+    if (near > c.tapDist) {
+      d.state = 'PLANK';
+      var sagMax = d.cyc ? d.cyc.sagMax : 0;
+      var r = d.close(m, function (cy) {
+        /* Lebih kecil lebih baik di sini — ia jarak ke bahu. */
+        if (cy.tapMin <= jd.fullTap)
+          return { verdict: 'valid', score: TR.scoreFrom(cy.tapMin, jd.fullTap, jd.greyTap) };
+        if (cy.tapMin <= jd.greyTap)
+          return { verdict: 'grey', reason: 'short', cue: def.cue.shallow,
+                   score: TR.scoreFrom(cy.tapMin, jd.fullTap, jd.greyTap) };
+        return { verdict: 'norep', reason: 'short', cue: def.cue.shallow, score: 0 };
+      });
+      if (r) { r.rep.sag = sagMax; ev.push(r); if (sagMax > def.form.sagMax) ev.push(d.cue(def.cue.sag)); }
+    }
+  }
+  return ev;
+};
+
+/* Static run ialah high knee pada irama berlari. Ia memakai kod yang SAMA —
+   hanya ambang dalam config yang berbeza. Menyalin fungsi high knee dan
+   menala salinan itu ialah cara AI Trainer lama berakhir dengan dua
+   pengesan lutut yang tidak bersetuju antara satu sama lain. */
+TR.STEP.staticrun = TR.STEP.highknee;
+/* ═══════════════════════════════════════════════════════════════════════
+   t_judge.js — Semak Teknik THE START: piawaian BEGINNER di atas enjin
+   HITFAT Trainer (engine/*.js, disalin tanpa ubah dari hitfat-trainer-src).
+
+   Enjin asal menghakimi seperti pengadil: squat mesti pinggul bawah lutut,
+   kalau tidak "no rep". Untuk orang yang baru mula itu salah tujuan. Di sini
+   tiada kiraan dan tiada "gagal": setiap rep diperiksa terhadap kunci teknik
+   beginner, dan keputusan memberi SATU benda untuk dibetulkan.
+
+   Fail ini tulen (tiada DOM) supaya ia boleh diuji dengan jsc.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+var TK = TK || {};
+
+/* Gerakan yang dibuka. Video = klip coach HITFAT yang sama dalam app. */
+TK.EX = {
+  squat: {
+    nama: 'Squat', sub: 'Bodyweight Squat', vid: '1183237084',
+    kunci: ['Kaki selebar bahu, tumit kekal di lantai',
+            'Tolak punggung ke belakang, macam nak duduk kerusi',
+            'Dada naik, pandang ke depan',
+            'Turun 2 saat, naik 1 saat'],
+    sedia: 'Berdiri tegak, sisi badan menghadap kamera.',
+    mula: 'Sedia! Buat 5 squat perlahan.',
+    rows: [['Kedalaman', ['dalam', 'dalam_sikit']], ['Dada naik', ['dada']], ['Kawalan turun', ['laju']]]
+  },
+  pushup: {
+    nama: 'Push Up', sub: 'Push up lutut atau biasa', vid: '1183277738', vidFull: '1183253182',
+    kunci: ['Tangan di bawah bahu, sedikit lebih lebar',
+            'Badan lurus dari kepala ke lutut (atau kaki)',
+            'Ketatkan perut, pinggul jangan jatuh',
+            'Turun sampai siku lebih kurang 90°'],
+    sedia: 'Berdiri tegak dulu, sisi badan menghadap kamera. Bila AI dah sedia, baru turun.',
+    mula: 'Sedia! Turun ke posisi push up, kemudian buat 5 rep.',
+    rows: [['Siku sampai 90°', ['siku', 'siku_sikit']], ['Badan lurus', ['pinggul']], ['Kawalan turun', ['laju']]]
+  },
+  lunge: {
+    nama: 'Lunge', sub: 'Reverse Lunge', vid: '1183237088',
+    kunci: ['Langkah ke BELAKANG, bukan ke depan',
+            'Lutut belakang turun ke arah lantai',
+            'Badan tegak, jangan condong ke depan',
+            'Tukar kaki setiap rep. Pegang kerusi kalau perlu'],
+    sedia: 'Berdiri tegak, sisi badan menghadap kamera.',
+    mula: 'Sedia! Buat 5 lunge, tukar kaki setiap rep.',
+    rows: [['Lutut turun', ['lutut', 'lutut_sikit']], ['Badan tegak', ['badan']], ['Kawalan turun', ['laju']]]
+  },
+  burpee: {
+    nama: 'Burpee', sub: 'Burpee beginner, langkah ke belakang', vid: '1183253168',
+    kunci: ['Cangkung, letak tangan di lantai',
+            'Langkah kaki ke belakang satu-satu sampai badan lurus',
+            'Langkah balik ke depan, kemudian bangun',
+            'Berdiri tegak penuh di hujung setiap rep. Lompat tak perlu'],
+    sedia: 'Berdiri tegak, sisi badan menghadap kamera.',
+    mula: 'Sedia! Buat 5 burpee ikut rentak anda.',
+    /* "Bangun penuh" tiada kod: enjin hanya menutup rep bila pinggul kembali
+       ke paras berdiri, jadi setiap rep yang wujud SUDAH bangun penuh. */
+    rows: [['Sampai plank', ['plank']], ['Bangun penuh', []]]
+  }
+};
+TK.ORDER = ['squat', 'pushup', 'lunge', 'burpee'];
+TK.TARGET = 5;
+
+/* Ayat untuk setiap isu. cue = disebut semasa rep (pendek);
+   title/body = kad "fokus seterusnya". */
+TK.ISU = {
+  dalam:       { cue: 'Turun lagi, sampai paha selari lantai.', title: 'Turun lebih dalam',
+                 body: 'Bayangkan ada kerusi di belakang anda. Tolak punggung ke belakang dan turun sampai paha selari dengan lantai.' },
+  dalam_sikit: { cue: 'Hampir! Turun sikit lagi.', title: 'Turun sikit lagi',
+                 body: 'Dah hampir. Turun sedikit lagi sampai paha selari dengan lantai, tumit kekal di lantai.' },
+  dada:        { cue: 'Dada naik, pandang depan.', title: 'Dada naik',
+                 body: 'Badan anda condong terlalu ke depan. Angkat dada, pandang ke depan, dan biar punggung yang bergerak ke belakang.' },
+  laju:        { cue: 'Perlahan masa turun. Kira dua saat.', title: 'Turun lebih perlahan',
+                 body: 'Anda turun terlalu laju. Kira "satu, dua" masa turun. Gerakan perlahan bina kawalan dan jaga sendi.' },
+  siku:        { cue: 'Bengkok siku lagi, dada ke lantai.', title: 'Turun lebih rendah',
+                 body: 'Bengkokkan siku sampai lebih kurang 90°. Kalau terlalu berat, buat push up lutut dulu.' },
+  siku_sikit:  { cue: 'Hampir! Turun sikit lagi.', title: 'Turun sikit lagi',
+                 body: 'Dah hampir 90°. Turun sedikit lagi, dada ke arah lantai.' },
+  pinggul:     { cue: 'Ketatkan perut, pinggul jangan jatuh.', title: 'Badan lurus',
+                 body: 'Pinggul anda jatuh atau terangkat. Ketatkan perut dan punggung supaya badan lurus macam papan.' },
+  lutut:       { cue: 'Lutut belakang turun lagi.', title: 'Lutut belakang turun',
+                 body: 'Langkah cukup jauh ke belakang dan turunkan lutut belakang ke arah lantai.' },
+  lutut_sikit: { cue: 'Hampir! Turun sikit lagi.', title: 'Turun sikit lagi',
+                 body: 'Dah hampir. Turunkan lutut belakang sedikit lagi, badan kekal tegak.' },
+  badan:       { cue: 'Badan tegak, jangan condong.', title: 'Badan tegak',
+                 body: 'Badan anda condong ke depan. Kekalkan dada naik dan bahu di atas pinggul.' },
+  plank:       { cue: 'Kaki ke belakang sampai badan lurus.', title: 'Sampai posisi plank',
+                 body: 'Langkah kaki ke belakang sampai badan lurus dari bahu ke kaki, baru langkah balik ke depan.' },
+  tangan:      { cue: 'Bangun penuh, tangan ke atas.', title: 'Bangun penuh',
+                 body: 'Habiskan setiap burpee dengan berdiri tegak dan angkat tangan ke atas kepala.' }
+};
+
+/* Penyesuaian enjin untuk beginner. Get kekal (ia yang menghalang rep
+   hantu), cuma dilonggarkan sedikit supaya squat cetek orang baru TETAP
+   wujud sebagai rep dan boleh ditegur, bukannya hilang senyap. */
+TK.tune = function () {
+  TR.EX.squat.gate.minDrop = 0.28; TR.EX.squat.gate.minBend = 20;
+  TR.EX.lunge.gate.minDrop = 0.15; TR.EX.lunge.gate.minBend = 20;
+  TR.EX.pushup.gate.minBend = 25;
+  TR.EX.burpee.gate.minMs = 900;
+  /* Tangan atas kepala tidak diwajibkan: video coach HITFAT sendiri melompat
+     dengan tangan di belakang kepala (diuji 11 Nov), dan burpee beginner
+     tanpa lompat tidak perlu. Yang diwajibkan: sampai plank, bangun penuh. */
+  TR.EX.burpee.judge.requireReach = false;
+  /* Teguran enjin asal dalam English; Semak Teknik bercakap sendiri. */
+  var k; for (k in TR.EX) if (TR.EX.hasOwnProperty(k)) TR.EX[k].cue = {};
+};
+
+/* Push up lutut: garis badan ialah bahu → LUTUT, bukan bahu → buku lali.
+   Dengan sag asal, lutut di lantai membuat pinggul nampak "jatuh". */
+TK.sagAnkle = null;
+TK.setVariant = function (v) {
+  if (!TK.sagAnkle) TK.sagAnkle = TR.sag;
+  TR.sag = (v === 'lutut') ? function (m) {
+    var sh = m.sh, hip = m.hip, kn = m.knee;
+    if (!sh || !hip || !kn) return null;
+    var vx = kn.x - sh.x, vy = kn.y - sh.y, len = Math.sqrt(vx * vx + vy * vy);
+    if (len < 0.01) return null;
+    return Math.abs((hip.x - sh.x) * vy - (hip.y - sh.y) * vx) / len / m.torso;
+  } : TK.sagAnkle;
+};
+
+/* Adakah ini percubaan sebenar? Push up: badan mesti mendatar. Ujian pada
+   video coach (11 Nov) menunjukkan turun dari berdiri ke posisi push up
+   membengkokkan siku dan menjadi "rep" pertama dengan badan masih tegak
+   (lean 27°); push up sebenar ialah ~108°. */
+TK.accept = function (key, rep) {
+  if (key === 'pushup' && rep.lean != null && rep.lean < 60) return false;
+  return true;
+};
+
+/* Satu rep → senarai isu beginner.
+   Had "laju" diuji pada video coach HITFAT sebenar (11 Nov): squat coach
+   pada tempo biasa memberi ecc 0.58–0.82 s (ecc diukur dari lutut mula
+   bengkok hingga titik terdalam). Hanya rep yang betul-betul "jatuh"
+   (< 0.5 s) ditegur, supaya demo coach sendiri tidak dikatakan laju. */
+TK.check = function (key, rep) {
+  var is = [], hk = rep.hipKnee, k = rep.kneeMin, e = rep.elbowMin;
+  if (key === 'squat') {
+    var ok = (hk != null && hk >= -0.15) || (k != null && k <= 110);
+    var near = (hk != null && hk >= -0.35) || (k != null && k <= 135);
+    if (!ok) is.push(near ? 'dalam_sikit' : 'dalam');
+    if (rep.lean != null && rep.lean > 45) is.push('dada');
+    if (rep.ecc != null && rep.ecc < 0.5) is.push('laju');
+  } else if (key === 'pushup') {
+    if (!(e != null && e <= 105)) is.push((e != null && e <= 125) ? 'siku_sikit' : 'siku');
+    if (rep.sag != null && rep.sag > 0.22) is.push('pinggul');
+    if (rep.ecc != null && rep.ecc < 0.4) is.push('laju');
+  } else if (key === 'lunge') {
+    if (!(k != null && k <= 110)) is.push((k != null && k <= 130) ? 'lutut_sikit' : 'lutut');
+    if (rep.lean != null && rep.lean > 40) is.push('badan');
+    if (rep.ecc != null && rep.ecc < 0.45) is.push('laju');
+  } else if (key === 'burpee') {
+    if (rep.reason === 'no-plank') is.push('plank');
+    else if (rep.reason === 'no-reach') is.push('tangan');
+  }
+  return is;
+};
+
+/* Set → keputusan: berapa rep cantik, status setiap kunci, dan SATU fokus.
+   Fokus = kunci yang paling kerap terlepas; seri dipecah ikut susunan rows
+   (kedalaman dahulu, kerana itu yang paling mengubah gerakan). */
+TK.summary = function (key, reps) {
+  var ex = TK.EX[key], n = reps.length, good = 0, i, r, c;
+  var rows = [];
+  for (r = 0; r < ex.rows.length; r++) rows.push({ label: ex.rows[r][0], codes: ex.rows[r][1], miss: 0, top: null, topN: 0, cnt: {} });
+  for (i = 0; i < n; i++) {
+    var is = reps[i].issues || [];
+    if (!is.length) good++;
+    for (r = 0; r < rows.length; r++) {
+      var hit = false;
+      for (c = 0; c < is.length; c++) if (rows[r].codes.indexOf(is[c]) > -1) {
+        hit = true; rows[r].cnt[is[c]] = (rows[r].cnt[is[c]] || 0) + 1;
+      }
+      if (hit) rows[r].miss++;
+    }
+  }
+  var focus = null, fN = 0;
+  for (r = 0; r < rows.length; r++) {
+    var row = rows[r], code;
+    for (code in row.cnt) if (row.cnt.hasOwnProperty(code) && row.cnt[code] > row.topN) { row.top = code; row.topN = row.cnt[code]; }
+    /* "dalam" mengatasi "dalam_sikit" bila kedua-duanya berlaku, kerana
+       nasihat untuk yang jauh juga betul untuk yang hampir. */
+    if (row.cnt[row.codes[0]] && row.codes.length > 1) row.top = row.codes[0];
+    if (row.miss > fN) { fN = row.miss; focus = row.top; }
+  }
+  var level = !n ? 'kosong' : good === n ? 'cantik' : good / n >= 0.6 ? 'hampir' : 'betulkan';
+  return { key: key, n: n, good: good, rows: rows, focus: focus, level: level };
+};
+
+/* ── Memory: setiap percubaan disimpan dalam telefon ─────────────────────
+   Kiraan dan isu sahaja; tiada video, tiada titik badan. */
+TK.MEM_KEY = 'hf_teknik_v1';
+TK.memRead = function () {
+  try { var a = JSON.parse(localStorage.getItem(TK.MEM_KEY) || '[]'); return Object.prototype.toString.call(a) === '[object Array]' ? a : []; }
+  catch (e) { return []; }
+};
+TK.memAdd = function (s, variant) {
+  var a = TK.memRead();
+  var rows = {}, r;
+  for (r = 0; r < s.rows.length; r++) rows[s.rows[r].label] = s.rows[r].miss;
+  a.push({ ex: s.key, v: variant || '', t: TR.now(), n: s.n, good: s.good, rows: rows, focus: s.focus, level: s.level });
+  try { localStorage.setItem(TK.MEM_KEY, JSON.stringify(a.slice(-200))); } catch (e) {}
+  return a;
+};
+TK.memFor = function (key) {
+  var a = TK.memRead(), out = [], i;
+  for (i = 0; i < a.length; i++) if (a[i].ex === key) out.push(a[i]);
+  return out;
+};
+
+/* Teks enjin (English) → BM, untuk kalibrasi dan "hilang dari kamera". */
+TK.bm = function (t) {
+  if (!t) return '';
+  if (t.indexOf('Hold still') === 0) return 'Berdiri tegak, jangan bergerak…';
+  var M = {
+    'Show your shoulders': 'Pastikan bahu nampak dalam kamera',
+    'Show your hips': 'Pastikan pinggul nampak dalam kamera',
+    'Stand up straight': 'Berdiri tegak dulu',
+    'Step closer to the camera': 'Dekat sikit dengan kamera',
+    'Step back — full body in frame': 'Undur sikit, seluruh badan mesti nampak',
+    'Turn side-on to the camera': 'Pusing ke tepi, sisi badan menghadap kamera',
+    'Show your full body': 'Pastikan seluruh badan nampak',
+    'Step back into frame': 'Masuk semula dalam kamera'
+  };
+  return M[t] || t;
+};
+/* ═══════════════════════════════════════════════════════════════════════
+   t_ui.js — skrin Semak Teknik: Pilih → Tonton → Kamera → Keputusan.
+   Satu kamera dipegang sepanjang satu percubaan dan dilepaskan di skrin
+   keputusan; "Cuba lagi" ialah klik, jadi iOS benarkan getUserMedia semula.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+TK.$ = function (id) { return document.getElementById(id); };
+TK.esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+TK.st = { key: null, variant: 'lutut', reps: [], det: null, armed: false, busy: false, done: false, sound: true };
+
+TK.show = function (id) {
+  var s = ['home', 'move', 'cam', 'result'], i;
+  for (i = 0; i < s.length; i++) TK.$('v-' + s[i]).hidden = (s[i] !== id);
+  document.body.className = 'on-' + id;
+  window.scrollTo(0, 0);
+};
+
+TK.vimeo = function (id) {
+  return 'https://player.vimeo.com/video/' + id + '?background=1&autoplay=1&loop=1&muted=1&controls=0&autopause=0';
+};
+
+TK.when = function (t) {
+  var d = new Date(t), now = new Date();
+  var days = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 864e5);
+  var bl = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
+  return days === 0 ? 'Hari ini' : days === 1 ? 'Semalam' : d.getDate() + ' ' + bl[d.getMonth()];
+};
+
+/* ── Home ─────────────────────────────────────────────────────────────── */
+TK.home = function () {
+  var h = '', i, k, ex, m, last;
+  for (i = 0; i < TK.ORDER.length; i++) {
+    k = TK.ORDER[i]; ex = TK.EX[k]; m = TK.memFor(k); last = m[m.length - 1];
+    h += '<button class="mv" onclick="TK.open(\'' + k + '\')">' +
+      '<span class="mv-n">0' + (i + 1) + '</span>' +
+      '<span class="mv-t"><b>' + ex.nama + '</b><small>' + TK.esc(ex.sub) + '</small></span>' +
+      (last ? '<span class="chip ' + last.level + '">' + last.good + '/' + last.n + ' cantik</span>'
+            : '<span class="chip baru">Belum cuba</span>') +
+      '<span class="mv-go">›</span></button>';
+  }
+  TK.$('mvList').innerHTML = h;
+  TK.show('home');
+};
+
+/* ── Satu gerakan: video + kunci teknik + cara letak telefon + kemajuan ── */
+TK.open = function (k) {
+  var ex = TK.EX[k], i, h = '';
+  TK.st.key = k;
+  TK.$('mvTitle').textContent = ex.nama;
+  TK.$('mvSub').textContent = ex.sub;
+  var vid = (k === 'pushup' && TK.st.variant === 'biasa') ? ex.vidFull : ex.vid;
+  TK.$('mvVid').innerHTML = '<iframe src="' + TK.vimeo(vid) + '" allow="autoplay; fullscreen; picture-in-picture" title="Video coach ' + ex.nama + '"></iframe>';
+  for (i = 0; i < ex.kunci.length; i++) h += '<li><span>' + (i + 1) + '</span>' + TK.esc(ex.kunci[i]) + '</li>';
+  TK.$('mvKunci').innerHTML = h;
+  TK.$('mvVar').hidden = (k !== 'pushup');
+  TK.paintVar();
+  TK.paintProgress();
+  TK.show('move');
+};
+
+TK.setVar = function (v) {
+  if (TK.st.variant === v) return;
+  TK.st.variant = v;
+  TK.open('pushup');
+};
+TK.paintVar = function () {
+  var b = TK.$('mvVar').getElementsByTagName('button'), i;
+  for (i = 0; i < b.length; i++) b[i].className = (b[i].getAttribute('data-v') === TK.st.variant) ? 'on' : '';
+};
+
+TK.paintProgress = function () {
+  var m = TK.memFor(TK.st.key), box = TK.$('mvProg'), h = '', i, e, f;
+  if (!m.length) { box.innerHTML = '<p class="muted">Belum ada rekod. Lepas cuba kali pertama, kemajuan teknik anda akan keluar di sini.</p>'; return; }
+  var best = 0; for (i = 0; i < m.length; i++) best = Math.max(best, m[i].n ? m[i].good / m[i].n : 0);
+  var shown = m.slice(-5).reverse();
+  for (i = 0; i < shown.length; i++) {
+    e = shown[i]; f = e.focus && TK.ISU[e.focus] ? TK.ISU[e.focus].title : 'Teknik cantik';
+    h += '<li><span class="pd">' + TK.when(e.t) + (e.v ? ' · ' + (e.v === 'lutut' ? 'lutut' : 'biasa') : '') + '</span>' +
+         '<span class="pg ' + e.level + '">' + e.good + '/' + e.n + '</span>' +
+         '<span class="pf">' + TK.esc(f) + '</span></li>';
+  }
+  box.innerHTML = '<p class="pr-h">Percubaan: <b>' + m.length + '</b> · Terbaik: <b>' + Math.round(best * 100) + '%</b> rep cantik</p><ul class="pl">' + h + '</ul>';
+};
+
+/* ── Kamera ───────────────────────────────────────────────────────────── */
+TK.say = function (t) {
+  if (!TK.st.sound || !t || !window.speechSynthesis) return;
+  try {
+    if (TK.voice === undefined) {
+      var vs = speechSynthesis.getVoices() || [], i;
+      TK.voice = null;
+      for (i = 0; i < vs.length; i++) if (/^ms/i.test(vs[i].lang)) { TK.voice = vs[i]; break; }
+      if (!TK.voice) for (i = 0; i < vs.length; i++) if (/^id/i.test(vs[i].lang)) { TK.voice = vs[i]; break; }
+      if (!vs.length) TK.voice = undefined;          // senarai belum dimuat; cuba lagi lain kali
+    }
+    if (!TK.voice) return;                            // suara English menyebut BM dengan teruk; diam lebih baik
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(t);
+    u.voice = TK.voice; u.lang = TK.voice.lang; u.rate = 1.0;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+};
+TK.beep = function (good) {
+  if (!TK.st.sound) return;
+  try {
+    var A = TK.ac || (TK.ac = new (window.AudioContext || window.webkitAudioContext)());
+    var o = A.createOscillator(), g = A.createGain();
+    o.frequency.value = good ? 880 : 330; o.type = 'sine';
+    g.gain.setValueAtTime(0.0001, A.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.25, A.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, A.currentTime + (good ? 0.18 : 0.32));
+    o.connect(g); g.connect(A.destination); o.start(); o.stop(A.currentTime + 0.35);
+  } catch (e) {}
+};
+TK.toggleSound = function () {
+  TK.st.sound = !TK.st.sound;
+  TK.$('camSound').textContent = TK.st.sound ? '🔊' : '🔇';
+  try { localStorage.setItem('hf_teknik_sound', TK.st.sound ? '1' : '0'); } catch (e) {}
+};
+
+TK.setStatus = function (big, small, cls) {
+  TK.$('camBig').textContent = big || '';
+  TK.$('camBig').className = 'big' + (cls ? ' ' + cls : '');
+  TK.$('camCue').textContent = small || '';
+};
+TK.paintDots = function () {
+  var h = '', i, r;
+  for (i = 0; i < TK.TARGET; i++) {
+    r = TK.st.reps[i];
+    h += '<s class="' + (r ? (r.issues.length ? 'warn' : 'good') : '') + '"></s>';
+  }
+  TK.$('camDots').innerHTML = h;
+  TK.$('camEnd').disabled = !TK.st.reps.length;
+};
+
+TK.start = function () {
+  var k = TK.st.key, ex = TK.EX[k];
+  if (TK.st.busy) return;
+  TK.st.busy = true; TK.st.reps = []; TK.st.armed = false; TK.st.done = false;
+  /* iOS: kamera, audio dan suara mesti "dibuka" di dalam klik ini. */
+  try { if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance('')); } catch (e) {}
+  try { if (!TK.ac) TK.ac = new (window.AudioContext || window.webkitAudioContext)(); if (TK.ac.resume) TK.ac.resume(); } catch (e) {}
+  TK.show('cam');
+  TK.$('camName').textContent = ex.nama + (k === 'pushup' ? (TK.st.variant === 'lutut' ? ' · lutut' : ' · biasa') : '');
+  TK.$('camErr').hidden = true;
+  TK.paintDots();
+  TK.setStatus('Buka kamera…', 'Benarkan kamera bila telefon tanya.');
+  TK.setVariant(k === 'pushup' ? TK.st.variant : '');
+  TR.Pose.grab('user').then(function () {
+    return TR.Pose.attach(TK.$('camVideo'));
+  }).then(function () {
+    TR.Pose.syncCanvas(TK.$('camCanvas'));
+    if (TR.Pose.engine) return 'ready';
+    TK.setStatus('AI sedang bersedia…', 'Kali pertama ambil 10–20 saat. Lepas ni lebih laju.');
+    return TR.Pose.initEngine();
+  }).then(function () {
+    TK.st.busy = false;
+    TR.Calib.reset();
+    TK.st.det = TR.Detector.create(k);
+    TK.setStatus('Berdiri tegak', ex.sedia);
+    TR.Pose.start(TK.onFrame);
+  })['catch'](function (e) {
+    TK.st.busy = false;
+    TK.fail(e);
+  });
+};
+
+TK.fail = function (e) {
+  var msg = String(e && (e.message || e) || '');
+  var nice = /Permission|NotAllowed|denied/i.test(msg) ? 'Kamera tidak dibenarkan. Buka tetapan pelayar, benarkan kamera untuk laman ini, kemudian cuba lagi.'
+           : /not supported|getUserMedia/i.test(msg) ? 'Pelayar ini tak sokong kamera. Buka page ini dalam Safari atau Chrome.'
+           : /pose engine|unavailable|timed out|timeout/i.test(msg) ? 'AI tak dapat dimuat. Semak internet anda dan cuba lagi.'
+           : 'Kamera tak dapat dibuka. Tutup app lain yang guna kamera, kemudian cuba lagi.';
+  TK.$('camErr').hidden = false;
+  TK.$('camErrMsg').textContent = nice;
+  TK.$('camErrTech').textContent = msg;
+  TK.setStatus('', '');
+  try { TR.Pose.release(); } catch (x) {}
+};
+
+TK.onFrame = function (j) {
+  var st = TK.st;
+  if (!st.det || st.done) return;
+  TR.Pose.draw(j, st.armed ? '#FF7A35' : '#FFF4EA');
+  var evs = st.det.feed(j), i, e;
+  for (i = 0; i < evs.length; i++) {
+    e = evs[i];
+    if (e.t === 'calib') {
+      if (e.done && !st.armed) {
+        st.armed = true;
+        TK.setStatus('Mula!', TK.EX[st.key].mula, 'good');
+        TK.say(TK.EX[st.key].mula);
+      } else if (!e.done) {
+        var p = Math.round((TR.Calib.frames.length / TR.CFG.calibFrames) * 100);
+        TK.setStatus('Berdiri tegak' + (p ? ' · ' + p + '%' : ''), TK.bm(e.text));
+      }
+    } else if (e.t === 'lost') {
+      TK.setStatus('Cari anda…', TK.bm(e.text), 'warn');
+    } else if (e.t === 'rep') {
+      TK.onRep(e.rep);
+    }
+  }
+};
+
+TK.onRep = function (rep) {
+  var st = TK.st;
+  if (st.done || st.reps.length >= TK.TARGET) return;
+  if (!TK.accept(st.key, rep)) return;
+  rep.issues = TK.check(st.key, rep);
+  st.reps.push(rep);
+  TK.paintDots();
+  var n = st.reps.length;
+  if (!rep.issues.length) {
+    TK.setStatus('Cantik! ' + n + '/' + TK.TARGET, n < TK.TARGET ? 'Teruskan, macam tu.' : '', 'good');
+    TK.beep(true); TK.say(n < TK.TARGET ? 'Cantik.' : 'Cantik. Siap!');
+  } else {
+    var cue = TK.ISU[rep.issues[0]].cue;
+    TK.setStatus('Rep ' + n + '/' + TK.TARGET, cue, 'warn');
+    TK.beep(false); TK.say(cue);
+  }
+  if (n >= TK.TARGET) { st.done = true; setTimeout(TK.finish, 1600); }
+};
+
+TK.stop = function () {
+  /* Butang "Selesai": tamat dengan rep yang ada; tanpa rep, balik ke gerakan. */
+  if (TK.st.reps.length) { TK.st.done = true; TK.finish(); return; }
+  TK.teardown(); TK.open(TK.st.key);
+};
+TK.teardown = function () {
+  TK.st.det = null; TK.st.busy = false;
+  try { TR.Pose.release(); } catch (e) {}
+  try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
+};
+
+/* ── Keputusan ────────────────────────────────────────────────────────── */
+TK.finish = function () {
+  var k = TK.st.key, s = TK.summary(k, TK.st.reps), i, row, h = '';
+  TK.teardown();
+  TK.memAdd(s, k === 'pushup' ? TK.st.variant : '');
+  var head = { cantik: 'Teknik cantik!', hampir: 'Dah hampir!', betulkan: 'Mari betulkan sama-sama', kosong: 'Tiada rep dikesan' }[s.level];
+  TK.$('rsLevel').textContent = head;
+  TK.$('rsLevel').className = 'rs-level ' + s.level;
+  TK.$('rsBig').innerHTML = '<b>' + s.good + '</b><span>/' + s.n + '</span>';
+  TK.$('rsBigLbl').textContent = 'rep teknik cantik';
+  for (i = 0; i < s.rows.length; i++) {
+    row = s.rows[i];
+    h += '<li class="' + (row.miss ? 'miss' : 'ok') + '"><span class="ic">' + (row.miss ? '!' : '✓') + '</span>' +
+         '<span class="lb">' + row.label + '</span><span class="vl">' + (row.miss ? row.miss + ' dari ' + s.n + ' rep' : 'Cantik') + '</span></li>';
+  }
+  TK.$('rsRows').innerHTML = h;
+  var f = s.focus && TK.ISU[s.focus];
+  TK.$('rsFocusT').textContent = f ? f.title : 'Langkah seterusnya';
+  TK.$('rsFocusB').textContent = f ? f.body
+    : 'Semua kunci teknik dah betul. Sekarang cuba turun lebih perlahan (kira 3 saat), atau tambah rep dalam sesi latihan anda.';
+  TK.$('rsName').textContent = TK.EX[k].nama;
+  TK.show('result');
+  TK.say(f ? 'Fokus seterusnya: ' + f.title + '.' : 'Teknik cantik!');
+};
+
+/* ── Pendawaian ───────────────────────────────────────────────────────── */
+TK.boot = function () {
+  TK.tune();
+  try { TK.st.sound = localStorage.getItem('hf_teknik_sound') !== '0'; } catch (e) {}
+  TK.$('camSound').textContent = TK.st.sound ? '🔊' : '🔇';
+  try { if (window.speechSynthesis) speechSynthesis.getVoices(); } catch (e) {}
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden && TK.$('v-cam') && !TK.$('v-cam').hidden) { TK.teardown(); TK.open(TK.st.key); }
+  });
+  TK.home();
+};
+
+TK.boot();
+</script>
+</body>
+</html>

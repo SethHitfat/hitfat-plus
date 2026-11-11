@@ -3821,6 +3821,29 @@ print("\n── THE START ──");
   startWorkout=keepSW; _ent=keepEnt; HF.data.mf=keepMf||{}; HF.data.progress[MF_ID]=0; mfTab='plan'; mfQ=-1;
 })();
 HF.email=null; mfEnsure();
+print("\n── THE START: ITS OWN PLAYER ──");
+(function(){
+  var keepMf=HF.data.mf;
+  HF.data.mf={me:{done:true, why:'mula', act:'jalan', exp:'dulu', masa:20, alat:['kerusi','tuala','botol'], pain:['tiada'], sihat:['tiada'], days:['isn','rab','jum'], makan:'campur', path:1}};
+  var s=mfSession(4), e=mfExercises(s), k=e.findIndex(function(x){ return !!x.mfp; });
+  ok("the main moves carry their pattern, warm-up and cool-down are marked", k>0 && e[0].mfw==='warm' && e[e.length-1].mfw==='cool' && !!MF_TECH[e[k].mfp]);
+  startWorkout(e,{rounds:1, name:'THE START · Sesi 5', mf:{gi:4}, key:'mf-test', pid:MF_ID, gi:4});
+  var play=document.getElementById('play');
+  ok("a THE START session wears its own player, not MAK2FIT's", play.classList.contains('tst') && !play.classList.contains('m2f'));
+  pl.i=k; renderPl(); var L=document.getElementById('pl-learn').innerHTML;
+  ok("on the move: the three technique cues of its pattern, one card", L.indexOf('Kunci teknik')>0 && MF_TECH[e[k].mfp][0].every(function(c){ return L.indexOf(mfT(c))>0; }) && L.indexOf('Form tip')<0);
+  ok("...and the easier version a tap away, with the usual mistake", L.indexOf('mfPlEasy()')>0 && L.indexOf(mfT(MF_TECH[e[k].mfp][2]))>0 && L.indexOf('Elak: ')>0);
+  ok("...in THE START's words", document.getElementById('pl-ph').textContent==='Gerak' && document.getElementById('pl-mv').textContent==='Gerakan '+(k+1)+'/'+e.length &&
+    document.getElementById('pl-next').innerHTML.indexOf('Seterusnya: ')===0 && plLeftWord()===' lagi');
+  pl.i=0; renderPl(); ok("the warm-up gets warm-up cues, not a pattern's", document.getElementById('pl-ph').textContent==='Pemanasan' && document.getElementById('pl-learn').innerHTML.indexOf(mfT(MF_PL_WARM[0][0]))>0);
+  var j=mfPlJourney(4); ok("Ready shows the 18 sessions, this one marked, the records ringed", (j.match(/<i /g)||[]).length===18 && (j.match(/now/g)||[]).length===1 && (j.match(/rec/g)||[]).length===2 && j.indexOf('Minggu 2 daripada 6')>0);
+  ok("...and Done counts this one in", mfPlJourney(4,true).indexOf('5 daripada 18 sesi siap. Lagi 13 sesi.')>0);
+  plClose(); if(pl) plCloseNow();
+  startWorkout(e.slice(0,2),{rounds:1, name:'Morning Kickstart', key:'other'});
+  ok("every other program keeps the HITFAT player", !play.classList.contains('tst') && document.getElementById('pl-learn').innerHTML.indexOf('Form tip')>0 && plLeftWord()===' left');
+  plClose(); if(pl) plCloseNow();
+  HF.data.mf=keepMf;
+})();
 print("\n── MEAL SCAN: PORTION AND NAME ──");
 (function(){
   var keep=_scanData;

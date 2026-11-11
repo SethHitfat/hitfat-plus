@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#E8480F">
+<title>Semak Teknik · THE START</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&display=swap" rel="stylesheet">
+<style>
+:root{--o:#E8480F;--o2:#B8380A;--o3:#FF7A35;--cream:#FFF4EA;--peach:#FFE0CC;--ink:#141414;--ink2:#5A4A40;--line:#F0DCCB;--good:#1F8A4C;--warn:#E8A10F;
+  --f:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--cream);color:var(--ink);font:400 16px/1.45 var(--f);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px calc(28px + env(safe-area-inset-bottom))}
+.muted{color:var(--ink2)}
+h1,h2,.disp{font-family:var(--f);font-style:italic;font-weight:900;font-stretch:122%;letter-spacing:-.01em;line-height:.98;text-transform:uppercase;margin:0;text-wrap:balance}
+
+/* Poster: oren pepejal + titik halftone, seperti landing THE START */
+.poster{position:relative;isolation:isolate;overflow:hidden;background:var(--cream);border-radius:0 0 28px 28px;margin:0 -16px;padding:calc(18px + env(safe-area-inset-top)) 20px 26px}
+.poster::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(150deg,var(--o3),var(--o) 45%,var(--o2))}
+.poster::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle,rgba(255,244,234,.5) 0 1.6px,transparent 2.1px) 0 0/7px 7px;
+  -webkit-mask:linear-gradient(100deg,transparent 35%,#000 85%);mask:linear-gradient(100deg,transparent 35%,#000 85%)}
+.ghost{position:absolute;right:-6px;bottom:-14px;z-index:-1;font:italic 900 108px/.8 var(--f);font-stretch:125%;color:rgba(255,244,234,.16);text-transform:uppercase;pointer-events:none;white-space:nowrap}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}
+.brand{font:italic 900 13px/1 var(--f);font-stretch:118%;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:#fff;padding:7px 10px;border-radius:999px}
+.tagAi{font:800 11px/1 var(--f);letter-spacing:.12em;text-transform:uppercase;background:#fff;color:var(--o2);padding:7px 10px;border-radius:999px;box-shadow:0 6px 16px -8px rgba(92,26,3,.5)}
+.poster h1{font-size:clamp(40px,12vw,58px)}
+.poster h1{color:var(--ink)}
+.poster h1 em{font-style:italic;color:var(--cream);display:block}
+.lead{margin:18px 2px 0;font-size:16px;max-width:32em}
+
+/* Kad gerakan */
+.sec{margin-top:26px}
+.sec-h{font:800 12px/1 var(--f);letter-spacing:.14em;text-transform:uppercase;color:var(--o2);margin:0 0 12px}
+.mvs{display:grid;gap:10px}
+.mv{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:#fff;border-radius:20px;padding:14px 16px;box-shadow:0 10px 24px -18px rgba(92,26,3,.6);border:1.5px solid var(--line)}
+.mv:active{transform:scale(.99)}
+.mv-n{font:italic 900 26px/1 var(--f);font-stretch:122%;color:var(--o);min-width:40px}
+.mv-t{flex:1;min-width:0;display:flex;flex-direction:column}
+.mv-t b{font:italic 900 21px/1.05 var(--f);font-stretch:118%;text-transform:uppercase}
+.mv-t small{color:var(--ink2);font-size:13px;margin-top:2px}
+.mv-go{font-size:26px;color:var(--o);line-height:1}
+.chip{font:800 11.5px/1 var(--f);padding:6px 9px;border-radius:999px;white-space:nowrap;background:var(--peach);color:var(--o2)}
+.chip.baru{background:var(--cream);color:var(--ink2);border:1px solid var(--line)}
+.chip.cantik{background:#DDF3E6;color:var(--good)}
+.chip.hampir{background:#FFF0CC;color:#8A5A00}
+.how{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.how li{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:16px;padding:12px 14px;border:1px solid var(--line);font-size:14.5px}
+.how li b{font:italic 900 18px/1.1 var(--f);color:var(--o);min-width:22px}
+.priv{margin-top:18px;font-size:13px;color:var(--ink2);background:rgba(255,255,255,.7);border-radius:14px;padding:11px 13px;border:1px dashed var(--line)}
+
+/* Skrin gerakan */
+.bar{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 0 12px}
+.back{width:40px;height:40px;border-radius:50%;background:#fff;border:1.5px solid var(--line);font-size:22px;line-height:1;display:grid;place-items:center}
+.bar .disp{font-size:24px}
+.bar small{display:block;color:var(--ink2);font-size:13px;font-style:normal;font-weight:500;text-transform:none;letter-spacing:0;font-stretch:100%}
+.vid{position:relative;aspect-ratio:9/16;max-height:62vh;width:100%;border-radius:24px;overflow:hidden;background:var(--ink);margin:0 auto;box-shadow:0 18px 36px -22px rgba(92,26,3,.7)}
+.vid iframe{position:absolute;top:50%;left:50%;width:100%;height:100%;transform:translate(-50%,-50%) scale(1.02);border:0;pointer-events:none}
+.vid .lbl{position:absolute;left:12px;top:12px;z-index:2;font:800 11px/1 var(--f);letter-spacing:.1em;text-transform:uppercase;background:rgba(20,20,20,.72);color:#fff;padding:7px 9px;border-radius:999px}
+.seg{display:flex;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:4px;margin:14px 0 0}
+.seg button{flex:1;padding:10px 8px;border-radius:999px;font-weight:700;font-size:14px;color:var(--ink2)}
+.seg button.on{background:var(--ink);color:#fff}
+.kunci{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.kunci li{display:flex;gap:12px;align-items:flex-start;font-size:15px;background:#fff;border-radius:14px;padding:11px 13px;border:1px solid var(--line)}
+.kunci li span{flex:none;width:24px;height:24px;border-radius:50%;background:var(--o);color:#fff;font:italic 900 13px/24px var(--f);text-align:center}
+.place{display:flex;gap:14px;align-items:center;background:var(--ink);color:#fff;border-radius:20px;padding:14px 16px}
+.place svg{flex:none}
+.place p{margin:0;font-size:14px}
+.place b{color:var(--o3)}
+.cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:58px;border-radius:999px;background:var(--o);color:#fff;font:italic 900 19px/1 var(--f);font-stretch:118%;text-transform:uppercase;letter-spacing:.01em;box-shadow:0 14px 28px -14px rgba(184,56,10,.9)}
+.cta:active{transform:translateY(1px)}
+.cta.ghostb{background:#fff;color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+.sticky{position:sticky;bottom:0;padding:14px 0 calc(10px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--cream) 30%)}
+.pr-h{margin:0 0 8px;font-size:14px}
+.pl{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.pl li{display:grid;grid-template-columns:1fr auto;grid-template-areas:"d g" "f g";gap:2px 10px;background:#fff;border-radius:14px;padding:10px 13px;border:1px solid var(--line)}
+.pd{grid-area:d;font-size:12.5px;color:var(--ink2)}
+.pf{grid-area:f;font-weight:700;font-size:14px}
+.pg{grid-area:g;align-self:center;font:italic 900 22px/1 var(--f);color:var(--o2)}
+.pg.cantik{color:var(--good)}
+
+/* Kamera */
+body.on-cam{background:#000}
+#v-cam{position:fixed;inset:0;background:#000;color:#fff;z-index:5}
+.stage{position:absolute;inset:0}
+.stage video,.stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.cam-top{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 30px;background:linear-gradient(rgba(0,0,0,.6),transparent)}
+.cam-top .nm{flex:1;min-width:0;font:italic 900 16px/1 var(--f);font-stretch:112%;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rbtn{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:18px;display:grid;place-items:center}
+.dots{display:flex;gap:6px}
+.dots s{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.6)}
+.dots s.good{background:#3DD07A;border-color:#3DD07A}
+.dots s.warn{background:var(--o3);border-color:var(--o3)}
+.cam-bot{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:40px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.78) 40%);text-align:center}
+.big{font:italic 900 clamp(30px,9vw,44px)/1 var(--f);font-stretch:120%;text-transform:uppercase;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.big.good{color:#5BE394}.big.warn{color:var(--o3)}
+.cue{min-height:2.8em;margin:10px auto 14px;max-width:24em;font-size:17px;font-weight:600;line-height:1.35}
+.end{display:inline-flex;min-height:48px;align-items:center;padding:0 26px;border-radius:999px;background:#fff;color:var(--ink);font:italic 900 16px/1 var(--f);text-transform:uppercase}
+.end:disabled{opacity:.45}
+.cam-err{position:absolute;inset:0;z-index:4;display:grid;place-items:center;padding:24px;background:rgba(20,20,20,.94);text-align:center}
+.cam-err p{max-width:22em;font-size:16px}
+.cam-err small{display:block;margin-top:8px;color:#999;font-size:11px;word-break:break-word}
+
+/* Keputusan */
+.rs{padding-top:calc(14px + env(safe-area-inset-top))}
+.rs-card{position:relative;isolation:isolate;overflow:hidden;border-radius:28px;padding:22px 20px 24px;background:var(--ink);color:#fff;margin-top:8px}
+.rs-card::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle,rgba(232,72,15,.55) 0 1.6px,transparent 2.1px) 0 0/7px 7px;
+  -webkit-mask:linear-gradient(200deg,#000,transparent 60%);mask:linear-gradient(200deg,#000,transparent 60%)}
+.rs-name{font:800 12px/1 var(--f);letter-spacing:.14em;text-transform:uppercase;color:var(--o3)}
+.rs-level{font:italic 900 clamp(28px,8.4vw,40px)/1 var(--f);font-stretch:122%;text-transform:uppercase;margin-top:10px}
+.rs-level.cantik{color:#5BE394}.rs-level.hampir{color:#FFD166}.rs-level.betulkan{color:var(--o3)}
+.rs-big{display:flex;align-items:baseline;gap:4px;margin-top:14px}
+.rs-big b{font:italic 900 76px/.9 var(--f);font-stretch:118%}
+.rs-big span{font:italic 900 34px/1 var(--f);color:rgba(255,255,255,.55)}
+.rs-lbl{font-size:14px;color:rgba(255,255,255,.75)}
+.rows{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:8px}
+.rows li{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:12px 14px;border:1.5px solid var(--line)}
+.rows .ic{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;background:var(--good)}
+.rows li.miss .ic{background:var(--o)}
+.rows .lb{flex:1;font-weight:700}
+.rows .vl{font-size:13.5px;color:var(--ink2)}
+.focus{margin-top:14px;background:var(--o);color:#fff;border-radius:22px;padding:18px 18px 20px;position:relative;isolation:isolate;overflow:hidden}
+.focus::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle,rgba(255,244,234,.35) 0 1.5px,transparent 2px) 0 0/7px 7px;-webkit-mask:linear-gradient(90deg,transparent 40%,#000);mask:linear-gradient(90deg,transparent 40%,#000)}
+.focus small{font:800 11.5px/1 var(--f);letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.focus h3{font:italic 900 24px/1.02 var(--f);font-stretch:118%;text-transform:uppercase;margin:8px 0 6px}
+.focus p{margin:0;font-size:15px}
+.acts{display:grid;gap:10px;margin-top:18px}
+.note{font-size:12.5px;color:var(--ink2);text-align:center;margin-top:14px}
+</style>
+</head>
+<body class="on-home">
+
+<!-- ═══ HOME ═══ -->
+<section id="v-home">
+  <div class="wrap">
+    <header class="poster">
+      <div class="top"><span class="brand">THE START</span><span class="tagAi">AI Coach · Uji</span></div>
+      <h1>Semak<em>Teknik.</em></h1>
+      <span class="ghost" aria-hidden="true">Teknik</span>
+    </header>
+    <p class="lead">AI tengok gerakan anda melalui kamera telefon, kemudian beritahu apa yang dah betul dan <b>satu benda</b> untuk dibetulkan. Tiada markah, tiada "gagal".</p>
+
+    <div class="sec">
+      <p class="sec-h">Pilih gerakan</p>
+      <div class="mvs" id="mvList"></div>
+    </div>
+
+    <div class="sec">
+      <p class="sec-h">Cara ia berjalan</p>
+      <ol class="how">
+        <li><b>1</b><span>Tonton video coach dan baca 4 kunci teknik.</span></li>
+        <li><b>2</b><span>Letak telefon di lantai, bersandar pada dinding, 2 hingga 3 meter dari anda.</span></li>
+        <li><b>3</b><span>Berdiri tegak sekejap supaya AI kenal badan anda, kemudian buat 5 rep perlahan.</span></li>
+        <li><b>4</b><span>Dapat keputusan dan satu fokus. Setiap percubaan disimpan, jadi anda nampak teknik bertambah baik.</span></li>
+      </ol>
+      <p class="priv">🔒 Video tidak dirakam dan tidak dihantar ke mana-mana. AI berjalan dalam telefon anda sahaja. Yang disimpan cuma keputusan (contoh: 4/5 cantik).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SATU GERAKAN ═══ -->
+<section id="v-move" hidden>
+  <div class="wrap">
+    <div class="bar">
+      <button class="back" onclick="TK.home()" aria-label="Kembali">‹</button>
+      <div><div class="disp" id="mvTitle"></div><small id="mvSub"></small></div>
+    </div>
+
+    <div class="vid"><span class="lbl">Video coach</span><div id="mvVid"></div></div>
+
+    <div class="seg" id="mvVar" hidden>
+      <button data-v="lutut" onclick="TK.setVar('lutut')">Push up lutut</button>
+      <button data-v="biasa" onclick="TK.setVar('biasa')">Push up biasa</button>
+    </div>
+
+    <div class="sec">
+      <p class="sec-h">Kunci teknik</p>
+      <ol class="kunci" id="mvKunci"></ol>
+    </div>
+
+    <div class="sec">
+      <div class="place">
+        <svg width="74" height="62" viewBox="0 0 74 62" aria-hidden="true">
+          <rect x="3" y="18" width="14" height="24" rx="3" fill="none" stroke="#FF7A35" stroke-width="2.4" transform="rotate(-8 10 30)"/>
+          <path d="M2 50h70" stroke="#FFF4EA" stroke-opacity=".35" stroke-width="2"/>
+          <path d="M22 30h14" stroke="#FFF4EA" stroke-opacity=".5" stroke-width="1.6" stroke-dasharray="3 3"/>
+          <circle cx="56" cy="12" r="5" fill="#FFF4EA"/>
+          <path d="M56 17v15m0 0l-6 17m6-17l5 17M56 22l-8 6m8-6l7 5" stroke="#FFF4EA" stroke-width="3" stroke-linecap="round" fill="none"/>
+        </svg>
+        <p>Telefon di lantai, bersandar pada dinding, <b>2–3 meter</b> dari anda. Berdiri dengan <b>sisi badan</b> menghadap kamera, dan pastikan kepala hingga kaki nampak.</p>
+      </div>
+    </div>
+
+    <div class="sec">
+      <p class="sec-h">Kemajuan anda</p>
+      <div id="mvProg"></div>
+    </div>
+
+    <div class="sticky"><button class="cta" onclick="TK.start()">Buka kamera &amp; mula</button></div>
+  </div>
+</section>
+
+<!-- ═══ KAMERA ═══ -->
+<section id="v-cam" hidden>
+  <div class="stage">
+    <video id="camVideo" playsinline webkit-playsinline muted></video>
+    <canvas id="camCanvas"></canvas>
+  </div>
+  <div class="cam-top">
+    <button class="rbtn" onclick="TK.teardown();TK.open(TK.st.key)" aria-label="Tutup">✕</button>
+    <span class="nm" id="camName"></span>
+    <span class="dots" id="camDots"></span>
+    <button class="rbtn" id="camSound" onclick="TK.toggleSound()" aria-label="Bunyi">🔊</button>
+  </div>
+  <div class="cam-bot">
+    <div class="big" id="camBig"></div>
+    <div class="cue" id="camCue"></div>
+    <button class="end" id="camEnd" onclick="TK.stop()" disabled>Selesai</button>
+  </div>
+  <div class="cam-err" id="camErr" hidden>
+    <div>
+      <p id="camErrMsg"></p>
+      <button class="end" onclick="TK.start()">Cuba lagi</button>
+      <small id="camErrTech"></small>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ KEPUTUSAN ═══ -->
+<section id="v-result" hidden>
+  <div class="wrap rs">
+    <div class="rs-card">
+      <div class="rs-name" id="rsName"></div>
+      <div class="rs-level" id="rsLevel"></div>
+      <div class="rs-big" id="rsBig"></div>
+      <div class="rs-lbl" id="rsBigLbl"></div>
+    </div>
+    <ul class="rows" id="rsRows"></ul>
+    <div class="focus">
+      <small>Fokus seterusnya</small>
+      <h3 id="rsFocusT"></h3>
+      <p id="rsFocusB"></p>
+    </div>
+    <div class="acts">
+      <button class="cta" onclick="TK.start()">Cuba lagi</button>
+      <button class="cta ghostb" onclick="TK.open(TK.st.key)">Video &amp; kemajuan</button>
+      <button class="cta ghostb" onclick="TK.home()">Pilih gerakan lain</button>
+    </div>
+    <p class="note">Keputusan ini disimpan dalam telefon anda.</p>
+  </div>
+</section>
+
+<script>

@@ -140,9 +140,11 @@ function plTime(){
   /* FIIT (18 Oct): a ring round the time empties with the move; the whole
      class's time left sits up top */
   const rg=$('pl-ringp'); if(rg && rg.style) rg.style.strokeDashoffset=String(Math.round(PL_RING*(len?el/len:0)*10)/10);
-  const tt=$('pl-tot'); if(tt) tt.textContent=fmtT(plTotalLeft())+' left';
+  const tt=$('pl-tot'); if(tt) tt.textContent=fmtT(plTotalLeft())+plLeftWord();
   const nx=$('pl-next'); if(nx && nx.classList) nx.classList.toggle('soon', !!pl.running && pl.left<=5 && pl.left>0);
 }
+/* "12:30 left", or THE START's own word for it */
+function plLeftWord(){ return pl && pl.meta && pl.meta.mf && typeof mfL==='function' ? mfL(' lagi',' left') : ' left'; }
 /* the ring's length: 2πr for r = 54 */
 const PL_RING=339.3;
 /* what is left of the whole class: this move, then every move and rest after it */
@@ -268,6 +270,11 @@ function startWorkout(exs,meta){
   if(a2f && $('pl-m2f')) $('pl-m2f').setAttribute('src','/img/p/ayah/logo-w.png?v=2');
   $('play').classList.toggle('m2f', m2f);
   if(m2f && $('pl-m2f')) $('pl-m2f').setAttribute('src','/ladies/img/mak2fit-logo-w.png');
+  /* THE START has its own beginner player (11 Nov 2026, Seth: "dia tak boleh sama dengan
+     Mark Taufik ... khas untuk orang beginner"): mfPl() in mula.js */
+  const tst=!!(meta && meta.mf);
+  $('play').classList.toggle('tst', tst);
+  if(typeof mfPlLabels==='function') mfPlLabels(tst);
   plCam.off=false; $('play').classList.remove('camoff');
   plSetMode(plCam.mode);
   renderPl(); setClip(exs[0]);
@@ -303,7 +310,7 @@ function exitPlayer(){
   plUnwait();
   if(pl) pl.clip=null;
   pl=null;
-  $('play').classList.remove('on','idle','rdy','resting','counting','m2f','a2f');
+  $('play').classList.remove('on','idle','rdy','resting','counting','m2f','a2f','tst');
   if(plIdleT){ clearTimeout(plIdleT); plIdleT=null; }
   $('pl-rest').classList.remove('on');
   $('pl-cd').classList.remove('on');
@@ -317,7 +324,8 @@ function plCountdown(done){
   const el=$('pl-cd'), n=$('pl-cdn');
   const paint=c=>{
     /* a fresh node each beat so the fade-in plays again */
-    n.textContent=c>3?'READY':(c>0?String(c):'GO');
+    const T=!!(pl && pl.meta && pl.meta.mf && typeof mfL==='function');
+    n.textContent=c>3?(T?mfL('SEDIA','READY'):'READY'):(c>0?String(c):(T?mfL('MULA','GO'):'GO'));
     n.className='cdn'+(c>0&&c<4?'':' go');
     if(typeof coCountdown==='function') coCountdown(c);
     try{ n.style.animation='none'; void n.offsetWidth; n.style.animation=''; }catch(e){}
@@ -326,6 +334,7 @@ function plCountdown(done){
       a.innerHTML='<path d="'+ringArc(100,100,88,pct)+'" fill="none" stroke-width="12" stroke-linecap="round"/>';
   };
   if($('pl-cdx') && pl) $('pl-cdx').innerHTML='<span>→ Up next</span><b>'+pl.exs[pl.i].n+'</b>';
+  if(typeof mfPl==='function') mfPl('count');
   el.classList.add('on'); $('play').classList.add('counting'); let c=4; paint(c);
   const t=setInterval(()=>{
     c--;
@@ -389,7 +398,7 @@ function plRestPaint(){
   if(!pl || !pl.rest) return;
   const r=pl.rest;
   $('pl-restn').textContent=Math.max(0,r.left);
-  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
+  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+plLeftWord();
   const a=$('pl-restarc');
   if(a && typeof ringArc==='function'){
     const pct=r.total?Math.max(0,r.left)/r.total*100:0;
@@ -406,10 +415,11 @@ function plRest(n){
     ' · '+(n.i+1)+' of '+pl.exs.length+(pl.rounds>1?', round '+n.round:'');
   /* the rest is the time to learn the next move */
   if($('pl-resttip')) $('pl-resttip').innerHTML='<b>Form tip</b>'+plCue(nx);
+  if(typeof mfPl==='function') mfPl('rest',n);
   $('pl-rest').classList.add('on');
   const rs=plRestOf(pl.exs[pl.i]);
   pl.rest={left:rs, total:rs, n};
-  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
+  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+plLeftWord();
   plRestPaint();
   /* "And rest! Next up: Lunges" — and a new round, or the last move, said so */
   if(typeof coRestStart==='function') coRestStart(n);
@@ -453,6 +463,7 @@ function renderPl(){
   const n=plNextIndex();
   $('pl-next').innerHTML = n ? ('Next: <b>'+pl.exs[n.i].n+'</b>') : 'Last one!';
   plStats();
+  if(typeof mfPl==='function') mfPl('work');
 }
 function plFinish(){
   stopTick();
@@ -487,6 +498,7 @@ function plFinish(){
       '<div class="wkd">'+Array.from({length:wg},(_,i)=>'<i class="'+(i<days?'on':'')+'"></i>').join('')+'</div>'+
       '<div class="wkl">'+(days>=wg?'Weekly goal reached 🎉':(wg-days)+' more day'+(wg-days===1?'':'s')+' to your goal.')+'</div>';
   }catch(e){ $('pl-dn-week').innerHTML=''; }
+  if(typeof mfPl==='function') mfPl('done');
   $('pl-done').classList.add('on');
 }
 /* the finish's top: Bara cheering, the HITFAT Score the workout moved, how it felt */
@@ -681,6 +693,7 @@ function plReadyText(){
   if(typeof coReadyLine==='function') coReadyLine();
   if(!PL_MIRROR && $('pl-rds')) $('pl-rds').innerHTML='<div class="pl-chips"><span><b>'+Math.max(1,Math.round(secs/60))+'</b> min</span><span><b>'+n+'</b> '+(n===1?'exercise':'exercises')+'</span><span><b>'+rd+'</b> '+(rd===1?'round':'rounds')+'</span></div>';
   if($('pl-rdf')) $('pl-rdf').textContent='Up first: '+pl.exs[0].n;
+  if(typeof mfPl==='function') mfPl('ready');
 }
 function plReady(){
   plReadyText();
@@ -691,6 +704,7 @@ function plReady(){
   plRenderModes();
   $('pl-ready').classList.add('on');
   $('play').classList.add('rdy');
+  if(typeof mfPl==='function') mfPl('ready');
 }
 function plPickMode(m){ plSetMode(m); plRenderModes(); }
 function plRenderModes(){

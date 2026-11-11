@@ -9604,6 +9604,137 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .pw-pack button{align-self:flex-start;margin-top:6px;padding:9px 14px;border:none;border-radius:var(--r-ctl);background:#16884F;color:#FFFFFF;
   font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
 
+/* ── THE START in the player (11 Nov 2026, Seth: "kita nak hidup vibe color the start ... dia tak boleh
+   sama dengan Mark Taufik ... style lain, khas untuk orang beginner") ──
+   The poster, not a recolour: cream, orange and black, heavy slanted type, halftone dots.
+   On the move a cream panel under the coach and a black technique card with one cue at a time;
+   the rest is a calm cream screen that breathes; the count-in is solid orange; Ready and Done show
+   the 18 sessions. Only a session started from THE START (meta.mf) wears it (mfPl in mula.js). */
+#play.tst{--to:#E8480F;--to2:#B8380A;--to3:#FF7A35;--tc:#FFF4EA;--tp:#FFE0CC;--tk:#141414;}
+#play.tst .pl-ph{background:var(--to);color:#FFFFFF;font-style:italic;letter-spacing:.06em;border-radius:6px;box-shadow:0 4px 14px rgba(232,72,15,.45);}
+#play.tst .pl-mv{font-weight:800;}
+#play.tst .pl-tot{background:var(--tk);color:var(--tc);font-weight:800;}
+#play.tst .pl-head .pl-segs i{background:rgba(255,244,234,.35);}
+#play.tst .pl-head .pl-segs i.done{background:var(--tc);}
+#play.tst .pl-head .pl-segs i.now{background:linear-gradient(90deg,var(--to3) var(--p,0%),rgba(255,244,234,.35) var(--p,0%));}
+/* the technique card: one cue at a time, five seconds each */
+#play.tst .mfk{max-width:340px;margin-top:2px;padding:12px 14px 12px;border-radius:18px;background:rgba(20,20,20,.86);color:#FFFFFF;
+  box-shadow:0 10px 28px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);text-shadow:none;}
+#play.tst .mfk-h{font-size:10.5px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--to3);}
+#play.tst .mfk-c{position:relative;min-height:44px;margin-top:6px;}
+#play.tst .mfk-c span{position:absolute;left:0;right:0;top:0;display:flex;gap:10px;align-items:flex-start;font-size:15.5px;font-weight:700;line-height:1.3;opacity:0;
+  -webkit-animation:mfkCue 15s infinite;animation:mfkCue 15s infinite;}
+#play.tst .mfk-c span.k1{-webkit-animation-delay:5s;animation-delay:5s;}
+#play.tst .mfk-c span.k2{-webkit-animation-delay:10s;animation-delay:10s;}
+#play.tst .mfk-c em{flex:none;width:22px;height:22px;border-radius:50%;background:var(--to);color:#FFFFFF;font:italic 900 12px/22px 'Inter',sans-serif;text-align:center;}
+@-webkit-keyframes mfkCue{0%{opacity:0;-webkit-transform:translateY(6px)}3%,30%{opacity:1;-webkit-transform:none}33.3%,100%{opacity:0;-webkit-transform:translateY(-6px)}}
+@keyframes mfkCue{0%{opacity:0;transform:translateY(6px)}3%,30%{opacity:1;transform:none}33.3%,100%{opacity:0;transform:translateY(-6px)}}
+#play.tst .mfk-e{margin-top:8px;padding:6px 11px;border:1px solid rgba(255,244,234,.35);border-radius:99px;background:transparent;color:var(--tc);font:700 12.5px/1 'Inter',sans-serif;cursor:pointer;}
+#play.tst .mfk-x{display:none;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.14);font-size:14px;font-weight:600;line-height:1.4;}
+#play.tst .mfk-x.on{display:block;}
+#play.tst .mfk-x i{display:block;margin-top:3px;font-style:normal;font-weight:500;color:rgba(255,255,255,.7);}
+/* the cream panel under the coach */
+#play.tst .pl-bot{background:linear-gradient(180deg,rgba(255,244,234,0) 0,rgba(255,244,234,.92) 30px,var(--tc) 58px);color:var(--tk);}
+#play.tst .pl-bot::before{content:"";position:absolute;left:0;right:0;top:26px;height:34px;pointer-events:none;
+  background:radial-gradient(circle,rgba(232,72,15,.55) 0 1.4px,transparent 1.9px) 0 0/7px 7px;
+  -webkit-mask:linear-gradient(90deg,transparent,#000 45%,transparent);mask:linear-gradient(90deg,transparent,#000 45%,transparent);opacity:.6;}
+#play.tst .pl-clock{color:var(--tk);font-style:italic;font-weight:900;}
+#play.tst .pl-ring .bg{stroke:var(--tp);}
+#play.tst .pl-ring .fg{stroke:var(--to);-webkit-filter:none;filter:none;}
+#play.tst .pl-stat.pl-tm:has(.pl-clock.hot) .fg{stroke:var(--to2);}
+#play.tst .pl-info .pl-name{color:var(--tk);font-style:italic;text-transform:uppercase;letter-spacing:-.4px;}
+#play.tst .pl-info .pl-next{color:#7A5A46;}
+#play.tst .pl-info .pl-next b{color:var(--tk);}
+#play.tst.nomirror .pl-info .pl-next.soon{background:var(--tk);color:var(--tc);}
+#play.tst .pl-kc{color:#7A5A46;}
+#play.tst .pl-kc b{color:var(--tk);}
+#play.tst .pl-lvb i.on{background:var(--to);}
+#play.tst .pl-bar span{color:#7A5A46;}
+#play.tst .pl-track{background:var(--tp);}
+#play.tst .pl-track i{background:var(--to);}
+#play.tst .pl-sm{color:var(--tk);}
+#play.tst.nomirror .pl-go2[aria-label="Play"],#play.tst .pl-go2{background:var(--tk);color:var(--tc);box-shadow:0 8px 24px rgba(20,20,20,.3);}
+#play.tst #pl-sndb .pl-eq i{background:var(--to3);}
+/* rest: a calm cream screen that breathes */
+#play.tst #pl-rest,#play.tst #pl-rest.pl-ov.pl-gr{background:var(--tc);color:var(--tk);}
+#play.tst #pl-rest::before{content:"";position:absolute;right:-40px;top:-40px;width:260px;height:260px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(232,72,15,.5) 0 1.6px,transparent 2.1px) 0 0/8px 8px;
+  -webkit-mask:radial-gradient(circle,#000 20%,transparent 70%);mask:radial-gradient(circle,#000 20%,transparent 70%);}
+#play.tst #pl-rest .rph{background:var(--tk);color:var(--tc);font-style:italic;box-shadow:none;}
+#play.tst #pl-rest .rtot{background:#FFFFFF;color:#7A5A46;box-shadow:inset 0 0 0 1.5px #F0DCCB;}
+#play.tst #pl-rest .rring{width:170px;height:170px;background:#FFFFFF;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 18px 40px rgba(184,56,10,.18);
+  -webkit-animation:mfBreath 8s ease-in-out infinite;animation:mfBreath 8s ease-in-out infinite;}
+#play.tst #pl-rest .rring circle{stroke:var(--tp);}
+#play.tst #pl-rest .rring path{stroke:var(--to);}
+#play.tst #pl-rest .rn{color:var(--tk);font-style:italic;font-weight:900;font-size:64px;}
+@-webkit-keyframes mfBreath{0%,100%{-webkit-transform:scale(.94)}50%{-webkit-transform:scale(1.06)}}
+@keyframes mfBreath{0%,100%{transform:scale(.94)}50%{transform:scale(1.06)}}
+#play.tst #pl-rest .rk{display:block;position:relative;height:30px;margin-top:16px;width:100%;text-align:center;font-size:20px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:.02em;color:var(--to);}
+#play.tst #pl-rest .rk span{position:absolute;left:0;right:0;top:0;opacity:0;-webkit-animation:mfBr 8s ease-in-out infinite;animation:mfBr 8s ease-in-out infinite;}
+#play.tst #pl-rest .rk .b2{-webkit-animation-delay:4s;animation-delay:4s;color:var(--tk);}
+@-webkit-keyframes mfBr{0%,45%{opacity:1}50%,95%{opacity:0}100%{opacity:1}}
+@keyframes mfBr{0%,45%{opacity:1}50%,95%{opacity:0}100%{opacity:1}}
+#play.tst #pl-rest .rnext{box-sizing:border-box;padding:14px 16px;border-radius:20px;background:#FFFFFF;color:var(--tk);border:1.5px solid #F0DCCB;box-shadow:0 10px 26px rgba(184,56,10,.12);}
+#play.tst #pl-rest .rnk{color:var(--to);font-weight:900;letter-spacing:.12em;text-transform:uppercase;}
+#play.tst #pl-rest .rnn{color:var(--tk);font-style:italic;text-transform:uppercase;}
+#play.tst #pl-rest .rnm{color:#7A5A46;}
+#play.tst #pl-rest .rtip{color:var(--tk);}
+#play.tst #pl-rest .rtip b{color:var(--to);}
+#play.tst #pl-rest .rplus{background:transparent;color:var(--tk);border:1.5px solid var(--tk);}
+#play.tst #pl-rest .rs{background:var(--to);color:#FFFFFF;}
+/* the count-in: solid orange with the dots */
+#play.tst #pl-cd{background:linear-gradient(150deg,rgba(255,122,53,.96),rgba(232,72,15,.96) 50%,rgba(184,56,10,.96));}
+#play.tst #pl-cd::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,rgba(255,244,234,.4) 0 1.6px,transparent 2.1px) 0 0/8px 8px;
+  -webkit-mask:linear-gradient(160deg,transparent 30%,#000);mask:linear-gradient(160deg,transparent 30%,#000);}
+#play.tst #pl-cd .cdn{color:var(--tc);font-style:italic;font-weight:900;text-shadow:none;}
+#play.tst #pl-cd .cdk{color:var(--tk);font-style:italic;text-transform:uppercase;}
+#play.tst .pl-gr .cdring circle{stroke:rgba(255,244,234,.3);}
+#play.tst .pl-gr .cdring path{stroke:var(--tk);}
+#play.tst #pl-cd .cdx span{color:rgba(255,244,234,.85);}
+#play.tst #pl-cd .cdx b{color:#FFFFFF;}
+/* ready: the coach above, the session on cream below */
+#play.tst #pl-ready{background:linear-gradient(180deg,rgba(255,244,234,0) 0%,rgba(255,244,234,.55) 32%,rgba(255,244,234,.97) 50%,var(--tc) 60%);color:var(--tk);}
+#play.tst #pl-ready .rdx{background:rgba(20,20,20,.55);color:#FFFFFF;}
+#play.tst #pl-ready .rdk,#play.tst.nomirror #pl-ready .rdk{color:var(--to);font-size:15px;font-weight:900;font-style:italic;letter-spacing:.06em;text-transform:uppercase;}
+#play.tst #pl-ready .rdt{color:var(--tk);font-style:italic;font-weight:900;text-transform:uppercase;letter-spacing:-.6px;line-height:1;}
+#play.tst #pl-ready .rdm{color:#7A5A46;}
+#play.tst #pl-ready .pl-chips span{background:#FFFFFF;color:var(--tk);border:1.5px solid #F0DCCB;}
+#play.tst #pl-ready .pl-chips b{color:var(--to);}
+#play.tst #pl-ready .bigbtn{background:var(--to);color:#FFFFFF;font-style:italic;font-weight:900;text-transform:uppercase;letter-spacing:.02em;box-shadow:0 14px 28px -12px rgba(184,56,10,.85);}
+#play.tst #pl-ready .pl-rdsnd{color:var(--tk);}
+#play.tst #pl-ready .rdf{color:var(--tk);}
+#play.tst .mf-rdf{margin-top:10px;font-size:13px;font-weight:600;color:#7A5A46;}
+/* the 18 sessions */
+#play.tst .mfj{margin-top:14px;}
+#play.tst .mfj-d{display:grid;grid-template-columns:repeat(18,1fr);gap:4px;}
+#play.tst .mfj-d i{height:10px;border-radius:3px;background:var(--tp);}
+#play.tst .mfj-d i.on{background:var(--tk);}
+#play.tst .mfj-d i.rec{box-shadow:inset 0 0 0 1.5px var(--to);}
+#play.tst .mfj-d i.now{background:var(--to);-webkit-transform:scaleY(1.5);transform:scaleY(1.5);}
+#play.tst .mfj-l{margin-top:8px;font-size:12.5px;font-weight:700;color:#7A5A46;}
+/* done: the poster's black with orange */
+#play.tst #pl-done{background:linear-gradient(180deg,#1E1612 0%,#141414 60%);}
+#play.tst #pl-done::before{content:"";position:absolute;left:0;right:0;top:0;height:220px;pointer-events:none;
+  background:radial-gradient(circle,rgba(232,72,15,.55) 0 1.6px,transparent 2.1px) 0 0/8px 8px;-webkit-mask:linear-gradient(180deg,#000,transparent);mask:linear-gradient(180deg,#000,transparent);}
+#play.tst #pl-done .dwrap::before{content:"THE START";display:block;margin:0 auto 8px;width:max-content;padding:6px 11px;border-radius:99px;background:var(--to);color:#FFFFFF;
+  font:italic 900 12px/1 'Inter',sans-serif;letter-spacing:.12em;}
+#play.tst #pl-done .dk{color:var(--to3);font-style:italic;font-size:30px;font-weight:900;text-transform:uppercase;letter-spacing:-.4px;}
+#play.tst #pl-done .dscore em,#play.tst #pl-done .dfeel button.on,#play.tst #pl-done .dweek .wkd i.on{background:var(--to);}
+#play.tst #pl-done .dscore i{color:var(--to3);}
+#play.tst #pl-done .hc-days{color:var(--to3);}
+#play.tst #pl-done .dscore{background:linear-gradient(180deg,rgba(232,72,15,.22),rgba(184,56,10,.12));box-shadow:inset 0 0 0 1px rgba(255,122,53,.38);}
+#play.tst #pl-done .mfj-d i{background:rgba(255,244,234,.14);}
+#play.tst #pl-done .mfj-d i.on{background:var(--tc);}
+#play.tst #pl-done .mfj-d i.now{background:var(--to);-webkit-animation:mfjPop .8s .4s cubic-bezier(.2,1.6,.4,1) both;animation:mfjPop .8s .4s cubic-bezier(.2,1.6,.4,1) both;}
+#play.tst #pl-done .mfj-l{color:rgba(255,244,234,.75);text-align:center;}
+#play.tst #mfj-dn{margin:6px 0 4px;}
+@-webkit-keyframes mfjPop{0%{-webkit-transform:scale(0)}100%{-webkit-transform:scaleY(1.5)}}
+@keyframes mfjPop{0%{transform:scale(0)}100%{transform:scaleY(1.5)}}
+@media (prefers-reduced-motion:reduce){
+  #play.tst .mfk-c span,#play.tst #pl-rest .rring,#play.tst #pl-rest .rk span{-webkit-animation:none;animation:none;}
+  #play.tst .mfk-c span.k0,#play.tst #pl-rest .rk .b1{opacity:1;}
+}
+
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
    HITFAT+ · the dark theme, after Apple Fitness+, in HITFAT red
@@ -18628,12 +18759,12 @@ function mfCue(p){ const c=MF_TECH[p]; return c ? c[0].map(mfT).join(' ')+' '+mf
 /* the whole session, warm-up to cool-down, in one list (rounds unrolled) */
 function mfExercises(s){
   const out=[];
-  s.warm.forEach((n,i)=>out.push(mfEx(n,30,i===s.warm.length-1?15:0)));
+  s.warm.forEach((n,i)=>{ const e=mfEx(n,30,i===s.warm.length-1?15:0); e.mfw='warm'; out.push(e); });
   for(let r=0;r<s.r;r++) s.main.forEach((x,i)=>{
     const last=r===s.r-1 && i===s.main.length-1;
-    out.push(mfEx(x.n,s.w,last?15:s.rest,mfCue(x.p)));
+    const e=mfEx(x.n,s.w,last?15:s.rest,mfCue(x.p)); e.mfp=x.p; out.push(e);
   });
-  s.cool.forEach((n,i)=>out.push(mfEx(n,40,0)));
+  s.cool.forEach((n,i)=>{ const e=mfEx(n,40,0); e.mfw='cool'; out.push(e); });
   return out;
 }
 function mfSecs(s){ return mfExercises(s).reduce((a,e)=>a+e.dur+(e.rest||0),0); }
@@ -19236,6 +19367,102 @@ function mfHomeCard(){
   if(owned && done) return hpoCard(MF,{wide:true,kick:mfL('Sesi ','Session ')+(done+1)+' · '+mfMinutes(mfSession(done))+' min',go:'mfOpenSession('+done+')'});
   if(owned) return hpoCard(MF,{wide:true,kick:mfL('Baru · Sedia bila anda sedia','New · Ready when you are'),go:"openProgram('"+MF_ID+"')"});
   return hpoCard(MF,{wide:true,kick:mfL('Program Baru · RM','New Program · RM')+MF_PRICE,go:"openProgram('"+MF_ID+"')"});
+}
+
+/* ── THE START in the player (11 Nov 2026, Seth: "kita nak hidup vibe color the start ... dia tak
+   boleh sama dengan Mark Taufik. Dia kena lain. Style lain. Khas untuk orang beginner") ──
+   Not MAK2FIT's recolour of the same screens: a poster player that teaches. On the move, the
+   three technique cues one at a time and the easier version a tap away; the rest is a cream
+   breathing screen; Ready and Done show where this session sits in the 18; every word in
+   THE START's own language (BM, or English when the member chose it). Only meta.mf sessions;
+   every other program keeps the HITFAT player as it was. */
+const MF_PL_WARM=[['Gerak perlahan, badan masih sejuk.','Ikut julat yang selesa.','Bernafas biasa.'],
+                  ['Regang perlahan, jangan melantun.','Tahan dan bernafas.','Rasa tarikan, bukan sakit.']];
+const MF_PL_LBL=[['#pl-rest .rph','Rest'],['#pl-rest .rnk','→ Up next'],['#pl-rest .rs','Skip'],
+                 ['#pl-cd .cdk','Get ready!'],['#pl-ready .rdk','Ready?'],['#pl-done .dk','Workout Complete'],
+                 ['#pl-done .dgrid > div:nth-child(1) > span','Time'],['#pl-done .dgrid > div:nth-child(2) > span','Burned'],
+                 ['#pl-done .dgrid > div:nth-child(3) > span','Moves'],['#pl-done .dgrid > div:nth-child(4) > span','Streak'],
+                 ['#pl-done .dshare','Share'],['#pl-done .dbtns .bigbtn','Done']];
+function mfPlCues(ex){
+  const c=ex&&ex.mfp&&MF_TECH[ex.mfp];
+  if(c) return c[0].map(mfT);
+  return MF_PL_WARM[ex&&ex.mfw==='cool'?1:0].map(mfT);
+}
+/* the 18 sessions as dots: done, this one, the two record sessions ringed */
+function mfPlJourney(gi,justDone){
+  if(typeof gi!=='number' || gi<0) return '';
+  const done=Math.max(mfDone(), justDone?gi+1:0);
+  let d='';
+  for(let i=0;i<MF_N;i++) d+='<i class="'+[i<done?'on':'',i===gi?'now':'',MF_RECS.indexOf(i)>=0?'rec':''].join(' ').trim()+'"></i>';
+  const wk=mfWeekOf(gi)+1, left=MF_N-done;
+  const line=justDone
+    ? (left>0 ? mfL(done+' daripada '+MF_N+' sesi siap. Lagi '+left+' sesi.', done+' of '+MF_N+' sessions done. '+left+' to go.')
+              : mfL('Semua '+MF_N+' sesi siap. Tahniah!','All '+MF_N+' sessions done. Well done!'))
+    : mfL('Minggu '+wk+' daripada '+MF_WK+' · sesi '+(gi+1)+' daripada '+MF_N,'Week '+wk+' of '+MF_WK+' · session '+(gi+1)+' of '+MF_N);
+  return '<div class="mfj"><div class="mfj-d">'+d+'</div><div class="mfj-l">'+line+'</div></div>';
+}
+/* On: THE START's words over the player's English labels. Off: the labels put back. */
+function mfPlLabels(on){
+  MF_PL_LBL.forEach(x=>{ const e=document.querySelector(x[0]); if(e) e.textContent=on?'':x[1]; });
+  ['mfj-rd','mfj-dn'].forEach(id=>{ const e=$(id); if(e && !on) e.innerHTML=''; });
+  const rk=document.querySelector('#pl-rest .rk');
+  if(rk) rk.innerHTML=on?'<span class="b1">'+mfL('Tarik nafas','Breathe in')+'</span><span class="b2">'+mfL('Hembus','Breathe out')+'</span>':'Rest';
+  if(!on) return;
+  const set=(s,v)=>{ const e=document.querySelector(s); if(e) e.textContent=v; };
+  set('#pl-rest .rph',mfL('Rehat','Rest')); set('#pl-rest .rnk',mfL('Seterusnya','Up next'));
+  set('#pl-rest .rs',mfL('Langkau','Skip')); set('#pl-cd .cdk',mfL('Bersedia!','Get ready!'));
+  set('#pl-done .dgrid > div:nth-child(1) > span',mfL('Masa','Time')); set('#pl-done .dgrid > div:nth-child(2) > span',mfL('Dibakar','Burned'));
+  set('#pl-done .dgrid > div:nth-child(3) > span',mfL('Gerakan','Moves')); set('#pl-done .dgrid > div:nth-child(4) > span',mfL('Berturut','Streak'));
+  set('#pl-done .dshare',mfL('Kongsi','Share')); set('#pl-done .dbtns .bigbtn',mfL('Siap','Done'));
+}
+function mfPlEasy(){ const x=$('mfk-x'); if(x && x.classList) x.classList.toggle('on'); }
+function mfPl(stage,arg){
+  if(!pl || !pl.meta || !pl.meta.mf) return;
+  const gi=pl.meta.mf.gi, ex=pl.exs[pl.i];
+  if(stage==='work'){
+    if($('pl-ph')) $('pl-ph').textContent=ex.mfw==='warm'?mfL('Pemanasan','Warm-up'):ex.mfw==='cool'?mfL('Regangan','Cool-down'):mfL('Gerak','Move');
+    if($('pl-mv')) $('pl-mv').textContent=mfL('Gerakan ','Move ')+(pl.i+1)+'/'+pl.exs.length;
+    const n=plNextIndex();
+    if($('pl-next')) $('pl-next').innerHTML=n?(mfL('Seterusnya: ','Next: ')+'<b>'+pl.exs[n.i].n+'</b>'):mfL('Gerakan terakhir!','Last one!');
+    const c=ex.mfp&&MF_TECH[ex.mfp], cues=mfPlCues(ex);
+    if($('pl-learn')) $('pl-learn').innerHTML='<div class="mfk"><div class="mfk-h">'+mfL('Kunci teknik','Technique')+'</div><div class="mfk-c">'+
+      cues.map((t,i)=>'<span class="k'+i+'"><em>'+(i+1)+'</em>'+t+'</span>').join('')+'</div>'+
+      (c?'<button class="mfk-e" onclick="event.stopPropagation();mfPlEasy()">'+mfL('Terlalu susah? Versi mudah','Too hard? Easier version')+'</button>'+
+         '<div class="mfk-x" id="mfk-x">'+mfT(c[2])+'. <i>'+mfL('Elak: ','Avoid: ')+mfT(c[1]).toLowerCase()+'.</i></div>':'')+'</div>';
+  } else if(stage==='rest'){
+    const n=arg, nx=n&&pl.exs[n.i]; if(!nx) return;
+    if($('pl-restmeta')) $('pl-restmeta').textContent=mfL('Gerakan ','Move ')+(n.i+1)+'/'+pl.exs.length;
+    if($('pl-resttip')) $('pl-resttip').innerHTML='<b>'+mfL('Kunci teknik','Technique')+'</b>'+mfPlCues(nx).join(' ');
+  } else if(stage==='count'){
+    if($('pl-cdx')) $('pl-cdx').innerHTML='<span>'+mfL('Mula dengan','First up')+'</span><b>'+ex.n+'</b>';
+  } else if(stage==='ready'){
+    const secs=pl.exs.reduce((t,e)=>t+(e.dur||45)+plRestOf(e),0), mins=Math.max(1,Math.round(secs/60)), nm=pl.exs.length;
+    if(document.querySelector('#pl-ready .rdk')) document.querySelector('#pl-ready .rdk').textContent=gi>=0?mfL('Sesi '+(gi+1)+' / '+MF_N,'Session '+(gi+1)+' / '+MF_N):mfL('Cuba gerakan','Try the move');
+    const ss=gi>=0&&mfSession(gi); if($('pl-rdt') && ss && ss.n) $('pl-rdt').textContent=mfT(ss.n);
+    if($('pl-rdm')) $('pl-rdm').textContent=nm+mfL(' gerakan · lebih kurang ',' moves · about ')+mins+mfL(' minit',' min');
+    if($('pl-rds')) $('pl-rds').innerHTML='<div class="pl-chips"><span><b>'+mins+'</b> '+mfL('minit','min')+'</span><span><b>'+nm+'</b> '+mfL('gerakan','moves')+'</span><span>'+mfL('Ikut rentak anda','Your own pace')+'</span></div>';
+    if($('pl-rdgo')) $('pl-rdgo').textContent=mfL('Mula sesi','Start session');
+    if($('pl-rdf')) $('pl-rdf').innerHTML=mfPlJourney(gi)+'<div class="mf-rdf">'+mfL('Mula dengan: ','First up: ')+pl.exs[0].n+'</div>';
+  } else if(stage==='done'){
+    const dk=document.querySelector('#pl-done .dk');
+    if(dk) dk.textContent=gi>=0?mfL('Sesi '+(gi+1)+' siap!','Session '+(gi+1)+' done!'):mfL('Siap!','Done!');
+    if($('pl-dn-date')) $('pl-dn-date').textContent=new Date().toLocaleDateString(mfEn()?'en-GB':'ms-MY',{weekday:'long',day:'numeric',month:'long'});
+    let j=$('mfj-dn');
+    if(!j){ const at=$('pl-dn-date'); if(at && at.insertAdjacentHTML){ at.insertAdjacentHTML('afterend','<div id="mfj-dn"></div>'); j=$('mfj-dn'); } }
+    if(j) j.innerHTML=mfPlJourney(gi,true);
+    /* how it felt, in THE START's own three words (the Pelan tab counts them the same way) */
+    const fk=document.querySelector('#pl-dn-feel .fk'); if(fk) fk.textContent=mfL('Macam mana sesi tadi?','How was it?');
+    const fw={easy:mfL('Mudah','Easy'),right:mfL('Ngam','Just right'),hard:mfL('Susah','Hard')};
+    Array.prototype.forEach.call(document.querySelectorAll('#pl-dn-feel button'),b=>{ const w=fw[b.getAttribute('data-f')]; if(w) b.textContent=w; });
+    const su=$('pl-dn-streak-u'); if(su) su.textContent=mfL('HARI',su.textContent);
+    try{
+      const days=daysThisWeek(), wg=HF.data.weekGoal||5, wm=weekMinutes();
+      const wh=document.querySelector('#pl-dn-week .wkh');
+      if(wh) wh.innerHTML='<b>'+mfL('Minggu ini','This week')+'</b><span>'+mfL(days+' daripada '+wg+' hari · '+wm+' minit',days+' of '+wg+' days · '+wm+' min')+'</span>';
+      const wl=document.querySelector('#pl-dn-week .wkl');
+      if(wl) wl.textContent=days>=wg?mfL('Sasaran minggu ini tercapai 🎉','Weekly goal reached 🎉'):mfL('Lagi '+(wg-days)+' hari untuk sasaran anda.',(wg-days)+' more day'+(wg-days===1?'':'s')+' to your goal.');
+    }catch(e){}
+  }
 }
 /* DIET 6 MINGGU 6KG: the program's content, exactly as Coach Seth wrote it
    (diet-6-minggu-6kg-content.json, 14 Oct 2026). Not edited here: change the
@@ -26504,9 +26731,11 @@ function plTime(){
   /* FIIT (18 Oct): a ring round the time empties with the move; the whole
      class's time left sits up top */
   const rg=$('pl-ringp'); if(rg && rg.style) rg.style.strokeDashoffset=String(Math.round(PL_RING*(len?el/len:0)*10)/10);
-  const tt=$('pl-tot'); if(tt) tt.textContent=fmtT(plTotalLeft())+' left';
+  const tt=$('pl-tot'); if(tt) tt.textContent=fmtT(plTotalLeft())+plLeftWord();
   const nx=$('pl-next'); if(nx && nx.classList) nx.classList.toggle('soon', !!pl.running && pl.left<=5 && pl.left>0);
 }
+/* "12:30 left", or THE START's own word for it */
+function plLeftWord(){ return pl && pl.meta && pl.meta.mf && typeof mfL==='function' ? mfL(' lagi',' left') : ' left'; }
 /* the ring's length: 2πr for r = 54 */
 const PL_RING=339.3;
 /* what is left of the whole class: this move, then every move and rest after it */
@@ -26632,6 +26861,11 @@ function startWorkout(exs,meta){
   if(a2f && $('pl-m2f')) $('pl-m2f').setAttribute('src','/img/p/ayah/logo-w.png?v=2');
   $('play').classList.toggle('m2f', m2f);
   if(m2f && $('pl-m2f')) $('pl-m2f').setAttribute('src','/ladies/img/mak2fit-logo-w.png');
+  /* THE START has its own beginner player (11 Nov 2026, Seth: "dia tak boleh sama dengan
+     Mark Taufik ... khas untuk orang beginner"): mfPl() in mula.js */
+  const tst=!!(meta && meta.mf);
+  $('play').classList.toggle('tst', tst);
+  if(typeof mfPlLabels==='function') mfPlLabels(tst);
   plCam.off=false; $('play').classList.remove('camoff');
   plSetMode(plCam.mode);
   renderPl(); setClip(exs[0]);
@@ -26667,7 +26901,7 @@ function exitPlayer(){
   plUnwait();
   if(pl) pl.clip=null;
   pl=null;
-  $('play').classList.remove('on','idle','rdy','resting','counting','m2f','a2f');
+  $('play').classList.remove('on','idle','rdy','resting','counting','m2f','a2f','tst');
   if(plIdleT){ clearTimeout(plIdleT); plIdleT=null; }
   $('pl-rest').classList.remove('on');
   $('pl-cd').classList.remove('on');
@@ -26681,7 +26915,8 @@ function plCountdown(done){
   const el=$('pl-cd'), n=$('pl-cdn');
   const paint=c=>{
     /* a fresh node each beat so the fade-in plays again */
-    n.textContent=c>3?'READY':(c>0?String(c):'GO');
+    const T=!!(pl && pl.meta && pl.meta.mf && typeof mfL==='function');
+    n.textContent=c>3?(T?mfL('SEDIA','READY'):'READY'):(c>0?String(c):(T?mfL('MULA','GO'):'GO'));
     n.className='cdn'+(c>0&&c<4?'':' go');
     if(typeof coCountdown==='function') coCountdown(c);
     try{ n.style.animation='none'; void n.offsetWidth; n.style.animation=''; }catch(e){}
@@ -26690,6 +26925,7 @@ function plCountdown(done){
       a.innerHTML='<path d="'+ringArc(100,100,88,pct)+'" fill="none" stroke-width="12" stroke-linecap="round"/>';
   };
   if($('pl-cdx') && pl) $('pl-cdx').innerHTML='<span>→ Up next</span><b>'+pl.exs[pl.i].n+'</b>';
+  if(typeof mfPl==='function') mfPl('count');
   el.classList.add('on'); $('play').classList.add('counting'); let c=4; paint(c);
   const t=setInterval(()=>{
     c--;
@@ -26753,7 +26989,7 @@ function plRestPaint(){
   if(!pl || !pl.rest) return;
   const r=pl.rest;
   $('pl-restn').textContent=Math.max(0,r.left);
-  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
+  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+plLeftWord();
   const a=$('pl-restarc');
   if(a && typeof ringArc==='function'){
     const pct=r.total?Math.max(0,r.left)/r.total*100:0;
@@ -26770,10 +27006,11 @@ function plRest(n){
     ' · '+(n.i+1)+' of '+pl.exs.length+(pl.rounds>1?', round '+n.round:'');
   /* the rest is the time to learn the next move */
   if($('pl-resttip')) $('pl-resttip').innerHTML='<b>Form tip</b>'+plCue(nx);
+  if(typeof mfPl==='function') mfPl('rest',n);
   $('pl-rest').classList.add('on');
   const rs=plRestOf(pl.exs[pl.i]);
   pl.rest={left:rs, total:rs, n};
-  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+' left';
+  if($('pl-resttot')) $('pl-resttot').textContent=fmtT(plTotalLeft())+plLeftWord();
   plRestPaint();
   /* "And rest! Next up: Lunges" — and a new round, or the last move, said so */
   if(typeof coRestStart==='function') coRestStart(n);
@@ -26817,6 +27054,7 @@ function renderPl(){
   const n=plNextIndex();
   $('pl-next').innerHTML = n ? ('Next: <b>'+pl.exs[n.i].n+'</b>') : 'Last one!';
   plStats();
+  if(typeof mfPl==='function') mfPl('work');
 }
 function plFinish(){
   stopTick();
@@ -26851,6 +27089,7 @@ function plFinish(){
       '<div class="wkd">'+Array.from({length:wg},(_,i)=>'<i class="'+(i<days?'on':'')+'"></i>').join('')+'</div>'+
       '<div class="wkl">'+(days>=wg?'Weekly goal reached 🎉':(wg-days)+' more day'+(wg-days===1?'':'s')+' to your goal.')+'</div>';
   }catch(e){ $('pl-dn-week').innerHTML=''; }
+  if(typeof mfPl==='function') mfPl('done');
   $('pl-done').classList.add('on');
 }
 /* the finish's top: Bara cheering, the HITFAT Score the workout moved, how it felt */
@@ -27045,6 +27284,7 @@ function plReadyText(){
   if(typeof coReadyLine==='function') coReadyLine();
   if(!PL_MIRROR && $('pl-rds')) $('pl-rds').innerHTML='<div class="pl-chips"><span><b>'+Math.max(1,Math.round(secs/60))+'</b> min</span><span><b>'+n+'</b> '+(n===1?'exercise':'exercises')+'</span><span><b>'+rd+'</b> '+(rd===1?'round':'rounds')+'</span></div>';
   if($('pl-rdf')) $('pl-rdf').textContent='Up first: '+pl.exs[0].n;
+  if(typeof mfPl==='function') mfPl('ready');
 }
 function plReady(){
   plReadyText();
@@ -27055,6 +27295,7 @@ function plReady(){
   plRenderModes();
   $('pl-ready').classList.add('on');
   $('play').classList.add('rdy');
+  if(typeof mfPl==='function') mfPl('ready');
 }
 function plPickMode(m){ plSetMode(m); plRenderModes(); }
 function plRenderModes(){
