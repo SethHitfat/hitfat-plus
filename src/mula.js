@@ -607,8 +607,9 @@ function mfOpenSession(gi){
       return '<div class="lbx-move mf-mv"><span class="n">'+(i+1)+'</span><div class="tx" onclick="'+(owned?'mfPlayOne(\''+x.n.replace(/'/g,"\\'")+'\','+gi+')':'mfBuy()')+'">'+
         '<div class="t">'+x.n+'</div><div class="m">'+mfT(MF_PAT[x.p].n)+' · '+s.w+' s</div></div>'+
         '<span class="pl" onclick="'+(owned?'mfPlayOne(\''+x.n.replace(/'/g,"\\'")+'\','+gi+')':'mfBuy()')+'">'+glyph(owned?'play':'lock')+'</span>'+
-        '<details class="mf-tip"><summary>'+mfL('Teknik','Technique')+'</summary><ul>'+c[0].map(t=>'<li>'+mfT(t)+'</li>').join('')+'</ul>'+
-        '<small>'+mfL('Elak: ','Avoid: ')+mfT(c[1]).toLowerCase()+'. '+mfL('Jika susah: ','If it is hard: ')+mfT(c[2]).toLowerCase()+'.</small></details></div>'; }).join('')+'</div></div>';
+        '<details class="mf-tip"><summary>'+mfL('Teknik','Technique')+'</summary>'+mfTkPics(x.p,true)+'<ul>'+c[0].map(t=>'<li>'+mfT(t)+'</li>').join('')+'</ul>'+
+        '<small>'+mfL('Elak: ','Avoid: ')+mfT(c[1]).toLowerCase()+'. '+mfL('Jika susah: ','If it is hard: ')+mfT(c[2]).toLowerCase()+'.</small>'+
+        (owned&&MF_TK[x.p]?mfTkBtn(x.p):'')+'</details></div>'; }).join('')+'</div></div>';
   h+=part(3,mfL('Penyejukan','Cool-down'),Math.round(s.cool.length*40/60*10)/10+' '+mfL('minit','min'),s.cool);
   const kit=[mfL('ruang selamat','a safe space'),mfL('kerusi stabil','a sturdy chair')];
   if(s.main.some(x=>/Towel/.test(x.n))) kit.push(mfL('tuala','a towel')); if(s.main.some(x=>/Bottle/.test(x.n))) kit.push(mfL('botol air','a water bottle')); if(s.main.some(x=>/Wall/.test(x.n))) kit.push(mfL('dinding','a wall'));
@@ -745,11 +746,12 @@ function mfLearn(){
   if(!mfOwned()) return mfLocked('doc',mfL('Belajar Asas','Learn the Basics'),mfL('Kad teknik untuk setiap gerakan dan '+MF_N+' pelajaran ringkas tentang latihan dan makan cara Malaysia.',
     'Technique cards for every move and '+MF_N+' short lessons on training and eating the Malaysian way.'));
   const done=mfDone(), me=mfMe();
-  let h='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">'+mfL('Kad Teknik','Technique Cards')+'</div><div class="lbx-ss">'+
+  let h=mfTkBanner()+'<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">'+mfL('Kad Teknik','Technique Cards')+'</div><div class="lbx-ss">'+
     mfL('Tiga isyarat, satu kesilapan biasa, satu cara lebih mudah','Three cues, one common mistake, one easier way')+'</div></div></div>';
   h+='<div class="mf-tech">'+Object.keys(MF_TECH).map(p=>{ const c=MF_TECH[p];
-    return '<div class="lbx-card"><div class="lbx-k">'+mfT(MF_PAT[p].n)+'</div><b>'+mfMove(p,mfWeekOf(Math.min(done,MF_N-1)),me)+'</b>'+
-      '<ol>'+c[0].map(t=>'<li>'+mfT(t)+'</li>').join('')+'</ol><div class="no">'+mfL('Elak: ','Avoid: ')+mfT(c[1])+'</div><div class="ez">'+mfL('Jika susah: ','If it is hard: ')+mfT(c[2])+'</div></div>'; }).join('')+'</div>';
+    return '<div class="lbx-card"><div class="lbx-k">'+mfT(MF_PAT[p].n)+'</div><b>'+mfMove(p,mfWeekOf(Math.min(done,MF_N-1)),me)+'</b>'+mfTkPics(p)+
+      '<ol>'+c[0].map(t=>'<li>'+mfT(t)+'</li>').join('')+'</ol><div class="no">'+mfL('Elak: ','Avoid: ')+mfT(c[1])+'</div><div class="ez">'+mfL('Jika susah: ','If it is hard: ')+mfT(c[2])+'</div>'+
+      (MF_TK[p]?mfTkBtn(p):'')+'</div>'; }).join('')+'</div>';
   h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">'+mfL('Pelajaran','Lessons')+'</div><div class="lbx-ss">'+mfL('Terbuka selepas setiap sesi','Each opens after its session')+'</div></div></div>';
   h+='<div class="lbx-card lbx-cl">'+MF_LESSON.map((l,i)=>{
     const open=i<done, kind={L:mfL('Latihan','Training'),M:mfL('Makan','Eating'),S:mfL('Semak','Review')}[l[2]]||'';
@@ -926,6 +928,11 @@ function mfPl(stage,arg){
     let j=$('mfj-dn');
     if(!j){ const at=$('pl-dn-date'); if(at && at.insertAdjacentHTML){ at.insertAdjacentHTML('afterend','<div id="mfj-dn"></div>'); j=$('mfj-dn'); } }
     if(j) j.innerHTML=mfPlJourney(gi,true);
+    /* a session with a squat or a push-up: Coach Seth can check it with the camera */
+    const tp=['squat','push'].filter(p=>pl.exs.some(e=>e.mfp===p))[0];
+    if(j && tp && mfOwned()) j.innerHTML+='<button class="mf-tkdn" onclick="mfTk(\''+MF_TK[tp]+'\')">'+glyph('target')+'<span><b>'+
+      mfL('Semak teknik '+(tp==='squat'?'squat':'push up')+' dengan AI','Check your '+(tp==='squat'?'squat':'push-up')+' with AI')+'</b>'+
+      mfL('Coach Seth tengok melalui kamera','Coach Seth watches through the camera')+'</span></button>';
     /* how it felt, in THE START's own three words (the Pelan tab counts them the same way) */
     const fk=document.querySelector('#pl-dn-feel .fk'); if(fk) fk.textContent=mfL('Macam mana sesi tadi?','How was it?');
     const fw={easy:mfL('Mudah','Easy'),right:mfL('Ngam','Just right'),hard:mfL('Susah','Hard')};
@@ -939,4 +946,49 @@ function mfPl(stage,arg){
       if(wl) wl.textContent=days>=wg?mfL('Sasaran minggu ini tercapai 🎉','Weekly goal reached 🎉'):mfL('Lagi '+(wg-days)+' hari untuk sasaran anda.',(wg-days)+' more day'+(wg-days===1?'':'s')+' to your goal.');
     }catch(e){}
   }
+}
+
+/* ── Semak Teknik inside THE START (11 Nov 2026, Seth: "aku nk ko masukkan terus dalam apps ... dalam 6 week the
+   start"). The AI camera check lives at /teknik (same origin, so its memory is the member's); here it opens over
+   the app in a frame with the camera allowed, and closes back to where the member was. Squat and push-up are the
+   two THE START patterns the AI can judge; the other moves (lunge, burpee) stay on its own home screen. ── */
+const MF_TK={squat:'squat', push:'pushup'};
+function mfTkBtn(p){
+  return '<button class="mf-tkb" onclick="event.stopPropagation();mfTk(\''+MF_TK[p]+'\')">'+glyph('target')+
+    mfL('Semak teknik dengan AI','Check technique with AI')+'</button>';
+}
+function mfTkBanner(){
+  return '<button class="mf-tkban" onclick="mfTk(\'\')"><span class="k">'+mfL('BARU · AI COACH','NEW · AI COACH')+'</span>'+
+    '<b>'+mfL('Semak Teknik','Technique Check')+'</b><span class="s">'+
+    mfL('Letak telefon, buat 5 rep. Coach Seth tengok melalui kamera dan beritahu apa yang perlu dibetulkan.',
+        'Prop up your phone and do 5 reps. Coach Seth watches through the camera and tells you what to fix.')+'</span>'+
+    '<span class="go">'+mfL('Squat · Push up · Lunge · Burpee','Squat · Push-up · Lunge · Burpee')+' →</span></button>';
+}
+function mfTk(move){
+  mfTkClose();
+  const ov=document.createElement('div'); ov.id='tkov';
+  ov.innerHTML='<iframe src="/teknik/?app=1'+(move?'#'+move:'')+'" allow="camera; microphone; autoplay; fullscreen" title="Semak Teknik"></iframe>';
+  document.body.appendChild(ov);
+  if(!mfTk._on){ mfTk._on=1; window.addEventListener('message',e=>{ if(e.origin===location.origin && e.data && e.data.tk==='close') mfTkClose(); }); }
+}
+function mfTkClose(){ const o=$('tkov'); if(o && o.parentNode) o.parentNode.removeChild(o); }
+
+/* ── Technique cards with pictures (11 Nov 2026, Seth: "kad teknik letak gambar baru mudah faham"; he picked
+   "betul vs salah"). One athlete per pattern, the same person and studio twice: ✓ the cue done right, ✗ the
+   usual mistake. Photos in /img/p/mula/tk/<pattern>-ok.jpg and -x.jpg. ── */
+const MF_TK_PIC={
+  squat: [['Lutut ikut arah jari kaki','Knees follow the toes'],['Lutut masuk ke dalam','Knees cave in']],
+  push:  [['Badan lurus macam papan','Body straight like a plank'],['Pinggang jatuh','Hips sag']],
+  bridge:[['Bahu, pinggul, lutut segaris','Shoulders, hips, knees in line'],['Pinggang melengkung','Lower back arches']],
+  hinge: [['Belakang lurus, punggung ke belakang','Flat back, hips back'],['Belakang membongkok','Rounded back']],
+  pull:  [['Bahu turun, jauh dari telinga','Shoulders down, away from ears'],['Bahu terangkat','Shoulders shrug up']],
+  core:  [['Pinggang rapat ke lantai','Lower back flat on the floor'],['Pinggang terangkat','Lower back lifts']],
+  bal:   [['Badan tegak, pandang depan','Tall, eyes ahead'],['Badan condong ke tepi','Leaning to the side']],
+  cardio:[['Duduk tegak, rentak sendiri','Sit tall, your own pace'],['Membongkok','Slumped']]
+};
+function mfTkPics(p,small){
+  const c=MF_TK_PIC[p]; if(!c) return '';
+  const one=(k,ok,cap)=>'<figure class="'+(ok?'ok':'x')+'"><span class="tg">'+(ok?'✓ '+mfL('BETUL','RIGHT'):'✗ '+mfL('SALAH','WRONG'))+'</span>'+
+    '<img src="/img/p/mula/tk/'+p+'-'+k+'.jpg?v=1" alt="'+mfL(cap[0],cap[1])+'" loading="lazy" width="300" height="375"><figcaption>'+mfL(cap[0],cap[1])+'</figcaption></figure>';
+  return '<div class="mf-tkpic'+(small?' sm':'')+'">'+one('ok',true,c[0])+one('x',false,c[1])+'</div>';
 }

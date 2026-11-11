@@ -3842,6 +3842,11 @@ print("\n── THE START: ITS OWN PLAYER ──");
   startWorkout(e.slice(0,2),{rounds:1, name:'Morning Kickstart', key:'other'});
   ok("every other program keeps the HITFAT player", !play.classList.contains('tst') && document.getElementById('pl-learn').innerHTML.indexOf('Form tip')>0 && plLeftWord()===' left');
   plClose(); if(pl) plCloseNow();
+  ok("Semak Teknik sits in THE START: squat and push-up open the AI check, the banner opens its home", MF_TK.squat==='squat' && MF_TK.push==='pushup' &&
+    mfTkBtn('squat').indexOf("mfTk('squat')")>0 && mfTkBanner().indexOf("mfTk('')")>0 && !MF_TK.hinge);
+  ok("...in a frame over the app, camera allowed, straight to the move, and it closes back to the app", String(mfTk).indexOf("/teknik/?app=1")>0 && String(mfTk).indexOf("'#'+move")>0 &&
+    String(mfTk).indexOf('allow="camera')>0 && String(mfTk).indexOf("e.origin===location.origin")>0 && String(mfTk).indexOf("tk==='close'")>0 && String(mfTkClose).indexOf('removeChild')>0);
+  ok("every technique card has a right and a wrong photo with its own words", Object.keys(MF_TECH).every(function(p){ var h=mfTkPics(p); return MF_TK_PIC[p] && h.indexOf('/img/p/mula/tk/'+p+'-ok.jpg')>0 && h.indexOf('/img/p/mula/tk/'+p+'-x.jpg')>0 && h.indexOf('BETUL')>0 && h.indexOf('SALAH')>0; }));
   HF.data.mf=keepMf;
 })();
 print("\n── MEAL SCAN: PORTION AND NAME ──");

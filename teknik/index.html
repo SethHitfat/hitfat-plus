@@ -27,6 +27,9 @@ h1,h2,.disp{font-family:var(--f);font-style:italic;font-weight:900;font-stretch:
 .ghost{position:absolute;right:-6px;bottom:-14px;z-index:-1;font:italic 900 108px/.8 var(--f);font-stretch:125%;color:rgba(255,244,234,.16);text-transform:uppercase;pointer-events:none;white-space:nowrap}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}
 .brand{font:italic 900 13px/1 var(--f);font-stretch:118%;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:#fff;padding:7px 10px;border-radius:999px}
+.appx{display:none;width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;font-size:16px;line-height:1;place-items:center;margin-left:auto}
+body.in-app .appx{display:grid}
+body.in-app .tagAi{margin-left:auto}
 .tagAi{font:800 11px/1 var(--f);letter-spacing:.12em;text-transform:uppercase;background:#fff;color:var(--o2);padding:7px 10px;border-radius:999px;box-shadow:0 6px 16px -8px rgba(92,26,3,.5)}
 .poster h1{font-size:clamp(40px,12vw,58px)}
 .poster h1{color:var(--ink)}
@@ -145,7 +148,7 @@ body.on-cam{background:#000}
 <section id="v-home">
   <div class="wrap">
     <header class="poster">
-      <div class="top"><span class="brand">THE START</span><span class="tagAi">AI Coach · Uji</span></div>
+      <div class="top"><span class="brand">THE START</span><span class="tagAi">AI Coach</span><button class="appx" onclick="TK.close()" aria-label="Tutup">✕</button></div>
       <h1>Semak<em>Teknik.</em></h1>
       <span class="ghost" aria-hidden="true">Teknik</span>
     </header>
@@ -173,7 +176,7 @@ body.on-cam{background:#000}
 <section id="v-move" hidden>
   <div class="wrap">
     <div class="bar">
-      <button class="back" onclick="TK.home()" aria-label="Kembali">‹</button>
+      <button class="back" onclick="TK.back()" aria-label="Kembali">‹</button>
       <div><div class="disp" id="mvTitle"></div><small id="mvSub"></small></div>
     </div>
 
@@ -291,7 +294,7 @@ body.on-cam{background:#000}
    lain. Kalau kau tergoda untuk hardcode satu ambang dalam detektor, itu
    tanda medan baharu patut ditambah di sini.
    ═══════════════════════════════════════════════════════════════════════ */
-var TR = { build: '20261111-1533' };
+var TR = { build: '20261111-1550' };
 
 /* Satu sumber masa, supaya ujian boleh memalsukan jam. Rep ditakrifkan oleh
    TEMPOH — get minRepMs ialah pertahanan utama terhadap rep hantu — jadi
@@ -2403,7 +2406,7 @@ TK.st = { key: null, variant: 'lutut', reps: [], det: null, armed: false, busy: 
 TK.show = function (id) {
   var s = ['home', 'move', 'cam', 'result'], i;
   for (i = 0; i < s.length; i++) TK.$('v-' + s[i]).hidden = (s[i] !== id);
-  document.body.className = 'on-' + id;
+  document.body.className = 'on-' + id + (TK.inApp ? ' in-app' : '');
   window.scrollTo(0, 0);
 };
 
@@ -2431,6 +2434,7 @@ TK.home = function () {
       '<span class="mv-go">›</span></button>';
   }
   TK.$('mvList').innerHTML = h;
+  TK.st.sawHome = true;
   TK.show('home');
 };
 
@@ -2756,6 +2760,19 @@ TK.boot = function () {
   document.addEventListener('visibilitychange', function () {
     if (document.hidden && TK.$('v-cam') && !TK.$('v-cam').hidden) { TK.teardown(); TK.open(TK.st.key); }
   });
+  /* Dalam app HITFAT+ (THE START), page ini dibuka dalam bingkai: ✕ menutup bingkai, dan
+     #squat / #pushup terus membuka gerakan itu. */
+  TK.inApp = /[?&]app=1/.test(location.search) && window.parent !== window;
+  var want = String(location.hash || '').replace('#', '');
+  if (TK.EX[want]) TK.open(want); else TK.home();
+};
+TK.close = function () {
+  TK.teardown();
+  try { window.parent.postMessage({ tk: 'close' }, location.origin); } catch (e) {}
+};
+/* butang kembali di skrin gerakan: dalam app, kalau dibuka terus ke gerakan, tutup terus */
+TK.back = function () {
+  if (TK.inApp && TK.EX[String(location.hash || '').replace('#', '')] && !TK.st.sawHome) return TK.close();
   TK.home();
 };
 

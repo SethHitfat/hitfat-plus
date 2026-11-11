@@ -11,7 +11,7 @@ TK.st = { key: null, variant: 'lutut', reps: [], det: null, armed: false, busy: 
 TK.show = function (id) {
   var s = ['home', 'move', 'cam', 'result'], i;
   for (i = 0; i < s.length; i++) TK.$('v-' + s[i]).hidden = (s[i] !== id);
-  document.body.className = 'on-' + id;
+  document.body.className = 'on-' + id + (TK.inApp ? ' in-app' : '');
   window.scrollTo(0, 0);
 };
 
@@ -39,6 +39,7 @@ TK.home = function () {
       '<span class="mv-go">›</span></button>';
   }
   TK.$('mvList').innerHTML = h;
+  TK.st.sawHome = true;
   TK.show('home');
 };
 
@@ -364,5 +365,18 @@ TK.boot = function () {
   document.addEventListener('visibilitychange', function () {
     if (document.hidden && TK.$('v-cam') && !TK.$('v-cam').hidden) { TK.teardown(); TK.open(TK.st.key); }
   });
+  /* Dalam app HITFAT+ (THE START), page ini dibuka dalam bingkai: ✕ menutup bingkai, dan
+     #squat / #pushup terus membuka gerakan itu. */
+  TK.inApp = /[?&]app=1/.test(location.search) && window.parent !== window;
+  var want = String(location.hash || '').replace('#', '');
+  if (TK.EX[want]) TK.open(want); else TK.home();
+};
+TK.close = function () {
+  TK.teardown();
+  try { window.parent.postMessage({ tk: 'close' }, location.origin); } catch (e) {}
+};
+/* butang kembali di skrin gerakan: dalam app, kalau dibuka terus ke gerakan, tutup terus */
+TK.back = function () {
+  if (TK.inApp && TK.EX[String(location.hash || '').replace('#', '')] && !TK.st.sawHome) return TK.close();
   TK.home();
 };
