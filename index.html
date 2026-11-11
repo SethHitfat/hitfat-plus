@@ -9573,6 +9573,24 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mf-feel b{display:block;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt);} .mf-feel span{font-size:12px;color:var(--dim);font-weight:650;}
 .mf-recs{padding:6px 15px;} .mf-recs > div{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px;gap:6px;padding:10px 0;border-top:1px solid var(--line,rgba(0,0,0,.08));font-size:14px;}
 .mf-recs > div.h{border-top:0;color:var(--dim);font-size:12px;} .mf-recs b{text-align:right;font-variant-numeric:tabular-nums;}
+/* THE START's Makan tab (11 Nov 2026): the week's habit, ticked each day */
+.mf-hab{display:flex;flex-direction:column;gap:12px;}
+.mf-hab-top{display:flex;gap:12px;align-items:flex-start;}
+.mf-hab-top .ic{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--lr);color:#fff;}
+.mf-hab-top .ic .gly{width:22px;height:22px;}
+.mf-hab-top .tx{flex:1;min-width:0;} .mf-hab .lbx-h{font-size:18px;line-height:1.2;} .mf-hab .lbx-p{margin-top:3px;}
+.mf-hab-wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.mf-hab-wk div{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.mf-hab-wk i{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--lbl);color:#fff;}
+.mf-hab-wk .now i{box-shadow:inset 0 0 0 2px var(--lr);}
+.mf-hab-wk .on i{background:var(--lr);} .mf-hab-wk i .gly{width:16px;height:16px;}
+.mf-hab-wk span{font-size:11px;font-weight:700;color:var(--dim);} .mf-hab-wk .now span{color:var(--lr);}
+.mf-hab .lbx-go{margin:0;} .mf-hab .lbx-go.mf-hab-done{background:var(--lbl2);color:var(--lr);box-shadow:none;}
+.mf-hab-keep{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--dim);font-weight:650;}
+.mf-hab-keep b{padding:4px 10px;border-radius:99px;background:var(--lbl);color:var(--txt);font-size:12px;font-weight:700;}
+.mf-hab-n{font-size:12px;color:var(--dim);font-weight:600;}
+.mf-mk-sw{flex:none;display:flex;align-items:center;gap:5px;padding:7px 12px;border:0;border-radius:99px;background:var(--surface2);color:var(--txt);font:inherit;font-size:12.5px;font-weight:750;cursor:pointer;}
+.mf-mk-sw .gly{width:14px;height:14px;}
 .mf-buy{margin:6px 16px 10px;padding:26px 18px;border-radius:20px;text-align:center;color:#141414;background:#FFF3E8;
   background-image:radial-gradient(circle,rgba(240,83,28,.35) 1.4px,transparent 1.8px);background-size:8px 8px;}
 .mf-buy .mf-top-t{display:inline-block;}
@@ -18700,7 +18718,7 @@ const MF_DAYS=[['isn','Isnin'],['sel','Selasa'],['rab','Rabu'],['kha','Khamis'],
 const MF=(function(){
   const weeks=MF_WEEKS.map((w,wi)=>({days:[0,1,2].map(j=>{ const t=MF_TYPES[MF_ORDER[wi*3+j]]; return {name:MF_NAMES[MF_ORDER[wi*3+j]][wi], ex:[MF_PAT.squat.l[0][0],'Wall Push Up'], r:MF_LOAD[wi][2], k:'train'}; })}));
   return {id:MF_ID, name:MF_NAME, sub:MF_SUB, goal:'Strength', level:'Beginner', dur:20, rounds:2,
-    packHas:'latihan, langkah harian, 20 scan makanan AI dan Belajar', c1:'#F0531C', c2:'#5C1A03', ac:'#FFF1E2', icon:'✦', weeks, hub:'mf', len:MF_N+' sesi', oneTime:true, price:MF_PRICE, wk:MF_WK,
+    packHas:'latihan, langkah harian, tabiat makan, 20 scan makanan AI dan Belajar', c1:'#F0531C', c2:'#5C1A03', ac:'#FFF1E2', icon:'✦', weeks, hub:'mf', len:MF_N+' sesi', oneTime:true, price:MF_PRICE, wk:MF_WK,
     desc:'Program asas 6 minggu untuk lelaki dan wanita yang baru mula atau mahu aktif semula. '+
          MF_N+' sesi seluruh badan di rumah, 15–25 minit, dengan teknik setiap gerakan, pelajaran ringkas dan pemakanan Malaysia.'};
 })();
@@ -18950,9 +18968,10 @@ function renderMF(){
       '<button class="mf-link" onclick="mfSetTab(\'progress\')">'+mfL('Lihat Kemajuan','See Progress')+' ›</button></div></div>'+mfNextCard();
   }
   if(owned) h+=(mfRecDue()||mfLessonDue()||mfScanCard());
-  h+='<div class="lbx-seg" id="mf-tabs">'+[['plan',mfL('Pelan','Plan')],['learn',mfL('Belajar','Learn')],['progress',mfL('Kemajuan','Progress')]]
+  h+='<div class="lbx-seg" id="mf-tabs">'+[['plan',mfL('Pelan','Plan')],['food',mfL('Makan','Eat')],['learn',mfL('Belajar','Learn')],['progress',mfL('Kemajuan','Progress')]]
     .map(t=>'<button class="'+(mfTab===t[0]?'on':'')+'" onclick="mfSetTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>';
-  if(mfTab==='learn') h+=mfLearn();
+  if(mfTab==='food') h+=mfFood();
+  else if(mfTab==='learn') h+=mfLearn();
   else if(mfTab==='progress') h+=mfProgress();
   else h+=mfPlan();
   h+='</div>';
@@ -19319,6 +19338,112 @@ function mfLearn(){
   return h;
 }
 
+/* ── Makan (11 Nov 2026, Seth: "tak ada nutrition ke?", picked "Beginner, tak
+   kira kalori"): no calorie target and no numbers to type. One eating habit a
+   week, in step with the lessons, ticked each day, the weeks before kept;
+   today's three meals from MAK2FIT's photographed menu (kedai dishes only for
+   those who eat out); the plate and the hands; swaps; eating out. ── */
+const MF_HABIT=[
+  ['Separuh pinggan sayur','Sekurang-kurangnya sekali sehari, separuh pinggan sayur atau buah.','Half a plate of vegetables','At least once a day, half your plate vegetables or fruit.','leaf'],
+  ['Nasi segenggam','Ambil nasi sebesar genggaman anda. Masih lapar? Tambah sayur dulu.','Rice, one fist','Take rice the size of your fist. Still hungry? Add vegetables first.','food'],
+  ['Protein setiap kali makan','Ayam, ikan, telur, tempe, tauhu atau dhal, pada setiap waktu makan.','Protein at every meal','Chicken, fish, eggs, tempeh, tofu or dhal, at every meal.','food'],
+  ['Air kosong 6–8 gelas','Segelas sebelum setiap kali makan. Minuman manis, satu sehari sahaja.','Plain water, 6–8 glasses','A glass before every meal. Sweet drinks, one a day only.','water'],
+  ['Snek terancang','Lapar antara waktu makan? Buah, kacang atau telur rebus.','Planned snacks','Hungry between meals? Fruit, nuts or a boiled egg.','leaf'],
+  ['Sarapan ada protein','Tambah telur, susu atau tempe pada sarapan anda.','Protein at breakfast','Add an egg, milk or tempeh to your breakfast.','sunrise']
+];
+let mfMkSwap={};
+function mfMk(){ const d=mfData(); return d.mk||(d.mk={}); }
+function mfMkWeek(){ return mfWeekOf(Math.min(mfDone(),MF_N-1)); }
+function mfMkTick(){
+  const m=mfMk(), t=iso(0), wi=mfMkWeek();
+  if(m[t]===wi) delete m[t]; else m[t]=wi;
+  HF.save(); renderMF();
+  if(m[t]===wi) toast(mfL('Bagus. Tabiat hari ini ditanda.','Nice. Today’s habit is ticked.'));
+}
+function mfMkDays(wi){ const m=mfMk(); return Object.keys(m).filter(k=>m[k]===wi).length; }
+function mfPlateSVG(){
+  return '<svg class="lbx-plate-svg" viewBox="0 0 120 120" aria-hidden="true">'+
+    '<circle cx="60" cy="60" r="58" fill="#fff" stroke="rgba(0,0,0,.08)" stroke-width="2"/>'+
+    '<circle cx="60" cy="60" r="50" fill="#F3EFEA"/>'+
+    '<path d="M60 60 L60 12 A48 48 0 0 0 60 108 Z" fill="#1F9D6A"/>'+
+    '<path d="M60 60 L60 12 A48 48 0 0 1 108 60 Z" fill="#E8480F"/>'+
+    '<path d="M60 60 L108 60 A48 48 0 0 1 60 108 Z" fill="#E6A100"/>'+
+    '<circle cx="104" cy="22" r="8" fill="#9C7A3C" stroke="#fff" stroke-width="2"/>'+
+    '<line x1="60" y1="12" x2="60" y2="108" stroke="#fff" stroke-width="2.5"/><line x1="60" y1="60" x2="108" y2="60" stroke="#fff" stroke-width="2.5"/></svg>';
+}
+/* today's dish for a meal: changes each day, "Tukar" shows the next one */
+function mfMkDish(slot){
+  if(typeof LB30_MENU==='undefined' || !LB30_MENU[slot]) return null;
+  const me=mfMe(), out=me && me.makan==='kedai';
+  /* the dinners are all home cooking: someone who eats out gets the kedai lunches */
+  let opts=LB30_MENU[slot].opts.filter(o=>!out || o.b);
+  if(!opts.length && out) opts=LB30_MENU.tengahari.opts.filter(o=>o.b);
+  if(!opts.length) opts=LB30_MENU[slot].opts;
+  const day=Math.floor((new Date(iso(0)+'T12:00:00')).getTime()/864e5);
+  return opts[((day*7+(slot==='malam'?3:0)+(mfMkSwap[slot]||0)) % opts.length + opts.length) % opts.length];
+}
+function mfMkNext(slot){ mfMkSwap[slot]=(mfMkSwap[slot]||0)+1; renderMF(); }
+function mfFood(){
+  if(!mfOwned()) return mfLocked('food',mfL('Makan Cara Malaysia','Eating the Malaysian Way'),mfL('Satu tabiat makan setiap minggu, idea menu Malaysia setiap hari, pinggan sihat dan sukatan tangan. Tak perlu kira kalori.',
+    'One eating habit a week, Malaysian meal ideas every day, the healthy plate and hand portions. No calorie counting.'));
+  const wi=mfMkWeek(), hb=MF_HABIT[wi], t=iso(0), on=mfMk()[t]===wi, me=mfMe();
+  let h='<div class="lbx-card mf-hab"><div class="mf-hab-top"><span class="ic">'+glyph(hb[4])+'</span><div class="tx"><div class="lbx-k">'+mfL('Tabiat minggu ','Habit for week ')+(wi+1)+'</div>'+
+    '<div class="lbx-h">'+mfL(hb[0],hb[2])+'</div><div class="lbx-p">'+mfL(hb[1],hb[3])+'</div></div></div>'+
+    '<div class="mf-hab-wk">'+[6,5,4,3,2,1,0].map(n=>{ const k=iso(-n), x=mfMk()[k]===wi, d=new Date(k+'T12:00:00');
+      return '<div class="'+(x?'on':'')+(n===0?' now':'')+'"><i>'+(x?glyph('check'):'')+'</i><span>'+mfL(['Ah','Is','Se','Ra','Kh','Ju','Sa'],['Su','Mo','Tu','We','Th','Fr','Sa'])[d.getDay()]+'</span></div>'; }).join('')+'</div>'+
+    '<button class="lbx-go'+(on?' mf-hab-done':'')+'" onclick="mfMkTick()">'+glyph('check')+(on?mfL('Dah buat hari ini','Done today'):mfL('Saya buat hari ini','I did it today'))+'</button>'+
+    (wi>0?'<div class="mf-hab-keep"><span>'+mfL('Teruskan juga:','Keep these too:')+'</span>'+MF_HABIT.slice(0,wi).map(x=>'<b>'+mfL(x[0],x[2])+'</b>').join('')+'</div>':'')+
+    '<div class="mf-hab-n">'+mfL(mfMkDays(wi)+' hari minggu ini · tabiat baru setiap minggu sesi anda',mfMkDays(wi)+' days this week · a new habit each week of sessions')+'</div></div>';
+  h+=mfScanCard();
+  /* today's meals: one idea each, a photograph, no calories */
+  const look={sarapan:['sunrise','#E6A100',mfL('Sarapan','Breakfast')],tengahari:['sun','#E8480F',mfL('Tengah hari','Lunch')],malam:['moon','#5B4BC4',mfL('Makan malam','Dinner')]};
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">'+mfL('Idea Makan Hari Ini','Meal Ideas for Today')+'</div><div class="lbx-ss">'+
+    (me&&me.makan==='kedai'?mfL('Yang mudah dibeli di kedai dan warung','Easy to buy at a kedai or warung'):mfL('Masakan Malaysia, nasi tetap ada','Malaysian food, rice included'))+'</div></div></div>';
+  h+='<div class="lbx-meals">'+['sarapan','tengahari','malam'].map(sl=>{ const o=mfMkDish(sl), lk=look[sl]; if(!o) return '';
+    const im=typeof lbDishImg==='function'?lbDishImg(LB30_MENU[sl].opts.indexOf(o)>=0?sl:'tengahari',o):'';
+    return '<div class="mpslot lbx-meal" style="--mc:'+lk[1]+'"><div class="mpslot-h"><span class="ic">'+glyph(lk[0])+'</span><div class="hd"><div class="t">'+lk[2]+'</div></div>'+
+      '<button class="mf-mk-sw" onclick="mfMkNext(\''+sl+'\')">'+glyph('repeat')+mfL('Tukar','Swap')+'</button></div>'+
+      '<div class="lbx-mo">'+(im?'<div class="lbx-dish sm" style="background-image:url(\''+im+'\')"></div>':'<div></div>')+
+      '<div class="tx"><div class="mpopt-h"><div class="t">'+o.n+'</div></div><div class="lbx-items">'+o.it.map(x=>'<span>'+x.replace('{nasi}',mfL('segenggam','one fist'))+'</span>').join('')+'</div></div></div>'+
+      '<div class="lbx-meal-f"><div class="lbx-meal-n">'+mfL('Ikut pinggan sihat di bawah','Follow the healthy plate below')+'</div><button class="lbx-mscan" onclick="mfScanGo()">'+glyph('photo')+'Scan</button></div></div>';
+  }).join('')+'</div>';
+  /* the plate, then the hands */
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">'+mfL('Pinggan Sihat','The Healthy Plate')+'</div><div class="lbx-ss">'+mfL('Bentuk pinggan setiap kali makan. Tak perlu penimbang.','The shape of every meal. No scales needed.')+'</div></div></div>';
+  h+='<div class="lbx-card lbx-plate">'+mfPlateSVG()+'<div class="lbx-plate-k">'+
+    [['#1F9D6A',mfL('Sayur & buah','Veg & fruit'),mfL('½ pinggan · 2 genggam','½ plate · 2 fists')],['#E8480F','Protein',mfL('¼ pinggan · 1 tapak tangan','¼ plate · 1 palm')],
+     ['#E6A100',mfL('Nasi / karbo','Rice / carbs'),mfL('¼ pinggan · 1 genggam','¼ plate · 1 fist')],['#9C7A3C',mfL('Minyak & kuah','Oil & gravy'),mfL('1 ibu jari','1 thumb')]]
+    .map(x=>'<div><i style="background:'+x[0]+'"></i><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('')+'</div></div>';
+  h+='<div class="lbx-por">'+[['food','Protein','1',mfL('tapak tangan','palm'),mfL('ayam, ikan, telur, tauhu, tempe','chicken, fish, eggs, tofu, tempeh'),'#E8480F'],
+      ['workout',mfL('Karbo','Carbs'),'1',mfL('genggam','fist'),mfL('nasi, mi, roti','rice, noodles, bread'),'#E6A100'],
+      ['leaf',mfL('Sayur','Veg'),'2',mfL('genggam','fists'),mfL('separuh pinggan','half the plate'),'#1F9D6A'],
+      ['water',mfL('Lemak','Fat'),'1',mfL('ibu jari','thumb'),mfL('minyak, santan, kuah','oil, santan, gravy'),'#9C7A3C']]
+    .map(x=>'<div class="lbx-po" style="--pc:'+x[5]+'"><div class="lbx-po-top"><span class="ic">'+glyph(x[0])+'</span><span class="k">'+x[1]+'</span></div>'+
+      '<div class="lbx-po-n"><b>'+x[2]+'</b><span>'+x[3]+'</span></div><div class="lbx-po-s">'+x[4]+'</div></div>').join('')+'</div>'+
+    '<div class="lb-fine">'+mfL('Ukuran ini untuk setiap kali makan. Lelaki atau badan lebih besar biasanya perlukan dua tapak tangan protein dan dua genggam nasi.',
+      'These are for each meal. Men and bigger bodies usually need two palms of protein and two fists of rice.')+'</div>';
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">'+mfL('Tukar Satu','One Swap')+'</div><div class="lbx-ss">'+mfL('Satu perubahan kecil, bukan semua sekali gus.','One small change, not all at once.')+'</div></div></div>';
+  h+='<div class="lbx-swaps">'+[[mfL('Teh tarik','Teh tarik'),mfL('Teh o kurang manis','Teh o, less sweet'),mfL('Langkah pertama yang paling mudah untuk ramai orang.','The easiest first step for most people.')],
+    [mfL('Ayam goreng','Fried chicken'),mfL('Ayam bakar','Grilled chicken'),mfL('Ayam yang sama, minyak jauh kurang.','The same chicken, far less oil.')],
+    [mfL('Mi goreng','Fried noodles'),mfL('Mi sup','Noodle soup'),mfL('Masih mi, lebih ringan.','Still noodles, lighter.')],
+    [mfL('Tambah nasi kali kedua','A second helping of rice'),mfL('Tambah sayur','More vegetables'),mfL('Kenyang sama, lebih banyak serat.','Just as full, more fibre.')]]
+    .map(x=>'<div class="lbx-sw"><div class="lbx-sw-r"><span class="from">'+x[0]+'</span><span class="arr">→</span><span class="to">'+x[1]+'</span></div><div class="lbx-sw-s">'+x[2]+'</div></div>').join('')+'</div>';
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">'+mfL('Makan Di Luar','Eating Out')+'</div><div class="lbx-ss">'+mfL('Apa nak order, bila tak masak.','What to order when you are not cooking.')+'</div></div></div>';
+  h+='<div class="lbx-out">'+[
+    ['people','#E8480F','Mamak',[mfL('Roti canai kosong + kuah dal','Roti canai kosong + dhal'),mfL('Nasi kandar: ayam bakar, sayur, kuah sikit','Nasi kandar: grilled chicken, veg, a little gravy'),mfL('Teh o atau teh tarik kurang manis','Teh o or teh tarik, less sweet')]],
+    ['food','#1F9D6A',mfL('Nasi campur','Mixed rice'),[mfL('Satu lauk protein','One protein dish'),mfL('Dua jenis sayur','Two vegetables'),mfL('Kuah sedikit, nasi segenggam','A little gravy, rice one fist')]],
+    ['star','#5B4BC4',mfL('Kenduri','Weddings & feasts'),[mfL('Ambil sayur dan lauk dulu','Take vegetables and protein first'),mfL('Satu pinggan, tiada makanan yang perlu ditinggal','One plate, no food has to be skipped'),mfL('Air kosong, bukan sirap','Plain water, not syrup')]],
+    ['bag','#E6A100',mfL('Makanan segera','Fast food'),[mfL('Burger ayam bakar, bukan goreng','Grilled chicken burger, not fried'),mfL('Air kosong atau minuman zero','Plain water or a zero drink'),mfL('Kentang goreng: kongsi','Fries: share them')]]]
+    .map(x=>'<div class="lbx-oc" style="--mc:'+x[1]+'"><div class="h"><span class="ic">'+glyph(x[0])+'</span><b>'+x[2]+'</b></div>'+
+      x[3].map(o=>'<div class="o">'+glyph('check')+'<span>'+o+'</span></div>').join('')+'</div>').join('')+'</div>';
+  /* the eating lessons opened so far */
+  const done=mfDone(), ls=MF_LESSON.map((l,i)=>[l,i]).filter(x=>x[0][2]==='M');
+  h+='<div class="lbx-sec"><div class="lbx-sh"><div class="lbx-st">'+mfL('Pelajaran Makan','Eating Lessons')+'</div><div class="lbx-ss">'+mfL('Terbuka selepas sesinya','Each opens after its session')+'</div></div></div>';
+  h+='<div class="lbx-card lbx-cl">'+ls.map(x=>{ const i=x[1], open=i<done, rd=mfData().lesson[i];
+    return '<div class="lbx-cr'+(rd?' on':'')+'"'+(open?' onclick="mfLsShow('+i+')"':'')+'><span class="ck'+(rd?' on':'')+'">'+glyph(open?(rd?'check':'doc'):'lock')+'</span>'+
+      '<div class="tx"><span class="k">'+mfL('Sesi ','Session ')+(i+1)+'</span><b class="w">'+(open?mfT(x[0][0]):mfL('Selepas sesi ','After session ')+(i+1))+'</b></div>'+(open?'<span class="pdx-chev">›</span>':'')+'</div>'; }).join('')+'</div>';
+  return h;
+}
+
 /* ── Kemajuan: sessions, how they felt, the two records side by side ── */
 function mfProgress(){
   if(!mfOwned()) return mfLocked('chart',mfL('Kemajuan','Progress'),mfL('Sesi siap, rasa setiap sesi, dan rekod sesi 1 berbanding sesi '+MF_N+'.','Sessions done, how each felt, and your session 1 record against session '+MF_N+'.'));
@@ -19387,7 +19512,7 @@ function mfBuy(){
       ['target',mfL('Teknik setiap gerakan','Technique for every move'),mfL('Tiga isyarat, kesilapan biasa dan versi lebih mudah','Three cues, the common mistake and an easier version')],
       ['steps',mfL('Langkah harian','Daily steps'),mfL('Sasaran naik sedikit setiap minggu, sampai 7,000','A goal that rises a little each week, to 7,000')],
       ['photo',mfScanN()+mfL(' scan makanan AI',' AI meal scans'),mfL('Ambil gambar makanan, AI anggarkan kalorinya. Simpan sampai anda guna','Snap a meal and AI estimates its calories. Kept until you use them')],
-      ['food',mfL('Makan cara Malaysia','Eating the Malaysian way'),mfL('Pelajaran ringkas. Nasi tetap ada','Short lessons. Rice stays')],
+      ['food',mfL('Makan cara Malaysia','Eating the Malaysian way'),mfL('Satu tabiat makan seminggu, idea menu setiap hari. Tak kira kalori, nasi tetap ada','One eating habit a week, meal ideas every day. No calorie counting, rice stays')],
       ['trophy',mfL('Milik anda','Yours to keep'),mfL('Bayar sekali. Tiada langganan','Pay once. No subscription')]]
       .map(b=>'<div class="pwf"><div class="ic"><span class="wl-kic">'+glyph(b[0])+'</span></div><div><div class="t">'+b[1]+'</div><div class="m">'+b[2]+'</div></div></div>').join('')+'</div>'+
     '<div class="pwprice"><div class="p">RM'+MF_PRICE+'</div><div class="per">'+mfL('sekali bayar','one payment')+'</div></div>'+

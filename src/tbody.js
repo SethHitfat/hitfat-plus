@@ -3849,6 +3849,21 @@ print("\n── THE START: ITS OWN PLAYER ──");
   ok("every technique card has a right and a wrong photo with its own words", Object.keys(MF_TECH).every(function(p){ var h=mfTkPics(p); return MF_TK_PIC[p] && h.indexOf('/img/p/mula/tk/'+p+'-ok.jpg')>0 && h.indexOf('/img/p/mula/tk/'+p+'-x.jpg')>0 && h.indexOf('BETUL')>0 && h.indexOf('SALAH')>0; }));
   HF.data.mf=keepMf;
 })();
+print("\n── THE START: MAKAN ──");
+(function(){
+  var keepMf=HF.data.mf, keepOwn=mfOwned, keepRender=renderMF;
+  HF.data.mf={me:{done:true, makan:'kedai', path:1}}; mfOwned=function(){ return true; }; renderMF=function(){};
+  ok("six eating habits, one for each week, in Malay and English", MF_HABIT.length===MF_WK && MF_HABIT.every(function(x){ return x[0]&&x[1]&&x[2]&&x[3]; }));
+  ok("someone who eats out gets kedai dishes only", ['sarapan','tengahari','malam'].every(function(sl){ var o=mfMkDish(sl); return o && o.b===1; }));
+  var a=mfMkDish('malam'); mfMkNext('malam'); ok("Tukar shows another dish", mfMkDish('malam')!==a);
+  mfMkTick(); ok("ticking today counts for this week's habit", mfMk()[iso(0)]===mfMkWeek() && mfMkDays(mfMkWeek())===1);
+  var h=mfFood();
+  ok("the Makan tab: the habit, today's meals with photos, the plate, the hands, no calorie target", h.indexOf(MF_HABIT[mfMkWeek()][0])>0 && h.indexOf('Dah buat hari ini')>0 &&
+    h.indexOf('/ladies/img/menu/')>0 && h.indexOf('lbx-plate-svg')>0 && h.indexOf('tapak tangan')>0 && h.indexOf('kcal')<0 && h.indexOf('{nasi}')<0);
+  mfMkTick(); ok("...and a second tap takes the tick back", mfMk()[iso(0)]===undefined);
+  mfOwned=function(){ return false; }; ok("not bought: the tab shows what is inside and the price", mfFood().indexOf('mfBuy()')>0);
+  mfOwned=keepOwn; renderMF=keepRender; HF.data.mf=keepMf;
+})();
 print("\n── MEAL SCAN: PORTION AND NAME ──");
 (function(){
   var keep=_scanData;
