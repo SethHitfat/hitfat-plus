@@ -3866,6 +3866,17 @@ print("\n── THE START: MAKAN ──");
   renderMF(); var B=document.getElementById('pgd-body').innerHTML;
   ok("a first-timer sees how THE START runs and one button: no tabs, no session to skip the questions", B.indexOf('mf-how')>0 && B.indexOf('mfQuizOpen()')>0 && B.indexOf('mf-tabs')<0 && B.indexOf('mfOpenSession(')<0 && B.indexOf('mfScanGo')<0);
   ok("...in plain words: no 'laluan', no 'pusingan' on the weeks", JSON.stringify(MF_WEEKS).indexOf('pusingan')<0 && String(renderMF).indexOf('laluan')<0);
+  var all=['isn','sel','rab','kha','jum','sab','ahd'], keepS=HF.data.sessions; HF.data.sessions={};
+  HF.data.mf={me:{done:true, makan:'campur', path:1, days:all}, rec:{}, lesson:{}}; HF.data.progress[MF_ID]=2;
+  renderMF(); B=document.getElementById('pgd-body').innerHTML;
+  ok("once the plan is built: a small header with the week, today's workout first, three ticks, today's meals, then the tabs",
+    B.indexOf('mf-head')>0 && B.indexOf('mf-top-ph')<0 && B.indexOf('mfPlay(2)')>0 && B.indexOf('mf-ticks')>0 && B.indexOf('0 / 3')>0 && B.indexOf('mf-meals')>0 && B.indexOf('mf-meals')<B.indexOf('mf-tabs'));
+  HF.data.mf.me.days=[]; HF.data.mf.me.days=all.filter(function(d){ return d!==MF_DAYCODE[new Date().getDay()]; });
+  ok("a rest day says walk, and the session is still there if they want it", mfToday().indexOf('Jalan kaki 20 minit')>0 && mfToday().indexOf('mfPlay(2)')>0 && mfTicks().indexOf('mfWalkTick()')>0);
+  mfWalkTick(); ok("...the walk ticks", mfTicks().indexOf('1 / 3')>0);
+  HF.data.sessions[MF_KEY+'-s2']={date:new Date().toISOString(), mins:14}; HF.data.progress[MF_ID]=3;
+  ok("a session done today says so, and ticks itself", mfToday().indexOf('Sesi 3 selesai')>0 && mfTicks().indexOf('Sesi 3')>0 && mfDoneToday()===2);
+  HF.data.sessions=keepS;
   HF.data.progress[MF_ID]=kp;
   mfOwned=keepOwn; renderMF=keepRender; HF.data.mf=keepMf;
 })();

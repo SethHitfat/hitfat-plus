@@ -355,6 +355,73 @@ function mfHero(){
     '<div class="mf-top-s">'+mfL('Program untuk anda yang baru mula','For anyone just starting out')+'</div>'+
     '<div class="mf-top-m">'+MF_N+' '+mfL('sesi','sessions')+' · 15–25 min · '+mfL('di rumah','at home')+' · '+mfL('lelaki & wanita','men & women')+'</div></div></div>';
 }
+
+/* ── the program page once the plan is built (11 Nov 2026, Seth showed a
+   "today first" app: "ui mcm ni ok tak?"): a small header with the name,
+   today's workout as one big card, today's three ticks, today's meals as a
+   row of photos, the technique check, then the tabs. The big photograph and
+   the how-it-works card stay for the first visit. ── */
+const MF_DAYCODE=['ahd','isn','sel','rab','kha','jum','sab'];
+function mfTrainDay(){ const me=mfMe(); return !me || !(me.days||[]).length || (me.days||[]).indexOf(MF_DAYCODE[new Date().getDay()])>=0; }
+function mfDoneToday(){
+  const S=HF.data.sessions||{}, t=iso(0);
+  for(let i=MF_N-1;i>=0;i--){ const x=S[MF_KEY+'-s'+i]; if(x && x.date){ const d=new Date(x.date);
+    if(d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)===t) return i; } }
+  return -1;
+}
+function mfWalkOn(){ const w=mfData().walk||{}; return !!w[iso(0)]; }
+function mfWalkTick(){ const d=mfData(), w=d.walk||(d.walk={}), t=iso(0); if(w[t]) delete w[t]; else w[t]=1; HF.save(); renderMF(); }
+function mfHead(){
+  const nm=mfFirst(), done=mfDone(), wi=mfWeekOf(Math.min(done,MF_N-1));
+  return '<div class="mf-head"><div class="mf-head-k">THE <b>START.</b></div>'+
+    '<div class="mf-head-t">'+(nm?mfL('Hai ','Hi ')+hesc(nm)+'!':mfL('Hai!','Hi!'))+'</div>'+
+    '<div class="mf-head-s">'+(done>=MF_N?mfL('Program selesai · '+MF_N+' sesi','Program done · '+MF_N+' sessions')
+      :mfL('Minggu ','Week ')+(wi+1)+mfL(' daripada ',' of ')+MF_WK+' · '+done+'/'+MF_N+mfL(' sesi siap',' sessions done'))+'</div>'+
+    '<div class="mf-head-bar"><i style="width:'+Math.round(done/MF_N*100)+'%"></i></div>'+mfLangBtn()+'</div>';
+}
+function mfToday(){
+  const nx=mfDone(), dt=mfDoneToday(), train=mfTrainDay();
+  if(nx>=MF_N) return '';
+  const s=mfSession(nx), p=s.main[0].p, img='/img/p/mula/tk/'+p+'-ok.jpg?v=1';
+  let k, t, m, btn;
+  if(dt>=0){
+    k=mfL('Latihan hari ini','Today’s workout'); t=mfL('Sesi '+(dt+1)+' selesai ✓','Session '+(dt+1)+' done ✓');
+    m=mfL('Bagus. Rehat, minum air, dan jalan santai. Sesi '+(nx+1)+' pada hari latihan seterusnya.','Well done. Rest, drink water and take an easy walk. Session '+(nx+1)+' on your next training day.');
+    btn='<button class="mf-link" onclick="mfOpenSession('+nx+')">'+mfL('Lihat sesi ','See session ')+(nx+1)+' ›</button>';
+  } else if(!train){
+    k=mfL('Hari rehat','Rest day'); t=mfL('Jalan kaki 20 minit','Walk for 20 minutes');
+    m=mfL('Hari ini bukan hari latihan anda. Jalan santai, masih boleh bercakap. Nak buat Sesi '+(nx+1)+' juga? Boleh.','Today is not one of your training days. An easy walk, still able to talk. Want to do Session '+(nx+1)+' anyway? You can.');
+    btn='<button class="lbx-ghost mf-today-alt" onclick="mfPlay('+nx+')">'+glyph('play')+mfL('Buat Sesi ','Do Session ')+(nx+1)+' · '+mfMinutes(s)+' min</button>';
+  } else {
+    k=mfL('Latihan hari ini · Sesi ','Today’s workout · Session ')+(nx+1); t=mfT(s.n);
+    m=mfMinutes(s)+' min · '+s.main.length+' '+mfL('gerakan','moves')+' · '+mfL('kerusi','chair')+(s.main.some(x=>x.p==='pull')?' · '+mfL('tuala','towel'):'');
+    btn='<button class="lbx-go" onclick="mfPlay('+nx+')">'+glyph('play')+mfL('Mula','Start')+'</button>'+
+      '<button class="mf-link" onclick="mfOpenSession('+nx+')">'+mfL('Lihat gerakan','See the moves')+' ›</button>';
+  }
+  return '<div class="lbx-card mf-today'+(dt>=0?' done':!train?' rest':'')+'"><div class="mf-today-tx"><div class="lbx-k">'+k+'</div><div class="lbx-h">'+t+'</div><div class="lbx-p">'+m+'</div>'+btn+'</div>'+
+    '<div class="mf-today-ph" style="background-image:url(\''+(dt>=0||!train?'/img/p/mula-hero2.jpg':img)+'\')"></div></div>';
+}
+function mfTicks(){
+  const nx=mfDone(), dt=mfDoneToday(), train=mfTrainDay(), wi=mfWeekOf(Math.min(nx,MF_N-1));
+  const g=mfStepGoal(wi), now=scDaily().steps, hb=MF_HABIT[mfMkWeek()], hOn=mfMk()[iso(0)]===mfMkWeek();
+  const rows=[
+    dt>=0||train ? [dt>=0, mfL('Sesi '+((dt>=0?dt:nx)+1),'Session '+((dt>=0?dt:nx)+1)), dt>=0?mfL('Siap','Done'):mfMinutes(mfSession(Math.min(nx,MF_N-1)))+' min', dt>=0?'':'mfPlay('+nx+')']
+                 : [mfWalkOn(), mfL('Jalan kaki 20 minit','Walk 20 minutes'), mfL('Tanda bila siap','Tick when done'), 'mfWalkTick()'],
+    [hOn, mfL(hb[0],hb[2]), mfL('Tabiat makan minggu ini','This week’s eating habit'), 'mfMkTick()'],
+    [now>=g, mfFmt(g)+mfL(' langkah',' steps'), mfFmt(now)+mfL(' setakat ini',' so far'), "scSheet('steps')"]];
+  const n=rows.filter(r=>r[0]).length;
+  return '<div class="lbx-card mf-ticks"><div class="mf-ticks-h"><b>'+mfL('Hari Ini','Today')+'</b><span>'+(n===3?mfL('Selesai ✓','All done ✓'):n+' / 3')+'</span></div>'+
+    rows.map(r=>'<div class="mf-tk'+(r[0]?' on':'')+'"'+(r[3]?' onclick="'+r[3]+'"':'')+'><span class="ck">'+(r[0]?glyph('check'):'')+'</span><div class="tx"><b>'+r[1]+'</b><span>'+r[2]+'</span></div>'+(r[3]&&!r[0]?'<span class="pdx-chev">›</span>':'')+'</div>').join('')+'</div>';
+}
+function mfMealRow(){
+  const look={sarapan:mfL('Sarapan','Breakfast'),tengahari:mfL('Tengah hari','Lunch'),malam:mfL('Makan malam','Dinner')};
+  const cards=['sarapan','tengahari','malam'].map(sl=>{ const o=mfMkDish(sl); if(!o) return '';
+    const im=typeof lbDishImg==='function'?lbDishImg(LB30_MENU[sl].opts.indexOf(o)>=0?sl:'tengahari',o):'';
+    return '<button class="mf-ml" onclick="mfSetTab(\'food\')"><span class="ph" style="background-image:url(\''+im+'\')"></span><span class="k">'+look[sl]+'</span><b>'+o.n+'</b></button>'; }).join('');
+  if(!cards) return '';
+  return '<div class="lbx-sec mf-row-h"><div class="lbx-sh"><div class="lbx-st">'+mfL('Makan Hari Ini','Today’s Meals')+'</div></div>'+
+    '<button class="mf-row-a" onclick="mfScanGo()">'+glyph('photo')+'Scan</button></div><div class="mf-meals">'+cards+'</div>';
+}
 function renderMF(){
   if(mfQ>=0){ $('pgd-body').innerHTML=mfQuiz(); return; }
   const owned=mfOwned(), done=mfDone(), nx=done;
@@ -362,7 +429,8 @@ function renderMF(){
   const pill=!owned ? {icon:'lock',label:'RM'+MF_PRICE,go:'mfBuy()'}
            : !mfMe() && !nx ? null
            : nx<MF_N ? {icon:'play',label:mfL('Sesi ','Session ')+(nx+1),go:'mfOpenSession('+nx+')'} : null;
-  let h=pdxBar('program',pill)+mfHero()+'<div class="lbx mf">';
+  const built=owned && !!mfMe();
+  let h=pdxBar('program',pill)+(built?mfHead():mfHero())+'<div class="lbx mf'+(built?' mf-built':'')+'">';
   if(!owned){
     h+='<div class="lbx-card lbx-sell">'+
       '<div class="lbx-h">'+mfL('Tak tahu nak mula dari mana? Mula di sini.','Not sure where to begin? Begin here.')+'</div>'+
@@ -388,22 +456,14 @@ function renderMF(){
       '<button class="lbx-go" onclick="mfQuizOpen()">'+glyph('sliders')+mfL('Bina Pelan Saya','Build My Plan')+'</button>'+
       (done?'<button class="lbx-ghost" onclick="mfOpenSession('+Math.min(nx,MF_N-1)+')">'+glyph('play')+mfL('Teruskan Sesi ','Continue Session ')+(Math.min(nx,MF_N-1)+1)+'</button>':'')+'</div>';
   } else if(nx<MF_N){
-    const s=mfSession(nx), g=mfStepGoal(s.wi), now=scDaily().steps;
-    h+='<div class="lbx-card mf-now">'+
-      '<div class="mf-now-top">'+lbRing(done/MF_N,64,done+'<i>/'+MF_N+'</i>','')+
-        '<div class="tx"><div class="lbx-k">'+mfL('Seterusnya · Minggu ','Up next · Week ')+(s.wi+1)+'</div>'+
-        '<div class="lbx-h">'+mfL('Sesi ','Session ')+(nx+1)+': '+mfT(s.n)+'</div>'+
-        '<div class="lbx-p">'+mfMinutes(s)+' min · '+s.main.length+' '+mfL('gerakan','moves')+' · '+mfL('ulang '+s.r+' kali',s.r+' rounds')+'</div></div></div>'+
-      '<button class="lbx-go" onclick="mfPlay('+nx+')">'+glyph('play')+mfL('Mula · ','Start · ')+mfMinutes(s)+' min</button>'+
-      '<button class="mf-link" onclick="mfOpenSession('+nx+')">'+mfL('Lihat gerakan sesi ini','See this session’s moves')+' ›</button>'+
-      '<div class="mf-stepln">'+glyph('steps')+mfL('Langkah hari ini ','Steps today ')+'<b>'+mfFmt(now)+'</b> / '+mfFmt(g)+(now>=g?' ✓':'')+'</div></div>';
+    h+=mfToday()+mfTicks()+(mfRecDue()||mfLessonDue())+mfMealRow()+mfTkBanner();
   } else {
     h+='<div class="lbx-card mf-now mf-fin">'+lbRing(1,64,''+MF_N,'')+
       '<div class="tx"><div class="lbx-h">'+mfL('THE START selesai','THE START is done')+'</div><div class="lbx-p">'+
       mfL(MF_N+' sesi. Tengok sejauh mana anda pergi.',MF_N+' sessions. See how far you have come.')+'</div>'+
       '<button class="mf-link" onclick="mfSetTab(\'progress\')">'+mfL('Lihat Kemajuan','See Progress')+' ›</button></div></div>'+mfNextCard();
   }
-  if(owned) h+=(mfRecDue()||mfLessonDue()||mfScanCard());
+  if(owned && !(mfMe() && nx<MF_N)) h+=(mfRecDue()||mfLessonDue()||mfScanCard());
   h+='<div class="lbx-seg" id="mf-tabs">'+[['plan',mfL('Pelan','Plan')],['food',mfL('Makan','Eat')],['learn',mfL('Belajar','Learn')],['progress',mfL('Kemajuan','Progress')]]
     .map(t=>'<button class="'+(mfTab===t[0]?'on':'')+'" onclick="mfSetTab(\''+t[0]+'\')">'+t[1]+'</button>').join('')+'</div>';
   if(mfTab==='food') h+=mfFood();
