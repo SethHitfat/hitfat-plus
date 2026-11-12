@@ -150,7 +150,7 @@ const WELCOME: Record<string, Welcome> = {
   /* THE START (11 Nov 2026): its own colour and first steps */
   prog_mula: { name: 'THE START', tebus: 'mula', color: '#E8480F', ink: '#141414', from: 'THE START <hello@mail.hitfat.io>',
     lead: '18 sesi anda sedang menunggu.',
-    steps: ['Jawab <b>9 soalan</b>, lebih kurang 2 minit. App pilih laluan anda: Mudah, Asas atau Beransur.', 'Mula <b>Sesi 1</b>: lebih kurang 15 minit, di rumah. Sediakan kerusi yang stabil.'] },
+    steps: ['Jawab <b>9 soalan</b>, lebih kurang 2 minit. App pilih tahap anda: Mudah, Asas atau Beransur.', 'Mula <b>Sesi 1</b>: lebih kurang 15 minit, di rumah. Sediakan kerusi yang stabil.'] },
 };
 function esc(s: unknown): string {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));

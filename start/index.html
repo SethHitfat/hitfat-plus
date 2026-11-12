@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#E8480F">
 <link rel="icon" href="/img/icon/favicon-64.png?v=3">
-<link rel="preload" as="image" href="img/athlete.png">
+<link rel="preload" as="image" href="img/hero-rumah.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,700..900;1,62..125,700..900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -839,6 +839,44 @@ body{background:var(--bg)}
 .final .wa{display:inline-flex;margin-top:14px;padding:9px 16px;border-radius:999px;background:#fff;box-shadow:0 8px 20px -10px rgba(92,26,3,.35)}
 .pk-cut::before,.pk-cut::after{background:var(--cream)!important;box-shadow:inset 0 0 0 2px #EBD3C8}
 
+
+/* 12 Nov 2026 (Seth: "konsep tu lebih kurang pada MAK2FIT, banyak gambar"): photographs as MAK2FIT's page */
+.hpic{position:relative;margin:0 -12px 18px;border-radius:28px;overflow:hidden;aspect-ratio:27/16;background:var(--peach);box-shadow:0 18px 40px -22px rgba(140,40,5,.45)}
+.hpic img{width:100%;height:100%;object-fit:cover;object-position:center 42%}
+.hpic span{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.94);font-size:13px;font-weight:800;color:var(--m)}
+@media(min-width:860px){ .hpic{aspect-ratio:21/9;margin:0 0 22px} }
+.hwm{--hs:clamp(60px,18vw,116px);margin:4px 0 14px}
+.hwm .cond{display:block;font-size:calc(var(--hs)*.36);color:var(--ink)}
+.hero .hwm h1.big{margin:0;font-size:var(--hs);color:var(--ink);letter-spacing:-.025em}
+.hwm .swoosh{width:min(80%,460px);height:calc(var(--hs)*.17);margin:.06em auto 0}
+.lpics{display:grid;grid-template-columns:1fr;gap:12px;margin-top:24px}
+@media(min-width:640px){ .lpics{grid-template-columns:1fr 1fr} }
+.lpics figure{position:relative;margin:0;aspect-ratio:16/10;border-radius:24px;overflow:hidden;background:var(--peach) center/cover no-repeat}
+.lpics figcaption{position:absolute;left:12px;bottom:12px;padding:6px 12px;white-space:nowrap;border-radius:999px;background:rgba(255,255,255,.94);font-size:12.5px;font-weight:800;color:var(--ink)}
+.sp-row{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:12px -22px 22px;padding:2px 22px 10px;scrollbar-width:none;text-align:left}
+.sp-row::-webkit-scrollbar{display:none}
+.spc{position:relative;flex:none;width:min(44vw,190px);aspect-ratio:4/5;margin:0;border-radius:20px;overflow:hidden;background:#2A1A12 center/cover no-repeat;scroll-snap-align:start}
+.spc::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(20,10,4,.88))}
+.spc figcaption{position:absolute;left:12px;right:12px;bottom:11px;z-index:1;color:#fff}
+.spc small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#FFB38A}
+.spc b{display:block;margin-top:2px;font-size:15px;font-weight:900;font-style:italic;text-transform:uppercase;line-height:1.1}
+.mk-h{margin-top:30px;font-size:21px;font-weight:800}
+.md .mph{flex:none;width:96px;height:96px;border-radius:14px;background:#eee center/cover no-repeat}
+.md{display:flex;gap:12px;padding:10px;border-radius:20px;background:#fff;box-shadow:0 12px 30px -20px rgba(92,26,3,.35)}
+.md .tx{min-width:0;display:flex;flex-direction:column;gap:2px;justify-content:center}
+.md small{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--m)}
+.md b{font-size:15.5px;font-weight:800}
+.md span{font-size:12.5px;line-height:1.4;color:var(--ink2)}
+.habs{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:620px;margin:14px auto 0;text-align:left}
+@media(min-width:760px){ .habs{grid-template-columns:1fr 1fr 1fr} }
+.habs div{padding:12px 13px;border-radius:18px;background:var(--lav)}
+.habs em{display:block;font-style:italic;font-weight:800;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--m)}
+.habs b{display:block;margin-top:2px;font-size:14.5px;font-weight:800;line-height:1.25}
+.habs span{display:block;margin-top:3px;font-size:12.5px;line-height:1.4;color:var(--ink2)}
+.outs{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:620px;margin:14px auto 0;text-align:left}
+.outs div{padding:12px;border-radius:18px;background:#fff;box-shadow:0 10px 26px -20px rgba(92,26,3,.4)}
+.outs b{display:block;font-size:14.5px;font-weight:800;color:var(--m)}
+.outs span{display:block;margin-top:3px;font-size:12.5px;line-height:1.4;color:var(--ink2)}
 </style>
 </head>
 <body>
@@ -853,18 +891,8 @@ body{background:var(--bg)}
 
 <!-- 1 · HERO: the poster on top, then the question, the button and the facts -->
 <section class="box hero c">
-  <div class="hposter poster">
-    <div class="ghost" aria-hidden="true"><span>Beginner</span><span>Progress</span><span>Fitness</span></div>
-    <div class="hero-in">
-      <div class="hero-t">
-        <div class="h-top"><span class="cond">6 Weeks of</span><span class="big">The</span></div>
-        <h1 class="big">Start.</h1>
-        <i class="swoosh" aria-hidden="true"></i>
-        <span class="tag">Program untuk anda yang baru mula</span>
-      </div>
-      <img class="ath" src="img/athlete.png" width="900" height="716" alt="Atlet THE START dalam posisi plank" fetchpriority="high">
-    </div>
-  </div>
+  <div class="hpic"><img fetchpriority="high" src="img/hero-rumah.jpg" alt="Seorang lelaki membuat chair squat di ruang tamu rumahnya" width="1350" height="800"><span><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg>Di rumah · 15–25 minit</span></div>
+  <div class="hwm"><span class="cond">6 Weeks of</span><h1 class="big">The <b>Start.</b></h1><i class="swoosh" aria-hidden="true"></i></div>
   <span class="tag2">UNTUK LELAKI &amp; WANITA</span>
   <p class="hq">Nak mula bersenam, tapi <span class="grad">tak tahu nak mula di mana?</span></p>
   <p class="lead">Program 6 minggu yang mula dari tahap anda. 18 sesi di rumah, 15 hingga 25 minit, dan naik sikit demi sikit setiap minggu.</p>
@@ -890,16 +918,16 @@ body{background:var(--bg)}
     <div><b>Direka oleh Coach Seth</b><span>Pengasas HITFAT<br>BSc Sport Science, UiTM</span></div></div>
 </section>
 
-<!-- 3 · THE PROBLEM -->
+<!-- 3 · THE PROBLEM: photographs, as MAK2FIT's (12 Nov 2026) -->
 <section class="box c reveal">
   <span class="pill">Masalah sebenar</span>
   <h2 class="sec-h">Dah lama nak start, <span class="grad">tapi…</span></h2>
   <p class="sec-p">Dah cakap "Isnin ni aku nak start". Dah simpan video workout. Tapi bila mula, tak tahu nak buat apa, atau hari kedua dah terlalu penat untuk sambung.</p>
   <div class="pgrid">
-    <div class="pc pcx"><em>01</em><div><b>TAK TAHU NAK MULA</b><span>Beratus video di internet. Yang mana sesuai untuk saya?</span></div></div>
-    <div class="pc pcx"><em>02</em><div><b>TAKUT BUAT SALAH</b><span>Risau teknik salah, lutut atau pinggang jadi sakit.</span></div></div>
-    <div class="pc pcx"><em>03</em><div><b>PROGRAM TERLALU LAJU</b><span>Hari kedua dah penat. Minggu kedua dah berhenti.</span></div></div>
-    <div class="pc pcx"><em>04</em><div><b>SEGAN KE GYM</b><span>Rasa diperhati. Belum yakin dengan badan sendiri.</span></div></div>
+    <div class="pc" data-bg="img/st-p1.jpg"><div><b>TAK TAHU NAK MULA</b><span>Beratus video di internet. Yang mana sesuai untuk saya?</span></div></div>
+    <div class="pc" data-bg="img/st-p2.jpg"><div><b>TAKUT BUAT SALAH</b><span>Risau teknik salah, lutut atau pinggang jadi sakit.</span></div></div>
+    <div class="pc" data-bg="img/st-p3.jpg"><div><b>PROGRAM TERLALU LAJU</b><span>Hari kedua dah penat. Minggu kedua dah berhenti.</span></div></div>
+    <div class="pc" data-bg="img/st-p4.jpg"><div><b>SEGAN KE GYM</b><span>Rasa diperhati. Belum yakin dengan badan sendiri.</span></div></div>
   </div>
   <p class="turn">Bukan sebab anda malas. Anda perlukan <span class="grad">pelan yang mula perlahan</span>, dan hanya satu perkara berubah setiap minggu.</p>
 </section>
@@ -908,6 +936,10 @@ body{background:var(--bg)}
 <section class="box c reveal">
   <span class="pill">Dalam hidup sebenar</span>
   <h2 class="sec-h">Muat dalam minggu anda <span class="grad">yang sibuk.</span></h2>
+  <div class="lpics">
+    <figure data-bg="img/st-life-m.jpg" role="img" aria-label="Seorang lelaki membuat glute bridge di ruang tamu kecil"><figcaption>Ruang sebesar tikar</figcaption></figure>
+    <figure data-bg="img/st-life-w.jpg" role="img" aria-label="Seorang wanita berhijab membuat tolak dengan kerusi di rumah"><figcaption>Cuma perlu kerusi</figcaption></figure>
+  </div>
   <div class="life">
     <div><i><svg class="ic" aria-hidden="true"><use href="#i-timer"/></svg></i><b>15 hingga 25 minit</b><span>Pilih dalam kuiz. Pemanasan dan penyejukan sudah termasuk.</span></div>
     <div><i><svg class="ic" aria-hidden="true"><use href="#i-sun"/></svg></i><b>3 hari seminggu</b><span>Anda pilih harinya, dengan hari rehat di antaranya.</span></div>
@@ -1007,6 +1039,8 @@ body{background:var(--bg)}
     <div><b>2</b><span>sesi rekod, sesi 1 &amp; 18</span></div>
     <div><b>31</b><span>gerakan berbeza</span></div>
   </div>
+  <div class="tx-hd"><h3>18 sesi, setiap satu ada posternya</h3><span>Swipe →</span></div>
+  <div class="sp-row"><figure class="spc" data-bg="/img/p/mula/s/s01.jpg?v=2"><figcaption><small>Sesi 1 · Minggu 1</small><b>Duduk-Bangun &amp; Tolak</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s02.jpg?v=2"><figcaption><small>Sesi 2 · Minggu 1</small><b>Pinggul &amp; Imbangan</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s03.jpg?v=2"><figcaption><small>Sesi 3 · Minggu 1</small><b>Gabung &amp; Stamina</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s04.jpg?v=2"><figcaption><small>Sesi 4 · Minggu 2</small><b>Kaki &amp; Dada</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s05.jpg?v=2"><figcaption><small>Sesi 5 · Minggu 2</small><b>Belakang &amp; Postur</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s06.jpg?v=2"><figcaption><small>Sesi 6 · Minggu 2</small><b>Nafas &amp; Rentak</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s07.jpg?v=2"><figcaption><small>Sesi 7 · Minggu 3</small><b>Punggung &amp; Bahu</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s08.jpg?v=2"><figcaption><small>Sesi 8 · Minggu 3</small><b>Imbangan &amp; Kawalan</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s09.jpg?v=2"><figcaption><small>Sesi 9 · Minggu 3</small><b>Litar Penuh</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s10.jpg?v=2"><figcaption><small>Sesi 10 · Minggu 4</small><b>Kaki Tegap</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s11.jpg?v=2"><figcaption><small>Sesi 11 · Minggu 4</small><b>Pinggul Kuat</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s12.jpg?v=2"><figcaption><small>Sesi 12 · Minggu 4</small><b>Stamina Bertambah</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s13.jpg?v=2"><figcaption><small>Sesi 13 · Minggu 5</small><b>Naik Setingkat: Kaki &amp; Dada</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s14.jpg?v=2"><figcaption><small>Sesi 14 · Minggu 5</small><b>Naik Setingkat: Belakang</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s15.jpg?v=2"><figcaption><small>Sesi 15 · Minggu 5</small><b>Naik Setingkat: Stamina</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s16.jpg?v=2"><figcaption><small>Sesi 16 · Minggu 6</small><b>Kuat Seluruh Badan</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s17.jpg?v=2"><figcaption><small>Sesi 17 · Minggu 6</small><b>Berdiri Tegak</b></figcaption></figure><figure class="spc" data-bg="/img/p/mula/s/s18.jpg?v=2"><figcaption><small>Sesi 18 · Minggu 6</small><b>Pusingan Akhir</b></figcaption></figure></div>
   <div class="tp-cal" id="tp-cal" aria-label="Kalendar 6 minggu: tinggi setiap bar ialah minit sesi"></div>
   <div class="tp-leg" id="tp-leg"></div>
   <div class="tp-day" id="tp-day" aria-live="polite"></div>
@@ -1021,11 +1055,49 @@ body{background:var(--bg)}
   <div style="margin-top:22px"><a class="cta" href="#" data-buy="latihan">Saya Nak Mula — RM49</a></div>
 </section>
 
-<!-- 9 · LEARN, IN DETAIL (THE START has no menu: technique and short lessons) -->
+<!-- 8b · EATING: THE START's Makan tab (12 Nov 2026): one habit a week, no calorie counting, the app's own dishes -->
+<section class="box c reveal" id="makan">
+  <span class="pill">Pemakanan</span>
+  <h2 class="sec-h">Makanan Malaysia. <span class="grad">Nasi tetap ada.</span></h2>
+  <p class="sec-p">Tak perlu kira kalori. Setiap minggu, satu tabiat makan baharu. Tekan "Saya buat hari ini" bila anda buat, dan app beri idea menu Malaysia setiap hari, ikut sama ada anda masak di rumah atau makan di kedai.</p>
+  <div class="tp-stats">
+    <div><b>6</b><span>tabiat, satu seminggu</span></div>
+    <div><b>0</b><span>kalori perlu dikira</span></div>
+    <div><b>3</b><span>idea menu setiap hari</span></div>
+    <div><b>✋</b><span>sukatan guna tangan</span></div>
+  </div>
+  <h3 class="mk-h">Contoh satu hari</h3>
+  <div class="mday">
+    <div class="md"><div class="mph" data-bg="/ladies/img/menu/d08.jpg"></div><div class="tx"><small>Sarapan</small><b>Ubi rebus &amp; telur</b><span>Ubi kayu rebus, 1 genggam · 1 biji telur rebus · kopi o kosong</span></div></div>
+    <div class="md"><div class="mph" data-bg="/ladies/img/menu/d14.jpg"></div><div class="tx"><small>Tengah hari</small><b>Telur dadar sayur</b><span>Nasi putih, segenggam · telur dadar sayur 2 biji · sambal timun</span></div></div>
+    <div class="md"><div class="mph" data-bg="/ladies/img/menu/d27.jpg"></div><div class="tx"><small>Makan malam</small><b>Ayam masak halia</b><span>Nasi putih, segenggam · ayam masak halia, 1 tapak tangan · kailan tumis</span></div></div>
+  </div>
+  <p class="fine">Contoh daripada tab Makan THE START. Tak suka? Tekan Tukar dalam app untuk idea lain.</p>
+  <h3 class="mk-h">6 minggu, 6 tabiat</h3>
+  <div class="habs"><div><em>Minggu 1</em><b>Separuh pinggan sayur</b><span>Sekurang-kurangnya sekali sehari, separuh pinggan sayur atau buah.</span></div><div><em>Minggu 2</em><b>Nasi segenggam</b><span>Ambil nasi sebesar genggaman anda. Masih lapar? Tambah sayur dulu.</span></div><div><em>Minggu 3</em><b>Protein setiap kali makan</b><span>Ayam, ikan, telur, tempe, tauhu atau dhal, pada setiap waktu makan.</span></div><div><em>Minggu 4</em><b>Air kosong 6–8 gelas</b><span>Segelas sebelum setiap kali makan. Minuman manis, satu sehari sahaja.</span></div><div><em>Minggu 5</em><b>Snek terancang</b><span>Lapar antara waktu makan? Buah, kacang atau telur rebus.</span></div><div><em>Minggu 6</em><b>Sarapan ada protein</b><span>Tambah telur, susu atau tempe pada sarapan anda.</span></div></div>
+  <h3 class="mk-h">Tukar satu</h3>
+  <div class="swaps">
+    <div><s>Teh tarik</s><i>→</i><b>Teh o kurang manis</b></div>
+    <div><s>Ayam goreng</s><i>→</i><b>Ayam bakar</b></div>
+    <div><s>Mi goreng</s><i>→</i><b>Mi sup</b></div>
+    <div><s>Tambah nasi kali kedua</s><i>→</i><b>Tambah sayur</b></div>
+  </div>
+  <details class="more"><summary>Makan di luar pun ada panduan</summary>
+  <div class="outs">
+    <div><b>Mamak</b><span>Roti canai kosong + kuah dal · nasi kandar ayam bakar, kuah sikit</span></div>
+    <div><b>Nasi campur</b><span>Satu lauk protein, dua jenis sayur, kuah sedikit, nasi segenggam</span></div>
+    <div><b>Kenduri</b><span>Ambil sayur dan lauk dulu, satu pinggan, air kosong bukan sirap</span></div>
+    <div><b>Makanan segera</b><span>Burger ayam bakar, bukan goreng · kentang goreng: kongsi</span></div>
+  </div>
+  </details>
+  <div style="margin-top:22px"><a class="cta" href="#" data-buy="makan">Saya Nak Mula — RM49</a></div>
+</section>
+
+<!-- 9 · LEARN, IN DETAIL: technique cards and Semak Teknik, as the app shows them -->
 <section class="box c reveal" id="belajar">
   <span class="pill">Belajar</span>
   <h2 class="sec-h">Teknik dulu. <span class="grad">Laju kemudian.</span></h2>
-  <p class="sec-p">Setiap corak gerakan ada kad teknik: tiga isyarat, satu kesilapan biasa, dan cara lebih mudah. Selepas setiap sesi, satu pelajaran ringkas tentang latihan dan makan cara Malaysia.</p>
+  <p class="sec-p">Setiap corak gerakan ada kad teknik: gambar betul dan salah, tiga isyarat, dan cara lebih mudah. Tak pasti? Semak Teknik AI tengok anda melalui kamera. Selepas setiap sesi, satu pelajaran ringkas tentang latihan dan makan.</p>
   <div class="tp-stats">
     <div><b>18</b><span>pelajaran ringkas</span></div>
     <div><b>3</b><span>isyarat setiap gerakan</span></div>
@@ -1033,8 +1105,8 @@ body{background:var(--bg)}
     <div><b>🍚</b><span>nasi tetap ada</span></div>
   </div>
   <div class="lphones">
-    <div class="phone"><img src="img/app-learn.jpg" alt="Kad teknik dalam tab Belajar" loading="lazy"></div>
-    <div class="phone"><img src="img/app-moves.jpg" alt="Gerakan utama dengan isyarat teknik" loading="lazy"></div>
+    <div class="phone"><img src="img/ap-g-belajar.jpg" alt="Tab Belajar: Semak Teknik AI dan kad teknik duduk-bangun" loading="lazy"></div>
+    <div class="phone"><img src="img/ap-g-belajar2.jpg" alt="Kad teknik tolak: betul dan salah" loading="lazy"></div>
   </div>
   <div style="margin-top:22px"><a class="cta" href="#" data-buy="belajar">Saya Nak Mula — RM49</a></div>
 </section>
@@ -1062,16 +1134,20 @@ body{background:var(--bg)}
   <span class="pill">Semua dalam satu app</span>
   <h2 class="sec-h">Semua yang anda perlu, <span class="grad">di telefon anda.</span></h2>
   <p class="sec-p">Skrin sebenar THE START dalam app HITFAT+, di app.hitfat.io. Tiada muat turun dari App Store.</p>
-  <div class="tx-hd"><h3>4 bahagian app</h3></div>
+  <div class="tx-hd"><h3>6 bahagian app</h3></div>
   <div class="feats">
-    <div class="fc g1"><span class="k">1 · PELAN PERIBADI</span><h3>Tahap anda, bukan semua orang</h3><p>Jawab 9 soalan dalam 2 minit: tahap, masa, alat di rumah, dan bahagian badan yang kurang selesa.</p>
-      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/app-quiz.jpg"></div><div class="lv-s nx" data-bg="img/app-result.jpg"></div><span class="lv-tap" style="left:50%;top:72%"></span></div><span class="lv-chip l"><b>9</b> soalan · 2 minit</span><span class="lv-chip r"><i class="d"></i>Mudah, Asas atau Beransur</span></div></div>
-    <div class="fc g2"><span class="k">2 · SESI</span><h3>15–25 minit. Tahu apa nak buat.</h3><p>Setiap sesi ada pemanasan, 4 gerakan utama dan penyejukan. Tekan Mula, dan ikut video.</p>
-      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/app-program.jpg"></div><div class="lv-s nx" data-bg="img/app-session.jpg"></div><span class="lv-tap" style="left:50%;top:58%"></span></div><span class="lv-chip l"><b>18</b> sesi berpandu</span><span class="lv-chip r"><i class="d"></i>Video setiap gerakan</span></div></div>
-    <div class="fc g3"><span class="k">3 · TEKNIK</span><h3>Gerakan yang betul, dari hari pertama</h3><p>Isyarat teknik untuk setiap gerakan, dan kad Belajar untuk setiap corak.</p>
-      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/app-moves.jpg"></div><div class="lv-s nx" data-bg="img/app-learn.jpg"></div><span class="lv-tap" style="left:50%;top:9%"></span></div><span class="lv-chip l"><b>3</b> isyarat setiap gerakan</span><span class="lv-chip r"><i class="d"></i>18 pelajaran ringkas</span></div></div>
-    <div class="fc g2"><span class="k">4 · SETIAP HARI</span><h3>Langkah harian &amp; scan makanan</h3><p>Hari tanpa sesi pun ada sasaran: jalan kaki. Dan bila nak tahu kalori, ambil gambar sahaja. BM atau English.</p>
-      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/app-en.jpg"></div><div class="lv-s nx" data-bg="img/app-program.jpg"></div><span class="lv-tap" style="left:78%;top:24%"></span></div><span class="lv-chip l"><b>7,000</b> langkah sehari</span><span class="lv-chip r"><i class="d"></i>20 scan makanan AI</span></div></div>
+    <div class="fc g1"><span class="k">1 · MULA DI SINI</span><h3>Tonton, jawab, pelan sedia</h3><p>Video Coach Seth 33 saat, kemudian 9 soalan: tahap, masa, alat dan keselesaan badan.</p>
+      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/ap-a-first.jpg"></div><div class="lv-s nx" data-bg="img/ap-b-quiz.jpg"></div><span class="lv-tap" style="left:50%;top:66%"></span></div><span class="lv-chip l"><b>9</b> soalan · 2 minit</span><span class="lv-chip r"><i class="d"></i>Mudah, Asas atau Beransur</span></div></div>
+    <div class="fc g2"><span class="k">2 · HARI INI</span><h3>Buka app. Tahu apa nak buat.</h3><p>Latihan hari ini, satu butang Mula, tiga tanda untuk hari ini dan menu dalam gambar.</p>
+      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/ap-c-today.jpg"></div><div class="lv-s nx" data-bg="img/ap-c-today2.jpg"></div><span class="lv-tap" style="left:36%;top:40%"></span></div><span class="lv-chip l"><b>1</b> butang · Mula</span><span class="lv-chip r"><i class="d"></i>3 tanda sehari</span></div></div>
+    <div class="fc g3"><span class="k">3 · SESI</span><h3>18 sesi, setiap satu dirancang</h3><p>Setiap sesi ada posternya: pemanasan, 4 gerakan utama dan penyejukan.</p>
+      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/ap-d-sessions.jpg"></div><div class="lv-s nx" data-bg="img/ap-e-session.jpg"></div><span class="lv-tap" style="left:28%;top:62%"></span></div><span class="lv-chip l"><b>18</b> sesi berpandu</span><span class="lv-chip r"><i class="d"></i>Video setiap gerakan</span></div></div>
+    <div class="fc g2"><span class="k">4 · MAKAN</span><h3>Satu tabiat makan seminggu</h3><p>Tak kira kalori. Tanda bila anda buat, dan dapat idea menu Malaysia setiap hari.</p>
+      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/ap-f-makan.jpg"></div><div class="lv-s nx" data-bg="img/ap-f-makan2.jpg"></div><span class="lv-tap" style="left:50%;top:37%"></span></div><span class="lv-chip l"><b>6</b> tabiat · 6 minggu</span><span class="lv-chip r"><i class="d"></i>Nasi tetap ada</span></div></div>
+    <div class="fc g1"><span class="k">5 · TEKNIK</span><h3>Gerakan yang betul, dari hari pertama</h3><p>Gambar betul dan salah, dan Semak Teknik AI melalui kamera.</p>
+      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/ap-g-belajar.jpg"></div><div class="lv-s nx" data-bg="img/ap-g-belajar2.jpg"></div><span class="lv-tap" style="left:50%;top:26%"></span></div><span class="lv-chip l"><b>AI</b> semak teknik</span><span class="lv-chip r"><i class="d"></i>Betul vs salah</span></div></div>
+    <div class="fc g3"><span class="k">6 · KEMAJUAN</span><h3>Nampak sejauh mana anda pergi</h3><p>Sesi siap, rasa setiap sesi, dan rekod sesi 1 berbanding sesi 18.</p>
+      <div class="lv" data-lv><div class="lv-ph"><div class="lv-s on" data-bg="img/ap-h-kemajuan.jpg"></div><div class="lv-s nx" data-bg="img/ap-c-today.jpg"></div><span class="lv-tap" style="left:84%;top:18%"></span></div><span class="lv-chip l"><b>Sesi 1</b> vs sesi 18</span><span class="lv-chip r"><i class="d"></i>BM atau English</span></div></div>
   </div>
   <div style="margin-top:22px"><a class="cta" href="#" data-buy="app">Saya Nak Mula — RM49</a></div>
 </section>
