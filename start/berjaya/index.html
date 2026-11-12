@@ -116,7 +116,7 @@ function showPaid(sure){
     fbq('init', PIXEL_ID); fbq('track','PageView');
     var k='hf_px_mula_'+(order||'x'), seen=false;
     try{ seen=!!localStorage.getItem(k); localStorage.setItem(k,'1'); }catch(e){}
-    if(!seen) fbq('track','Purchase',{value:49,currency:'MYR',content_ids:['prog_mula'],content_type:'product'}, order?{eventID:'mula-'+order}:undefined);
+    if(!seen) fbq('track','Purchase',{value:59,currency:'MYR',content_ids:['prog_mula'],content_type:'product'}, order?{eventID:'mula-'+order}:undefined);
   }
 }
 /* still settling after a minute: it opens by itself once the bank tells us */

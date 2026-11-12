@@ -34,7 +34,7 @@ import { CATALOGUE, CHANNELS, BC_API, SITE, CORS, json, isPaidStatus, isFailedSt
 /* the programs sold on their own, and the page each comes back to */
 const LANDING: Record<string, string> = {
   prog_lad4: '/ladies/berjaya/',            // Ladies Burn 30, RM39
-  prog_mula: '/start/berjaya/',             // THE START, RM49 (11 Nov 2026)
+  prog_mula: '/start/berjaya/',             // THE START, RM59 (RM49 11 Nov, RM59 from 12 Nov 2026)
 };
 
 /* the "baru sertai" card counts orders paid from here on (see ?action=recent) */

@@ -3721,7 +3721,7 @@ HF.email=null; ayEnsure();
 print("\n── THE START ──");
 (function(){
   _guest(); HF.email=null; mfEnsure();
-  ok("live since 11 Nov 2026: any account sees it in Train, at RM49", MF_LIVE===true && !!findProg(MF_ID) && trainingPlans().some(function(p){ return p.id===MF_ID; }) && programPrice(MF)===49);
+  ok("live since 11 Nov 2026: any account sees it in Train, at RM59", MF_LIVE===true && !!findProg(MF_ID) && trainingPlans().some(function(p){ return p.id===MF_ID; }) && programPrice(MF)===59);
   HF.email='SethNasser1991@gmail.com'; mfEnsure();
   ok("the listed account sees it on Home and in Train", !!findProg(MF_ID) && mfHomeCard().indexOf('Program Baru')>0 && trainingPlans().some(function(p){ return p.id===MF_ID; }));
   var keepEnt=_ent, keepSW=startWorkout, keepMf=HF.data.mf, played=null;
@@ -3729,7 +3729,7 @@ print("\n── THE START ──");
   var html=function(id){ return document.getElementById(id).innerHTML||''; };
   var plan=function(a){ HF.data.mf={me:Object.assign({done:true, why:'mula', act:'jalan', exp:'dulu', masa:20, alat:['kerusi','tuala','botol'], pain:['tiada'], sihat:['tiada'], days:['isn','rab','jum'], makan:'campur'},a||{})}; };
   ok("THE START: eighteen sessions in six weeks, eighteen lessons, training and eating by turns, the review last", MF_NAME==='THE START' && MF_N===18 && MF_WK===6 && progDays(MF)===18 && MF_LESSON.length===18 && MF_LESSON.every(function(l){ return l[0] && l[1].length>60 && /^[LMS]$/.test(l[2]); }) && MF_LESSON[17][2]==='S' && MF_RECS[1]===17);
-  ok("sold for RM49 on its own", programPrice(MF)===49 && isPaidProgram(MF));
+  ok("sold for RM59 on its own", programPrice(MF)===59 && isPaidProgram(MF));
   var bad=[]; [['tiada'],['lutut'],['bahu'],['pinggang'],['lantai'],['lutut','bahu','pinggang','lantai']].forEach(function(p){ [15,20,25].forEach(function(m){ [0,1,2].forEach(function(path){
     plan({pain:p, masa:m, path:path});
     for(var i=0;i<MF_N;i++){ var x=mfSession(i), mins=mfMinutes(x);
@@ -3783,7 +3783,8 @@ print("\n── THE START ──");
       n.every(function(v,i){ return n.indexOf(v)===i; }) && mfSession(0).warm.length===6 && mfSession(5).cool.length===5);
     ok("...and the record sessions keep session 1's squat and push, for a fair count", [0,1,2].every(function(path){ plan({path:path}); var a=mfSession(0).main, b=mfSession(MF_N-1).main;
       return a[0].n===b[0].n && a[1].n===b[1].n; }));
-    plan({}); var nm=mfSession(4).n; mfData().lang='en'; ok("...the names in English too", mfT(nm)!==nm && /^[A-Z][A-Za-z :&-]+$/.test(mfT(nm))); mfData().lang='ms';
+    plan({}); var nm=mfSession(4).n; mfData().lang='en'; var en=mfT(nm); mfData().lang='ms';
+    ok("...the session names are English in both languages (12 Nov 2026, Seth)", /^[A-Z][A-Za-z :&-]+$/.test(nm) && mfT(nm)===nm && en===nm);
   })();
   _guest(); HF.data.progress[MF_ID]=0; ok("locked to a guest", !ownsProgram(MF));
   noThrow("its page opens for a guest", function(){ openProgram(MF_ID); });

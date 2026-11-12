@@ -18684,7 +18684,7 @@ const AY_PINGGAN={
    Not here yet: its own photographs (green palette until then), the landing
    page, prog_mula in the deployed edge functions.                        */
 
-const MF_ID='mula', MF_KEY='mf', MF_PRICE=49;   /* RM49 since 11 Nov 2026 (Seth: "buat harga rm 49") */
+const MF_ID='mula', MF_KEY='mf', MF_PRICE=59;   /* RM59 since 12 Nov 2026 (Seth: "harga RM59"); RM49 on 11 Nov */
 const MF_NAME='THE START', MF_SUB='6 Minggu Asas Kecergasan';
 /* Before launch only the listed accounts (and anyone who owns it) see it. */
 const MF_LIVE=true, MF_TESTERS=['sethnasser1991@gmail.com','hitfat91@gmail.com'];
@@ -18738,15 +18738,16 @@ const MF_PAT={
 const MF_FLOOR=['Hip Thrust','Towel Glute Bridge','Chair Glute Bridge','Chair Single Leg Glute Bridge','Single Leg Glutes Bridge','Dead Bug','Bird Dog','Plank','Side Plank','Knee Push Ups'];
 const MF_SEATED_CORE=['Seated Twist','Seated Knee To Chest','Towel Side Bend','Chair Russian Twist'];
 const MF_TYPES={
-  A:{n:'Duduk-Bangun & Tolak', p:['squat','push','bridge','core']},
-  B:{n:'Pinggul & Imbangan',   p:['hinge','pull','bal','core']},
-  C:{n:'Gabung & Stamina',     p:['squat','push','pull','cardio']}
+  A:{n:'Sit-to-Stand & Push', p:['squat','push','bridge','core']},
+  B:{n:'Hips & Balance',   p:['hinge','pull','bal','core']},
+  C:{n:'Combo & Stamina',     p:['squat','push','pull','cardio']}
 };
-/* each session's name turns with the week too, so the list never repeats */
+/* each session's name turns with the week too, so the list never repeats. In English in both
+   languages (12 Nov 2026, Seth: "nama training ... guna bahasa English") */
 const MF_NAMES={
-  A:['Duduk-Bangun & Tolak','Kaki & Dada','Punggung & Bahu','Kaki Tegap','Naik Setingkat: Kaki & Dada','Kuat Seluruh Badan'],
-  B:['Pinggul & Imbangan','Belakang & Postur','Imbangan & Kawalan','Pinggul Kuat','Naik Setingkat: Belakang','Berdiri Tegak'],
-  C:['Gabung & Stamina','Nafas & Rentak','Litar Penuh','Stamina Bertambah','Naik Setingkat: Stamina','Pusingan Akhir']
+  A:['Sit-to-Stand & Push','Legs & Chest','Glutes & Shoulders','Steady Legs','Step Up: Legs & Chest','Full-Body Strength'],
+  B:['Hips & Balance','Back & Posture','Balance & Control','Strong Hips','Step Up: Back','Stand Tall'],
+  C:['Combo & Stamina','Breath & Rhythm','Full Circuit','More Stamina','Step Up: Stamina','Final Round']
 };
 const MF_ORDER=[].concat.apply([],MF_WEEKS.map(()=>['A','B','C']));
 const MF_N=MF_ORDER.length, MF_RECS=[0,MF_N-1];
@@ -19885,7 +19886,7 @@ const MF_TK_PIC={
 function mfTkPics(p,small){
   const c=MF_TK_PIC[p]; if(!c) return '';
   const one=(k,ok,cap)=>'<figure class="'+(ok?'ok':'x')+'"><span class="tg">'+(ok?'✓ '+mfL('BETUL','RIGHT'):'✗ '+mfL('SALAH','WRONG'))+'</span>'+
-    '<img src="/img/p/mula/tk/'+p+'-'+k+'.jpg?v=1" alt="'+mfL(cap[0],cap[1])+'" loading="lazy" width="300" height="375"><figcaption>'+mfL(cap[0],cap[1])+'</figcaption></figure>';
+    '<img src="/img/p/mula/tk/'+p+'-'+k+'.jpg?v=2" alt="'+mfL(cap[0],cap[1])+'" loading="lazy" width="300" height="375"><figcaption>'+mfL(cap[0],cap[1])+'</figcaption></figure>';
   return '<div class="mf-tkpic'+(small?' sm':'')+'">'+one('ok',true,c[0])+one('x',false,c[1])+'</div>';
 }
 /* DIET 6 MINGGU 6KG: the program's content, exactly as Coach Seth wrote it

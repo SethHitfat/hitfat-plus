@@ -43,7 +43,7 @@ const CATALOGUE: Record<string, Sku> = {
   "prog_rh6": { price: 19, kind: "program" },       // Post-Workout Recovery · 2wk
   "prog_lad4": { price: 39, kind: "program" },      // Ladies Burn 30 (RM39 from 19 Oct 2026)
   "prog_ay30": { price: 39, kind: "program" },      // AYAH2FIT 30
-  "prog_mula": { price: 49, kind: "program" },      // THE START (RM49 since 11 Nov 2026)
+  "prog_mula": { price: 59, kind: "program" },      // THE START (RM59 since 12 Nov 2026; RM49 on 11 Nov)
   "prog_men6": { price: 39, kind: "program" },      // Men's Body Reset
   "prog_f40": { price: 39, kind: "program" },       // Fit After 40
   "prog_bws8": { price: 39, kind: "program" },      // Bodyweight Strength
@@ -168,7 +168,7 @@ function isFailedStatus(s: unknown) {
 /* the programs sold on their own, and the page each comes back to */
 const LANDING: Record<string, string> = {
   prog_lad4: '/ladies/berjaya/',            // Ladies Burn 30, RM39
-  prog_mula: '/start/berjaya/',             // THE START, RM49 (11 Nov 2026)
+  prog_mula: '/start/berjaya/',             // THE START, RM59 (RM49 11 Nov, RM59 from 12 Nov 2026)
 };
 
 /* the "baru sertai" card counts orders paid from here on (see ?action=recent) */
@@ -284,7 +284,7 @@ const WELCOME: Record<string, Welcome> = {
   /* THE START (11 Nov 2026): its own colour and first steps */
   prog_mula: { name: 'THE START', tebus: 'mula', color: '#E8480F', ink: '#141414', from: 'THE START <hello@mail.hitfat.io>',
     lead: '18 sesi anda sedang menunggu.',
-    steps: ['Jawab <b>9 soalan</b>, lebih kurang 2 minit. App pilih laluan anda: Mudah, Asas atau Beransur.', 'Mula <b>Sesi 1</b>: lebih kurang 15 minit, di rumah. Sediakan kerusi yang stabil.'] },
+    steps: ['Jawab <b>9 soalan</b>, lebih kurang 2 minit. App pilih tahap anda: Mudah, Asas atau Beransur.', 'Mula <b>Sesi 1</b>: lebih kurang 15 minit, di rumah. Sediakan kerusi yang stabil.'] },
 };
 function esc(s: unknown): string {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
