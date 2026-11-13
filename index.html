@@ -18691,13 +18691,15 @@ const MF_LIVE=true, MF_TESTERS=['sethnasser1991@gmail.com','hitfat91@gmail.com']
 
 /* (10 Nov 2026, Seth: "buat 6 minggu", with the poster "6 WEEKS OF THE START.")
    six weeks, eighteen sessions; still one change a week */
+/* week names and movement-pattern labels are in English in both languages too
+   (13 Nov 2026, Seth: "nama dalam apps tu kena tukar"); the descriptions stay Malay */
 const MF_WEEKS=[
-  {n:'Belajar Gerakan',        s:'Teknik, pernafasan dan cara sesi berjalan. Setiap set gerakan dibuat 2 kali.'},
-  {n:'Tambah Satu Kali',       s:'Gerakan sama, ulang satu kali lagi.'},
-  {n:'Lebih Lama',        s:'Buat 40 saat, rehat masih 30 saat. Kenal beza penat dengan sakit.'},
-  {n:'Rehat Pendek',      s:'Rehat dipendekkan ke 20 saat. Rentak sama.'},
-  {n:'Naik Tahap',        s:'Masa sama. Beberapa gerakan naik satu tahap.'},
-  {n:'Semak dan Sambung', s:'Kekalkan rentak, kemudian semak sejauh mana anda pergi.'}
+  {n:'The Basics',        s:'Teknik, pernafasan dan cara sesi berjalan. Setiap set gerakan dibuat 2 kali.'},
+  {n:'One More Time',       s:'Gerakan sama, ulang satu kali lagi.'},
+  {n:'Longer',        s:'Buat 40 saat, rehat masih 30 saat. Kenal beza penat dengan sakit.'},
+  {n:'Shorter Rest',      s:'Rehat dipendekkan ke 20 saat. Rentak sama.'},
+  {n:'Step Up',        s:'Masa sama. Beberapa gerakan naik satu tahap.'},
+  {n:'Check and Carry On', s:'Kekalkan rentak, kemudian semak sejauh mana anda pergi.'}
 ];
 const MF_WK=MF_WEEKS.length;
 /* by week: seconds of work, seconds of rest, rounds. (10 Nov 2026) one thing
@@ -18712,23 +18714,23 @@ const MF_LOAD=[[30,30,2],[30,30,3],[40,30,3],[40,20,3],[40,20,3],[40,20,3]];
    version turns. "late" are the versions from week 5, one step up. Paths:
    Mudah, Asas, Beransur. */
 const MF_PAT={
-  squat: {n:'Duduk-bangun',
+  squat: {n:'Sit-to-stand',
     l:[['Sit To Stand','Chair Assist Squat Hold','Chair Assist Squat Calf Raise'],['Chair Squat','Chair Squat Pause','Towel Squat Front Raises'],['Bodyweight Squat','Squat Pause','Towel Squat Press']],
     late:[['Chair Squat','Chair Squat Pause','Chair Squat Calf Raises'],['Bodyweight Squat','Squat Pause','Towel Squat Overhead'],null]},
-  push:  {n:'Tolak',
+  push:  {n:'Push',
     l:[['Wall Push Up','Towel Shoulder Press','Towel Shoulder Press 2'],['Incline Push Up (Chair)','Incline Wide Push Up','Towel Shoulder Press'],['Knee Push Ups','Incline Wide Push Up','Towel Shoulder Press 2']],
     late:[['Incline Push Up (Chair)','Incline Wide Push Up','Towel Shoulder Press 2'],['Knee Push Ups','Incline Wide Push Up','Towel Shoulder Press 2'],null]},
-  bridge:{n:'Jambatan pinggul',
+  bridge:{n:'Hip bridge',
     l:[['Hip Thrust','Towel Glute Bridge'],['Hip Thrust','Towel Glute Bridge','Chair Glute Bridge'],['Hip Thrust','Chair Glute Bridge','Towel Glute Bridge']],
     late:[null,null,['Single Leg Glutes Bridge','Chair Single Leg Glute Bridge']]},
-  hinge: {n:'Bengkok pinggul',
+  hinge: {n:'Hip hinge',
     l:[['Towel Deadlift','Hip Thrust'],['Towel Deadlift','Backpack Deadlift'],['Towel Deadlift','Backpack Deadlift','Backpack Good Morning']]},
-  pull:  {n:'Tarik',
+  pull:  {n:'Pull',
     l:[['Towel Shoulder Back Pull','Towel Rotation Shoulder','Towel Upright Row'],['Towel Shoulder Back Pull','Towel Rotation Shoulder','Towel Upright Row'],['Bottle Bent Over Row','Towel Shoulder Back Pull','Towel Rotation Shoulder']],
     late:[null,['Bottle Bent Over Row','Towel Shoulder Back Pull','Towel Rotation Shoulder'],null]},
-  core:  {n:'Kawalan badan',
+  core:  {n:'Core control',
     l:[['Dead Bug','Seated Knee To Chest','Seated Twist'],['Bird Dog','Dead Bug','Towel Side Bend'],['Plank','Bird Dog','Dead Bug','Side Plank']]},
-  bal:   {n:'Imbangan',
+  bal:   {n:'Balance',
     l:[['Chair Assist Hip Abduction','Chair Calf Raises','Chair Kick Back'],['Chair Calf Raises','Chair Assist Hip Abduction','Chair Kick Back','Lateral Step Over'],['Single Leg Calf Raises','Lateral Step Over','Chair Kick Back','Chair Assist Hip Abduction']]},
   cardio:{n:'Stamina',
     l:[['Seated High Knee','Seated Jack'],['Seated High Knee','Seated Jack','High Knee Tap Chair'],['High Knee','Butt Kick','Jumping Jack','Fast Feet']],
@@ -19409,7 +19411,7 @@ function mfComplete(gi){
 }
 
 /* ── after a session: the record (the first and last sessions), else the lesson ── */
-const MF_REC=[['sq','Duduk-bangun','kali'],['pu','Tolak','kali'],['yk','Yakin (1–5)','/ 5']];
+const MF_REC=[['sq','Sit-to-stand','kali'],['pu','Push','kali'],['yk','Yakin (1–5)','/ 5']];
 function mfRecKey(gi){ return 's'+(gi+1); }
 function mfRecDue(){
   const done=mfDone(), d=mfData();

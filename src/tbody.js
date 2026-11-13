@@ -3808,9 +3808,10 @@ print("\n── THE START ──");
   ok("after session 1: one task at a time, the record first", html('pgd-body').indexOf('Rekod permulaan')>0 && html('pgd-body').indexOf('Cara bernafas')<0);
   mfRecSkip(0); ok("...then the lesson", html('pgd-body').indexOf('Cara bernafas')>0);
   mfSetLang('en'); ok("BM | EN: the whole page in English", html('pgd-body').indexOf('How to breathe')>0 && html('pgd-body').indexOf('>Plan<')>0 && html('pgd-body').indexOf('Cara bernafas')<0 && html('pgd-body').indexOf('mfSetLang(')>0);
-  ok("...every lesson, technique card, week and question has its English", MF_LESSON.every(function(l){ return MF_EN[l[0]] && MF_EN[l[1]]; }) && MF_WEEKS.every(function(w){ return MF_EN[w.n] && MF_EN[w.s]; }) &&
-    Object.keys(MF_TECH).every(function(k){ var c=MF_TECH[k]; return c[0].every(function(t){ return MF_EN[t]; }) && MF_EN[c[1]] && MF_EN[c[2]] && MF_EN[MF_PAT[k].n]; }) &&
+  ok("...every lesson, technique card, week and question has its English", MF_LESSON.every(function(l){ return MF_EN[l[0]] && MF_EN[l[1]]; }) && MF_WEEKS.every(function(w){ return MF_EN[w.s]; }) &&
+    Object.keys(MF_TECH).every(function(k){ var c=MF_TECH[k]; return c[0].every(function(t){ return MF_EN[t]; }) && MF_EN[c[1]] && MF_EN[c[2]]; }) &&
     MF_Q.every(function(q){ return MF_EN[q.t] && (!q.s || MF_EN[q.s]) && q.o.every(function(o){ return MF_EN[o[1]] && (!o[2] || MF_EN[o[2]]); }); }));
+  ok("...week names and movement labels are English in both languages (13 Nov)", MF_WEEKS.map(function(w){ return w.n; }).join()==='The Basics,One More Time,Longer,Shorter Rest,Step Up,Check and Carry On' && Object.keys(MF_PAT).map(function(k){ return MF_PAT[k].n; }).join()==='Sit-to-stand,Push,Hip bridge,Hip hinge,Pull,Core control,Balance,Stamina');
   ok("...the player's technique line too", mfCue('squat').indexOf('Feet shoulder-width')===0);
   mfOpenSession(0); ok("...and the session page", html('dd-body').indexOf('Warm-up')>0 && html('dd-body').indexOf('Main Workout')>0);
   mfSetLang('ms'); ok("...and back to Malay", mfCue('squat').indexOf('Kaki selebar')===0);
