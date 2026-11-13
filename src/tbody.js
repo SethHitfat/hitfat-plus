@@ -3943,6 +3943,15 @@ print("\n── MEAL SCAN PLANS ──");
   ok("...and the app reads it from either program", WELCOME_SCAN_SKUS.prog_wl30==='BURN30' && WELCOME_SCAN_SKUS.prog_lad4==='MAK2FIT 30');
   /* THE START: 20, the same way (11 Nov 2026) */
   _ent.ladiesFrom=new Date(Date.now()-2*864e5).toISOString(); _ent.welcomeName='THE START'; _ent.welcomeN=20; HF.data.scanQuota={month:thisMonth(), used:3};
+  (function(){ const fl={done:1,masa:20,pain:['lantai'],sihat:['tiada'],path:0}, no={done:1,masa:20,pain:[],sihat:['tiada'],path:0};
+    let floorFree=true, same=true;
+    for(let gi=0;gi<MF_N;gi++){ const s=mfSession(gi,fl); if(mfExercises(s).some(e=>MF_FLOOR.indexOf(e.n)>=0 || /Cobra|Knee to Chest|Butterfly|Back Stretch|Side Abs/.test(e.n))) floorFree=false;
+      if(mfSession(gi,no).cool.join()!==MF_COOLS[(gi+s.wi+1)%3].join()) same=false; }
+    const nb={done:1,masa:20,pain:[],sihat:['tiada'],path:2,alat:['kerusi','tuala']}, wb=Object.assign({},nb,{alat:['kerusi','tuala','botol']});
+    let noBottle=true, bottle=false; for(let gi=0;gi<MF_N;gi++){ if(mfSession(gi,nb).main.some(x=>/Bottle/.test(x.n))) noBottle=false; if(mfSession(gi,wb).main.some(x=>/Bottle/.test(x.n))) bottle=true; }
+    ok("THE START: no water bottle at home means no bottle row; with one it stays", noBottle && bottle);
+    ok("THE START: someone who finds the floor hard is never sent to it, cool-down included (others keep the stretches)", floorFree && same && MF_COOLS_UP.every(c=>c.every(mfInDB)));
+  })();
   ok("THE START gives 20 scans, past the monthly 3, under its own name", welcomeScanN('prog_mula')===20 && welcomeScanN('prog_lad4')===10 && WELCOME_SCAN_SKUS.prog_mula==='THE START' &&
     scanAccess().left===20 && scanAccess().label.indexOf('20 of 20 THE START')===0);
   scanBump(); ok("...counted down", scanAccess().left===19 && mfScanCard().indexOf('19 daripada 20')>0 && mfScanCard().indexOf('mfScanGo()')>0);
