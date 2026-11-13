@@ -462,6 +462,24 @@ header .w{display:flex;align-items:center;justify-content:space-between;height:6
 .vc-lock b{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1}
 .vc-lock span{margin-top:3px;font-size:11px;font-weight:800;line-height:1.15;text-align:center}
 .vc-lock i{position:absolute;top:8px;right:8px;width:14px;height:11px;border-radius:3px;background:#fff}
+/* (14 Nov 2026, Seth: "buatkan jenis mcm cover style filem2 netflix ke setiap sesi") each session tile is a
+   film cover: its studio poster, the program's mark at the top, the title big at the bottom; no video frame */
+.vc-t.cv,.vc-lock.cv{aspect-ratio:2/3;border-radius:10px;box-shadow:0 14px 26px -16px rgba(60,20,0,.7);transition:transform .25s}
+.vc-t.cv:hover,.vc-lock.cv:hover{transform:translateY(-3px)}
+.vc-t.cv img{object-position:50% 20%}
+.vc-t.cv::after{background:linear-gradient(180deg,rgba(14,8,4,.35) 0,rgba(14,8,4,0) 22%,rgba(14,8,4,0) 45%,rgba(14,8,4,.9) 86%)}
+.vc-t.cv .mk{position:absolute;z-index:1;top:9px;right:8px;display:flex;align-items:center;gap:4px;font-family:var(--disp);font-style:italic;font-weight:900;font-stretch:80%;font-size:9px;letter-spacing:.08em;color:#fff;text-transform:uppercase}
+.vc-t.cv .mk::before{content:"";width:3px;height:11px;border-radius:1px;background:#FF7A35}
+.vc-t.cv .no{position:absolute;z-index:1;top:7px;left:7px;font-family:var(--disp);font-style:italic;font-weight:900;font-stretch:100%;font-size:44px;line-height:.8;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.95)}
+.vc-t.cv span{left:8px;right:8px;bottom:8px;font-family:var(--disp);font-style:italic;font-weight:900;font-stretch:72%;font-size:15px;line-height:.95;text-transform:uppercase;letter-spacing:-.005em;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.vc-t.cv span em{margin-top:5px;font-family:'Plus Jakarta Sans',sans-serif;font-style:normal;font-stretch:100%;font-size:9.5px;font-weight:800;letter-spacing:.06em;color:#FFD2B5;text-transform:uppercase;line-height:1.2}
+.vc-t.cv.on{box-shadow:0 0 0 3px var(--m),0 14px 26px -16px rgba(60,20,0,.7)}
+.vc-t.cv.on::before{content:"▶ MAIN";position:absolute;z-index:2;right:6px;top:6px;padding:3px 6px;border-radius:3px;background:#E8480F;color:#fff;font-size:8.5px;font-weight:800;letter-spacing:.08em;white-space:nowrap}
+.vc-t.cv.on .mk{display:none}
+.vc-lock.cv img{filter:blur(3px) saturate(.9)}
+.vc-lock.cv b{font-family:var(--disp);font-style:italic;font-weight:900;font-size:32px}
+.vc-lock.cv span{font-family:var(--disp);font-style:italic;font-weight:900;font-stretch:80%;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+@media (max-width:520px){ .vc-t.cv .mk,.vc-t.cv.on::before{display:none} .vc-t.cv span{font-size:11.5px;left:6px;right:6px;bottom:6px} .vc-t.cv .no{font-size:32px;top:6px;left:6px} .vc-t.cv span em{font-size:8.5px;margin-top:3px} .vc-lock.cv b{font-size:26px} .vc-lock.cv span{font-size:10px} }
 .vc-lock i::before{content:"";position:absolute;left:3px;top:-6px;width:8px;height:8px;border:2px solid #fff;border-bottom:0;border-radius:5px 5px 0 0;box-sizing:border-box}
 .vc-more{margin-top:10px;font-size:13px;font-weight:700;color:var(--ink2)}
 @media (prefers-reduced-motion:reduce){ .vc-f,.vc-rest{transition:none} }
@@ -992,7 +1010,7 @@ body{background:var(--bg)}
     </div>
     <div>
       <div class="vc-h">Minggu 1, sesi demi sesi</div>
-      <div class="vc-tiles" id="vc-tiles"><a class="vc-lock" href="#" data-buy="video-more"><img src="https://i.vimeocdn.com/video/2152224383-5b405703135398fbbaedbf2219be3311dd191ec7c0547a5a8e0a9afd0f946453-d_240x427" alt="" loading="lazy"><b>+15</b><span>sesi lagi</span><i aria-hidden="true"></i></a></div>
+      <div class="vc-tiles" id="vc-tiles"><a class="vc-lock cv" href="#" data-buy="video-more"><img src="/img/p/mula/s/s04.jpg?v=2" alt="" loading="lazy"><b>+15</b><span>sesi lagi</span><i aria-hidden="true"></i></a></div>
       <p class="vc-more">Setiap minggu, cuma satu perkara jadi lebih mencabar. Badan sempat biasa dulu sebelum naik.</p>
     </div>
   </div>
@@ -1462,7 +1480,7 @@ function vcPo(m,sz){ return 'https://i.vimeocdn.com/video/'+VC[m][1]+'-d_'+sz; }
   var po=$('vc-po'), seg=$('vc-seg'), arc=$('vc-arc'), rest=$('vc-rest'), tiles=$('vc-tiles');
   var esc=function(t){ return String(t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
   tiles.insertAdjacentHTML('afterbegin',DAYS.map(function(n){ var d=D[n-1];
-    return '<button type="button" class="vc-t" data-d="'+n+'"><img src="'+vcPo(d[4][0],'240x427')+'" alt="" loading="lazy"><i></i><span><small>SESI '+n+'</small>'+esc(d[0])+'<em>'+d[2]+' min · '+d[4].length+' gerakan</em></span></button>'; }).join(''));
+    return '<button type="button" class="vc-t cv" data-d="'+n+'" aria-label="Sesi '+n+': '+esc(d[0])+'"><img src="/img/p/mula/s/s0'+n+'.jpg?v=2" alt="" loading="lazy"><b class="no" aria-hidden="true">'+n+'</b><span>'+esc(d[0])+'<em>'+d[2]+' min</em></span></button>'; }).join(''));
   /* two frames, as in the app's player: the one on screen and the next, loading behind it */
   var src=function(m){ return 'https://player.vimeo.com/video/'+VC[m][0]+'?background=1&autoplay=1&loop=1&muted=1&controls=0&autopause=0&dnt=1&playsinline=1'; };
   var fr=[0,1].map(function(){ var f=document.createElement('iframe'); f.className='vc-f'; f.setAttribute('allow','autoplay; fullscreen'); f.setAttribute('tabindex','-1'); f.setAttribute('aria-hidden','true'); ph.insertBefore(f,po.nextSibling); return f; });
