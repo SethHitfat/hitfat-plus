@@ -375,6 +375,7 @@ function homeGoing(){
 function homeRow(){
   const t=[], sex=homeSex(), P=o=>typeof hpoTile==='function'?hpoTile(o):'';
   const sq=(p,kick,len,go)=>hpoCard(p,{cls:'hpo-sq hpo-br',kick:kick,len:len,go:go});
+  if(typeof syHomeTile==='function') t.push(syHomeTile());   /* HITFAT SYNC 30 first: testers only until it has a price */
   if(typeof mfLive==='function'){ mfEnsure();
     if(mfLive() && !mfDone()) t.push(sq(MF,mfOwned()?'Baru':'RM'+MF_PRICE,MF.len||'12 sesi')); }
   if(typeof ayLive==='function' && sex!=='female'){ ayEnsure();

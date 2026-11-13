@@ -9864,6 +9864,40 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mf-tkpic .x figcaption{box-shadow:inset 0 3px 0 #D9261C;}
 .mf-tkpic.sm{max-width:320px;}
 .mf-tkpic.sm figcaption{font-size:11.5px;}
+/* ── HITFAT SYNC 30 (13 Nov 2026): its own dark page and full-screen player, the look of its videos ── */
+#syv{position:fixed;inset:0;z-index:9990;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#0E0A0B;color:#fff;}
+#syv .sy-x,#syp .x{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:14px;z-index:3;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:18px;cursor:pointer;}
+.sy-hero{position:relative;min-height:62vh;background-size:cover;background-position:50% 30%;display:flex;align-items:flex-end;}
+.sy-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,10,11,.15) 30%,rgba(14,10,11,.96));}
+.sy-hero-in{position:relative;z-index:1;padding:0 22px 26px;}
+.sy-k{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#FF6B78;}
+.sy-t{font-size:46px;font-weight:900;font-style:italic;letter-spacing:-.04em;line-height:1;margin-top:8px;}
+.sy-t b{color:#FF2E43;}
+.sy-s{font-size:16px;line-height:1.45;color:rgba(255,255,255,.82);margin-top:10px;max-width:30em;}
+.sy-body{padding:6px 18px calc(env(safe-area-inset-bottom,0px) + 40px);max-width:560px;margin:0 auto;}
+.sy-prog{margin:14px 0 6px;}
+.sy-prog-h{font-size:14px;color:rgba(255,255,255,.75);} .sy-prog-h b{font-size:22px;color:#fff;}
+.sy-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.14);margin-top:8px;overflow:hidden;}
+.sy-bar i{display:block;height:100%;background:#FF2E43;border-radius:4px;}
+.sy-how{display:grid;gap:10px;margin:18px 0 6px;}
+.sy-how>div{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.06);border-radius:14px;padding:12px 14px;}
+.sy-how span{flex:0 0 30px;height:30px;border-radius:50%;background:#FF2E43;display:flex;align-items:center;justify-content:center;}
+.sy-how span svg{width:16px;height:16px;fill:#fff;stroke:#fff;}
+.sy-how p{margin:0;font-size:14px;line-height:1.45;color:rgba(255,255,255,.85);} .sy-how p b{color:#fff;}
+.sy-h{font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);margin:22px 2px 10px;}
+.sy-lv{display:grid;gap:10px;}
+.sy-card{display:block;width:100%;text-align:left;border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#fff;border-radius:16px;padding:14px 16px;cursor:pointer;font:inherit;}
+.sy-card.on{border-color:#FF2E43;background:rgba(255,46,67,.12);}
+.sy-card-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;} .sy-card-h b{font-size:20px;font-weight:900;} .sy-card-h span{font-size:13px;color:rgba(255,255,255,.65);}
+.sy-card ul{margin:8px 0 0;padding-left:18px;font-size:13.5px;line-height:1.55;color:rgba(255,255,255,.8);}
+.sy-go{display:block;width:100%;margin-top:18px;border:0;border-radius:16px;padding:17px 18px;background:#FF2E43;color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer;}
+.sy-note{font-size:13px;color:rgba(255,255,255,.6);text-align:center;margin-top:8px;}
+.sy-log{display:grid;gap:6px;} .sy-log>div{display:flex;justify-content:space-between;gap:10px;background:rgba(255,255,255,.05);border-radius:12px;padding:10px 14px;font-size:14px;} .sy-log span{color:rgba(255,255,255,.6);}
+#syp{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;}
+#syp iframe{border:0;width:min(100vw,56.25vh);height:min(100vh,177.78vw);}
+.sy-done{position:absolute;inset:0;z-index:2;background:rgba(14,10,11,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#fff;}
+.sy-done .sy-t{font-size:72px;color:#FF2E43;font-style:normal;} .sy-done .sy-go{max-width:320px;}
+.sy-go.off{background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);cursor:default;}
 
 /* The HITFAT ONE look, over the design layer. Delete this marker to go back. */
 /* ═══════════════════════════════════════════════════════════════
@@ -19890,6 +19924,138 @@ function mfTkPics(p,small){
   const one=(k,ok,cap)=>'<figure class="'+(ok?'ok':'x')+'"><span class="tg">'+(ok?'✓ '+mfL('BETUL','RIGHT'):'✗ '+mfL('SALAH','WRONG'))+'</span>'+
     '<img src="/img/p/mula/tk/'+p+'-'+k+'.jpg?v=2" alt="'+mfL(cap[0],cap[1])+'" loading="lazy" width="300" height="375"><figcaption>'+mfL(cap[0],cap[1])+'</figcaption></figure>';
   return '<div class="mf-tkpic'+(small?' sm':'')+'">'+one('ok',true,c[0])+one('x',false,c[1])+'</div>';
+}
+/* ── HITFAT SYNC 30 (13 Nov 2026) ──
+   Seth, 13 Nov: "dia asing, dia dalam HITFAT Plus, tapi dia kena beli … harga tu nanti",
+   then the model ("ni terbaik"), the 15-minute pilot ("semua okay"), levels "Easy · Medium · Hard"
+   and "3, ya" (put it in the app).
+   One session is one video made in _projek/sync: the coach's voice, the music and the moves on one
+   timeline, so the app only plays it. Every rep is counted aloud ("Down… Up! ONE!"); timed moves get
+   energy, not counting. Three levels of the same 15 minutes.
+   Sold on its own: HITFAT+ does NOT include it (the first program like that). Until it has a price it is
+   kept out of PROGRAMS, the Store and checkout; testers see it on Home and own it for testing. */
+const SYNC_ID='sync30', SYNC_NAME='HITFAT SYNC 30', SYNC_N=30, SYNC_MIN=15;
+const SYNC_LIVE=false, SYNC_TESTERS=['sethnasser1991@gmail.com'];
+/* Vimeo "id" or "id/hash" per level; empty until Seth uploads the three videos */
+const SYNC_VIDEO={easy:'', medium:'', hard:''};
+const SYNC_PIC='/img/p/sync/hero.jpg?v=2';
+const SYNC_LEVELS=[
+  {k:'easy',   n:'Easy',   s:'Perlahan, tanpa lompat',      d:['Squat 8 · Push up 6, perlahan','Mountain climber & plank 25 saat','Rehat 25 saat · 60 saat antara pusingan','Tiada lompat, tiada burpee']},
+  {k:'medium', n:'Medium', s:'Rentak penuh',                d:['Squat 12 · Push up 10','Mountain climber & plank 30 saat','Rehat 15 saat · 45 saat antara pusingan','Penutup: wall sit + burpee 8']},
+  {k:'hard',   n:'Hard',   s:'Lebih ulangan, rehat pendek', d:['Squat 12 · Push up 12','Mountain climber & plank 40 saat','Rehat 10 saat · 30 saat antara pusingan','Penutup: wall sit 45 saat + burpee 10']}
+];
+
+function syTester(){ return SYNC_TESTERS.indexOf(String(HF.email||'').toLowerCase())>=0; }
+/* bought on its own: never through contentOpen()/hasPlus() */
+function syOwned(){ return (typeof owns==='function' && owns('prog_'+SYNC_ID)) || syTester(); }
+function syLive(){ return SYNC_LIVE || syOwned(); }
+function syData(){ const d=HF.data.sync||(HF.data.sync={}); d.log=d.log||[]; d.level=d.level||'medium'; return d; }
+function syDone(){ return Math.min(syData().log.length, SYNC_N); }
+function syLevel(k){ return SYNC_LEVELS.find(l=>l.k===k)||SYNC_LEVELS[1]; }
+function syReady(k){ return !!SYNC_VIDEO[k]; }
+
+/* ── Home: a tile in "Program & Kursus" for testers ── */
+function syHomeTile(){
+  if(!syLive() || typeof hpoTile!=='function') return '';
+  const d=syDone();
+  return hpoTile({t:'HITFAT SYNC', kick:d?'Sesi '+(d+1)+' / '+SYNC_N:'Baru · '+SYNC_MIN+' min', lv:'Coach di telinga · ikut rentak', pal:'red', img:SYNC_PIC, pos:'50% 35%', go:'syOpen()'});
+}
+
+/* ── the page ── */
+function syOpen(){
+  syClose();
+  const o=document.createElement('div'); o.id='syv'; o.className='sy';
+  document.body.appendChild(o); syRender();
+}
+function syClose(){ const o=$('syv'); if(o&&o.parentNode) o.parentNode.removeChild(o); }
+function syPick(k){ syData().level=k; HF.save(); syRender(); }
+function syRender(){
+  const o=$('syv'); if(!o) return;
+  const d=syData(), n=syDone(), lv=syLevel(d.level);
+  let h='<button class="sy-x" aria-label="Tutup" onclick="syClose()">✕</button>'+
+    '<div class="sy-hero" style="background-image:url(\''+SYNC_PIC+'\')"><div class="sy-hero-in">'+
+      '<div class="sy-k">Program baru · '+SYNC_MIN+' minit</div><div class="sy-t">HITFAT <b>SYNC</b> 30</div>'+
+      '<div class="sy-s">Coach di telinga. Setiap ulangan dikira, ikut rentak muzik.</div></div></div>'+
+    '<div class="sy-body">'+
+    '<div class="sy-prog"><div class="sy-prog-h"><b>'+n+'</b> / '+SYNC_N+' sesi</div><div class="sy-bar"><i style="width:'+(n/SYNC_N*100).toFixed(1)+'%"></i></div></div>'+
+    '<div class="sy-how">'+
+      '<div><span>'+glyph('play')+'</span><p><b>Down… Up! ONE!</b> Setiap ulangan squat, push up dan burpee dikira dengan suara.</p></div>'+
+      '<div><span>'+glyph('bolt')+'</span><p><b>Gerakan ikut masa</b> (high knee, plank…): coach bagi semangat sampai "3, 2, 1, Stop!"</p></div>'+
+      '<div><span>'+glyph('target')+'</span><p><b>Pakai earphone</b> dan naikkan volume. Tiada alat diperlukan.</p></div></div>'+
+    '<div class="sy-h">Pilih tahap</div><div class="sy-lv">';
+  SYNC_LEVELS.forEach(l=>{
+    h+='<button class="sy-card'+(l.k===lv.k?' on':'')+'" onclick="syPick(\''+l.k+'\')"><div class="sy-card-h"><b>'+l.n+'</b><span>'+hesc(l.s)+'</span></div>'+
+      '<ul>'+l.d.map(x=>'<li>'+hesc(x)+'</li>').join('')+'</ul></button>';
+  });
+  h+='</div>'+
+    '<button class="sy-go'+(syReady(lv.k)?'':' off')+'" onclick="syPlay()">'+(syReady(lv.k)?'Mula · '+lv.n+' · '+SYNC_MIN+' minit':'Video '+lv.n+' akan datang')+'</button>'+
+    (syReady(lv.k)?'':'<div class="sy-note">Video sedang dimuat naik.</div>');
+  if(d.log.length){
+    h+='<div class="sy-h">Rekod anda</div><div class="sy-log">'+d.log.slice(-6).reverse().map(x=>
+      '<div><b>Sesi '+x.n+'</b><span>'+syLevel(x.lv).n+' · '+String(x.at||'').slice(0,10)+'</span></div>').join('')+'</div>';
+  }
+  h+='</div>';
+  o.innerHTML=h; o.scrollTop=0;
+}
+
+/* ── the player: the session video full screen, with its own sound ── */
+let _sy=null;   /* {lv, sid, seen, dur, done} */
+function syVimeo(v){
+  const p=String(v).split('/');
+  return 'https://player.vimeo.com/video/'+p[0]+'?'+(p[1]?'h='+p[1]+'&':'')+'autoplay=1&title=0&byline=0&portrait=0&dnt=1&playsinline=1&texttrack=false';
+}
+function syPlay(){
+  const lv=syData().level; if(!syReady(lv)) return;
+  syStop();
+  _sy={lv:lv, sid:null, seen:0, dur:0, done:false};
+  const o=document.createElement('div'); o.id='syp';
+  o.innerHTML='<iframe src="'+syVimeo(SYNC_VIDEO[lv])+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="HITFAT SYNC"></iframe>'+
+    '<button class="x" aria-label="Tutup" onclick="syStop()">✕</button>';
+  document.body.appendChild(o);
+}
+function syStop(){ const o=$('syp'); if(o&&o.parentNode) o.parentNode.removeChild(o); _sy=null; }
+function syPost(method,value){
+  const f=document.querySelector('#syp iframe'), w=f&&f.contentWindow; if(!w) return;
+  try{ w.postMessage(JSON.stringify(value===undefined?{method}:{method,value}),'https://player.vimeo.com'); }catch(e){}
+}
+function syOnMessage(ev){
+  if(ev.origin!=='https://player.vimeo.com' || !_sy) return;
+  let d; try{ d=typeof ev.data==='string'?JSON.parse(ev.data):ev.data; }catch(e){ return; }
+  if(!d) return;
+  if(d.event==='ready'){ ['timeupdate','play','ended'].forEach(x=>syPost('addEventListener',x)); return; }
+  if(d.event==='play' && !_sy.sid) sySessionStart();
+  if(d.event==='timeupdate' && d.data){
+    _sy.dur=d.data.duration||_sy.dur;
+    /* count only time really played forward, so a skip to the end is not a session */
+    const s=d.data.seconds||0; if(s>_sy.seen && s-_sy.seen<3) _sy.seen=s;
+    if(_sy.dur && _sy.seen>=_sy.dur*0.95) syFinish();
+  }
+  if(d.event==='ended' && _sy.dur && _sy.seen>=_sy.dur*0.9) syFinish();
+}
+if(typeof window!=='undefined' && window.addEventListener) window.addEventListener('message',syOnMessage);
+function sySessionStart(){
+  try{
+    if(!sb || !HF.userId || !_sy) return;
+    const p=_sy, n=syDone()+1;
+    sb.rpc('plus_session_start',{p_program:SYNC_ID, p_day:n-1, p_label:'HITFAT SYNC · Sesi '+n+' · '+syLevel(p.lv).n})
+      .then(r=>{ if(r && !r.error && _sy===p) p.sid=r.data; }).catch(()=>{});
+  }catch(e){}
+}
+function syFinish(){
+  if(!_sy || _sy.done) return; _sy.done=true;
+  const d=syData(), n=d.log.length+1, lv=_sy.lv;
+  d.log.push({n:n, lv:lv, at:new Date().toISOString()});
+  HF.markDone(SYNC_ID+'-s'+(n-1),{name:'HITFAT SYNC · Sesi '+n+' · '+syLevel(lv).n, mins:SYNC_MIN});
+  try{ if(sb && _sy.sid){ const id=_sy.sid; _sy.sid=null; sb.rpc('plus_session_finish',{p_id:id}).then(()=>{ if(typeof _lbCache!=='undefined') _lbCache={}; }).catch(()=>{}); } }catch(e){}
+  const o=$('syp');
+  if(o){
+    const done=document.createElement('div'); done.className='sy-done';
+    done.innerHTML='<div class="sy-k">Sesi '+n+' / '+SYNC_N+' · '+syLevel(lv).n+'</div><div class="sy-t">SIAP!</div>'+
+      '<div class="sy-s">'+SYNC_MIN+' minit, ikut rentak. Direkod dalam streak anda.</div>'+
+      '<button class="sy-go" onclick="syStop();syRender()">Tutup</button>';
+    o.appendChild(done);
+  }
+  if(typeof toast==='function') toast('Sesi SYNC siap 🔥');
 }
 /* DIET 6 MINGGU 6KG: the program's content, exactly as Coach Seth wrote it
    (diet-6-minggu-6kg-content.json, 14 Oct 2026). Not edited here: change the
@@ -38463,6 +38629,7 @@ function homeGoing(){
 function homeRow(){
   const t=[], sex=homeSex(), P=o=>typeof hpoTile==='function'?hpoTile(o):'';
   const sq=(p,kick,len,go)=>hpoCard(p,{cls:'hpo-sq hpo-br',kick:kick,len:len,go:go});
+  if(typeof syHomeTile==='function') t.push(syHomeTile());   /* HITFAT SYNC 30 first: testers only until it has a price */
   if(typeof mfLive==='function'){ mfEnsure();
     if(mfLive() && !mfDone()) t.push(sq(MF,mfOwned()?'Baru':'RM'+MF_PRICE,MF.len||'12 sesi')); }
   if(typeof ayLive==='function' && sex!=='female'){ ayEnsure();
