@@ -462,6 +462,100 @@ header .w{display:flex;align-items:center;justify-content:space-between;height:6
 .vc-lock b{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1}
 .vc-lock span{margin-top:3px;font-size:11px;font-weight:800;line-height:1.15;text-align:center}
 .vc-lock i{position:absolute;top:8px;right:8px;width:14px;height:11px;border-radius:3px;background:#fff}
+/* ── the phone in THE START's own player look (14 Nov 2026): cream, orange, black, slanted heavy type, halftone ── */
+.vc-ph.ts{--to:#E8480F;--to2:#B8380A;--to3:#FF7A35;--tc:#FFF4EA;--tp:#FFE0CC;--tk:#141414;background:var(--tk)}
+.vc-ph.ts::after{display:none}
+.ts .vc-f,.ts .vc-po{height:78%}
+.ts-pill{display:inline-block;padding:4px 9px 3px;border-radius:5px;background:var(--to);color:#fff;font-family:var(--disp);font-style:italic;font-weight:900;font-size:11px;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 4px 12px rgba(232,72,15,.45)}
+.ts-pill.k{background:var(--tk);color:var(--tc);box-shadow:none}
+.ts-work{position:absolute;inset:0;z-index:2;opacity:0;transition:opacity .4s}
+.ts-work.on{opacity:1}
+.ts-work::before{content:"";position:absolute;inset:0 0 auto;height:42%;background:linear-gradient(180deg,rgba(14,8,4,.7),rgba(14,8,4,0));pointer-events:none}
+.ts-top{position:absolute;top:14px;left:12px;right:12px;display:flex;align-items:center;gap:7px;color:#fff;font-size:11.5px;font-weight:800}
+.ts-nn{flex:1}
+.ts-tot{padding:4px 8px;border-radius:7px;background:var(--tk);color:var(--tc);font-variant-numeric:tabular-nums}
+.ts-seg{position:absolute;top:44px;left:12px;right:12px;display:flex;gap:3px}
+.ts-seg i{flex:1;height:4px;border-radius:3px;background:rgba(255,244,234,.35);overflow:hidden}
+.ts-seg i b{display:block;height:100%;width:0;background:var(--to3)}
+.ts-seg i.done{background:var(--tc)}
+.ts-kc{position:absolute;top:58px;left:12px;right:12px;padding:10px 12px;border-radius:15px;background:rgba(20,20,20,.86);color:#fff;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.ts-kc small{display:block;font-size:9.5px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--to3)}
+.ts-kc p{display:flex;gap:8px;align-items:flex-start;min-height:36px;margin:6px 0 0;font-size:13px;font-weight:700;line-height:1.3;transition:opacity .3s}
+.ts-kc p.fade{opacity:0}
+.ts-kc p em{flex:none;width:19px;height:19px;border-radius:50%;background:var(--to);color:#fff;font:italic 900 11px/19px var(--disp);text-align:center}
+.ts-kc u{display:inline-block;margin-top:7px;padding:4px 9px;border:1px solid rgba(255,244,234,.35);border-radius:99px;font-size:10.5px;font-weight:700;text-decoration:none;color:var(--tc)}
+.ts-bot{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:12px;padding:44px 14px 16px;color:var(--tk);
+  background:linear-gradient(180deg,rgba(255,244,234,0) 0,rgba(255,244,234,.92) 26px,var(--tc) 48px)}
+.ts-bot::before{content:"";position:absolute;left:0;right:0;top:20px;height:30px;pointer-events:none;background:radial-gradient(circle,rgba(232,72,15,.55) 0 1.3px,transparent 1.8px) 0 0/7px 7px;
+  -webkit-mask:linear-gradient(90deg,transparent,#000 45%,transparent);mask:linear-gradient(90deg,transparent,#000 45%,transparent);opacity:.6}
+.ts-ring,.ts-cring,.ts-bring{position:relative;flex:none;width:68px;height:68px}
+.ts-ring svg,.ts-cring svg,.ts-bring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ts svg circle{fill:none;stroke-width:6}
+.ts-ring circle{stroke:var(--tp)}
+.ts svg circle.fg{stroke:var(--to);stroke-linecap:round;stroke-dasharray:170;stroke-dashoffset:0}
+.ts-ring em{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:italic 900 19px/1 var(--disp);font-variant-numeric:tabular-nums}
+.ts-nm{min-width:0}
+.ts-nm b{display:block;font:italic 900 19px/1 var(--disp);font-stretch:90%;text-transform:uppercase;letter-spacing:-.01em}
+.ts-nm span{display:block;margin-top:5px;font-size:11px;font-weight:600;color:#7A5A46}
+.ts-nm span i{font-style:normal;font-weight:800;color:var(--tk)}
+.ts-sc{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;visibility:hidden;transition:opacity .45s,visibility 0s .45s}
+.ts-sc.on{opacity:1;visibility:visible;transition:opacity .45s}
+/* ready: the session poster above, the session on cream below */
+.ts-ready{justify-content:flex-end;background:var(--tc);color:var(--tk);text-align:left;align-items:stretch}
+.ts-pic{position:absolute;inset:0 0 34%;background:center 22%/cover no-repeat}
+.ts-pic::after{content:"";position:absolute;inset:auto 0 0;height:40%;background:linear-gradient(180deg,rgba(255,244,234,0),var(--tc))}
+.ts-rb{position:relative;padding:0 16px 16px}
+.ts-rb small{display:block;font:italic 900 12px/1 var(--disp);letter-spacing:.06em;text-transform:uppercase;color:var(--to)}
+.ts-rb b{display:block;margin-top:5px;font:italic 900 23px/1 var(--disp);font-stretch:88%;text-transform:uppercase;letter-spacing:-.01em}
+.ts-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.ts-chips span{padding:5px 9px;border-radius:99px;background:#fff;border:1.5px solid #F0DCCB;font-size:10.5px;font-weight:700}
+.ts-chips i{font-style:normal;font-weight:900;color:var(--to)}
+.ts-btn{margin-top:11px;padding:11px;border-radius:99px;background:var(--to);color:#fff;text-align:center;font:italic 900 14px/1 var(--disp);letter-spacing:.03em;text-transform:uppercase;box-shadow:0 12px 24px -12px rgba(184,56,10,.85)}
+.ts-dots{display:grid;grid-template-columns:repeat(18,1fr);gap:3px;width:100%;margin-top:12px}
+.ts-dots i{height:7px;border-radius:2px;background:var(--tp)}
+.ts-dots i.on{background:var(--tk)}
+.ts-dots i.now{background:var(--to);transform:scaleY(1.5)}
+/* count-in: solid orange with the dots */
+.ts-cd{background:linear-gradient(150deg,#FF7A35,#E8480F 50%,#B8380A);color:var(--tc)}
+.ts-cd::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,rgba(255,244,234,.4) 0 1.5px,transparent 2px) 0 0/8px 8px;-webkit-mask:linear-gradient(160deg,transparent 30%,#000);mask:linear-gradient(160deg,transparent 30%,#000)}
+.ts-cring{width:150px;height:150px}
+.ts-cring circle{stroke:rgba(255,244,234,.3)}
+.ts-cd svg circle.fg{stroke:var(--tk)}
+.ts-cring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:italic 900 74px/1 var(--disp);color:var(--tc)}
+.ts-cd strong{margin-top:14px;font:italic 900 24px/1 var(--disp);text-transform:uppercase;color:var(--tk)}
+.ts-cx{position:absolute;left:16px;right:16px;bottom:18px;text-align:left}
+.ts-cx small{display:block;font-size:9.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,244,234,.85)}
+.ts-cx b{display:block;margin-top:3px;font-size:19px;font-weight:800;color:#fff}
+/* rest: a calm cream screen that breathes */
+.ts-rest{justify-content:flex-start;padding:22px 14px 14px;background:var(--tc);color:var(--tk);overflow:hidden}
+.ts-rest::before{content:"";position:absolute;right:-40px;top:-40px;width:220px;height:220px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(232,72,15,.5) 0 1.5px,transparent 2px) 0 0/8px 8px;-webkit-mask:radial-gradient(circle,#000 20%,transparent 70%);mask:radial-gradient(circle,#000 20%,transparent 70%)}
+.ts-bring{width:136px;height:136px;margin-top:18px;border-radius:50%;background:#fff;box-shadow:0 16px 34px rgba(184,56,10,.18);animation:tsBreath 8s ease-in-out infinite}
+.ts-bring circle{stroke:var(--tp)}
+.ts-bring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:italic 900 52px/1 var(--disp)}
+@keyframes tsBreath{0%,100%{transform:scale(.94)}50%{transform:scale(1.06)}}
+.ts-br{position:relative;width:100%;height:26px;margin-top:14px;font:italic 900 18px/26px var(--disp);text-transform:uppercase;color:var(--to)}
+.ts-br span{position:absolute;inset:0;opacity:0;animation:tsBr 8s ease-in-out infinite}
+.ts-br .b2{animation-delay:4s;color:var(--tk)}
+@keyframes tsBr{0%,45%{opacity:1}50%,95%{opacity:0}100%{opacity:1}}
+.ts-nx{position:absolute;left:12px;right:12px;bottom:14px;padding:12px 13px;border-radius:17px;background:#fff;border:1.5px solid #F0DCCB;box-shadow:0 10px 24px rgba(184,56,10,.12);text-align:left}
+.ts-nx small,.ts-nx em{display:block;font-size:9.5px;font-style:normal;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--to)}
+.ts-nx b{display:block;margin-top:4px;font:italic 900 18px/1.05 var(--disp);font-stretch:88%;text-transform:uppercase}
+.ts-nx em{margin-top:9px}
+.ts-nx span{display:block;margin-top:3px;font-size:11.5px;line-height:1.35;color:var(--tk)}
+/* done: black with orange */
+.ts-done{padding:0 16px;background:radial-gradient(circle at 50% 0,rgba(232,72,15,.35),transparent 55%),var(--tk);color:#fff}
+.ts-done::before{content:"";position:absolute;inset:0 0 55%;pointer-events:none;background:radial-gradient(circle,rgba(232,72,15,.45) 0 1.5px,transparent 2px) 0 0/8px 8px;-webkit-mask:linear-gradient(180deg,#000,transparent);mask:linear-gradient(180deg,#000,transparent)}
+.ts-done strong{margin-top:16px;font:italic 900 30px/1 var(--disp);text-transform:uppercase;color:var(--to3)}
+.ts-done > b{margin-top:8px;font-size:17px;font-weight:800}
+.ts-done .ts-dots i{background:rgba(255,244,234,.18)}
+.ts-done .ts-dots i.on{background:var(--tc)}
+.ts-st{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:18px}
+.ts-st div{padding:11px 12px;border-radius:14px;background:rgba(255,244,234,.07);border:1px solid rgba(255,244,234,.12);text-align:left}
+.ts-st small{display:block;margin:0;font-size:10.5px;color:rgba(255,244,234,.7)}
+.ts-st b{display:block;margin-top:4px;font-size:12px;font-weight:800;color:#fff}
+.ts-st i{font:italic 900 26px/1 var(--disp);color:var(--to3)}
+.ts-done > small{margin-top:10px;font-size:11.5px;font-weight:600;color:rgba(255,244,234,.75)}
+@media (prefers-reduced-motion:reduce){ .ts-bring,.ts-br span{animation:none} .ts-br .b2{display:none} .ts-br span:first-child{opacity:1} }
 /* (14 Nov 2026, Seth: "buatkan jenis mcm cover style filem2 netflix ke setiap sesi") each session tile is a
    film cover: its studio poster, the program's mark at the top, the title big at the bottom; no video frame */
 .vc-t.cv,.vc-lock.cv{aspect-ratio:2/3;border-radius:10px;box-shadow:0 14px 26px -16px rgba(60,20,0,.7);transition:transform .25s}
@@ -998,15 +1092,34 @@ body{background:var(--bg)}
   </div>
   <div class="vc">
     <div>
-      <div class="vc-ph" id="vc-ph" aria-label="Pratonton video latihan">
+      <!-- 14 Nov 2026 (Seth: "rakam sebenar coach ni ko buat yang mula2 jer, lepas tu pastikan ade frame vibe the start", picked
+           "Gerakan pertama sahaja"): the phone plays a session the way THE START's own player does: the session card, the orange
+           count-in, the coach's real clip for the first move under the technique card and the cream panel, the breathing rest,
+           then "Sesi N siap!"; only the first move is video -->
+      <div class="vc-ph ts" id="vc-ph" aria-label="Pratonton sesi THE START">
         <img class="vc-po" id="vc-po" alt="" loading="lazy">
-        <div class="vc-top"><span id="vc-day">Sesi 1 · Sit-to-Stand &amp; Push</span><span id="vc-n">1 / 4</span></div>
-        <div class="vc-seg" id="vc-seg"></div>
-        <div class="vc-bot"><div><small>Sekarang</small><b id="vc-name">Chair Squat</b><span id="vc-next"></span></div>
-          <div class="vc-ring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" id="vc-arc" cx="32" cy="32" r="27"/></svg><em id="vc-sec">10</em></div></div>
-        <div class="vc-rest" id="vc-rest"><small>Rehat · seterusnya</small><b id="vc-rn"></b></div>
+        <div class="ts-work" id="ts-work">
+          <div class="ts-top"><span class="ts-pill">Gerak</span><span class="ts-nn" id="ts-n">Gerakan 1/4</span><span class="ts-tot" id="ts-tot">14:00 lagi</span></div>
+          <div class="ts-seg" id="ts-seg"></div>
+          <div class="ts-kc"><small>Kunci teknik</small><p id="ts-cue"><em>1</em><span></span></p><u>Terlalu susah? Versi mudah</u></div>
+          <div class="ts-bot"><div class="ts-ring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" id="ts-arc" cx="32" cy="32" r="27"/></svg><em id="ts-sec">0:10</em></div>
+            <div class="ts-nm"><b id="ts-name">Chair Squat</b><span id="ts-next"></span></div></div>
+        </div>
+        <div class="ts-sc ts-ready on" id="ts-ready"><div class="ts-pic" id="ts-pic"></div>
+          <div class="ts-rb"><small id="ts-rk">Sesi 1 / 18</small><b id="ts-rt">Sit-to-Stand &amp; Push</b>
+            <div class="ts-chips"><span><i id="ts-rm">14</i> minit</span><span><i id="ts-rg">4</i> gerakan</span><span>Ikut rentak anda</span></div>
+            <div class="ts-btn">Mula sesi</div><div class="ts-dots" id="ts-d1"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+        <div class="ts-sc ts-cd" id="ts-cd"><div class="ts-cring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><circle class="fg" id="ts-carc" cx="32" cy="32" r="27"/></svg><b id="ts-cn">3</b></div>
+          <strong>Bersedia!</strong><div class="ts-cx"><small>Mula dengan</small><b id="ts-cm">Chair Squat</b></div></div>
+        <div class="ts-sc ts-rest" id="ts-rest"><div class="ts-rh"><span class="ts-pill k">Rehat</span></div>
+          <div class="ts-bring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><circle class="fg" id="ts-barc" cx="32" cy="32" r="27"/></svg><b id="ts-bn">5</b></div>
+          <div class="ts-br"><span>Tarik nafas</span><span class="b2">Hembus</span></div>
+          <div class="ts-nx"><small>Seterusnya</small><b id="ts-xn"></b><em>Kunci teknik</em><span id="ts-xc"></span></div></div>
+        <div class="ts-sc ts-done" id="ts-done"><span class="ts-pill">The Start</span><strong id="ts-dk">Sesi 1 siap!</strong><b id="ts-dt">THE START · Sesi 1</b>
+          <div class="ts-dots" id="ts-d2"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><small id="ts-dl">1 daripada 18 sesi siap. Lagi 17 sesi.</small>
+        <div class="ts-st"><div><small>Masa</small><b><i id="ts-sm">14</i> min</b></div><div><small>Minggu</small><b><i>1</i> / 6</b></div></div></div>
       </div>
-      <p class="vc-cap">Rakaman sebenar coach HITFAT di gym HITFAT, bukan animasi. Pratonton dipendekkan; dalam app setiap gerakan 30–40 saat.</p>
+      <p class="vc-cap">Gerakan pertama: rakaman sebenar coach HITFAT. Dalam app, setiap gerakan ada video coach, 30–40 saat, dengan kunci teknik dan rehat berpandu.</p>
     </div>
     <div>
       <div class="vc-h">Minggu 1, sesi demi sesi</div>
@@ -1473,66 +1586,83 @@ function vcPo(m,sz){ return 'https://i.vimeocdn.com/video/'+VC[m][1]+'-d_'+sz; }
       if(!touched && !still && !timer) timer=setInterval(function(){ ti=(ti+1)%tour.length; show(tour[ti]); },4200); }
     else { clearInterval(timer); timer=null; } },{threshold:.3}).observe(cal);
 })();
-/* the video course player (29 Oct 2026): a day of the program, as the app plays it, shortened */
+/* the session preview (14 Nov 2026): THE START's player in miniature; the coach's real clip for the first move only */
 (function(){
   var ph=document.getElementById('vc-ph'), D=window.LBD; if(!ph||!D) return;
-  var DAYS=[1,2,3], SECS=10, REST=2, $=function(i){ return document.getElementById(i); };
-  var po=$('vc-po'), seg=$('vc-seg'), arc=$('vc-arc'), rest=$('vc-rest'), tiles=$('vc-tiles');
+  var DAYS=[1,2,3], $=function(i){ return document.getElementById(i); }, tiles=$('vc-tiles'), po=$('vc-po');
   var esc=function(t){ return String(t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
   tiles.insertAdjacentHTML('afterbegin',DAYS.map(function(n){ var d=D[n-1];
     return '<button type="button" class="vc-t cv" data-d="'+n+'" aria-label="Sesi '+n+': '+esc(d[0])+'"><img src="/img/p/mula/s/s0'+n+'.jpg?v=2" alt="" loading="lazy"><b class="no" aria-hidden="true">'+n+'</b><span>'+esc(d[0])+'<em>'+d[2]+' min</em></span></button>'; }).join(''));
-  /* two frames, as in the app's player: the one on screen and the next, loading behind it */
-  var src=function(m){ return 'https://player.vimeo.com/video/'+VC[m][0]+'?background=1&autoplay=1&loop=1&muted=1&controls=0&autopause=0&dnt=1&playsinline=1'; };
-  var fr=[0,1].map(function(){ var f=document.createElement('iframe'); f.className='vc-f'; f.setAttribute('allow','autoplay; fullscreen'); f.setAttribute('tabindex','-1'); f.setAttribute('aria-hidden','true'); ph.insertBefore(f,po.nextSibling); return f; });
-  function load(f,m){ if(f.getAttribute('data-m')===m) return; f.classList.remove('ready'); f.setAttribute('data-m',m); f.src=src(m); }
+  /* the technique cues of each session's first two moves (MF_TECH in the app) */
+  var TK={squat:['Kaki selebar bahu.','Tolak punggung ke belakang seperti nak duduk.','Bangun dengan menolak lantai.'],
+    push:['Badan lurus dari kepala ke tumit.','Siku 45°, bukan terkeluar ke tepi.','Hembus nafas semasa menolak.'],
+    hinge:['Lutut bengkok sedikit.','Tolak punggung ke belakang, belakang lurus.','Rasa tarikan di belakang peha.'],
+    pull:['Bahu turun, jauh dari telinga.','Rapatkan bilah bahu.','Gerak perlahan.']};
+  var PAT={1:['squat','push'],2:['hinge','pull'],3:['squat','push']};
+  var WORK=10, REST=5, f=null, day=1, T=[], live=false, started=false, cueT=null;
+  function later(fn,ms){ T.push(setTimeout(function(){ if(live) fn(); },ms)); }
+  function clear(){ T.forEach(clearTimeout); T=[]; clearInterval(cueT); cueT=null; }
+  function show(id){ ['ts-ready','ts-cd','ts-rest','ts-done'].forEach(function(k){ $(k).classList.toggle('on',k===id); }); $('ts-work').classList.toggle('on',id==='work'); }
+  function dots(el,done,now){ [].forEach.call($(el).children,function(x,k){ x.className=k<done?'on':(k===now?'now':''); }); }
+  function mmss(t){ return Math.floor(t/60)+':'+('0'+(t%60)).slice(-2); }
+  function clip(m){
+    if(!VC[m]) return; po.src=vcPo(m,'360x640');
+    if(f && f.getAttribute('data-m')===m) return;
+    if(!f){ f=document.createElement('iframe'); f.className='vc-f cur'; f.setAttribute('allow','autoplay; fullscreen'); f.setAttribute('tabindex','-1'); f.setAttribute('aria-hidden','true'); ph.insertBefore(f,po.nextSibling); }
+    f.classList.remove('ready'); f.setAttribute('data-m',m);
+    f.src='https://player.vimeo.com/video/'+VC[m][0]+'?background=1&autoplay=1&loop=1&muted=1&controls=0&autopause=0&dnt=1&playsinline=1';
+  }
   addEventListener('message',function(e){
-    if(!/vimeo\.com$/.test(String(e.origin).replace(/^https?:\/\//,''))) return;
+    if(!f || e.source!==f.contentWindow) return;
     var d; try{ d=typeof e.data==='string'?JSON.parse(e.data):e.data; }catch(x){ return; }
-    fr.forEach(function(f){ if(f.contentWindow!==e.source) return;
-      if(d&&d.event==='ready'){ ['play','playProgress'].forEach(function(v){ f.contentWindow.postMessage(JSON.stringify({method:'addEventListener',value:v}),'*'); }); }
-      if(d&&(d.event==='play'||d.event==='playProgress')) f.classList.add('ready'); });
+    if(d&&d.event==='ready') ['play','playProgress'].forEach(function(v){ f.contentWindow.postMessage(JSON.stringify({method:'addEventListener',value:v}),'*'); });
+    if(d&&(d.event==='play'||d.event==='playProgress')) f.classList.add('ready');
   });
-  var cur=0, day=DAYS[0], list=[], i=0, left=SECS, tick=null, live=false, started=false;
-  function setDay(n){ day=n; list=D[n-1][4]; i=0;
-    seg.innerHTML=list.map(function(){ return '<i><b></b></i>'; }).join('');
-    $('vc-day').textContent='Sesi '+n+' · '+D[n-1][0];
-    [].forEach.call(tiles.querySelectorAll('.vc-t'),function(t){ t.classList.toggle('on',+t.getAttribute('data-d')===n); }); }
-  function paint(){
-    var m=list[i]; po.src=vcPo(m,'360x640');
-    var a=fr[cur], b=fr[1-cur];
-    if(b.getAttribute('data-m')===m){ cur=1-cur; a=fr[cur]; b=fr[1-cur]; } else load(a,m);
-    a.classList.add('cur'); b.classList.remove('cur');
-    $('vc-name').textContent=m;
-    $('vc-n').textContent=(i+1)+' / '+list.length;
-    $('vc-next').textContent=i<list.length-1?'Seterusnya: '+list[i+1]:'Gerakan terakhir ulangan ini';
-    [].forEach.call(seg.children,function(s,n){ s.firstChild.style.width=n<i?'100%':'0'; });
-    /* the next move loads behind this one */
-    var nx=next(); if(nx!==m) setTimeout(function(){ if(list[i]===m) load(fr[1-cur],nx); },1500);
-    left=SECS; clock();
+  function setDay(n){
+    day=n; var d=D[n-1], mv=d[4];
+    $('ts-pic').style.backgroundImage='url(/img/p/mula/s/s0'+n+'.jpg?v=2)';
+    $('ts-rk').textContent='Sesi '+n+' / 18'; $('ts-rt').textContent=d[0]; $('ts-rm').textContent=d[2]; $('ts-rg').textContent=mv.length;
+    $('ts-cm').textContent=mv[0]; $('ts-name').textContent=mv[0];
+    $('ts-next').innerHTML='Seterusnya: <i>'+esc(mv[1])+'</i>';
+    $('ts-n').textContent='Gerakan 1/'+mv.length;
+    $('ts-seg').innerHTML=mv.map(function(){ return '<i><b></b></i>'; }).join('');
+    $('ts-xn').textContent=mv[1]; $('ts-xc').textContent=TK[PAT[n][1]].slice(0,2).join(' ');
+    dots('ts-d1',n-1,n-1);
+    [].forEach.call(tiles.querySelectorAll('.vc-t'),function(t){ t.classList.toggle('on',+t.getAttribute('data-d')===n); });
+    clip(mv[0]);
   }
-  /* after a day's last move, the next day on the tiles */
-  function next(){ if(i<list.length-1) return list[i+1]; var k=DAYS[(DAYS.indexOf(day)+1)%DAYS.length]; return D[k-1][4][0]; }
-  function clock(){ $('vc-sec').textContent=left; arc.style.strokeDashoffset=170*(1-left/SECS);
-    var s=seg.children[i]; if(s) s.firstChild.style.width=(100*(SECS-left)/SECS)+'%'; }
-  function step(){
-    if(!live) return;
-    if(left>0){ left--; clock(); return; }
-    var last=i>=list.length-1;
-    $('vc-rn').textContent=next(); rest.classList.add('on');
-    clearInterval(tick); tick=null;
-    setTimeout(function(){ rest.classList.remove('on');
-      if(last) setDay(DAYS[(DAYS.indexOf(day)+1)%DAYS.length]); else i++;
-      paint(); run(); },REST*1000);
+  function ring(id,frac){ $(id).style.strokeDashoffset=170*(1-frac); }
+  function play(){
+    clear(); var mins=D[day-1][2]*60;
+    show('ts-ready');
+    later(function(){ show('ts-cd'); [3,2,1].forEach(function(k,j){ later(function(){ $('ts-cn').textContent=k; ring('ts-carc',(3-j)/3); },j*800); }); },2600);
+    later(work,2600+2500);
   }
-  function run(){ if(live && !tick) tick=setInterval(step,1000); }
-  function stop(){ clearInterval(tick); tick=null; }
+  function work(){
+    show('work'); var cues=TK[PAT[day][0]], ci=0, left=WORK, seg=$('ts-seg').firstChild.firstChild, mins=D[day-1][2]*60;
+    var cue=function(){ var p=$('ts-cue'); p.classList.add('fade'); setTimeout(function(){ p.firstChild.textContent=ci+1; p.lastChild.textContent=cues[ci]; p.classList.remove('fade'); ci=(ci+1)%cues.length; },300); };
+    cue(); cueT=setInterval(cue,3400);
+    var tick=function(){ $('ts-sec').textContent=mmss(left); ring('ts-arc',left/WORK); seg.style.width=(100*(WORK-left)/WORK)+'%';
+      $('ts-tot').textContent=mmss(mins-(WORK-left))+' lagi';
+      if(left-- > 0) later(tick,1000); else { clearInterval(cueT); cueT=null; rest(); } };
+    tick();
+  }
+  function rest(){
+    show('ts-rest'); var left=REST;
+    var tick=function(){ $('ts-bn').textContent=left; ring('ts-barc',left/REST); if(left-- > 0) later(tick,1000); else done(); };
+    tick();
+  }
+  function done(){ var n=day;
+    $('ts-dk').textContent='Sesi '+n+' siap!'; $('ts-dt').textContent='THE START · Sesi '+n;
+    $('ts-dl').textContent=n+' daripada 18 sesi siap. Lagi '+(18-n)+' sesi.'; dots('ts-d2',n,-1); $('ts-sm').textContent=D[n-1][2];
+    show('ts-done'); later(function(){ setDay(DAYS[(DAYS.indexOf(day)+1)%DAYS.length]); play(); },3800); }
   tiles.addEventListener('click',function(e){ var t=e.target.closest('.vc-t'); if(!t) return;
-    var n=+t.getAttribute('data-d'); rest.classList.remove('on'); stop(); setDay(n); paint(); started=true; run();
-    if(typeof trackC==='function') trackC('VideoTap',{day:n}); });
-  setDay(day); po.src=vcPo(list[0],'360x640');
-  function go(){ if(!started){ started=true; paint(); } live=true; run(); }
+    started=true; live=true; setDay(+t.getAttribute('data-d')); play();
+    if(typeof trackC==='function') trackC('VideoTap',{day:day}); });
+  setDay(1);
+  function go(){ live=true; if(!started){ started=true; play(); } else play(); }
   if(!('IntersectionObserver' in window)){ go(); return; }
-  new IntersectionObserver(function(es){ if(es[0].isIntersecting) go(); else { live=false; stop(); } },{threshold:.25}).observe(ph);
+  new IntersectionObserver(function(es){ if(es[0].isIntersecting){ if(!live) go(); } else { live=false; clear(); } },{threshold:.25}).observe(ph);
 })();
 /* Real reviews only, given with permission; while empty the section stays hidden */
 var TESTI = [];
