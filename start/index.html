@@ -463,62 +463,62 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,#FF8A4C 0%,transparent
 .vc-lock span{margin-top:3px;font-size:11px;font-weight:800;line-height:1.15;text-align:center}
 .vc-lock i{position:absolute;top:8px;right:8px;width:14px;height:11px;border-radius:3px;background:#fff}
 /* ── the six-week calendar (14 Nov 2026) ── */
-.kc-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:620px;margin:22px auto 0}
-.kc-stats div{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 8px;border-radius:20px;background:#FFF1E6;text-align:center}
-.kc-stats b{font:italic 900 40px/1 var(--disp);color:#E8480F;letter-spacing:-.02em}
-.kc-stats span{margin-top:6px;font-size:13px;font-weight:700;color:var(--ink2);line-height:1.3}
+.kc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:620px;margin:16px auto 0}
+.kc-stats div{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;border-radius:14px;background:#FFF1E6;text-align:center}
+.kc-stats b{font:italic 900 28px/1 var(--disp);color:#E8480F;letter-spacing:-.02em}
+.kc-stats span{margin-top:4px;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2);line-height:1.2}
 .kc{position:relative;max-width:620px;margin:16px auto 0;padding:16px 12px 14px;border-radius:26px;background:#141414;color:#FFF4EA;text-align:left;overflow:hidden;box-shadow:0 28px 54px -30px rgba(90,30,0,.75)}
 .kc::before{content:"";position:absolute;right:-50px;top:-50px;width:240px;height:240px;pointer-events:none;background:radial-gradient(circle,rgba(232,72,15,.55) 0 1.5px,transparent 2px) 0 0/8px 8px;-webkit-mask:radial-gradient(circle,#000 15%,transparent 70%);mask:radial-gradient(circle,#000 15%,transparent 70%)}
-.kc-hd{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:0 4px 12px}
+.kc-hd{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:0 4px 10px}
 .kc-pl{padding:4px 9px 3px;border-radius:5px;background:#E8480F;color:#fff;font:italic 900 11px/1 var(--disp);letter-spacing:.08em;text-transform:uppercase}
 .kc-hd b{font:italic 900 19px/1 var(--disp);text-transform:uppercase;letter-spacing:-.01em}
 .kc-hd small{flex-basis:100%;font-size:11.5px;font-weight:600;color:rgba(255,244,234,.6)}
-.kc-dn,.kc-w{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;align-items:stretch}
+.kc-dn,.kc-w{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;align-items:stretch}
 .kc-dn span{text-align:center;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,244,234,.55)}
-.kc-g{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.kc-g{display:flex;flex-direction:column;gap:7px;margin-top:4px}
 .kc-wl{grid-column:1/-1;display:flex;align-items:baseline;gap:7px;padding:0 2px;line-height:1.1}
 .kc-wl small{font:italic 900 11px/1 var(--disp);letter-spacing:.06em;text-transform:uppercase;color:#FF7A35}
 .kc-wl b{font-size:12.5px;font-weight:800;color:#FFF4EA}
 .kc-wl em{margin-left:auto;font-style:normal;font-size:10.5px;font-weight:700;color:rgba(255,244,234,.55)}
-.kc-c{position:relative;aspect-ratio:4/5;border-radius:8px;overflow:hidden;opacity:0;transform:scale(.7);transition:opacity .35s,transform .35s cubic-bezier(.3,1.5,.5,1)}
+.kc-c{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;opacity:0;transform:scale(.7);transition:opacity .35s,transform .35s cubic-bezier(.3,1.5,.5,1)}
 .kc.in .kc-c{opacity:1;transform:none}
 .kc-c.rest{display:flex;align-items:center;justify-content:center;background:#1F1F1F}
-.kc-c.rest svg{width:46%;height:46%;fill:none;stroke:rgba(255,244,234,.32);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.kc-c.s{padding:0;border:0;cursor:pointer;background:center 20%/cover no-repeat #2A2A2A;-webkit-tap-highlight-color:transparent}
+.kc-c.rest svg{width:42%;height:42%;fill:none;stroke:rgba(255,244,234,.32);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kc-c.s{padding:0;border:0;cursor:pointer;background:center 25%/cover no-repeat #2A2A2A;-webkit-tap-highlight-color:transparent}
 .kc-c.s::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.75))}
-.kc-c.s b{position:absolute;z-index:1;left:4px;bottom:3px;font:italic 900 15px/1 var(--disp);color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.kc-c.s b{position:absolute;z-index:1;left:4px;bottom:3px;font:italic 900 14px/1 var(--disp);color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .kc-c.rec{box-shadow:inset 0 0 0 2px #FF7A35}
 .kc-c.rec::before{content:"★";position:absolute;z-index:2;top:2px;right:3px;font-size:10px;color:#FF7A35;text-shadow:0 1px 4px rgba(0,0,0,.6)}
 .kc-c.s.on{box-shadow:0 0 0 2.5px #FFF4EA,0 0 18px 2px rgba(255,122,53,.8)}
-.kc-pk{position:relative;display:flex;flex-direction:column;gap:8px;margin:0 2px 12px;padding:10px;border-radius:16px;background:rgba(255,244,234,.06);border:1px solid rgba(255,244,234,.1)}
+.kc-pk{position:relative;display:flex;flex-direction:column;gap:7px;margin:0 2px 10px;padding:9px;border-radius:16px;background:rgba(255,244,234,.06);border:1px solid rgba(255,244,234,.1)}
 .kc-pr > span{display:block;margin-bottom:5px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#FFF4EA}
 .kc-pr em{font-style:normal;font-weight:700;letter-spacing:0;text-transform:none;color:rgba(255,244,234,.55)}
 .kc-ch{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.kc-ch button{padding:7px 0;border:1.5px solid rgba(255,244,234,.18);border-radius:9px;background:transparent;color:#FFF4EA;font:800 11px/1 inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.kc-ch button{padding:6px 0;border:1.5px solid rgba(255,244,234,.18);border-radius:9px;background:transparent;color:#FFF4EA;font:800 11px/1 inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .kc-ch button.on{border-color:#E8480F;background:#E8480F;color:#fff}
 #kc-pa button.on{border-color:#FF7A35;background:transparent;color:#FF7A35;box-shadow:inset 0 0 0 1px #FF7A35}
 .kc-ch button:disabled{opacity:.25;cursor:default}
 .kc-c.ak{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:rgba(255,122,53,.12);box-shadow:inset 0 0 0 1.5px #FF7A35}
-.kc-c.ak svg{width:44%;height:44%;fill:none;stroke:#FF7A35;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.kc-c.ak small{font-size:8.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#FF7A35}
+.kc-c.ak svg{width:40%;height:40%;fill:none;stroke:#FF7A35;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kc-c.ak small{font-size:8px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#FF7A35}
 .kc-lg .k{background:rgba(255,122,53,.12);box-shadow:inset 0 0 0 1.5px #FF7A35}
-.kc-lg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;padding:0 4px;font-size:11px;font-weight:700;color:rgba(255,244,234,.7)}
+.kc-lg{display:flex;flex-wrap:wrap;gap:5px 12px;margin-top:10px;padding:0 4px;font-size:10.5px;font-weight:700;color:rgba(255,244,234,.7)}
 .kc-lg i{display:inline-block;width:10px;height:12px;margin-right:6px;border-radius:3px;vertical-align:-2px}
 .kc-lg .a{background:#E8480F}.kc-lg .r{background:#141414;box-shadow:inset 0 0 0 2px #FF7A35}.kc-lg .w{background:#2E2E2E}
-.kc-d{display:grid;grid-template-columns:104px 1fr;gap:14px;max-width:620px;margin:12px auto 0;padding:14px;border-radius:22px;background:#fff;border:1.5px solid #F4E2D4;text-align:left;transition:opacity .2s}
+.kc-d{display:grid;grid-template-columns:74px 1fr;gap:12px;max-width:620px;margin:10px auto 0;padding:12px;border-radius:20px;background:#fff;border:1.5px solid #F4E2D4;text-align:left;transition:opacity .2s}
 .kc-d.fade{opacity:0}
-.kc-dp{aspect-ratio:4/5;border-radius:14px;background:center 20%/cover no-repeat #eee}
-.kc-dk{font:italic 900 11.5px/1 var(--disp);letter-spacing:.06em;text-transform:uppercase;color:#E8480F}
-.kc-d h3{margin-top:6px;font:italic 900 21px/1.02 var(--disp);text-transform:uppercase;letter-spacing:-.01em}
-.kc-df{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
-.kc-df span{padding:4px 9px;border-radius:99px;background:#FFF1E6;font-size:11px;font-weight:800;color:var(--ink)}
-.kc-d ol{margin:10px 0 0;padding:0;list-style:none;counter-reset:k;font-size:12.5px;font-weight:700;line-height:1.35}
-.kc-d li{counter-increment:k;display:flex;gap:7px;margin-top:4px}
+.kc-dp{aspect-ratio:4/5;border-radius:12px;background:center 20%/cover no-repeat #eee}
+.kc-dk{font:italic 900 10.5px/1.15 var(--disp);letter-spacing:.06em;text-transform:uppercase;color:#E8480F}
+.kc-d h3{margin-top:4px;font:italic 900 18px/1.02 var(--disp);text-transform:uppercase;letter-spacing:-.01em}
+.kc-df{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.kc-df span{padding:3px 8px;border-radius:99px;background:#FFF1E6;font-size:10.5px;font-weight:800;color:var(--ink)}
+.kc-d ol{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;margin:0;padding:0;list-style:none;counter-reset:k;font-size:12px;font-weight:700;line-height:1.25}
+.kc-d li{counter-increment:k;display:flex;align-items:center;gap:6px;min-width:0}
 .kc-d li::before{content:counter(k);flex:none;width:18px;height:18px;border-radius:50%;background:#141414;color:#FFF4EA;font:italic 900 10px/18px var(--disp);text-align:center}
-.kc-d q{grid-column:1/-1;display:block;padding:10px 12px;border-radius:14px;background:#FFF7F0;font-size:12.5px;line-height:1.4;color:var(--ink2);quotes:none}
-.kc-d q b{display:block;margin-bottom:2px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#E8480F}
-.kc-note{max-width:620px;margin:12px auto 0;font-size:12.5px;color:var(--ink2)}
-@media (min-width:700px){ .kc-stats{grid-template-columns:repeat(4,1fr)} .kc-dn,.kc-w{gap:8px} .kc-wl b{font-size:14px} .kc-c.s b{font-size:20px;left:6px;bottom:5px} .kc-d{grid-template-columns:150px 1fr} }
+.kc-d q{grid-column:1/-1;display:block;padding:8px 10px;border-radius:12px;background:#FFF7F0;font-size:12px;line-height:1.35;color:var(--ink2);quotes:none}
+.kc-d q b{margin-right:6px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#E8480F}
+.kc-note{max-width:620px;margin:10px auto 0;font-size:12px;color:var(--ink2)}
+@media (min-width:700px){ .kc-stats b{font-size:36px} .kc-stats span{font-size:12px} .kc-dn,.kc-w{gap:8px} .kc-wl b{font-size:14px} .kc-c.s b{font-size:20px;left:6px;bottom:5px} .kc-d{grid-template-columns:120px 1fr} .kc-d ol{grid-column:2} }
 @media (prefers-reduced-motion:reduce){ .kc-c{opacity:1;transform:none;transition:none} }
 /* testimonials, tidied (14 Nov 2026) */
 .txf{max-width:620px;margin:24px auto 0;border-radius:26px;overflow:hidden;background:#141414;color:#fff;text-align:left;box-shadow:0 26px 50px -30px rgba(90,30,0,.7);position:relative}
@@ -1239,20 +1239,20 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
      each week a row of seven days, the session posters on its three training days, a walk on the rest days, the two record
      sessions ringed; tap a session to see it -->
 <section class="box c reveal" id="kalendar">
-  <span class="pill">Pelan 6 minggu</span>
+  <span class="pill">6-Week Plan</span>
   <h2 class="sec-h">6 minggu. <span class="grad">Setiap sesi dirancang.</span></h2>
-  <p class="sec-p">Pelan Asas THE START, minggu demi minggu. App menyesuaikannya ikut jawapan anda: gerakan ditukar jika lutut, bahu atau pinggang tak selesa, atau susah turun ke lantai, dan hari latihan ikut pilihan anda.</p>
-  <div class="kc-stats"><div><b>18</b><span>sesi latihan</span></div><div><b>6</b><span>minggu, satu perubahan seminggu</span></div><div><b>2</b><span>sesi rekod, Sesi 1 &amp; 18</span></div><div><b>31</b><span>gerakan berbeza</span></div></div>
+  <p class="sec-p">Gerakan ikut lutut, bahu dan pinggang anda. Hari latihan ikut pilihan anda.</p>
+  <div class="kc-stats"><div><b>18</b><span>Sessions</span></div><div><b>6</b><span>Weeks</span></div><div><b>2</b><span>Tests</span></div><div><b>31</b><span>Moves</span></div></div>
   <div class="kc" id="kc" aria-label="Kalendar 6 minggu THE START">
-    <div class="kc-hd"><span class="kc-pl">The Start</span><b>Kalendar latihan</b><small>Ini contoh. Tekan hari di bawah untuk tukar, dan dalam app anda pilih sendiri.</small></div>
-    <div class="kc-pk"><div class="kc-pr"><span>Hari sesi <em>pilih 3</em></span><div class="kc-ch" id="kc-ps"></div></div>
-      <div class="kc-pr"><span>Hari aktif <em>pilihan, maks 2</em></span><div class="kc-ch" id="kc-pa"></div></div></div>
-    <div class="kc-dn"><span>Isn</span><span>Sel</span><span>Rab</span><span>Kha</span><span>Jum</span><span>Sab</span><span>Ahd</span></div>
+    <div class="kc-hd"><span class="kc-pl">The Start</span><b>Training Calendar</b><small>Contoh sahaja. Pilih hari anda, kalendar ikut.</small></div>
+    <div class="kc-pk"><div class="kc-pr"><span>Session days <em>pick 3</em></span><div class="kc-ch" id="kc-ps"></div></div>
+      <div class="kc-pr"><span>Active days <em>optional, up to 2</em></span><div class="kc-ch" id="kc-pa"></div></div></div>
+    <div class="kc-dn"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
     <div class="kc-g" id="kc-g"></div>
-    <div class="kc-lg"><span><i class="a"></i>Sesi latihan</span><span><i class="r"></i>Sesi rekod</span><span><i class="k"></i>Hari aktif · jalan + regangan</span><span><i class="w"></i>Hari rehat · jalan kaki</span></div>
+    <div class="kc-lg"><span><i class="a"></i>Session</span><span><i class="r"></i>Test</span><span><i class="k"></i>Active · walk + stretch</span><span><i class="w"></i>Rest · walk</span></div>
   </div>
   <div class="kc-d" id="kc-d" aria-live="polite"></div>
-  <p class="kc-note">Sesi THE START kekal 3 seminggu supaya badan sempat pulih. Nak bergerak 4 atau 5 hari? Tambah hari aktif: jalan 20 minit dan regangan 10 minit. Tertinggal satu sesi? App sambung dari sesi seterusnya.</p>
+  <p class="kc-note">3 sesi seminggu supaya badan sempat pulih. Hari aktif: jalan 20 minit + regangan 10 minit. Tertinggal sesi? App sambung dari sesi seterusnya.</p>
 </section>
 <section class="box c reveal" id="dapat">
   <span class="pill">Apa anda dapat</span>
@@ -1668,8 +1668,8 @@ function vcPo(m,sz){ return 'https://i.vimeocdn.com/video/'+VC[m][1]+'-d_'+sz; }
   var D=[["Sit-to-Stand & Push", "rec", 14, 2, ["Chair Squat", "Incline Push Up (Chair)", "Hip Thrust", "Bird Dog"], "Sesi rekod: kira duduk-bangun dan tolak dalam 30 saat pertama. Teknik, pernafasan dan cara sesi berjalan. Setiap set gerakan dibuat 2 kali.", 30, 30], ["Hips & Balance", "B", 14, 2, ["Towel Deadlift", "Towel Shoulder Back Pull", "Chair Calf Raises", "Dead Bug"], "Teknik, pernafasan dan cara sesi berjalan. Setiap set gerakan dibuat 2 kali.", 30, 30], ["Combo & Stamina", "C", 14, 2, ["Chair Squat Pause", "Incline Wide Push Up", "Towel Rotation Shoulder", "Seated High Knee"], "Teknik, pernafasan dan cara sesi berjalan. Setiap set gerakan dibuat 2 kali.", 30, 30], ["Legs & Chest", "A", 18, 3, ["Towel Squat Front Raises", "Towel Shoulder Press", "Towel Glute Bridge", "Towel Side Bend"], "Gerakan sama, ulang satu kali lagi.", 30, 30], ["Back & Posture", "B", 18, 3, ["Backpack Deadlift", "Towel Upright Row", "Chair Assist Hip Abduction", "Bird Dog"], "Gerakan sama, ulang satu kali lagi.", 30, 30], ["Breath & Rhythm", "C", 18, 3, ["Chair Squat", "Incline Push Up (Chair)", "Towel Shoulder Back Pull", "Seated Jack"], "Gerakan sama, ulang satu kali lagi.", 30, 30], ["Glutes & Shoulders", "A", 20, 3, ["Chair Squat Pause", "Incline Wide Push Up", "Chair Glute Bridge", "Dead Bug"], "Buat 40 saat, rehat masih 30 saat. Kenal beza penat dengan sakit.", 40, 30], ["Balance & Control", "B", 20, 3, ["Towel Deadlift", "Towel Rotation Shoulder", "Chair Kick Back", "Towel Side Bend"], "Buat 40 saat, rehat masih 30 saat. Kenal beza penat dengan sakit.", 40, 30], ["Full Circuit", "C", 20, 3, ["Towel Squat Front Raises", "Towel Shoulder Press", "Towel Upright Row", "High Knee Tap Chair"], "Buat 40 saat, rehat masih 30 saat. Kenal beza penat dengan sakit.", 40, 30], ["Steady Legs", "A", 19, 3, ["Chair Squat", "Incline Push Up (Chair)", "Hip Thrust", "Bird Dog"], "Rehat dipendekkan ke 20 saat. Rentak sama.", 40, 20], ["Strong Hips", "B", 19, 3, ["Backpack Deadlift", "Towel Shoulder Back Pull", "Lateral Step Over", "Dead Bug"], "Rehat dipendekkan ke 20 saat. Rentak sama.", 40, 20], ["More Stamina", "C", 19, 3, ["Chair Squat Pause", "Incline Wide Push Up", "Towel Rotation Shoulder", "Seated High Knee"], "Rehat dipendekkan ke 20 saat. Rentak sama.", 40, 20], ["Step Up: Legs & Chest", "A", 19, 3, ["Towel Squat Overhead", "Towel Shoulder Press 2", "Towel Glute Bridge", "Towel Side Bend"], "Masa sama. Beberapa gerakan naik satu tahap.", 40, 20], ["Step Up: Back", "B", 19, 3, ["Towel Deadlift", "Towel Rotation Shoulder", "Chair Calf Raises", "Bird Dog"], "Masa sama. Beberapa gerakan naik satu tahap.", 40, 20], ["Step Up: Stamina", "C", 19, 3, ["Bodyweight Squat", "Knee Push Ups", "Bottle Bent Over Row", "High Knee Tap Chair"], "Masa sama. Beberapa gerakan naik satu tahap.", 40, 20], ["Full-Body Strength", "A", 19, 3, ["Squat Pause", "Incline Wide Push Up", "Chair Glute Bridge", "Dead Bug"], "Kekalkan rentak, kemudian semak sejauh mana anda pergi.", 40, 20], ["Stand Tall", "B", 19, 3, ["Backpack Deadlift", "Towel Shoulder Back Pull", "Chair Assist Hip Abduction", "Towel Side Bend"], "Kekalkan rentak, kemudian semak sejauh mana anda pergi.", 40, 20], ["Final Round", "rec", 19, 3, ["Chair Squat", "Incline Push Up (Chair)", "Towel Rotation Shoulder", "Butt Kick"], "Sesi rekod: kira duduk-bangun dan tolak dalam 30 saat pertama. Kekalkan rentak, kemudian semak sejauh mana anda pergi.", 40, 20]];
   window.LBD=D;
   /* (14 Nov 2026) the six weeks as a calendar: three training days a week (Mon, Wed, Fri as the example), the rest are walks */
-  var WK=[['The Basics','2 kali · 30/30'],['One More Time','3 kali · 30/30'],['Longer','buat 40 · rehat 30'],['Shorter Rest','buat 40 · rehat 20'],['Step Up','gerakan naik'],['Check and Carry On','rekod akhir']];
-  var PICK=[0,2,4], DAYS=[0,2,4], AKT=[], DN=['Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu','Ahad'], DS=['Isn','Sel','Rab','Kha','Jum','Sab','Ahd'];
+  var WK=[['The Basics','2 rounds · 30/30'],['One More Time','3 rounds · 30/30'],['Longer','40s work · 30s rest'],['Shorter Rest','40s work · 20s rest'],['Step Up','harder moves'],['Check and Carry On','final test']];
+  var PICK=[0,2,4], DAYS=[0,2,4], AKT=[], DN=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'], DS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   var esc=function(t){ return String(t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
   var g=document.getElementById('kc-g'), box=document.getElementById('kc-d'), kc=document.getElementById('kc'); if(!g) return;
   var ps=document.getElementById('kc-ps'), pa=document.getElementById('kc-pa');
@@ -1679,12 +1679,12 @@ function vcPo(m,sz){ return 'https://i.vimeocdn.com/video/'+VC[m][1]+'-d_'+sz; }
   function build(){
     var n=0, k=0;
     g.innerHTML=WK.map(function(w,wi){
-      var h='<div class="kc-w"><div class="kc-wl"><small>Minggu '+(wi+1)+'</small><b>'+w[0]+'</b><em>'+w[1]+'</em></div>';
+      var h='<div class="kc-w"><div class="kc-wl"><small>Week '+(wi+1)+'</small><b>'+w[0]+'</b><em>'+w[1]+'</em></div>';
       for(var d=0;d<7;d++){ var dl=(k++)*28;
         if(DAYS.indexOf(d)>=0){ n++; var x=D[n-1];
-          h+='<button type="button" class="kc-c s'+(x[1]==='rec'?' rec':'')+(n===cur?' on':'')+'" data-d="'+n+'" style="background-image:url('+pic(n)+');transition-delay:'+dl+'ms" aria-label="Sesi '+n+', '+DN[d]+' minggu '+(wi+1)+': '+esc(x[0])+', '+x[2]+' minit"><b>'+n+'</b></button>';
-        } else if(AKT.indexOf(d)>=0) h+='<span class="kc-c ak" style="transition-delay:'+dl+'ms" title="'+DN[d]+': hari aktif, jalan 20 minit dan regangan 10 minit">'+walk+'<small>Aktif</small></span>';
-        else h+='<span class="kc-c rest" style="transition-delay:'+dl+'ms" title="'+DN[d]+': rehat, jalan kaki 20 minit">'+walk+'</span>';
+          h+='<button type="button" class="kc-c s'+(x[1]==='rec'?' rec':'')+(n===cur?' on':'')+'" data-d="'+n+'" style="background-image:url('+pic(n)+');transition-delay:'+dl+'ms" aria-label="Session '+n+', '+DN[d]+', week '+(wi+1)+': '+esc(x[0])+', '+x[2]+' min"><b>'+n+'</b></button>';
+        } else if(AKT.indexOf(d)>=0) h+='<span class="kc-c ak" style="transition-delay:'+dl+'ms" title="'+DN[d]+': active day, 20-min walk + 10-min stretch">'+walk+'<small>Active</small></span>';
+        else h+='<span class="kc-c rest" style="transition-delay:'+dl+'ms" title="'+DN[d]+': rest, 20-min walk">'+walk+'</span>';
       }
       return h+'</div>'; }).join('');
     ps.innerHTML=DS.map(function(x,d){ return '<button type="button" data-s="'+d+'" class="'+(DAYS.indexOf(d)>=0?'on':'')+'" aria-pressed="'+(DAYS.indexOf(d)>=0)+'">'+x+'</button>'; }).join('');
@@ -1701,10 +1701,10 @@ function vcPo(m,sz){ return 'https://i.vimeocdn.com/video/'+VC[m][1]+'-d_'+sz; }
     [].forEach.call(g.querySelectorAll('.kc-c.s'),function(b){ b.classList.toggle('on',+b.getAttribute('data-d')===i); });
     box.classList.add('fade');
     setTimeout(function(){
-      box.innerHTML='<div class="kc-dp" style="background-image:url('+pic(i)+')"></div><div><div class="kc-dk">Sesi '+i+' / 18 · Minggu '+(wi+1)+' · '+day+(x[1]==='rec'?' · Rekod':'')+'</div>'+
-        '<h3>'+esc(x[0])+'</h3><div class="kc-df"><span>'+x[2]+' minit</span><span>ulang '+x[3]+' kali</span><span>'+x[4].length+' gerakan</span></div>'+
+      box.innerHTML='<div class="kc-dp" style="background-image:url('+pic(i)+')"></div><div><div class="kc-dk">Session '+i+' / 18 · Week '+(wi+1)+' · '+day+(x[1]==='rec'?' · Test':'')+'</div>'+
+        '<h3>'+esc(x[0])+'</h3><div class="kc-df"><span>'+x[2]+' min</span><span>'+x[3]+' rounds</span><span>'+x[4].length+' moves</span></div>'+
         '<ol>'+x[4].map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('')+'</ol></div>'+
-        '<q><b>'+WK[wi][0]+'</b>'+esc(x[5])+'</q>';
+        '<q><b>'+WK[wi][0]+'</b>'+esc(x[5].replace(/^Sesi rekod: /,'Test: '))+'</q>';
       box.classList.remove('fade'); },160); }
   g.addEventListener('click',function(e){ var b=e.target.closest('.kc-c.s'); if(!b) return; touch(); show(+b.getAttribute('data-d')); });
   show(1);
