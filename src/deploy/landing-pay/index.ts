@@ -245,6 +245,8 @@ Deno.serve(async (req: Request) => {
         fbp: fb(b?.fbp), fbc: fb(b?.fbc),
         ip: (req.headers.get('x-forwarded-for') || '').split(',')[0].trim().slice(0, 64),
         ua: (req.headers.get('user-agent') || '').slice(0, 400),
+        /* (14 Nov 2026) the buyer ticked "Jangan papar nama saya": never in the "baru sertai" card */
+        ...(b?.hide ? { hide: 1 } : {}),
       };
       /* an affiliate's code from her link (?ref=), kept by the page; checked when it is paid */
       const ref = String(b?.ref || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16);
@@ -339,9 +341,16 @@ Deno.serve(async (req: Request) => {
       const sku = (new URL(req.url).searchParams.get('sku') || '').trim();
       if (!LANDING[sku]) return json({ recent: [] });
       const since = new Date(Math.max(Date.now() - 7 * 864e5, Date.parse(SHOW_FROM))).toISOString();
-      const { data } = await admin().from('plus_landing_purchases').select('name, paid_at')
+      const { data } = await admin().from('plus_landing_purchases').select('name, paid_at, order_number')
         .eq('sku', sku).gte('paid_at', since).order('paid_at', { ascending: false }).limit(10);
-      const recent = (data || []).map((r: any) => ({ n: shortName(r.name), t: r.paid_at })).filter((r) => r.n);
+      /* buyers who asked not to be shown (the order's meta.hide) are left out */
+      const nums = (data || []).map((r: any) => r.order_number).filter(Boolean);
+      const hidden: Record<string, boolean> = {};
+      if (nums.length) {
+        const { data: os } = await admin().from('plus_landing_orders').select('order_number, meta').in('order_number', nums);
+        for (const o of (os || [])) if (o && o.meta && o.meta.hide) hidden[o.order_number] = true;
+      }
+      const recent = (data || []).filter((r: any) => !hidden[r.order_number]).map((r: any) => ({ n: shortName(r.name), t: r.paid_at })).filter((r) => r.n);
       return new Response(JSON.stringify({ recent }), { headers: { ...CORS, 'Cache-Control': 'public, max-age=120' } });
     }
 

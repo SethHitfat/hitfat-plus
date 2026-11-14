@@ -1098,6 +1098,48 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
 .gi i.th.mid{background-position:center 30%}
 .gi i.th.bara{background-size:78%;background-color:var(--peach)}
 .gi{align-items:center}
+
+/* (14 Nov 2026, the prospect review, Seth: "buat semua") a shorter page: compact blocks, no repeats */
+.laurels.l2{grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+.laurels.l2 .lau{gap:4px} .laurels.l2 .lau svg{width:20px;height:44px} .laurels.l2 .lau div{font-size:12.5px;line-height:1.25}
+.lpics.one{grid-template-columns:1fr!important;margin-top:18px} .lpics.one figure{aspect-ratio:2/1}
+.life.ls{grid-template-columns:1fr;gap:6px;max-width:620px;margin-left:auto;margin-right:auto}
+.life.ls div{display:grid;grid-template-columns:34px 1fr;column-gap:12px;align-items:center;padding:10px 12px;border-radius:16px}
+.life.ls i{grid-row:span 2;width:34px;height:34px;border-radius:11px} .life.ls i .ic{width:18px;height:18px}
+.life.ls b{margin:0;font-size:14px} .life.ls span{margin:1px 0 0;font-size:12.5px;line-height:1.35}
+@media(min-width:760px){ .life.ls{grid-template-columns:1fr 1fr} }
+.gi.bn{flex-direction:column;gap:8px}
+.gi.bn .bnl{display:grid;gap:7px;width:100%;padding-right:0}
+.gi.bn .bnl div{display:flex;gap:8px;align-items:baseline;font-size:13px;line-height:1.35;color:var(--ink2)}
+.gi.bn .bnl div b{flex:none;display:inline;font-size:13.5px;color:var(--ink)}
+.habs.hl{grid-template-columns:1fr!important;gap:0;padding:4px 14px;border-radius:18px;background:var(--lav)}
+.habs.hl div{display:grid;grid-template-columns:74px 1fr;column-gap:10px;padding:9px 0;border-radius:0;background:none;border-top:1px solid rgba(232,72,15,.12)}
+.habs.hl div:first-child{border-top:0}
+.habs.hl em{grid-row:span 2;align-self:center;font-size:10.5px} .habs.hl b{margin:0;font-size:13.5px} .habs.hl span{margin-top:1px;font-size:12px}
+.more .swaps{margin-top:10px}
+.final .fph{position:relative;max-width:560px;margin:24px auto 0;aspect-ratio:16/10;border-radius:26px 26px 0 0;background:var(--peach) center/cover no-repeat;box-shadow:0 -10px 40px -20px rgba(92,26,3,.35)}
+.final .fph span{position:absolute;left:12px;bottom:12px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.94);font-size:12.5px;font-weight:800;color:var(--ink)}
+.ck-hide{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;font-weight:700;color:var(--ink2);cursor:pointer}
+.ck-hide input{width:18px;height:18px;margin:0;accent-color:#E8480F}
+.hero .chips{gap:6px;margin-top:14px} .hero .chips span{padding:5px 10px;font-size:12px;line-height:1.2}
+.wv{max-width:220px}
+.life.ls{grid-template-columns:1fr 1fr!important}
+.life.ls div{display:block;padding:11px 12px}
+.life.ls i{display:inline-grid;vertical-align:middle;width:28px;height:28px;border-radius:9px;margin-right:6px} .life.ls i .ic{width:16px;height:16px}
+.life.ls b{display:inline;vertical-align:middle;font-size:13.5px} .life.ls span{display:block;margin-top:5px;font-size:12px}
+.sub-h{margin:30px 0 0;font:italic 900 22px/1.05 var(--disp);text-transform:uppercase;letter-spacing:-.01em}
+.gi{padding:12px;gap:11px} .gi i.th{width:54px;height:54px;border-radius:14px} .gi b{font-size:14.5px} .gi span{font-size:12.5px;line-height:1.35}
+.fit > div{padding:16px 18px;border-radius:22px} .fit h3{font-size:16px} .fit ul{gap:5px;margin-top:8px} .fit li{font-size:13.5px;line-height:1.4}
+.faq{gap:7px} .faq details{border-radius:18px;padding:2px 16px} .faq summary{padding:11px 0;font-size:14.5px} .faq summary::after{width:28px;height:28px;font-size:19px} .faq p{padding-bottom:14px;font-size:14px;line-height:1.55}
+.care{font-size:12.5px!important}
+@media(max-width:699px){ .txqs:not(.sm){display:flex;overflow-x:auto;gap:10px;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+  .txqs:not(.sm) .txq{flex:0 0 84%;scroll-snap-align:center} }
+.txq-sw{margin-top:4px;font-size:11.5px;font-weight:700;color:var(--ink2)}
+.life.ls div{display:grid!important;grid-template-columns:28px 1fr;column-gap:8px;align-items:center;align-content:start}
+.life.ls i{margin:0} .life.ls b{display:block;line-height:1.2} .life.ls span{grid-column:1/-1}
+.gi.bn{align-items:stretch} .gi.bn > p{align-self:flex-start;text-align:left}
+.gi.bn .bnl div{display:grid;grid-template-columns:118px 1fr;gap:8px}
+.md{padding:8px} .md .mph{width:72px;height:72px;border-radius:12px} .mday{gap:8px}
 </style>
 </head>
 <body>
@@ -1150,23 +1192,17 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
     <div class="pc" data-bg="img/st-p4.jpg"><div><b>SEGAN KE GYM</b><span>Rasa diperhati. Belum yakin dengan badan sendiri.</span></div></div>
   </div>
   <p class="turn">Bukan sebab anda malas. Anda perlukan <span class="grad">pelan yang mula perlahan</span>, dan hanya satu perkara berubah setiap minggu.</p>
-</section>
-
-<!-- 4 · REAL LIFE -->
-<section class="box c reveal">
-  <span class="pill">Dalam hidup sebenar</span>
-  <h2 class="sec-h">Muat dalam minggu anda <span class="grad">yang sibuk.</span></h2>
-  <div class="lpics">
-    <figure data-bg="img/st-life-m.jpg?v=3" role="img" aria-label="Seorang lelaki mengangkat tuala ke atas kepala di ruang tamu kecil"><figcaption>Ruang sebesar tikar</figcaption></figure>
-    <figure data-bg="img/st-life-w.jpg" role="img" aria-label="Seorang wanita berhijab membuat tolak dengan kerusi di rumah"><figcaption>Cuma perlu kerusi</figcaption></figure>
+  <h3 class="sub-h">Sibuk pun <span class="grad">sempat.</span></h3>
+  <div class="lpics one">
+    <figure data-bg="img/st-life-m.jpg?v=3" role="img" aria-label="Seorang lelaki mengangkat tuala ke atas kepala di ruang tamu kecil"><figcaption>Ruang sebesar tikar · cuma perlu kerusi</figcaption></figure>
   </div>
-  <div class="life">
+  <div class="life ls">
     <div><i><svg class="ic" aria-hidden="true"><use href="#i-timer"/></svg></i><b>15 hingga 20 minit</b><span>Pilih dalam kuiz. Pemanasan dan penyejukan sudah termasuk.</span></div>
     <div><i><svg class="ic" aria-hidden="true"><use href="#i-sun"/></svg></i><b>3 hari seminggu</b><span>Anda pilih harinya, dengan hari rehat di antaranya.</span></div>
-    <div><i><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg></i><b>Tiada lompat-lompat</b><span>Tahap Mudah dan Asas tanpa lompatan. Duduk flat atau kondo pun tak ganggu jiran.</span></div>
+    <div><i><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg></i><b>Tiada lompat-lompat</b><span>Tahap Mudah dan Asas tanpa lompatan. Tak ganggu jiran.</span></div>
     <div><i><svg class="ic" aria-hidden="true"><use href="#i-quiet"/></svg></i><b>Tiada siapa tengok</b><span>Privasi rumah sendiri. Pakai apa yang selesa.</span></div>
     <div><i><svg class="ic" aria-hidden="true"><use href="#i-repeat"/></svg></i><b>Tertinggal satu sesi?</b><span>Tak apa. App ingat di mana anda berhenti.</span></div>
-    <div><i><svg class="ic" aria-hidden="true"><use href="#i-tape"/></svg></i><b>Tak boleh push up? Tak apa</b><span>Mula dengan tolak dinding dan duduk-bangun dari kerusi. Susah turun ke lantai? Beritahu dalam kuiz, gerakan lantai ditukar kepada versi duduk atau berdiri.</span></div>
+    <div><i><svg class="ic" aria-hidden="true"><use href="#i-tape"/></svg></i><b>Tak boleh push up? Tak apa</b><span>Mula dengan tolak dinding dan kerusi. Susah turun ke lantai? Ada versi duduk atau berdiri.</span></div>
   </div>
 </section>
 
@@ -1243,14 +1279,14 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
   <span class="pill">6-Week Plan</span>
   <h2 class="sec-h">6 minggu. <span class="grad">Setiap sesi dirancang.</span></h2>
   <p class="sec-p">Gerakan ikut lutut, bahu dan pinggang anda. Hari latihan ikut pilihan anda.</p>
-  <div class="kc-stats"><div><b>18</b><span>Sessions</span></div><div><b>6</b><span>Weeks</span></div><div><b>2</b><span>Tests</span></div><div><b>31</b><span>Moves</span></div></div>
+  <div class="kc-stats"><div><b>18</b><span>Sessions</span></div><div><b>6</b><span>Weeks</span></div><div><b>2</b><span>Progress checks</span></div><div><b>31</b><span>Moves</span></div></div>
   <div class="kc" id="kc" aria-label="Kalendar 6 minggu THE START">
     <div class="kc-hd"><span class="kc-pl">The Start</span><b>Training Calendar</b><small>Contoh sahaja. Pilih hari anda, kalendar ikut.</small></div>
     <div class="kc-pk"><div class="kc-pr"><span>Session days <em>pick 3</em></span><div class="kc-ch" id="kc-ps"></div></div>
       <div class="kc-pr"><span>Active days <em>optional, up to 2</em></span><div class="kc-ch" id="kc-pa"></div></div></div>
     <div class="kc-dn"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
     <div class="kc-g" id="kc-g"></div>
-    <div class="kc-lg"><span><i class="a"></i>Session</span><span><i class="r"></i>Test</span><span><i class="k"></i>Active · walk + stretch</span><span><i class="w"></i>Rest · walk</span></div>
+    <div class="kc-lg"><span><i class="a"></i>Session</span><span><i class="r"></i>Progress check</span><span><i class="k"></i>Active · walk + stretch</span><span><i class="w"></i>Rest · walk</span></div>
   </div>
   <div class="kc-d" id="kc-d" aria-live="polite"></div>
   <p class="kc-note">3 sesi seminggu supaya badan sempat pulih. Hari aktif: jalan 20 minit + regangan 10 minit. Tertinggal sesi? App sambung dari sesi seterusnya.</p>
@@ -1259,12 +1295,6 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
   <span class="pill">Apa anda dapat</span>
   <h2 class="sec-h">Satu program. <span class="grad">Semua yang anda perlu.</span></h2>
   <p class="sec-p">Latihan berpandu, sasaran langkah harian, tabiat makan dan ilmu asas, semua dalam satu app di telefon anda.</p>
-  <div class="pfan" aria-label="Skrin sebenar THE START: senarai sesi, Hari Ini dan Makan">
-    <div class="phone l"><img src="img/ap-d-sessions.jpg" alt="" loading="lazy"></div>
-    <div class="phone c"><img src="img/ap-c-today.jpg" alt="Skrin Hari Ini dalam THE START" loading="lazy"></div>
-    <div class="phone r"><img src="img/ap-f-makan.jpg" alt="" loading="lazy"></div>
-    <span class="pf-b b1"><b>18</b> Guided Sessions</span><span class="pf-b b2"><i class="d"></i>Today's Plan</span><span class="pf-b b3"><b>6</b> Eating Habits</span>
-  </div>
   <div class="get">
     <div class="gi"><i class="th" data-bg="/img/p/mula/s/s02.jpg?v=2" aria-hidden="true"></i><p><b>6-Week Training Program</b><span>18 sesi, 3 seminggu, 15 hingga 20 minit. Satu perubahan sahaja setiap minggu.</span></p></div>
     <div class="gi"><i class="th" data-bg="https://i.vimeocdn.com/video/2146037828-0b88106cbbd51a50ca4452cc84b61c11a8ba0b3cea005789d9602e599445f185-d_240x427" aria-hidden="true"></i><p><b>Video for Every Move</b><span>Rakaman coach HITFAT, dengan pemasa, rehat automatik dan isyarat teknik.</span></p></div>
@@ -1273,25 +1303,13 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
     <div class="gi"><i class="th scr mid" data-bg="img/ap-h-kemajuan.jpg" aria-hidden="true"></i><p><b>See Your Progress</b><span>Pada sesi 1 dan sesi 18, kira berapa kali anda boleh duduk-bangun dalam 30 saat. Bandingkan.</span></p></div>
     <div class="gi bonus"><em>BAHARU</em><i class="th" data-bg="/img/p/mula/tk/squat-ok.jpg?v=2" aria-hidden="true"></i><p><b>AI Form Check</b><span>Letak telefon, buat 5 rep. Kamera semak squat dan push up anda, dan Coach Seth beritahu apa nak dibetulkan.</span></p></div>
     <div class="gi bonus"><em>BAHARU</em><i class="th" data-bg="/ladies/img/menu/d14.jpg" aria-hidden="true"></i><p><b>One Eating Habit a Week</b><span>Idea menu Malaysia setiap hari, pinggan sihat dan sukatan tangan. Tak perlu kira kalori, nasi tetap ada.</span></p></div>
-    <div class="gi bonus"><em>BAHARU</em><i class="th bara" data-bg="/img/mascot/m2.png" aria-hidden="true"></i><p><b>Training-Day Reminder</b><span>Pukul 9 pagi pada hari yang anda pilih: sesi hari ini, berapa minit. Supaya tak terlupa.</span></p></div>
-    <div class="gi bonus"><em>BONUS</em><i class="th" data-bg="/img/p/mula/tk/squat-ok.jpg?v=2" aria-hidden="true"></i><p><b>Learn</b><span>Gambar cara betul dan salah untuk setiap gerakan, dan 18 pelajaran ringkas tentang latihan dan makan.</span></p></div>
-    <div class="gi bonus"><em>BONUS</em><i class="th" data-bg="img/menu/d11.jpg" aria-hidden="true"></i><p><b>20 AI Food Scans</b><span>Nak tahu kalori sepinggan? Ambil gambar. Pilihan sahaja, tak wajib.</span></p></div>
-    <div class="gi bonus"><em>BONUS</em><i class="th scr" data-bg="img/ap-a-first.jpg" aria-hidden="true"></i><p><b>Malay or English</b><span>Tukar bahasa program dengan satu tekan.</span></p></div>
+    <div class="gi bonus"><em>BAHARU</em><i class="th bara" data-bg="/img/mascot/m2.png" aria-hidden="true"></i><p><b>Training-Day Reminder</b><span>Pukul 9 pagi pada hari sesi dan hari aktif anda. Supaya tak terlupa.</span></p></div>
+    <div class="gi bonus bn"><em>BONUS</em><p><b>Bonus</b></p><div class="bnl"><div><b>Learn</b>Gambar cara betul dan salah setiap gerakan, versi lebih mudah, dan 18 pelajaran ringkas.</div><div><b>20 AI Food Scans</b>Ambil gambar makanan untuk tahu kalori. Pilihan sahaja.</div><div><b>Malay or English</b>Tukar bahasa program dengan satu tekan.</div></div></div>
   </div>
   <div class="getp"><b>RM59</b><span>sekali bayar untuk semua di atas · tiada langganan</span></div>
   <div style="margin-top:18px"><a class="cta" href="#" data-buy="dapat">Saya Nak Mula — RM59</a></div>
 </section>
 
-<!-- 9 · LEARN, IN DETAIL: technique cards and Semak Teknik, as the app shows them -->
-<section class="box c reveal" id="belajar">
-  <span class="pill">Takut buat salah?</span>
-  <h2 class="sec-h">Teknik dulu. <span class="grad">Laju kemudian.</span></h2>
-  <p class="sec-p">Setiap gerakan ada gambar cara betul dan salah, tiga perkara untuk diingat, dan versi lebih mudah. Tak pasti? Semak Teknik AI tengok anda melalui kamera. Selepas setiap sesi, satu pelajaran ringkas tentang latihan dan makan.</p>
-  <div class="lphones">
-    <div class="phone"><img src="img/ap-g-belajar.jpg" alt="Tab Belajar: Semak Teknik AI dan kad teknik duduk-bangun" loading="lazy"></div>
-    <div class="phone"><img src="img/ap-g-belajar2.jpg" alt="Kad teknik tolak: betul dan salah" loading="lazy"></div>
-  </div>
-</section>
 
 <!-- 8b · EATING: THE START's Makan tab (12 Nov 2026): one habit a week, no calorie counting, the app's own dishes -->
 <section class="box c reveal" id="makan">
@@ -1306,15 +1324,14 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
   </div>
   <p class="fine">Contoh daripada tab Makan THE START. Tak suka? Tekan Tukar dalam app untuk idea lain.</p>
   <h3 class="mk-h">6 minggu, 6 tabiat</h3>
-  <div class="habs"><div><em>Minggu 1</em><b>Separuh pinggan sayur</b><span>Sekurang-kurangnya sekali sehari, separuh pinggan sayur atau buah.</span></div><div><em>Minggu 2</em><b>Nasi segenggam</b><span>Ambil nasi sebesar genggaman anda. Masih lapar? Tambah sayur dulu.</span></div><div><em>Minggu 3</em><b>Protein setiap kali makan</b><span>Ayam, ikan, telur, tempe, tauhu atau dhal, pada setiap waktu makan.</span></div><div><em>Minggu 4</em><b>Air kosong 6–8 gelas</b><span>Segelas sebelum setiap kali makan. Minuman manis, satu sehari sahaja.</span></div><div><em>Minggu 5</em><b>Snek terancang</b><span>Lapar antara waktu makan? Buah, kacang atau telur rebus.</span></div><div><em>Minggu 6</em><b>Sarapan ada protein</b><span>Tambah telur, susu atau tempe pada sarapan anda.</span></div></div>
-  <h3 class="mk-h">Tukar satu</h3>
+  <div class="habs hl"><div><em>Minggu 1</em><b>Separuh pinggan sayur</b><span>Sekurang-kurangnya sekali sehari, separuh pinggan sayur atau buah.</span></div><div><em>Minggu 2</em><b>Nasi segenggam</b><span>Ambil nasi sebesar genggaman anda. Masih lapar? Tambah sayur dulu.</span></div><div><em>Minggu 3</em><b>Protein setiap kali makan</b><span>Ayam, ikan, telur, tempe, tauhu atau dhal, pada setiap waktu makan.</span></div><div><em>Minggu 4</em><b>Air kosong 6–8 gelas</b><span>Segelas sebelum setiap kali makan. Minuman manis, satu sehari sahaja.</span></div><div><em>Minggu 5</em><b>Snek terancang</b><span>Lapar antara waktu makan? Buah, kacang atau telur rebus.</span></div><div><em>Minggu 6</em><b>Sarapan ada protein</b><span>Tambah telur, susu atau tempe pada sarapan anda.</span></div></div>
+  <details class="more"><summary>Tukar satu &amp; makan di luar</summary>
   <div class="swaps">
     <div><s>Teh tarik</s><i>→</i><b>Teh o kurang manis</b></div>
     <div><s>Ayam goreng</s><i>→</i><b>Ayam bakar</b></div>
     <div><s>Mi goreng</s><i>→</i><b>Mi sup</b></div>
     <div><s>Tambah nasi kali kedua</s><i>→</i><b>Tambah sayur</b></div>
   </div>
-  <details class="more"><summary>Makan di luar pun ada panduan</summary>
   <div class="outs">
     <div><b>Mamak</b><span>Roti canai kosong + kuah dal · nasi kandar ayam bakar, kuah sikit</span></div>
     <div><b>Nasi campur</b><span>Satu lauk protein, dua jenis sayur, kuah sedikit, nasi segenggam</span></div>
@@ -1338,9 +1355,9 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
     <div class="txf-im" data-bg="img/testi/p-ba-m-107.jpg" role="img" aria-label="Sebelum dan selepas, peserta HITFAT, 107.5 ke 84 kg"></div>
     <div class="txf-b"><span class="txf-k">Hasil peserta</span><b>−23.5 kg</b><span class="txf-f">107.5 → 84 kg</span><small>Peserta kelas HITFAT</small></div>
   </div>
-  <div class="txg"><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-hafifah.jpg" role="img" aria-label="Sebelum dan selepas, Hafifah · Peserta HITFAT"></div><figcaption><b>−21 kg</b><span>116 → 95 kg</span><small>Hafifah · Peserta HITFAT</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-m-107x.jpg" role="img" aria-label="Sebelum dan selepas, Peserta HITFATX"></div><figcaption><b>−19 kg</b><span>107 → 88 kg</span><small>Peserta HITFATX</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-big.jpg" role="img" aria-label="Sebelum dan selepas, Peserta HITFAT · jangka panjang"></div><figcaption><b>−34.3 kg</b><span>98 → 63.7 kg</span><small>Peserta HITFAT · jangka panjang</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-m-kb.jpg" role="img" aria-label="Sebelum dan selepas, HITFATX Kota Bharu"></div><figcaption><b>−8.8 kg</b><span>97.6 → 88.8 kg</span><small>HITFATX Kota Bharu</small></figcaption></figure></div>
-  <details class="more txm"><summary>Lihat 4 lagi hasil</summary><div class="txg"><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-m-120.jpg" role="img" aria-label="Sebelum dan selepas, Peserta HITFAT"></div><figcaption><b>−17 kg</b><span>120 → 103 kg</span><small>Peserta HITFAT</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-aishah.jpg" role="img" aria-label="Sebelum dan selepas, Peserta HITFAT"></div><figcaption><b>−7.8 kg</b><span>70.9 → 63.1 kg</span><small>Peserta HITFAT</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-t42w.jpg" role="img" aria-label="Sebelum dan selepas, Program latihan HITFAT"></div><figcaption><b>Wanita · 40-an</b><span>Sebelum → selepas</span><small>Program latihan HITFAT</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-w2.jpg" role="img" aria-label="Sebelum dan selepas, Peserta HITFAT"></div><figcaption><b>Sebelum → selepas</b><span>Program latihan HITFAT</span><small>Peserta HITFAT</small></figcaption></figure></div></details>
-  <h3 class="txq-h">Bukan sekadar berat</h3>
+  <div class="txg"><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-hafifah.jpg" role="img" aria-label="Sebelum dan selepas, Hafifah · Peserta HITFAT"></div><figcaption><b>−21 kg</b><span>116 → 95 kg</span><small>Hafifah · Peserta HITFAT</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-m-107x.jpg" role="img" aria-label="Sebelum dan selepas, Peserta HITFATX"></div><figcaption><b>−19 kg</b><span>107 → 88 kg</span><small>Peserta HITFATX</small></figcaption></figure></div>
+  <details class="more txm"><summary>Lihat 6 lagi hasil</summary><div class="txg"><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-big.jpg" role="img" aria-label="Sebelum dan selepas, Peserta HITFAT · jangka panjang"></div><figcaption><b>−34.3 kg</b><span>98 → 63.7 kg</span><small>Peserta HITFAT · jangka panjang</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-m-kb.jpg" role="img" aria-label="Sebelum dan selepas, HITFATX Kota Bharu"></div><figcaption><b>−8.8 kg</b><span>97.6 → 88.8 kg</span><small>HITFATX Kota Bharu</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-m-120.jpg" role="img" aria-label="Sebelum dan selepas, Peserta HITFAT"></div><figcaption><b>−17 kg</b><span>120 → 103 kg</span><small>Peserta HITFAT</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-aishah.jpg" role="img" aria-label="Sebelum dan selepas, Peserta HITFAT"></div><figcaption><b>−7.8 kg</b><span>70.9 → 63.1 kg</span><small>Peserta HITFAT</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-t42w.jpg" role="img" aria-label="Sebelum dan selepas, Program latihan HITFAT"></div><figcaption><b>Wanita · 40-an</b><span>Sebelum → selepas</span><small>Program latihan HITFAT</small></figcaption></figure><figure class="txb"><div class="txb-im" data-bg="img/testi/p-ba-w2.jpg" role="img" aria-label="Sebelum dan selepas, Peserta HITFAT"></div><figcaption><b>Sebelum → selepas</b><span>Program latihan HITFAT</span><small>Peserta HITFAT</small></figcaption></figure></div></details>
+  <h3 class="txq-h">Bukan sekadar berat</h3><div class="txq-sw" aria-hidden="true">Leret ke tepi →</div>
   <div class="txqs"><div class="txq"><em class="txq-t">Tekanan darah</em><p>“Alhamdulillah. Tekanan darah saya dari paras sempadan (140/80) turun ke normal (125/80). Terima kasih Seth.”</p><div class="who"><span data-bg="img/testi/q-hafizi.jpg"></span><div><b>Cikgu Hafizi</b><small>Peserta HITFAT Kota Bharu</small></div></div></div><div class="txq"><em class="txq-t">Migrain & lutut</em><p>“Alhamdulillah, akhirnya dapat berat ideal kembali. Dulu kerap migrain dan sakit lutut, tapi kini tiada lagi.”</p><div class="who"><span data-bg="img/testi/q-suhana.jpg"></span><div><b>Suhana</b><small>Peserta HITFAT Johor Bahru</small></div></div></div><div class="txq"><em class="txq-t">Tenaga</em><p>“Dah berjaya turun 8 kg. Saya tak lagi lesu dan selalu mengantuk, dan rasa kebas-kebas kaki dah hilang. Happy bila saiz baju dah bertukar.”</p><div class="who"><span data-bg="img/testi/q-pyka.jpg"></span><div><b>Pyka</b><small>Peserta HITFAT Shah Alam</small></div></div></div></div>
   <details class="more txm"><summary>Baca 10 lagi kata peserta</summary><div class="txqs sm"><div class="txq"><p>“Tak pernah terfikir jadi peserta paling fit dan menang HITFAT 7.0 Kuantan. Cabaran 2.4 km dalam 12 minit memang gila bagi saya, tapi dengan HITFAT saya mampu buat.”</p><div class="who"><span data-bg="img/testi/q-raden.jpg"></span><div><b>Raden</b><small>Peserta HITFAT Kuantan</small></div></div></div><div class="txq"><p>“Terima kasih coach HITFAT yang bantu saya turunkan berat badan. Bermula dari BMI obesiti kelas 2, kini turun ke BMI overweight. InsyaAllah saya teruskan sampai BMI normal.”</p><div class="who"><span data-bg="img/testi/q-zaidan.jpg"></span><div><b>Zaidan Zanuddin</b><small>Peserta HITFAT Kota Bharu</small></div></div></div><div class="txq"><p>“Saya dah bersama HITFAT selama 5 season, dengan penurunan berat keseluruhan 17 kg. Workout dalam team HITFAT Gombak amat menyeronokkan.”</p><div class="who"><span data-bg="img/testi/q-shahrul.jpg"></span><div><b>Shahrul Nizam</b><small>Peserta HITFAT Gombak</small></div></div></div><div class="txq"><p>“Coach, saya bangga join HITFAT dari 77 kg dan sekarang 70 kg. Rasa berbeza sangat.”</p><div class="who"><span data-bg="img/testi/q-eera.jpg"></span><div><b>Eera Ziman</b><small>Peserta HITFAT Ampang</small></div></div></div><div class="txq"><p>“Program HITFAT ini mengubah gaya hidup saya. Dengan pemantauan cara makan dan training daripada coach, berat saya turun dari minggu ke minggu.”</p><div class="who"><span data-bg="img/testi/q-azamuddin.jpg"></span><div><b>Azamuddin</b><small>Peserta HITFAT Gombak</small></div></div></div><div class="txq"><p>“Akhirnya raya haji ni saya dapat pakai baju raya lama. Alhamdulillah.”</p><div class="who"><span data-bg="img/testi/q-izzati.jpg"></span><div><b>Izzati</b><small>Peserta HITFAT Kota Bharu</small></div></div></div><div class="txq"><p>“Kesan sampingan join HITFAT 6 dan HITFAT 7: saya mampu lari half marathon 21 km dua kali dalam 2 minggu, di SCKLM 2016 dan KUMAR 2016.”</p><div class="who"><span data-bg="img/testi/q-amir.jpg"></span><div><b>Amir</b><small>Peserta HITFAT Kuantan</small></div></div></div><div class="txq"><p>“Saya rasa lain sangat, terutama badan dan pergerakan. Baju kurung saya banyak kena alter.”</p><div class="who"><span data-bg="img/testi/q-rara.jpg"></span><div><b>Kak Rara</b><small>Peserta HITFAT Kota Bharu</small></div></div></div><div class="txq"><p>“Dari HITFAT, saiz XL ke M. Sukar menurunkan berat badan, jadi mudah dan menyedarkan saya betapa pentingnya kesihatan.”</p><div class="who"><span data-bg="img/testi/q-syud.jpg"></span><div><b>Syud Syuhada</b><small>Peserta HITFAT Kuantan</small></div></div></div><div class="txq"><p>“Saya suka HITFAT sebab coach HITFAT semua ada latar belakang Sains Sukan.”</p><div class="who"><span data-bg="img/testi/q-hartini.jpg"></span><div><b>Hartini Baharudin</b><small>Peserta HITFAT Kuantan</small></div></div></div></div></details>
   <p class="fine">Gambar dan kata-kata daripada peserta kelas HITFAT, bukan pengguna THE START. Keputusan setiap orang berbeza, bergantung pada konsistensi, pemakanan, tidur dan kesihatan.</p>
@@ -1376,18 +1393,8 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
   <div class="pcard">
     <div class="pn big">The <b>Start.</b></div>
     <div class="pk-k">THE COMPLETE PACKAGE</div>
-    <div class="pk-me">
-      <i><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></i>
-      <div><small>YOUR OWN PATH</small><b>Mudah, Asas atau Beransur, ikut jawapan anda</b></div>
-    </div>
-    <div class="pk">
-      <div><b>18</b><span>Guided<br>Sessions</span></div>
-      <div><b>6</b><span>Weeks,<br>step by step</span></div>
-      <div><b>3</b><span>Sessions<br>a week</span></div>
-    </div>
-    <div class="pk-bn"><em>BONUS</em><span><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg>18 Lessons</span><span><svg class="ic" aria-hidden="true"><use href="#i-scan"/></svg>20 AI Food Scans</span><span><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>BM / English</span></div>
     <div class="pk-cut" aria-hidden="true"></div>
-    <div class="pk-all">Semua ini, untuk</div>
+    <div class="pk-all">18 sesi, 6 tabiat makan dan semua bonus, untuk</div>
     <div class="amt"><sup>RM</sup>59</div>
     <div class="per"><b>Sekali bayar</b> · tiada langganan · milik anda selamanya<br>Buka terus di telefon, tiada download</div>
     <a class="cta" href="#" data-buy="price">Saya Nak Mula — RM59</a>
@@ -1401,9 +1408,8 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
   <span class="pill">Soalan lazim</span>
   <h2 class="sec-h">Ada soalan?</h2>
   <div class="faq">
-    <details><summary>Berat saya lebih, dan saya tak fit langsung. Boleh ke?</summary><p>Boleh. Kuiz akan letak anda di tahap Mudah: duduk-bangun dari kerusi, tolak dinding, dan tiada gerakan yang perlu turun ke lantai jika anda sukar. Minggu pertama setiap sesi lebih kurang 14 minit, dengan rehat 30 saat selepas setiap gerakan.</p></details>
+    <details><summary>Berat saya lebih, atau tak pernah bersenam. Boleh ke?</summary><p>Boleh. Itu sebab THE START wujud. Kuiz akan letak anda di tahap Mudah: duduk-bangun dari kerusi, tolak dinding, dan tiada gerakan yang perlu turun ke lantai jika anda sukar. Minggu pertama setiap sesi lebih kurang 14 minit: buat 30 saat, rehat 30 saat, setiap gerakan ada video. Jika terasa sakit pada sendi, berhenti.</p></details>
     <details><summary>Ada lompat-lompat? Saya duduk flat.</summary><p>Tahap Mudah dan Asas tiada lompatan, jadi tak bising untuk jiran bawah. Hanya tahap Beransur, untuk yang pernah aktif, ada gerakan seperti jumping jack.</p></details>
-    <details><summary>Saya betul-betul tak pernah bersenam. Sesuai ke?</summary><p>Sesuai. Itu sebab THE START wujud. Kuiz akan letak anda di tahap Mudah jika perlu, dan minggu pertama setiap set gerakan cuma diulang 2 kali: buat 30 saat, rehat 30 saat. Setiap gerakan ada video. Jika terasa sakit pada sendi, berhenti.</p></details>
     <details><summary>Untuk lelaki atau wanita?</summary><p>Kedua-duanya. Gerakan dan pelan yang sama sesuai untuk lelaki dan wanita.</p></details>
     <details><summary>Perlu pergi gym atau beli peralatan?</summary><p>Tak perlu. Semua di rumah, cukup ruang sebesar tikar. Anda cuma perlukan kerusi yang stabil, tuala dan botol air. Tiada tuala? Gerakan tarik boleh dibuat tanpa tuala.</p></details>
     <details><summary>RM59 ni bayar sekali atau bulanan?</summary><p>Sekali sahaja. Tiada langganan, dan program milik anda selamanya. Ulang bila-bila masa.</p></details>
@@ -1426,7 +1432,7 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
   <p class="sec-p">Tak perlu tunggu Isnin. Tak perlu jadi sempurna. Mula dengan satu sesi pendek, dan biar pelan bawa anda, minggu demi minggu.</p>
   <div style="margin-top:24px"><a class="cta" href="#" data-buy="final">Saya Nak Mula — RM59</a></div>
   <a class="wa" href="#" data-wa><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>Ada soalan? WhatsApp kami</a>
-  <img class="ath" src="img/athlete.png?v=2" width="900" height="716" alt="" loading="lazy">
+  <div class="fph" data-bg="img/st-life-w.jpg" role="img" aria-label="Seorang wanita berhijab membuat tolak dengan kerusi di rumah"><span>Cuma perlu kerusi</span></div>
 </section>
 
 </main>
@@ -1469,13 +1475,14 @@ section.bara{background:radial-gradient(90% 60% at 50% 0%,rgba(232,72,15,.55) 0%
     <div class="ck-hd"><b id="ck-t">THE START · RM59</b><button type="button" class="ck-x" aria-label="Tutup" onclick="ckClose()">✕</button></div>
     <p class="ck-p">Bayar sekali, milik anda selamanya. Selepas bayar, log masuk app dengan emel yang sama.</p>
     <label for="ck-n">Nama</label><input id="ck-n" autocomplete="name" placeholder="Nama penuh">
-    <label for="ck-e">Emel</label><input id="ck-e" type="email" autocomplete="email" inputmode="email" placeholder="nama@gmail.com">
+    <label for="ck-e">Emel</label><input id="ck-e" type="email" autocomplete="email" inputmode="email" placeholder="nama@contoh.com">
     <label for="ck-ph">No. telefon</label><input id="ck-ph" type="tel" autocomplete="tel" inputmode="tel" placeholder="012-345 6789">
     <label>Cara bayar</label>
     <div class="ck-ch"><button type="button" class="on" data-ch="1">FPX Online Banking</button><button type="button" data-ch="6">DuitNow QR</button></div>
+    <label class="ck-hide"><input type="checkbox" id="ck-hide"> Jangan papar nama saya sebagai pembeli terkini</label>
     <div class="ck-err" id="ck-err"></div>
     <button class="cta" id="ck-go" type="submit">Bayar RM59</button>
-    <div class="ck-note">Pembayaran selamat melalui Bayarcash. Guna emel Google yang anda akan log masuk app. Nama pertama anda (cth. “Nur A.”) mungkin dipaparkan sebagai pembeli terkini.</div>
+    <div class="ck-note">Pembayaran selamat melalui Bayarcash. Guna emel yang sama untuk log masuk app nanti. Jika kotak di atas tidak ditanda, nama pertama anda (cth. “Nur A.”) mungkin dipaparkan sebagai pembeli terkini.</div>
     <a class="ck-help" href="#" data-wa>Masalah bayaran? WhatsApp kami</a>
   </form>
 </div>
@@ -1570,7 +1577,7 @@ document.getElementById('ck-f').addEventListener('submit', function(e){
   er.textContent=''; go.disabled=true; go.textContent='Membuka halaman bayaran…';
   track('AddPaymentInfo',{content_ids:['prog_mula'],value:59,currency:'MYR'});
   fetch(PAY_FN+'?action=create',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({sku:'prog_mula',name:n,email:em,phone:ph,channel:ckCh,fbp:fbCookie('_fbp'),fbc:fbCookie('_fbc')||fbcFromUrl(),ref:REF})})
+    body:JSON.stringify({sku:'prog_mula',name:n,email:em,phone:ph,channel:ckCh,fbp:fbCookie('_fbp'),fbc:fbCookie('_fbc')||fbcFromUrl(),ref:REF,hide:document.getElementById('ck-hide').checked?1:0})})
     .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
     .then(function(x){
       if(x.ok && x.d && x.d.url){ location.href=x.d.url; return; }
@@ -1669,7 +1676,7 @@ function vcPo(m,sz){ return 'https://i.vimeocdn.com/video/'+VC[m][1]+'-d_'+sz; }
   var D=[["Sit-to-Stand & Push", "rec", 14, 2, ["Chair Squat", "Incline Push Up (Chair)", "Hip Thrust", "Bird Dog"], "Sesi rekod: kira duduk-bangun dan tolak dalam 30 saat pertama. Teknik, pernafasan dan cara sesi berjalan. Setiap set gerakan dibuat 2 kali.", 30, 30], ["Hips & Balance", "B", 14, 2, ["Towel Deadlift", "Towel Shoulder Back Pull", "Chair Calf Raises", "Dead Bug"], "Teknik, pernafasan dan cara sesi berjalan. Setiap set gerakan dibuat 2 kali.", 30, 30], ["Combo & Stamina", "C", 14, 2, ["Chair Squat Pause", "Incline Wide Push Up", "Towel Rotation Shoulder", "Seated High Knee"], "Teknik, pernafasan dan cara sesi berjalan. Setiap set gerakan dibuat 2 kali.", 30, 30], ["Legs & Chest", "A", 18, 3, ["Towel Squat Front Raises", "Towel Shoulder Press", "Towel Glute Bridge", "Towel Side Bend"], "Gerakan sama, ulang satu kali lagi.", 30, 30], ["Back & Posture", "B", 18, 3, ["Backpack Deadlift", "Towel Upright Row", "Chair Assist Hip Abduction", "Bird Dog"], "Gerakan sama, ulang satu kali lagi.", 30, 30], ["Breath & Rhythm", "C", 18, 3, ["Chair Squat", "Incline Push Up (Chair)", "Towel Shoulder Back Pull", "Seated Jack"], "Gerakan sama, ulang satu kali lagi.", 30, 30], ["Glutes & Shoulders", "A", 20, 3, ["Chair Squat Pause", "Incline Wide Push Up", "Chair Glute Bridge", "Dead Bug"], "Buat 40 saat, rehat masih 30 saat. Kenal beza penat dengan sakit.", 40, 30], ["Balance & Control", "B", 20, 3, ["Towel Deadlift", "Towel Rotation Shoulder", "Chair Kick Back", "Towel Side Bend"], "Buat 40 saat, rehat masih 30 saat. Kenal beza penat dengan sakit.", 40, 30], ["Full Circuit", "C", 20, 3, ["Towel Squat Front Raises", "Towel Shoulder Press", "Towel Upright Row", "High Knee Tap Chair"], "Buat 40 saat, rehat masih 30 saat. Kenal beza penat dengan sakit.", 40, 30], ["Steady Legs", "A", 19, 3, ["Chair Squat", "Incline Push Up (Chair)", "Hip Thrust", "Bird Dog"], "Rehat dipendekkan ke 20 saat. Rentak sama.", 40, 20], ["Strong Hips", "B", 19, 3, ["Backpack Deadlift", "Towel Shoulder Back Pull", "Lateral Step Over", "Dead Bug"], "Rehat dipendekkan ke 20 saat. Rentak sama.", 40, 20], ["More Stamina", "C", 19, 3, ["Chair Squat Pause", "Incline Wide Push Up", "Towel Rotation Shoulder", "Seated High Knee"], "Rehat dipendekkan ke 20 saat. Rentak sama.", 40, 20], ["Step Up: Legs & Chest", "A", 19, 3, ["Towel Squat Overhead", "Towel Shoulder Press 2", "Towel Glute Bridge", "Towel Side Bend"], "Masa sama. Beberapa gerakan naik satu tahap.", 40, 20], ["Step Up: Back", "B", 19, 3, ["Towel Deadlift", "Towel Rotation Shoulder", "Chair Calf Raises", "Bird Dog"], "Masa sama. Beberapa gerakan naik satu tahap.", 40, 20], ["Step Up: Stamina", "C", 19, 3, ["Bodyweight Squat", "Knee Push Ups", "Bottle Bent Over Row", "High Knee Tap Chair"], "Masa sama. Beberapa gerakan naik satu tahap.", 40, 20], ["Full-Body Strength", "A", 19, 3, ["Squat Pause", "Incline Wide Push Up", "Chair Glute Bridge", "Dead Bug"], "Kekalkan rentak, kemudian semak sejauh mana anda pergi.", 40, 20], ["Stand Tall", "B", 19, 3, ["Backpack Deadlift", "Towel Shoulder Back Pull", "Chair Assist Hip Abduction", "Towel Side Bend"], "Kekalkan rentak, kemudian semak sejauh mana anda pergi.", 40, 20], ["Final Round", "rec", 19, 3, ["Chair Squat", "Incline Push Up (Chair)", "Towel Rotation Shoulder", "Butt Kick"], "Sesi rekod: kira duduk-bangun dan tolak dalam 30 saat pertama. Kekalkan rentak, kemudian semak sejauh mana anda pergi.", 40, 20]];
   window.LBD=D;
   /* (14 Nov 2026) the six weeks as a calendar: three training days a week (Mon, Wed, Fri as the example), the rest are walks */
-  var WK=[['The Basics','2 rounds · 30/30'],['One More Time','3 rounds · 30/30'],['Longer','40s work · 30s rest'],['Shorter Rest','40s work · 20s rest'],['Step Up','harder moves'],['Check and Carry On','final test']];
+  var WK=[['The Basics','2 rounds · 30/30'],['One More Time','3 rounds · 30/30'],['Longer','40s work · 30s rest'],['Shorter Rest','40s work · 20s rest'],['Step Up','harder moves'],['Check and Carry On','final check']];
   var PICK=[0,2,4], DAYS=[0,2,4], AKT=[], DN=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'], DS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   var esc=function(t){ return String(t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
   var g=document.getElementById('kc-g'), box=document.getElementById('kc-d'), kc=document.getElementById('kc'); if(!g) return;
@@ -1702,10 +1709,10 @@ function vcPo(m,sz){ return 'https://i.vimeocdn.com/video/'+VC[m][1]+'-d_'+sz; }
     [].forEach.call(g.querySelectorAll('.kc-c.s'),function(b){ b.classList.toggle('on',+b.getAttribute('data-d')===i); });
     box.classList.add('fade');
     setTimeout(function(){
-      box.innerHTML='<div class="kc-dp" style="background-image:url('+pic(i)+')"></div><div><div class="kc-dk">Session '+i+' / 18 · Week '+(wi+1)+' · '+day+(x[1]==='rec'?' · Test':'')+'</div>'+
+      box.innerHTML='<div class="kc-dp" style="background-image:url('+pic(i)+')"></div><div><div class="kc-dk">Session '+i+' / 18 · Week '+(wi+1)+' · '+day+(x[1]==='rec'?' · Progress check':'')+'</div>'+
         '<h3>'+esc(x[0])+'</h3><div class="kc-df"><span>'+x[2]+' min</span><span>'+x[3]+' rounds</span><span>'+x[4].length+' moves</span></div>'+
         '<ol>'+x[4].map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('')+'</ol></div>'+
-        '<q><b>'+WK[wi][0]+'</b>'+esc(x[5].replace(/^Sesi rekod: /,'Test: '))+'</q>';
+        '<q><b>'+WK[wi][0]+'</b>'+esc(x[5].replace(/^Sesi rekod: /,'Progress check: '))+'</q>';
       box.classList.remove('fade'); },160); }
   g.addEventListener('click',function(e){ var b=e.target.closest('.kc-c.s'); if(!b) return; touch(); show(+b.getAttribute('data-d')); });
   show(1);
