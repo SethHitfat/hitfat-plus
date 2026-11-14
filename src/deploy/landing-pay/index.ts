@@ -148,7 +148,8 @@ const WELCOME: Record<string, Welcome> = {
     lead: 'pelan 30 hari anda sedang menunggu.',
     steps: ['Tekan <b>Bina Pelan Saya</b> dan jawab soalan, lebih kurang 2 minit.', 'Mula <b>Hari 1</b>: rekod berat dan pinggang, kemudian Fit Test.'] },
   /* THE START (11 Nov 2026): its own colour and first steps */
-  prog_mula: { name: 'THE START', tebus: 'mula', color: '#E8480F', ink: '#141414', from: 'THE START <hello@mail.hitfat.io>',
+  /* (14 Nov 2026, Seth) the sender reads HITFAT+ first, so Gmail's round letter is "H" and the buyer sees who it is from */
+  prog_mula: { name: 'THE START', tebus: 'mula', color: '#E8480F', ink: '#141414', from: '"HITFAT+ THE START" <hello@mail.hitfat.io>',
     lead: '18 sesi anda sedang menunggu.',
     steps: ['Jawab <b>9 soalan</b>, lebih kurang 2 minit. App pilih tahap anda: Mudah, Asas atau Beransur.', 'Mula <b>Sesi 1</b>: lebih kurang 15 minit, di rumah. Sediakan kerusi yang stabil.'] },
 };
