@@ -29,7 +29,8 @@
      (no slot)     8 pm   class first, then the habits below
      ?slot=tidur  10 pm   a score of 25–49: what is left to turn Bara red
    On a THE START training day the 9 am message is that day's session
-   (startMessage, 11 Nov 2026).
+   (startMessage, 11 Nov 2026); on an active day, a walk and a stretch
+   (14 Nov 2026).
    Each kind has its own Bara picture (icon; Android and desktop show it,
    an iPhone shows the app's own icon) and calls the member by first name.
 
@@ -130,13 +131,22 @@ export function startMessage(d: Data, today: string, name: string): Msg | null {
   if (!me || !me.done) return null;
   const done = Math.min(MF_N, Number((d.progress || {}).mula) || 0);
   if (done >= MF_N) return null;
-  if (!(me.days || []).includes(MF_DAYCODE[new Date(Date.parse(today + 'T12:00:00Z')).getUTCDay()])) return null;
+  const code = MF_DAYCODE[new Date(Date.parse(today + 'T12:00:00Z')).getUTCDay()], days: string[] = me.days || [];
+  /* an active day (14 Nov 2026): up to 2 days picked in the quiz besides the 3 session days */
+  const aktif = !days.includes(code) && (me.aktif || []).includes(code);
+  if (!days.includes(code) && !aktif) return null;
   let last = typeof me.at === 'string' ? me.at : '';
   for (let i = 0; i < MF_N; i++) {
     const s = (d.sessions || {})['mf-s' + i];
     if (s && s.date) { const dd = dayOf(s.date); if (dd === today) return null; if (dd > last) last = dd; }
   }
   if (!last || daysBetween(last, today) > 21) return null;
+  if (aktif) {
+    /* the stretch already done, or the walk already ticked */
+    if ((d.sessions || {})['mf-aktif-' + today] || (d.mf.walk || {})[today]) return null;
+    return { kind: 'mula', title: 'Hari aktif 🚶',
+      body: (name ? name + ', j' : 'J') + 'alan 20 minit dan regangan 10 minit hari ni. Jom!', url: '/?go=mula' };
+  }
   const mins = me.masa === 15 ? 15 : me.masa === 25 ? 25 : 20;
   return { kind: 'mula', title: 'Hari latihan 💪',
     body: (name ? name + ', s' : 'S') + 'esi ' + (done + 1) + ' THE START hari ni. ' + mins + ' minit je, jom!', url: '/?go=mula' };
