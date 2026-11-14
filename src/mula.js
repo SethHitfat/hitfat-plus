@@ -376,6 +376,28 @@ function mfHero(){
    the how-it-works card stay for the first visit. ── */
 const MF_DAYCODE=['ahd','isn','sel','rab','kha','jum','sab'];
 function mfTrainDay(){ const me=mfMe(); return !me || !(me.days||[]).length || (me.days||[]).indexOf(MF_DAYCODE[new Date().getDay()])>=0; }
+/* ── active days (14 Nov 2026, Seth: "takut ada nak training 4-5 kali seminggu", picked "3 sesi + hari aktif") ──
+   THE START stays three sessions a week, so a beginner's body has the days between to recover. Someone who wants to
+   move on four or five days picks up to two more in the quiz; on those days the app offers a walk and a ten-minute
+   stretch made of THE START's own warm-up and cool-down moves (seated or standing for those who find the floor hard).
+   It counts in the streak, not in the 18 sessions. */
+const MF_AKTIF_MAX=2;
+function mfAktifDays(me){ const d=(me&&me.days)||[]; return ((me&&me.aktif)||[]).filter(x=>x!=='tiada' && d.indexOf(x)<0); }
+function mfAktifToday(){ const me=mfMe(); return !!me && !mfTrainDay() && mfAktifDays(me).indexOf(MF_DAYCODE[new Date().getDay()])>=0; }
+function mfAktifKey(){ return MF_KEY+'-aktif-'+iso(0); }
+function mfAktifDone(){ return !!((HF.data.sessions||{})[mfAktifKey()]); }
+function mfAktifList(){
+  const me=mfMe(), k=Math.floor(Date.now()/864e5)%3, low=!!me && (me.pain||[]).indexOf('lantai')>=0;
+  const L=MF_WARMS[k].map(n=>{ const e=mfEx(n,50,0); e.mfw='warm'; return e; })
+    .concat((low?MF_COOLS_UP:MF_COOLS)[k].map(n=>{ const e=mfEx(n,60,0); e.mfw='cool'; return e; }));
+  return L;
+}
+function mfAktifMin(){ return Math.round(mfAktifList().reduce((a,e)=>a+e.dur+(e.rest||0),0)/60); }
+function mfAktifPlay(){
+  if(!mfOwned()) return mfBuy();
+  if(!mfMe()) return mfQuizOpen();
+  startWorkout(mfAktifList(),{rounds:1, name:'THE START · '+mfL('Hari Aktif','Active Day'), key:mfAktifKey(), mf:{gi:-1, aktif:1}});
+}
 function mfDoneToday(){
   const S=HF.data.sessions||{}, t=iso(0);
   for(let i=MF_N-1;i>=0;i--){ const x=S[MF_KEY+'-s'+i]; if(x && x.date){ const d=new Date(x.date);
@@ -401,6 +423,13 @@ function mfToday(){
     k=mfL('Latihan hari ini','Today’s workout'); t=mfL('Sesi '+(dt+1)+' selesai ✓','Session '+(dt+1)+' done ✓');
     m=mfL('Bagus. Rehat, minum air, dan jalan santai. Sesi '+(nx+1)+' pada hari latihan seterusnya.','Well done. Rest, drink water and take an easy walk. Session '+(nx+1)+' on your next training day.');
     btn='<button class="mf-link" onclick="mfOpenSession('+nx+')">'+mfL('Lihat sesi ','See session ')+(nx+1)+' ›</button>';
+  } else if(!train && mfAktifToday()){
+    const ad=mfAktifDone();
+    k=mfL('Hari aktif','Active day'); t=ad?mfL('Regangan selesai ✓','Stretch done ✓'):mfL('Jalan 20 minit + regangan '+mfAktifMin()+' minit','Walk 20 min + stretch '+mfAktifMin()+' min');
+    m=ad?mfL('Bagus. Jalan santai bila sempat. Sesi '+(nx+1)+' pada hari latihan seterusnya.','Well done. Take an easy walk when you can. Session '+(nx+1)+' on your next training day.')
+        :mfL('Hari pilihan anda untuk terus bergerak. Sesi THE START kekal pada hari latihan supaya badan sempat pulih.','Your day to keep moving. THE START’s sessions stay on your training days so your body can recover.');
+    btn=ad?'<button class="mf-link" onclick="mfOpenSession('+nx+')">'+mfL('Lihat sesi ','See session ')+(nx+1)+' ›</button>'
+          :'<button class="lbx-go" onclick="mfAktifPlay()">'+glyph('play')+mfL('Mula regangan · ','Start stretch · ')+mfAktifMin()+' min</button>';
   } else if(!train){
     k=mfL('Hari rehat','Rest day'); t=mfL('Jalan kaki 20 minit','Walk for 20 minutes');
     m=mfL('Hari ini bukan hari latihan anda. Jalan santai, masih boleh bercakap. Nak buat Sesi '+(nx+1)+' juga? Boleh.','Today is not one of your training days. An easy walk, still able to talk. Want to do Session '+(nx+1)+' anyway? You can.');
@@ -411,7 +440,7 @@ function mfToday(){
     btn='<button class="lbx-go" onclick="mfPlay('+nx+')">'+glyph('play')+mfL('Mula','Start')+'</button>'+
       '<button class="mf-link" onclick="mfOpenSession('+nx+')">'+mfL('Lihat gerakan','See the moves')+' ›</button>';
   }
-  return '<div class="lbx-card mf-today'+(dt>=0?' done':!train?' rest':'')+'"><div class="mf-today-tx"><div class="lbx-k">'+k+'</div><div class="lbx-h">'+t+'</div><div class="lbx-p">'+m+'</div>'+btn+'</div>'+
+  return '<div class="lbx-card mf-today'+(dt>=0?' done':!train?' rest':'')+(!train&&dt<0&&mfAktifToday()?' aktif':'')+'"><div class="mf-today-tx"><div class="lbx-k">'+k+'</div><div class="lbx-h">'+t+'</div><div class="lbx-p">'+m+'</div>'+btn+'</div>'+
     '<div class="mf-today-ph" style="background-image:url(\''+(dt>=0||!train?'/img/p/mula-hero2.jpg':img)+'\')"></div></div>';
 }
 function mfTicks(){
@@ -422,8 +451,9 @@ function mfTicks(){
                  : [mfWalkOn(), mfL('Jalan kaki 20 minit','Walk 20 minutes'), mfL('Tanda bila siap','Tick when done'), 'mfWalkTick()'],
     [hOn, mfL(hb[0],hb[2]), mfL('Tabiat makan minggu ini','This week’s eating habit'), 'mfMkTick()'],
     [now>=g, mfFmt(g)+mfL(' langkah',' steps'), mfFmt(now)+mfL(' setakat ini',' so far'), "scSheet('steps')"]];
+  if(dt<0 && !train && mfAktifToday()) rows.unshift([mfAktifDone(), mfL('Regangan '+mfAktifMin()+' minit','Stretch '+mfAktifMin()+' min'), mfAktifDone()?mfL('Siap','Done'):mfL('Hari aktif','Active day'), mfAktifDone()?'':'mfAktifPlay()']);
   const n=rows.filter(r=>r[0]).length;
-  return '<div class="lbx-card mf-ticks"><div class="mf-ticks-h"><b>'+mfL('Hari Ini','Today')+'</b><span>'+(n===3?mfL('Selesai ✓','All done ✓'):n+' / 3')+'</span></div>'+
+  return '<div class="lbx-card mf-ticks"><div class="mf-ticks-h"><b>'+mfL('Hari Ini','Today')+'</b><span>'+(n===rows.length?mfL('Selesai ✓','All done ✓'):n+' / '+rows.length)+'</span></div>'+
     rows.map(r=>'<div class="mf-tk'+(r[0]?' on':'')+'"'+(r[3]?' onclick="'+r[3]+'"':'')+'><span class="ck">'+(r[0]?glyph('check'):'')+'</span><div class="tx"><b>'+r[1]+'</b><span>'+r[2]+'</span></div>'+(r[3]&&!r[0]?'<span class="pdx-chev">›</span>':'')+'</div>').join('')+'</div>';
 }
 function mfMealRow(){
@@ -548,9 +578,16 @@ function mfQPick(k,v,multi){
     let l=(mfQA[k]||[]).slice(); const i=l.indexOf(v);
     if(v==='tiada') l=i>=0?[]:['tiada'];
     else { l=l.filter(x=>x!=='tiada'); if(i>=0) l.splice(i,1); else { if(q.max && l.length>=q.max) l.shift(); l.push(v); } }
-    mfQA[k]=l; if(k==='sihat' && !mfRiskOf(mfQA)) delete mfQA.clear; renderMF(); return;
+    mfQA[k]=l; if(k==='sihat' && !mfRiskOf(mfQA)) delete mfQA.clear;
+    if(k==='days' && mfQA.aktif) mfQA.aktif=mfQA.aktif.filter(x=>l.indexOf(x)<0);
+    renderMF(); return;
   }
   mfQA[k]=v; mfQuizNext();
+}
+function mfQAktif(c){
+  let l=(mfQA.aktif||[]).filter(x=>x!=='tiada' && (mfQA.days||[]).indexOf(x)<0); const i=l.indexOf(c);
+  if(i>=0) l.splice(i,1); else { if(l.length>=MF_AKTIF_MAX) l.shift(); l.push(c); }
+  mfQA.aktif=l; renderMF();
 }
 function mfQCount(){ return MF_Q.length; }
 function mfQOk(q){
@@ -592,6 +629,13 @@ function mfQuiz(){
       '<div class="lbq-ticks"><div class="obrow obtick'+(mfQA.clear?' on':'')+'" onclick="mfQA.clear=!mfQA.clear;renderMF()"><span class="box">'+(mfQA.clear?'✓':'')+'</span><span>'+
       mfL('Saya faham, dan akan dapatkan nasihat','I understand, and will get advice')+'</span></div></div>';
   }
+  if(q.k==='days'){
+    const tk=mfQA.days||[], ak=(mfQA.aktif||[]).filter(x=>tk.indexOf(x)<0);
+    h+='<div class="mf-qak"><div class="mf-qak-h"><b>'+mfL('Nak bergerak hari lain juga?','Want to move on other days too?')+'</b><span>'+mfL('Pilihan, maksimum '+MF_AKTIF_MAX+' hari','Optional, up to '+MF_AKTIF_MAX+' days')+'</span></div>'+
+      '<div class="mf-qak-s">'+mfL('Sesi THE START kekal 3 seminggu supaya badan sempat pulih. Pada hari aktif: jalan 20 minit dan regangan 10 minit.','THE START stays at 3 sessions a week so your body can recover. On an active day: a 20-minute walk and a 10-minute stretch.')+'</div>'+
+      '<div class="mf-qak-d">'+MF_DAYS.map(d=>{ const t=tk.indexOf(d[0])>=0, on=ak.indexOf(d[0])>=0;
+        return '<button class="'+(t?'t':on?'on':'')+'"'+(t?' disabled':' onclick="mfQAktif(\''+d[0]+'\')"')+'>'+(mfEn()?['Mon','Tue','Wed','Thu','Fri','Sat','Sun']:['Isn','Sel','Rab','Kha','Jum','Sab','Ahd'])[MF_DAYS.indexOf(d)]+(t?'<i>'+mfL('Sesi','Session')+'</i>':on?'<i>'+mfL('Aktif','Active')+'</i>':'')+'</button>'; }).join('')+'</div></div>';
+  }
   if(q.multi){
     const ok=mfQOk(q);
     h+=(q.max && (v||[]).length && (v||[]).length<q.max?'<div class="lbq-hint">'+mfL('Pilih '+q.max+' hari ('+(v||[]).length+' dipilih).','Choose '+q.max+' days ('+(v||[]).length+' chosen).')+'</div>':'')+
@@ -600,6 +644,7 @@ function mfQuiz(){
   return h+'</div>';
 }
 function mfDayNames(me){ return (me.days||[]).map(d=>mfT((MF_DAYS.filter(x=>x[0]===d)[0]||['',''])[1])).filter(Boolean); }
+function mfAktifNames(me){ return mfAktifDays(me).map(d=>mfT((MF_DAYS.filter(x=>x[0]===d)[0]||['',''])[1])).filter(Boolean); }
 function mfQuizResult(){
   const me=Object.assign({},mfQA,{done:true}), path=mfAutoPath(me), s1=mfSession(0,me), sN=mfSession(MF_N-1,me), nm=mfFirst();
   const lines=[]; (me.pain||[]).forEach(p=>{ const t={
@@ -615,7 +660,7 @@ function mfQuizResult(){
     '<div class="lbq-card"><div class="lbq-ch">'+glyph('workout')+'<b>'+mfL('Tahap','Path')+'</b><span>'+mfT(MF_PATHS[path])+'</span></div>'+
       '<div class="lbq-stats"><div><b>'+mfMinutes(s1)+'</b><span>'+mfL('min minggu 1','min week 1')+'</span></div><div><b>'+mfMinutes(sN)+'</b><span>'+mfL('min minggu ','min week ')+MF_WK+'</span></div><div><b>3</b><span>'+mfL('sesi seminggu','a week')+'</span></div></div>'+
       '<div class="mf-ladder">'+['squat','push','pull','core'].map(p=>'<div><span>'+mfT(MF_PAT[p].n)+'</span><b>'+mfMove(p,0,me)+'</b></div>').join('')+'</div></div>'+
-    (days.length?'<div class="lbq-chips">'+days.map(x=>'<span>'+x+'</span>').join('')+'</div>':'')+
+    (days.length?'<div class="lbq-chips">'+days.map(x=>'<span>'+x+'</span>').join('')+mfAktifNames(me).map(x=>'<span class="ak">'+x+' · '+mfL('aktif','active')+'</span>').join('')+'</div>':'')+
     (lines.length?'<div class="lbq-lines">'+lines.map(l=>'<div><span>'+glyph('check')+'</span><p>'+l+'</p></div>').join('')+'</div>':'')+
     '<div class="lbq-fine">'+mfL('Bukan rawatan atau program pemulihan. Berhenti jika sakit tajam, pening, sakit dada atau sesak nafas luar biasa.','Not a treatment or rehab program. Stop with sharp pain, dizziness, chest pain or unusual breathlessness.')+'</div>'+
     '<button class="lbx-go" onclick="mfQuizSave()">'+glyph('play')+mfL('Lihat Pelan Saya','See My Plan')+'</button>'+
@@ -631,7 +676,7 @@ function mfMeCard(){
   const me=mfMe(); if(!me) return '';
   const p=mfPath(), auto=mfAutoPath(me), days=mfDayNames(me);
   return '<div class="lbx-card mf-me"><div class="h"><div class="tt"><b>'+mfL('Tahap ','Path: ')+mfT(MF_PATHS[p])+'</b>'+
-      (days.length?'<span>'+days.join(' · ')+'</span>':'')+'</div>'+
+      (days.length?'<span>'+days.join(' · ')+(mfAktifNames(me).length?' + '+mfAktifNames(me).join(' · ')+' '+mfL('(aktif)','(active)'):'')+'</span>':'')+'</div>'+
     '<button onclick="mfQuizOpen()">'+glyph('pencil')+mfL('Ubah','Edit')+'</button></div>'+
     '<div class="lbx-split mf-path" role="radiogroup" aria-label="'+mfL('Tahap','Path')+'">'+MF_PATHS.map((x,i)=>
       '<button class="'+(p===i?'on':'')+'" role="radio" aria-checked="'+(p===i)+'" '+(mfRiskOf(me)&&i>0?'disabled ':'')+'onclick="mfSetPath('+i+')">'+mfT(x)+(i===auto?' ·':'')+'</button>').join('')+'</div>'+
@@ -749,6 +794,7 @@ function mfPlayOne(n,gi){
   startWorkout([mfEx(n,x?s.w:30,0,x?mfCue(x.p):'')],{rounds:1, name:n, mf:{gi:-1,back:gi}});
 }
 function mfAfterSession(m){
+  if(m.aktif){ hidePanels(); $('progdetail').style.display='block'; mfTab='plan'; renderMF(); $('screen').scrollTop=0; return; }
   if(m.gi<0) return mfOpenSession(m.back);
   hidePanels(); $('progdetail').style.display='block'; mfTab='plan';
   if(m.gi<mfDone()) mfLsOpen=m.gi;
@@ -1166,15 +1212,16 @@ function mfPl(stage,arg){
     if($('pl-cdx')) $('pl-cdx').innerHTML='<span>'+mfL('Mula dengan','First up')+'</span><b>'+ex.n+'</b>';
   } else if(stage==='ready'){
     const secs=pl.exs.reduce((t,e)=>t+(e.dur||45)+plRestOf(e),0), mins=Math.max(1,Math.round(secs/60)), nm=pl.exs.length;
-    if(document.querySelector('#pl-ready .rdk')) document.querySelector('#pl-ready .rdk').textContent=gi>=0?mfL('Sesi '+(gi+1)+' / '+MF_N,'Session '+(gi+1)+' / '+MF_N):mfL('Cuba gerakan','Try the move');
+    if(document.querySelector('#pl-ready .rdk')) document.querySelector('#pl-ready .rdk').textContent=gi>=0?mfL('Sesi '+(gi+1)+' / '+MF_N,'Session '+(gi+1)+' / '+MF_N):(pl.meta.mf.aktif?mfL('Hari aktif','Active day'):mfL('Cuba gerakan','Try the move'));
     const ss=gi>=0&&mfSession(gi); if($('pl-rdt') && ss && ss.n) $('pl-rdt').textContent=mfT(ss.n);
+    if(pl.meta.mf.aktif && $('pl-rdt')) $('pl-rdt').textContent=mfL('Regangan','Stretch');
     if($('pl-rdm')) $('pl-rdm').textContent=nm+mfL(' gerakan · lebih kurang ',' moves · about ')+mins+mfL(' minit',' min');
     if($('pl-rds')) $('pl-rds').innerHTML='<div class="pl-chips"><span><b>'+mins+'</b> '+mfL('minit','min')+'</span><span><b>'+nm+'</b> '+mfL('gerakan','moves')+'</span><span>'+mfL('Ikut rentak anda','Your own pace')+'</span></div>';
     if($('pl-rdgo')) $('pl-rdgo').textContent=mfL('Mula sesi','Start session');
     if($('pl-rdf')) $('pl-rdf').innerHTML=mfPlJourney(gi)+'<div class="mf-rdf">'+mfL('Mula dengan: ','First up: ')+pl.exs[0].n+'</div>';
   } else if(stage==='done'){
     const dk=document.querySelector('#pl-done .dk');
-    if(dk) dk.textContent=gi>=0?mfL('Sesi '+(gi+1)+' siap!','Session '+(gi+1)+' done!'):mfL('Siap!','Done!');
+    if(dk) dk.textContent=gi>=0?mfL('Sesi '+(gi+1)+' siap!','Session '+(gi+1)+' done!'):(pl.meta.mf.aktif?mfL('Hari aktif siap!','Active day done!'):mfL('Siap!','Done!'));
     if($('pl-dn-date')) $('pl-dn-date').textContent=new Date().toLocaleDateString(mfEn()?'en-GB':'ms-MY',{weekday:'long',day:'numeric',month:'long'});
     let j=$('mfj-dn');
     if(!j){ const at=$('pl-dn-date'); if(at && at.insertAdjacentHTML){ at.insertAdjacentHTML('afterend','<div id="mfj-dn"></div>'); j=$('mfj-dn'); } }
