@@ -16,7 +16,7 @@
   Layout after everfit.io (white page, huge black headline with a rotating
   word, black pill buttons, two-tier cards, black feature band), in HITFAT red.
 
-  No backend: the form builds a WhatsApp message to the gym's number.
+  The form calls kerjaya_apply on the HITFAT OS database (OS sql/116) and lands in OS → HR → Permohonan Coach; if that fails it opens WhatsApp.
   Everything Seth still has to confirm sits in CONFIG at the bottom
   (pay wording, where to send applications).
 -->
@@ -123,6 +123,11 @@ section{padding:96px 0}
 .tier .pay b{display:block;font:800 18px Inter;color:var(--ink);margin-bottom:2px}
 .tier.ft .pay b{color:#fff}
 .tier.ft .btn{background:#fff;color:var(--ink)}
+.sal{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;background:var(--red);color:#fff;border-radius:18px;padding:16px 20px;margin:-6px 0 24px;box-shadow:0 18px 40px -18px rgba(227,6,19,.7)}
+.sal small{flex-basis:100%;font:700 12px Inter;letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+.sal b{font:900 clamp(40px,5vw,54px)/1 Archivo,Inter,sans-serif;letter-spacing:-.02em}
+.sal span{font:600 16px Inter;opacity:.9}
+.chip.hot{background:var(--red);color:#fff;box-shadow:none;font-weight:700}
 @media(max-width:820px){.tiers{grid-template-columns:1fr}.tier{padding:26px}}
 
 /* who */
@@ -190,6 +195,20 @@ section{padding:96px 0}
 .f textarea{min-height:110px;resize:vertical}
 .f input:focus,.f select:focus,.f textarea:focus{border-color:var(--ink)}
 fieldset.f{border:0}
+.f .fl{font:600 14px Inter}
+.f .fl em,.f .hint{font-style:normal;color:var(--ink2);font-weight:500}
+.f .hint{font-size:13px}
+.up{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px;border-radius:14px;border:1.5px dashed #D5D8DE;cursor:pointer;transition:border-color .15s,background .15s}
+.up:hover{border-color:var(--ink);background:#FAFAFB}
+.up input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.up b{font:700 14px Inter;background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px}
+.up small{color:var(--ink2);font-size:13px}
+.up:focus-within{outline:2px solid var(--red);outline-offset:2px}
+.ups{display:flex;flex-wrap:wrap;gap:8px}
+.ups:empty{display:none}
+.ups span{display:inline-flex;align-items:center;gap:8px;max-width:100%;padding:8px 8px 8px 14px;border-radius:999px;background:#F3F4F6;font:600 13px Inter}
+.ups span i{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
+.ups button{border:0;background:#fff;width:24px;height:24px;border-radius:50%;cursor:pointer;font:700 14px Inter;line-height:1;color:var(--ink)}
 .pills{display:flex;flex-wrap:wrap;gap:8px}
 .pills label{cursor:pointer;position:relative}
 .pills input{position:absolute;opacity:0;pointer-events:none}
@@ -199,6 +218,13 @@ fieldset.f{border:0}
 .form .send{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:6px}
 .form .send small{color:var(--ink2);font-size:13px;max-width:420px}
 .err{color:var(--red);font:600 14px Inter;grid-column:1/-1;display:none}
+.hpf{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.form .btn[disabled]{opacity:.6;pointer-events:none}
+.done{background:#fff;border-radius:28px;padding:40px 36px;box-shadow:0 30px 60px -30px rgba(227,6,19,.25);max-width:880px;text-align:center}
+.done .tick{width:64px;height:64px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px}
+.done h3{font:800 clamp(24px,4vw,32px)/1.1 Archivo,Inter,sans-serif;margin:0 0 10px}
+.done p{color:var(--ink2);font-size:16px;line-height:1.6;max-width:520px;margin:0 auto 20px}
+.done .btn{display:inline-flex}
 @media(max-width:700px){.form{grid-template-columns:1fr;padding:24px}.form .send .btn{width:100%}}
 
 /* faq */
@@ -252,7 +278,7 @@ footer a{text-decoration:none}
         <a class="btn ghost" href="#academy">Tengok HITFAT Academy</a>
       </div>
       <div class="chips">
-        <span class="chip">Part time</span><span class="chip">Full time</span><span class="chip">Coach lelaki & wanita</span><span class="chip">Latihan disediakan</span><span class="chip">Sejak 2015</span>
+        <span class="chip">Part time</span><span class="chip hot">Full time dari <span data-c="ftFrom"></span></span><span class="chip">Coach lelaki & wanita</span><span class="chip">Latihan disediakan</span><span class="chip">Sejak 2015</span>
       </div>
     </div>
     <div style="position:relative">
@@ -299,6 +325,7 @@ footer a{text-decoration:none}
         <span class="tag">Full time</span>
         <h3 class="h">Coach Full Time</h3>
         <p class="sub">Untuk yang nak jadikan coaching kerjaya, dan bina nama sebagai coach.</p>
+        <div class="sal"><small>Gaji bermula</small><b data-c="ftFrom"></b><span>sebulan</span></div>
         <ul>
           <li>Pimpin kelas HITFAT, HYROX, Kids dan Ladies</li>
           <li>Bimbing ahli secara personal dan jaga kemajuan mereka</li>
@@ -373,7 +400,7 @@ footer a{text-decoration:none}
       <h2 class="h">Dari borang ke lantai gym</h2>
     </div>
     <div class="path">
-      <div class="step rv"><h4>Hantar permohonan</h4><p>Isi borang di bawah. Ia terus dihantar ke WhatsApp HITFAT.</p></div>
+      <div class="step rv"><h4>Hantar permohonan</h4><p>Isi borang di bawah. Ia terus sampai kepada pasukan HITFAT.</p></div>
       <div class="step rv"><h4>Sembang & sesi cuba</h4><p>Kami jemput anda ke gym untuk berkenalan dan cuba pimpin satu segmen kelas.</p></div>
       <div class="step rv"><h4>HITFAT Academy</h4><p>Belajar format HITFAT, teknik dan cara jaga ahli, sambil ikut coach senior di kelas.</p></div>
       <div class="step rv"><h4>Pimpin kelas sendiri</h4><p>Bila anda dah bersedia, anda dapat slot kelas sendiri dan terus berkembang bersama kami.</p></div>
@@ -404,7 +431,7 @@ footer a{text-decoration:none}
     <div class="sec-h rv">
       <span class="eyebrow">Borang permohonan</span>
       <h2 class="h">Mohon dalam 2 minit</h2>
-      <p>Isi dan tekan hantar. WhatsApp akan buka dengan maklumat anda siap ditaip. Tekan hantar di WhatsApp, dan kami akan hubungi anda.</p>
+      <p>Isi dan tekan hantar. Permohonan anda terus sampai kepada pasukan HITFAT, dan kami akan hubungi anda melalui WhatsApp.</p>
     </div>
     <form class="form rv" id="f" novalidate>
       <fieldset class="f full">
@@ -433,14 +460,38 @@ footer a{text-decoration:none}
           <label><input type="checkbox" value="Hujung minggu"><span>Hujung minggu</span></label>
         </div>
       </fieldset>
-      <div class="f full"><label for="ig">Instagram atau TikTok <em>(jika ada)</em></label><input id="ig" name="ig" placeholder="@nama"></div>
+      <fieldset class="f full">
+        <legend>Boleh coach dalam English?</legend>
+        <div class="pills" id="bi">
+          <label><input type="radio" name="bi" value="Ya, lancar"><span>Ya, lancar</span></label>
+          <label><input type="radio" name="bi" value="Sikit-sikit"><span>Sikit-sikit</span></label>
+          <label><input type="radio" name="bi" value="Tak"><span>Tak</span></label>
+        </div>
+      </fieldset>
+      <div class="f full"><span class="fl">Resume / CV <em>(jika ada)</em></span>
+        <label class="up"><input type="file" id="rf" accept=".pdf,.doc,.docx,image/*"><b>＋ Pilih resume</b><small>PDF, Word atau gambar · maks 10 MB</small></label>
+        <div class="ups" id="rfl"></div>
+      </div>
+      <div class="f full"><span class="fl">Sijil <em>(jika ada, boleh pilih beberapa)</em></span>
+        <label class="up"><input type="file" id="sf" multiple accept=".pdf,.doc,.docx,image/*"><b>＋ Pilih sijil</b><small>Sehingga 5 fail · gambar sijil pun boleh</small></label>
+        <div class="ups" id="sfl"></div>
+      </div>
+      <div class="f full"><label for="ig">Instagram atau TikTok <em>(jika ada)</em></label><input id="ig" name="ig" placeholder="@nama"><span class="hint">Tak wajib. Ia bantu kami kenal anda sedikit sebelum berbual.</span></div>
       <div class="f full"><label for="wy">Kenapa anda nak jadi coach?</label><textarea id="wy" name="wy" placeholder="Ceritakan sedikit tentang diri anda"></textarea></div>
+      <div class="hpf" aria-hidden="true"><label>Leave empty<input id="hp" tabindex="-1" autocomplete="off"></label></div>
       <p class="err" id="er"></p>
       <div class="send">
-        <button class="btn red" type="submit">Hantar melalui WhatsApp <span class="ar">→</span></button>
-        <small>Maklumat ini dihantar terus ke WhatsApp HITFAT dan hanya digunakan untuk permohonan ini.</small>
+        <button class="btn red" type="submit" id="sb">Hantar permohonan <span class="ar">→</span></button>
+        <small>Maklumat anda hanya digunakan untuk permohonan ini.</small>
       </div>
     </form>
+    <div class="done" id="done" hidden>
+      <div class="tick">✓</div>
+      <h3>Terima kasih, <span id="dn"></span>!</h3>
+      <p>Permohonan anda sudah kami terima. Pasukan HITFAT akan hubungi anda melalui WhatsApp di nombor yang anda beri.</p>
+      <p id="dfail" hidden style="color:var(--red);font-weight:600"></p>
+      <a class="btn ghost" id="dwa" href="#" target="_blank" rel="noopener">Ada soalan? WhatsApp kami</a>
+    </div>
   </div>
 </section>
 
@@ -480,8 +531,9 @@ footer a{text-decoration:none}
 var CONFIG = {
   WA: '60189174656',
   payPT: 'Bayaran ikut kelas',
-  payFT: 'Gaji bulanan',
-  payFaq: 'Coach part time dibayar ikut kelas yang diajar. Coach full time menerima gaji bulanan. Kadar penuh diterangkan semasa temuduga, ikut pengalaman dan peranan.'
+  ftFrom: 'RM2,000',
+  payFT: 'Gaji bulanan, ikut pengalaman',
+  payFaq: 'Coach part time dibayar ikut kelas yang diajar. Coach full time menerima gaji bulanan bermula RM2,000. Kadar penuh diterangkan semasa temuduga, ikut pengalaman dan peranan.'
 };
 document.querySelectorAll('[data-c]').forEach(function(el){ el.textContent = CONFIG[el.getAttribute('data-c')] || ''; });
 
@@ -527,13 +579,65 @@ document.querySelectorAll('[data-pick]').forEach(function(a){
   });
 });
 
-/* form → WhatsApp */
+/* form → terus ke HITFAT OS (HR → Permohonan Coach). Kalau gagal, WhatsApp seperti dahulu. */
+var OS_URL='https://ddcmfbaidkrqpeckmzou.supabase.co', OS_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkY21mYmFpZGtycXBlY2ttem91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzg2OTIsImV4cCI6MjEwMzg1NDY5Mn0.V7IE_gmYn_GuJZId1aXbzjj7WwNerHZiAfNav_C91XY';
+var FILES = { resume:[], sijil:[] }, OK_EXT = ['pdf','doc','docx','jpg','jpeg','png','webp','heic','heif'],
+    MIME = { pdf:'application/pdf', doc:'application/msword', docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document', jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', webp:'image/webp', heic:'image/heic', heif:'image/heif' };
+function extOf(n){ return String(n.split('.').pop() || '').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5); }
+function showFiles(kind){
+  var box = document.getElementById(kind === 'resume' ? 'rfl' : 'sfl');
+  box.innerHTML = '';
+  FILES[kind].forEach(function(f, i){
+    var s = document.createElement('span'), t = document.createElement('i'), x = document.createElement('button');
+    t.textContent = f.name; x.type = 'button'; x.textContent = '×'; x.setAttribute('aria-label', 'Buang ' + f.name);
+    x.onclick = function(){ FILES[kind].splice(i, 1); showFiles(kind); };
+    s.appendChild(t); s.appendChild(x); box.appendChild(s);
+  });
+}
+function pickFiles(input, kind, max){
+  var er = document.getElementById('er'), bad = [];
+  [].forEach.call(input.files, function(f){
+    if(OK_EXT.indexOf(extOf(f.name)) < 0 && !/^image\//.test(f.type)) { bad.push(f.name + ' (jenis fail tidak diterima)'); return; }
+    if(f.size > 10 * 1024 * 1024) { bad.push(f.name + ' (lebih 10 MB)'); return; }
+    if(kind === 'resume') FILES.resume = [f];
+    else if(FILES.sijil.length < max) FILES.sijil.push(f);
+    else bad.push(f.name + ' (maksimum ' + max + ' sijil)');
+  });
+  input.value = '';
+  showFiles(kind);
+  if(bad.length){ er.textContent = 'Tidak dapat tambah: ' + bad.join(', ') + '.'; er.style.display = 'block'; } else er.style.display = 'none';
+}
+document.getElementById('rf').addEventListener('change', function(){ pickFiles(this, 'resume', 1); });
+document.getElementById('sf').addEventListener('change', function(){ pickFiles(this, 'sijil', 5); });
+function uid(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){ var r = Math.random()*16|0; return (c === 'x' ? r : (r&3|8)).toString(16); });
+}
+function upOne(f, kind){
+  var ext = extOf(f.name) || 'pdf', path = 'kerjaya/' + uid() + '.' + ext;
+  return fetch(OS_URL + '/storage/v1/object/resumes/' + path, {
+    method:'POST',
+    headers:{ apikey:OS_ANON, Authorization:'Bearer ' + OS_ANON, 'Content-Type': f.type || MIME[ext] || 'application/octet-stream', 'x-upsert':'false' },
+    body:f
+  }).then(function(r){ return r.ok ? { path:path, name:f.name, kind:kind } : null; }).catch(function(){ return null; });
+}
+function upAll(sb){
+  var list = FILES.resume.map(function(f){ return [f,'resume']; }).concat(FILES.sijil.map(function(f){ return [f,'sijil']; })), out = [], fail = 0, i = 0;
+  function next(){
+    if(i >= list.length) return Promise.resolve({ files:out, fail:fail });
+    sb.textContent = 'Memuat naik fail ' + (i + 1) + '/' + list.length + '…';
+    var it = list[i++];
+    return upOne(it[0], it[1]).then(function(r){ if(r) out.push(r); else fail++; return next(); });
+  }
+  return next();
+}
 document.getElementById('f').addEventListener('submit', function(e){
   e.preventDefault();
   var g = function(id){ return document.getElementById(id).value.trim(); };
   var jw = (document.querySelector('input[name=jw]:checked') || {}).value || '';
+  var bi = (document.querySelector('input[name=bi]:checked') || {}).value || '';
   var mt = [].map.call(document.querySelectorAll('#mt input:checked'), function(x){ return x.value; }).join(', ');
-  var er = document.getElementById('er'), miss = [];
+  var er = document.getElementById('er'), sb = document.getElementById('sb'), miss = [];
   if(!jw) miss.push('jawatan');
   if(!g('nm')) miss.push('nama');
   if(g('ph').replace(/\D/g,'').length < 9) miss.push('no. telefon');
@@ -550,10 +654,40 @@ document.getElementById('f').addEventListener('submit', function(e){
     g('ex') ? 'Pengalaman: ' + g('ex') : '',
     g('cr') ? 'Sijil: ' + g('cr') : '',
     mt ? 'Boleh ajar: ' + mt : '',
+    bi ? 'Coach dalam English: ' + bi : '',
     g('ig') ? 'IG/TikTok: ' + g('ig') : '',
     g('wy') ? '\nKenapa nak jadi coach:\n' + g('wy') : ''
   ].filter(function(x){ return x !== ''; });
-  location.href = 'https://wa.me/' + CONFIG.WA + '?text=' + encodeURIComponent(lines.join('\n'));
+  var waUrl = 'https://wa.me/' + CONFIG.WA + '?text=' + encodeURIComponent(lines.join('\n'));
+  var p = { jawatan:jw, name:g('nm'), phone:g('ph'), umur:g('ag'), tinggal:g('ct'), pengalaman:g('ex'), sijil:g('cr'), masa:mt, english:bi, sosial:g('ig'), kenapa:g('wy'), hp:g('hp') };
+  var nFiles = FILES.resume.length + FILES.sijil.length;
+  if(nFiles) waUrl += encodeURIComponent('\n\n(Saya ada ' + (FILES.resume.length ? 'resume' : '') + (FILES.resume.length && FILES.sijil.length ? ' dan ' : '') + (FILES.sijil.length ? 'sijil' : '') + ' untuk dihantar.)');
+  sb.disabled = true; var lbl = sb.innerHTML, upFail = 0; sb.textContent = 'Menghantar…';
+  function fallback(msg){
+    sb.disabled = false; sb.innerHTML = lbl;
+    er.textContent = msg; er.style.display = 'block';
+    location.href = waUrl;
+  }
+  upAll(sb).then(function(u){
+    p.files = u.files; upFail = u.fail;
+    sb.textContent = 'Menghantar…';
+    return fetch(OS_URL + '/rest/v1/rpc/kerjaya_apply', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', apikey:OS_ANON, Authorization:'Bearer ' + OS_ANON },
+      body: JSON.stringify({ p:p })
+    });
+  }).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
+    if(d && d.ok){
+      document.getElementById('dn').textContent = g('nm').split(' ')[0];
+      document.getElementById('dwa').href = 'https://wa.me/' + CONFIG.WA + '?text=' + encodeURIComponent('Salam HITFAT, saya ' + g('nm') + ', baru hantar permohonan coach.');
+      document.getElementById('f').style.display = 'none';
+      if(upFail){ var df = document.getElementById('dfail'); df.textContent = upFail + ' fail tidak dapat dimuat naik. Anda boleh hantar melalui WhatsApp di bawah.'; df.hidden = false; }
+      var dn = document.getElementById('done'); dn.hidden = false; window.scrollTo(0, Math.max(0, dn.getBoundingClientRect().top + window.pageYOffset - 120));
+      return;
+    }
+    if(d && d.error === 'phone'){ sb.disabled = false; sb.innerHTML = lbl; er.textContent = 'Sila semak nombor telefon anda.'; er.style.display = 'block'; return; }
+    fallback('Tidak dapat hantar sekarang. Kami buka WhatsApp untuk anda.');
+  }).catch(function(){ fallback('Tidak dapat hantar sekarang. Kami buka WhatsApp untuk anda.'); });
 });
 </script>
 </body>
