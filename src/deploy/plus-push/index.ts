@@ -9,7 +9,7 @@
                                  member with a subscription, their day
                                  read from plus_data, at most one message
    POST ?action=test             a signed-in member's own test message
-   POST ?action=notify&key=<cron>  { users, title, body, url, tag }: a
+   POST ?action=notify&key=<cron>  { users, title, body, url, tag, icon? }: a
                                  message now, for plus-class (a comment on
                                  your post, a reply to your comment); not
                                  counted as the evening's one message
@@ -379,6 +379,8 @@ Deno.serve(async (req: Request) => {
     if (!users.length) return json({ ok: true, sent: 0 });
     const msg: Msg = { kind: 'cm', title: String(b.title || 'HITFAT+').slice(0, 80), body: String(b.body || '').slice(0, 160),
       url: typeof b.url === 'string' && b.url.startsWith('/') ? b.url.slice(0, 80) : '/', tag: String(b.tag || 'cm').slice(0, 60) };
+    /* a caller may pick one of our own push pictures, e.g. the HITFAT OS mark for OS sales (Android, desktop; an iPhone shows the app icon) */
+    if (typeof b.icon === 'string' && /^\/img\/mascot\/push\/[a-z0-9_-]+\.png$/.test(b.icon)) msg.icon = b.icon;
     const { data: subs } = await admin.from('plus_push_subs').select('*').in('user_id', users);
     return json({ ok: true, sent: await sendTo(admin, subs || [], msg, false) });
   }
