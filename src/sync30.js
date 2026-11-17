@@ -114,9 +114,15 @@ function syThumb(sn){ return '/img/p/sync/t'+sn+'.jpg?v=1'; }   /* 400×225 */
 /* 17 Nov, two more Spotify recordings from Seth ("yang ini sekali"): its featured class plays itself, muted, in
    a 16:9 card, and the episode page shows the video. Ours loop a 6-second silent clip of the session (its first
    move of round 1, made by _projek/sync/tools/sync_previews.py, ~90 KB); still frame when motion is reduced. */
-function syPrev(sn){
+/* 17 Nov, later: the vertical clip over a blurred copy of itself looked muddy on Seth's iPhone; he chose the split
+   card ("b"): the session's colour with the day and its name on the left, the clip on the right, its left edge
+   fading into the colour. The clip (416×640, top cut) and its first frame pp{n}.jpg come from sync_previews.py. */
+function syPrev(sn,day){
   let still=false; try{ still=window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
-  return '<video class="sy-pv" src="/img/p/sync/p'+sn+'.mp4?v=1" poster="'+syWide(sn)+'" muted loop playsinline preload="metadata"'+(still?'':' autoplay')+' aria-hidden="true"></video>';
+  const lv=syLevel(syData().level);
+  return '<span class="sy-sp" style="--c:'+SYNC_COL[sn-1]+'"><span class="sy-sp-t"><i>Day '+day+'</i><b>'+hesc(SYNC_S[sn-1].n)+'</b>'+
+      '<small>'+SYNC_MIN+' min · '+lv.n+'</small></span>'+
+    '<video class="sy-pv" src="/img/p/sync/p'+sn+'.mp4?v=2" poster="/img/p/sync/pp'+sn+'.jpg?v=2" muted loop playsinline preload="metadata"'+(still?'':' autoplay')+' aria-hidden="true"></video></span>';
 }
 /* each session's poster (17 Nov, Seth: "gambar coach tu ai xpe, cantik sikit", "masuk"): the coach in studio light in the
    session's colour, its English name on it. Made in _projek/sync (tools/poster_sync_ai.html), 720 px. */
@@ -186,8 +192,8 @@ function syRender(top){
   h+=syTiles(nxt)+syNewRelease();
   /* up next: the featured card, its clip playing */
   h+='<div class="sy-h2">'+(n?'Up next':'Start here')+'</div>'+
-    '<div class="sy-ft"><button class="sy-ft-v" aria-label="Open day '+nxt+'" onclick="syDay('+nxt+')">'+syPrev(nsn)+
-      '<span class="sy-np-vt">'+(np?syLeft(np):SYNC_MIN+':00')+'</span>'+(np?syPbar(np):'')+'</button>'+
+    '<div class="sy-ft"><button class="sy-ft-v" aria-label="Open day '+nxt+'" onclick="syDay('+nxt+')">'+syPrev(nsn,nxt)+
+      (np?'<span class="sy-np-vt">'+syLeft(np)+'</span>'+syPbar(np):'')+'</button>'+
     '<div class="sy-ft-i">'+syCover(nsn,'xs')+'<button class="sy-ft-t" onclick="syDay('+nxt+')"><b>Day '+nxt+' · '+hesc(SYNC_S[nsn-1].n)+'</b>'+
       '<small>'+syPhase(nxt).n+' · '+syPhase(nxt).t+' · '+lv.n+'</small></button>'+
       '<button class="sy-ep-p'+(syReady(nsn,lv.k)?'':' off')+'" aria-label="Play day '+nxt+'" onclick="syDayPlay('+nxt+')">'+SY_I.play+'</button></div></div>';
@@ -330,8 +336,8 @@ function sySheet(day){
   let h='<div class="sy-np'+(_syIn?' in':'')+'" id="sy-np" style="--c:'+SYNC_COL[sn-1]+'">'+
     '<div class="sy-npb" id="sy-npb"><button class="sy-np-x" aria-label="Back" onclick="syShut()">'+SY_I.back+'</button><b>'+hesc(S.n)+'</b>'+
       '<button class="sy-tb-p'+(ok?'':' off')+'" aria-label="Play" onclick="'+go+'">'+SY_I.play+'</button></div>'+
-    '<button class="sy-np-v" aria-label="Play day '+day+'" onclick="'+go+'">'+syPrev(sn)+
-      '<span class="sy-np-vp'+(ok?'':' off')+'">'+SY_I.play+'</span><span class="sy-np-vt">'+(p?syLeft(p):SYNC_MIN+':00')+'</span>'+(p?syPbar(p):'')+'</button>'+
+    '<button class="sy-np-v" aria-label="Play day '+day+'" onclick="'+go+'">'+syPrev(sn,day)+
+      '<span class="sy-np-vp'+(ok?'':' off')+'">'+SY_I.play+'</span>'+(p?'<span class="sy-np-vt">'+syLeft(p)+'</span>'+syPbar(p):'')+'</button>'+
     '<div class="sy-np-k">Day '+day+' of '+SYNC_N+' · '+ph.n+' · '+ph.t+'</div>'+
     '<div class="sy-np-t">'+hesc(S.n)+'</div>'+
     '<div class="sy-np-o">'+syCover(sn,'xs')+'<b>HITFAT SYNC 30</b></div>'+
