@@ -88,7 +88,7 @@ const SY_I={
 };
 let _syS=0, _syIn=false, _syPh=0;   /* the day open full screen (0 = none); _syIn = slide it up this render; _syPh = the phase tab (0 = the next day's) */
 function syOpen(){
-  syClose(); _syS=0; _syPh=0;
+  syClose(); _syS=0; _syPh=0; _syX='';
   const o=document.createElement('div'); o.id='syv'; o.className='sy';
   document.body.appendChild(o); syRender(true);
 }
@@ -183,6 +183,7 @@ function syRender(top){
       '<div class="sy-lvs">'+hesc(lv.s)+'</div>'+
     '</div>'+
     '<div class="sy-body">';
+  h+=syTiles(nxt)+syNewRelease();
   /* up next: the featured card, its clip playing */
   h+='<div class="sy-h2">'+(n?'Up next':'Start here')+'</div>'+
     '<div class="sy-ft"><button class="sy-ft-v" aria-label="Open day '+nxt+'" onclick="syDay('+nxt+')">'+syPrev(nsn)+
@@ -190,12 +191,18 @@ function syRender(top){
     '<div class="sy-ft-i">'+syCover(nsn,'xs')+'<button class="sy-ft-t" onclick="syDay('+nxt+')"><b>Day '+nxt+' · '+hesc(SYNC_S[nsn-1].n)+'</b>'+
       '<small>'+syPhase(nxt).n+' · '+syPhase(nxt).t+' · '+lv.n+'</small></button>'+
       '<button class="sy-ep-p'+(syReady(nsn,lv.k)?'':' off')+'" aria-label="Play day '+nxt+'" onclick="syDayPlay('+nxt+')">'+SY_I.play+'</button></div></div>';
+  const rc=syRecent();
+  if(rc.length) h+='<div class="sy-h2">Recents</div><div class="sy-shelf sy-rc">'+rc.map(x=>{ const sn=sySession(x.day);
+    return '<button class="sy-al" onclick="syDay('+x.day+')">'+syCover(sn)+'<b class="sy-rc-t">Day '+x.day+' · '+hesc(SYNC_S[sn-1].n)+'</b>'+
+      '<i class="sy-pb"><b style="width:'+Math.min(100,x.f*100).toFixed(0)+'%"></b></i></button>'; }).join('')+'</div>';
   /* the 30 days as episodes, one phase at a time */
   const pd=Object.keys(d.days).filter(x=>x>=ph.from && x<=ph.to).length;
   h+='<div class="sy-pt">'+SYNC_PHASES.map((p,k)=>'<button class="'+(p===ph?'on':'')+'" onclick="syPh('+(k+1)+')">'+p.t+'</button>').join('')+'</div>'+
     '<div class="sy-pt-s">'+ph.n+' · Days '+ph.from+'–'+ph.to+' · '+pd+' of '+(ph.to-ph.from+1)+' done</div><div class="sy-eps">';
   for(let i=ph.from;i<=ph.to;i++) h+=syRow(i);
   h+='</div>';
+  h+='<div class="sy-h2">Mixes by focus</div><div class="sy-shelf">'+SYNC_MIX.map(x=>'<button class="sy-mxc" onclick="syX(\'mix:'+x.k+'\')">'+syMixArt(x)+
+    '<small>'+x.s.map(s=>hesc(SYNC_S[s-1].n)).join(' · ')+'</small></button>').join('')+'</div>';
   /* the 10 sessions: the posters, a shelf that scrolls sideways */
   h+='<div class="sy-h2">Choose your own workout</div><div class="sy-shelf">';
   SYNC_S.forEach((S,i)=>{
@@ -218,15 +225,100 @@ function syRender(top){
   /* a bar that slides in once the header has scrolled away */
   h+='<div class="sy-tb" id="sy-tb" style="--c:'+SYNC_COL[0]+'"><b>HITFAT SYNC 30</b>'+
     '<button class="sy-tb-p" aria-label="Play day '+nxt+'" onclick="syDayPlay('+nxt+')">'+SY_I.play+'</button></div>';
+  if(_syX) h+=syXSheet();
   if(_syS) h+=sySheet(_syS);
   const old=$('sy-np'), keepNp=old && !_syIn ? old.scrollTop : 0, keep=top?0:o.scrollTop;
+  const oldX=$('sy-xp'), keepX=oldX && !_syXIn ? oldX.scrollTop : 0;
   o.innerHTML=h; o.scrollTop=keep;
   const tb=$('sy-tb'), hero=o.querySelector('.sy-hero'), hh=Math.min(o.clientWidth,440);
   const on=()=>{ const st=o.scrollTop; if(tb) tb.classList.toggle('on', st>hh-60); if(hero) hero.style.setProperty('--f', Math.min(1,Math.max(0,st/hh)).toFixed(3)); };
   o.onscroll=on; on();
+  const xp=$('sy-xp'), xb=$('sy-xpb');
+  if(xp){ xp.scrollTop=keepX; const on3=()=>{ if(xb) xb.classList.toggle('on', xp.scrollTop>200); }; xp.onscroll=on3; on3(); }
   const np2=$('sy-np'), nb=$('sy-npb');
   if(np2){ np2.scrollTop=keepNp; const on2=()=>{ if(nb) nb.classList.toggle('on', np2.scrollTop>260); }; np2.onscroll=on2; on2(); }
 }
+/* ── Spotify's Home (Seth, 17 Nov, two screenshots: "yang ni mana"): quick tiles at the top, "New release from",
+   "Recents" with how far each went, and stations / "Your top mixes" — here mixes by body focus, a pastel card
+   with the coach in circles — plus "All moves", every move with its technique cue, a tap plays it. ── */
+const SYNC_MIX=[
+  {k:'full',   n:'Full Body',  s:[1,4,10]},
+  {k:'legs',   n:'Legs',       s:[2,5,8]},
+  {k:'upper',  n:'Upper Body', s:[3,7]},
+  {k:'core',   n:'Core',       s:[6,3]},
+  {k:'cardio', n:'Cardio',     s:[9,5,1]}
+];
+/* the newest videos, newest first ("s1_medium"), added with SYNC_VIDEO as they go up: the "New release" card */
+const SYNC_NEW=[];
+let _syX='', _syXIn=false;   /* a list open over the page: 'mix:legs' or 'moves' ('' = none) */
+function syCirc(sn){ return '/img/p/sync/c'+sn+'.jpg?v=1'; }   /* 240×240, the coach, for the circles */
+function syX(k){ _syXIn=!_syX; _syX=k; syRender(); _syXIn=false; }
+function syXShut(){ _syX=''; syRender(); }
+function syPhGo(k){ _syPh=k; syRender(); const o=$('syv'), t=o&&o.querySelector('.sy-pt'); if(t) o.scrollTop+=t.getBoundingClientRect().top-72; }
+/* days played lately: the one stopped part way first, then the days done, newest first */
+function syRecent(){
+  const d=syData(), r=[], seen={};
+  if(d.pos){ r.push({day:d.pos.day, f:d.pos.t/d.pos.dur}); seen[d.pos.day]=1; }
+  d.log.slice().reverse().forEach(x=>{ if(!seen[x.n] && x.n>=1 && x.n<=SYNC_N){ seen[x.n]=1; r.push({day:x.n, f:1}); } });
+  return r.slice(0,8);
+}
+function syTiles(nxt){
+  const t=(img,label,go)=>'<button class="sy-qt" onclick="'+go+'"><span class="sy-qt-i" style="background-image:url(\''+img+'\')"></span><b>'+label+'</b></button>';
+  const nsn=sySession(nxt);
+  return '<div class="sy-qg">'+
+    t(syArt(nsn),'Day '+nxt+' · '+hesc(SYNC_S[nsn-1].n),'syDay('+nxt+')')+
+    t(syCirc(7),'All moves &amp; technique','syX(\'moves\')')+
+    SYNC_PHASES.map((p,k)=>t(syThumb(p.s[0]),p.n+' · '+p.t,'syPhGo('+(k+1)+')')).join('')+
+    t(syArt(10),'Final Test','syDay('+sySessionDay(10)+')')+
+  '</div>';
+}
+function syNewRelease(){
+  const k=SYNC_NEW.find(x=>SYNC_VIDEO[x]), m=k && /^s(\d+)_(\w+)$/.exec(k); if(!m) return '';
+  const sn=+m[1], lv=m[2], day=sySessionDay(sn);
+  return '<div class="sy-nr-h"><span class="sy-logo">H</span><div><small>New release from</small><b>HITFAT SYNC</b></div></div>'+
+    '<div class="sy-nr"><button class="sy-nr-a" aria-label="Open '+hesc(SYNC_S[sn-1].n)+'" onclick="syDay('+day+')">'+syCover(sn)+'</button>'+
+    '<div class="sy-nr-in"><small>Video</small><b>'+hesc(SYNC_S[sn-1].n)+'</b><span>Session '+sn+' · '+syLevel(lv).n+' · '+SYNC_MIN+' min</span>'+
+    '<button class="sy-ep-p" aria-label="Play" onclick="syPick(\''+lv+'\');syDayPlay('+day+')">'+SY_I.play+'</button></div></div>';
+}
+function syMixArt(x,cls){
+  return '<span class="sy-mxc-a'+(cls?' '+cls:'')+'" style="--c:'+SYNC_COL[x.s[0]-1]+'"><em>MIX</em><span class="sy-mxc-c">'+
+    x.s.slice(0,3).map(s=>'<i style="background-image:url(\''+syCirc(s)+'\')"></i>').join('')+'</span><b>'+x.n+'</b></span>';
+}
+/* a list over the page: a mix (its days as episodes) or every move */
+function syXSheet(){
+  const d=syData(), lv=d.level;
+  if(_syX==='moves'){
+    const mv={};
+    for(let sn=1;sn<=10;sn++){ const c=SYNC_CUE[syKey(sn,lv)]; if(!c) continue;
+      c.m.forEach(m=>{ const x=mv[m[4]]||(mv[m[4]]={n:m[4], s:[], at:{}}); if(x.s.indexOf(sn)<0){ x.s.push(sn); x.at[sn]=m[0]; } }); }
+    const list=Object.keys(mv).sort().map(k=>mv[k]);
+    let h='<div class="sy-np sy-xp'+(_syXIn?' in':'')+'" id="sy-xp" style="--c:'+SYNC_COL[6]+'">'+
+      '<div class="sy-npb" id="sy-xpb"><button class="sy-np-x" aria-label="Back" onclick="syXShut()">'+SY_I.back+'</button><b>All moves</b><span></span></div>'+
+      '<div class="sy-np-t">All moves &amp; technique</div>'+
+      '<div class="sy-np-m">'+list.length+' moves · '+syLevel(lv).n+' · tap one to watch the coach do it</div><div class="sy-mvs">';
+    list.forEach(x=>{
+      const sn=x.s.find(s=>syReady(s,lv))||x.s[0];
+      h+='<button class="sy-mv" onclick="syMoveGo('+sn+','+x.at[sn]+')"><span class="sy-mv-c" style="background-image:url(\''+syCirc(sn)+'\')"></span>'+
+        '<span class="sy-mv-in"><b>'+hesc(x.n)+'</b><small>'+hesc(SYNC_TIP[x.n]||'')+'</small></span><em class="sy-mv-k">'+x.s.length+(x.s.length>1?' sessions':' session')+'</em></button>';
+    });
+    return h+'</div></div>';
+  }
+  const x=SYNC_MIX.find(m=>'mix:'+m.k===_syX); if(!x) return '';
+  const days=[]; for(let i=1;i<=SYNC_N;i++) if(x.s.indexOf(sySession(i))>=0) days.push(i);
+  const done=days.filter(i=>d.days[i]).length, nx=days.find(i=>!d.days[i])||days[0];
+  return '<div class="sy-np sy-xp'+(_syXIn?' in':'')+'" id="sy-xp" style="--c:'+SYNC_COL[x.s[0]-1]+'">'+
+    '<div class="sy-npb" id="sy-xpb"><button class="sy-np-x" aria-label="Back" onclick="syXShut()">'+SY_I.back+'</button><b>'+x.n+' Mix</b>'+
+      '<button class="sy-tb-p" aria-label="Play day '+nx+'" onclick="syDayPlay('+nx+')">'+SY_I.play+'</button></div>'+
+    '<div class="sy-mxh">'+syMixArt(x,'lg')+'</div>'+
+    '<div class="sy-np-t">'+x.n+' Mix</div>'+
+    '<div class="sy-np-m">'+x.s.map(s=>hesc(SYNC_S[s-1].n)).join(' · ')+'</div>'+
+    '<div class="sy-np-a"><span class="sy-np-m">'+days.length+' days · '+done+' done</span><span></span>'+
+      '<button class="sy-play" aria-label="Play day '+nx+'" onclick="syDayPlay('+nx+')">'+SY_I.play+'</button></div>'+
+    '<div class="sy-eps">'+days.map(syRow).join('')+'</div></div>';
+}
+/* a move from "All moves": play it in a session whose video is up, or open that session's day */
+function syMoveGo(sn,t){ const day=sySessionDay(sn); if(syReady(sn,syData().level)) syPlay(day,t); else syDay(day); }
+
 /* one day, like an episode page */
 function sySheet(day){
   const d=syData(), lv=syLevel(d.level), sn=sySession(day), S=SYNC_S[sn-1], ph=syPhase(day), dn=d.days[day], ok=syReady(sn,lv.k), p=syPos(day);

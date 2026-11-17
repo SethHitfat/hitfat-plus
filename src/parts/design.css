@@ -7903,3 +7903,44 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .syp-skip svg{width:15px;height:15px;}
 .syp-chn{flex:1;text-align:center;font-weight:700;color:rgba(255,255,255,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 8px;}
 .sy-al{align-self:flex-start;}
+/* Spotify's Home in SYNC (17 Nov, "yang ni mana"): quick tiles, "New release from", "Recents", mixes by focus */
+.sy-qg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:24px;}
+.sy-qt{display:flex;align-items:center;gap:10px;min-width:0;height:56px;padding:0 8px 0 0;border:0;border-radius:6px;background:rgba(255,255,255,.1);color:#fff;font:inherit;text-align:left;cursor:pointer;overflow:hidden;}
+.sy-qt:active{background:rgba(255,255,255,.18);}
+.sy-qt-i{flex:0 0 56px;height:56px;background:#222 center/cover no-repeat;}
+.sy-qt b{min-width:0;font-size:13px;font-weight:800;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.sy-nr-h{display:flex;align-items:center;gap:12px;margin:28px 0 12px;}
+.sy-nr-h .sy-logo{flex:0 0 44px;height:44px;font-size:19px;}
+.sy-nr-h small{display:block;font-size:13px;color:rgba(255,255,255,.6);}
+.sy-nr-h b{display:block;font-size:21px;font-weight:900;letter-spacing:-.01em;}
+.sy-nr{display:flex;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.09);}
+.sy-nr-a{flex:0 0 44%;border:0;padding:0;background:none;cursor:pointer;}
+.sy-nr-a .sy-cv{width:100%;border-radius:0;box-shadow:none;}
+.sy-nr-in{position:relative;flex:1;min-width:0;padding:14px;}
+.sy-nr-in small{display:block;font-size:12px;color:rgba(255,255,255,.6);}
+.sy-nr-in b{display:block;font-size:17px;font-weight:900;margin-top:3px;}
+.sy-nr-in span{display:block;font-size:13px;color:rgba(255,255,255,.6);margin-top:3px;line-height:1.35;}
+.sy-nr-in .sy-ep-p{position:absolute;right:14px;bottom:14px;}
+.sy-rc .sy-al{flex:0 0 118px;width:118px;min-width:0;}
+.sy-rc .sy-al .sy-cv{width:118px;}
+.sy-al>b.sy-rc-t{display:block;font-size:13.5px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:8px;}
+.sy-rc .sy-pb{width:100%;margin-top:7px;}
+.sy-mxc{flex:0 0 168px;scroll-snap-align:start;align-self:flex-start;border:0;padding:0;background:none;color:#fff;font:inherit;text-align:left;cursor:pointer;}
+.sy-mxc-a{position:relative;display:block;width:168px;aspect-ratio:1;border-radius:6px;overflow:hidden;background:var(--c);background:color-mix(in srgb,var(--c) 55%,#fff);}
+.sy-mxc-a em{position:absolute;top:9px;right:10px;font-style:normal;font-size:11px;font-weight:900;letter-spacing:.16em;color:rgba(14,10,11,.8);}
+.sy-mxc-c{position:absolute;left:0;right:0;top:17%;height:58%;}
+.sy-mxc-c i{position:absolute;top:0;left:22%;z-index:2;width:56%;aspect-ratio:1;border-radius:50%;background:#111 center/cover no-repeat;}
+.sy-mxc-c i:nth-child(2){left:-6%;top:12%;z-index:1;width:40%;}
+.sy-mxc-c i:nth-child(3){left:66%;top:12%;z-index:1;width:40%;}
+.sy-mxc-a b{position:absolute;left:10px;right:10px;bottom:9px;font-size:24px;font-weight:900;letter-spacing:-.02em;line-height:1;color:#0E0A0B;}
+.sy-mxc small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;line-height:1.35;color:rgba(255,255,255,.6);margin-top:8px;}
+.sy-mxh{display:flex;justify-content:center;margin-top:4px;}
+.sy-mxc-a.lg{width:min(62vw,240px);border-radius:8px;box-shadow:0 18px 44px rgba(0,0,0,.5);}
+.sy-mxc-a.lg b{font-size:34px;left:14px;bottom:13px;}
+.sy-mxc-a.lg em{font-size:13px;top:12px;right:14px;}
+.sy-xp .sy-np-t{margin-top:20px;}
+.sy-xp .sy-np-a .sy-np-m{margin:0;}
+.sy-xp .sy-mvs{margin-top:16px;}
+.sy-mv-c{flex:0 0 40px;height:40px;border-radius:50%;background:#222 center/cover no-repeat;}
+.sy-npb>span{flex:0 0 40px;}
+.sy-mv em.sy-mv-k{font-size:12px;font-weight:700;color:rgba(255,255,255,.5);white-space:nowrap;}
