@@ -9879,7 +9879,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .mf-tkpic.sm figcaption{font-size:11.5px;}
 /* ── HITFAT SYNC 30 (13 Nov 2026; 17 Nov a music-app page, Seth: "style Spotify … YouTube Music"):
    its own dark page, session covers, days as tracks, a mini player and a "now playing" view ── */
-#syv{position:fixed;inset:0;z-index:9990;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#0E0A0B;color:#fff;}
+#syv{position:fixed;inset:0;z-index:9990;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:#0E0A0B;color:#fff;}
 .sy svg{display:block;fill:currentColor;}
 #syv .sy-x{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:12px;z-index:3;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.35);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 #syv .sy-x svg{width:26px;height:26px;}
@@ -9888,9 +9888,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .sy-top{position:relative;padding:calc(env(safe-area-inset-top,0px) + 60px) 18px 6px;max-width:560px;margin:0 auto;}
 .sy-top:before{content:"";position:absolute;left:-50vw;right:-50vw;top:0;height:460px;background:var(--c);opacity:.6;-webkit-mask-image:linear-gradient(#000 0%,transparent 100%);mask-image:linear-gradient(#000 0%,transparent 100%);pointer-events:none;}
 .sy-top>*{position:relative;}
-.sy-art{width:min(62vw,236px);aspect-ratio:1;margin:0 auto 22px;border-radius:6px;background-size:cover;background-position:50% 28%;box-shadow:0 18px 44px rgba(0,0,0,.6);display:flex;align-items:flex-end;overflow:hidden;}
-.sy-art span{display:block;width:100%;padding:28px 12px 10px;background:linear-gradient(180deg,transparent,rgba(14,10,11,.85));font-size:19px;font-weight:900;font-style:italic;letter-spacing:-.03em;}
-.sy-art b{color:#FF2E43;}
+.sy-art{width:min(66vw,260px);aspect-ratio:1;margin:0 auto 22px;border-radius:8px;background:#060405 center/cover no-repeat;box-shadow:0 22px 50px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.06);}
 .sy-k{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#FF6B78;}
 .sy-t{font-size:27px;font-weight:900;letter-spacing:-.02em;line-height:1.1;}
 .sy-s{font-size:14px;line-height:1.45;color:rgba(255,255,255,.72);margin-top:6px;}
@@ -9913,13 +9911,10 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .sy-h2{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:21px;font-weight:900;letter-spacing:-.01em;margin:28px 0 12px;}
 .sy-h2 span{font-size:12px;font-weight:700;color:rgba(255,255,255,.45);}
 /* a session cover: the SYNC photo in the session's colour */
-.sy-cv{position:relative;aspect-ratio:1;border-radius:6px;background-color:var(--c);background-size:cover;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;text-align:left;color:#fff;}
-.sy-cv i{font-style:normal;font-size:9px;font-weight:900;letter-spacing:.16em;opacity:.85;}
-.sy-cv b{font-size:17px;font-weight:900;line-height:1.02;letter-spacing:-.02em;margin-top:2px;}
-.sy-cv.sm{flex:0 0 76px;width:76px;padding:7px;} .sy-cv.sm i{display:none;} .sy-cv.sm b{font-size:11px;}
-.sy-cv.xs{flex:0 0 46px;width:46px;padding:0;border-radius:4px;} .sy-cv.xs i,.sy-cv.xs b{display:none;}
-.sy-cv.lg{width:min(76vw,320px,40vh);margin:14px auto 0;padding:18px;border-radius:8px;box-shadow:0 24px 50px rgba(0,0,0,.55);}
-.sy-cv.lg i{font-size:12px;} .sy-cv.lg b{font-size:34px;}
+.sy-cv{position:relative;aspect-ratio:1;border-radius:6px;background:#060405 center/cover no-repeat;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.06);}
+.sy-cv.sm{flex:0 0 76px;width:76px;}
+.sy-cv.xs{flex:0 0 46px;width:46px;border-radius:4px;}
+.sy-cv.lg{width:min(80vw,340px,42vh);margin:14px auto 0;border-radius:10px;box-shadow:0 26px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);}
 /* up next: one wide card */
 .sy-up{display:flex;align-items:center;gap:12px;width:100%;padding:8px;border:0;border-radius:10px;background:rgba(255,255,255,.08);color:#fff;font:inherit;text-align:left;cursor:pointer;}
 .sy-up-in{flex:1;min-width:0;}
@@ -9962,8 +9957,15 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .sy-how span svg{width:16px;height:16px;fill:#fff;stroke:#fff;}
 .sy-how p{margin:0;font-size:14px;line-height:1.45;color:rgba(255,255,255,.82);} .sy-how p b{color:#fff;}
 .sy-note{font-size:13px;color:rgba(255,255,255,.55);text-align:center;margin-top:14px;}
+/* the bar that slides in at the top once the header has scrolled away */
+.sy-tb{position:fixed;left:0;right:0;top:0;z-index:2;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px 64px;background:#1a0f12;background:color-mix(in srgb,var(--c) 30%,#0E0A0B);box-shadow:0 8px 24px rgba(0,0,0,.35);transform:translateY(-100%);opacity:0;transition:transform .25s ease,opacity .25s ease;pointer-events:none;}
+.sy-tb.on{transform:none;opacity:1;pointer-events:auto;}
+.sy-tb b{flex:1;font-size:17px;font-weight:900;letter-spacing:-.01em;line-height:40px;}
+.sy-tb-p{flex:0 0 40px;height:40px;border:0;border-radius:50%;background:#FF2E43;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.sy-tb-p svg{width:20px;height:20px;}
+@media (prefers-reduced-motion:reduce){.sy-tb{transition:none;}}
 /* the mini player */
-.sy-mini{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:2;max-width:544px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:7px 8px 9px;border-radius:10px;background:#3A1218;box-shadow:0 10px 30px rgba(0,0,0,.5);overflow:hidden;cursor:pointer;}
+.sy-mini{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:2;max-width:544px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:7px 8px 9px;border-radius:10px;background:#3A1218;background:color-mix(in srgb,var(--c) 38%,#120A0C);box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06);overflow:hidden;cursor:pointer;}
 .sy-mini .sy-cv.xs{flex-basis:42px;width:42px;}
 .sy-mini-in{flex:1;min-width:0;}
 .sy-mini-in b{display:block;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -9973,7 +9975,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .sy-mini-bar{position:absolute;left:8px;bottom:3px;height:2px;max-width:calc(100% - 16px);background:#fff;border-radius:1px;}
 .sy-mini-bar:before{content:"";position:absolute;left:0;top:0;width:calc(100vw);max-width:528px;height:2px;background:rgba(255,255,255,.18);z-index:-1;}
 /* one day full screen, like "now playing" */
-.sy-np{position:fixed;inset:0;z-index:4;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top,0px) + 8px) 22px calc(env(safe-area-inset-bottom,0px) + 30px);background:linear-gradient(rgba(0,0,0,.3),rgba(0,0,0,.3)),linear-gradient(180deg,var(--c) 0%,#0E0A0B 68%);background-attachment:local;}
+.sy-np{position:fixed;inset:0;z-index:4;overflow-y:auto;overscroll-behavior:contain;background-color:#0E0A0B;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top,0px) + 8px) 22px calc(env(safe-area-inset-bottom,0px) + 30px);background:linear-gradient(rgba(0,0,0,.3),rgba(0,0,0,.3)),linear-gradient(180deg,var(--c) 0%,#0E0A0B 68%);background-attachment:scroll;background-color:#0E0A0B;}
 .sy-np>*{max-width:420px;margin-left:auto;margin-right:auto;}
 .sy-np.in{animation:syUp .32s cubic-bezier(.2,.8,.2,1);}
 @keyframes syUp{from{transform:translateY(100%);}to{transform:none;}}
@@ -20123,29 +20125,29 @@ const SYNC_VIDEO={
 };
 const SYNC_PIC='/img/p/sync/hero.jpg?v=2';
 const SYNC_LEVELS=[
-  {k:'easy',   n:'Easy',   s:'Perlahan, tanpa lompat. Ulangan 6–8, rehat 25 saat.'},
-  {k:'medium', n:'Medium', s:'Rentak penuh. Ulangan 10–12, rehat 15 saat.'},
-  {k:'hard',   n:'Hard',   s:'Lebih ulangan, lebih lama, rehat 10 saat.'}
+  {k:'easy',   n:'Easy',   s:'Gentle, no jumping. 6–8 reps, 25 s rest.'},
+  {k:'medium', n:'Medium', s:'Full tempo. 10–12 reps, 15 s rest.'},
+  {k:'hard',   n:'Hard',   s:'More reps, longer holds, 10 s rest.'}
 ];
-/* the 10 sessions; moves per level as "warm up / one round (×3) / finisher", read from the rendered
+/* the 10 sessions (the whole page in English, Seth 17 Nov: "nama training semua english", then "semua … English … day 1, day 2"); moves per level as "warm up / one round (×3) / finisher", read from the rendered
    timelines in _projek/sync so the page lists exactly what the video plays */
 const SYNC_S=[
-  {n:'Full Body',     s:'Asas seluruh badan', m:{easy:'High Knee 40s/Squat ×8|Push Up ×6|Mountain Climber 25s|Plank 25s/Wall Sit 30s', medium:'High Knee 40s|Jumping Jack 40s/Squat ×12|Push Up ×10|Mountain Climber 30s|Plank 30s/Wall Sit 40s|Burpee ×8', hard:'High Knee 40s|Jumping Jack 40s/Squat ×12|Push Up ×12|Mountain Climber 40s|Plank 40s/Wall Sit 45s|Burpee ×10'}},
-  {n:'Kaki',          s:'Lunges, squat dan lompat', m:{easy:'Butt Kick 40s/Reverse Lunges ×8|Squat Pause ×8|Fast Feet 25s|Squat Hold 25s/Calf Raises ×8|Squat Pause ×8', medium:'Butt Kick 40s|Jumping Jack 40s/Reverse Lunges ×12|Squat Pause ×12|Fast Feet 25s|Squat Hold 25s/Calf Raises ×12|Squat Jump ×10', hard:'Butt Kick 40s|Jumping Jack 40s/Reverse Lunges ×12|Squat Pause ×12|Fast Feet 30s|Squat Hold 30s/Calf Raises ×12|Squat Jump ×12'}},
-  {n:'Atas + Core',   s:'Dada, lengan dan perut', m:{easy:'High Knee 40s|Plank Shoulder Tap 40s/Knee Push Up ×6|Tricep Dip ×6|Plank Shoulder Tap 25s|Crunch ×8/Russian Twist 30s|Plank 30s', medium:'High Knee 40s|Plank Jack 40s/Push Up ×10|Tricep Dip ×10|Plank Shoulder Tap 30s|Crunch ×12/Russian Twist 40s|Plank 40s', hard:'High Knee 40s|Plank Jack 40s/Push Up ×12|Tricep Dip ×12|Plank Shoulder Tap 35s|Crunch ×12/Russian Twist 40s|Plank 40s'}},
-  {n:'Full Body 2',   s:'Seluruh badan, gerakan baru', m:{easy:'Butt Kick 40s/Squat ×8|Incline Push Up ×6|Mountain Climber 25s|Sit Up ×8/Wall Sit 30s|Half Burpee ×6', medium:'Jumping Jack 40s|Butt Kick 40s/Squat ×12|Wide Push Up ×10|Mountain Climber 30s|Sit Up ×12/Wall Sit 40s|Half Burpee ×8', hard:'Jumping Jack 40s|Butt Kick 40s/Squat ×12|Wide Push Up ×12|Mountain Climber 35s|Sit Up ×12/Wall Sit 40s|Half Burpee ×10'}},
-  {n:'Kaki + Kardio', s:'Kaki kuat, jantung laju', m:{easy:'High Knee 40s|Fast Feet 40s/Alternating Lunges ×8|Squat Pause ×8|Fast Feet 25s|Wall Sit 25s/Side Lunges ×8|Half Burpee ×6', medium:'High Knee 40s|Fast Feet 40s/Alternating Lunges ×12|Squat Jump ×10|Skater Jump 30s|Wall Sit 30s/Side Lunges ×12|Burpee ×8', hard:'High Knee 40s|Fast Feet 40s/Alternating Lunges ×12|Squat Jump ×12|Skater Jump 35s|Wall Sit 35s/Side Lunges ×12|Burpee ×10'}},
-  {n:'Core',          s:'Perut dan pinggang', m:{easy:'Butt Kick 40s|Plank Shoulder Tap 40s/Crunch ×8|Leg Raises ×8|Flutter Kick 25s|Side Plank 25s/Hollow Hold 30s|Bicycle Crunch 30s', medium:'Jumping Jack 40s|Plank Jack 40s/Crunch ×12|Leg Raises ×12|Flutter Kick 30s|Side Plank 30s/Hollow Hold 40s|Bicycle Crunch 40s', hard:'Jumping Jack 40s|Plank Jack 40s/Crunch ×12|Leg Raises ×12|Flutter Kick 35s|Side Plank 35s/Hollow Hold 40s|Bicycle Crunch 40s'}},
-  {n:'Push',          s:'Dada, bahu dan trisep', m:{easy:'High Knee 40s|Butt Kick 40s/Knee Push Up ×6|Push Up Shoulder Tap 25s|Tricep Dip ×6/Push Up Hold 30s|Plank Shoulder Tap 30s', medium:'High Knee 40s|Jumping Jack 40s/Push Up ×10|Diamond Push Up ×10|Push Up Shoulder Tap 30s|Tricep Dip ×10/Push Up Hold 40s|Plank Jack 40s', hard:'High Knee 40s|Jumping Jack 40s/Push Up ×12|Diamond Push Up ×12|Push Up Shoulder Tap 40s|Tricep Dip ×12/Push Up Hold 45s|Plank Jack 45s'}},
-  {n:'Kaki Kuat',     s:'Kaki, punggung dan lompat', m:{easy:'Butt Kick 40s|High Knee 40s/Curtsy Lunges ×8|Squat Pause ×8|Reverse Lunges ×8|Squat Hold 25s/Hip Thrust ×8|Squat Pause ×8', medium:'Butt Kick 40s|High Knee 40s/Curtsy Lunges ×12|Squat Pause ×12|Jump Lunges ×10|Squat Hold 25s/Hip Thrust ×12|Squat Jump ×10', hard:'Butt Kick 40s|High Knee 40s/Curtsy Lunges ×12|Squat Pause ×12|Jump Lunges ×12|Squat Hold 30s/Hip Thrust ×12|Squat Jump ×12'}},
-  {n:'HIIT',          s:'Kardio penuh tenaga', m:{easy:'Butt Kick 40s|High Knee 40s/Half Burpee ×6|High Knee 25s|Fast Feet 25s|Mountain Climber 25s/Butt Kick 30s|Squat Pause ×8', medium:'Jumping Jack 40s|High Knee 40s/Burpee ×8|High Knee 30s|Skater Jump 30s|Mountain Climber 30s/Butt Kick 40s|Squat Jump ×10', hard:'Jumping Jack 40s|High Knee 40s/Burpee ×10|High Knee 35s|Skater Jump 35s|Mountain Climber 35s/Butt Kick 40s|Squat Jump ×12'}},
-  {n:'Ujian Akhir',   s:'Ukur sejauh mana anda pergi', m:{easy:'High Knee 40s|Butt Kick 40s/Squat ×8|Knee Push Up ×6|Half Burpee ×6|Plank 25s/Wall Sit 30s|High Knee 30s', medium:'High Knee 40s|Jumping Jack 40s/Squat ×12|Push Up ×10|Burpee ×8|Plank 30s/Wall Sit 40s|High Knee 40s', hard:'High Knee 40s|Jumping Jack 40s/Squat ×12|Push Up ×12|Burpee ×10|Plank 40s/Wall Sit 45s|High Knee 45s'}}
+  {n:'Full Body',     s:'Full-body basics', m:{easy:'High Knee 40s/Squat ×8|Push Up ×6|Mountain Climber 25s|Plank 25s/Wall Sit 30s', medium:'High Knee 40s|Jumping Jack 40s/Squat ×12|Push Up ×10|Mountain Climber 30s|Plank 30s/Wall Sit 40s|Burpee ×8', hard:'High Knee 40s|Jumping Jack 40s/Squat ×12|Push Up ×12|Mountain Climber 40s|Plank 40s/Wall Sit 45s|Burpee ×10'}},
+  {n:'Legs',          s:'Lunges, squats and jumps', m:{easy:'Butt Kick 40s/Reverse Lunges ×8|Squat Pause ×8|Fast Feet 25s|Squat Hold 25s/Calf Raises ×8|Squat Pause ×8', medium:'Butt Kick 40s|Jumping Jack 40s/Reverse Lunges ×12|Squat Pause ×12|Fast Feet 25s|Squat Hold 25s/Calf Raises ×12|Squat Jump ×10', hard:'Butt Kick 40s|Jumping Jack 40s/Reverse Lunges ×12|Squat Pause ×12|Fast Feet 30s|Squat Hold 30s/Calf Raises ×12|Squat Jump ×12'}},
+  {n:'Upper Body + Core', s:'Chest, arms and abs', m:{easy:'High Knee 40s|Plank Shoulder Tap 40s/Knee Push Up ×6|Tricep Dip ×6|Plank Shoulder Tap 25s|Crunch ×8/Russian Twist 30s|Plank 30s', medium:'High Knee 40s|Plank Jack 40s/Push Up ×10|Tricep Dip ×10|Plank Shoulder Tap 30s|Crunch ×12/Russian Twist 40s|Plank 40s', hard:'High Knee 40s|Plank Jack 40s/Push Up ×12|Tricep Dip ×12|Plank Shoulder Tap 35s|Crunch ×12/Russian Twist 40s|Plank 40s'}},
+  {n:'Full Body 2',   s:'Full body, new moves', m:{easy:'Butt Kick 40s/Squat ×8|Incline Push Up ×6|Mountain Climber 25s|Sit Up ×8/Wall Sit 30s|Half Burpee ×6', medium:'Jumping Jack 40s|Butt Kick 40s/Squat ×12|Wide Push Up ×10|Mountain Climber 30s|Sit Up ×12/Wall Sit 40s|Half Burpee ×8', hard:'Jumping Jack 40s|Butt Kick 40s/Squat ×12|Wide Push Up ×12|Mountain Climber 35s|Sit Up ×12/Wall Sit 40s|Half Burpee ×10'}},
+  {n:'Legs + Cardio', s:'Strong legs, fast heart', m:{easy:'High Knee 40s|Fast Feet 40s/Alternating Lunges ×8|Squat Pause ×8|Fast Feet 25s|Wall Sit 25s/Side Lunges ×8|Half Burpee ×6', medium:'High Knee 40s|Fast Feet 40s/Alternating Lunges ×12|Squat Jump ×10|Skater Jump 30s|Wall Sit 30s/Side Lunges ×12|Burpee ×8', hard:'High Knee 40s|Fast Feet 40s/Alternating Lunges ×12|Squat Jump ×12|Skater Jump 35s|Wall Sit 35s/Side Lunges ×12|Burpee ×10'}},
+  {n:'Core',          s:'Abs and waist', m:{easy:'Butt Kick 40s|Plank Shoulder Tap 40s/Crunch ×8|Leg Raises ×8|Flutter Kick 25s|Side Plank 25s/Hollow Hold 30s|Bicycle Crunch 30s', medium:'Jumping Jack 40s|Plank Jack 40s/Crunch ×12|Leg Raises ×12|Flutter Kick 30s|Side Plank 30s/Hollow Hold 40s|Bicycle Crunch 40s', hard:'Jumping Jack 40s|Plank Jack 40s/Crunch ×12|Leg Raises ×12|Flutter Kick 35s|Side Plank 35s/Hollow Hold 40s|Bicycle Crunch 40s'}},
+  {n:'Push',          s:'Chest, shoulders and triceps', m:{easy:'High Knee 40s|Butt Kick 40s/Knee Push Up ×6|Push Up Shoulder Tap 25s|Tricep Dip ×6/Push Up Hold 30s|Plank Shoulder Tap 30s', medium:'High Knee 40s|Jumping Jack 40s/Push Up ×10|Diamond Push Up ×10|Push Up Shoulder Tap 30s|Tricep Dip ×10/Push Up Hold 40s|Plank Jack 40s', hard:'High Knee 40s|Jumping Jack 40s/Push Up ×12|Diamond Push Up ×12|Push Up Shoulder Tap 40s|Tricep Dip ×12/Push Up Hold 45s|Plank Jack 45s'}},
+  {n:'Leg Power',     s:'Legs, glutes and jumps', m:{easy:'Butt Kick 40s|High Knee 40s/Curtsy Lunges ×8|Squat Pause ×8|Reverse Lunges ×8|Squat Hold 25s/Hip Thrust ×8|Squat Pause ×8', medium:'Butt Kick 40s|High Knee 40s/Curtsy Lunges ×12|Squat Pause ×12|Jump Lunges ×10|Squat Hold 25s/Hip Thrust ×12|Squat Jump ×10', hard:'Butt Kick 40s|High Knee 40s/Curtsy Lunges ×12|Squat Pause ×12|Jump Lunges ×12|Squat Hold 30s/Hip Thrust ×12|Squat Jump ×12'}},
+  {n:'HIIT',          s:'All-out cardio', m:{easy:'Butt Kick 40s|High Knee 40s/Half Burpee ×6|High Knee 25s|Fast Feet 25s|Mountain Climber 25s/Butt Kick 30s|Squat Pause ×8', medium:'Jumping Jack 40s|High Knee 40s/Burpee ×8|High Knee 30s|Skater Jump 30s|Mountain Climber 30s/Butt Kick 40s|Squat Jump ×10', hard:'Jumping Jack 40s|High Knee 40s/Burpee ×10|High Knee 35s|Skater Jump 35s|Mountain Climber 35s/Butt Kick 40s|Squat Jump ×12'}},
+  {n:'Final Test',    s:'See how far you have come', m:{easy:'High Knee 40s|Butt Kick 40s/Squat ×8|Knee Push Up ×6|Half Burpee ×6|Plank 25s/Wall Sit 30s|High Knee 30s', medium:'High Knee 40s|Jumping Jack 40s/Squat ×12|Push Up ×10|Burpee ×8|Plank 30s/Wall Sit 40s|High Knee 40s', hard:'High Knee 40s|Jumping Jack 40s/Squat ×12|Push Up ×12|Burpee ×10|Plank 40s/Wall Sit 45s|High Knee 45s'}}
 ];
 /* 30 days in three phases (Seth, 14 Nov): each phase repeats its sessions three times */
 const SYNC_PHASES=[
-  {n:'Fasa 1', t:'Asas', s:[1,2,3], from:1,  to:9},
-  {n:'Fasa 2', t:'Bina', s:[4,5,6], from:10, to:18},
-  {n:'Fasa 3', t:'Kuat', s:[7,8,9,10], from:19, to:30}
+  {n:'Phase 1', t:'Foundation', s:[1,2,3], from:1,  to:9},
+  {n:'Phase 2', t:'Build', s:[4,5,6], from:10, to:18},
+  {n:'Phase 3', t:'Strong', s:[7,8,9,10], from:19, to:30}
 ];
 function syPhase(day){ return SYNC_PHASES.find(p=>day>=p.from && day<=p.to)||SYNC_PHASES[0]; }
 function sySession(day){ const p=syPhase(day); return p.s[(day-p.from)%p.s.length]; }   /* 1–10 */
@@ -20171,7 +20173,7 @@ function syVideos(){ return Object.keys(SYNC_VIDEO).filter(k=>SYNC_VIDEO[k]).len
 function syHomeTile(){
   if(!syLive() || typeof hpoTile!=='function') return '';
   const n=syDone();
-  return hpoTile({t:'HITFAT SYNC', kick:n?'Hari '+Math.min(n+1,SYNC_N)+' / '+SYNC_N:'Baru · '+SYNC_N+' hari', lv:'Coach di telinga · ikut rentak', pal:'red', img:SYNC_PIC, pos:'50% 35%', go:'syOpen()'});
+  return hpoTile({t:'HITFAT SYNC', kick:n?'Day '+Math.min(n+1,SYNC_N)+' / '+SYNC_N:'New · '+SYNC_N+' days', lv:'Coach in your ear · move to the beat', pal:'red', img:SYNC_PIC, pos:'50% 35%', go:'syOpen()'});
 }
 
 /* ── the page (17 Nov, Seth: "style Spotify … YouTube Music"): a playlist page. Each session has its own
@@ -20200,13 +20202,15 @@ function syShut(){ _syS=0; syRender(); }
 function syGo(){ const n=syNext(); if(syReady(sySession(n),syData().level)) syPlay(n); else syDay(n); }
 function syDaysOf(sn){ const r=[]; for(let i=1;i<=SYNC_N;i++) if(sySession(i)===sn) r.push(i); return r; }
 function sySessionDay(sn){ const dd=syData().days, r=syDaysOf(sn); return r.find(i=>!dd[i])||r[0]; }
+/* each session's poster (17 Nov, Seth: "gambar coach tu ai xpe, cantik sikit", "masuk"): the coach in studio light in the
+   session's colour, its English name on it. Made in _projek/sync (tools/poster_sync_ai.html), 720 px. */
+const SYNC_ART='/img/p/sync/cover.jpg?v=2';
+function syArt(sn){ return '/img/p/sync/s'+sn+'.jpg?v=2'; }
 function syCover(sn,cls){
-  const c=SYNC_COL[sn-1];
-  return '<div class="sy-cv'+(cls?' '+cls:'')+'" style="--c:'+c+';background-image:linear-gradient(180deg,rgba(0,0,0,0) 25%,'+c+'e6 78%),url(\''+SYNC_PIC+'\');background-position:50% '+(14+sn*5)+'%">'+
-    '<i>SYNC '+String(sn).padStart(2,'0')+'</i><b>'+hesc(SYNC_S[sn-1].n)+'</b></div>';
+  return '<div class="sy-cv'+(cls?' '+cls:'')+'" role="img" aria-label="'+hesc(SYNC_S[sn-1].n)+'" style="--c:'+SYNC_COL[sn-1]+';background-image:url(\''+syArt(sn)+'\')"></div>';
 }
 function syMoveList(sn,lv){
-  const p=String(SYNC_S[sn-1].m[lv]||'').split('/'), names=['Warm up','3 pusingan · ulang 3 kali','Penutup'];
+  const p=String(SYNC_S[sn-1].m[lv]||'').split('/'), names=['Warm up','3 rounds · repeat 3 times','Finisher'];
   let h='', k=0;
   p.forEach((x,j)=>{
     if(!x) return;
@@ -20223,15 +20227,15 @@ function syRender(top){
   const o=$('syv'); if(!o) return;
   const d=syData(), n=syDone(), lv=syLevel(d.level), nxt=syNext(), nsn=sySession(nxt);
   const pc=(n/SYNC_N*100).toFixed(1);
-  let h='<button class="sy-x" aria-label="Tutup" onclick="syClose()">'+SY_I.down+'</button>'+
+  let h='<button class="sy-x" aria-label="Close" onclick="syClose()">'+SY_I.down+'</button>'+
     '<div class="sy-top" style="--c:'+SYNC_COL[nsn-1]+'">'+
-      '<div class="sy-art" style="background-image:url(\''+SYNC_PIC+'\')"><span>HITFAT <b>SYNC</b> 30</span></div>'+
+      '<div class="sy-art" role="img" aria-label="HITFAT SYNC 30" style="background-image:url(\''+SYNC_ART+'\')"></div>'+
       '<div class="sy-t">HITFAT SYNC 30</div>'+
-      '<div class="sy-s">Coach di telinga. Setiap ulangan dikira, ikut rentak muzik.</div>'+
-      '<div class="sy-meta"><span class="sy-logo">H</span><b>HITFAT</b> · '+SYNC_N+' hari · 10 sesi · '+SYNC_MIN+' min sehari</div>'+
+      '<div class="sy-s">Your coach in your ear. Every rep counted, right on the beat.</div>'+
+      '<div class="sy-meta"><span class="sy-logo">H</span><b>HITFAT</b> · '+SYNC_N+' days · 10 sessions · '+SYNC_MIN+' min a day</div>'+
       '<div class="sy-acts">'+
-        '<div class="sy-pr"><div><b>'+n+'</b> / '+SYNC_N+' hari siap</div><div class="sy-bar"><i style="width:'+pc+'%"></i></div></div>'+
-        '<button class="sy-play" aria-label="Main hari '+nxt+'" onclick="syGo()">'+SY_I.play+'</button>'+
+        '<div class="sy-pr"><div><b>'+n+'</b> / '+SYNC_N+' days done</div><div class="sy-bar"><i style="width:'+pc+'%"></i></div></div>'+
+        '<button class="sy-play" aria-label="Play day '+nxt+'" onclick="syGo()">'+SY_I.play+'</button>'+
       '</div>'+
     '</div>'+
     '<div class="sy-body">'+
@@ -20239,68 +20243,73 @@ function syRender(top){
     '<div class="sy-lvs">'+hesc(lv.s)+'</div>';
   /* up next: one wide card */
   const nd=d.days[nxt];
-  h+='<div class="sy-h2">'+(n?'Sambung semula':'Mula di sini')+'</div>'+
+  h+='<div class="sy-h2">'+(n?'Continue':'Start here')+'</div>'+
     '<button class="sy-up" onclick="syDay('+nxt+')">'+syCover(nsn,'sm')+
-      '<div class="sy-up-in"><div class="sy-up-k">Hari '+nxt+' · '+syPhase(nxt).n+' · '+syPhase(nxt).t+'</div>'+
+      '<div class="sy-up-in"><div class="sy-up-k">Day '+nxt+' · '+syPhase(nxt).t+'</div>'+
       '<div class="sy-up-t">'+hesc(SYNC_S[nsn-1].n)+'</div>'+
-      '<div class="sy-up-s">'+(nd?'Program siap · ulang bila-bila':hesc(SYNC_S[nsn-1].s))+' · '+lv.n+' · '+SYNC_MIN+' min</div></div>'+
+      '<div class="sy-up-s">'+(nd?'Program complete · replay any time':hesc(SYNC_S[nsn-1].s))+' · '+lv.n+' · '+SYNC_MIN+' min</div></div>'+
       '<span class="sy-up-p">'+SY_I.play+'</span></button>';
   /* the 10 sessions as a shelf of albums */
-  h+='<div class="sy-h2">10 sesi<span>Leret →</span></div><div class="sy-shelf">';
+  h+='<div class="sy-h2">10 sessions<span>Swipe →</span></div><div class="sy-shelf">';
   SYNC_S.forEach((S,i)=>{
     const sn=i+1, ds=syDaysOf(sn), dn=ds.filter(x=>d.days[x]).length;
     h+='<button class="sy-al'+(syReady(sn,lv.k)?'':' soon')+'" onclick="syDay('+sySessionDay(sn)+')">'+syCover(sn)+
-      '<b>'+hesc(S.n)+'</b><small>Hari '+ds.join(', ')+(dn?' · '+dn+'/'+ds.length+' ✓':'')+'</small></button>';
+      '<b>'+hesc(S.n)+'</b><small>Days '+ds.join(', ')+(dn?' · '+dn+'/'+ds.length+' ✓':'')+'</small></button>';
   });
   h+='</div>';
   /* the 30 days as tracks, by phase */
   SYNC_PHASES.forEach(p=>{
-    h+='<div class="sy-h2">'+p.n+' · '+p.t+'<span>Hari '+p.from+'–'+p.to+'</span></div><div class="sy-trs">';
+    h+='<div class="sy-h2">'+p.n+' · '+p.t+'<span>Days '+p.from+'–'+p.to+'</span></div><div class="sy-trs">';
     for(let i=p.from;i<=p.to;i++){
       const s=sySession(i), S=SYNC_S[s-1], dn=d.days[i], ok=syReady(s,lv.k), cl=['sy-tr'];
       if(dn) cl.push('done'); if(i===nxt && !dn) cl.push('nx'); if(!ok) cl.push('soon');
       h+='<button class="'+cl.join(' ')+'" onclick="syDay('+i+')">'+
         '<span class="sy-no">'+(i===nxt && !dn?'<i class="sy-eq"><i></i><i></i><i></i></i>':i)+'</span>'+syCover(s,'xs')+
-        '<span class="sy-tr-in"><b>'+hesc(S.n)+'</b><small>'+(dn?'✓ Siap · '+syLevel(dn.lv).n:'Hari '+i+' · '+hesc(S.s))+'</small></span>'+
-        '<span class="sy-tr-r">'+(dn?'<em class="sy-ok">'+SY_I.ok+'</em>':ok?SYNC_MIN+' min':'Akan datang')+'</span></button>';
+        '<span class="sy-tr-in"><b>'+hesc(S.n)+'</b><small>'+(dn?'Done · '+syLevel(dn.lv).n:'Day '+i+' · '+hesc(S.s))+'</small></span>'+
+        '<span class="sy-tr-r">'+(dn?'<em class="sy-ok">'+SY_I.ok+'</em>':ok?SYNC_MIN+' min':'Coming soon')+'</span></button>';
     }
     h+='</div>';
   });
-  h+='<div class="sy-h2">Tentang program</div><div class="sy-how">'+
-      '<div><span>'+glyph('play')+'</span><p><b>Down… Up! ONE!</b> Setiap ulangan dikira dengan suara, ikut rentak muzik.</p></div>'+
-      '<div><span>'+glyph('bolt')+'</span><p><b>Gerakan ikut masa</b> (high knee, plank…): coach bagi semangat sampai "3, 2, 1, Stop!"</p></div>'+
-      '<div><span>'+glyph('target')+'</span><p><b>Pakai earphone</b> dan naikkan volume. Tiada alat diperlukan, cuma kerusi untuk tricep dip.</p></div></div>';
-  if(syVideos()<SYNC_N) h+='<div class="sy-note">'+syVideos()+' / '+SYNC_N+' video sudah ada. Yang lain dimuat naik satu demi satu.</div>';
+  h+='<div class="sy-h2">About the program</div><div class="sy-how">'+
+      '<div><span>'+glyph('play')+'</span><p><b>Down… Up! ONE!</b> Every rep is counted out loud, right on the beat of the music.</p></div>'+
+      '<div><span>'+glyph('bolt')+'</span><p><b>Timed moves</b> (high knees, plank…): your coach keeps you going until "3, 2, 1, Stop!"</p></div>'+
+      '<div><span>'+glyph('target')+'</span><p><b>Put your earphones in</b> and turn it up. No equipment, just a chair for tricep dips.</p></div></div>';
+  if(syVideos()<SYNC_N) h+='<div class="sy-note">'+syVideos()+' / '+SYNC_N+' videos ready. The rest are added one by one.</div>';
   h+='</div>';
   /* the mini player: the next day, always one tap away */
-  if(!_syS) h+='<div class="sy-mini" onclick="syDay('+nxt+')">'+syCover(nsn,'xs')+
-      '<div class="sy-mini-in"><b>Hari '+nxt+' · '+hesc(SYNC_S[nsn-1].n)+'</b><small>Seterusnya · '+lv.n+' · '+SYNC_MIN+' min</small></div>'+
-      '<button class="sy-mini-p" aria-label="Main" onclick="event.stopPropagation();syGo()">'+SY_I.play+'</button>'+
+  if(!_syS) h+='<div class="sy-mini" style="--c:'+SYNC_COL[nsn-1]+'" onclick="syDay('+nxt+')">'+syCover(nsn,'xs')+
+      '<div class="sy-mini-in"><b>Day '+nxt+' · '+hesc(SYNC_S[nsn-1].n)+'</b><small>Up next · '+lv.n+' · '+SYNC_MIN+' min</small></div>'+
+      '<button class="sy-mini-p" aria-label="Play" onclick="event.stopPropagation();syGo()">'+SY_I.play+'</button>'+
       '<i class="sy-mini-bar" style="width:'+pc+'%"></i></div>';
+  /* a bar that slides in once the header has scrolled away, like a music app's */
+  h+='<div class="sy-tb" id="sy-tb" style="--c:'+SYNC_COL[nsn-1]+'"><b>HITFAT SYNC 30</b>'+
+    '<button class="sy-tb-p" aria-label="Play day '+nxt+'" onclick="syGo()">'+SY_I.play+'</button></div>';
   if(_syS) h+=sySheet(_syS);
   const keep=top?0:o.scrollTop;
   o.innerHTML=h; o.scrollTop=keep;
+  const tb=$('sy-tb'), on=()=>{ if(tb) tb.classList.toggle('on', o.scrollTop>300); };
+  o.onscroll=on; on();
 }
 /* one day full screen, like "now playing": cover, title, level, ⏮ ▶ ⏭, then its moves as the track list */
 function sySheet(day){
   const d=syData(), lv=syLevel(d.level), sn=sySession(day), S=SYNC_S[sn-1], ph=syPhase(day), dn=d.days[day], ok=syReady(sn,lv.k);
   return '<div class="sy-np'+(_syIn?' in':'')+'" style="--c:'+SYNC_COL[sn-1]+'">'+
-    '<div class="sy-np-top"><button class="sy-np-x" aria-label="Kecilkan" onclick="syShut()">'+SY_I.down+'</button>'+
-      '<div><small>Hari '+day+' / '+SYNC_N+'</small><b>'+ph.n+' · '+ph.t+'</b></div><span></span></div>'+
+    '<div class="sy-np-top"><button class="sy-np-x" aria-label="Minimise" onclick="syShut()">'+SY_I.down+'</button>'+
+      '<div><small>Day '+day+' / '+SYNC_N+'</small><b>'+ph.n+' · '+ph.t+'</b></div><span></span></div>'+
     syCover(sn,'lg')+
     '<div class="sy-np-t">'+hesc(S.n)+'</div>'+
-    '<div class="sy-np-s">'+hesc(S.s)+' · '+syMoveCount(sn,lv.k)+' gerakan · '+SYNC_MIN+' min</div>'+
-    (dn?'<div class="sy-tick">'+SY_I.ok+' Siap · '+syLevel(dn.lv).n+' · '+String(dn.at||'').slice(0,10)+'</div>':'')+
+    '<div class="sy-np-s">'+hesc(S.s)+' · '+syMoveCount(sn,lv.k)+' moves · '+SYNC_MIN+' min</div>'+
+    (dn?'<div class="sy-tick">'+SY_I.ok+' Done · '+syLevel(dn.lv).n+' · '+String(dn.at||'').slice(0,10)+'</div>':'')+
     '<div class="sy-np-bar"><i style="width:'+(day/SYNC_N*100).toFixed(1)+'%"></i></div>'+
-    '<div class="sy-np-bt"><small>Hari 1</small><small>Hari '+SYNC_N+'</small></div>'+
+    '<div class="sy-np-bt"><small>Day 1</small><small>Day '+SYNC_N+'</small></div>'+
     '<div class="sy-np-c">'+
-      '<button aria-label="Hari sebelum" '+(day>1?'onclick="syDay('+(day-1)+')"':'disabled')+'>'+SY_I.prev+'</button>'+
-      '<button class="sy-np-p'+(ok?'':' off')+'" aria-label="Main" onclick="syPlay('+day+')">'+SY_I.play+'</button>'+
-      '<button aria-label="Hari selepas" '+(day<SYNC_N?'onclick="syDay('+(day+1)+')"':'disabled')+'>'+SY_I.next+'</button>'+
+      '<button aria-label="Previous day" '+(day>1?'onclick="syDay('+(day-1)+')"':'disabled')+'>'+SY_I.prev+'</button>'+
+      '<button class="sy-np-p'+(ok?'':' off')+'" aria-label="Play" onclick="syPlay('+day+')">'+SY_I.play+'</button>'+
+      '<button aria-label="Next day" '+(day<SYNC_N?'onclick="syDay('+(day+1)+')"':'disabled')+'>'+SY_I.next+'</button>'+
     '</div>'+
-    '<div class="sy-np-go">'+(ok?(dn?'Ulang':'Mula')+' · '+lv.n:'Video '+hesc(S.n)+' ('+lv.n+') akan datang')+'</div>'+
+    '<div class="sy-np-go">'+(ok?(dn?'Replay':'Start')+' · '+lv.n:hesc(S.n)+' ('+lv.n+') video coming soon')+'</div>'+
     '<div class="sy-chips sm">'+SYNC_LEVELS.map(l=>'<button class="'+(l.k===lv.k?'on':'')+'" onclick="syPick(\''+l.k+'\')">'+l.n+'</button>').join('')+'</div>'+
-    '<div class="sy-np-list"><div class="sy-np-lh">Dalam sesi ini</div>'+syMoveList(sn,lv.k)+'</div>'+
+    '<div class="sy-np-list"><div class="sy-np-lh">In this session</div>'+syMoveList(sn,lv.k)+'</div>'+
   '</div>';
 }
 
@@ -20316,7 +20325,7 @@ function syPlay(n){
   _sy={day:day, sn:sn, lv:lv, sid:null, seen:0, dur:0, done:false};
   const o=document.createElement('div'); o.id='syp';
   o.innerHTML='<iframe src="'+syVimeo(SYNC_VIDEO[syKey(sn,lv)])+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="HITFAT SYNC"></iframe>'+
-    '<button class="x" aria-label="Tutup" onclick="syStop()">✕</button>';
+    '<button class="x" aria-label="Close" onclick="syStop()">✕</button>';
   document.body.appendChild(o);
 }
 function syStop(){ const o=$('syp'); if(o&&o.parentNode) o.parentNode.removeChild(o); _sy=null; }
@@ -20339,7 +20348,7 @@ function syOnMessage(ev){
   if(d.event==='ended' && _sy.dur && _sy.seen>=_sy.dur*0.9) syFinish();
 }
 if(typeof window!=='undefined' && window.addEventListener) window.addEventListener('message',syOnMessage);
-function syLabel(p){ return 'HITFAT SYNC · Hari '+p.day+' · '+SYNC_S[p.sn-1].n+' · '+syLevel(p.lv).n; }
+function syLabel(p){ return 'HITFAT SYNC · Day '+p.day+' · '+SYNC_S[p.sn-1].n+' · '+syLevel(p.lv).n; }
 function sySessionStart(){
   try{
     if(!sb || !HF.userId || !_sy) return;
@@ -20358,12 +20367,12 @@ function syFinish(){
   const o=$('syp');
   if(o){
     const el=document.createElement('div'); el.className='sy-done';
-    el.innerHTML='<div class="sy-k">Hari '+p.day+' / '+SYNC_N+' · '+hesc(SYNC_S[p.sn-1].n)+' · '+syLevel(p.lv).n+'</div><div class="sy-t">SIAP!</div>'+
-      '<div class="sy-s">'+SYNC_MIN+' minit, ikut rentak. Direkod dalam streak anda.</div>'+
-      '<button class="sy-go" onclick="syStop();_syS=0;syRender()">Tutup</button>';
+    el.innerHTML='<div class="sy-k">Day '+p.day+' / '+SYNC_N+' · '+hesc(SYNC_S[p.sn-1].n)+' · '+syLevel(p.lv).n+'</div><div class="sy-t">DONE!</div>'+
+      '<div class="sy-s">'+SYNC_MIN+' minutes, on the beat. Added to your streak.</div>'+
+      '<button class="sy-go" onclick="syStop();_syS=0;syRender()">Close</button>';
     o.appendChild(el);
   }
-  if(typeof toast==='function') toast('Hari '+p.day+' SYNC siap 🔥');
+  if(typeof toast==='function') toast('SYNC day '+p.day+' done 🔥');
 }
 /* DIET 6 MINGGU 6KG: the program's content, exactly as Coach Seth wrote it
    (diet-6-minggu-6kg-content.json, 14 Oct 2026). Not edited here: change the
