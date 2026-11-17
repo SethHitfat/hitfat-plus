@@ -77,21 +77,18 @@ function syHomeTile(){
   return hpoTile({t:'HITFAT SYNC', kick:n?'Day '+Math.min(n+1,SYNC_N)+' / '+SYNC_N:'New · '+SYNC_N+' days', lv:'Coach in your ear · move to the beat', pal:'red', img:SYNC_PIC, pos:'50% 35%', go:'syOpen()'});
 }
 
-/* ── the page (17 Nov, Seth: "style Spotify … YouTube Music"): a playlist page. Each session has its own
-   cover (the SYNC photo in its own colour); the 30 days are the tracks; a mini player at the bottom
-   holds the next day; tapping a day opens it full screen like "now playing", with its moves as the
-   track list and ⏮ ▶ ⏭ to step through the days. ── */
 const SYNC_COL=['#FF2E43','#FF7A1A','#7C5CFF','#E9418F','#14B8A6','#3B82F6','#F59E0B','#C81E3A','#B44DFF','#E5B800'];
 const SY_I={
   play:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
   prev:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM19 6.2v11.6a1 1 0 0 1-1.55.83L9.5 13.2a1.4 1.4 0 0 1 0-2.4l7.95-5.43A1 1 0 0 1 19 6.2z"/></svg>',
   next:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM5 6.2v11.6a1 1 0 0 0 1.55.83l7.95-5.43a1.4 1.4 0 0 0 0-2.4L6.55 5.37A1 1 0 0 0 5 6.2z"/></svg>',
   ok:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6 11-11-1.4-1.4z"/></svg>',
-  down:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 8.6 12 14.2l5.6-5.6L19 10l-7 7-7-7z"/></svg>'
+  down:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 8.6 12 14.2l5.6-5.6L19 10l-7 7-7-7z"/></svg>',
+  back:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 6.4 9.8 12l5.6 5.6L14 19l-7-7 7-7z"/></svg>'
 };
-let _syS=0, _syIn=false;   /* the day open full screen (0 = none); _syIn = slide it up this render */
+let _syS=0, _syIn=false, _syPh=0;   /* the day open full screen (0 = none); _syIn = slide it up this render; _syPh = the phase tab (0 = the next day's) */
 function syOpen(){
-  syClose(); _syS=0;
+  syClose(); _syS=0; _syPh=0;
   const o=document.createElement('div'); o.id='syv'; o.className='sy';
   document.body.appendChild(o); syRender(true);
 }
@@ -100,9 +97,27 @@ function syPick(k){ syData().level=k; HF.save(); syRender(); }
 function syDay(n){ _syIn=!_syS; _syS=Math.max(1,Math.min(SYNC_N,n)); syRender(); _syIn=false; }
 function syShut(){ _syS=0; syRender(); }
 /* the big play button: plays the next day, or opens it when its video is not up yet */
-function syGo(){ const n=syNext(); if(syReady(sySession(n),syData().level)) syPlay(n); else syDay(n); }
+function syGo(){ syDayPlay(syNext()); }
 function syDaysOf(sn){ const r=[]; for(let i=1;i<=SYNC_N;i++) if(sySession(i)===sn) r.push(i); return r; }
 function sySessionDay(sn){ const dd=syData().days, r=syDaysOf(sn); return r.find(i=>!dd[i])||r[0]; }
+/* ── the page. 17 Nov, Seth: "style Spotify … YouTube Music", then a screen recording of Spotify's own
+   workout videos: "aku nk ko tgk spotify betul, pastu try fikir n tiruvasi". Taken from it: the coach photo
+   full width with the title big across it and the header tinted below; the days as episodes (a 16:9 frame,
+   the name, a line on what is in it, "15 min" or "8 min left" with its bar, a play button); a day opens like
+   an episode page: the video frame on top, the day and phase in colour, the big title, ⏮ ⏭ and play, and
+   "Chapters" (warm up, the three rounds, finisher) that start the video right there. Our own on top: the
+   three phases as tabs so a phase fits on a screen, every move with its technique cue under the chapters
+   (a tap plays that move), carrying on where you stopped, and the posters kept as the sessions shelf. ── */
+const SYNC_HERO='/img/p/sync/w0.jpg?v=1';
+function syWide(sn){ return '/img/p/sync/v'+sn+'.jpg?v=1'; }    /* 960×540, the coach on the session's colour */
+function syThumb(sn){ return '/img/p/sync/t'+sn+'.jpg?v=1'; }   /* 400×225 */
+/* 17 Nov, two more Spotify recordings from Seth ("yang ini sekali"): its featured class plays itself, muted, in
+   a 16:9 card, and the episode page shows the video. Ours loop a 6-second silent clip of the session (its first
+   move of round 1, made by _projek/sync/tools/sync_previews.py, ~90 KB); still frame when motion is reduced. */
+function syPrev(sn){
+  let still=false; try{ still=window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+  return '<video class="sy-pv" src="/img/p/sync/p'+sn+'.mp4?v=1" poster="'+syWide(sn)+'" muted loop playsinline preload="metadata"'+(still?'':' autoplay')+' aria-hidden="true"></video>';
+}
 /* each session's poster (17 Nov, Seth: "gambar coach tu ai xpe, cantik sikit", "masuk"): the coach in studio light in the
    session's colour, its English name on it. Made in _projek/sync (tools/poster_sync_ai.html), 720 px. */
 const SYNC_ART='/img/p/sync/cover.jpg?v=2';
@@ -110,67 +125,85 @@ function syArt(sn){ return '/img/p/sync/s'+sn+'.jpg?v=2'; }
 function syCover(sn,cls){
   return '<div class="sy-cv'+(cls?' '+cls:'')+'" role="img" aria-label="'+hesc(SYNC_S[sn-1].n)+'" style="--c:'+SYNC_COL[sn-1]+';background-image:url(\''+syArt(sn)+'\')"></div>';
 }
-function syMoveList(sn,lv){
-  const p=String(SYNC_S[sn-1].m[lv]||'').split('/'), names=['Warm up','3 rounds · repeat 3 times','Finisher'];
-  let h='', k=0;
-  p.forEach((x,j)=>{
-    if(!x) return;
-    h+='<div class="sy-ml-h">'+names[j]+'</div>';
-    x.split('|').forEach(m=>{
-      const r=/^(.*?)\s+(×\d+|\d+s)$/.exec(m)||[0,m,''];
-      k++; h+='<div class="sy-ml"><span>'+k+'</span><b>'+hesc(r[1])+'</b><em>'+hesc(r[2])+'</em></div>';
-    });
-  });
-  return h;
+const SY_EQ='<i class="sy-eq"><i></i><i></i><i></i></i>';
+/* where a day was stopped part way (only the last one), so its play button carries on from there */
+function syPos(day){ const d=syData(), p=d.pos; return p && p.day===day && p.lv===d.level ? p : null; }
+function syLeft(p){ return Math.max(1,Math.round((p.dur-p.t)/60))+' min left'; }
+function syPbar(p){ return '<i class="sy-pb"><b style="width:'+Math.min(100,p.t/p.dur*100).toFixed(1)+'%"></b></i>'; }
+function sySoon(day){ const sn=sySession(day); if(typeof toast==='function') toast(SYNC_S[sn-1].n+' ('+syLevel(syData().level).n+'): video coming soon'); }
+/* a play button: plays the day (from where it was stopped), or says its video is not up yet */
+function syDayPlay(day){
+  const p=syPos(day);
+  if(syReady(sySession(day),syData().level)) syPlay(day,p?p.t:0); else if(_syS===day) sySoon(day); else syDay(day);
 }
-function syMoveCount(sn,lv){ return String(SYNC_S[sn-1].m[lv]||'').split(/[|/]/).filter(Boolean).length; }
+function syPh(k){ _syPh=k; syRender(); }
+function syMoveNames(sn,lv){
+  const r=[]; String(SYNC_S[sn-1].m[lv]||'').split(/[|/]/).forEach(m=>{ const x=m.replace(/\s+(×\d+|\d+s)$/,'').trim(); if(x && r.indexOf(x)<0) r.push(x); });
+  return r;
+}
+/* the video's chapters from its cues: warm up, round 1–3, finisher, each with when it starts and its moves */
+function syChapters(sn,lv){
+  const c=SYNC_CUE[syKey(sn,lv)]; if(!c) return [];
+  const r=[];
+  c.m.forEach(m=>{ let x=r.find(y=>y.k===m[6]); if(!x){ x={k:m[6], t:m[0], moves:[]}; r.push(x); } if(x.moves.indexOf(m[4])<0) x.moves.push(m[4]); });
+  if(r.length) r[0].t=0;
+  r.forEach((x,i)=>{ x.e=i+1<r.length?r[i+1].t:c.d; });
+  return r;
+}
+function syMin(s){ return Math.max(1,Math.round(s/60))+' min'; }
+/* one day as an episode */
+function syRow(i){
+  const d=syData(), lv=syLevel(d.level), s=sySession(i), S=SYNC_S[s-1], dn=d.days[i], ok=syReady(s,lv.k), nx=i===syNext() && !dn, p=syPos(i);
+  const meta=dn?'<span class="sy-ok">'+SY_I.ok+'</span>Done · '+syLevel(dn.lv).n
+    : p?syLeft(p)+syPbar(p)
+    : SYNC_MIN+' min'+(ok?'':' · Coming soon');
+  return '<div class="sy-ep'+(nx?' nx':'')+(dn?' done':'')+(ok?'':' soon')+'">'+
+    '<button class="sy-ep-a" onclick="syDay('+i+')">'+
+      '<span class="sy-ep-top"><span class="sy-th" style="background-image:url(\''+syThumb(s)+'\')"><i>Day '+i+'</i></span>'+
+      '<span class="sy-ep-in"><b>'+(nx?SY_EQ:'')+hesc(S.n)+'</b><small>Day '+i+' · '+lv.n+'</small></span></span>'+
+      '<span class="sy-ep-d">'+hesc(S.s)+'. '+hesc(syMoveNames(s,lv.k).join(' · '))+'</span>'+
+    '</button>'+
+    '<div class="sy-ep-f"><span class="sy-ep-m">'+meta+'</span>'+
+      '<button class="sy-ep-p'+(ok?'':' off')+'" aria-label="Play day '+i+'" onclick="syDayPlay('+i+')">'+SY_I.play+'</button></div></div>';
+}
 function syRender(top){
   const o=$('syv'); if(!o) return;
-  const d=syData(), n=syDone(), lv=syLevel(d.level), nxt=syNext(), nsn=sySession(nxt);
-  const pc=(n/SYNC_N*100).toFixed(1);
-  let h='<button class="sy-x" aria-label="Close" onclick="syClose()">'+SY_I.down+'</button>'+
-    '<div class="sy-top" style="--c:'+SYNC_COL[nsn-1]+'">'+
-      '<div class="sy-art" role="img" aria-label="HITFAT SYNC 30" style="background-image:url(\''+SYNC_ART+'\')"></div>'+
-      '<div class="sy-t">HITFAT SYNC 30</div>'+
-      '<div class="sy-s">Your coach in your ear. Every rep counted, right on the beat.</div>'+
-      '<div class="sy-meta"><span class="sy-logo">H</span><b>HITFAT</b> · '+SYNC_N+' days · 10 sessions · '+SYNC_MIN+' min a day</div>'+
-      '<div class="sy-acts">'+
-        '<div class="sy-pr"><div><b>'+n+'</b> / '+SYNC_N+' days done</div><div class="sy-bar"><i style="width:'+pc+'%"></i></div></div>'+
-        '<button class="sy-play" aria-label="Play day '+nxt+'" onclick="syGo()">'+SY_I.play+'</button>'+
-      '</div>'+
+  const d=syData(), n=syDone(), lv=syLevel(d.level), nxt=syNext(), nsn=sySession(nxt), np=syPos(nxt);
+  const pc=(n/SYNC_N*100).toFixed(1), ph=_syPh?SYNC_PHASES[_syPh-1]:syPhase(nxt);
+  const chips=(cls)=>'<div class="sy-chips'+(cls?' '+cls:'')+'">'+SYNC_LEVELS.map(l=>'<button class="'+(l.k===lv.k?'on':'')+'" onclick="syPick(\''+l.k+'\')">'+l.n+'</button>').join('')+'</div>';
+  let h='<button class="sy-x" aria-label="Close" onclick="syClose()">'+SY_I.back+'</button>'+
+    '<div class="sy-hero" role="img" aria-label="HITFAT SYNC 30" style="background-image:url(\''+SYNC_HERO+'\')"><div class="sy-hero-t">HITFAT<br>SYNC 30</div></div>'+
+    '<div class="sy-top">'+
+      '<div class="sy-s">Your coach in your ear. Every rep counted out loud, right on the beat. '+SYNC_N+' days, '+SYNC_MIN+' minutes a day, no equipment.</div>'+
+      '<div class="sy-meta"><span class="sy-logo">H</span><b>HITFAT</b></div>'+
+      '<div class="sy-meta2">'+n+' / '+SYNC_N+' days done · 10 sessions · '+SYNC_MIN+' min a day</div>'+
+      '<div class="sy-bar"><i style="width:'+pc+'%"></i></div>'+
+      '<div class="sy-acts">'+chips()+
+        '<button class="sy-play" aria-label="Play day '+nxt+'" onclick="syDayPlay('+nxt+')">'+SY_I.play+'</button></div>'+
+      '<div class="sy-lvs">'+hesc(lv.s)+'</div>'+
     '</div>'+
-    '<div class="sy-body">'+
-    '<div class="sy-chips">'+SYNC_LEVELS.map(l=>'<button class="'+(l.k===lv.k?'on':'')+'" onclick="syPick(\''+l.k+'\')">'+l.n+'</button>').join('')+'</div>'+
-    '<div class="sy-lvs">'+hesc(lv.s)+'</div>';
-  /* up next: one wide card */
-  const nd=d.days[nxt];
-  h+='<div class="sy-h2">'+(n?'Continue':'Start here')+'</div>'+
-    '<button class="sy-up" onclick="syDay('+nxt+')">'+syCover(nsn,'sm')+
-      '<div class="sy-up-in"><div class="sy-up-k">Day '+nxt+' · '+syPhase(nxt).t+'</div>'+
-      '<div class="sy-up-t">'+hesc(SYNC_S[nsn-1].n)+'</div>'+
-      '<div class="sy-up-s">'+(nd?'Program complete · replay any time':hesc(SYNC_S[nsn-1].s))+' · '+lv.n+' · '+SYNC_MIN+' min</div></div>'+
-      '<span class="sy-up-p">'+SY_I.play+'</span></button>';
-  /* the 10 sessions as a shelf of albums */
-  h+='<div class="sy-h2">10 sessions<span>Swipe →</span></div><div class="sy-shelf">';
+    '<div class="sy-body">';
+  /* up next: the featured card, its clip playing */
+  h+='<div class="sy-h2">'+(n?'Up next':'Start here')+'</div>'+
+    '<div class="sy-ft"><button class="sy-ft-v" aria-label="Open day '+nxt+'" onclick="syDay('+nxt+')">'+syPrev(nsn)+
+      '<span class="sy-np-vt">'+(np?syLeft(np):SYNC_MIN+':00')+'</span>'+(np?syPbar(np):'')+'</button>'+
+    '<div class="sy-ft-i">'+syCover(nsn,'xs')+'<button class="sy-ft-t" onclick="syDay('+nxt+')"><b>Day '+nxt+' · '+hesc(SYNC_S[nsn-1].n)+'</b>'+
+      '<small>'+syPhase(nxt).n+' · '+syPhase(nxt).t+' · '+lv.n+'</small></button>'+
+      '<button class="sy-ep-p'+(syReady(nsn,lv.k)?'':' off')+'" aria-label="Play day '+nxt+'" onclick="syDayPlay('+nxt+')">'+SY_I.play+'</button></div></div>';
+  /* the 30 days as episodes, one phase at a time */
+  const pd=Object.keys(d.days).filter(x=>x>=ph.from && x<=ph.to).length;
+  h+='<div class="sy-pt">'+SYNC_PHASES.map((p,k)=>'<button class="'+(p===ph?'on':'')+'" onclick="syPh('+(k+1)+')">'+p.t+'</button>').join('')+'</div>'+
+    '<div class="sy-pt-s">'+ph.n+' · Days '+ph.from+'–'+ph.to+' · '+pd+' of '+(ph.to-ph.from+1)+' done</div><div class="sy-eps">';
+  for(let i=ph.from;i<=ph.to;i++) h+=syRow(i);
+  h+='</div>';
+  /* the 10 sessions: the posters, a shelf that scrolls sideways */
+  h+='<div class="sy-h2">Choose your own workout</div><div class="sy-shelf">';
   SYNC_S.forEach((S,i)=>{
     const sn=i+1, ds=syDaysOf(sn), dn=ds.filter(x=>d.days[x]).length;
     h+='<button class="sy-al'+(syReady(sn,lv.k)?'':' soon')+'" onclick="syDay('+sySessionDay(sn)+')">'+syCover(sn)+
-      '<b>'+hesc(S.n)+'</b><small>Days '+ds.join(', ')+(dn?' · '+dn+'/'+ds.length+' ✓':'')+'</small></button>';
+      '<b>'+hesc(S.s)+'</b><small>Days '+ds.join(', ')+(dn?' · '+dn+'/'+ds.length+' ✓':'')+'</small></button>';
   });
   h+='</div>';
-  /* the 30 days as tracks, by phase */
-  SYNC_PHASES.forEach(p=>{
-    h+='<div class="sy-h2">'+p.n+' · '+p.t+'<span>Days '+p.from+'–'+p.to+'</span></div><div class="sy-trs">';
-    for(let i=p.from;i<=p.to;i++){
-      const s=sySession(i), S=SYNC_S[s-1], dn=d.days[i], ok=syReady(s,lv.k), cl=['sy-tr'];
-      if(dn) cl.push('done'); if(i===nxt && !dn) cl.push('nx'); if(!ok) cl.push('soon');
-      h+='<button class="'+cl.join(' ')+'" onclick="syDay('+i+')">'+
-        '<span class="sy-no">'+(i===nxt && !dn?'<i class="sy-eq"><i></i><i></i><i></i></i>':i)+'</span>'+syCover(s,'xs')+
-        '<span class="sy-tr-in"><b>'+hesc(S.n)+'</b><small>'+(dn?'Done · '+syLevel(dn.lv).n:'Day '+i+' · '+hesc(S.s))+'</small></span>'+
-        '<span class="sy-tr-r">'+(dn?'<em class="sy-ok">'+SY_I.ok+'</em>':ok?SYNC_MIN+' min':'Coming soon')+'</span></button>';
-    }
-    h+='</div>';
-  });
   h+='<div class="sy-h2">About the program</div><div class="sy-how">'+
       '<div><span>'+glyph('play')+'</span><p><b>Down… Up! ONE!</b> Every rep is counted out loud, right on the beat of the music.</p></div>'+
       '<div><span>'+glyph('bolt')+'</span><p><b>Timed moves</b> (high knees, plank…): your coach keeps you going until "3, 2, 1, Stop!"</p></div>'+
@@ -178,40 +211,66 @@ function syRender(top){
   if(syVideos()<SYNC_N) h+='<div class="sy-note">'+syVideos()+' / '+SYNC_N+' videos ready. The rest are added one by one.</div>';
   h+='</div>';
   /* the mini player: the next day, always one tap away */
-  if(!_syS) h+='<div class="sy-mini" style="--c:'+SYNC_COL[nsn-1]+'" onclick="syDay('+nxt+')">'+syCover(nsn,'xs')+
-      '<div class="sy-mini-in"><b>Day '+nxt+' · '+hesc(SYNC_S[nsn-1].n)+'</b><small>Up next · '+lv.n+' · '+SYNC_MIN+' min</small></div>'+
-      '<button class="sy-mini-p" aria-label="Play" onclick="event.stopPropagation();syGo()">'+SY_I.play+'</button>'+
-      '<i class="sy-mini-bar" style="width:'+pc+'%"></i></div>';
-  /* a bar that slides in once the header has scrolled away, like a music app's */
-  h+='<div class="sy-tb" id="sy-tb" style="--c:'+SYNC_COL[nsn-1]+'"><b>HITFAT SYNC 30</b>'+
-    '<button class="sy-tb-p" aria-label="Play day '+nxt+'" onclick="syGo()">'+SY_I.play+'</button></div>';
+  if(!_syS) h+='<div class="sy-mini" style="--c:'+SYNC_COL[nsn-1]+'" onclick="syDay('+nxt+')"><span class="sy-th sm" style="background-image:url(\''+syThumb(nsn)+'\')"></span>'+
+      '<div class="sy-mini-in"><b>Day '+nxt+' · '+hesc(SYNC_S[nsn-1].n)+'</b><small>'+(np?syLeft(np):'Up next')+' · '+lv.n+' · '+SYNC_MIN+' min</small></div>'+
+      '<button class="sy-mini-p" aria-label="Play" onclick="event.stopPropagation();syDayPlay('+nxt+')">'+SY_I.play+'</button>'+
+      '<i class="sy-mini-bar" style="width:'+(np?(np.t/np.dur*100).toFixed(1):pc)+'%"></i></div>';
+  /* a bar that slides in once the header has scrolled away */
+  h+='<div class="sy-tb" id="sy-tb" style="--c:'+SYNC_COL[0]+'"><b>HITFAT SYNC 30</b>'+
+    '<button class="sy-tb-p" aria-label="Play day '+nxt+'" onclick="syDayPlay('+nxt+')">'+SY_I.play+'</button></div>';
   if(_syS) h+=sySheet(_syS);
-  const keep=top?0:o.scrollTop;
+  const old=$('sy-np'), keepNp=old && !_syIn ? old.scrollTop : 0, keep=top?0:o.scrollTop;
   o.innerHTML=h; o.scrollTop=keep;
-  const tb=$('sy-tb'), on=()=>{ if(tb) tb.classList.toggle('on', o.scrollTop>300); };
+  const tb=$('sy-tb'), hero=o.querySelector('.sy-hero'), hh=Math.min(o.clientWidth,440);
+  const on=()=>{ const st=o.scrollTop; if(tb) tb.classList.toggle('on', st>hh-60); if(hero) hero.style.setProperty('--f', Math.min(1,Math.max(0,st/hh)).toFixed(3)); };
   o.onscroll=on; on();
+  const np2=$('sy-np'), nb=$('sy-npb');
+  if(np2){ np2.scrollTop=keepNp; const on2=()=>{ if(nb) nb.classList.toggle('on', np2.scrollTop>260); }; np2.onscroll=on2; on2(); }
 }
-/* one day full screen, like "now playing": cover, title, level, ⏮ ▶ ⏭, then its moves as the track list */
+/* one day, like an episode page */
 function sySheet(day){
-  const d=syData(), lv=syLevel(d.level), sn=sySession(day), S=SYNC_S[sn-1], ph=syPhase(day), dn=d.days[day], ok=syReady(sn,lv.k);
-  return '<div class="sy-np'+(_syIn?' in':'')+'" style="--c:'+SYNC_COL[sn-1]+'">'+
-    '<div class="sy-np-top"><button class="sy-np-x" aria-label="Minimise" onclick="syShut()">'+SY_I.down+'</button>'+
-      '<div><small>Day '+day+' / '+SYNC_N+'</small><b>'+ph.n+' · '+ph.t+'</b></div><span></span></div>'+
-    syCover(sn,'lg')+
+  const d=syData(), lv=syLevel(d.level), sn=sySession(day), S=SYNC_S[sn-1], ph=syPhase(day), dn=d.days[day], ok=syReady(sn,lv.k), p=syPos(day);
+  const go='syDayPlay('+day+')', cue=SYNC_CUE[syKey(sn,lv.k)], ch=syChapters(sn,lv.k);
+  const names=syMoveNames(sn,lv.k), chair=names.some(x=>/Tricep Dip|Incline Push Up/.test(x));
+  const meta=dn?'<span class="sy-ok">'+SY_I.ok+'</span>Done · '+syLevel(dn.lv).n+' · '+String(dn.at||'').slice(0,10)
+    : p?syLeft(p)+syPbar(p)
+    : lv.n+' · '+SYNC_MIN+' min'+(ok?'':' · Video coming soon');
+  let h='<div class="sy-np'+(_syIn?' in':'')+'" id="sy-np" style="--c:'+SYNC_COL[sn-1]+'">'+
+    '<div class="sy-npb" id="sy-npb"><button class="sy-np-x" aria-label="Back" onclick="syShut()">'+SY_I.back+'</button><b>'+hesc(S.n)+'</b>'+
+      '<button class="sy-tb-p'+(ok?'':' off')+'" aria-label="Play" onclick="'+go+'">'+SY_I.play+'</button></div>'+
+    '<button class="sy-np-v" aria-label="Play day '+day+'" onclick="'+go+'">'+syPrev(sn)+
+      '<span class="sy-np-vp'+(ok?'':' off')+'">'+SY_I.play+'</span><span class="sy-np-vt">'+(p?syLeft(p):SYNC_MIN+':00')+'</span>'+(p?syPbar(p):'')+'</button>'+
+    '<div class="sy-np-k">Day '+day+' of '+SYNC_N+' · '+ph.n+' · '+ph.t+'</div>'+
     '<div class="sy-np-t">'+hesc(S.n)+'</div>'+
-    '<div class="sy-np-s">'+hesc(S.s)+' · '+syMoveCount(sn,lv.k)+' moves · '+SYNC_MIN+' min</div>'+
-    (dn?'<div class="sy-tick">'+SY_I.ok+' Done · '+syLevel(dn.lv).n+' · '+String(dn.at||'').slice(0,10)+'</div>':'')+
-    '<div class="sy-np-bar"><i style="width:'+(day/SYNC_N*100).toFixed(1)+'%"></i></div>'+
-    '<div class="sy-np-bt"><small>Day 1</small><small>Day '+SYNC_N+'</small></div>'+
-    '<div class="sy-np-c">'+
-      '<button aria-label="Previous day" '+(day>1?'onclick="syDay('+(day-1)+')"':'disabled')+'>'+SY_I.prev+'</button>'+
-      '<button class="sy-np-p'+(ok?'':' off')+'" aria-label="Play" onclick="syPlay('+day+')">'+SY_I.play+'</button>'+
-      '<button aria-label="Next day" '+(day<SYNC_N?'onclick="syDay('+(day+1)+')"':'disabled')+'>'+SY_I.next+'</button>'+
-    '</div>'+
-    '<div class="sy-np-go">'+(ok?(dn?'Replay':'Start')+' · '+lv.n:hesc(S.n)+' ('+lv.n+') video coming soon')+'</div>'+
-    '<div class="sy-chips sm">'+SYNC_LEVELS.map(l=>'<button class="'+(l.k===lv.k?'on':'')+'" onclick="syPick(\''+l.k+'\')">'+l.n+'</button>').join('')+'</div>'+
-    '<div class="sy-np-list"><div class="sy-np-lh">In this session</div>'+syMoveList(sn,lv.k)+'</div>'+
-  '</div>';
+    '<div class="sy-np-o">'+syCover(sn,'xs')+'<b>HITFAT SYNC 30</b></div>'+
+    '<div class="sy-np-m">'+meta+'</div>'+
+    '<div class="sy-np-a">'+
+      '<button class="sy-np-i" aria-label="Previous day" '+(day>1?'onclick="syDay('+(day-1)+')"':'disabled')+'>'+SY_I.prev+'</button>'+
+      '<button class="sy-np-i" aria-label="Next day" '+(day<SYNC_N?'onclick="syDay('+(day+1)+')"':'disabled')+'>'+SY_I.next+'</button>'+
+      '<span></span><button class="sy-play'+(ok?'':' off')+'" aria-label="Play" onclick="'+go+'">'+SY_I.play+'</button></div>'+
+    '<div class="sy-chips">'+SYNC_LEVELS.map(l=>'<button class="'+(l.k===lv.k?'on':'')+'" onclick="syPick(\''+l.k+'\')">'+l.n+'</button>').join('')+'</div>'+
+    '<p class="sy-np-d">'+hesc(S.s)+'. '+hesc(lv.s)+' '+(chair?'You need a chair.':'No equipment needed.')+' Earphones in and turn it up.</p>';
+  if(ch.length){
+    h+='<div class="sy-np-h">Chapters</div>';
+    ch.forEach(c=>{
+      const cur=p && p.t>=c.t && p.t<c.e;
+      h+='<button class="sy-chp'+(cur?' now':'')+'" onclick="'+(ok?'syPlay('+day+','+c.t+')':'sySoon('+day+')')+'">'+
+        '<span class="sy-th xs" style="background-image:url(\''+syThumb(sn)+'\')"><i>'+syTime(c.t)+'</i></span>'+
+        '<span class="sy-chp-in"><b>'+(cur?SY_EQ:'')+SY_RND[c.k]+'</b><small>'+syMin(c.e-c.t)+' · '+hesc(c.moves.join(' · '))+'</small></span></button>';
+    });
+  }
+  /* every move once, with what to think about; a tap plays that move */
+  h+='<div class="sy-np-h">Moves &amp; technique</div><div class="sy-mvs">';
+  if(cue){
+    const seen={}; let k=0;
+    cue.m.forEach(m=>{
+      if(seen[m[4]]) return; seen[m[4]]=1; k++;
+      h+='<button class="sy-mv" onclick="'+(ok?'syPlay('+day+','+m[0]+')':'sySoon('+day+')')+'"><span class="sy-mv-n">'+k+'</span>'+
+        '<span class="sy-mv-in"><b>'+hesc(m[4])+'</b><small>'+hesc(SYNC_TIP[m[4]]||'')+'</small></span><em>'+(m[3]==='r'?'×'+m[5]:m[5]+'s')+'</em></button>';
+    });
+  } else names.forEach((x,k)=>{ h+='<div class="sy-mv"><span class="sy-mv-n">'+(k+1)+'</span><span class="sy-mv-in"><b>'+hesc(x)+'</b><small>'+hesc(SYNC_TIP[x]||'')+'</small></span></div>'; });
+  h+='</div><button class="sy-np-all" onclick="syShut()">See all '+SYNC_N+' days<span>›</span></button></div>';
+  return h;
 }
 
 /* ── the player (17 Nov, Seth: "konsep Spotify", "lebih kepada orang nak faham teknik", "buat sekarang") ──
@@ -237,22 +296,23 @@ function syVimeo(v){
 }
 function syTime(s){ s=Math.max(0,Math.round(s||0)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 function syCues(){ const c=_sy&&SYNC_CUE[_sy.key]; return c?c.m:[]; }
-function syPlay(n){
+function syPlay(n,at){
   const lv=syData().level, day=n||syNext(), sn=sySession(day), key=syKey(sn,lv); if(!syReady(sn,lv)) return;
-  syStop();
+  syStop(true); at=Math.max(0,+at||0);
+  const pos=syPos(day);   /* carrying on: what was already played still counts towards finishing */
   const cue=SYNC_CUE[key], src=SYNC_VIDEO[key];
-  _sy={day:day, sn:sn, lv:lv, key:key, sid:null, t:0, dur:cue?cue.d:0, last:0, watched:0, playing:false, started:false, cur:-2, ui:false, ly:false, done:false};
+  _sy={day:day, sn:sn, lv:lv, key:key, sid:null, at:at, t:at, dur:cue?cue.d:0, last:at, watched:pos&&at?pos.w||0:0, playing:false, started:false, cur:-2, ui:false, ly:false, done:false};
   const S=SYNC_S[sn-1], ms=syCues();
   const media=syIsFile(src)
     ? '<video id="syp-vid" src="'+hesc(src)+'" playsinline autoplay preload="auto"></video>'
-    : '<iframe src="'+syVimeo(src)+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="HITFAT SYNC"></iframe>';
+    : '<iframe src="'+syVimeo(src)+(at?'#t='+Math.floor(at)+'s':'')+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="HITFAT SYNC"></iframe>';
   let marks='', lines='', r=-1;
   ms.forEach((m,i)=>{
     if(m[6]!==r){ r=m[6]; lines+='<div class="syp-lr">'+SY_RND[r]+'</div>'; if(i && _sy.dur) marks+='<i style="left:'+(m[0]/_sy.dur*100).toFixed(2)+'%"></i>'; }
     lines+='<button class="syp-ln" id="syp-ln'+i+'" onclick="syJump('+i+')"><b>'+hesc(m[4])+'</b><span>'+(m[3]==='r'?'×'+m[5]:m[5]+'s')+'</span><em></em><small>'+hesc(SYNC_TIP[m[4]]||'')+'</small></button>';
   });
   const bar=(id)=>'<div class="syp-bar" onclick="sySeekBar(event,this)"><div class="syp-track">'+marks+'<b id="'+id+'"></b></div></div>'+
-    '<div class="syp-tm"><span class="syp-t0">0:00</span><span class="syp-t1">−'+syTime(_sy.dur)+'</span></div>';
+    '<div class="syp-tm"><span class="syp-t0">0:00</span><span class="syp-chn">Warm up</span><span class="syp-t1">−'+syTime(_sy.dur)+'</span></div>';
   const play='<button class="syp-pp" aria-label="Play or pause" onclick="syToggle()">'+SY_I.play+'</button>';
   const o=document.createElement('div'); o.id='syp'; o.style.setProperty('--c',SYNC_COL[sn-1]);
   o.innerHTML=
@@ -263,7 +323,8 @@ function syPlay(n){
     '<div class="syp-dim" onclick="syTap()"></div>'+
     '<div class="syp-top"><button class="syp-ic" aria-label="Close" onclick="syStop()">'+SY_I.down+'</button>'+
       '<div><small>Playing · Day '+day+' / '+SYNC_N+'</small><b>HITFAT SYNC 30</b></div><span></span></div>'+
-    '<div class="syp-bot"><div class="syp-hd">'+syCover(sn,'xs')+'<div><div class="syp-ti">'+hesc(S.n)+'</div><div class="syp-su" id="syp-su">'+syLevel(lv).n+' · '+SYNC_MIN+' min</div></div></div>'+
+    '<div class="syp-bot"><div class="syp-hd">'+syCover(sn,'xs')+'<div><div class="syp-ti">'+hesc(S.n)+'</div><div class="syp-su" id="syp-su">'+syLevel(lv).n+' · '+SYNC_MIN+' min</div></div>'+
+      '<button class="syp-skip" id="syp-skip" onclick="sySkip()">'+SY_I.next+'<span>Skip ahead</span></button></div>'+
       bar('syp-b1')+
       '<div class="syp-ctl"><button class="syp-ic" aria-label="Back 10 seconds" onclick="sySeek(_sy.t-10)">'+SY_P.back+'</button>'+
         '<button class="syp-ic" aria-label="Previous move" onclick="syStep(-1)">'+SY_I.prev+'</button>'+play+
@@ -284,15 +345,21 @@ function syPlay(n){
     v.addEventListener('play',()=>syPlaying(true));
     v.addEventListener('pause',()=>syPlaying(false));
     v.addEventListener('ended',()=>syEnded());
+    if(at) v.addEventListener('loadedmetadata',()=>{ try{ v.currentTime=at; }catch(e){} },{once:true});
   }
   try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').then(l=>{ if(_sy) _sy.lock=l; else l.release(); }).catch(()=>{}); }catch(e){}
   setTimeout(()=>{ const c=document.querySelector('#syp .syp-cover'); if(c) c.classList.add('gone'); },3000);
   syUi(true);
 }
-function syStop(){
+function syStop(quiet){
   if(_sy && _sy.lock) try{ _sy.lock.release(); }catch(e){}
+  /* stopped part way: remember where, so the day's play button carries on from there */
+  if(_sy && _sy.started && !_sy.done && _sy.dur && _sy.t>20 && _sy.t<_sy.dur-20){
+    const d=syData(); d.pos={day:_sy.day, lv:_sy.lv, t:Math.round(_sy.t), dur:Math.round(_sy.dur), w:Math.round(_sy.watched)}; HF.save();
+  }
   try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); }catch(e){}
   const o=$('syp'); if(o&&o.parentNode) o.parentNode.removeChild(o); _sy=null;
+  if(!quiet && $('syv')) syRender();
 }
 function syPost(method,value){
   const f=document.querySelector('#syp iframe'), w=f&&f.contentWindow; if(!w) return;
@@ -321,6 +388,8 @@ function syStep(d){
   else i=Math.min(ms.length-1,i+1);
   sySeek(ms[i][0]);
 }
+/* Skip ahead: past the intro to the first move, or past a rest to the next move */
+function sySkip(){ if(_sy && _sy.skip!=null){ sySeek(_sy.skip); if(!_sy.playing) syCmd('play'); } }
 function syJump(i){ const m=syCues()[i]; if(m){ sySeek(m[0]); if(!_sy.playing) syCmd('play'); } }
 function syFull(){
   const o=$('syp'); if(!o) return;
@@ -363,6 +432,12 @@ function syUi(force){
   o.querySelectorAll('.syp-t1').forEach(e=>e.textContent='−'+syTime(d-t));
   const ms=syCues(); if(!ms.length) return;
   const i=syIdx(t), m=ms[i];
+  o.querySelectorAll('.syp-chn').forEach(e=>e.textContent=SY_RND[ms[Math.max(0,i)][6]]);
+  let skip=null, sk='';
+  if(i<0 && ms[0][0]-t>4){ skip=ms[0][0]; sk='Skip intro'; }
+  else if(m && t>=m[2] && ms[i+1] && ms[i+1][0]-t>4){ skip=ms[i+1][0]; sk='Skip rest'; }
+  _sy.skip=skip;
+  const sb=$('syp-skip'); if(sb){ sb.classList.toggle('on',skip!=null); if(sk) sb.querySelector('span').textContent=sk; }
   let live='', state='';
   if(m){
     if(t>=m[2]){ state='rest'; const n=ms[i+1]; live=n?'Next · '+Math.max(0,Math.ceil(n[0]-t))+'s':'Last one done'; }
@@ -386,7 +461,7 @@ function syOnMessage(ev){
   if(ev.origin!=='https://player.vimeo.com' || !_sy) return;
   let d; try{ d=typeof ev.data==='string'?JSON.parse(ev.data):ev.data; }catch(e){ return; }
   if(!d) return;
-  if(d.event==='ready'){ ['timeupdate','play','pause','ended'].forEach(x=>syPost('addEventListener',x)); return; }
+  if(d.event==='ready'){ ['timeupdate','play','pause','ended'].forEach(x=>syPost('addEventListener',x)); if(_sy.at) syPost('setCurrentTime',_sy.at); return; }
   if(d.event==='play') syPlaying(true);
   if(d.event==='pause') syPlaying(false);
   if(d.event==='timeupdate' && d.data) syTick(d.data.seconds||0, d.data.duration||0);
@@ -405,7 +480,7 @@ function sySessionStart(){
 function syFinish(){
   if(!_sy || _sy.done) return; _sy.done=true;
   const d=syData(), p=_sy, at=new Date().toISOString();
-  d.days[p.day]={lv:p.lv, at:at};
+  d.days[p.day]={lv:p.lv, at:at}; if(d.pos && d.pos.day===p.day) delete d.pos;
   d.log.push({n:p.day, s:p.sn, lv:p.lv, at:at});
   HF.markDone(SYNC_ID+'-s'+(p.day-1),{name:syLabel(p), mins:SYNC_MIN});
   try{ if(sb && p.sid){ const id=p.sid; p.sid=null; sb.rpc('plus_session_finish',{p_id:id}).then(()=>{ if(typeof _lbCache!=='undefined') _lbCache={}; }).catch(()=>{}); } }catch(e){}
@@ -420,7 +495,7 @@ function syFinish(){
       '<div class="sy-s">'+SYNC_MIN+' minutes, on the beat. Added to your streak.</div>'+
       '<div class="sy-done-bar"><i style="width:'+(Object.keys(d.days).length/SYNC_N*100).toFixed(1)+'%"></i></div>'+
       '<div class="sy-done-n">'+Object.keys(d.days).length+' / '+SYNC_N+' days done'+(more?' · Up next: Day '+nx+' · '+hesc(SYNC_S[sySession(nx)-1].n):' · Program complete')+'</div>'+
-      '<button class="sy-go" onclick="syStop();_syS=0;syRender()">Close</button>';
+      '<button class="sy-go" onclick="_syS=0;syStop()">Close</button>';
     o.appendChild(el);
   }
   if(typeof toast==='function') toast('SYNC day '+p.day+' done 🔥');
