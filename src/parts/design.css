@@ -5131,6 +5131,8 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 @-webkit-keyframes plSpin{to{-webkit-transform:rotate(360deg)}}
 @keyframes plSpin{to{transform:rotate(360deg)}}
 #play.resting .pl-load,#play.counting .pl-load{display:none;}
+#play .pl-load.slow{cursor:pointer;padding:11px 16px;background:rgba(0,0,0,.72);}
+#play .pl-load.slow b{font-weight:800;color:var(--pl-ac,#FFFFFF);margin-left:4px;text-decoration:underline;}
 
 /* ── learn as you move (18 Oct) ── */
 #play .pl-learn{margin-top:10px;pointer-events:auto;}
@@ -5784,6 +5786,48 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .lbx-ghost{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:8px;padding:13px;border:none;border-radius:14px;background:transparent;
   color:var(--dim);font:inherit;font-size:14.5px;font-weight:700;cursor:pointer;}
 .lbx-ghost .gly{width:16px;height:16px;}
+/* MAK2FIT: "Kongsi cerita anda" (15 Nov 2026), the card and its sheet */
+.lbst{background:linear-gradient(160deg,var(--lcard) 55%,rgba(201,148,127,.16));border:1.5px solid rgba(201,148,127,.45);}
+.lbst .lbx-k,.lbst-sh .lbx-k{display:flex;align-items:center;gap:6px;}
+.lbst .lbx-k .gly,.lbst-sh .lbx-k .gly{width:14px;height:14px;}
+.lbst .lbx-h{margin-top:6px;}
+.lbst-note{font-size:12.5px;color:var(--dim);margin-top:10px;line-height:1.4;}
+.lbst-row{display:flex;gap:6px;}
+.lbst-row .lbx-ghost{margin-top:4px;padding:11px 6px;font-size:13.5px;}
+.lbst-sh{--lr:#C02A7C; --lr2:#8E1460; --lr0:#F0509E; --lbl:rgba(192,42,124,.10); --lbl2:rgba(192,42,124,.17);
+  display:flex;flex-direction:column;gap:8px;padding:0 2px 8px;text-align:left;}
+.lbst-sh .lbx-h{margin-bottom:6px;padding-right:44px;}
+.lbst-sh > .lbx-k{padding-right:48px;}
+.lbst-lbl{display:block;font-size:12.5px;font-weight:800;color:var(--dim);margin-top:8px;}
+.lbst-picks{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.lbst-pick{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:18px 10px;border-radius:18px;
+  background:var(--lbl);border:1.5px dashed rgba(192,42,124,.4);color:var(--lr);cursor:pointer;text-align:center;}
+.lbst-pick .gly{width:26px;height:26px;}
+.lbst-pick b{font-size:15px;}
+.lbst-pick small{font-size:12px;color:var(--dim);font-weight:600;}
+.lbst-pick input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.lbst-prev{position:relative;border-radius:18px;overflow:hidden;background:#1C0814;}
+.lbst-prev img,.lbst-prev video{display:block;width:100%;max-height:340px;object-fit:contain;}
+.lbst-rm{position:absolute;top:8px;right:8px;width:32px;height:32px;border:none;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:15px;cursor:pointer;}
+.lbst-tip{display:flex;gap:9px;align-items:flex-start;padding:11px 12px;border-radius:14px;background:rgba(201,148,127,.14);font-size:13px;line-height:1.4;}
+.lbst-tip .gly{flex:none;width:16px;height:16px;color:#B07A64;margin-top:1px;}
+.lbst-tx{width:100%;min-height:78px;resize:vertical;font:inherit;font-size:15px;}
+.lbst-fit{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:14px;background:var(--lbl);}
+.lbst-fit div{display:flex;justify-content:space-between;gap:10px;font-size:14px;}
+.lbst-fit b{color:var(--lr);white-space:nowrap;}
+.lbst-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.lbst-two .inp{width:100%;}
+.lbst-face{display:flex;flex-direction:column;gap:8px;}
+.lbst-face button{display:flex;align-items:center;gap:8px;padding:13px 14px;border-radius:14px;border:1.5px solid var(--lbl2);background:transparent;
+  color:inherit;font:inherit;font-size:14.5px;font-weight:700;text-align:left;cursor:pointer;}
+.lbst-face button.on{border-color:var(--lr);background:var(--lbl);color:var(--lr);}
+.lbst-face .gly{width:16px;height:16px;}
+.lbst-ok{display:flex;gap:10px;align-items:flex-start;margin-top:10px;font-size:13px;line-height:1.45;color:var(--dim);cursor:pointer;}
+.lbst-ok input{flex:none;width:20px;height:20px;margin-top:1px;accent-color:#C02A7C;}
+.lbst-sh .lbx-go[disabled]{opacity:.6;}
+.lbst-done{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:16px 4px 4px;}
+.lbst-big{font-size:46px;line-height:1;}
+.lbst-done .lbx-h{padding-right:0;}
 /* the ring */
 .lbx-ring{position:relative;flex:none;}
 .lbx-ring svg{display:block;}

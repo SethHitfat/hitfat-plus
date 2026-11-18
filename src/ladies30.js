@@ -986,6 +986,8 @@ function renderLB30(){
       '<div class="lbx-h">30 days complete</div><div class="lbx-p">Lihat sejauh mana anda sudah pergi.</div>'+
       '<button class="lbx-go" onclick="lbSetTab(\'progress\')">'+glyph('trophy')+'See Your Results</button></div>';
   }
+  var story=owned && !scan1 ? lbStoryDue() : null;
+  if(story) h+=lbStoryCard(story);
   if(owned && !scan1) h+=lbScanHero();
   h+='<div class="lbx-seg" id="lb-tabs">'+[['plan','Plan'],['food','Nutrition'],['learn','Learn'],['progress','Progress'],['guide','Start Here']]
     .map(function(t){ return '<button class="'+(lbTab===t[0]?'on':'')+'" onclick="lbSetTab(\''+t[0]+'\')">'+t[1]+'</button>'; }).join('')+'</div>';
@@ -1305,6 +1307,195 @@ function lbScanFirstCard(){
     '<button class="lbx-ghost" onclick="lbScanLater()">Nanti dulu</button></div></div>';
 }
 function lbScanLater(){ lbData().scan1='later'; HF.save(); renderLB30(); }
+
+/* ═══ "Kongsi cerita anda" (15 Nov 2026, Seth picked "Kad Kongsi Cerita") ═══
+   After Day 1, Day 7 and the last day she may send one photo or a short
+   video and a line, straight to HITFAT OS (HITFAT+ → Cerita MAK2FIT), where
+   Seth picks what to post. Her own phone, no photo shoot.
+   - Meta's rules: no before/after, no weight, no body words. The sheet says
+     so, and the last day sends Fit Test numbers (strength), never kg or cm.
+   - First name only, she says whether her face may show, and she ticks the
+     permission. The exact wording goes with the row.
+   - No reward is promised here: Seth decides that.
+   Like /kerjaya it goes to the OS project with the OS's public key: the file
+   into the private bucket 'cerita' (anyone may add under mak2fit/, nobody
+   may read but OS staff), the row through mak2fit_cerita()
+   (hitfat-membership-src sql/118). lbData().story[k] remembers sent / no. */
+var LB30_ST_OS='https://ddcmfbaidkrqpeckmzou.supabase.co',
+    LB30_ST_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkY21mYmFpZGtycXBlY2ttem91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzg2OTIsImV4cCI6MjEwMzg1NDY5Mn0.V7IE_gmYn_GuJZId1aXbzjj7WwNerHZiAfNav_C91XY';
+/* ON HOLD (15 Nov 2026, Seth: "tak perlu publish lagi, tunggu dulu"): the card shows only when this is true */
+var LB30_STORY_LIVE=false;
+var LB30_ST_SECS=15, LB30_ST_MB=50;
+var LB30_ST_OK='Saya benarkan HITFAT berkongsi cerita ini (gambar, video dan ayat saya) di media sosial dan iklan MAK2FIT dan HITFAT, dengan nama pertama saya sahaja. Saya boleh minta ia dipadam bila-bila masa melalui WhatsApp HITFAT.';
+var LB30_STORY=[
+  {k:'d1', at:1, kick:'Hari 1 siap', h:'Mak dah ON! Kongsi detik ini?',
+   p:'Selfie atau video 10 saat: <b>"Saya dah mula!"</b> Cerita anda boleh beri semangat kepada mak lain yang belum mula.',
+   ask:'Contoh: Saya nak ada tenaga main dengan anak.', need:false},
+  {k:'d7', at:7, kick:'Seminggu siap', h:'Seminggu dah. Apa yang rasa lain?',
+   p:'Satu ayat pun cukup: tenaga, tidur, mood, atau masa untuk diri sendiri.',
+   ask:'Contoh: Saya lebih bertenaga lepas balik kerja.', need:true},
+  {k:'end', at:0, kick:'30 hari siap', h:'Tahniah! Kongsi cerita 30 hari anda?',
+   p:'Satu ayat tentang 30 hari ini. Angka Fit Test anda kami sertakan sekali.',
+   ask:'Apa yang paling berubah untuk anda?', need:true}
+];
+var lbSt=null;
+function lbStAt(m){ return m.at||LB30_DAYS.length; }
+function lbStData(){ var d=lbData(); return d.story||(d.story={}); }
+/* the furthest step she has reached, unless she has answered it */
+function lbStoryDue(){
+  if(!LB30_STORY_LIVE || !lbOwned() || !HF.userId) return null;
+  var st=lbStData(), done=lbDone();
+  if(st.snooze && Date.now()<st.snooze) return null;
+  for(var i=LB30_STORY.length-1;i>=0;i--){
+    var m=LB30_STORY[i];
+    if(done>=lbStAt(m)) return st[m.k] ? null : m;
+  }
+  return null;
+}
+function lbStoryCard(m){
+  return '<div class="lbx-card lbst"><div class="lbx-k">'+glyph('heart')+'Kongsi cerita anda · '+m.kick+'</div>'+
+    '<div class="lbx-h">'+m.h+'</div><div class="lbx-p">'+m.p+'</div>'+
+    '<div class="lbst-note">Nama pertama sahaja. Anda pilih sama ada muka boleh ditunjuk.</div>'+
+    '<button class="lbx-go" onclick="lbStoryOpen(\''+m.k+'\')">'+glyph('photo')+'Kongsi Cerita Saya</button>'+
+    '<div class="lbst-row"><button class="lbx-ghost" onclick="lbStoryLater()">Nanti dulu</button>'+
+    '<button class="lbx-ghost" onclick="lbStoryNo(\''+m.k+'\')">Tak nak kongsi</button></div></div>';
+}
+function lbStoryLater(){ lbStData().snooze=Date.now()+2*864e5; HF.save(); renderLB30(); }
+function lbStoryNo(k){ lbStData()[k]={no:1, t:Date.now()}; HF.save(); renderLB30(); }
+function lbStoryM(k){ for(var i=0;i<LB30_STORY.length;i++) if(LB30_STORY[i].k===k) return LB30_STORY[i]; return LB30_STORY[0]; }
+/* her Fit Test, Day 1 and Day 30, as reps or seconds */
+function lbStoryFit(){
+  var f=lbData().fit||{}, a=f.d1||{}, b=f.d30||{}, out=[];
+  lbFitList().forEach(function(x){ var p=+a[x[0]]||0, q=+b[x[0]]||0; if(p||q) out.push({n:x[1], u:x[2]==='secs'?'saat':'kali', a:p, b:q}); });
+  return out;
+}
+function lbStoryOpen(k){
+  if(lbSt && lbSt.url){ try{ URL.revokeObjectURL(lbSt.url); }catch(e){} }
+  var nm=((HF.data.prefs&&HF.data.prefs.name)||'').trim().split(/\s+/)[0]||'';
+  lbSt={k:k, file:null, kind:'', url:'', name:nm.slice(0,24), phone:'', face:'', ok:false, text:'', busy:false, sent:false};
+  lbStorySheet(); $('pwm').classList.add('on');
+}
+function lbStorySheet(){
+  var s=lbSt, m=lbStoryM(s.k), h='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="lbStoryClose()">✕</button></div><div class="lbst-sh">';
+  if(s.sent){
+    $('pw-body').innerHTML=h+'<div class="lbst-done"><div class="lbst-big">💗</div><div class="lbx-h">Terima kasih'+(s.name?', '+hesc(s.name):'')+'!</div>'+
+      '<div class="lbx-p">Cerita anda dah sampai. Seth baca setiap cerita. Kalau kami kongsi, nama pertama anda sahaja yang ditulis.</div>'+
+      '<button class="lbx-go" onclick="lbStoryClose()">'+glyph('check')+'Selesai</button></div></div>';
+    return;
+  }
+  h+='<div class="lbx-k">'+glyph('heart')+'Kongsi cerita anda · '+m.kick+'</div><div class="lbx-h">'+m.h+'</div>';
+  /* the photo or video */
+  h+='<div class="lbst-lbl">Gambar atau video'+(s.k==='d1'?'':' (pilihan)')+'</div>';
+  if(s.url){
+    h+='<div class="lbst-prev">'+(s.kind==='video'?'<video src="'+s.url+'" playsinline muted controls preload="metadata"></video>':'<img src="'+s.url+'" alt="">')+
+      '<button class="lbst-rm" onclick="lbStoryRm()" aria-label="Buang">✕</button></div>';
+  } else {
+    h+='<div class="lbst-picks">'+
+      '<label class="lbst-pick">'+glyph('play')+'<b>Video</b><small>maks '+LB30_ST_SECS+' saat</small><input type="file" accept="video/*" onchange="lbStoryFile(this,\'video\')"></label>'+
+      '<label class="lbst-pick">'+glyph('photo')+'<b>Gambar</b><small>selfie pun boleh</small><input type="file" accept="image/*" onchange="lbStoryFile(this,\'image\')"></label></div>';
+  }
+  h+='<div class="lbst-tip">'+glyph('star')+'<span>Tak perlu gambar badan, timbang berat atau gambar sebelum/selepas. Senyuman, peluh dan tempat anda workout dah cukup.</span></div>';
+  /* the line */
+  h+='<div class="lbst-lbl">'+(m.need?'Satu ayat':'Satu ayat (pilihan)')+'</div>'+
+    '<textarea class="inp lbst-tx" maxlength="400" rows="3" placeholder="'+hesc(m.ask)+'" oninput="lbSt.text=this.value">'+hesc(s.text)+'</textarea>';
+  if(s.k==='end'){
+    var fit=lbStoryFit();
+    h+=fit.length ? '<div class="lbst-fit">'+fit.map(function(x){ return '<div><span>'+hesc(x.n)+'</span><b>'+(x.a||'–')+' → '+(x.b||'–')+' '+x.u+'</b></div>'; }).join('')+'</div>'
+      : '<div class="lbst-note">Fit Test Hari 30 belum diisi, jadi angka tidak disertakan.</div>';
+  }
+  /* who, and her permission */
+  h+='<div class="lbst-two"><label><span class="lbst-lbl">Nama pertama</span><input class="inp" maxlength="24" value="'+hesc(s.name)+'" oninput="lbSt.name=this.value"></label>'+
+    '<label><span class="lbst-lbl">No. WhatsApp (pilihan)</span><input class="inp" inputmode="tel" maxlength="16" placeholder="01x" value="'+hesc(s.phone)+'" oninput="lbSt.phone=this.value"></label></div>';
+  h+='<div class="lbst-lbl">Muka anda</div><div class="lbst-face">'+
+    [['ya','Boleh tunjuk muka saya'],['tak','Jangan tunjuk muka saya']].map(function(x){
+      return '<button class="'+(s.face===x[0]?'on':'')+'" onclick="lbSt.face=\''+x[0]+'\';lbStoryRe()">'+(s.face===x[0]?glyph('check'):'')+x[1]+'</button>'; }).join('')+'</div>';
+  h+='<label class="lbst-ok"><input type="checkbox" '+(s.ok?'checked':'')+' onchange="lbSt.ok=this.checked"><span>'+LB30_ST_OK+'</span></label>';
+  h+='<button class="lbx-go" '+(s.busy?'disabled':'')+' onclick="lbStorySend()">'+(s.busy?'Menghantar…':glyph('share')+'Hantar Cerita')+'</button>'+
+    '<button class="lbx-ghost" onclick="lbStoryClose()">Nanti dulu</button></div>';
+  $('pw-body').innerHTML=h;
+}
+/* re-draw without losing what she typed or where she scrolled */
+function lbStoryRe(){ var b=$('pw-body'), y=b?b.scrollTop:0; lbStorySheet(); if(b) b.scrollTop=y; }
+function lbStoryClose(){
+  if(lbSt && lbSt.busy) return;
+  var sent=lbSt && lbSt.sent;
+  if(lbSt && lbSt.url){ try{ URL.revokeObjectURL(lbSt.url); }catch(e){} }
+  lbSt=null; closeProduct(); if(sent) renderLB30();
+}
+function lbStoryRm(){ if(lbSt.url){ try{ URL.revokeObjectURL(lbSt.url); }catch(e){} } lbSt.file=null; lbSt.kind=''; lbSt.url=''; lbStoryRe(); }
+function lbStoryFile(inp,kind){
+  var f=inp&&inp.files&&inp.files[0]; if(!f) return;
+  if(kind==='video'){
+    if(f.size>LB30_ST_MB*1048576){ toast('Video terlalu besar. Rakam '+LB30_ST_SECS+' saat sahaja.'); return; }
+    var url=URL.createObjectURL(f), v=document.createElement('video');
+    v.preload='metadata'; v.muted=true;
+    v.onloadedmetadata=function(){
+      if(isFinite(v.duration) && v.duration>LB30_ST_SECS+0.9){ URL.revokeObjectURL(url); toast('Video maksimum '+LB30_ST_SECS+' saat. Potong dulu di telefon.'); return; }
+      lbSt.file=f; lbSt.kind='video'; lbSt.url=url; lbStoryRe();
+    };
+    v.onerror=function(){ lbSt.file=f; lbSt.kind='video'; lbSt.url=url; lbStoryRe(); };
+    v.src=url;
+    return;
+  }
+  /* a photo: a JPEG of 1600 px at most, as the phone sees it */
+  var rd=new FileReader();
+  rd.onload=function(){ var img=new Image();
+    img.onload=function(){ var mx=1600, sc=Math.min(1,mx/Math.max(img.width,img.height)), cv=document.createElement('canvas');
+      cv.width=Math.round(img.width*sc); cv.height=Math.round(img.height*sc); cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+      cv.toBlob(function(b){ if(!b){ toast('Gambar tak dapat dibuka. Cuba gambar lain.'); return; }
+        lbSt.file=b; lbSt.kind='image'; lbSt.url=URL.createObjectURL(b); lbStoryRe(); },'image/jpeg',.86); };
+    img.onerror=function(){ toast('Gambar tak dapat dibuka. Cuba gambar lain.'); };
+    img.src=rd.result; };
+  rd.readAsDataURL(f);
+}
+function lbStUuid(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){ var r=Math.random()*16|0; return (c==='x'?r:(r&3|8)).toString(16); });
+}
+function lbStoryExt(){
+  var f=lbSt.file, t=String(f.type||'').toLowerCase();
+  if(lbSt.kind==='image') return {ext:'jpg', type:'image/jpeg'};
+  var e=t.indexOf('quicktime')>=0?'mov':t.indexOf('webm')>=0?'webm':t.indexOf('mp4')>=0?'mp4':
+        String((f.name||'').split('.').pop()||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  if(['mp4','mov','webm','m4v'].indexOf(e)<0) e='mp4';
+  return {ext:e, type:t||(e==='mov'?'video/quicktime':'video/'+e)};
+}
+function lbStoryPost(path,body){
+  return fetch(LB30_ST_OS+path,{method:'POST', headers:{apikey:LB30_ST_ANON, Authorization:'Bearer '+LB30_ST_ANON, 'Content-Type':'application/json'}, body:JSON.stringify(body)})
+    .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {ok:r.ok, j:j}; }); });
+}
+function lbStorySend(){
+  var s=lbSt, m=lbStoryM(s.k), text=String(s.text||'').trim(), name=String(s.name||'').trim().split(/\s+/)[0]||'';
+  if(s.busy) return;
+  if(m.need && text.length<3){ toast('Tulis satu ayat dulu'); return; }
+  if(!m.need && !s.file && text.length<3){ toast('Pilih gambar atau video, atau tulis satu ayat'); return; }
+  if(name.length<2){ toast('Tulis nama pertama anda'); return; }
+  if(!s.face){ toast('Pilih sama ada muka anda boleh ditunjuk'); return; }
+  if(!s.ok){ toast('Tandakan kebenaran dulu'); return; }
+  s.busy=true; lbStoryRe();
+  var row=function(media){
+    var fit=s.k==='end'?lbStoryFit():null, me=lbMe()||{};
+    return lbStoryPost('/rest/v1/rpc/mak2fit_cerita',{p:{
+      uid:HF.userId, email:HF.email||'', name:name, phone:s.phone||'', milestone:s.k, day:lbDone(),
+      text:text, face:s.face==='ya', consent:true, consent_text:LB30_ST_OK,
+      media:media, fit:fit&&fit.length?fit:null, level:me.level||''
+    }});
+  }, go;
+  if(s.file){
+    var x=lbStoryExt(), path='mak2fit/'+lbStUuid()+'.'+x.ext;
+    go=fetch(LB30_ST_OS+'/storage/v1/object/cerita/'+path,{method:'POST',
+        headers:{apikey:LB30_ST_ANON, Authorization:'Bearer '+LB30_ST_ANON, 'Content-Type':x.type, 'x-upsert':'false'}, body:s.file})
+      .then(function(r){ if(!r.ok) throw new Error('upload'); return row({path:path, type:s.kind}); });
+  } else go=row(null);
+  go.then(function(r){
+    if(!r.ok || !r.j || r.j.ok===false) throw new Error((r.j&&r.j.error)||'rpc');
+    lbStData()[s.k]={sent:1, t:Date.now()}; HF.save();
+    s.busy=false; s.sent=true; s.name=name; lbStorySheet();
+  }).catch(function(e){
+    s.busy=false; lbStoryRe();
+    toast(String(e&&e.message)==='upload'?'Fail tak dapat dimuat naik. Cuba fail lebih kecil atau cuba lagi.':'Tak dapat hantar sekarang. Cuba lagi sekejap.');
+  });
+}
 function lbScanHero(){
   if(typeof scanAccess!=='function') return '';
   var a=scanAccess(), has=a.left>0;

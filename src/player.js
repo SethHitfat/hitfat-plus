@@ -52,31 +52,63 @@ function plVimeoMsg(e){
   if(d.event==='ready'){ try{ f.contentWindow.postMessage(JSON.stringify({method:'addEventListener',value:'playProgress'}),'*'); }catch(x){} return; }
   if(d.event==='playProgress' || d.event==='play'){
     if(f.getAttribute('data-live')!=='1') f.setAttribute('data-live','1');
-    if(f.id==='pl-video' && pl && pl.waiting) plRelease();
+    if(f.id==='pl-video' && pl){ if(pl.waiting) plRelease(); else plLoadMsg(''); }
   }
 }
 if(typeof window!=='undefined' && window.addEventListener) window.addEventListener('message',plVimeoMsg);
-/* start the clock once the clip is playing (four seconds at most, so a slow line never stalls the class) */
+/* Start the clock once the clip is playing. (18 Nov 2026) A MAK2FIT buyer on
+   4G sat on "Loading the video…" on the first move, which has no rest to load
+   in, and four seconds later the clock ran over a black screen. Now the clock
+   waits up to ten seconds, the clip is asked for again at five, and if it is
+   still not there the screen says so and a tap tries again (also the way past
+   an iPhone in Low Power Mode, which holds back videos that play by
+   themselves). A slow line still never stalls the class for long. */
+const PL_WAIT_MS=10000, PL_RETRY_MS=5000;
+function plLoadMsg(k){
+  const l=$('pl-load'); if(!l || !l.classList) return;
+  l.classList.toggle('on', !!k); l.classList.toggle('slow', k==='slow');
+  l.innerHTML=k==='slow' ? 'The video is slow to load. <b>Tap to try again</b>' : '<i></i>Loading the video…';
+}
 function plResumeReady(){
   if(!pl) return;
   if(plClipLive()) return plResume();
   pl.waiting=true; plSetPlayIcon(true);
-  const l=$('pl-load'); if(l && l.classList) l.classList.add('on');
-  clearTimeout(pl.waitT); pl.waitT=setTimeout(plRelease,4000);
+  plLoadMsg('wait');
+  clearTimeout(pl.waitT); clearTimeout(pl.retryT);
+  pl.retryT=setTimeout(plRetryClip,PL_RETRY_MS);
+  pl.waitT=setTimeout(()=>{ plRelease(); if(pl && !plClipLive()) plLoadMsg('slow'); },PL_WAIT_MS);
+}
+/* the clip on screen, asked for again: a fresh load, and a "play" for a phone that held it back */
+function plRetryClip(){
+  if(!pl || plClipLive()) return;
+  const f=$('pl-video'), ex=pl.exs && pl.exs[pl.i];
+  if(!f || !ex || !ex.v || pl.clip!==ex.v) return;
+  plFrame(f,ex);
+}
+function plLoadTap(e){
+  if(e && e.stopPropagation) e.stopPropagation();
+  if(!pl) return;
+  const f=$('pl-video');
+  try{ f && f.contentWindow && f.contentWindow.postMessage(JSON.stringify({method:'play'}),'*'); }catch(x){}
+  plRetryClip(); plLoadMsg('wait');
+  clearTimeout(pl.retryT); pl.retryT=setTimeout(()=>{ if(pl && !plClipLive() && !pl.waiting) plLoadMsg('slow'); },PL_WAIT_MS);
 }
 function plRelease(){
   if(!pl || !pl.waiting) return;
-  pl.waiting=false; clearTimeout(pl.waitT);
-  const l=$('pl-load'); if(l && l.classList) l.classList.remove('on');
+  pl.waiting=false; clearTimeout(pl.waitT); clearTimeout(pl.retryT);
+  plLoadMsg('');
   plResume();
 }
 function plUnwait(){
-  if(!pl || !pl.waiting) return;
+  if(!pl) return;
+  clearTimeout(pl.retryT);
+  if(!pl.waiting){ if(!plClipLive()) plLoadMsg(''); return; }
   pl.waiting=false; clearTimeout(pl.waitT);
-  const l=$('pl-load'); if(l && l.classList) l.classList.remove('on');
+  plLoadMsg('');
 }
 function setClip(ex){
   let f=$('pl-video'); if(!f||!ex) return;
+  if(pl && !pl.waiting && pl.clip!==ex.v){ clearTimeout(pl.retryT); plLoadMsg(''); }
   const nf=$('pl-nofilm');
   /* No clip is not the same as "keep the previous clip". Leaving the last
      video running under a different exercise name is worse than an empty

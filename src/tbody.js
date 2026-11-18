@@ -661,6 +661,15 @@ plAdjust(-999);ok("never below 5s", pl.left===5, pl.left);
 plPause(); ok("paused shows play", document.getElementById('pl-play').innerHTML.indexOf('M8 5.5')>0);
 plResume(); ok("playing shows pause", document.getElementById('pl-play').innerHTML.indexOf('<rect')>=0);
 plPause();
+/* (18 Nov 2026) a clip slow on 4G: asked for again, then a note to tap */
+var _pf=document.getElementById('pl-video'), _keepLive=plClipLive; plClipLive=function(){ return false; }; _pf.src='about:blank';
+plRetryClip(); ok("a clip not playing yet is loaded again", _pf.src.indexOf('/video/'+pl.clip)>0, _pf.src.slice(0,60));
+plClipLive=_keepLive;
+plLoadMsg('slow'); var _pld=document.getElementById('pl-load');
+ok("...and still not there, the screen says so and a tap tries again", _pld.innerHTML.indexOf('Tap to try again')>0 && _pld.className.indexOf('slow')>=0 &&
+   readFile('shell2.html').indexOf('onclick="plLoadTap(event)"')>0);
+ok("...the clock waits up to ten seconds, asking again at five", PL_WAIT_MS===10000 && PL_RETRY_MS===5000);
+plLoadMsg(''); ok("...and the note goes when it plays", _pld.className.indexOf('on')<0 && _pld.innerHTML.indexOf('Loading')>0);
 /* the foot's big play/pause follows the same state as the one over the clip */
 ok("the foot's play/pause shows play when paused", document.getElementById('pl-play2').innerHTML.indexOf('M8 5.5')>0);
 ok("the pill says only the round (the segments count the movements)",
@@ -4319,6 +4328,32 @@ print("\n── MAK2FIT 30 ──");
        localStorage.setItem('hf_push_ask',JSON.stringify({n:1,t:Date.now()})); ok("...three days apart", lbPushDue()===''); localStorage.removeItem('hf_push_ask'); }catch(e){}
   pushState=keepState; HF.userId=keepUser; sb=keepSb;
   try{ if(keepAsk) localStorage.setItem('hf_push_ask',keepAsk); if(keepInst) localStorage.setItem('hf_lb_inst',keepInst); }catch(e){}
+  /* "Kongsi cerita anda" (15 Nov 2026): after Day 1, Day 7 and the last day */
+  var keepStory=lbData().story, keepUid=HF.userId, keepFetch=(typeof fetch!=='undefined')?fetch:undefined, keepScan1b=lbData().scan1;
+  HF.userId='u-1'; delete lbData().story; HF.data.progress[LB30_ID]=1;
+  ok("stories: on hold, so no card yet (15 Nov)", LB30_STORY_LIVE===false && !lbStoryDue());
+  var keepStLive=LB30_STORY_LIVE; LB30_STORY_LIVE=true;
+  HF.data.progress[LB30_ID]=0; ok("stories: nothing before a day is done", !lbStoryDue());
+  HF.data.progress[LB30_ID]=1; ok("...Day 1 asks for the first one", (lbStoryDue()||{}).k==='d1');
+  HF.data.progress[LB30_ID]=8; ok("...past Day 7 asks the week's, not Day 1's", (lbStoryDue()||{}).k==='d7');
+  HF.data.progress[LB30_ID]=LB30_DAYS.length; ok("...the last day asks the 30 days'", (lbStoryDue()||{}).k==='end');
+  lbStoryNo('end'); ok("\"Tak nak kongsi\" is not asked again", !lbStoryDue());
+  HF.data.progress[LB30_ID]=7; delete lbData().story; lbStoryLater(); ok("\"Nanti dulu\" waits two days", !lbStoryDue());
+  delete lbData().story; lbData().scan1='later'; lbData().me={done:true, level:'baru'}; lbTab='plan'; renderLB30(); var stc=$('pgd-body').innerHTML;
+  ok("...the card sits on her program page", stc.indexOf('Kongsi cerita anda')>0 && stc.indexOf("lbStoryOpen('d7')")>0);
+  var stAll=LB30_STORY.map(function(m){ return lbStoryCard(m); }).join('')+LB30_ST_OK;
+  ok("...no body words, no free, no reward promised", !/kurus|berat badan|percuma|hadiah|ganjaran/i.test(stAll));
+  var calls=[]; fetch=function(u,o){ calls.push({u:u,o:o}); return Promise.resolve({ok:true, json:function(){ return Promise.resolve({ok:true}); }}); };
+  lbStoryOpen('d7'); lbSt.text='Saya lebih bertenaga.'; lbSt.name='Aminah Binti Ali'; lbSt.face='tak';
+  lbStorySend(); ok("...nothing goes without her permission", calls.length===0 && !lbData().story.d7);
+  lbSt.ok=true; lbSt.face=''; lbStorySend(); ok("...or her choice about her face", calls.length===0);
+  lbSt.face='tak'; lbStorySend();
+  var sent=calls[0] ? JSON.parse(calls[0].o.body).p : {};
+  ok("...then one row to HITFAT OS, first name only, with the words she agreed to", calls.length===1 && /mak2fit_cerita$/.test(calls[0].u) &&
+     sent.name==='Aminah' && sent.face===false && sent.consent===true && sent.consent_text===LB30_ST_OK && sent.milestone==='d7' && sent.uid==='u-1');
+  closeProduct(); lbSt=null; LB30_STORY_LIVE=keepStLive;
+  if(keepFetch!==undefined) fetch=keepFetch;
+  HF.userId=keepUid; if(keepStory) lbData().story=keepStory; else delete lbData().story; if(keepScan1b) lbData().scan1=keepScan1b; else delete lbData().scan1;
   hfPhone=keepPhone; pushStandalone=keepAlone; hfInApp=keepApp; lbData().me=keepMe; HF.data.progress[LB30_ID]=keepProg; startWorkout=keepStart;
   /* Malay on its own pages */
   var html=''; var keepBody=$('pgd-body');
