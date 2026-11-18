@@ -7436,6 +7436,13 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
   background-image:radial-gradient(circle,rgba(240,83,28,.35) 1.4px,transparent 1.8px);background-size:8px 8px;}
 .mf-buy .mf-top-t{display:inline-block;}
 .mf-buy span{display:block;margin-top:10px;font-size:11px;font-weight:800;letter-spacing:1.6px;color:#E8480F;}
+/* the official THE START logo (15 Nov 2026) in place of the typed wordmark */
+.mf-logo{display:block;height:auto;max-width:100%;}
+.mf-logo-top{width:min(78%,300px);margin:2px 0 10px;}
+.mf-head-k{padding-top:2px;}
+.mf-logo-head{width:118px;}
+.mf-logo-q{width:min(64%,230px);margin:0 0 8px;}
+.mf-logo-buy{width:min(70%,250px);margin:0 auto;}
 
 /* ── one program, no HITFAT+ (9 Nov 2026): what is hers, what is extra ── */
 .lockt.lockt-p{width:auto;height:auto;border-radius:99px;padding:5px 9px 5px 7px;gap:4px;display:inline-flex;align-items:center;

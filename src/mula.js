@@ -361,10 +361,11 @@ function mfLangBtn(){
 let mfTab='plan', mfWeek=-1, mfLsOpen=-1;
 function mfScrollTabs(){ try{ const s=$('screen'), a=$('mf-tabs'); if(s&&a&&a.offsetTop) s.scrollTop=Math.max(0,a.offsetTop-70); }catch(e){} }
 function mfSetTab(t){ mfTab=t; renderMF(); mfScrollTabs(); }
+/* Seth's official logo, "6 WEEKS OF THE START" (15 Nov 2026: "aku nak fokus pada logo"); it replaces the typed THE START. wordmark */
+function mfLogo(cls){ return '<img class="mf-logo '+cls+'" src="img/p/mula/logo.png" alt="THE START" width="720" height="291">'; }
 function mfHero(){
   return '<div class="mf-top"><div class="mf-top-ph" role="img" aria-label="THE START">'+mfLangBtn()+'</div>'+
-    '<div class="mf-top-b"><div class="mf-top-k">'+mfL(MF_WK+' Minggu',MF_WK+' Weeks of')+'</div>'+
-    '<div class="mf-top-t">THE <b>START.</b></div>'+
+    '<div class="mf-top-b">'+mfLogo('mf-logo-top')+
     '<div class="mf-top-s">'+mfL('Program untuk anda yang baru mula','For anyone just starting out')+'</div>'+
     '<div class="mf-top-m">'+MF_N+' '+mfL('sesi','sessions')+' · 15–20 min · '+mfL('di rumah','at home')+' · '+mfL('lelaki & wanita','men & women')+'</div></div></div>';
 }
@@ -408,7 +409,7 @@ function mfWalkOn(){ const w=mfData().walk||{}; return !!w[iso(0)]; }
 function mfWalkTick(){ const d=mfData(), w=d.walk||(d.walk={}), t=iso(0); if(w[t]) delete w[t]; else w[t]=1; HF.save(); renderMF(); }
 function mfHead(){
   const nm=mfFirst(), done=mfDone(), wi=mfWeekOf(Math.min(done,MF_N-1));
-  return '<div class="mf-head"><div class="mf-head-k">THE <b>START.</b></div>'+
+  return '<div class="mf-head"><div class="mf-head-k">'+mfLogo('mf-logo-head')+'</div>'+
     '<div class="mf-head-t">'+(nm?mfL('Hai ','Hi ')+hesc(nm)+'!':mfL('Hai!','Hi!'))+'</div>'+
     '<div class="mf-head-s">'+(done>=MF_N?mfL('Program selesai · '+MF_N+' sesi','Program done · '+MF_N+' sessions')
       :mfL('Minggu ','Week ')+(wi+1)+mfL(' daripada ',' of ')+MF_WK+' · '+done+'/'+MF_N+mfL(' sesi siap',' sessions done'))+'</div>'+
@@ -602,7 +603,7 @@ function mfQuiz(){
     '<div class="lbq-bar"><i style="width:'+Math.round(Math.min(mfQ,n)/n*100)+'%"></i></div><span class="lbq-n">'+Math.min(mfQ,n)+'/'+n+'</span></div>';
   if(mfQ===0){
     const nm=mfFirst();
-    return h+bar+'<div class="mf-qhero"><div class="mf-top-t">THE <b>START.</b></div>'+mfLangBtn()+
+    return h+bar+'<div class="mf-qhero">'+mfLogo('mf-logo-q')+mfLangBtn()+
       '<div class="mf-top-s">'+mfL('Jom pilih tahap anda','Let us pick your path')+(nm?', '+hesc(nm):'')+'.</div></div>'+
       '<div class="lbq-p">'+mfL(n+' soalan, lebih kurang 2 minit. Jawapan anda memilih tahap Mudah, Asas atau Beransur, dan masa setiap sesi.',
         n+' questions, about 2 minutes. Your answers choose the Easy, Basic or Build path, and the length of each session.')+'</div>'+
@@ -1088,7 +1089,7 @@ function mfLocked(icon,title,text){
 function mfBuy(){
   if(mfOwned()) return openProgram(MF_ID);
   $('pw-body').innerHTML='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>'+
-    '<div class="mf-buy"><div class="mf-top-t">THE <b>START.</b></div><span>'+MF_WK+mfL(' MINGGU · ',' WEEKS · ')+MF_N+mfL(' SESI · DI RUMAH',' SESSIONS · AT HOME')+'</span></div>'+
+    '<div class="mf-buy">'+mfLogo('mf-logo-buy')+'<span>'+MF_WK+mfL(' MINGGU · ',' WEEKS · ')+MF_N+mfL(' SESI · DI RUMAH',' SESSIONS · AT HOME')+'</span></div>'+
     '<div class="pwlist">'+[
       ['sliders',mfL('Tahap anda sendiri','Your own path'),mfL('Mudah, Asas atau Beransur, ikut tahap dan keselesaan badan','Easy, Basic or Build, by your level and how your body feels')],
       ['workout',MF_N+mfL(' sesi berpandu',' guided sessions'),mfL('Pemanasan, latihan utama, penyejukan. Video setiap gerakan','Warm-up, main workout, cool-down. A video for every move')],
