@@ -1851,7 +1851,7 @@ function lbTebusSheet(state,o){
     '<div class="co-s">Kalau anda bayar guna emel lain, masukkan nombor pesanan dari resit Bayarcash.</div></div>'+
     '<div class="wl-claim"><div class="wl-claim-f"><input id="lb-order" placeholder="Nombor pesanan" autocomplete="off" value="'+hesc(o||'')+'"><button onclick="lbClaim()">Buka</button></div></div>'+
     '<button class="bigbtn lb-btn" onclick="lbTebus(1)">Cuba lagi</button>'+
-    '<button class="authalt" onclick="window.open(\'https://wa.me/60189174656?text='+encodeURIComponent('Hai HITFAT, saya dah bayar MAK2FIT 30 tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">Masih tak terbuka? <b>WhatsApp kami</b></button>';
+    '<button class="authalt" onclick="window.open(\'https://wa.me/60178040920?text='+encodeURIComponent('Hai HITFAT, saya dah bayar MAK2FIT 30 tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">Masih tak terbuka? <b>WhatsApp kami</b></button>';
   $('pw-body').innerHTML=h; $('pwm').classList.add('on');
 }
 

@@ -121,7 +121,7 @@ const SUB_PLANS=[
 ];
 /* The coach's line and the members' group. The group link is set when it
    exists; until then the row is not shown. */
-const COACH_WA='60176132170', COACH_GROUP_URL='';
+const COACH_WA='60178040920', COACH_GROUP_URL='';
 
 /* The membership is on: pay-create, pay-callback and pay-status know the
    sub_ SKUs (deployed 9 Oct 2026). Set false to open everything again —

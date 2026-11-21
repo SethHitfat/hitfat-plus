@@ -1570,7 +1570,7 @@ async function t42ClaimCoach(){
 
 function t42AskPay(){
   var c=T42.challenge, r=T42.reg||{};
-  window.open('https://wa.me/60176132170?text='+encodeURIComponent(
+  window.open('https://wa.me/60189174656?text='+encodeURIComponent(
     'Hi HITFAT, I signed up for '+t42EdName(c)+' (code '+(r.verify_code||'-')+') and would like to pay.'),'_blank');
 }
 
@@ -3823,7 +3823,7 @@ function t42NextGym(){ if(typeof clubEnquire==='function') clubEnquire(); }
 /* The same HITFAT WhatsApp line the Club uses for enquiries, with a message
    that says where it came from. */
 function t42NextHyrox(){
-  window.open('https://wa.me/60176132170?text='+encodeURIComponent(
+  window.open('https://wa.me/60189174656?text='+encodeURIComponent(
     'Hi HITFAT, I just finished T42 and I would like to know about HYROX training.'),'_blank');
 }
 

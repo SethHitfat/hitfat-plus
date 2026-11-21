@@ -18319,7 +18319,7 @@ function lbTebusSheet(state,o){
     '<div class="co-s">Kalau anda bayar guna emel lain, masukkan nombor pesanan dari resit Bayarcash.</div></div>'+
     '<div class="wl-claim"><div class="wl-claim-f"><input id="lb-order" placeholder="Nombor pesanan" autocomplete="off" value="'+hesc(o||'')+'"><button onclick="lbClaim()">Buka</button></div></div>'+
     '<button class="bigbtn lb-btn" onclick="lbTebus(1)">Cuba lagi</button>'+
-    '<button class="authalt" onclick="window.open(\'https://wa.me/60189174656?text='+encodeURIComponent('Hai HITFAT, saya dah bayar MAK2FIT 30 tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">Masih tak terbuka? <b>WhatsApp kami</b></button>';
+    '<button class="authalt" onclick="window.open(\'https://wa.me/60178040920?text='+encodeURIComponent('Hai HITFAT, saya dah bayar MAK2FIT 30 tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">Masih tak terbuka? <b>WhatsApp kami</b></button>';
   $('pw-body').innerHTML=h; $('pwm').classList.add('on');
 }
 
@@ -20130,7 +20130,7 @@ function mfTebusSheet(state,o){
     '<div class="co-s">'+mfL('Kalau anda bayar guna emel lain, masukkan nombor pesanan dari resit Bayarcash.','If you paid with another email, enter the order number from your Bayarcash receipt.')+'</div></div>'+
     '<div class="wl-claim"><div class="wl-claim-f"><input id="mf-order" placeholder="'+mfL('Nombor pesanan','Order number')+'" autocomplete="off" value="'+hesc(o||'')+'"><button onclick="mfClaim()">'+mfL('Buka','Open')+'</button></div></div>'+
     '<button class="bigbtn lb-btn" onclick="mfTebus(1)">'+mfL('Cuba lagi','Try again')+'</button>'+
-    '<button class="authalt" onclick="window.open(\'https://wa.me/60189174656?text='+encodeURIComponent('Hai HITFAT, saya dah bayar THE START tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">'+mfL('Masih tak terbuka? <b>WhatsApp kami</b>','Still locked? <b>WhatsApp us</b>')+'</button>';
+    '<button class="authalt" onclick="window.open(\'https://wa.me/60178040920?text='+encodeURIComponent('Hai HITFAT, saya dah bayar THE START tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">'+mfL('Masih tak terbuka? <b>WhatsApp kami</b>','Still locked? <b>WhatsApp us</b>')+'</button>';
   $('pw-body').innerHTML=h; $('pwm').classList.add('on');
 }
 function mfClaim(){
@@ -25828,7 +25828,7 @@ const SUB_PLANS=[
 ];
 /* The coach's line and the members' group. The group link is set when it
    exists; until then the row is not shown. */
-const COACH_WA='60176132170', COACH_GROUP_URL='';
+const COACH_WA='60178040920', COACH_GROUP_URL='';
 
 /* The membership is on: pay-create, pay-callback and pay-status know the
    sub_ SKUs (deployed 9 Oct 2026). Set false to open everything again —
@@ -30240,7 +30240,7 @@ function clubPromoHTML(full){
     '<button class="bigbtn sec" onclick="clubEnquire()">Explore HITFAT Club</button></div>';
 }
 function clubEnquire(){
-  window.open('https://wa.me/60176132170?text='+encodeURIComponent(
+  window.open('https://wa.me/60189174656?text='+encodeURIComponent(
     'Hi HITFAT, I use HITFAT+ and I would like to know about training at the gym.'),'_blank');
 }
 function clubHomeCard(){
@@ -32727,7 +32727,7 @@ function kelasFold(k,ic,t,s,right){
 function kelasFoldTap(k){ Kelas[k+'Open']=!Kelas[k+'Open']; renderKelas(); }
 function kelasRenew(){
   const m=kelasMain();
-  window.open('https://wa.me/60176132170?text='+encodeURIComponent(
+  window.open('https://wa.me/60189174656?text='+encodeURIComponent(
     'Hi HITFAT, I would like to renew my '+kelasCat(m&&m.category)+' membership.'),'_blank');
 }
 
@@ -32826,7 +32826,7 @@ async function kelasRecheck(){
 function kelasWaitCancel(){ kelasWaitSet(null); Kelas.wait=null; Kelas.step='phone'; Kelas.found=null; Kelas.err=''; renderKelas(); }
 function kelasDigits(p){ return String(p||'').replace(/\D/g,''); }
 const KELAS_ERR={
-  not_found:'This number is not on our class list. Use the number you gave at the counter, or <a href="https://wa.me/60176132170" target="_blank" rel="noopener">WhatsApp HITFAT</a>.',
+  not_found:'This number is not on our class list. Use the number you gave at the counter, or <a href="https://wa.me/60178040920" target="_blank" rel="noopener">WhatsApp HITFAT+</a>.',
   expired:'Your class membership has ended. Renew at the counter and connect again.',
   taken:'This number is already connected to another HITFAT+ account. Ask at the counter and we will release it.',
   too_many:'Too many tries. Please wait an hour, or ask at the counter.',
@@ -36510,7 +36510,7 @@ async function t42ClaimCoach(){
 
 function t42AskPay(){
   var c=T42.challenge, r=T42.reg||{};
-  window.open('https://wa.me/60176132170?text='+encodeURIComponent(
+  window.open('https://wa.me/60189174656?text='+encodeURIComponent(
     'Hi HITFAT, I signed up for '+t42EdName(c)+' (code '+(r.verify_code||'-')+') and would like to pay.'),'_blank');
 }
 
@@ -38763,7 +38763,7 @@ function t42NextGym(){ if(typeof clubEnquire==='function') clubEnquire(); }
 /* The same HITFAT WhatsApp line the Club uses for enquiries, with a message
    that says where it came from. */
 function t42NextHyrox(){
-  window.open('https://wa.me/60176132170?text='+encodeURIComponent(
+  window.open('https://wa.me/60189174656?text='+encodeURIComponent(
     'Hi HITFAT, I just finished T42 and I would like to know about HYROX training.'),'_blank');
 }
 

@@ -17,7 +17,7 @@ Kalau nanti ada borang Bayarcash Link RM39, tukar satu baris `CHECKOUT_URL` dala
 1. **Meta Pixel:** buka Events Manager, buat Pixel, dan beri aku **Pixel ID** (nombor sahaja, bukan rahsia). Aku pasang dalam landing page.
 2. **Uji beli sendiri sekali** dari landing page dalam telefon: Mula → log masuk → bayar → program terbuka.
 3. **Domain verification** untuk hitfat.io dalam Business Settings, supaya event Pixel dikira penuh.
-4. **WhatsApp +60 18-917 4656:** pastikan ada orang yang balas dalam 1 jam pada waktu iklan jalan. Skrip balas ada di bahagian 8.
+4. **WhatsApp +60 17-804 0920:** pastikan ada orang yang balas dalam 1 jam pada waktu iklan jalan. Skrip balas ada di bahagian 8.
 
 > Pixel sekarang kira **PageView, ViewContent, InitiateCheckout (tekan Mula), Contact (tekan WhatsApp)**.
 > Event **Purchase** belum dikira, sebab pembelian berlaku dalam app. Aku boleh pasang Purchase dalam app (bila bayaran prog_lad4 berjaya) selepas dapat Pixel ID. Ini sangat disyorkan, supaya Meta belajar cari orang yang **beli**, bukan sekadar klik.

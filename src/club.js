@@ -779,7 +779,7 @@ function clubPromoHTML(full){
     '<button class="bigbtn sec" onclick="clubEnquire()">Explore HITFAT Club</button></div>';
 }
 function clubEnquire(){
-  window.open('https://wa.me/60176132170?text='+encodeURIComponent(
+  window.open('https://wa.me/60189174656?text='+encodeURIComponent(
     'Hi HITFAT, I use HITFAT+ and I would like to know about training at the gym.'),'_blank');
 }
 function clubHomeCard(){

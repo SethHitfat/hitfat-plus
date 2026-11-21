@@ -889,7 +889,7 @@ function mfTebusSheet(state,o){
     '<div class="co-s">'+mfL('Kalau anda bayar guna emel lain, masukkan nombor pesanan dari resit Bayarcash.','If you paid with another email, enter the order number from your Bayarcash receipt.')+'</div></div>'+
     '<div class="wl-claim"><div class="wl-claim-f"><input id="mf-order" placeholder="'+mfL('Nombor pesanan','Order number')+'" autocomplete="off" value="'+hesc(o||'')+'"><button onclick="mfClaim()">'+mfL('Buka','Open')+'</button></div></div>'+
     '<button class="bigbtn lb-btn" onclick="mfTebus(1)">'+mfL('Cuba lagi','Try again')+'</button>'+
-    '<button class="authalt" onclick="window.open(\'https://wa.me/60189174656?text='+encodeURIComponent('Hai HITFAT, saya dah bayar THE START tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">'+mfL('Masih tak terbuka? <b>WhatsApp kami</b>','Still locked? <b>WhatsApp us</b>')+'</button>';
+    '<button class="authalt" onclick="window.open(\'https://wa.me/60178040920?text='+encodeURIComponent('Hai HITFAT, saya dah bayar THE START tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">'+mfL('Masih tak terbuka? <b>WhatsApp kami</b>','Still locked? <b>WhatsApp us</b>')+'</button>';
   $('pw-body').innerHTML=h; $('pwm').classList.add('on');
 }
 function mfClaim(){

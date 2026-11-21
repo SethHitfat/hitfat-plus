@@ -1812,7 +1812,7 @@ function kelasFold(k,ic,t,s,right){
 function kelasFoldTap(k){ Kelas[k+'Open']=!Kelas[k+'Open']; renderKelas(); }
 function kelasRenew(){
   const m=kelasMain();
-  window.open('https://wa.me/60176132170?text='+encodeURIComponent(
+  window.open('https://wa.me/60189174656?text='+encodeURIComponent(
     'Hi HITFAT, I would like to renew my '+kelasCat(m&&m.category)+' membership.'),'_blank');
 }
 
@@ -1911,7 +1911,7 @@ async function kelasRecheck(){
 function kelasWaitCancel(){ kelasWaitSet(null); Kelas.wait=null; Kelas.step='phone'; Kelas.found=null; Kelas.err=''; renderKelas(); }
 function kelasDigits(p){ return String(p||'').replace(/\D/g,''); }
 const KELAS_ERR={
-  not_found:'This number is not on our class list. Use the number you gave at the counter, or <a href="https://wa.me/60176132170" target="_blank" rel="noopener">WhatsApp HITFAT</a>.',
+  not_found:'This number is not on our class list. Use the number you gave at the counter, or <a href="https://wa.me/60178040920" target="_blank" rel="noopener">WhatsApp HITFAT+</a>.',
   expired:'Your class membership has ended. Renew at the counter and connect again.',
   taken:'This number is already connected to another HITFAT+ account. Ask at the counter and we will release it.',
   too_many:'Too many tries. Please wait an hour, or ask at the counter.',
