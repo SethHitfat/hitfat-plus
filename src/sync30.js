@@ -398,6 +398,7 @@ function syCues(){ const c=_sy&&SYNC_CUE[_sy.key]; return c?c.m:[]; }
 function syPlay(n,at){
   const lv=syData().level, day=n||syNext(), sn=sySession(day), key=syKey(sn,lv); if(!syReady(sn,lv)) return;
   syStop(true); at=Math.max(0,+at||0);
+  syAudio(true);
   const pos=syPos(day);   /* carrying on: what was already played still counts towards finishing */
   const cue=SYNC_CUE[key], src=SYNC_VIDEO[key];
   _sy={day:day, sn:sn, lv:lv, key:key, sid:null, at:at, t:at, dur:cue?cue.d:0, last:at, watched:pos&&at?pos.w||0:0, playing:false, started:false, cur:-2, ui:false, ly:false, done:false};
@@ -451,7 +452,14 @@ function syPlay(n,at){
   setTimeout(()=>{ const c=document.querySelector('#syp .syp-cover'); if(c) c.classList.add('gone'); },3000);
   syUi(true);
 }
+/* 22 Nov, still no sound on Seth's iPhone (its silent switch on). The app's tap sounds put the page in the
+   'ambient' audio session (sound.js), which follows the silent switch, and the video plays in that session too.
+   While SYNC plays it is 'playback', like a music app (the coach's own music does the same); back after. */
+function syAudio(on){
+  try{ if(typeof navigator!=='undefined' && navigator.audioSession) navigator.audioSession.type=on?'playback':'ambient'; }catch(e){}
+}
 function syStop(quiet){
+  syAudio(false);
   if(_sy && _sy.lock) try{ _sy.lock.release(); }catch(e){}
   /* stopped part way: remember where, so the day's play button carries on from there */
   if(_sy && _sy.started && !_sy.done && _sy.dur && _sy.t>20 && _sy.t<_sy.dur-20){
