@@ -387,6 +387,7 @@ const SY_P={
   up:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 15.4 12 9.8l5.6 5.6L19 14l-7-7-7 7z"/></svg>',
   full:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v2H6v4H4zm10 0h6v6h-2V6h-4zM4 14h2v4h4v2H4zm14 0h2v6h-6v-2h4z"/></svg>'
 };
+SY_I.mute='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z"/></svg>';
 function syIsFile(v){ return /^(https?:\/\/|\/).+\.mp4(\?|$)/i.test(String(v)); }
 function syVimeo(v){
   const p=String(v).split('/');
@@ -419,6 +420,7 @@ function syPlay(n,at){
     '<div class="syp-cover"><div class="sy-cv lg" style="background-image:url(\''+syArt(sn)+'\')"></div>'+
       '<b>Day '+day+' · '+hesc(S.n)+'</b><small>'+syLevel(lv).n+' · '+SYNC_MIN+' min · Get ready</small><i class="syp-spin"></i></div>'+
     '<div class="syp-dim" onclick="syTap()"></div>'+
+    '<button class="syp-snd" onclick="syUnmute()">'+SY_I.mute+'<span>Tap for sound</span></button><div class="syp-hint">Tap ▶ on the video to start with sound</div>'+
     '<div class="syp-top"><button class="syp-ic" aria-label="Close" onclick="syStop()">'+SY_I.down+'</button>'+
       '<div><small>Playing · Day '+day+' / '+SYNC_N+'</small><b>HITFAT SYNC 30</b></div><span></span></div>'+
     '<div class="syp-bot"><div class="syp-hd">'+syCover(sn,'xs')+'<div><div class="syp-ti">'+hesc(S.n)+'</div><div class="syp-su" id="syp-su">'+syLevel(lv).n+' · '+SYNC_MIN+' min</div></div>'+
@@ -463,6 +465,24 @@ function syPost(method,value){
   const f=document.querySelector('#syp iframe'), w=f&&f.contentWindow; if(!w) return;
   try{ w.postMessage(JSON.stringify(value===undefined?{method}:{method,value}),'https://player.vimeo.com'); }catch(e){}
 }
+function syMuteAns(m){
+  if(!_sy) return;
+  if(!m){ _sy.muted=false; _sy.chk=0; syClass(); return; }
+  if(_sy.chk && Date.now()-_sy.chk<4000){ _sy.chk=0; syForSound(); return; }   /* the phone would not unmute it from here */
+  _sy.muted=true; syClass();
+}
+function syUnmute(){
+  if(!_sy) return; _sy.chk=Date.now();
+  syPost('setMuted',false); syPost('setVolume',1);
+  setTimeout(()=>{ syPost('getMuted'); syPost('getVolume'); },700);
+}
+/* the sure way: Vimeo's own player, paused where we are; a tap on its ▶ is the phone's own tap, so sound is allowed */
+function syForSound(){
+  const f=document.querySelector('#syp iframe'); if(!f || !_sy) return;
+  _sy.at=_sy.t; _sy.muted=false; _sy.native=true; _sy.playing=false;
+  f.src=syVimeo(SYNC_VIDEO[_sy.key]).replace('autoplay=1','autoplay=0').replace('controls=0','controls=1')+'#t='+Math.floor(_sy.t)+'s';
+  syClass();
+}
 function syCmd(m,v){
   const el=$('syp-vid');
   if(el){ try{ if(m==='play') el.play(); else if(m==='pause') el.pause(); else if(m==='setCurrentTime') el.currentTime=v; }catch(e){} return; }
@@ -505,6 +525,8 @@ function syClass(){
   o.classList.toggle('ui', _sy.ui || (!_sy.playing && _sy.started && !_sy.ly));
   o.classList.toggle('ly', _sy.ly);
   o.classList.toggle('on', _sy.started);
+  o.classList.toggle('muted', !!_sy.muted);
+  o.classList.toggle('native', !!_sy.native && !_sy.playing);
   o.querySelectorAll('.syp-pp').forEach(b=>b.innerHTML=_sy.playing?SY_P.pause:SY_I.play);
 }
 function syPlaying(p){
@@ -562,6 +584,10 @@ function syOnMessage(ev){
   /* 22 Nov, first real video: the frame's own message API names them playProgress and finish
      (timeupdate/ended are the Player SDK's names), so the clock never moved; both are heard now */
   if(d.event==='ready'){ ['playProgress','play','pause','finish'].forEach(x=>syPost('addEventListener',x)); if(_sy.at) syPost('setCurrentTime',_sy.at); return; }
+  /* 22 Nov, Seth: "kenapa sound x bunyi". A phone lets a video in a frame start by itself only with no sound, so
+     Vimeo starts it muted and, with its controls hidden, nothing says so. Asked once it plays: muted → "Tap for sound". */
+  if(d.method==='getMuted' || d.method==='getVolume') syMuteAns(d.method==='getMuted' ? d.value===true : +d.value===0);
+  if(d.event==='play'){ setTimeout(()=>{ syPost('getMuted'); syPost('getVolume'); },400); }
   if(d.event==='play') syPlaying(true);
   if(d.event==='pause') syPlaying(false);
   if((d.event==='playProgress' || d.event==='timeupdate') && d.data) syTick(d.data.seconds||0, d.data.duration||0);

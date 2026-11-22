@@ -7898,6 +7898,16 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 #syp.ly .syp-v{z-index:6;left:20px;top:calc(env(safe-area-inset-top,0px) + 14px);width:58px;height:103px;border-radius:8px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.4);}
 #syp.ly .syp-v iframe,#syp.ly .syp-v video{width:58px;height:103px;}
 #syp.ly .syp-tap{pointer-events:auto;}
+/* 22 Nov: the video started without sound (a phone's rule for a video in a frame) */
+.syp-snd{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 64px);z-index:6;transform:translateX(-50%);display:none;align-items:center;gap:8px;padding:10px 16px 10px 12px;border:0;border-radius:999px;background:#fff;color:#0E0A0B;font:inherit;font-size:14px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.45);cursor:pointer;animation:sypSnd 1.6s ease-in-out infinite;}
+.syp-snd svg{width:20px;height:20px;fill:currentColor;}
+#syp.muted .syp-snd{display:flex;}
+.syp-hint{position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 28px);z-index:6;display:none;text-align:center;font-size:15px;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.8);pointer-events:none;}
+#syp.native .syp-hint{display:block;}
+#syp.native .syp-tap,#syp.native .syp-dim{pointer-events:none!important;}
+#syp.native .syp-bot,#syp.native .syp-pill,#syp.native .syp-line{display:none;}
+@keyframes sypSnd{50%{transform:translateX(-50%) scale(1.05);}}
+@media (prefers-reduced-motion:reduce){.syp-snd{animation:none;}}
 .syp-lyh{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,0px) + 14px) 12px 10px 20px;min-height:103px;}
 .syp-lyv{flex:0 0 58px;height:103px;}
 .syp-lyh>div{flex:1;min-width:0;}
