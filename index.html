@@ -20546,17 +20546,17 @@ const SYNC_ID='sync30', SYNC_NAME='HITFAT SYNC 30', SYNC_N=30, SYNC_MIN=15;
 const SYNC_LIVE=false, SYNC_TESTERS=['sethnasser1991@gmail.com'];
 /* Vimeo "id" or "id/hash" for each of the 30 videos, filled one by one as Seth uploads them.
    Key: s<session>_<level>. An empty one shows "Video akan datang" on every day that uses it. */
-const SYNC_VIDEO={
-  s1_easy:'', s1_medium:'', s1_hard:'',
-  s2_easy:'', s2_medium:'', s2_hard:'',
-  s3_easy:'', s3_medium:'', s3_hard:'',
-  s4_easy:'', s4_medium:'', s4_hard:'',
-  s5_easy:'', s5_medium:'', s5_hard:'',
-  s6_easy:'', s6_medium:'', s6_hard:'',
-  s7_easy:'', s7_medium:'', s7_hard:'',
-  s8_easy:'', s8_medium:'', s8_hard:'',
-  s9_easy:'', s9_medium:'', s9_hard:'',
-  s10_easy:'', s10_medium:'', s10_hard:''
+const SYNC_VIDEO={  /* all 30 uploaded by Seth to Vimeo folder HitfatSYNC, 22 Nov 2026 */
+  s1_easy:'1249082670', s1_medium:'1249082671', s1_hard:'1249082673',
+  s2_easy:'1249082707', s2_medium:'1249082672', s2_hard:'1249082745',
+  s3_easy:'1249082773', s3_medium:'1249082771', s3_hard:'1249082769',
+  s4_easy:'1249082770', s4_medium:'1249082845', s4_hard:'1249082844',
+  s5_easy:'1249082847', s5_medium:'1249082941', s5_hard:'1249082846',
+  s6_easy:'1249082942', s6_medium:'1249082944', s6_hard:'1249082943',
+  s7_easy:'1249083049', s7_medium:'1249083055', s7_hard:'1249083056',
+  s8_easy:'1249083057', s8_medium:'1249083151', s8_hard:'1249083112',
+  s9_easy:'1249083150', s9_medium:'1249083179', s9_hard:'1249083152',
+  s10_easy:'1249083255', s10_medium:'1249083256', s10_hard:'1249083257'
 };
 const SYNC_PIC='/img/p/sync/hero.jpg?v=2';
 const SYNC_LEVELS=[
@@ -21093,11 +21093,13 @@ function syOnMessage(ev){
   if(ev.origin!=='https://player.vimeo.com' || !_sy) return;
   let d; try{ d=typeof ev.data==='string'?JSON.parse(ev.data):ev.data; }catch(e){ return; }
   if(!d) return;
-  if(d.event==='ready'){ ['timeupdate','play','pause','ended'].forEach(x=>syPost('addEventListener',x)); if(_sy.at) syPost('setCurrentTime',_sy.at); return; }
+  /* 22 Nov, first real video: the frame's own message API names them playProgress and finish
+     (timeupdate/ended are the Player SDK's names), so the clock never moved; both are heard now */
+  if(d.event==='ready'){ ['playProgress','play','pause','finish'].forEach(x=>syPost('addEventListener',x)); if(_sy.at) syPost('setCurrentTime',_sy.at); return; }
   if(d.event==='play') syPlaying(true);
   if(d.event==='pause') syPlaying(false);
-  if(d.event==='timeupdate' && d.data) syTick(d.data.seconds||0, d.data.duration||0);
-  if(d.event==='ended') syEnded();
+  if((d.event==='playProgress' || d.event==='timeupdate') && d.data) syTick(d.data.seconds||0, d.data.duration||0);
+  if(d.event==='finish' || d.event==='ended') syEnded();
 }
 if(typeof window!=='undefined' && window.addEventListener) window.addEventListener('message',syOnMessage);
 function syLabel(p){ return 'HITFAT SYNC · Day '+p.day+' · '+SYNC_S[p.sn-1].n+' · '+syLevel(p.lv).n; }
