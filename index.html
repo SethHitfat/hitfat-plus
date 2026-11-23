@@ -10156,6 +10156,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 #syp.muted .syp-snd{display:flex;}
 .syp-hint{position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 28px);z-index:6;display:none;text-align:center;font-size:15px;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.8);pointer-events:none;}
 #syp.native .syp-hint{display:block;}
+#syp.native .syp-top{opacity:1;pointer-events:auto;transform:none;}   /* the way out stays while it waits for the tap */
 #syp.native .syp-tap,#syp.native .syp-dim{pointer-events:none!important;}
 #syp.native .syp-bot,#syp.native .syp-pill,#syp.native .syp-line{display:none;}
 @keyframes sypSnd{50%{transform:translateX(-50%) scale(1.05);}}
@@ -20932,6 +20933,9 @@ const SY_P={
   full:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v2H6v4H4zm10 0h6v6h-2V6h-4zM4 14h2v4h4v2H4zm14 0h2v6h-6v-2h4z"/></svg>'
 };
 SY_I.mute='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z"/></svg>';
+function syIOS(){
+  try{ const n=navigator; return /iP(hone|ad|od)/.test(n.userAgent||'') || (n.platform==='MacIntel' && n.maxTouchPoints>1); }catch(e){ return false; }
+}
 function syIsFile(v){ return /^(https?:\/\/|\/).+\.mp4(\?|$)/i.test(String(v)); }
 function syVimeo(v){
   const p=String(v).split('/');
@@ -20947,9 +20951,14 @@ function syPlay(n,at){
   const cue=SYNC_CUE[key], src=SYNC_VIDEO[key];
   _sy={day:day, sn:sn, lv:lv, key:key, sid:null, at:at, t:at, dur:cue?cue.d:0, last:at, watched:pos&&at?pos.w||0:0, playing:false, started:false, cur:-2, ui:false, ly:false, done:false};
   const S=SYNC_S[sn-1], ms=syCues();
+  /* 23 Nov, Seth's screen recording: the iPhone played it with no sound and no "Tap for sound" (Vimeo said it was
+     not muted). An iPhone lets a video in a frame make sound only after a tap inside that frame, so there it waits
+     paused with Vimeo's own ▶; after that first tap our controls take over, with sound. */
+  _sy.native=!syIsFile(src) && syIOS();
+  let vu=syVimeo(src); if(_sy.native) vu=vu.replace('autoplay=1','autoplay=0').replace('controls=0','controls=1');
   const media=syIsFile(src)
     ? '<video id="syp-vid" src="'+hesc(src)+'" playsinline autoplay preload="auto"></video>'
-    : '<iframe src="'+syVimeo(src)+(at?'#t='+Math.floor(at)+'s':'')+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="HITFAT SYNC"></iframe>';
+    : '<iframe src="'+vu+(at?'#t='+Math.floor(at)+'s':'')+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="HITFAT SYNC"></iframe>';
   let marks='', lines='', r=-1;
   ms.forEach((m,i)=>{
     if(m[6]!==r){ r=m[6]; lines+='<div class="syp-lr">'+SY_RND[r]+'</div>'; if(i && _sy.dur) marks+='<i style="left:'+(m[0]/_sy.dur*100).toFixed(2)+'%"></i>'; }
@@ -20965,7 +20974,7 @@ function syPlay(n,at){
     '<div class="syp-cover"><div class="sy-cv lg" style="background-image:url(\''+syArt(sn)+'\')"></div>'+
       '<b>Day '+day+' · '+hesc(S.n)+'</b><small>'+syLevel(lv).n+' · '+SYNC_MIN+' min · Get ready</small><i class="syp-spin"></i></div>'+
     '<div class="syp-dim" onclick="syTap()"></div>'+
-    '<button class="syp-snd" onclick="syUnmute()">'+SY_I.mute+'<span>Tap for sound</span></button><div class="syp-hint">Tap ▶ on the video to start with sound</div>'+
+    '<button class="syp-snd" onclick="syUnmute()">'+SY_I.mute+'<span>Tap for sound</span></button><div class="syp-hint">Tap ▶ above to start with sound</div>'+
     '<div class="syp-top"><button class="syp-ic" aria-label="Close" onclick="syStop()">'+SY_I.down+'</button>'+
       '<div><small>Playing · Day '+day+' / '+SYNC_N+'</small><b>HITFAT SYNC 30</b></div><span></span></div>'+
     '<div class="syp-bot"><div class="syp-hd">'+syCover(sn,'xs')+'<div><div class="syp-ti">'+hesc(S.n)+'</div><div class="syp-su" id="syp-su">'+syLevel(lv).n+' · '+SYNC_MIN+' min</div></div>'+
@@ -20984,6 +20993,7 @@ function syPlay(n,at){
         '<button class="syp-ic" aria-label="Next move" onclick="syStep(1)">'+SY_I.next+'</button></div></div></div>';
   document.body.appendChild(o);
   if(!(document.fullscreenEnabled||document.webkitFullscreenEnabled)) o.classList.add('nofs');
+  syClass();
   const v=$('syp-vid');
   if(v){
     v.addEventListener('timeupdate',()=>syTick(v.currentTime, v.duration));
@@ -20993,7 +21003,7 @@ function syPlay(n,at){
     if(at) v.addEventListener('loadedmetadata',()=>{ try{ v.currentTime=at; }catch(e){} },{once:true});
   }
   try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').then(l=>{ if(_sy) _sy.lock=l; else l.release(); }).catch(()=>{}); }catch(e){}
-  setTimeout(()=>{ const c=document.querySelector('#syp .syp-cover'); if(c) c.classList.add('gone'); },3000);
+  setTimeout(()=>{ const c=document.querySelector('#syp .syp-cover'); if(c) c.classList.add('gone'); },_sy.native?1200:3000);
   syUi(true);
 }
 /* 22 Nov, still no sound on Seth's iPhone (its silent switch on). The app's tap sounds put the page in the
@@ -21082,7 +21092,7 @@ function syClass(){
   o.querySelectorAll('.syp-pp').forEach(b=>b.innerHTML=_sy.playing?SY_P.pause:SY_I.play);
 }
 function syPlaying(p){
-  if(!_sy) return; _sy.playing=p;
+  if(!_sy) return; _sy.playing=p; if(p) _sy.native=false;   /* tapped once: from now on our controls, with sound */
   if(p && !_sy.started){ _sy.started=true; sySessionStart(); const c=document.querySelector('#syp .syp-cover'); if(c) c.classList.add('gone'); }
   syClass();
 }

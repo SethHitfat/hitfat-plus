@@ -7904,6 +7904,7 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 #syp.muted .syp-snd{display:flex;}
 .syp-hint{position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 28px);z-index:6;display:none;text-align:center;font-size:15px;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.8);pointer-events:none;}
 #syp.native .syp-hint{display:block;}
+#syp.native .syp-top{opacity:1;pointer-events:auto;transform:none;}   /* the way out stays while it waits for the tap */
 #syp.native .syp-tap,#syp.native .syp-dim{pointer-events:none!important;}
 #syp.native .syp-bot,#syp.native .syp-pill,#syp.native .syp-line{display:none;}
 @keyframes sypSnd{50%{transform:translateX(-50%) scale(1.05);}}
