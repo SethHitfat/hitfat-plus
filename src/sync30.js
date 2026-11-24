@@ -382,6 +382,7 @@ function sySheet(day){
 let _sy=null;   /* {day, sn, lv, key, sid, t, dur, last, watched, playing, started, cur, ui, ly, done} */
 const SY_RND=['Warm up','Round 1 of 3','Round 2 of 3','Round 3 of 3','Finisher'];
 const SY_P={
+  list:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h12v2H4zm0 5h12v2H4zm0 5h8v2H4zm14-6 4 3-4 3z"/></svg>',
   pause:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>',
   back:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2L7 6.5 12 11V7.5a5.5 5.5 0 1 1-5.5 5.5H4a8 8 0 1 0 8-8z"/><text x="12" y="16.2" font-size="6.4" font-weight="800" text-anchor="middle" font-family="Inter,Arial,sans-serif">10</text></svg>',
   up:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 15.4 12 9.8l5.6 5.6L19 14l-7-7-7 7z"/></svg>',
@@ -396,6 +397,25 @@ function syVimeo(v){
   const p=String(v).split('/');
   return 'https://player.vimeo.com/video/'+p[0]+'?'+(p[1]?'h='+p[1]+'&':'')+'autoplay=1&controls=0&title=0&byline=0&portrait=0&dnt=1&playsinline=1&autopause=0&texttrack=false';
 }
+/* the bar in parts, one per round: warm up, rounds 1–3, finisher (24 Nov, Seth chose the card player, "B") */
+function sySegs(){
+  const ms=syCues(), d=(_sy&&_sy.dur)||0, st=[]; let r=-1;
+  ms.forEach(m=>{ if(m[6]!==r){ r=m[6]; st.push(st.length?m[0]:0); } });
+  if(!st.length || !d) return [[0,d||1]];
+  return st.map((a,k)=>[a, k+1<st.length?st[k+1]:d]);
+}
+/* a tap lifts the video into a card between the top bar and the controls, so nothing covers its own captions */
+function syCard(){
+  const o=$('syp'); if(!o) return;
+  const f=o.querySelector('.syp-v iframe,.syp-v video'), tp=o.querySelector('.syp-top'), bt=o.querySelector('.syp-bot');
+  if(!f || !tp || !bt) return;
+  const W=o.clientWidth, H=o.clientHeight, vh=f.offsetHeight||1;
+  const top=tp.offsetHeight+10, room=H-top-bt.offsetHeight-30, ch=Math.min(room,(W-72)*16/9);
+  const no=W>H || ch<240; o.classList.toggle('nocard',no); if(no) return;
+  o.style.setProperty('--sc',(ch/vh).toFixed(4));
+  o.style.setProperty('--ty',(top+ch/2-H/2).toFixed(1)+'px');
+}
+if(typeof window!=='undefined' && window.addEventListener) window.addEventListener('resize',()=>{ if(_sy) syCard(); });
 function syTime(s){ s=Math.max(0,Math.round(s||0)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 function syCues(){ const c=_sy&&SYNC_CUE[_sy.key]; return c?c.m:[]; }
 function syPlay(n,at){
@@ -414,12 +434,14 @@ function syPlay(n,at){
   const media=syIsFile(src)
     ? '<video id="syp-vid" src="'+hesc(src)+'" playsinline autoplay preload="auto"></video>'
     : '<iframe src="'+vu+(at?'#t='+Math.floor(at)+'s':'')+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="HITFAT SYNC"></iframe>';
-  let marks='', lines='', r=-1;
+  let lines='', r=-1;
   ms.forEach((m,i)=>{
-    if(m[6]!==r){ r=m[6]; lines+='<div class="syp-lr">'+SY_RND[r]+'</div>'; if(i && _sy.dur) marks+='<i style="left:'+(m[0]/_sy.dur*100).toFixed(2)+'%"></i>'; }
+    if(m[6]!==r){ r=m[6]; lines+='<div class="syp-lr">'+SY_RND[r]+'</div>'; }
     lines+='<button class="syp-ln" id="syp-ln'+i+'" onclick="syJump('+i+')"><b>'+hesc(m[4])+'</b><span>'+(m[3]==='r'?'×'+m[5]:m[5]+'s')+'</span><em></em><small>'+hesc(SYNC_TIP[m[4]]||'')+'</small></button>';
   });
-  const bar=(id)=>'<div class="syp-bar" onclick="sySeekBar(event,this)"><div class="syp-track">'+marks+'<b id="'+id+'"></b></div></div>'+
+  _sy.seg=sySegs();
+  const segs=_sy.seg.map(g=>'<i style="flex:'+Math.max(1,g[1]-g[0]).toFixed(1)+' 1 0"><b></b></i>').join('');
+  const bar=(id)=>'<div class="syp-bar" onclick="sySeekBar(event,this)"><div class="syp-track" id="'+id+'">'+segs+'</div></div>'+
     '<div class="syp-tm"><span class="syp-t0">0:00</span><span class="syp-chn">Warm up</span><span class="syp-t1">−'+syTime(_sy.dur)+'</span></div>';
   const play='<button class="syp-pp" aria-label="Play or pause" onclick="syToggle()">'+SY_I.play+'</button>';
   const o=document.createElement('div'); o.id='syp'; o.style.setProperty('--c',SYNC_COL[sn-1]);
@@ -431,16 +453,16 @@ function syPlay(n,at){
     '<div class="syp-dim" onclick="syTap()"></div>'+
     '<button class="syp-snd" onclick="syUnmute()">'+SY_I.mute+'<span>Tap for sound</span></button><div class="syp-hint">Tap ▶ above to start with sound</div>'+
     '<div class="syp-top"><button class="syp-ic" aria-label="Close" onclick="syStop()">'+SY_I.down+'</button>'+
-      '<div><small>Playing · Day '+day+' / '+SYNC_N+'</small><b>HITFAT SYNC 30</b></div><span></span></div>'+
-    '<div class="syp-bot"><div class="syp-hd">'+syCover(sn,'xs')+'<div><div class="syp-ti">'+hesc(S.n)+'</div><div class="syp-su" id="syp-su">'+syLevel(lv).n+' · '+SYNC_MIN+' min</div></div>'+
-      '<button class="syp-skip" id="syp-skip" onclick="sySkip()">'+SY_I.next+'<span>Skip ahead</span></button></div>'+
+      '<div><small>Day '+day+' of '+SYNC_N+'</small><b>'+hesc(S.n)+'</b></div><button class="syp-ic syp-lyb" aria-label="Moves" onclick="syLy(1)">'+SY_P.list+'</button></div>'+
+    '<div class="syp-bot"><div class="syp-hd"><div><div class="syp-ti" id="syp-ti">'+hesc(S.n)+'</div><div class="syp-su" id="syp-su">'+syLevel(lv).n+' · '+SYNC_MIN+' min</div></div>'+
+      '<button class="syp-skip" id="syp-skip" onclick="sySkip()">'+SY_I.next+'<span>Skip ahead</span></button>'+
+      '<button class="syp-chip" onclick="syLy(1)">'+SY_P.list+'Moves</button></div>'+
       bar('syp-b1')+
       '<div class="syp-ctl"><button class="syp-ic" aria-label="Back 10 seconds" onclick="sySeek(_sy.t-10)">'+SY_P.back+'</button>'+
         '<button class="syp-ic" aria-label="Previous move" onclick="syStep(-1)">'+SY_I.prev+'</button>'+play+
         '<button class="syp-ic" aria-label="Next move" onclick="syStep(1)">'+SY_I.next+'</button>'+
-        '<button class="syp-ic syp-fs" aria-label="Full screen" onclick="syFull()">'+SY_P.full+'</button></div>'+
-      '<button class="syp-chip" onclick="syLy(1)">'+SY_P.up+'Moves</button></div>'+
-    '<button class="syp-pill" onclick="syLy(1)">'+SY_P.up+'Moves</button><i class="syp-line"><b id="syp-b0"></b></i>'+
+        '<button class="syp-ic syp-fs" aria-label="Full screen" onclick="syFull()">'+SY_P.full+'</button></div></div>'+
+    '<div class="syp-line"><div class="syp-track" id="syp-b0">'+segs+'</div><span id="syp-cap"></span></div>'+
     '<div class="syp-ly"><div class="syp-lybg" style="background-image:url(\''+syArt(sn)+'\')"></div><div class="syp-lyh"><span class="syp-lyv"></span><div><b>'+hesc(S.n)+' · Day '+day+'</b><small>HITFAT SYNC · '+syLevel(lv).n+'</small></div>'+
       '<button class="syp-ic" aria-label="Back to the video" onclick="syLy(0)">'+SY_I.down+'</button></div>'+
       '<div class="syp-lines" id="syp-lines">'+lines+'</div>'+
@@ -448,7 +470,7 @@ function syPlay(n,at){
         '<button class="syp-ic" aria-label="Next move" onclick="syStep(1)">'+SY_I.next+'</button></div></div></div>';
   document.body.appendChild(o);
   if(!(document.fullscreenEnabled||document.webkitFullscreenEnabled)) o.classList.add('nofs');
-  syClass();
+  syCard(); syClass();
   const v=$('syp-vid');
   if(v){
     v.addEventListener('timeupdate',()=>syTick(v.currentTime, v.duration));
@@ -563,8 +585,9 @@ function syEnded(){ if(_sy && _sy.dur && _sy.watched>=_sy.dur*0.85) syFinish(); 
 /* the live parts: bars, times, the current move, its count */
 function syUi(force){
   if(!_sy) return; const o=$('syp'); if(!o) return;
-  const t=_sy.t, d=_sy.dur||1, pc=Math.min(100,t/d*100).toFixed(2)+'%';
-  ['syp-b0','syp-b1','syp-b2'].forEach(id=>{ const b=$(id); if(b) b.style.width=pc; });
+  const t=_sy.t, d=_sy.dur||1;
+  const fill=(_sy.seg||[]).map(g=>(Math.max(0,Math.min(1,(t-g[0])/Math.max(1,g[1]-g[0])))*100).toFixed(2)+'%');
+  ['syp-b0','syp-b1','syp-b2'].forEach(id=>{ const b=$(id); if(b) b.querySelectorAll('b').forEach((x,k)=>x.style.width=fill[k]||'0%'); });
   o.querySelectorAll('.syp-t0').forEach(e=>e.textContent=syTime(t));
   o.querySelectorAll('.syp-t1').forEach(e=>e.textContent='−'+syTime(d-t));
   const ms=syCues(); if(!ms.length) return;
@@ -584,8 +607,11 @@ function syUi(force){
   }
   /* during a rest the next move is the one to look at */
   const show=state==='rest' && ms[i+1] ? i+1 : i;
-  const su=$('syp-su');
-  if(su) su.textContent=(ms[show]?SY_RND[ms[show][6]]+' · '+ms[show][4]+' · ':'')+syLevel(_sy.lv).n;
+  /* under the card: the move that matters now (the next one during a rest), its round, the level, its count */
+  const su=$('syp-su'), ti=$('syp-ti'), cap=$('syp-cap'), sm=ms[show];
+  if(ti) ti.textContent=sm?sm[4]:SYNC_S[_sy.sn-1].n;
+  if(su) su.textContent=(sm?SY_RND[sm[6]]:'Intro')+' · '+syLevel(_sy.lv).n+(live?' · '+live:'');
+  if(cap) cap.textContent=SY_RND[ms[Math.max(0,i)][6]]+' · '+syTime(d-t)+' left';
   if(show!==_sy.cur || force){
     _sy.cur=show;
     ms.forEach((x,k)=>{ const ln=$('syp-ln'+k); if(!ln) return; ln.classList.toggle('done',k<show); ln.classList.toggle('now',k===show); });
