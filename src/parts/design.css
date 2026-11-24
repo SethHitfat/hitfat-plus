@@ -2881,6 +2881,11 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
   color:var(--txt);background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,.16);}
 :root:not([data-theme="light"]) #mascot-home .sc-page .sc-plus{background:#2A2A2E;box-shadow:0 2px 8px rgba(0,0,0,.5);}
 #mascot-home .sc-page .sc-h.full .sc-ring{background:#FFC20E;}
+/* the water ring's "−" (24 Nov 2026), top right, smaller than the "+" so adding stays the easy tap */
+.sc-minus{position:absolute;right:-6px;top:-6px;width:22px;height:22px;border-radius:50%;background:var(--surface);color:var(--txt);
+  box-shadow:0 2px 6px rgba(0,0,0,.18);font-size:16px;font-weight:700;line-height:21px;text-align:center;cursor:pointer;z-index:2;}
+.sc-minus:active{transform:scale(.9);}
+:root:not([data-theme="light"]) .sc-minus{background:#2A2A2E;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.5);}
 #mascot-home .sc-page .sc-h.full .sc-ring-t,#mascot-home .sc-page .sc-h.full .sc-ring-v{stroke:#FFC20E;}
 #mascot-home .sc-page .sc-h.full .sc-ic{color:#111111!important;}
 #mascot-home .sc-page .sc-h b,#mascot-home .sc-page .sc-l{display:none;}

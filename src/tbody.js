@@ -670,6 +670,15 @@ ok("...and still not there, the screen says so and a tap tries again", _pld.inne
    readFile('shell2.html').indexOf('onclick="plLoadTap(event)"')>0);
 ok("...the clock waits up to ten seconds, asking again at five", PL_WAIT_MS===10000 && PL_RETRY_MS===5000);
 plLoadMsg(''); ok("...and the note goes when it plays", _pld.className.indexOf('on')<0 && _pld.innerHTML.indexOf('Loading')>0);
+/* (24 Nov 2026) a clip that froze half way is asked to play, then loaded again, and not in a loop */
+plFrame(_pf,pl.exs[pl.i]); ok("a fresh clip is not watched until it plays", _pf._pt===0);
+_pf._pt=Date.now()-2000; _pf._kick=0; _pf._reload=0; _pf.src='about:keep';
+plStallCheck(); ok("a clip still playing is left alone", _pf.src==='about:keep' && !_pf._kick);
+_pf._pt=Date.now()-5000; plStallCheck(); ok("a clip silent for 4 s is asked to play, not reloaded yet", _pf._kick>0 && _pf.src==='about:keep');
+_pf._pt=Date.now()-10000; plStallCheck(); ok("...silent for 9 s, it is loaded again", _pf.src.indexOf('/video/'+pl.clip)>0 && _pf._reload>0);
+_pf._pt=Date.now()-10000; _pf.src='about:keep'; plStallCheck(); ok("...but not again within 20 s", _pf.src==='about:keep');
+_pf._pt=0; _pf._reload=0;
+ok("Seated Knee To Chest is a core move, not a push-up (no 'Chest · Triceps', no push-up tip)", (function(){ var e=DB.find(function(x){ return x.n==='Seated Knee To Chest'; }); return !!e && e.m==='Core' && e.t==='core'; })());
 /* the foot's big play/pause follows the same state as the one over the clip */
 ok("the foot's play/pause shows play when paused", document.getElementById('pl-play2').innerHTML.indexOf('M8 5.5')>0);
 ok("the pill says only the round (the segments count the movements)",
@@ -4818,6 +4827,11 @@ print("\n── SKOR HITFAT · COACH, BANNER, ONE TAP, PLAN, RAMADAN, WEEKLY, ME
 ok("BURN30 is today's plan for a member with no other plan", !scBurnIsPlan() || (h.indexOf('Or find a plan')>0 && (typeof renderHome!=='function' || true)));
   scTap('water');
   ok("one tap on water adds a glass, and Bell's banner offers an undo", HF.data.daily[iso(0)].water===1 && document.getElementById('scb').className.indexOf('on')>0 && document.getElementById('scb').innerHTML.indexOf('Batal')>0);
+  /* (24 Nov 2026) once the banner is gone a glass can still be taken back: a "−" on the water ring */
+  ok("the water ring shows a − once there is a glass, and only the water ring", (function(){ var r=scRing({k:'water',v:.12,val:'1/8',n:'Water',ic:'water'}), s=scRing({k:'steps',v:.1,val:'1k',n:'Steps',ic:'steps'}); return r.indexOf('sc-minus')>0 && r.indexOf('scWaterLess()')>0 && s.indexOf('sc-minus')<0; })());
+  scWaterLess();
+  ok("the − takes a glass back, with its own undo, and never goes below zero", HF.data.daily[iso(0)].water===0 && document.getElementById('scb').innerHTML.indexOf('Batal')>0 && (scWaterLess(), HF.data.daily[iso(0)].water===0) && scRing({k:'water',v:0,val:'0/8',n:'Water',ic:'water'}).indexOf('sc-minus')<0);
+  scWaterTap();
   HF.data.ifs={plan:{start:iso(0),endMin:1200},log:[]};
   SC_FAST_LIVE=true;
   scTap('fast');

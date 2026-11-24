@@ -100,6 +100,13 @@ function scWaterTap(){
   scBanner('+1 gelas air 💧',(dy.water+1)+'/'+SC_WATER+' hari ni · Glug glug!','Batal','scSet(\'water\',scDaily().water-1);scRender()');
   scRender();
 }
+/* the "−" on the water ring: one glass less, with its own undo (24 Nov 2026, a member could add but never take back) */
+function scWaterLess(){
+  var dy=scDaily(); if(!(dy.water>0)) return;
+  scSet('water',dy.water-1);
+  scBanner('−1 gelas air',(dy.water-1)+'/'+SC_WATER+' hari ni','Batal','scSet(\'water\',scDaily().water+1);scRender()');
+  scRender();
+}
 function scFastTap(){
   if(!SC_FAST_LIVE) return openIF();
   if(scRamadan()) return scRamToggle();

@@ -148,7 +148,9 @@ function scRing(h){
   return '<button class="sc-h'+(h.v>=1?' full':'')+'" onclick="scTap(\''+h.k+'\')" aria-label="'+h.n+'">'+
     '<span class="sc-ring" style="color:'+c+'"><svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" class="sc-ring-t"/>'+
     (h.v>0?'<circle cx="26" cy="26" r="22" class="sc-ring-v" pathLength="100" stroke="currentColor" stroke-dasharray="'+Math.round(h.v*100)+' 100"/>':'')+
-    '</svg><span class="sc-ic"'+(h.v>0?' style="color:'+c+'"':'')+'>'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'<span class="sc-plus sc-okb">✓</span>')+'</span>'+
+    '</svg><span class="sc-ic"'+(h.v>0?' style="color:'+c+'"':'')+'>'+glyph(h.ic)+'</span>'+(h.v<1?'<span class="sc-plus">+</span>':'<span class="sc-plus sc-okb">✓</span>')+
+    /* (24 Nov 2026) a glass taken back: once "Batal" was gone there was no way down ("bila nak kurang kan ... x boleh") */
+    (h.k==='water' && scDaily().water>0?'<span class="sc-minus" role="button" aria-label="One glass less" onclick="event.stopPropagation();scWaterLess()">−</span>':'')+'</span>'+
     '<b>'+h.val+'</b><span class="sc-l">'+h.n+'</span><span class="sc-t">'+hesc(h.t||h.val)+'</span></button>';
 }
 /* the card takes the score's colour, as Simple's screens do (A); Bara's

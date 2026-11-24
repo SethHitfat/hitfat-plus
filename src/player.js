@@ -29,6 +29,7 @@ function vimeoSrc(id,hash){
 function plFrame(f,ex){
   if(!f) return;
   f.src=vimeoSrc(ex.v,ex.h);
+  f._pt=0;                                      /* the stall watch waits for this clip's own first playProgress */
   try{ f.setAttribute('data-v',ex.v); f.setAttribute('data-live',''); }catch(e){}
 }
 function plFrameV(f){ try{ return f&&f.getAttribute?f.getAttribute('data-v'):null; }catch(e){ return null; } }
@@ -51,6 +52,7 @@ function plVimeoMsg(e){
   const f=[$('pl-video'),$('pl-video2')].find(x=>x && x.contentWindow===e.source); if(!f) return;
   if(d.event==='ready'){ try{ f.contentWindow.postMessage(JSON.stringify({method:'addEventListener',value:'playProgress'}),'*'); }catch(x){} return; }
   if(d.event==='playProgress' || d.event==='play'){
+    f._pt=Date.now();
     if(f.getAttribute('data-live')!=='1') f.setAttribute('data-live','1');
     if(f.id==='pl-video' && pl){ if(pl.waiting) plRelease(); else plLoadMsg(''); }
   }
@@ -374,14 +376,37 @@ function plCountdown(done){
     else { clearInterval(t); el.classList.remove('on'); $('play').classList.remove('counting'); done&&done(); }
   },1000);
 }
+/* (24 Nov 2026) A clip that froze half way stayed frozen: a MAK2FIT buyer's
+   screen recording showed Seated Knee To Chest stuck on one frame for ten
+   seconds while the clock ran on. Vimeo reports playProgress several times a
+   second while a clip runs, so silence from the clip on screen means it has
+   stalled: after 4 s it is asked to play, after 9 s it is loaded again (at
+   most once every 20 s, so a dead line does not reload in a loop). */
+const PL_STALL_KICK=4000, PL_STALL_RELOAD=9000, PL_STALL_GAP=20000;
+function plStallCheck(){
+  if(!pl || !pl.clip) return;
+  const f=$('pl-video'), ex=pl.exs && pl.exs[pl.i];
+  if(!f || !ex || ex.v!==pl.clip) return;
+  if(!f._pt) return;                            /* not playing yet: plResumeReady looks after that */
+  const now=Date.now(), gap=now-f._pt;
+  if(gap>PL_STALL_KICK && !(f._kick>f._pt)){
+    f._kick=now;
+    try{ f.contentWindow && f.contentWindow.postMessage(JSON.stringify({method:'play'}),'*'); }catch(x){}
+  }
+  if(gap>PL_STALL_RELOAD && !(now-(f._reload||0)<PL_STALL_GAP)){
+    f._reload=now;
+    plFrame(f,ex); f._pt=now;                    /* counted from the reload, so a dead line waits the full gap */
+  }
+}
 function plResume(){
   if(!pl || pl.running) return;
   pl.running=true; plSetPlayIcon(true); plWake();
+  { const f=$('pl-video'); if(f && f._pt) f._pt=Math.max(f._pt, Date.now()); }   /* a fresh start for the stall watch after a pause or rest */
   if(typeof coResume==='function') coResume();
   plTick=setInterval(()=>{
     if(!pl) return;
     pl.left--; pl.work=(pl.work||0)+1; pl.kc=(pl.kc||0)+plRate(pl.exs[pl.i])/60;
-    plTime(); plStats();
+    plTime(); plStats(); plStallCheck();
     /* the coach counts 5-4-3-2-1 out loud; without the coach, three ticks and a higher one */
     const v=typeof coPrefs==='function' && coPrefs().voice;
     if(v) coWorkTick();

@@ -165,7 +165,7 @@ var DB = [
   {n:'Lunges Step Chair',v:'1188609611',sets:3,reps:12,m:'Legs',t:'squat',dur:45,eq:'Chair'},
   {n:'Half Burpee Step Chair',v:'1188609604',sets:3,reps:12,m:'Cardio',t:'cardio',dur:30,eq:'Chair'},
   {n:'Chair Flutter Kick',v:'1188609602',sets:3,reps:12,m:'Core',t:'core',dur:45,eq:'Chair'},
-  {n:'Seated Knee To Chest',v:'1188609610',sets:3,reps:12,m:'Chest',t:'push',dur:45,eq:'Chair'},
+  {n:'Seated Knee To Chest',v:'1188609610',sets:3,reps:12,m:'Core',t:'core',dur:45,eq:'Chair'},
   {n:'Chair Single Leg Glute Bridge',v:'1188609583',sets:3,reps:12,m:'Glutes',t:'squat',dur:45,eq:'Chair'},
   {n:'Chair Squat Calf Raises',v:'1188609591',sets:3,reps:12,m:'Legs',t:'squat',dur:45,eq:'Chair'},
   {n:'Tricep Dip',v:'1188609589',sets:3,reps:12,m:'Triceps',t:'push',dur:45,eq:'Chair'},
