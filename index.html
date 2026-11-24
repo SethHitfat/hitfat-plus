@@ -10214,6 +10214,15 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .syp-bot .syp-bar{padding:16px 0 8px;}
 .syp-bot .syp-ctl{margin-top:12px;}
 @media (prefers-reduced-motion:reduce){.syp-v,.syp-ly,.syp-dim,.syp-top,.syp-bot{transition:none;}}
+/* 24 Nov: the share card, like Spotify Wrapped */
+.sy-sh{position:fixed;inset:0;z-index:10050;background:rgba(5,3,4,.92);display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 16px) 20px calc(env(safe-area-inset-bottom,0px) + 16px);}
+.sy-sh-in{display:flex;flex-direction:column;align-items:center;width:100%;max-width:360px;max-height:100%;}
+.sy-sh-in img{display:none;width:auto;max-width:100%;max-height:calc(100vh - 210px);aspect-ratio:9/16;border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.6);}
+.sy-sh-in img.on{display:block;}
+.sy-sh-load{height:50vh;display:flex;align-items:center;justify-content:center;}
+.sy-sh-b{width:100%;margin-top:14px;}
+.sy-sh-b .sy-go{margin-top:0;}
+.sy-fuel.sh>span:first-child{background:#7C5CFF;}
 /* 24 Nov, "ya, kemaskan": the 30 days as a grid, Explore with two chips */
 .sy-cal{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;}
 .sy-cd{position:relative;aspect-ratio:1;border:0;border-radius:12px;padding:0;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);color:rgba(255,255,255,.75);font:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;}
@@ -20870,7 +20879,7 @@ function syRender(top){
       '<button class="sy-ep-p'+(syReady(nsn,lv.k)?'':' off')+'" aria-label="Play day '+nxt+'" onclick="syDayPlay('+nxt+')">'+SY_I.play+'</button></div></div>';
   /* 24 Nov, Seth "ya, kemaskan": the 30 days as a grid (instead of the bar and the long list of days), and the
      check-ins under it; one "Explore" for sessions and mixes; the six quick tiles are gone (all said twice) */
-  h+='<div class="sy-h2">Your 30 days<span>'+n+' / '+SYNC_N+' done</span></div>'+syCal(nxt)+syCkProgress();
+  h+='<div class="sy-h2">Your 30 days<span>'+n+' / '+SYNC_N+' done'+(n?' · <button class="sy-h2-l" onclick="syShare()">Share</button>':'')+'</span></div>'+syCal(nxt)+syCkProgress();
   const rc=syRecent();
   if(rc.length) h+='<div class="sy-h2">Recents</div><div class="sy-shelf sy-rc">'+rc.map(x=>{ const sn=sySession(x.day);
     return '<button class="sy-al" onclick="syDay('+x.day+')">'+syCover(sn)+'<b class="sy-rc-t">Day '+x.day+' · '+hesc(SYNC_S[sn-1].n)+'</b>'+
@@ -21052,6 +21061,96 @@ function syFuelLine(){
   return pt&&t ? 'Protein today: '+Math.round(t.p||0)+' / '+pt+' g · log your next meal' : 'Log your next meal in Eat';
 }
 function syFuel(){ _syS=0; syStop(true); syClose(); if(typeof switchTab==='function') switchTab('eat'); }
+/* ── 24 Nov, Seth: a share card like Spotify Wrapped. A 1080×1920 story image drawn on a canvas from what was
+   really done: days, minutes, the reps the coach counted, the best streak, the session done most. Weight is
+   never on it. Shared with the phone's own sheet, or saved when sharing files is not there. ── */
+function syLocalDay(at){ const t=new Date(at); if(isNaN(t)) return ''; return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
+function syStats(){
+  const d=syData(), days=Object.keys(d.days).map(Number).filter(Boolean).sort((a,b)=>a-b), cnt={};
+  let reps=0;
+  days.forEach(i=>{ const x=d.days[i]||{}, sn=sySession(i), c=SYNC_CUE[syKey(sn,x.lv||d.level)];
+    if(c) c.m.forEach(m=>{ if(m[3]==='r') reps+=m[5]; }); cnt[sn]=(cnt[sn]||0)+1; });
+  let top=0; Object.keys(cnt).forEach(k=>{ if(!top || cnt[k]>cnt[top]) top=+k; });
+  const ds=[...new Set(days.map(i=>syLocalDay((d.days[i]||{}).at)).filter(Boolean))].sort();
+  let best=ds.length?1:0, run=1;
+  for(let k=1;k<ds.length;k++){ const gap=Math.round((new Date(ds[k])-new Date(ds[k-1]))/864e5); run=gap===1?run+1:1; if(run>best) best=run; }
+  return {n:days.length, min:days.length*SYNC_MIN, reps:reps, top:top, streak:best};
+}
+let _syShC=null;
+function syShare(){
+  if(!syDone()){ toast('Finish a day first, then share it'); return; }
+  const o=document.createElement('div'); o.id='sy-sh'; o.className='sy-sh';
+  o.innerHTML='<div class="sy-sh-in"><div class="sy-sh-load" id="sy-sh-load"><i class="syp-spin"></i></div><img id="sy-sh-img" alt="My HITFAT SYNC 30">'+
+    '<div class="sy-sh-b"><button class="sy-go" onclick="syShareGo()">Share</button><button class="sy-ckskip" onclick="syShareShut()">Close</button></div></div>';
+  document.body.appendChild(o);
+  const im=new Image(), go=()=>{ try{ const url=syShareDraw(im.complete && im.naturalWidth?im:null); const e=$('sy-sh-img'); if(e){ e.src=url; e.classList.add('on'); } const l=$('sy-sh-load'); if(l) l.remove(); }catch(e){ console.error(e); syShareShut(); toast('Could not make the card'); } };
+  let ready=0; const one=()=>{ if(++ready===2) go(); };
+  im.onload=one; im.onerror=one; im.src=SYNC_HERO;
+  if(document.fonts && document.fonts.load) Promise.all([document.fonts.load("700 120px 'Oswald'"),document.fonts.load("800 40px 'Inter'")]).then(one,one); else one();
+}
+function syShareShut(){ const o=$('sy-sh'); if(o) o.remove(); }
+/* 24 Nov, Seth: "biar warna tu nampak kelas sikit": quieter, tonal blocks instead of four loud colours */
+const SY_SHP={
+  wine:{bg:['#5A0A18','#7E1126','#2B1316','#EFE3D3'], fg:['#F5E9DC','#F5E9DC','#F5E9DC','#2A0D12'], lab:.72, line:0},
+  glass:{bg:['rgba(255,255,255,.06)','rgba(255,255,255,.06)','rgba(255,255,255,.06)','rgba(255,255,255,.06)'], fg:['grad','grad','grad','grad'], lab:.6, line:'rgba(255,255,255,.14)'},
+  gold:{bg:['#171314','#171314','#171314','#171314'], fg:['#D4AF6A','#D4AF6A','#D4AF6A','#D4AF6A'], lab:.62, line:'rgba(212,175,106,.45)'}
+};
+let _syShPal='glass';   /* Seth chose "B", the dark glass blocks */
+function syShareDraw(hero){
+  const W=1080, H=1920, cv=_syShC||(_syShC=document.createElement('canvas')); cv.width=W; cv.height=H;
+  const x=cv.getContext('2d'), st=syStats(), all=st.n>=SYNC_N, F="'Oswald',Impact,sans-serif", I="'Inter',-apple-system,sans-serif";
+  const rr=(rx,ry,w,h,r)=>{ x.beginPath(); x.moveTo(rx+r,ry); x.arcTo(rx+w,ry,rx+w,ry+h,r); x.arcTo(rx+w,ry+h,rx,ry+h,r); x.arcTo(rx,ry+h,rx,ry,r); x.arcTo(rx,ry,rx+w,ry,r); x.closePath(); };
+  x.fillStyle='#0E0A0B'; x.fillRect(0,0,W,H);
+  if(hero){ x.drawImage(hero,0,0,W,W*hero.height/hero.width); }
+  let g=x.createLinearGradient(0,560,0,1120); g.addColorStop(0,'rgba(14,10,11,0)'); g.addColorStop(1,'#0E0A0B'); x.fillStyle=g; x.fillRect(0,560,W,560);
+  g=x.createLinearGradient(0,0,0,260); g.addColorStop(0,'rgba(0,0,0,.55)'); g.addColorStop(1,'rgba(0,0,0,0)'); x.fillStyle=g; x.fillRect(0,0,W,260);
+  /* the SYNC mark: a red disc, a white pulse */
+  const mk=(cx,cy,r)=>{ x.save(); x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.fillStyle='#FF2E43'; x.fill();
+    const pts=[[16,52],[30,52],[36,40],[43,66],[51,26],[59,72],[65,46],[70,52],[84,52]], k=r*2/100;
+    x.beginPath(); pts.forEach((p,i)=>{ const px=cx-r+p[0]*k, py=cy-r+p[1]*k; i?x.lineTo(px,py):x.moveTo(px,py); });
+    x.strokeStyle='#fff'; x.lineWidth=r*0.14; x.lineCap='round'; x.lineJoin='round'; x.stroke(); x.restore(); };
+  mk(110,120,46);
+  x.fillStyle='#fff'; x.font="italic 900 54px "+I; x.textBaseline='middle'; x.fillText('HITFAT',176,122);
+  const hw=x.measureText('HITFAT ').width; x.fillStyle='#FF2E43'; x.fillText('SYNC',176+hw,122);
+  /* the headline */
+  x.textBaseline='alphabetic'; x.fillStyle='rgba(255,255,255,.8)'; x.font="800 38px "+I;
+  x.fillText(all?'I FINISHED':'MY 30 DAYS SO FAR',72,935);
+  x.fillStyle='#fff'; x.font="700 210px "+F; x.fillText(all?'30 DAYS':st.n+' / '+SYNC_N,64,1125);
+  x.fillStyle='rgba(255,255,255,.72)'; x.font="700 40px "+I; x.fillText((all?'of HITFAT SYNC 30':'days of HITFAT SYNC 30')+' · '+syLevel(syData().level).n,72,1190);
+  /* four blocks, like Wrapped */
+  const P=SY_SHP[_syShPal]||SY_SHP.wine;
+  const B=[[P.bg[0],P.fg[0],String(st.min),'minutes moved'],[P.bg[1],P.fg[1],st.reps.toLocaleString('en-US'),'reps counted out loud'],
+    [P.bg[2],P.fg[2],st.streak+(st.streak===1?' day':' days'),'best streak'],[P.bg[3],P.fg[3],st.top?SYNC_S[st.top-1].n:'—','my top session']];
+  const bw=(W-72*2-28)/2, bh=240;
+  B.forEach((b,i)=>{ const bx=72+(i%2)*(bw+28), by=1250+Math.floor(i/2)*(bh+28);
+    rr(bx,by,bw,bh,34); x.fillStyle=b[0]; x.fill();
+    if(P.line){ x.strokeStyle=P.line; x.lineWidth=2; rr(bx+1,by+1,bw-2,bh-2,33); x.stroke(); }
+    let fs=b[2].length>9?76:b[2].length>6?96:120; x.font="700 "+fs+"px "+F;
+    while(x.measureText(b[2]).width>bw-64 && fs>48){ fs-=6; x.font="700 "+fs+"px "+F; }
+    if(b[1]==='grad'){ const gg=x.createLinearGradient(bx+32,0,bx+32+x.measureText(b[2]).width,0); gg.addColorStop(0,'#FF4D5E'); gg.addColorStop(1,'#FFB27A'); x.fillStyle=gg; }
+    else x.fillStyle=b[1];
+    x.fillText(b[2],bx+32,by+40+fs*0.92);
+    x.fillStyle=b[1]==='grad'?'#fff':b[1]; x.globalAlpha=P.lab; x.font="800 30px "+I; x.fillText(b[3],bx+32,by+bh-36); x.globalAlpha=1; });
+  x.fillStyle='rgba(255,255,255,.6)'; x.font="700 32px "+I; x.textAlign='center';
+  x.fillText('Coach in your ear · move to the beat',W/2,1828); x.fillStyle='rgba(255,255,255,.4)'; x.font="700 28px "+I; x.fillText('app.hitfat.io',W/2,1872);
+  x.textAlign='left';
+  return cv.toDataURL('image/png');
+}
+function syShareSave(){
+  const a=document.createElement('a'); a.href=_syShC.toDataURL('image/png'); a.download='hitfat-sync-30.png';
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ try{ document.body.removeChild(a); }catch(e){} },1200);
+}
+function syShareGo(){
+  if(!_syShC) return;
+  if(!_syShC.toBlob){ syShareSave(); return; }
+  _syShC.toBlob(b=>{
+    try{
+      const f=b && new File([b],'hitfat-sync-30.png',{type:'image/png'});
+      if(f && navigator.canShare && navigator.canShare({files:[f]})){ navigator.share({files:[f], title:'HITFAT SYNC 30', text:'Coach in your ear, move to the beat 🔥'}).catch(()=>{}); return; }
+    }catch(e){}
+    syShareSave();
+  },'image/png');
+}
 /* a move from "All moves": play it in a session whose video is up, or open that session's day */
 function syMoveGo(sn,t){ const day=sySessionDay(sn); if(syReady(sn,syData().level)) syPlay(day,t); else syDay(day); }
 
@@ -21396,6 +21495,7 @@ function syFinish(){
       '<div class="sy-done-n">'+Object.keys(d.days).length+' / '+SYNC_N+' days done'+(more?' · Up next: Day '+nx+' · '+hesc(SYNC_S[sySession(nx)-1].n):' · Program complete')+'</div>'+
       '<button class="sy-fuel" onclick="syFuel()"><span>'+glyph('food')+'</span><span><b>Refuel</b><small>'+syFuelLine()+'</small></span><i>›</i></button>'+
       (syCkDue()>1?'<button class="sy-fuel ck" onclick="_syS=0;syStop();syX(\'ck:'+syCkDue()+'\')"><span>'+glyph('scale')+'</span><span><b>Day '+syCkDue()+' check-in</b><small>Weight, waist and a photo · about a minute</small></span><i>›</i></button>':'')+
+      '<button class="sy-fuel sh" onclick="syShare()"><span>'+glyph('share')+'</span><span><b>Share my SYNC</b><small>A card for your story, like Spotify Wrapped</small></span><i>›</i></button>'+
       '<button class="sy-go" onclick="_syS=0;syStop()">Close</button>';
     o.appendChild(el);
   }

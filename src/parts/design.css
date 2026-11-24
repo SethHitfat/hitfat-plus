@@ -7962,6 +7962,15 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .syp-bot .syp-bar{padding:16px 0 8px;}
 .syp-bot .syp-ctl{margin-top:12px;}
 @media (prefers-reduced-motion:reduce){.syp-v,.syp-ly,.syp-dim,.syp-top,.syp-bot{transition:none;}}
+/* 24 Nov: the share card, like Spotify Wrapped */
+.sy-sh{position:fixed;inset:0;z-index:10050;background:rgba(5,3,4,.92);display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 16px) 20px calc(env(safe-area-inset-bottom,0px) + 16px);}
+.sy-sh-in{display:flex;flex-direction:column;align-items:center;width:100%;max-width:360px;max-height:100%;}
+.sy-sh-in img{display:none;width:auto;max-width:100%;max-height:calc(100vh - 210px);aspect-ratio:9/16;border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.6);}
+.sy-sh-in img.on{display:block;}
+.sy-sh-load{height:50vh;display:flex;align-items:center;justify-content:center;}
+.sy-sh-b{width:100%;margin-top:14px;}
+.sy-sh-b .sy-go{margin-top:0;}
+.sy-fuel.sh>span:first-child{background:#7C5CFF;}
 /* 24 Nov, "ya, kemaskan": the 30 days as a grid, Explore with two chips */
 .sy-cal{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;}
 .sy-cd{position:relative;aspect-ratio:1;border:0;border-radius:12px;padding:0;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);color:rgba(255,255,255,.75);font:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;}
