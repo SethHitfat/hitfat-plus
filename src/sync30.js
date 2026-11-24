@@ -146,7 +146,6 @@ function syDayPlay(day){
   const p=syPos(day);
   if(syReady(sySession(day),syData().level)) syPlay(day,p?p.t:0); else if(_syS===day) sySoon(day); else syDay(day);
 }
-function syPh(k){ _syPh=k; syRender(); }
 function syMoveNames(sn,lv){
   const r=[]; String(SYNC_S[sn-1].m[lv]||'').split(/[|/]/).forEach(m=>{ const x=m.replace(/\s+(×\d+|\d+s)$/,'').trim(); if(x && r.indexOf(x)<0) r.push(x); });
   return r;
@@ -176,10 +175,37 @@ function syRow(i){
     '<div class="sy-ep-f"><span class="sy-ep-m">'+meta+'</span>'+
       '<button class="sy-ep-p'+(ok?'':' off')+'" aria-label="Play day '+i+'" onclick="syDayPlay('+i+')">'+SY_I.play+'</button></div></div>';
 }
+const SY_PHC=['#FF2E43','#FF7A1A','#7C5CFF'];
+function syCal(nxt){
+  const d=syData(); let h='<div class="sy-cal">';
+  for(let i=1;i<=SYNC_N;i++){
+    const k=Math.max(0,SYNC_PHASES.findIndex(p=>i>=p.from && i<=p.to)), dn=d.days[i], now=i===nxt && !dn, ck=SY_CK.indexOf(i)>=0;
+    h+='<button class="sy-cd'+(dn?' done':'')+(now?' now':'')+'" style="--pc:'+SY_PHC[k]+'" aria-label="Day '+i+(dn?', done':now?', up next':'')+'" onclick="syDay('+i+')">'+
+      '<b>'+i+'</b>'+(dn?'<i class="sy-cd-ok">'+SY_I.ok+'</i>':'')+(ck?'<i class="sy-cd-ck"></i>':'')+'</button>';
+  }
+  return h+'</div><div class="sy-cal-l">'+SYNC_PHASES.map((p,k)=>'<span><i style="--pc:'+SY_PHC[k]+'"></i>'+p.t+' '+p.from+'–'+p.to+'</span>').join('')+
+    '<span><i class="ck"></i>Check-in</span></div>';
+}
+let _syEx='s';
+function syEx(k){ _syEx=k; syRender(); }
+function syExplore(){
+  const d=syData(), lv=syLevel(d.level);
+  let h='<div class="sy-h2">Explore<button class="sy-h2-l" onclick="syX(\'moves\')">All moves ›</button></div>'+
+    '<div class="sy-chips sy-exc">'+[['s','Sessions'],['m','Mixes by focus']].map(x=>'<button class="'+(_syEx===x[0]?'on':'')+'" onclick="syEx(\''+x[0]+'\')">'+x[1]+'</button>').join('')+'</div>'+
+    '<div class="sy-shelf">';
+  if(_syEx==='m') h+=SYNC_MIX.map(x=>'<button class="sy-mxc" onclick="syX(\'mix:'+x.k+'\')">'+syMixArt(x)+
+      '<small>'+x.s.map(s=>hesc(SYNC_S[s-1].n)).join(' · ')+'</small></button>').join('');
+  else SYNC_S.forEach((S,i)=>{
+    const sn=i+1, ds=syDaysOf(sn), dn=ds.filter(x=>d.days[x]).length;
+    h+='<button class="sy-al'+(syReady(sn,lv.k)?'':' soon')+'" onclick="syDay('+sySessionDay(sn)+')">'+syCover(sn)+
+      '<b>'+hesc(S.s)+'</b><small>Days '+ds.join(', ')+(dn?' · '+dn+'/'+ds.length+' ✓':'')+'</small></button>';
+  });
+  return h+'</div>';
+}
 function syRender(top){
   const o=$('syv'); if(!o) return;
   const d=syData(), n=syDone(), lv=syLevel(d.level), nxt=syNext(), nsn=sySession(nxt), np=syPos(nxt);
-  const pc=(n/SYNC_N*100).toFixed(1), ph=_syPh?SYNC_PHASES[_syPh-1]:syPhase(nxt);
+  const pc=(n/SYNC_N*100).toFixed(1);
   const chips=(cls)=>'<div class="sy-chips'+(cls?' '+cls:'')+'">'+SYNC_LEVELS.map(l=>'<button class="'+(l.k===lv.k?'on':'')+'" onclick="syPick(\''+l.k+'\')">'+l.n+'</button>').join('')+'</div>';
   let h='<button class="sy-x" aria-label="Close" onclick="syClose()">'+SY_I.back+'</button>'+
     '<div class="sy-hero" role="img" aria-label="HITFAT SYNC 30" style="background-image:url(\''+SYNC_HERO+'\')"><div class="sy-hero-t">HITFAT<br>SYNC 30</div></div>'+
@@ -187,13 +213,12 @@ function syRender(top){
       '<div class="sy-s">Your coach in your ear. Every rep counted out loud, right on the beat. '+SYNC_N+' days, '+SYNC_MIN+' minutes a day, no equipment.</div>'+
       '<div class="sy-meta"><span class="sy-logo">H</span><b>HITFAT</b></div>'+
       '<div class="sy-meta2">'+n+' / '+SYNC_N+' days done · 10 sessions · '+SYNC_MIN+' min a day</div>'+
-      '<div class="sy-bar"><i style="width:'+pc+'%"></i></div>'+
       '<div class="sy-acts">'+chips()+
         '<button class="sy-play" aria-label="Play day '+nxt+'" onclick="syDayPlay('+nxt+')">'+SY_I.play+'</button></div>'+
       '<div class="sy-lvs">'+hesc(lv.s)+'</div>'+
     '</div>'+
     '<div class="sy-body">';
-  h+=syTiles(nxt)+syNewRelease()+syCkCard();
+  h+=syNewRelease()+syCkCard();
   /* up next: the featured card, its clip playing */
   h+='<div class="sy-h2">'+(n?'Up next':'Start here')+'</div>'+
     '<div class="sy-ft"><button class="sy-ft-v" aria-label="Open day '+nxt+'" onclick="syDay('+nxt+')">'+syPrev(nsn,nxt)+
@@ -201,27 +226,14 @@ function syRender(top){
     '<div class="sy-ft-i">'+syCover(nsn,'xs')+'<button class="sy-ft-t" onclick="syDay('+nxt+')"><b>Day '+nxt+' · '+hesc(SYNC_S[nsn-1].n)+'</b>'+
       '<small>'+syPhase(nxt).n+' · '+syPhase(nxt).t+' · '+lv.n+'</small></button>'+
       '<button class="sy-ep-p'+(syReady(nsn,lv.k)?'':' off')+'" aria-label="Play day '+nxt+'" onclick="syDayPlay('+nxt+')">'+SY_I.play+'</button></div></div>';
-  h+=syCkProgress();
+  /* 24 Nov, Seth "ya, kemaskan": the 30 days as a grid (instead of the bar and the long list of days), and the
+     check-ins under it; one "Explore" for sessions and mixes; the six quick tiles are gone (all said twice) */
+  h+='<div class="sy-h2">Your 30 days<span>'+n+' / '+SYNC_N+' done</span></div>'+syCal(nxt)+syCkProgress();
   const rc=syRecent();
   if(rc.length) h+='<div class="sy-h2">Recents</div><div class="sy-shelf sy-rc">'+rc.map(x=>{ const sn=sySession(x.day);
     return '<button class="sy-al" onclick="syDay('+x.day+')">'+syCover(sn)+'<b class="sy-rc-t">Day '+x.day+' · '+hesc(SYNC_S[sn-1].n)+'</b>'+
       '<i class="sy-pb"><b style="width:'+Math.min(100,x.f*100).toFixed(0)+'%"></b></i></button>'; }).join('')+'</div>';
-  /* the 30 days as episodes, one phase at a time */
-  const pd=Object.keys(d.days).filter(x=>x>=ph.from && x<=ph.to).length;
-  h+='<div class="sy-pt">'+SYNC_PHASES.map((p,k)=>'<button class="'+(p===ph?'on':'')+'" onclick="syPh('+(k+1)+')">'+p.t+'</button>').join('')+'</div>'+
-    '<div class="sy-pt-s">'+ph.n+' · Days '+ph.from+'–'+ph.to+' · '+pd+' of '+(ph.to-ph.from+1)+' done</div><div class="sy-eps">';
-  for(let i=ph.from;i<=ph.to;i++) h+=syRow(i);
-  h+='</div>';
-  h+='<div class="sy-h2">Mixes by focus</div><div class="sy-shelf">'+SYNC_MIX.map(x=>'<button class="sy-mxc" onclick="syX(\'mix:'+x.k+'\')">'+syMixArt(x)+
-    '<small>'+x.s.map(s=>hesc(SYNC_S[s-1].n)).join(' · ')+'</small></button>').join('')+'</div>';
-  /* the 10 sessions: the posters, a shelf that scrolls sideways */
-  h+='<div class="sy-h2">Choose your own workout</div><div class="sy-shelf">';
-  SYNC_S.forEach((S,i)=>{
-    const sn=i+1, ds=syDaysOf(sn), dn=ds.filter(x=>d.days[x]).length;
-    h+='<button class="sy-al'+(syReady(sn,lv.k)?'':' soon')+'" onclick="syDay('+sySessionDay(sn)+')">'+syCover(sn)+
-      '<b>'+hesc(S.s)+'</b><small>Days '+ds.join(', ')+(dn?' · '+dn+'/'+ds.length+' ✓':'')+'</small></button>';
-  });
-  h+='</div>';
+  h+=syExplore();
   h+='<div class="sy-h2">About the program</div><div class="sy-how">'+
       '<div><span>'+glyph('play')+'</span><p><b>Down… Up! ONE!</b> Every rep is counted out loud, right on the beat of the music.</p></div>'+
       '<div><span>'+glyph('bolt')+'</span><p><b>Timed moves</b> (high knees, plank…): your coach keeps you going until "3, 2, 1, Stop!"</p></div>'+
@@ -265,23 +277,12 @@ let _syX='', _syXIn=false;   /* a list open over the page: 'mix:legs' or 'moves'
 function syCirc(sn){ return '/img/p/sync/c'+sn+'.jpg?v=1'; }   /* 240×240, the coach, for the circles */
 function syX(k){ _syXIn=!_syX; _syX=k; syRender(); _syXIn=false; }
 function syXShut(){ _syX=''; syRender(); }
-function syPhGo(k){ _syPh=k; syRender(); const o=$('syv'), t=o&&o.querySelector('.sy-pt'); if(t) o.scrollTop+=t.getBoundingClientRect().top-72; }
 /* days played lately: the one stopped part way first, then the days done, newest first */
 function syRecent(){
   const d=syData(), r=[], seen={};
   if(d.pos){ r.push({day:d.pos.day, f:d.pos.t/d.pos.dur}); seen[d.pos.day]=1; }
   d.log.slice().reverse().forEach(x=>{ if(!seen[x.n] && x.n>=1 && x.n<=SYNC_N){ seen[x.n]=1; r.push({day:x.n, f:1}); } });
   return r.slice(0,8);
-}
-function syTiles(nxt){
-  const t=(img,label,go)=>'<button class="sy-qt" onclick="'+go+'"><span class="sy-qt-i" style="background-image:url(\''+img+'\')"></span><b>'+label+'</b></button>';
-  const nsn=sySession(nxt);
-  return '<div class="sy-qg">'+
-    t(syArt(nsn),'Day '+nxt+' · '+hesc(SYNC_S[nsn-1].n),'syDay('+nxt+')')+
-    t(syCirc(7),'All moves &amp; technique','syX(\'moves\')')+
-    SYNC_PHASES.map((p,k)=>t(syThumb(p.s[0]),p.n+' · '+p.t,'syPhGo('+(k+1)+')')).join('')+
-    t(syArt(10),'Final Test','syDay('+sySessionDay(10)+')')+
-  '</div>';
 }
 function syNewRelease(){
   const k=SYNC_NEW.find(x=>SYNC_VIDEO[x]), m=k && /^s(\d+)_(\w+)$/.exec(k); if(!m) return '';
@@ -397,7 +398,7 @@ function syCkProgress(){
   const a=c[have[0]]||{}, z=c[have[have.length-1]]||{}, dl=(k,u)=>{ if(have.length<2||!a[k]||!z[k]) return '';
     const v=Math.round((z[k]-a[k])*10)/10; return (v>0?'+':v<0?'−':'±')+Math.abs(v)+' '+u; };
   const ch=[dl('kg','kg'),dl('waist','cm')].filter(Boolean).join(' · ');
-  return '<div class="sy-h2">Your 30 days'+(ch?'<span>'+ch+' since Day '+have[0]+'</span>':'')+'</div><div class="sy-ckg">'+SY_CK.map(m=>{
+  return '<div class="sy-ckh"><b>Check-ins</b>'+(ch?'<span>'+ch+' since Day '+have[0]+'</span>':'')+'</div><div class="sy-ckg">'+SY_CK.map(m=>{
     const x=c[m]||{}, ph=syPhoto(m), on=syCkHas(m);
     return '<button class="sy-ckc'+(on?'':' off')+'" onclick="syX(\'ck:'+m+'\')"><span class="sy-ckc-p"'+(ph?' style="background-image:url(\''+ph+'\')"':'')+'>'+(ph?'':glyph('photo'))+'</span>'+
       '<b>Day '+m+'</b><small>'+(on?[x.kg?x.kg+' kg':'',x.waist?x.waist+' cm':''].filter(Boolean).join(' · ')||'Photo':'Not yet')+'</small></button>';
