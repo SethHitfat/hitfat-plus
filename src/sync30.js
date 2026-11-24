@@ -70,11 +70,15 @@ function syLevel(k){ return SYNC_LEVELS.find(l=>l.k===k)||SYNC_LEVELS[1]; }
 function syReady(sn,lv){ return !!SYNC_VIDEO[syKey(sn,lv)]; }
 function syVideos(){ return Object.keys(SYNC_VIDEO).filter(k=>SYNC_VIDEO[k]).length; }
 
-/* ── Home: a tile in "Program & Kursus" for testers ── */
+/* ── Home: a tile in the "Program" row for testers ── */
+/* 24 Nov, Seth chose "Poster 2": its own poster, Spotify-like (the coach in red headphones and the HITFAT
+   Performance jersey, a glass player, the SYNC mark); only the line on top stays live (New · 30 days → Day 4 / 30) */
+const SYNC_TILE='/img/p/sync/tile.jpg?v=1';
 function syHomeTile(){
-  if(!syLive() || typeof hpoTile!=='function') return '';
-  const n=syDone();
-  return hpoTile({t:'HITFAT SYNC', kick:n?'Day '+Math.min(n+1,SYNC_N)+' / '+SYNC_N:'New · '+SYNC_N+' days', lv:'Coach in your ear · move to the beat', pal:'red', img:SYNC_PIC, pos:'50% 35%', go:'syOpen()'});
+  if(!syLive()) return '';
+  const n=syDone(), kick=n?'Day '+Math.min(n+1,SYNC_N)+' / '+SYNC_N:'New · '+SYNC_N+' days';
+  return '<div class="hpo hpo-sq hpo-br sy-hp" role="button" aria-label="HITFAT SYNC: coach in your ear, move to the beat" onclick="syOpen()">'+
+    '<img src="'+SYNC_TILE+'" alt="" decoding="async"><span class="hpo-len">'+hesc(kick)+'</span></div>';
 }
 
 const SYNC_COL=['#FF2E43','#FF7A1A','#7C5CFF','#E9418F','#14B8A6','#3B82F6','#F59E0B','#C81E3A','#B44DFF','#E5B800'];

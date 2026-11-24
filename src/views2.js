@@ -350,7 +350,7 @@ function homePack(mine){
 }
 /* (10 Nov 2026) Home for everyone else. "Sambung": a big card for each
    program under way, so the one she is doing is the first thing she sees.
-   "Program & Kursus": every program not started yet and every course, as one
+   "Program" (was "Program & Kursus" until 24 Nov, Seth: just "Program"): every program not started yet and every course, as one
    row of small posters to swipe. A man does not get MAK2FIT 30 in the row and
    a woman does not get AYAH2FIT 30, once Eat knows which (Train still lists
    both). A program finished drops out, as before. */
@@ -392,7 +392,7 @@ function homeRow(){
   }
   const tl=t.filter(Boolean);
   if(!tl.length) return '';
-  return fsec('Program & Kursus',tl.length>2?'Leret untuk tengok semua.'+(contentOpen()?' Semua termasuk dalam HITFAT+ anda.':''):'')+
+  return fsec('Program',tl.length>2?'Leret untuk tengok semua.'+(contentOpen()?' Semua termasuk dalam HITFAT+ anda.':''):'')+
     '<div class="hrow">'+tl.join('')+'</div>';
 }
 /* Home: the courses not yet started (a course under way shows its own

@@ -5936,6 +5936,11 @@ html,body{overscroll-behavior:none;}
 .hpo-flat .hpo-ph{opacity:.55;}
 .hpo-len{position:absolute;left:12px;top:11px;z-index:3;font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#FFFFFF;}
 .hpo .lockt{position:absolute;right:10px;top:9px;left:auto;z-index:3;}
+/* HITFAT SYNC's own poster in the Home "Program" row (24 Nov) */
+.hpo.sy-hp{background:#140306;}
+.hpo.sy-hp::before,.hpo.sy-hp::after{display:none;}
+.sy-hp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+.sy-hp .hpo-len{text-shadow:0 1px 6px rgba(0,0,0,.5);}
 .hpo-t{position:absolute;inset:0;z-index:3;display:grid;place-items:center;text-align:center;padding:0 18px;
   font-weight:900;font-size:30px;line-height:.92;letter-spacing:-.6px;text-transform:uppercase;color:#FFFFFF;text-wrap:balance;
   text-shadow:0 2px 14px rgba(0,0,0,.30);}
@@ -20633,11 +20638,15 @@ function syLevel(k){ return SYNC_LEVELS.find(l=>l.k===k)||SYNC_LEVELS[1]; }
 function syReady(sn,lv){ return !!SYNC_VIDEO[syKey(sn,lv)]; }
 function syVideos(){ return Object.keys(SYNC_VIDEO).filter(k=>SYNC_VIDEO[k]).length; }
 
-/* ── Home: a tile in "Program & Kursus" for testers ── */
+/* ── Home: a tile in the "Program" row for testers ── */
+/* 24 Nov, Seth chose "Poster 2": its own poster, Spotify-like (the coach in red headphones and the HITFAT
+   Performance jersey, a glass player, the SYNC mark); only the line on top stays live (New · 30 days → Day 4 / 30) */
+const SYNC_TILE='/img/p/sync/tile.jpg?v=1';
 function syHomeTile(){
-  if(!syLive() || typeof hpoTile!=='function') return '';
-  const n=syDone();
-  return hpoTile({t:'HITFAT SYNC', kick:n?'Day '+Math.min(n+1,SYNC_N)+' / '+SYNC_N:'New · '+SYNC_N+' days', lv:'Coach in your ear · move to the beat', pal:'red', img:SYNC_PIC, pos:'50% 35%', go:'syOpen()'});
+  if(!syLive()) return '';
+  const n=syDone(), kick=n?'Day '+Math.min(n+1,SYNC_N)+' / '+SYNC_N:'New · '+SYNC_N+' days';
+  return '<div class="hpo hpo-sq hpo-br sy-hp" role="button" aria-label="HITFAT SYNC: coach in your ear, move to the beat" onclick="syOpen()">'+
+    '<img src="'+SYNC_TILE+'" alt="" decoding="async"><span class="hpo-len">'+hesc(kick)+'</span></div>';
 }
 
 const SYNC_COL=['#FF2E43','#FF7A1A','#7C5CFF','#E9418F','#14B8A6','#3B82F6','#F59E0B','#C81E3A','#B44DFF','#E5B800'];
@@ -39847,7 +39856,7 @@ function homePack(mine){
 }
 /* (10 Nov 2026) Home for everyone else. "Sambung": a big card for each
    program under way, so the one she is doing is the first thing she sees.
-   "Program & Kursus": every program not started yet and every course, as one
+   "Program" (was "Program & Kursus" until 24 Nov, Seth: just "Program"): every program not started yet and every course, as one
    row of small posters to swipe. A man does not get MAK2FIT 30 in the row and
    a woman does not get AYAH2FIT 30, once Eat knows which (Train still lists
    both). A program finished drops out, as before. */
@@ -39889,7 +39898,7 @@ function homeRow(){
   }
   const tl=t.filter(Boolean);
   if(!tl.length) return '';
-  return fsec('Program & Kursus',tl.length>2?'Leret untuk tengok semua.'+(contentOpen()?' Semua termasuk dalam HITFAT+ anda.':''):'')+
+  return fsec('Program',tl.length>2?'Leret untuk tengok semua.'+(contentOpen()?' Semua termasuk dalam HITFAT+ anda.':''):'')+
     '<div class="hrow">'+tl.join('')+'</div>';
 }
 /* Home: the courses not yet started (a course under way shows its own

@@ -4792,7 +4792,7 @@ print("\n── HOME · SAMBUNG + PROGRAM & KURSUS (10 Nov) ──");
   HF.data.nutrition.gender='male'; var m=homeRow();
   HF.data.nutrition.gender='female'; var f=homeRow();
   HF.data.nutrition.gender=keepG; if(!n) delete HF.data.nutrition;
-  ok("everything not started is one swipe row, not a stack of big cards", m.indexOf('class="hrow"')>0 && m.indexOf('Program & Kursus')>0);
+  ok("everything not started is one swipe row, not a stack of big cards", m.indexOf('class="hrow"')>0 && m.indexOf('<div class="ft">Program<')>0);
   ok("...a man does not get MAK2FIT 30 in it, a woman does", m.indexOf(LB30_NAME)<0 && (lbFull()||f.indexOf(LB30_NAME)>0));
   ok("...a woman does not get AYAH2FIT 30", f.indexOf('AYAH2FIT')<0);
   ok("Sambung: big cards only for a program under way, not the one Today's Plan shows", String(homeGoing).indexOf('scPlanNext')>0 && String(homeGoing).indexOf("fsec('Sambung'")>0);
