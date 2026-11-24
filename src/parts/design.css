@@ -7939,6 +7939,10 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .syp-lyf .syp-pp{width:58px;height:58px;}
 /* 24 Nov, Seth chose "B": a tap lifts the video into a card, the controls under it, never over the video's captions */
 .syp-v iframe,.syp-v video{transition:border-radius .35s,box-shadow .35s;}
+/* 24 Nov, Seth: grade "C" (warmer, deeper contrast) tried as a filter in the app first, before any re-render or
+   Vimeo replace. It colours the whole frame, the video's own captions too, so it is kept gentle. */
+#syp,.sy-sp{--syg:contrast(1.12) saturate(1.18) brightness(.99) sepia(.06);}
+.syp-v iframe,.syp-v video,.sy-sp .sy-pv{-webkit-filter:var(--syg);filter:var(--syg);}
 #syp.ui:not(.ly):not(.nocard) .syp-v{transform:translateY(var(--ty,0px)) scale(var(--sc,1));}
 #syp.ui:not(.ly):not(.nocard) .syp-v iframe,#syp.ui:not(.ly):not(.nocard) .syp-v video{border-radius:calc(22px / var(--sc,1));box-shadow:0 30px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);}
 #syp:not(.nocard) .syp-dim{background:none;}
