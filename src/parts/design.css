@@ -2256,6 +2256,8 @@ html body .t42-logo, html body .t42-banner-logo, html body #splash .tg{
   background:radial-gradient(circle at 70% 15%,rgba(192,42,124,.45),transparent 60%),linear-gradient(160deg,#3a1f2d,#0d080b 78%);color:#fff;}
 .wl-hero.lb-type{aspect-ratio:16/9;}
 .wl-hero.day.lb-type{aspect-ratio:16/9;}
+/* the HF+ mark never stretches, whatever box it is given (24 Nov 2026: redrawn wider, 606x600) */
+img.lb-mark,img.lbx-mark{object-fit:contain;}
 .lb-type img.lb-mark,.wl-hero .lb-mark,.wl-poster .lb-mark{display:block;width:60px;height:60px;aspect-ratio:auto;object-fit:contain;margin:0 auto;}
 .lb-name{font-size:34px;font-weight:800;letter-spacing:-.8px;line-height:1.05;padding:0 20px;}
 .lb-sub{font-size:12px;font-weight:700;letter-spacing:.14em;color:#F7A8C2;}
