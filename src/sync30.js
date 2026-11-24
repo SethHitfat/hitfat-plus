@@ -193,7 +193,7 @@ function syRender(top){
       '<div class="sy-lvs">'+hesc(lv.s)+'</div>'+
     '</div>'+
     '<div class="sy-body">';
-  h+=syTiles(nxt)+syNewRelease();
+  h+=syTiles(nxt)+syNewRelease()+syCkCard();
   /* up next: the featured card, its clip playing */
   h+='<div class="sy-h2">'+(n?'Up next':'Start here')+'</div>'+
     '<div class="sy-ft"><button class="sy-ft-v" aria-label="Open day '+nxt+'" onclick="syDay('+nxt+')">'+syPrev(nsn,nxt)+
@@ -201,6 +201,7 @@ function syRender(top){
     '<div class="sy-ft-i">'+syCover(nsn,'xs')+'<button class="sy-ft-t" onclick="syDay('+nxt+')"><b>Day '+nxt+' · '+hesc(SYNC_S[nsn-1].n)+'</b>'+
       '<small>'+syPhase(nxt).n+' · '+syPhase(nxt).t+' · '+lv.n+'</small></button>'+
       '<button class="sy-ep-p'+(syReady(nsn,lv.k)?'':' off')+'" aria-label="Play day '+nxt+'" onclick="syDayPlay('+nxt+')">'+SY_I.play+'</button></div></div>';
+  h+=syCkProgress();
   const rc=syRecent();
   if(rc.length) h+='<div class="sy-h2">Recents</div><div class="sy-shelf sy-rc">'+rc.map(x=>{ const sn=sySession(x.day);
     return '<button class="sy-al" onclick="syDay('+x.day+')">'+syCover(sn)+'<b class="sy-rc-t">Day '+x.day+' · '+hesc(SYNC_S[sn-1].n)+'</b>'+
@@ -297,6 +298,7 @@ function syMixArt(x,cls){
 /* a list over the page: a mix (its days as episodes) or every move */
 function syXSheet(){
   const d=syData(), lv=d.level;
+  if(_syX.indexOf('ck:')===0) return syCkSheet(+_syX.slice(3));
   if(_syX==='moves'){
     const mv={};
     for(let sn=1;sn<=10;sn++){ const c=SYNC_CUE[syKey(sn,lv)]; if(!c) continue;
@@ -326,6 +328,87 @@ function syXSheet(){
       '<button class="sy-play" aria-label="Play day '+nx+'" onclick="syDayPlay('+nx+')">'+SY_I.play+'</button></div>'+
     '<div class="sy-eps">'+days.map(syRow).join('')+'</div></div>';
 }
+/* ── 24 Nov, Seth "ok try": a check-in on Day 1, 15 and 30 (weight, waist, a front photo), so the 30 days show,
+   and after each session one card into Eat. Weight and waist also go to Progress (logWeight, logBody), so its
+   charts move too; the photo stays on this phone only (localStorage, like MAK2FIT's). All optional. ── */
+const SY_CK=[1,15,30];
+let _syCkD=null;   /* what was typed before a photo was picked, so the redraw keeps it */
+function syCk(){ const d=syData(); return d.ck||(d.ck={}); }
+function syCkDue(){ const n=syDone(), c=syCk();
+  if(!c[1]) return 1; if(n>=14 && !c[15]) return 15; if(n>=SYNC_N && !c[30]) return 30; return 0; }
+function syPhKey(m){ return 'hf_sync_photo_'+(HF.userId||'me')+'_'+m; }
+function syPhoto(m){ try{ return localStorage.getItem(syPhKey(m))||''; }catch(e){ return ''; } }
+function syCkHas(m){ const x=syCk()[m]; return !!((x && (x.kg||x.waist)) || syPhoto(m)); }
+const SY_CKT={1:'Before you start: your weight, waist and a photo. On Day 30 you will see the change.',
+  15:'Halfway there. The same three, about a minute, to see how far you have come.',
+  30:'You finished all 30 days. Your last check-in shows the difference.'};
+function syCkCard(){
+  const m=syCkDue(); if(!m) return '';
+  return '<div class="sy-ck"><span class="sy-ck-i">'+glyph('scale')+'</span><div class="sy-ck-t"><b>Day '+m+' check-in</b><small>'+SY_CKT[m]+'</small></div>'+
+    '<button class="sy-ck-b" onclick="syX(\'ck:'+m+'\')">Check in</button></div>';
+}
+function syCkSheet(m){
+  const x=Object.assign({}, syCk()[m]||{}, _syCkD&&_syCkD.m===m?_syCkD:{}), ph=syPhoto(m);
+  const f=(id,lab,unit,v,hint)=>'<label class="sy-ckf"><span>'+lab+'</span><input id="'+id+'" class="inp" inputmode="decimal" placeholder="'+hint+'" value="'+(v||'')+'"><em>'+unit+'</em></label>';
+  return '<div class="sy-np sy-xp'+(_syXIn?' in':'')+'" id="sy-xp" style="--c:'+SYNC_COL[0]+'">'+
+    '<div class="sy-npb" id="sy-xpb"><button class="sy-np-x" aria-label="Back" onclick="syCkShut()">'+SY_I.back+'</button><b>Day '+m+' check-in</b><span></span></div>'+
+    '<div class="sy-np-t">Day '+m+' check-in</div>'+
+    '<div class="sy-np-m">About a minute. Same time of day each time, before you eat. Waist: around the belly button.</div>'+
+    '<div class="sy-ckfs">'+f('syck-kg','Weight','kg',x.kg,'e.g. 72.5')+f('syck-w','Waist','cm',x.waist,'e.g. 85')+'</div>'+
+    '<label class="sy-ckph'+(ph?' has':'')+'"'+(ph?' style="background-image:url(\''+ph+'\')"':'')+'>'+
+      '<input type="file" accept="image/*" onchange="syCkPhoto('+m+',this)">'+(ph?'':glyph('photo'))+'<span>'+(ph?'Change photo':'Front photo · Day '+m)+'</span></label>'+
+    '<div class="sy-ckfine">The photo stays on this phone only. Weight and waist also show in Progress.</div>'+
+    '<button class="sy-go" onclick="syCkSave('+m+')">Save check-in</button>'+
+    (syCk()[m]?'':'<button class="sy-ckskip" onclick="syCkSkip('+m+')">Skip for now</button>')+'</div>';
+}
+function syCkShut(){ _syCkD=null; syXShut(); }
+function syCkRead(m){
+  const g=id=>{ const e=$(id); return e?parseFloat(String(e.value).replace(',','.')):NaN; };
+  return {m:m, kg:g('syck-kg'), waist:g('syck-w')};
+}
+function syCkSave(m){
+  const r=syCkRead(m), kg=r.kg>0?r.kg:0, w=r.waist>0?r.waist:0;
+  if(kg && (kg<20||kg>300)){ toast('Enter a weight between 20 and 300 kg'); return; }
+  if(w && (w<40||w>200)){ toast('Enter a waist between 40 and 200 cm'); return; }
+  if(!kg && !w && !syPhoto(m)){ toast('Add your weight, waist or a photo'); return; }
+  const c=syCk(); c[m]={kg:kg?Math.round(kg*10)/10:0, waist:w?Math.round(w*10)/10:0, at:iso(0)};
+  if(kg && typeof logWeight==='function') logWeight(c[m].kg);
+  if(w && typeof logBody==='function') logBody({waist:c[m].waist});
+  HF.save(); _syCkD=null; syXShut(); toast('Day '+m+' check-in saved');
+}
+function syCkSkip(m){ syCk()[m]={skip:1, at:iso(0)}; HF.save(); _syCkD=null; syXShut(); }
+function syCkPhoto(m,input){
+  const f=input&&input.files&&input.files[0]; if(!f) return;
+  _syCkD=syCkRead(m);
+  const r=new FileReader();
+  r.onload=()=>{ const im=new Image(); im.onload=()=>{
+    const k=Math.min(1,720/Math.max(im.width,im.height)), cv=document.createElement('canvas');
+    cv.width=Math.round(im.width*k); cv.height=Math.round(im.height*k);
+    cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
+    try{ localStorage.setItem(syPhKey(m), cv.toDataURL('image/jpeg',.74)); toast('Photo saved'); }
+    catch(e){ toast('Not enough space on this phone for the photo'); }
+    syRender();
+  }; im.src=r.result; };
+  r.readAsDataURL(f);
+}
+/* "Your 30 days": the check-ins side by side, and the change since the first one */
+function syCkProgress(){
+  const c=syCk(), have=SY_CK.filter(syCkHas); if(!have.length) return '';
+  const a=c[have[0]]||{}, z=c[have[have.length-1]]||{}, dl=(k,u)=>{ if(have.length<2||!a[k]||!z[k]) return '';
+    const v=Math.round((z[k]-a[k])*10)/10; return (v>0?'+':v<0?'−':'±')+Math.abs(v)+' '+u; };
+  const ch=[dl('kg','kg'),dl('waist','cm')].filter(Boolean).join(' · ');
+  return '<div class="sy-h2">Your 30 days'+(ch?'<span>'+ch+' since Day '+have[0]+'</span>':'')+'</div><div class="sy-ckg">'+SY_CK.map(m=>{
+    const x=c[m]||{}, ph=syPhoto(m), on=syCkHas(m);
+    return '<button class="sy-ckc'+(on?'':' off')+'" onclick="syX(\'ck:'+m+'\')"><span class="sy-ckc-p"'+(ph?' style="background-image:url(\''+ph+'\')"':'')+'>'+(ph?'':glyph('photo'))+'</span>'+
+      '<b>Day '+m+'</b><small>'+(on?[x.kg?x.kg+' kg':'',x.waist?x.waist+' cm':''].filter(Boolean).join(' · ')||'Photo':'Not yet')+'</small></button>';
+  }).join('')+'</div>';
+}
+/* after a session: into Eat, with today's protein when a target is set */
+function syFuelLine(){
+  const pt=(HF.data.nutrition||{}).pt, t=typeof mealTotals==='function'?mealTotals():null;
+  return pt&&t ? 'Protein today: '+Math.round(t.p||0)+' / '+pt+' g · log your next meal' : 'Log your next meal in Eat';
+}
+function syFuel(){ _syS=0; syStop(true); syClose(); if(typeof switchTab==='function') switchTab('eat'); }
 /* a move from "All moves": play it in a session whose video is up, or open that session's day */
 function syMoveGo(sn,t){ const day=sySessionDay(sn); if(syReady(sn,syData().level)) syPlay(day,t); else syDay(day); }
 
@@ -668,6 +751,8 @@ function syFinish(){
       '<div class="sy-s">'+SYNC_MIN+' minutes, on the beat. Added to your streak.</div>'+
       '<div class="sy-done-bar"><i style="width:'+(Object.keys(d.days).length/SYNC_N*100).toFixed(1)+'%"></i></div>'+
       '<div class="sy-done-n">'+Object.keys(d.days).length+' / '+SYNC_N+' days done'+(more?' · Up next: Day '+nx+' · '+hesc(SYNC_S[sySession(nx)-1].n):' · Program complete')+'</div>'+
+      '<button class="sy-fuel" onclick="syFuel()"><span>'+glyph('food')+'</span><span><b>Refuel</b><small>'+syFuelLine()+'</small></span><i>›</i></button>'+
+      (syCkDue()>1?'<button class="sy-fuel ck" onclick="_syS=0;syStop();syX(\'ck:'+syCkDue()+'\')"><span>'+glyph('scale')+'</span><span><b>Day '+syCkDue()+' check-in</b><small>Weight, waist and a photo · about a minute</small></span><i>›</i></button>':'')+
       '<button class="sy-go" onclick="_syS=0;syStop()">Close</button>';
     o.appendChild(el);
   }
