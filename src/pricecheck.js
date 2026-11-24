@@ -8,6 +8,8 @@ PROGRAMS.concat(RECOVERY_LIVE?[]:REHAB_PLANS).filter(isPaidProgram).forEach(func
 out['prog_'+AY30_ID] = String(programPrice(AY30));
 /* StartFIT the same way (mfEnsure) */
 out['prog_'+MF_ID] = String(programPrice(MF));
+/* HITFAT SYNC 30 is sold on its own page, not among PROGRAMS */
+if (typeof SYNC_PRICE !== 'undefined') out['prog_'+SYNC_ID] = String(SYNC_PRICE);
 /* a course sold on its own is not among PROGRAMS (it is not a training plan) */
 if (typeof D6 !== 'undefined') out['prog_'+D6.id] = String(D6.price);
 SCAN_PRODUCTS.forEach(function(s){ out[s.sku] = String(s.price); });

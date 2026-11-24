@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>HITFAT SYNC 30 — Coach dalam telinga anda</title>
+<meta name="description" content="30 hari, 15 minit sehari, di rumah. Setiap rep dikira kuat-kuat, ikut rentak muzik. RM59, sekali bayar.">
+<meta name="theme-color" content="#0E0A0B">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,500;0,600;0,700;0,800;0,900;1,900&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+<meta property="og:title" content="HITFAT SYNC 30 — Coach dalam telinga anda">
+<meta property="og:description" content="30 hari, 15 minit sehari, di rumah. Ikut rentak muzik. RM59, sekali bayar.">
+<meta property="og:image" content="https://app.hitfat.io/sync/img/coach.jpg">
+<!-- HITFAT SYNC 30 landing page (24 Nov 2026), served at app.hitfat.io/sync. Built as a Spotify playlist: the program is
+     the playlist, the 30 days are its tracks. Master copy: _projek/sync/landing/; HITFAT-PLUS-UPLOAD/sync/ is a copy.
+     Paying: the sheet (#ck) → landing-pay (Bayarcash, sku prog_sync30) → /sync/berjaya/ → the app (?tebus=sync30). -->
+<style>
+:root{--bg:#0E0A0B;--card:#181314;--card2:#221B1C;--line:rgba(255,255,255,.08);--tx:#fff;--mut:rgba(255,255,255,.64);--dim:rgba(255,255,255,.42);--red:#FF2E43;--or:#FF7A1A;--pu:#7C5CFF;}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:Inter,-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.45;padding-bottom:96px}
+a{color:inherit;text-decoration:none}
+img,video{display:block;max-width:100%;height:auto}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+/* top bar */
+.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;background:rgba(14,10,11,.72);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-style:italic;font-size:19px;letter-spacing:-.01em}
+.brand em{color:var(--red);font-style:italic}
+.mark{width:32px;height:32px;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;background:var(--red);color:#fff;font:inherit;font-weight:800;cursor:pointer;white-space:nowrap}
+.btn.sm{font-size:14px;padding:10px 16px}
+.btn.lg{font-size:17px;padding:16px 26px}
+.btn.ghost{background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+/* playlist header */
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#8E1328 0%,#4A0B15 46%,var(--bg) 100%)}
+.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 80% 10%,rgba(255,46,67,.5),transparent 70%);pointer-events:none}
+.hero-in{position:relative;display:grid;grid-template-columns:1fr;gap:18px;padding-top:22px;padding-bottom:30px}
+.cover{position:relative;width:min(56vw,340px);aspect-ratio:4/5;border-radius:10px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.55);justify-self:center}
+.cover img{width:100%;height:100%;object-fit:cover}
+.cover .tag{position:absolute;left:14px;bottom:14px;display:flex;align-items:center;gap:8px;font-weight:900;font-style:italic;font-size:20px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.cover .tag em{color:var(--red);font-style:italic}
+.kick{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+h1{font-size:clamp(42px,11vw,92px);font-weight:900;letter-spacing:-.04em;line-height:.92;margin-top:8px}
+.lead{font-size:17px;color:rgba(255,255,255,.82);margin-top:14px;max-width:560px}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:14px;font-size:14px;font-weight:700;color:var(--mut)}
+.meta b{color:#fff}
+.meta .dot{width:4px;height:4px;border-radius:50%;background:var(--dim)}
+.acts{display:flex;align-items:center;gap:14px;margin-top:22px;flex-wrap:wrap}
+.play{width:60px;height:60px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(255,46,67,.45);flex:none;cursor:pointer;border:0}
+.play svg{width:26px;height:26px;fill:#fff;margin-left:3px}
+.price-line{font-size:14px;color:var(--mut);font-weight:600}
+.price-line b{color:#fff;font-size:18px}
+/* sections */
+section{padding:46px 0 0}
+h2{font-size:clamp(26px,6vw,40px);font-weight:900;letter-spacing:-.03em;line-height:1.05}
+.sub{color:var(--mut);font-size:16px;margin-top:8px;max-width:620px}
+.row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+/* now playing: phone + bullets */
+.np{display:grid;grid-template-columns:1fr;gap:26px;margin-top:24px;align-items:center}
+.phone{position:relative;width:min(72vw,300px);justify-self:center;border-radius:42px;padding:10px;background:#000;box-shadow:0 0 0 2px #2a2526,0 40px 80px rgba(0,0,0,.6)}
+.phone img{border-radius:32px;width:100%}
+.feat{display:grid;gap:12px}
+.fi{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:14px;background:var(--card)}
+.fi i{flex:none;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:20px;background:var(--c,var(--red))}
+.fi b{display:block;font-size:16px;font-weight:800}
+.fi span{display:block;font-size:14px;color:var(--mut);margin-top:2px}
+/* tracklist */
+.tl{margin-top:20px}
+.tl-h,.tr{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:14px}
+.tl-h{padding:0 12px 10px;border-bottom:1px solid var(--line);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.ph{display:flex;align-items:center;gap:10px;margin:22px 12px 6px;font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.ph i{width:10px;height:10px;border-radius:3px;background:var(--pc)}
+.ph span{color:var(--dim);font-weight:700;letter-spacing:.04em;text-transform:none}
+.tr{padding:9px 12px;border-radius:8px}
+.tr:hover{background:rgba(255,255,255,.05)}
+.tr .n{color:var(--dim);font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.tr .t{display:flex;align-items:center;gap:12px;min-width:0}
+.tr .t img{width:42px;height:42px;border-radius:4px;flex:none}
+.tr .t div{min-width:0}
+.tr .t b{display:block;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr .t small{display:block;font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr .d{font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums}
+.tr.ck .t b:after{content:"Check-in";margin-left:8px;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.12);font-size:11px;font-weight:800;vertical-align:2px}
+.more{display:block;margin:14px auto 0;background:none;border:0;color:#fff;font:inherit;font-weight:800;font-size:14px;cursor:pointer;padding:10px 16px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+.tl.short .tr.x,.tl.short .ph.x{display:none}
+/* levels */
+.lv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.lvc{padding:18px 16px;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line)}
+.lvc.on{background:linear-gradient(160deg,rgba(255,46,67,.28),rgba(255,46,67,.06));box-shadow:inset 0 0 0 1.5px rgba(255,46,67,.6)}
+.lvc b{display:block;font-size:20px;font-weight:900}
+.lvc span{display:block;font-size:13.5px;color:var(--mut);margin-top:6px}
+/* shelf */
+.shelf{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin:20px -20px 0;padding:0 20px 8px;scrollbar-width:none}
+.shelf::-webkit-scrollbar{display:none}
+.al{flex:none;width:156px;scroll-snap-align:start;padding:10px;border-radius:10px;background:var(--card)}
+.al img{width:100%;aspect-ratio:1;border-radius:6px;object-fit:cover}
+.al b{display:block;font-size:14px;font-weight:800;margin-top:9px}
+.al small{display:block;font-size:12.5px;color:var(--mut)}
+/* wrapped */
+.wr{display:grid;grid-template-columns:1fr;gap:24px;margin-top:22px;align-items:center}
+.wr-img{width:min(70vw,290px);justify-self:center;border-radius:18px;box-shadow:0 30px 70px rgba(0,0,0,.6);transform:rotate(-2deg)}
+.wr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.st{padding:18px;border-radius:14px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.st b{display:block;font-family:Oswald,Impact,sans-serif;font-weight:700;font-size:42px;line-height:1;background:linear-gradient(90deg,#FF4D5E,#FFB27A);-webkit-background-clip:text;background-clip:text;color:transparent}
+.st span{display:block;font-size:13px;color:var(--mut);margin-top:6px;font-weight:700}
+/* price */
+.pr{margin-top:22px;border-radius:22px;padding:26px 22px;background:linear-gradient(160deg,#3a0911 0%,#1a0b0d 60%,#140e0f 100%);box-shadow:inset 0 0 0 1px rgba(255,46,67,.35),0 30px 70px rgba(0,0,0,.45);display:grid;gap:18px}
+.pr .amt{display:flex;align-items:baseline;gap:10px}
+.pr .amt b{font-size:64px;font-weight:900;letter-spacing:-.04em;line-height:1}
+.pr .amt span{color:var(--mut);font-weight:700}
+.pr ul{list-style:none;display:grid;gap:10px}
+.pr li{display:flex;gap:10px;font-size:15px;font-weight:600}
+.pr li:before{content:"";flex:none;width:20px;height:20px;border-radius:50%;margin-top:1px;background:var(--red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z'/%3E%3C/svg%3E") center/14px no-repeat}
+.pr .btn{width:100%}
+.pr small{display:block;text-align:center;color:var(--dim);font-size:12.5px}
+/* faq */
+.faq{margin-top:18px;display:grid;gap:8px}
+details{border-radius:12px;background:var(--card);padding:0 16px}
+summary{list-style:none;cursor:pointer;padding:16px 0;font-weight:800;font-size:15.5px;display:flex;justify-content:space-between;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary:after{content:"+";font-size:22px;line-height:1;color:var(--mut)}
+details[open] summary:after{content:"−"}
+details p{padding:0 0 16px;color:var(--mut);font-size:14.5px}
+/* footer */
+.foot{margin-top:56px;padding:28px 0 20px;border-top:1px solid var(--line);color:var(--dim);font-size:12.5px;display:grid;gap:10px}
+.foot b{color:var(--mut)}
+/* 24 Nov, for conversion: a sample to watch, the problem it solves, who it is for, who made it */
+.ticks{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;font-size:13.5px;font-weight:700;color:rgba(255,255,255,.85)}
+.ticks span:before{content:"✓";color:#FF6A78;margin-right:6px;font-weight:900}
+.watch{display:inline-flex;align-items:center;gap:8px;margin-top:14px;border:0;background:none;color:#fff;font:inherit;font-weight:800;font-size:15px;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(255,255,255,.35)}
+.pain{display:grid;gap:10px;margin-top:20px}
+.pc{border-radius:14px;background:var(--card)}
+.pc .x{font-size:14px;color:var(--mut);font-weight:600}
+.pc .x b{display:block;color:#fff;font-size:15px;margin-bottom:2px}
+.pc .ar{color:var(--red);font-size:20px;font-weight:900}
+.pc .ok{font-size:14px;color:var(--mut);font-weight:600}
+.pc .ok b{display:block;color:#FF6A78;font-size:15px;margin-bottom:2px}
+.for{display:grid;grid-template-columns:1fr;gap:10px;margin-top:20px}
+.fo{padding:18px;border-radius:14px;background:var(--card)}
+.fo b{display:block;font-size:16px;font-weight:900;margin-bottom:10px}
+.fo li{list-style:none;font-size:14.5px;color:rgba(255,255,255,.82);padding:5px 0 5px 26px;position:relative}
+.fo li:before{position:absolute;left:0;top:5px;font-weight:900}
+.fo.y li:before{content:"✓";color:#5BD38A}
+.fo.n li:before{content:"✕";color:rgba(255,255,255,.4)}
+.auth{display:flex;align-items:center;gap:14px;margin-top:22px;padding:16px;border-radius:14px;background:linear-gradient(135deg,rgba(255,46,67,.16),rgba(255,46,67,.04));box-shadow:inset 0 0 0 1px rgba(255,46,67,.3)}
+.auth svg{width:44px;height:44px;flex:none}
+.auth b{display:block;font-size:15.5px;font-weight:900}
+.auth span{display:block;font-size:13.5px;color:var(--mut)}
+.perday{display:inline-block;margin-top:8px;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.1);font-size:13px;font-weight:800}
+.smp{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(5,3,4,.92)}
+.smp.on{display:flex}
+.smp-in{width:100%;max-width:340px}
+.smp video{display:block;margin:0 auto;width:auto;max-width:100%;max-height:calc(100vh - 170px);aspect-ratio:9/16;border-radius:16px;background:#000;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.smp .btn{width:100%;margin-top:14px}
+.smp .cl{display:block;width:100%;margin-top:8px;border:0;background:none;color:var(--mut);font:inherit;font-weight:700;padding:10px;cursor:pointer}
+@media (min-width:860px){ .for{grid-template-columns:1fr 1fr} }
+/* 24 Nov, Seth: "kena ada ikon atau gambar … biar mudah faham" — one icon set, visual tiles for what you get */
+.ic{flex:none;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.ic svg{width:22px;height:22px}
+.ic.rd{background:rgba(255,46,67,.16);color:#FF6A78}
+.ic.gr{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+.pc{display:flex;flex-direction:column;gap:0;padding:0;overflow:hidden}
+.pc-a,.pc-b{display:flex;align-items:flex-start;gap:12px;padding:14px 16px}
+.pc-a b,.pc-b b{display:block;font-size:15.5px;font-weight:800}
+.pc-a span:not(.ic),.pc-b span:not(.ic){display:block;font-size:13.5px;color:var(--mut);margin-top:2px}
+.pc-a b{color:rgba(255,255,255,.85)}
+.pc-b{background:linear-gradient(135deg,rgba(255,46,67,.18),rgba(255,46,67,.04))}
+.pc-b b{color:#fff}
+.pc-m{display:none}
+.pc-m i{position:absolute;left:37px;top:-14px;width:28px;height:28px;margin-left:-14px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px var(--card);z-index:1}
+.pc-m i:after{content:"";position:absolute;left:50%;top:8px;width:8px;height:8px;margin-left:-4px;border-right:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(45deg)}
+.fi i svg{width:22px;height:22px;color:#fff}
+.fo b{display:flex;align-items:center;gap:10px}
+.tk{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+.tk svg{width:15px;height:15px}
+.tk.ok{background:#2E9E5B;color:#fff}
+.tk.no{background:rgba(255,255,255,.14);color:rgba(255,255,255,.75)}
+.fo ul{display:grid;gap:8px}
+.fo li{display:flex;align-items:center;gap:12px;padding:0;font-size:14.5px}
+.fo li:before{display:none}
+.fo li .ic{width:38px;height:38px;border-radius:11px}
+.fo li .ic svg{width:20px;height:20px}
+.fo.n li>span:last-child{color:var(--mut)}
+.get{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.gt{border-radius:14px;background:var(--card);padding:10px 10px 14px;box-shadow:inset 0 0 0 1px var(--line)}
+.gt b{display:block;font-size:14px;font-weight:800;margin-top:10px;line-height:1.25}
+.gt>span{display:block;font-size:12.5px;color:var(--mut);margin-top:3px}
+.gv{position:relative;height:112px;border-radius:10px;overflow:hidden;background:linear-gradient(160deg,#2a1013,#150c0d)}
+.mos{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:3px;background:#000}
+.mos img{width:100%;height:100%;object-fit:cover}
+.mos em{position:absolute;right:6px;bottom:6px;font-style:normal;font-family:Oswald,Impact,sans-serif;font-weight:700;font-size:30px;line-height:1;padding:2px 9px 4px;border-radius:8px;background:var(--red)}
+.lvs{display:flex;flex-direction:column;justify-content:center;gap:6px;padding:0 14px}
+.lvs i{font-style:normal;font-size:13px;font-weight:800;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);text-align:center}
+.lvs i.on{background:#fff;color:#0E0A0B}
+.cnt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.cnt strong{font-family:Oswald,Impact,sans-serif;font-weight:700;font-size:30px;letter-spacing:.02em;background:linear-gradient(90deg,#FF4D5E,#FFB27A);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wv{display:flex;align-items:center;gap:4px;height:30px}
+.wv i{display:block;width:5px;border-radius:3px;background:#FF6A78;animation:wv 1s ease-in-out infinite}
+.wv i:nth-child(1){height:30%}.wv i:nth-child(2){height:70%;animation-delay:.1s}.wv i:nth-child(3){height:45%;animation-delay:.2s}.wv i:nth-child(4){height:100%;animation-delay:.3s}.wv i:nth-child(5){height:55%;animation-delay:.4s}.wv i:nth-child(6){height:80%;animation-delay:.5s}.wv i:nth-child(7){height:35%;animation-delay:.6s}
+@keyframes wv{50%{transform:scaleY(.45)}}
+.cks{display:flex;align-items:center;justify-content:center;gap:6px;padding:0 8px}
+.cks i{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;aspect-ratio:3/4;max-height:88px;border-radius:8px;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);font-style:normal;font-size:11px;font-weight:800;color:rgba(255,255,255,.8)}
+.cks i svg{width:18px;height:18px;color:#FF6A78}
+.wrp{display:flex;align-items:flex-start;justify-content:center;padding-top:10px}
+.wrp img{width:62%;border-radius:8px;transform:rotate(-4deg);box-shadow:0 10px 24px rgba(0,0,0,.6)}
+.app{display:flex;align-items:flex-start;justify-content:center;padding-top:12px}
+.mph{width:56%;border-radius:12px;padding:4px;background:#000;box-shadow:0 0 0 1.5px #3a3334}
+.mph img{border-radius:9px}
+.pr{margin-top:16px}
+@media (min-width:860px){ .get{grid-template-columns:repeat(3,1fr)} .gv{height:150px} .pain{grid-template-columns:1fr 1fr 1fr} }
+@media (prefers-reduced-motion:reduce){ .wv i{animation:none} }
+/* 24 Nov, MAK2FIT's proven order: proof first, the problem, a day it fits, what you get, the video, the plan,
+   testimonials, the app, who it is for, the price, questions, the close */
+.pill{display:inline-block;margin-bottom:10px;padding:5px 12px;border-radius:999px;background:rgba(255,46,67,.14);color:#FF6A78;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.hook{font-size:21px;font-weight:800;line-height:1.25;margin-top:16px;color:#fff}
+.hook+.lead{margin-top:8px}
+.pay-l{margin-top:12px;font-size:12.5px;color:var(--mut);font-weight:600;line-height:1.55}
+.pay-l span{color:var(--dim)}
+.proof{padding-top:34px}
+.ba{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.ba figure,.bac{border-radius:12px;overflow:hidden;background:var(--card)}
+.ba img{width:100%;aspect-ratio:3/4;object-fit:cover}
+.ba figcaption,.bac figcaption{padding:8px 10px 10px}
+.ba b,.bac b{display:block;font-size:17px;font-weight:900;color:#FF6A78}
+.ba span,.bac span{display:block;font-size:12px;color:#fff;font-weight:700}
+.ba small,.bac small{display:block;font-size:11px;color:var(--dim);margin-top:2px}
+.fine{font-size:12px;color:var(--dim);margin-top:10px}
+.fine a{color:var(--mut);text-decoration:underline}
+.cred{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.cred>div{padding:12px 14px;border-radius:12px;background:var(--card)}
+.cred b{display:block;font-size:15px;font-weight:900}
+.cred span{display:block;font-size:12.5px;color:var(--mut)}
+.cred .me{grid-column:1/-1;display:flex;align-items:center;gap:12px}
+.cred .me img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none}
+.cred .me b{font-size:15px;color:#fff;display:block}
+.life{display:grid;gap:8px;margin-top:18px}
+.lf{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:14px;background:var(--card)}
+.lf b{display:block;font-size:15.5px;font-weight:800}
+.lf span:not(.ic){display:block;font-size:13.5px;color:var(--mut);margin-top:2px}
+.cta-in{width:100%;margin-top:16px}
+.vid{position:relative;width:min(80vw,320px);justify-self:center;border-radius:18px;overflow:hidden;background:#000;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.vid video{width:100%;aspect-ratio:9/16;object-fit:cover}
+.vid-p{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:0;background:rgba(0,0,0,.28);color:#fff;font:inherit;font-weight:800;font-size:14px;cursor:pointer}
+.vid-p svg{width:64px;height:64px;padding:18px 15px 18px 21px;border-radius:50%;background:var(--red);fill:#fff;box-shadow:0 12px 30px rgba(255,46,67,.5)}
+.vid.on .vid-p{display:none}
+.mos3{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:6px;margin-top:16px;height:220px}
+.mos3>div{position:relative;border-radius:12px;overflow:hidden}
+.mos3 .g{grid-row:1/3}
+.mos3 img{width:100%;height:100%;object-fit:cover}
+.mos3 b{position:absolute;left:10px;bottom:10px;font-size:13px;font-weight:800;padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.55)}
+.rowh{display:flex;justify-content:space-between;align-items:baseline;margin:22px 0 10px}
+.rowh h3{font-size:18px;font-weight:900}
+.rowh span{font-size:12.5px;color:var(--dim);font-weight:700}
+.swipe{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -20px;padding:0 20px 6px;scrollbar-width:none}
+.swipe::-webkit-scrollbar{display:none}
+.bac{flex:none;width:200px;scroll-snap-align:start}
+.bac img{width:100%;aspect-ratio:1;object-fit:cover}
+.qc{flex:none;width:260px;scroll-snap-align:start;padding:16px;border-radius:14px;background:var(--card);display:flex;flex-direction:column;justify-content:space-between;gap:14px}
+.qc p{font-size:14.5px;line-height:1.5;color:rgba(255,255,255,.88)}
+.who{display:flex;align-items:center;gap:10px}
+.who img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+.who b{display:block;font-size:14px;font-weight:800}
+.who small{display:block;font-size:12px;color:var(--mut)}
+.scr figure{flex:none;width:170px;scroll-snap-align:start}
+.mph2{display:block;border-radius:22px;padding:6px;background:#000;box-shadow:0 0 0 1.5px #322b2c}
+.mph2 img{border-radius:17px}
+.mph2.card{background:none;box-shadow:none;padding:0}
+.mph2.card img{border-radius:14px}
+.scr figcaption{padding:10px 2px 0}
+.scr b{display:block;font-size:14px;font-weight:800}
+.scr span{display:block;font-size:12.5px;color:var(--mut)}
+.paybadge{display:flex;justify-content:center;gap:8px;margin-top:12px}
+.paybadge span{font-size:12px;font-weight:800;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.8)}
+.final{text-align:center;padding:50px 0 10px}
+.final h2{font-size:clamp(26px,7vw,40px)}
+.grad{background:linear-gradient(90deg,#FF4D5E,#FFB27A);-webkit-background-clip:text;background-clip:text;color:transparent}
+.final .sub{margin:12px auto 0}
+.final .btn{margin-top:20px}
+.wa{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;color:var(--mut);font-weight:700;font-size:14.5px}
+.wa svg{width:20px;height:20px}
+@media (min-width:860px){ .ba{max-width:620px} .life{grid-template-columns:1fr 1fr} .mos3{height:320px} }
+.wrc{flex:none;width:170px;scroll-snap-align:start}
+.wrc img{border-radius:14px;box-shadow:0 14px 30px rgba(0,0,0,.5)}
+.wrc figcaption{padding:10px 2px 0}
+.wrc b{display:block;font-size:14px;font-weight:800}
+.wrc span{display:block;font-size:12.5px;color:var(--mut);margin-top:2px}
+.steps-h{font-size:18px;font-weight:900;margin:26px 0 12px}
+.steps{display:grid;gap:8px}
+.stp{position:relative;display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;border-radius:14px;background:var(--card)}
+.stp .n{position:absolute;left:-6px;top:-6px;width:22px;height:22px;border-radius:50%;background:var(--red);font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px var(--bg)}
+.stp b{display:block;font-size:15px;font-weight:800}
+.stp div span{display:block;font-size:13.5px;color:var(--mut);margin-top:2px}
+@media (min-width:860px){ .steps{grid-template-columns:repeat(3,1fr)} }
+/* sticky mini player with the CTA */
+.mini{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 8px;border-radius:12px;background:#5A0B17;box-shadow:0 12px 34px rgba(0,0,0,.5);max-width:720px;margin:0 auto}
+.mini img{width:46px;height:46px;border-radius:6px;object-fit:cover;flex:none}
+.mini div{flex:1;min-width:0}
+.mini b{display:block;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini small{display:block;font-size:12.5px;color:rgba(255,255,255,.75)}
+.mini i{position:absolute;left:12px;right:12px;bottom:0;height:2px;border-radius:2px;background:rgba(255,255,255,.2);overflow:hidden}
+.mini i:after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--p,0%);background:#fff}
+@media (min-width:860px){
+  .hero-in{grid-template-columns:340px 1fr;align-items:end;gap:34px;padding-top:56px;padding-bottom:40px}
+  .cover{justify-self:start}
+  .np{grid-template-columns:320px 1fr;gap:44px}
+  .wr{grid-template-columns:320px 1fr;gap:44px}
+  .pr{grid-template-columns:1fr 1fr;align-items:center;padding:34px}
+}
+@media (max-width:520px){ .lv{grid-template-columns:1fr} .tr .d{display:none} .tl-h{grid-template-columns:34px 1fr} .tl-h span:last-child{display:none} }
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+/* the checkout sheet (as THE START's, in SYNC's colours) */
+.ck{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.62);opacity:0;pointer-events:none;transition:opacity .2s}
+.ck.on{opacity:1;pointer-events:auto}
+.ck-in{width:100%;max-width:480px;max-height:92vh;overflow:auto;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));border-radius:24px 24px 0 0;background:var(--card);border:1px solid var(--line);border-bottom:0;transform:translateY(24px);transition:transform .25s}
+.ck.on .ck-in{transform:none}
+.ck-hd{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ck-hd b{font-size:18px;font-weight:900}
+.ck-x{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:var(--card2);color:var(--tx);font-size:15px;cursor:pointer}
+.ck-p{margin:8px 0 6px;font-size:14px;color:var(--mut)}
+.ck label{display:block;margin-top:12px;font-size:13px;font-weight:700}
+.ck input{width:100%;height:48px;margin-top:6px;padding:0 14px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:#0E0A0B;color:#fff;font:16px Inter,system-ui,sans-serif}
+.ck input:focus{outline:0;border-color:var(--red)}
+.ck-ch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.ck-ch button{height:46px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:transparent;color:var(--tx);font:700 14px Inter,system-ui,sans-serif;cursor:pointer}
+.ck-ch button.on{border-color:var(--red);background:rgba(255,46,67,.14);color:#fff}
+.ck-err{min-height:20px;margin-top:10px;font-size:13.5px;color:#FF6B7A}
+.ck .btn{width:100%;height:54px;margin-top:6px;font-size:16px}
+.ck .btn:disabled{opacity:.6}
+.ck-note{margin-top:10px;font-size:12.5px;color:var(--dim);text-align:center}
+.ck-help{display:block;margin-top:8px;font-size:13px;font-weight:700;color:var(--mut);text-align:center;text-decoration:none}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="mk" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#FF2E43"/><path d="M16 52 H30 L36 40 L43 66 L51 26 L59 72 L65 46 L70 52 H84" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="pl" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
+  <symbol id="i-sunrise" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M4.9 8.9 6.3 10.3M19.1 8.9l-1.4 1.4M3 17h18M6 17a6 6 0 0 1 12 0M8 21h8"/></symbol><symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></symbol><symbol id="i-repeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5 20.5 6 17 9.5"/><path d="M3.5 11V9.5A3.5 3.5 0 0 1 7 6h13.5M7 21.5 3.5 18 7 14.5"/><path d="M20.5 13v1.5A3.5 3.5 0 0 1 17 18H3.5"/></symbol><symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.1A8 8 0 1 1 20 12z"/></symbol><symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol><symbol id="i-timer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13V9M9 2.5h6M18.5 6.5 20 5"/></symbol><symbol id="i-bored" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 15.5h8M8 10h2.5M13.5 10H16"/></symbol><symbol id="i-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol><symbol id="i-question" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.6 2.4c-.7.3-1.1.9-1.1 1.6v.5"/><path d="M12 17.2v.1"/></symbol><symbol id="i-speaker" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4h3.5L12 18V6l-5.5 4H3z"/><path d="M16 9.2a4 4 0 0 1 0 5.6M18.6 6.6a7.6 7.6 0 0 1 0 10.8"/></symbol><symbol id="i-headphones" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.6"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.6"/></symbol><symbol id="i-lyrics" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h11M4 18h14"/></symbol><symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5.5h4V20"/></symbol><symbol id="i-briefcase" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3 13h18"/></symbol><symbol id="i-sprout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8.5"/><path d="M12 12.5C12 8.6 9.2 6 5 6c0 4.1 2.8 6.5 7 6.5zM12 10.5c0-3.3 2.4-5.5 6.5-5.5 0 3.5-2.6 5.5-6.5 5.5z"/></symbol><symbol id="i-dumbbell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></symbol><symbol id="i-bandage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8.2" width="19" height="7.6" rx="3.8" transform="rotate(-45 12 12)"/><path d="M10.6 12h.01M13.4 12h.01M12 10.6v.01M12 13.4v.01"/></symbol><symbol id="i-hourglass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 21h12M7 3v3.5l5 5.5-5 5.5V21M17 3v3.5L12 12l5 5.5V21"/></symbol><symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></symbol><symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol><symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="12" cy="13.5" r="3.5"/><path d="m8.5 7 1.5-3h4l1.5 3"/></symbol><symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5"/><path d="M5 13v5.5A2.5 2.5 0 0 0 7.5 21h9a2.5 2.5 0 0 0 2.5-2.5V13"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2" width="11" height="20" rx="2.8"/><path d="M11 18.2h2"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol><symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10M17 7 7 17"/></symbol>
+</defs></svg>
+
+<header class="nav">
+  <a class="brand" href="#top"><svg class="mark"><use href="#mk"/></svg>HITFAT <em>SYNC</em></a>
+  <a class="btn sm buy" href="#get">Dapatkan · RM59</a>
+</header>
+
+<main id="top">
+  <!-- the playlist header (24 Nov: Seth chose Malay for the page; the English version is index_en.html) -->
+  <div class="hero"><div class="wrap hero-in">
+    <div class="cover"><img src="img/coach.jpg" alt="Coach HITFAT memakai headphone merah dan jersi HITFAT Performance, sedang melompat" width="960" height="1200"></div>
+    <div>
+      <div class="kick">Program 30 hari · di rumah</div>
+      <h1>HITFAT<br>SYNC 30</h1>
+      <p class="hook">Nak fit, tapi tak ada masa dan cepat bosan?</p><p class="lead">15 minit sehari, ikut rentak muzik. Coach dalam telinga anda kira setiap rep, anda cuma ikut. Di rumah, tanpa alat.</p>
+      <div class="meta"><svg class="mark" style="width:22px;height:22px"><use href="#mk"/></svg><b>HITFAT</b><i class="dot"></i>30 hari<i class="dot"></i>10 sesi<i class="dot"></i>15 min sehari<i class="dot"></i>3 level</div>
+      <div class="acts">
+        <button class="play" type="button" data-sample aria-label="Tonton contoh 30 saat"><svg><use href="#pl"/></svg></button>
+        <a class="btn lg buy" href="#get">Saya Nak Mula — RM59</a>
+      </div>
+      <a class="watch" href="#video">Tengok contoh dahulu ↓</a>
+      <div class="pay-l">Bayar sekali · tiada langganan · akses terus dalam app HITFAT+<br><span>Bayaran selamat · FPX · DuitNow</span></div>
+      <div class="ticks"><span>Di rumah</span><span>Tanpa alat</span><span>15 min</span><span>Ikut rentak</span></div>
+    </div>
+  </div></div>
+
+  <div class="wrap">
+
+    <!-- the problem it solves -->
+    <section>
+      <div class="pill">Masalah sebenar</div>
+      <h2>Penat asyik plan nak start, tapi…</h2>
+      <p class="sub">Dah cakap "Isnin ni aku nak start". Dah simpan video workout. Tapi bila tiba masanya, ada saja yang menghalang. Bukan sebab anda malas: anda perlukan cara yang anda <b>nak</b> buat.</p>
+      <div class="pain">
+        <div class="pc"><div class="pc-a"><span class="ic gr"><svg><use href="#i-clock"/></svg></span><div><b>"Tak ada masa."</b><span>Kerja, kelas, anak. Satu jam di gim memang susah.</span></div></div><div class="pc-m"><i></i></div><div class="pc-b"><span class="ic rd"><svg><use href="#i-timer"/></svg></span><div><b>15 minit je</b><span>Satu sesi, dari warm up sampai habis. Di rumah.</span></div></div></div>
+        <div class="pc"><div class="pc-a"><span class="ic gr"><svg><use href="#i-bored"/></svg></span><div><b>"Bosan, tak ada mood."</b><span>Workout yang senyap dan kaku cepat ditinggalkan.</span></div></div><div class="pc-m"><i></i></div><div class="pc-b"><span class="ic rd"><svg><use href="#i-music"/></svg></span><div><b>Ikut rentak muzik</b><span>Rasa macam dengar playlist, bukan buat kerja.</span></div></div></div>
+        <div class="pc"><div class="pc-a"><span class="ic gr"><svg><use href="#i-question"/></svg></span><div><b>"Tak tahu nak buat apa."</b><span>Tengok video random, hilang kiraan, berhenti separuh jalan.</span></div></div><div class="pc-m"><i></i></div><div class="pc-b"><span class="ic rd"><svg><use href="#i-speaker"/></svg></span><div><b>Coach kira untuk anda</b><span>Setiap rep dikira kuat-kuat. Anda cuma ikut.</span></div></div></div>
+      </div>
+    </section>
+
+    <!-- it fits your day -->
+    <section>
+      <div class="pill">Dalam hidup sebenar</div>
+      <h2>Muat dalam hari anda yang sibuk.</h2>
+      <div class="life">
+        <div class="lf"><span class="ic rd"><svg><use href="#i-sunrise"/></svg></span><div><b>Pagi, sebelum kerja</b><span>15 minit, dan tenaga anda dah naik sebelum mula hari.</span></div></div>
+        <div class="lf"><span class="ic rd"><svg><use href="#i-moon"/></svg></span><div><b>Malam, lepas semua selesai</b><span>Pakai earphone, tekan play, dan hari ini dah siap.</span></div></div>
+        <div class="lf"><span class="ic rd"><svg><use href="#i-home"/></svg></span><div><b>Ruang tamu pun cukup</b><span>Tak perlu ke gym, tak perlu alat. Pakai apa yang selesa.</span></div></div>
+        <div class="lf"><span class="ic rd"><svg><use href="#i-repeat"/></svg></span><div><b>Tertinggal sehari? Tak apa.</b><span>Pelan menunggu. Sambung esok, dari hari yang anda sampai.</span></div></div>
+        <div class="lf"><span class="ic rd"><svg><use href="#i-camera"/></svg></span><div><b>Nampak kemajuan sendiri</b><span>Check-in Hari 1, 15 dan 30, untuk anda sahaja.</span></div></div>
+      </div>
+      <a class="btn lg buy cta-in" href="#get">Saya Nak Mula — RM59</a>
+    </section>
+
+    <!-- what you get -->
+    <section id="dapat">
+      <div class="pill">Apa anda dapat</div>
+      <h2>Satu program. Semua yang anda perlu.</h2>
+      <p class="sub">HITFAT SYNC 30 ialah program 30 hari ikut rentak muzik: video coach, kiraan suara, tiga level dan check-in kemajuan, terus dalam app HITFAT+.</p>
+      <div class="get">
+        <div class="gt"><div class="gv mos"><img src="img/s1.jpg" alt=""><img src="img/s2.jpg" alt=""><img src="img/s3.jpg" alt=""><img src="img/s5.jpg" alt=""><img src="img/s7.jpg" alt=""><img src="img/s9.jpg" alt=""><em>30</em></div><b>30 video ikut-sama</b><span>15 minit setiap satu, 10 sesi berbeza</span></div>
+        <div class="gt"><div class="gv lvs"><i>Easy</i><i class="on">Medium</i><i>Hard</i></div><b>3 level untuk setiap sesi</b><span>Tukar bila-bila hari, ikut tenaga anda</span></div>
+        <div class="gt"><div class="gv cnt"><span class="wv"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><strong>1 · 2 · 3!</strong></div><b>Coach kira setiap rep</b><span>Kuat-kuat, betul-betul ikut rentak</span></div>
+        <div class="gt"><div class="gv cks"><i><svg><use href="#i-camera"/></svg>Hari 1</i><i><svg><use href="#i-camera"/></svg>Hari 15</i><i><svg><use href="#i-camera"/></svg>Hari 30</i></div><b>Check-in Hari 1, 15 dan 30</b><span>Berat, pinggang dan gambar, lihat perubahan</span></div>
+        <div class="gt"><div class="gv wrp"><img src="img/scr_share.jpg" alt=""></div><b>Kad Wrapped anda</b><span>Kongsi 30 hari anda ke Story</span></div>
+        <div class="gt"><div class="gv app"><span class="mph"><img src="img/scr_player.jpg" alt=""></span></div><b>Dalam app HITFAT+</b><span>Di telefon anda, bila-bila masa</span></div>
+      </div>
+    </section>
+
+    <!-- now playing -->
+    <section id="video">
+      <div class="pill">Contoh sebenar</div>
+      <h2>Tekan play. Ikut coach. Siap.</h2>
+      <p class="sub">Ia berfungsi macam app muzik anda. Coach kira setiap rep kuat-kuat, ikut rentak, jadi anda tak pernah hilang kiraan atau hilang rentak.</p>
+      <div class="np">
+        <div class="vid"><video id="vid" src="img/sample.mp4" poster="img/sample.jpg" playsinline preload="none"></video><button class="vid-p" type="button" id="vidp" aria-label="Main contoh 30 saat dengan bunyi"><svg><use href="#pl"/></svg><span>Main 30 saat, dengan bunyi</span></button></div>
+        <div class="feat">
+          <div class="fi" style="--c:#FF2E43"><i><svg><use href="#i-headphones"/></svg></i><div><b>Down… up! ONE!</b><span>Setiap rep dikira kuat-kuat, betul-betul ikut rentak. Pakai earphone dan kuatkan volume.</span></div></div>
+          <div class="fi" style="--c:#FF7A1A"><i><svg><use href="#i-timer"/></svg></i><div><b>15 minit, dari mula sampai habis</b><span>Warm up, tiga pusingan dan finisher. Tak perlu rancang, tak perlu fikir: ikut je.</span></div></div>
+          <div class="fi" style="--c:#7C5CFF"><i><svg><use href="#i-lyrics"/></svg></i><div><b>Gerakan macam lirik lagu</b><span>Senarai gerakan bergerak ikut video, macam lirik lagu. Langkau ke depan atau undur, setiap gerakan cuma satu tekan.</span></div></div>
+          <div class="fi" style="--c:#2E9E5B"><i><svg><use href="#i-home"/></svg></i><div><b>Di mana-mana, tanpa alat</b><span>Ruang tamu pun dah cukup. Cuma perlukan kerusi untuk tricep dip.</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- the plan, as a tracklist -->
+    <section id="plan">
+      <div class="row"><div><h2>30 hari anda</h2><p class="sub">Tiga fasa yang makin mencabar. Setiap hari satu sesi 15 minit.</p></div></div>
+      <div class="tl short" id="tl">
+        <div class="tl-h"><span style="text-align:right">#</span><span>Sesi</span><span>Masa</span></div>
+      </div>
+      <button class="more" id="more" type="button">Tunjuk semua 30 hari</button>
+    </section>
+
+    <!-- levels -->
+    <section>
+      <h2>Pilih level anda</h2>
+      <p class="sub">Sesi yang sama, tiga level. Boleh tukar bila-bila hari.</p>
+      <div class="lv">
+        <div class="lvc"><b>Easy</b><span>Lembut, tanpa lompat. 6–8 rep, rehat 25 saat. Mula di sini kalau anda baru bersenam atau baru kembali.</span></div>
+        <div class="lvc on"><b>Medium</b><span>Tempo penuh. 10–12 rep, rehat 15 saat. Pilihan kebanyakan orang.</span></div>
+        <div class="lvc"><b>Hard</b><span>Lebih banyak rep, tahan lebih lama, rehat 10 saat. Untuk yang nak dicabar.</span></div>
+      </div>
+    </section>
+
+    <!-- sessions shelf -->
+    <section>
+      <h2>Untuk setiap bahagian badan</h2>
+      <p class="sub">10 sesi: seluruh badan, kaki, badan atas, perut, kardio, dan ujian akhir pada Hari 30.</p>
+      <div class="shelf" id="shelf"></div>
+    </section>
+
+    <!-- testimonials: real HITFAT class members on the coaching (not weight, not size; Seth, 24 Nov). The Wrapped cards of
+         SYNC's own first users go in WRAPPED in the script; the block shows itself once there is one. -->
+    <section id="testi">
+      <div class="pill">Kata mereka</div>
+      <h2>Coach yang buat anda nak datang lagi.</h2>
+      <p class="sub">Apa kata peserta kelas HITFAT tentang cara coach HITFAT melatih. Cara yang sama, kini dalam telinga anda.</p>
+      <div class="swipe" style="margin-top:16px"><div class="qc"><p>“Saya suka sangat join HITFAT sebab coach banyak bagi nasihat dan semangat.”</p><div class="who"><img src="img/testi/q-shereen.jpg" alt="" loading="lazy"><div><b>Shereen</b><small>Peserta HITFAT Temerloh</small></div></div></div><div class="qc"><p>“Saya rasa lain sangat, terutama badan dan pergerakan.”</p><div class="who"><img src="img/testi/q-rara.jpg" alt="" loading="lazy"><div><b>Kak Rara</b><small>Peserta HITFAT Kota Bharu</small></div></div></div><div class="qc"><p>“Saya tak lagi lesu dan selalu mengantuk…”</p><div class="who"><img src="img/testi/q-pyka.jpg" alt="" loading="lazy"><div><b>Pyka</b><small>Peserta HITFAT Shah Alam</small></div></div></div><div class="qc"><p>“Saya suka HITFAT sebab coach HITFAT semua ada latar belakang Sains Sukan.”</p><div class="who"><img src="img/testi/q-hartini.jpg" alt="" loading="lazy"><div><b>Hartini Baharudin</b><small>Peserta HITFAT Kuantan</small></div></div></div></div>
+      <p class="fine">Kata-kata daripada peserta kelas HITFAT, bukan pengguna HITFAT SYNC 30.</p>
+      <div id="wr-own" hidden>
+        <div class="rowh"><h3>30 hari mereka, dalam kad Wrapped</h3><span>Swipe →</span></div>
+        <div class="swipe" id="wr-row"></div>
+        <p class="fine">Kad Wrapped sebenar daripada peserta HITFAT SYNC 30.</p>
+      </div>
+    </section>
+
+    <!-- the app, real screens -->
+    <section>
+      <div class="pill">Semua dalam satu app</div>
+      <h2>Semua yang anda perlu, di telefon anda.</h2>
+      <p class="sub">Skrin sebenar HITFAT SYNC 30 dalam app HITFAT+, di app.hitfat.io. Tiada muat turun dari App Store.</p>
+      <div class="swipe scr">
+        <figure><span class="mph2"><img src="img/scr_player.jpg" alt="Player SYNC" loading="lazy"></span><figcaption><b>Player ikut rentak</b><span>Video, kiraan dan senarai gerakan</span></figcaption></figure>
+        <figure><span class="mph2"><img src="img/scr_grid.jpg" alt="30 hari dalam grid" loading="lazy"></span><figcaption><b>30 hari anda</b><span>Nampak hari yang dah siap</span></figcaption></figure>
+        <figure><span class="mph2"><img src="img/scr_checkin.jpg" alt="Check-in berat, pinggang dan gambar" loading="lazy"></span><figcaption><b>Check-in</b><span>Hari 1, 15 dan 30</span></figcaption></figure>
+        <figure><span class="mph2"><img src="img/scr_done.jpg" alt="Skrin selesai selepas sesi" loading="lazy"></span><figcaption><b>Selesai!</b><span>Streak, Refuel dan kongsi</span></figcaption></figure>
+        <figure><span class="mph2 card"><img src="img/scr_share.jpg" alt="Kad Wrapped" loading="lazy"></span><figcaption><b>Kad Wrapped</b><span>Kongsi 30 hari anda</span></figcaption></figure>
+      </div>
+    </section>
+
+    <!-- who it is for -->
+    <section>
+      <h2>Untuk siapa SYNC ni?</h2>
+      <div class="for">
+        <div class="fo y"><b><span class="tk ok"><svg><use href="#i-check"/></svg></span>Sesuai untuk anda kalau…</b><ul><li><span class="ic rd"><svg><use href="#i-briefcase"/></svg></span><span>Anda sibuk dan cuma ada 15 minit sehari</span></li><li><span class="ic rd"><svg><use href="#i-headphones"/></svg></span><span>Anda suka bersenam dengan muzik</span></li><li><span class="ic rd"><svg><use href="#i-sprout"/></svg></span><span>Anda baru mula, atau nak kembali konsisten</span></li><li><span class="ic rd"><svg><use href="#i-home"/></svg></span><span>Anda nak bersenam di rumah, tanpa alat</span></li></ul></div>
+        <div class="fo n"><b><span class="tk no"><svg><use href="#i-x"/></svg></span>Kurang sesuai kalau…</b><ul><li><span class="ic gr"><svg><use href="#i-dumbbell"/></svg></span><span>Anda cari program angkat berat di gim</span></li><li><span class="ic gr"><svg><use href="#i-bandage"/></svg></span><span>Anda ada kecederaan yang belum pulih (dapatkan nasihat doktor dulu)</span></li><li><span class="ic gr"><svg><use href="#i-hourglass"/></svg></span><span>Anda nak latihan lebih sejam sehari</span></li></ul></div>
+      </div>
+    </section>
+
+    <!-- price -->
+    <section id="get">
+      <div class="pill">Harga</div>
+      <h2>Satu kelas walk-in, atau 30 hari SYNC.</h2>
+      <p class="sub">Satu kelas walk-in di gym HITFAT ialah RM40. Dengan RM59, anda dapat 30 hari latihan berpandu, setiap hari, di rumah.</p>
+      <div class="pr">
+        <div>
+          <div class="kick">HITFAT SYNC 30</div>
+          <div class="amt"><b>RM59</b><span>sekali bayar</span></div>
+          <p class="sub" style="margin-top:6px">Tiada langganan. Mula hari ni, ikut masa anda sendiri.</p>
+          <span class="perday">Kurang RM2 sehari untuk 30 hari</span>
+        </div>
+        <div>
+          <a class="btn lg buy" id="buy" href="#">Saya Nak Mula — RM59</a>
+          <div class="paybadge"><span>FPX Online Banking</span><span>DuitNow QR</span></div>
+          <small style="margin-top:10px">Bayaran selamat. Akses diberi kepada e-mel yang anda guna untuk bayar.</small>
+        </div>
+      </div>
+      <h3 class="steps-h">Lepas bayar, macam mana nak mula?</h3>
+      <div class="steps">
+        <div class="stp"><span class="n">1</span><span class="ic rd"><svg><use href="#i-check"/></svg></span><div><b>Bayar RM59</b><span>FPX atau DuitNow, sekali sahaja.</span></div></div>
+        <div class="stp"><span class="n">2</span><span class="ic rd"><svg><use href="#i-phone"/></svg></span><div><b>Buka app.hitfat.io</b><span>Log masuk dengan e-mel yang sama anda guna untuk bayar.</span></div></div>
+        <div class="stp"><span class="n">3</span><span class="ic rd"><svg><use href="#i-headphones"/></svg></span><div><b>Pakai earphone, tekan play</b><span>Pilih level, dan Hari 1 terus bermula.</span></div></div>
+      </div>
+    </section>
+
+    <!-- questions -->
+    <section>
+      <h2>Soalan lazim</h2>
+      <div class="faq">
+        <details><summary>Saya baru nak mula. Boleh ke saya buat?</summary><p>Boleh. Pilih Easy: tanpa lompat, rep lebih sikit, rehat lebih lama. Anda boleh naik ke Medium bila-bila hari.</p></details>
+        <details><summary>Perlu alat ke?</summary><p>Tak perlu. Cukup ruang lantai untuk baring, dan sebuah kerusi untuk tricep dip.</p></details>
+        <details><summary>Berapa lama setiap sesi?</summary><p>15 minit, termasuk warm up. Satu sesi sehari, selama 30 hari.</p></details>
+        <details><summary>Coach guna bahasa apa?</summary><p>Coach kira dan beri arahan dalam Bahasa Melayu, ikut rentak muzik. Paparan app dalam Bahasa Inggeris.</p></details>
+        <details><summary>Lepas bayar, macam mana nak mula?</summary><p>Buka app HITFAT+ di telefon anda, dan log masuk dengan e-mel yang sama anda guna untuk bayar. HITFAT SYNC 30 dah menunggu anda di situ.</p></details>
+        <details><summary>Perlu muat turun app ke?</summary><p>Tak perlu. HITFAT SYNC 30 dibuka dalam app HITFAT+ di app.hitfat.io, terus dari pelayar telefon anda. Anda boleh tambah ke skrin utama supaya ia macam app biasa.</p></details>
+        <details><summary>Boleh guna iPhone dan Android?</summary><p>Boleh. Buka app.hitfat.io di telefon anda, log masuk, dan tekan play. Pakai earphone untuk dengar coach dengan jelas.</p></details>
+        <details><summary>Ini langganan ke?</summary><p>Bukan. Sekali bayar RM59 untuk keseluruhan program.</p></details>
+      </div>
+    </section>
+
+    <!-- the close -->
+    <section class="final">
+      <h2>Anda dah cuba macam-macam.<br><span class="grad">15 minit ini lain, sebab ia ikut rentak.</span></h2>
+      <p class="sub">Tak perlu tunggu Isnin. Tak perlu jadi sempurna. Pakai earphone, tekan play, dan biar coach bawa anda, hari demi hari.</p>
+      <a class="btn lg buy" href="#get">Saya Nak Mula — RM59</a>
+      <a class="wa" href="#" data-wa><svg><use href="#i-chat"/></svg>Ada soalan? WhatsApp kami</a>
+    </section>
+
+    <footer class="foot">
+      <div class="brand" style="font-size:16px"><svg class="mark" style="width:26px;height:26px"><use href="#mk"/></svg>HITFAT <em>SYNC</em></div>
+      <div><b>Bersenam dengan selamat.</b> HITFAT SYNC 30 ada gerakan melompat dan berintensiti tinggi. Kalau anda ada kecederaan, masalah jantung atau tekanan darah, sedang hamil atau baru bersalin, dapatkan nasihat doktor sebelum mula, dan pilih level Easy. Berhenti kalau rasa sakit, pening atau tidak selesa di dada.</div>
+      <div>© 2026 HITFAT · app.hitfat.io</div>
+    </footer>
+  </div>
+</main>
+
+<!-- the 30-second sample, with sound -->
+<div class="smp" id="smp" role="dialog" aria-modal="true" aria-label="Contoh HITFAT SYNC 30">
+  <div class="smp-in">
+    <video id="smpv" src="img/sample.mp4" poster="img/sample.jpg" playsinline controls preload="none"></video>
+    <a class="btn lg buy" href="#get" data-close>Dapatkan SYNC · RM59</a>
+    <button class="cl" type="button" data-close>Tutup</button>
+  </div>
+</div>
+
+<!-- the mini player, always one tap from buying -->
+<a class="mini buy" href="#get" aria-label="Dapatkan HITFAT SYNC 30 dengan RM59">
+  <img src="img/s1.jpg" alt="" width="46" height="46">
+  <div><b>HITFAT SYNC 30</b><small>30 hari · 15 min sehari · RM59</small></div>
+  <span class="btn sm">Dapatkan</span>
+  <i id="mbar"></i>
+</a>
+
+<div class="ck" id="ck" role="dialog" aria-modal="true" aria-labelledby="ck-t">
+  <form class="ck-in" id="ck-f" novalidate>
+    <div class="ck-hd"><b id="ck-t">HITFAT SYNC 30 · RM59</b><button type="button" class="ck-x" aria-label="Tutup" onclick="ckClose()">✕</button></div>
+    <p class="ck-p">Bayar sekali, milik anda selamanya. Selepas bayar, log masuk app HITFAT+ dengan emel yang sama.</p>
+    <label for="ck-n">Nama</label><input id="ck-n" autocomplete="name" placeholder="Nama penuh">
+    <label for="ck-e">Emel</label><input id="ck-e" type="email" autocomplete="email" inputmode="email" placeholder="nama@contoh.com">
+    <label for="ck-ph">No. telefon</label><input id="ck-ph" type="tel" autocomplete="tel" inputmode="tel" placeholder="012-345 6789">
+    <label>Cara bayar</label>
+    <div class="ck-ch"><button type="button" class="on" data-ch="1">FPX Online Banking</button><button type="button" data-ch="6">DuitNow QR</button></div>
+    <div class="ck-err" id="ck-err"></div>
+    <button class="btn" id="ck-go" type="submit">Bayar RM59</button>
+    <div class="ck-note">Pembayaran selamat melalui Bayarcash. Guna emel yang sama untuk log masuk app nanti.</div>
+    <a class="ck-help" href="#" data-wa>Masalah bayaran? WhatsApp kami</a>
+  </form>
+</div>
+
+<script>
+/* paying: this page's sheet → landing-pay (Bayarcash) → /sync/berjaya/ → the app, as THE START does */
+var PAY_FN='https://ercvaagznsndvrewlvgt.supabase.co/functions/v1/landing-pay', SKU='prog_sync30', PRICE=59;
+var META_PIXEL_ID='1860516742038949';     /* HITFAT+ Pixel, as /start and /ladies */
+var TIKTOK_PIXEL_ID='';   /* TikTok Pixel ID */
+/* conversion tracking: PageView on open, ViewContent when the price is seen, InitiateCheckout on every buy tap.
+   The Purchase event belongs on the payment's thank-you page. Nothing loads while the IDs are empty. */
+if(META_PIXEL_ID){
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init',META_PIXEL_ID); fbq('track','PageView');
+}
+if(TIKTOK_PIXEL_ID){
+  !function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]=n||{};var o=d.createElement("script");o.type="text/javascript";o.async=!0;o.src=i+"?sdkid="+e+"&lib="+t;var a=d.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};ttq.load(TIKTOK_PIXEL_ID);ttq.page();}(window,document,'ttq');
+}
+var VAL={value:59,currency:'MYR',content_name:'HITFAT SYNC 30',content_type:'product',content_ids:['prog_sync30']};
+function track(ev,custom){
+  try{ if(window.fbq) custom?fbq('trackCustom',ev,VAL):fbq('track',ev,VAL); }catch(e){}
+  try{ if(window.ttq) ttq.track(custom?'ClickButton':ev,{value:59,currency:'MYR',content_id:'prog_sync30',content_name:'HITFAT SYNC 30'}); }catch(e){}
+}
+var S=[['Full Body','Asas seluruh badan'],['Legs','Lunge, squat dan lompat'],['Upper Body + Core','Dada, lengan dan perut'],['Full Body 2','Seluruh badan, gerakan baru'],
+  ['Legs + Cardio','Kaki kuat, jantung laju'],['Core','Perut dan pinggang'],['Push','Dada, bahu dan trisep'],['Leg Power','Kaki, punggung dan lompat'],['HIIT','Kardio habis-habisan'],['Final Test','Lihat sejauh mana anda dah pergi']];
+var P=[{t:'Foundation',from:1,to:9,s:[1,2,3],c:'#FF2E43'},{t:'Build',from:10,to:18,s:[4,5,6],c:'#FF7A1A'},{t:'Strong',from:19,to:30,s:[7,8,9,10],c:'#7C5CFF'}];
+var tl=document.getElementById('tl'), h='';
+P.forEach(function(p,k){
+  h+='<div class="ph'+(k?' x':'')+'" style="--pc:'+p.c+'"><i></i>Fasa '+(k+1)+' · '+p.t+' <span>Hari '+p.from+'–'+p.to+'</span></div>';
+  for(var d=p.from;d<=p.to;d++){
+    var sn=p.s[(d-p.from)%p.s.length], x=S[sn-1], ck=(d===1||d===15||d===30);
+    h+='<div class="tr'+(ck?' ck':'')+(d>9?' x':'')+'"><span class="n">'+d+'</span><span class="t"><img src="img/s'+sn+'.jpg" alt="" loading="lazy" width="42" height="42"><div><b>Hari '+d+' · '+x[0]+'</b><small>'+x[1]+'</small></div></span><span class="d">15:00</span></div>';
+  }
+});
+tl.insertAdjacentHTML('beforeend',h);
+document.getElementById('more').onclick=function(){ var s=tl.classList.toggle('short'); this.textContent=s?'Tunjuk semua 30 hari':'Tunjuk kurang'; };
+var sh=document.getElementById('shelf');
+sh.innerHTML=S.map(function(x,i){ return '<div class="al"><img src="img/s'+(i+1)+'.jpg" alt="'+x[0]+'" loading="lazy" width="720" height="720"><b>'+x[0]+'</b><small>'+x[1]+'</small></div>'; }).join('');
+/* an affiliate's link (?ref=CODE), kept 30 days, as the other pages; SYNC pays no commission yet (59-plus-sync.sql) */
+var REF=(function(){ try{ var m=location.search.match(/[?&]ref=([A-Za-z0-9]{3,16})/), now=Date.now();
+  if(m){ localStorage.setItem('hf_ref',JSON.stringify({c:m[1].toUpperCase(),t:now})); return m[1].toUpperCase(); }
+  var k=JSON.parse(localStorage.getItem('hf_ref')||'null'); return k && now-k.t<30*864e5 ? k.c : ''; }catch(e){ return ''; } })();
+/* every buy button opens the sheet */
+var ck=document.getElementById('ck'), ckCh=1;
+function ckOpen(){ ck.classList.add('on'); setTimeout(function(){ try{ document.getElementById('ck-n').focus(); }catch(e){} },200); }
+function ckClose(){ ck.classList.remove('on'); }
+document.querySelectorAll('.buy').forEach(function(a){
+  a.addEventListener('click',function(e){ e.preventDefault(); track('InitiateCheckout'); ckOpen(); });
+});
+ck.addEventListener('click',function(e){ if(e.target===ck) ckClose(); });
+document.querySelectorAll('.ck-ch button').forEach(function(b){
+  b.addEventListener('click',function(){ ckCh=+b.getAttribute('data-ch'); document.querySelectorAll('.ck-ch button').forEach(function(x){ x.classList.toggle('on',x===b); }); });
+});
+/* Meta's cookies, so the server's Purchase (Conversions API) matches the ad */
+function fbCookie(k){ var m=document.cookie.match(new RegExp('(?:^|; )'+k+'=([^;]*)')); return m?decodeURIComponent(m[1]):''; }
+function fbcFromUrl(){ var c=(location.search.match(/[?&]fbclid=([^&]+)/)||[])[1]; return c?'fb.1.'+Date.now()+'.'+decodeURIComponent(c):''; }
+document.getElementById('ck-f').addEventListener('submit',function(e){
+  e.preventDefault();
+  var n=document.getElementById('ck-n').value.trim(), em=document.getElementById('ck-e').value.trim(), ph=document.getElementById('ck-ph').value.trim(),
+      er=document.getElementById('ck-err'), go=document.getElementById('ck-go'), back=function(m){ er.textContent=m; go.disabled=false; go.textContent='Bayar RM59'; };
+  if(n.length<2){ er.textContent='Masukkan nama anda.'; return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){ er.textContent='Semak emel anda.'; return; }
+  if(ph.replace(/\D/g,'').length<9){ er.textContent='Masukkan no. telefon penuh.'; return; }
+  er.textContent=''; go.disabled=true; go.textContent='Membuka halaman bayaran…';
+  track('AddPaymentInfo');
+  fetch(PAY_FN+'?action=create',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({sku:SKU,name:n,email:em,phone:ph,channel:ckCh,fbp:fbCookie('_fbp'),fbc:fbCookie('_fbc')||fbcFromUrl(),ref:REF})})
+    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+    .then(function(x){ if(x.ok && x.d && x.d.url){ location.href=x.d.url; return; } back((x.d&&x.d.error)||'Tidak dapat membuka halaman bayaran. Cuba lagi.'); })
+    ['catch'](function(){ back('Sambungan terputus. Cuba lagi.'); });
+});
+/* the price seen = ViewContent, once */
+if('IntersectionObserver' in window){ var seen=false, io=new IntersectionObserver(function(es){ es.forEach(function(x){ if(x.isIntersecting && !seen){ seen=true; track('ViewContent'); io.disconnect(); } }); },{threshold:.4}); io.observe(document.getElementById('get')); }
+/* SYNC's own proof: Seth adds each tester's Wrapped card here, e.g. {img:'img/wr/aina.jpg', name:'Aina, 24', line:'Pertama kali saya tak skip workout seminggu.'} */
+var WRAPPED=[];
+if(WRAPPED.length){ var wr=document.getElementById('wr-own'), row=document.getElementById('wr-row');
+  row.innerHTML=WRAPPED.map(function(w){ return '<figure class="wrc"><img src="'+w.img+'" alt="Kad Wrapped '+w.name+'" loading="lazy"><figcaption><b>'+w.name+'</b><span>“'+w.line+'”</span></figcaption></figure>'; }).join('');
+  wr.hidden=false; }
+/* the inline sample in the video section */
+var vid=document.getElementById('vid'), vp=document.getElementById('vidp');
+if(vp) vp.addEventListener('click',function(){ vid.parentNode.classList.add('on'); vid.setAttribute('controls',''); try{ vid.play(); }catch(e){} track('PlaySample',true); });
+/* WhatsApp: the same number as HITFAT's other pages */
+var WA='60178040920', WA_TEXT='Hai HITFAT, saya nak tanya tentang HITFAT SYNC 30.';
+document.querySelectorAll('[data-wa]').forEach(function(a){ a.href='https://wa.me/'+WA+'?text='+encodeURIComponent(WA_TEXT); if(!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){ a.target='_blank'; a.rel='noopener'; } });
+/* the sample: the big play button and the link open it, with sound */
+var smp=document.getElementById('smp'), smpv=document.getElementById('smpv');
+document.querySelectorAll('[data-sample]').forEach(function(b){ b.addEventListener('click',function(){ smp.classList.add('on'); try{ smpv.currentTime=0; smpv.play(); }catch(e){} track('PlaySample',true); }); });
+smp.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click',function(){ smp.classList.remove('on'); try{ smpv.pause(); }catch(e){} }); });
+smp.addEventListener('click',function(e){ if(e.target===smp){ smp.classList.remove('on'); try{ smpv.pause(); }catch(x){} } });
+/* the mini player's bar fills as you scroll, like a song playing */
+var mb=document.getElementById('mbar');
+function onS(){ var m=document.documentElement, p=m.scrollTop/Math.max(1,m.scrollHeight-m.clientHeight); mb.style.setProperty('--p',(Math.min(1,p)*100).toFixed(1)+'%'); }
+window.addEventListener('scroll',onS,{passive:true}); onS();
+</script>
+</body>
+</html>

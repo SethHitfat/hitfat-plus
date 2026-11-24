@@ -650,6 +650,8 @@ const BUY_GO={lad4:function(){ openProgram(LB30_ID); if(typeof lbBuy==='function
               /* THE START (11 Nov 2026): app.hitfat.io/start, paid there (?tebus=mula, mula.js mfTebus) or bought in the app (?beli=mula) */
               mula:function(){ if(typeof mfBuy==='function'){ openProgram(MF_ID); mfBuy(); } },
               tebus_mula:function(){ if(typeof mfTebus==='function') mfTebus(0); },
+              /* HITFAT SYNC 30 (24 Nov 2026): app.hitfat.io/sync, paid there (?tebus=sync30, sync30.js syTebus) */
+              tebus_sync30:function(){ if(typeof syTebus==='function') syTebus(0); },
               /* ?beli=affiliate (26 Oct 2026): the /affiliate page's Mohon button. Me, and
                  the ask if she is not one yet (her status and links are on Me otherwise) */
               affiliate:function(){ switchTab('me'); _aff=undefined; affLoad();
@@ -664,7 +666,7 @@ function captureBuyParam(){
       /* (11 Nov 2026) THE START sells from /start too: landing-pay says which program the order was for */
       const go=p=>location.replace(p+location.search), hl=/^HL[A-Z0-9]+/.exec(lo)[0];
       fetch(SUPA_URL+'/functions/v1/landing-pay?action=status&order='+encodeURIComponent(hl)).then(r=>r.json())
-        .then(d=>go(d && d.sku==='prog_mula' ? '/start/berjaya/' : '/ladies/berjaya/'), ()=>go('/ladies/berjaya/'));
+        .then(d=>go(d && d.sku==='prog_mula' ? '/start/berjaya/' : d && d.sku==='prog_sync30' ? '/sync/berjaya/' : '/ladies/berjaya/'), ()=>go('/ladies/berjaya/'));
       return;
     }
     const q=new URLSearchParams(location.search), b=q.get('beli'), t=q.get('tebus');

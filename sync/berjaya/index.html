@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Pembayaran berjaya · HITFAT SYNC 30</title>
+<meta name="theme-color" content="#0E0A0B">
+<link rel="icon" href="/img/icon/favicon-64.png?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+<!--
+  HITFAT SYNC 30 · "Pembayaran berjaya" (24 Nov 2026), after THE START's page.
+  landing-pay sends the buyer back here with the order number. It asks
+  landing-pay whether Bayarcash has it paid, counts the Purchase for Meta
+  once an order (eventID sync30-<order>, as landing-pay's Conversions API),
+  and opens the app at ?tebus=sync30&o=…, so SYNC opens on whichever Google
+  account they sign in with (sync30.js syTebus).
+-->
+<style>
+:root{ --bg:#0E0A0B; --card:#181314; --card2:#221B1C; --red:#FF2E43; --tx:#fff; --mut:rgba(255,255,255,.68); --line:rgba(255,255,255,.08); --ok:#1ED760 }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.hero{background:linear-gradient(180deg,#8E1328 0%,#4A0B15 55%,var(--bg) 100%);padding:calc(22px + env(safe-area-inset-top,0px)) 0 64px;text-align:center}
+.w{max-width:520px;margin:0 auto;padding:0 max(20px,env(safe-area-inset-left,0px))}
+.brand{font:700 15px/1 Oswald,Impact,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+.brand em{color:var(--red);font-style:normal}
+.tick{width:84px;height:84px;margin:30px auto 18px;border-radius:50%;background:#fff;color:#16A34A;display:grid;place-items:center;box-shadow:0 14px 34px rgba(0,0,0,.35)}
+.tick svg{width:44px;height:44px}
+.bad .tick{color:#C42A2A}
+.spin{width:38px;height:38px;border-radius:50%;border:4px solid #F3D3D7;border-top-color:var(--red);animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+h1{margin:0;font:700 34px/1.05 Oswald,Impact,sans-serif;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+.lead{margin:12px auto 0;max-width:420px;color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.4);padding:22px;margin-top:-40px;position:relative}
+.ord{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--card2);border-radius:14px;padding:12px 14px;font-size:14px;color:var(--mut);margin-bottom:18px}
+.ord b{color:#fff;font-size:16px;letter-spacing:.02em;word-break:break-all;text-align:right}
+.steps{display:flex;flex-direction:column;gap:14px;margin:0 0 20px}
+.st{display:flex;gap:12px;align-items:flex-start}
+.st i{flex:none;width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;font-style:normal;font-weight:800;display:grid;place-items:center;font-size:15px}
+.st div{font-size:15.5px;line-height:1.45}
+.st small{display:block;color:var(--mut);font-size:13.5px}
+.cta{display:flex;align-items:center;justify-content:center;width:100%;padding:18px 22px;border:0;border-radius:999px;background:var(--red);color:#fff;
+  font:800 17px/1.2 Inter,sans-serif;text-decoration:none;box-shadow:0 12px 30px rgba(255,46,67,.4)}
+.note{margin-top:14px;text-align:center;font-size:13.5px;color:var(--mut)}
+.help{margin:22px 0 40px;text-align:center;font-size:14px;color:var(--mut)}
+.help a{color:#fff;font-weight:700}
+</style>
+</head>
+<body>
+<div class="hero"><div class="w">
+  <div class="brand">HITFAT <em>SYNC</em> 30</div>
+  <div class="tick" id="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+  <h1 id="h">Pembayaran berjaya! 🎉</h1>
+  <p class="lead" id="lead">Terima kasih. HITFAT SYNC 30 milik anda selamanya. Resit Bayarcash dihantar ke emel anda.</p>
+</div></div>
+
+<div class="w"><div class="card" id="card">
+  <div class="ord" id="ord" hidden><span>No. pesanan</span><b id="ordno"></b></div>
+  <div class="steps">
+    <div class="st"><i>1</i><div><b>Tekan "Buka HITFAT SYNC"</b><small>App HITFAT+ terbuka di telefon anda. Tak perlu App Store.</small></div></div>
+    <div class="st"><i>2</i><div><b>Log masuk dengan Google</b><small>Sebaiknya guna emel yang sama dengan bayaran tadi.</small></div></div>
+    <div class="st"><i>3</i><div><b>Pilih tahap, pakai earphone, mula Day 1</b><small>Easy, Medium atau Hard. 15 minit, di rumah, tanpa alat.</small></div></div>
+  </div>
+  <a class="cta" id="go" href="/?tebus=sync30">Buka HITFAT SYNC</a>
+  <div class="note">Lepas buka, app akan tunjuk cara letak HITFAT+ di skrin telefon anda.</div>
+</div>
+<div class="help">Ada masalah? <a id="wa" href="#" target="_blank" rel="noopener">WhatsApp kami</a></div>
+</div>
+
+<script>
+/* ── CONFIG ── */
+var PIXEL_ID = '1860516742038949'; /* Meta Pixel ID, the same as sync/index.html */
+var WA = '60178040920';
+
+/* what Bayarcash sends back: the order number (its name varies), and a status if any */
+/* Bayarcash adds its own "?payment_intent_id=…" after ours (27 Oct 2026, the
+   first DuitNow payment after the change): read every "?" as "&", and keep
+   only the HL… part of the order number */
+var q = new URLSearchParams(location.search.replace(/^\?/,'').replace(/\?/g,'&'));
+function pick(names){ for(var i=0;i<names.length;i++){ var v=q.get(names[i]); if(v) return String(v).trim().slice(0,64); } return ''; }
+var order = pick(['order_number','order_no','order','orderNo','ref_no','reference','ref','transaction_id','txn_id']);
+var hl = /^HL[A-Z0-9]+/i.exec(order); if(hl) order = hl[0].toUpperCase();
+var status = pick(['status','payment_status','status_description']).toLowerCase();
+var failed = /fail|cancel|unsuccess|reject|declin|expire/.test(status);
+
+document.getElementById('wa').href = 'https://wa.me/'+WA+'?text='+encodeURIComponent('Hai HITFAT, saya dah bayar HITFAT SYNC 30'+(order?' (no. pesanan '+order+')':'')+' dan perlukan bantuan.');
+
+var PAY_FN = 'https://ercvaagznsndvrewlvgt.supabase.co/functions/v1/landing-pay';
+var card = document.getElementById('card'), cardHTML = card.innerHTML;
+
+function showFailed(){
+  /* the bank said no: nothing was charged, back to the page to try again */
+  document.body.className='bad';
+  document.getElementById('tick').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+  document.getElementById('h').textContent='Pembayaran tidak berjaya';
+  document.getElementById('lead').textContent='Tiada caj dibuat. Anda boleh cuba sekali lagi.';
+  card.innerHTML='<a class="cta" href="/sync/">Cuba lagi</a><div class="note">Masih bermasalah? WhatsApp kami di bawah.</div>';
+}
+function showPaid(sure){
+  document.body.className='';
+  if(typeof okTick!=='undefined') document.getElementById('tick').innerHTML=okTick;
+  document.getElementById('h').textContent='Pembayaran berjaya! 🎉';
+  document.getElementById('lead').textContent='Terima kasih. HITFAT SYNC 30 milik anda selamanya. Resit dihantar ke emel anda.';
+  card.innerHTML=cardHTML;
+  if(order){ document.getElementById('ord').hidden=false; document.getElementById('ordno').textContent=order; }
+  document.getElementById('go').href = '/?tebus=sync30'+(order?'&o='+encodeURIComponent(order):'');
+  /* the Purchase, once an order on this phone, and only once the payment is confirmed */
+  if(PIXEL_ID && sure!==false){
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;
+    s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', PIXEL_ID); fbq('track','PageView');
+    var k='hf_px_sync30_'+(order||'x'), seen=false;
+    try{ seen=!!localStorage.getItem(k); localStorage.setItem(k,'1'); }catch(e){}
+    if(!seen) fbq('track','Purchase',{value:59,currency:'MYR',content_ids:['prog_sync30'],content_type:'product'}, order?{eventID:'sync30-'+order}:undefined);
+  }
+}
+/* still settling after a minute: it opens by itself once the bank tells us */
+function showSlow(){
+  showPaid(false);
+  document.getElementById('h').textContent='Pembayaran sedang diproses';
+  document.getElementById('lead').textContent='Bank anda belum sahkan lagi. Biasanya beberapa minit. HITFAT SYNC 30 terbuka sendiri sebaik disahkan.';
+}
+
+if(failed) showFailed();
+else if(/^HL[A-Z0-9]+$/.test(order)){
+  /* paid through landing-pay: ask what Bayarcash says before saying "berjaya" */
+  var okTick=document.getElementById('tick').innerHTML; document.getElementById('tick').innerHTML='<div class="spin"></div>';
+  document.getElementById('h').textContent='Menyemak pembayaran anda…';
+  document.getElementById('lead').textContent='Sebentar sahaja. Jangan tutup halaman ini.';
+  card.innerHTML='<div class="note" style="margin:6px 0">Menunggu pengesahan dari bank…</div>';
+  var tries=0;
+  (function ask(){
+    fetch(PAY_FN+'?action=status&order='+encodeURIComponent(order)).then(function(r){ return r.json(); }).then(function(d){
+      if(d && d.status==='paid') return showPaid();
+      if(d && d.status==='failed') return showFailed();
+      if(++tries<20) return setTimeout(ask,3000);
+      showSlow();
+    })['catch'](function(){ if(++tries<20) setTimeout(ask,3000); else showSlow(); });
+  })();
+}
+else showPaid();
+</script>
+</body>
+</html>

@@ -35,6 +35,7 @@ import { CATALOGUE, CHANNELS, BC_API, SITE, CORS, json, isPaidStatus, isFailedSt
 const LANDING: Record<string, string> = {
   prog_lad4: '/ladies/berjaya/',            // Ladies Burn 30, RM39
   prog_mula: '/start/berjaya/',             // THE START, RM59 (RM49 11 Nov, RM59 from 12 Nov 2026)
+  prog_sync30: '/sync/berjaya/',            // HITFAT SYNC 30, RM59 (24 Nov 2026)
 };
 
 /* the "baru sertai" card counts orders paid from here on (see ?action=recent) */
@@ -89,8 +90,8 @@ function verify(p: Record<string, unknown>, secret: string): boolean {
    phone go hashed (SHA-256); no health, meal or body data. Without the
    META_CAPI_TOKEN secret this does nothing. */
 const PIXEL_ID = '1860516742038949';                  // HITFAT+ Pixel, as ladies/index.html
-const EVENT_ID: Record<string, string> = { prog_lad4: 'lad4-', prog_mula: 'mula-' };   // as each berjaya page's eventID
-const LANDING_PAGE: Record<string, string> = { prog_lad4: '/ladies/', prog_mula: '/start/' };
+const EVENT_ID: Record<string, string> = { prog_lad4: 'lad4-', prog_mula: 'mula-', prog_sync30: 'sync30-' };   // as each berjaya page's eventID
+const LANDING_PAGE: Record<string, string> = { prog_lad4: '/ladies/', prog_mula: '/start/', prog_sync30: '/sync/' };
 async function sha256(s: string): Promise<string> {
   const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
   return Array.from(new Uint8Array(d), (x) => x.toString(16).padStart(2, '0')).join('');
@@ -152,6 +153,10 @@ const WELCOME: Record<string, Welcome> = {
   prog_mula: { name: 'THE START', tebus: 'mula', color: '#E8480F', ink: '#141414', from: '"HITFAT+ THE START" <hello@mail.hitfat.io>',
     lead: '18 sesi anda sedang menunggu.',
     steps: ['Jawab <b>9 soalan</b>, lebih kurang 2 minit. App pilih tahap anda: Mudah, Asas atau Beransur.', 'Mula <b>Sesi 1</b>: lebih kurang 15 minit, di rumah. Sediakan kerusi yang stabil.'] },
+  /* HITFAT SYNC 30 (24 Nov 2026): sold on app.hitfat.io/sync */
+  prog_sync30: { name: 'HITFAT SYNC 30', tebus: 'sync30', color: '#E5233A', ink: '#0E0A0B', from: '"HITFAT+ SYNC" <hello@mail.hitfat.io>',
+    lead: '30 sesi ikut muzik anda sedang menunggu.',
+    steps: ['Pilih tahap anda: <b>Easy</b>, <b>Medium</b> atau <b>Hard</b>. Boleh tukar bila-bila masa.', 'Pakai earphone dan tekan <b>Day 1</b>: 15 minit, di rumah, tanpa alat.'] },
 };
 function esc(s: unknown): string {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));

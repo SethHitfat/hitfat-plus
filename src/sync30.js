@@ -9,6 +9,7 @@
    Sold on its own: HITFAT+ does NOT include it (the first program like that). Until it has a price it is
    kept out of PROGRAMS, the Store and checkout; testers see it on Home and own it for testing. */
 const SYNC_ID='sync30', SYNC_NAME='HITFAT SYNC 30', SYNC_N=30, SYNC_MIN=15;
+const SYNC_PRICE=59;   /* 24 Nov 2026, Seth: RM59, sold on its own page (app.hitfat.io/sync); deploy/_shared/catalogue.ts says the same */
 const SYNC_LIVE=false, SYNC_TESTERS=['sethnasser1991@gmail.com'];
 /* Vimeo "id" or "id/hash" for each of the 30 videos, filled one by one as Seth uploads them.
    Key: s<session>_<level>. An empty one shows "Video akan datang" on every day that uses it. */
@@ -56,6 +57,46 @@ function syKey(sn,lv){ return 's'+sn+'_'+lv; }
 
 function syTester(){ return SYNC_TESTERS.indexOf(String(HF.email||'').toLowerCase())>=0; }
 /* bought on its own: never through contentOpen()/hasPlus() */
+/* ── ?tebus=sync30 (24 Nov 2026): paid on app.hitfat.io/sync (landing-pay → Bayarcash), back here with the order
+   number. The order is claimed on whichever account they sign in with, as THE START does (mula.js mfTebus). ── */
+function syTebus(tries){
+  tries=tries||0;
+  let o=''; try{ o=localStorage.getItem('hf_tebus_o')||''; }catch(e){}
+  const hl=/^HL[A-Z0-9]+/i.exec(o); if(hl) o=hl[0].toUpperCase();
+  const claim=(typeof sb!=='undefined' && sb && HF.userId) ? sb.rpc('plus_claim_landing', o?{p_order:o}:{}) : Promise.resolve(null);
+  const after=function(){
+    if(owns('prog_'+SYNC_ID)){
+      try{ localStorage.removeItem('hf_tebus_o'); }catch(e){}
+      if(typeof closeProduct==='function') closeProduct();
+      syOpen(); if(typeof toast==='function') toast('Payment confirmed. HITFAT SYNC 30 is yours 🎧');
+      return;
+    }
+    if(tries<2){ if(!tries) syTebusSheet('wait',o); setTimeout(function(){ syTebus(tries+1); },4000); return; }
+    syTebusSheet('miss',o);
+  };
+  Promise.resolve(claim).then(function(){ return loadEntitlement(); }, function(){ return loadEntitlement(); }).then(after, after);
+}
+function syTebusSheet(state,o){
+  let h='<div class="pwtop"><span></span><button class="pwx" aria-label="Close" onclick="closeProduct()">✕</button></div>';
+  if(state==='wait') h+='<div class="co co-done"><div class="co-badge co-wait"><span class="co-dot"></span><span class="co-dot"></span><span class="co-dot"></span></div>'+
+    '<div class="coh">Checking your payment</div><div class="co-s">Usually just a few seconds.</div></div>';
+  else h+='<div class="co co-done"><div class="co-badge co-late">'+glyph('clock')+'</div>'+
+    '<div class="coh">We have not found your payment yet</div>'+
+    '<div class="co-s">If you paid with another email, enter the order number from your Bayarcash receipt.</div></div>'+
+    '<div class="wl-claim"><div class="wl-claim-f"><input id="sy-order" placeholder="Order number" autocomplete="off" value="'+hesc(o||'')+'"><button onclick="syClaim()">Open</button></div></div>'+
+    '<button class="bigbtn lb-btn" onclick="syTebus(1)">Try again</button>'+
+    '<button class="authalt" onclick="window.open(\'https://wa.me/60178040920?text='+encodeURIComponent('Hai HITFAT, saya dah bayar HITFAT SYNC 30 tapi belum terbuka.')+'\',\'_blank\',\'noopener\')">Still locked? <b>WhatsApp us</b></button>';
+  $('pw-body').innerHTML=h; $('pwm').classList.add('on');
+}
+function syClaim(){
+  let o=String((($('sy-order')||{}).value)||'').trim(); const hl=/^HL[A-Z0-9]+/i.exec(o); if(hl) o=hl[0].toUpperCase();
+  if(!o) return toast('Enter the order number from your receipt');
+  if(typeof sb==='undefined' || !sb || !HF.userId) return toast('Sign in first');
+  sb.rpc('plus_claim_landing',{p_order:o}).then(function(r){ if(r.error) throw r.error; return loadEntitlement(); }).then(function(){
+    if(owns('prog_'+SYNC_ID)){ closeProduct(); toast('Unlocked. Welcome to HITFAT SYNC 30'); syOpen(); }
+    else toast('No paid order with that number. Check the receipt, or message us.');
+  })['catch'](function(){ toast('That order could not be checked. Try again shortly.'); });
+}
 function syOwned(){ return (typeof owns==='function' && owns('prog_'+SYNC_ID)) || syTester(); }
 function syLive(){ return SYNC_LIVE || syOwned(); }
 function syData(){
