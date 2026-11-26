@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>HITFAT Performance Tee · RM69, 3 helai RM59 sehelai</title>
-<meta name="description" content="Baju HITFAT Performance. RM69 sehelai, beli 3 helai atau lebih RM59 sehelai. Saiz XS hingga 6XL. Bayar dengan FPX atau DuitNow QR.">
+<meta name="description" content="Baju HITFAT Performance. RM69 sehelai, beli 3 helai atau lebih RM59 sehelai. Saiz XS hingga 6XL. Bayar FPX atau DuitNow QR, ambil di HITFAT Kota Bharu.">
 <meta property="og:title" content="HITFAT Performance Tee">
-<meta property="og:description" content="RM69 sehelai · Beli 3, RM59 sehelai · XS hingga 6XL">
+<meta property="og:description" content="RM69 sehelai · Beli 3, RM59 sehelai · XS hingga 6XL · Ambil di HITFAT Kota Bharu">
 <meta property="og:image" content="https://app.hitfat.io/shop/img/hitam-merah.jpg">
 <meta property="og:url" content="https://app.hitfat.io/shop/">
 <meta name="theme-color" content="#0B0B0C">
@@ -14,164 +14,193 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,100..125,800..900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0B0B0C;--card:#151517;--card2:#1D1D20;--line:#2A2A2E;--ink:#F5F5F6;--ink2:#A3A3AA;--r:#E5233A;--r2:#FF3B4F;--ok:#2ED47A}
+:root{--bg:#0B0B0C;--card:#141416;--card2:#1C1C1F;--line:#26262A;--ink:#F5F5F6;--ink2:#9C9CA4;--r:#E5233A;--r2:#FF4458;--ok:#2ED47A}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:96px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body.has-cart{padding-bottom:88px}
 button{font:inherit;color:inherit}
+a{color:inherit}
+.ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .wrap{max-width:1080px;margin:0 auto;padding:0 16px}
 .disp{font-family:'Archivo',sans-serif;font-style:italic;font-weight:900;font-stretch:112%;letter-spacing:-.01em;line-height:.95;text-transform:uppercase}
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:56px;padding:0 22px;border:0;border-radius:16px;background:var(--r);color:#fff;font-weight:800;font-size:16px;cursor:pointer;text-decoration:none;box-shadow:0 10px 26px rgba(229,35,58,.32)}
+.cta:disabled{opacity:.5;cursor:default;box-shadow:none}
+.ghost{background:var(--card2);box-shadow:none;border:1px solid var(--line)}
+
 /* top */
-.top{position:sticky;top:0;z-index:20;background:rgba(11,11,12,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:0;z-index:20;background:rgba(11,11,12,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;height:58px}
-.logo{font-size:22px}
+.logo{font-size:22px;text-decoration:none}
 .logo i{color:var(--r);font-style:inherit}
-.cartb{display:flex;align-items:center;gap:8px;height:40px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;font-weight:800;font-size:14px}
-.cartb b{min-width:22px;height:22px;border-radius:11px;background:var(--r);display:grid;place-items:center;font-size:12px}
+.cartb{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px 0 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;font-weight:800;font-size:14px}
+.cartb b{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--card2);display:grid;place-items:center;font-size:12px}
+.cartb.has b{background:var(--r)}
+
 /* product */
-.prod{display:grid;gap:22px;padding:18px 0 8px}
-@media(min-width:860px){.prod{grid-template-columns:1.05fr 1fr;gap:40px;padding-top:34px}}
-.gal{position:relative;border-radius:22px;overflow:hidden;background:#111;aspect-ratio:1/1.08}
-@media(min-width:860px){.gal{aspect-ratio:3/4}}
-.gal img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s}
+.prod{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;padding:16px 0 8px}
+@media(min-width:880px){.prod{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:44px;padding-top:36px;align-items:start}.prod>.gal{position:sticky;top:82px}}
+.gal{position:relative;border-radius:24px;overflow:hidden;background:#111;aspect-ratio:1/1.08}
+@media(min-width:880px){.gal{aspect-ratio:3/4}}
+.gal img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;opacity:0;transition:opacity .35s}
 .gal img.on{opacity:1}
-.tag{position:absolute;left:12px;top:12px;z-index:2;padding:7px 12px;border-radius:999px;background:var(--r);font-weight:800;font-size:13px;box-shadow:0 6px 20px rgba(229,35,58,.45)}
-.kick{font-size:13px;font-weight:800;letter-spacing:.14em;color:var(--r2);text-transform:uppercase}
-h1{margin:6px 0 10px;font-size:clamp(40px,11vw,64px)}
-.price{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.price .now{font-size:34px;font-weight:800}
-.price .per{color:var(--ink2);font-size:14px}
-.deal{margin:14px 0 4px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.deal div{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:12px 14px}
-.deal div.hot{border-color:var(--r);background:linear-gradient(160deg,rgba(229,35,58,.22),rgba(229,35,58,.05))}
-.deal small{display:block;color:var(--ink2);font-size:12.5px;font-weight:700}
-.deal b{font-size:22px}
-.deal .per{color:var(--ink2);font-size:13px;font-weight:700}
-.gal img{object-position:50% 40%}
-.deal em{display:block;font-style:normal;font-size:12.5px;color:var(--ok);font-weight:800}
-.lbl{display:flex;justify-content:space-between;margin:22px 0 10px;font-weight:800;font-size:14px}
-.lbl span{color:var(--ink2);font-weight:600}
-.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.col{border:2px solid var(--line);border-radius:16px;background:var(--card);padding:6px 6px 9px;cursor:pointer;text-align:center}
+.gal .tag{position:absolute;left:12px;top:12px;z-index:2;padding:7px 12px;border-radius:999px;background:var(--r);font-weight:800;font-size:13px}
+.kick{font-size:12.5px;font-weight:800;letter-spacing:.16em;color:var(--r2);text-transform:uppercase}
+h1{margin:8px 0 14px;font-size:clamp(34px,9.6vw,58px)}
+.price{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.price .now{font-size:32px;font-weight:800;line-height:1}
+.price .per{color:var(--ink2);font-size:14px;font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;font-size:13px;font-weight:800}
+.pill.r{background:rgba(229,35,58,.15);color:#FF8592;border:1px solid rgba(229,35,58,.45)}
+.pick{display:flex;align-items:center;gap:10px;margin-top:14px;padding:11px 14px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:14px;font-weight:700}
+.pick .ic{color:var(--r2)}
+.pick small{display:block;color:var(--ink2);font-weight:600;font-size:12.5px}
+
+.lbl{display:flex;justify-content:space-between;gap:10px;margin:24px 0 10px;font-weight:800;font-size:14px}
+.lbl span{color:var(--ink2);font-weight:600;text-align:right}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.col{border:2px solid var(--line);border-radius:16px;background:var(--card);padding:5px 5px 9px;cursor:pointer;text-align:center}
 .col img{display:block;width:100%;aspect-ratio:1;object-fit:cover;object-position:50% 38%;border-radius:11px}
 .col span{display:block;margin-top:7px;font-size:12.5px;font-weight:800}
 .col.on{border-color:var(--r)}
-.sizes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.sizes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
 .sz{height:48px;border:2px solid var(--line);border-radius:13px;background:var(--card);font-weight:800;font-size:15px;cursor:pointer}
 .sz.on{border-color:var(--r);background:rgba(229,35,58,.14)}
-.chart{margin-top:12px;border:1px solid var(--line);border-radius:16px;background:var(--card);padding:0 14px}
-.chart summary{cursor:pointer;padding:13px 0;font-weight:800;font-size:14.5px;list-style:none;display:flex;justify-content:space-between}
+.chart{margin-top:10px;border:1px solid var(--line);border-radius:16px;background:var(--card);padding:0 14px}
+.chart summary{cursor:pointer;padding:13px 0;font-weight:800;font-size:14px;list-style:none;display:flex;align-items:center;gap:8px}
 .chart summary::-webkit-details-marker{display:none}
-.chart summary::after{content:'+';color:var(--r2);font-size:18px;line-height:1}
+.chart summary .ic{color:var(--ink2)}
+.chart summary span{color:var(--ink2);font-weight:600}
+.chart summary::after{content:'+';margin-left:auto;color:var(--r2);font-size:20px;line-height:1}
 .chart[open] summary::after{content:'−'}
-.chart summary span{color:var(--ink2);font-weight:600;margin-right:auto;margin-left:6px}
 .chart table{width:100%;border-collapse:collapse;font-size:14px;text-align:center}
-.chart th{background:var(--r);padding:8px 4px;font-size:12.5px}
+.chart th{background:var(--card2);color:var(--ink2);padding:8px 4px;font-size:12px;font-weight:800}
 .chart th:first-child{border-radius:10px 0 0 10px}.chart th:last-child{border-radius:0 10px 10px 0}
 .chart td{padding:8px 4px;border-bottom:1px solid var(--line)}
+.chart tr:last-child td{border-bottom:0}
 .chart td:first-child{font-weight:800}
-.chart tr.on td{background:rgba(229,35,58,.16);color:#fff}
+.chart tr.on td{background:rgba(229,35,58,.16)}
 .chart p{color:var(--ink2);font-size:12.5px;margin:10px 0 14px}
-.hint{margin-top:8px;font-size:13px;color:var(--ink2)}
+.hint{margin-top:10px;font-size:13px;color:var(--ink2)}
 .hint a{color:var(--ink);font-weight:700}
-.add{display:grid;grid-template-columns:128px 1fr;gap:10px;margin-top:22px}
+.add{display:grid;grid-template-columns:124px minmax(0,1fr);gap:10px;margin-top:24px}
 .step{display:flex;align-items:center;justify-content:space-between;height:56px;border:2px solid var(--line);border-radius:16px;background:var(--card);padding:0 6px}
 .step button{width:40px;height:40px;border:0;border-radius:11px;background:var(--card2);font-size:22px;font-weight:800;cursor:pointer}
 .step b{font-size:18px}
-.cta{height:56px;border:0;border-radius:16px;background:var(--r);font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 10px 26px rgba(229,35,58,.35)}
-.cta:disabled{opacity:.55;cursor:default}
 .err{min-height:20px;margin-top:8px;color:var(--r2);font-size:13.5px;font-weight:700}
-/* cart */
-.cart{margin:26px 0 10px;border:1px solid var(--line);border-radius:22px;background:var(--card);padding:18px 16px}
-.cart h2{margin:0 0 4px;font-size:30px}
-.empty{color:var(--ink2);font-size:14.5px;margin:6px 0 2px}
-.ln{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+
+/* sections below */
+.sec{margin:40px 0 0}
+.sec h2{margin:0 0 14px;font-size:clamp(26px,7vw,36px)}
+.tiers{border:1px solid var(--line);border-radius:20px;background:var(--card);overflow:hidden}
+.tiers>div{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.tiers>div:last-child{border-bottom:0}
+.tiers b{font-size:17px}
+.tiers em{font-style:normal;color:var(--ok);font-weight:800;font-size:13px;margin-left:6px}
+.tiers .hot{background:linear-gradient(90deg,rgba(229,35,58,.14),transparent)}
+.tiers small{display:block;color:var(--ink2);font-size:12.5px;font-weight:600}
+.note{margin:10px 2px 0;color:var(--ink2);font-size:13.5px}
+.steps{display:grid;gap:10px}
+@media(min-width:760px){.steps{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.steps>div{display:flex;gap:14px;align-items:flex-start;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.steps i{flex:none;width:34px;height:34px;border-radius:11px;background:var(--r);display:grid;place-items:center;font-style:normal;font-weight:900}
+.steps b{display:block;margin-bottom:2px}
+.steps p{margin:0;color:var(--ink2);font-size:14px}
+.place{display:grid;gap:14px;padding:18px 16px;border:1px solid var(--line);border-radius:20px;background:radial-gradient(120% 90% at 100% 0%,rgba(229,35,58,.18),transparent 60%),var(--card)}
+.place b{font-size:17px}
+.place p{margin:4px 0 0;color:var(--ink2);font-size:14.5px}
+.place .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.place .cta{height:50px;font-size:15px;padding:0 12px}
+.foot{margin-top:44px;padding:22px 0 30px;border-top:1px solid var(--line);color:var(--ink2);font-size:13px;text-align:center}
+.foot b{color:var(--ink)}
+
+/* bottom bar */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 0 calc(10px + env(safe-area-inset-bottom));background:rgba(11,11,12,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);transform:translateY(110%);transition:transform .3s}
+.dock.on{transform:none}
+.dock .wrap{display:flex;align-items:center;gap:12px}
+.dock .m{flex:1;min-width:0}
+.dock .m b{display:block;font-size:18px;line-height:1.2}
+.dock .m small{color:var(--ink2);font-size:12.5px;font-weight:700}
+.dock .cta{height:50px}
+
+/* sheets: cart, then checkout */
+.sh{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.62);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.sh.on{opacity:1;pointer-events:auto}
+.sh-in{width:100%;max-width:520px;max-height:92vh;overflow:auto;background:var(--card);border-radius:24px 24px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));transform:translateY(30px);transition:transform .25s}
+.sh.on .sh-in{transform:none}
+@media(min-width:620px){.sh{align-items:center}.sh-in{border-radius:24px}}
+.sh-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.sh-hd b{font-size:19px}
+.x{width:36px;height:36px;border:0;border-radius:18px;background:var(--card2);cursor:pointer;display:grid;place-items:center}
+.empty{color:var(--ink2);font-size:14.5px;margin:8px 0 4px}
+.ln{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
 .ln img{width:56px;height:56px;border-radius:12px;object-fit:cover;object-position:50% 38%}
 .ln .t{font-weight:800;font-size:14.5px}
 .ln .t small{display:block;color:var(--ink2);font-weight:600;font-size:13px}
 .ln .q{display:flex;align-items:center;gap:6px}
 .ln .q button{width:32px;height:32px;border:1px solid var(--line);border-radius:10px;background:var(--card2);font-weight:800;cursor:pointer}
 .ln .q b{min-width:18px;text-align:center}
-.nudge{margin:14px 0 4px;padding:12px 14px;border-radius:14px;background:rgba(229,35,58,.13);border:1px dashed var(--r);font-size:14px;font-weight:700}
-.nudge.ok{background:rgba(46,212,122,.1);border-color:var(--ok)}
+.nudge{margin:14px 0 4px;padding:12px 14px;border-radius:14px;background:rgba(229,35,58,.12);border:1px dashed rgba(229,35,58,.7);font-size:14px;font-weight:700}
+.nudge.ok{background:rgba(46,212,122,.09);border-color:rgba(46,212,122,.7)}
 .nudge.ok b{color:var(--ok)}
 .bar{height:6px;border-radius:3px;background:var(--card2);margin-top:9px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--r);border-radius:3px;transition:width .3s}
 .nudge.ok .bar i{background:var(--ok)}
 .sum{margin-top:12px;font-size:14.5px}
-.sum div{display:flex;justify-content:space-between;padding:4px 0}
-.sum .tot{font-size:20px;font-weight:800;padding-top:10px;border-top:1px solid var(--line);margin-top:6px}
+.sum div{display:flex;justify-content:space-between;padding:3px 0}
+.sum .tot{font-size:19px;font-weight:800;padding-top:10px;border-top:1px solid var(--line);margin-top:6px}
 .sum s{color:var(--ink2);font-weight:600;margin-right:6px;font-size:15px}
-.cart .cta{width:100%;margin-top:14px}
-.pays{display:flex;justify-content:center;gap:8px;margin-top:12px;color:var(--ink2);font-size:12.5px;font-weight:700}
-.pays span{padding:5px 10px;border:1px solid var(--line);border-radius:999px}
-/* info */
-.info{display:grid;gap:10px;margin:18px 0 30px}
-@media(min-width:760px){.info{grid-template-columns:repeat(3,1fr)}}
-.info div{border:1px solid var(--line);border-radius:18px;padding:16px;background:var(--card)}
-.info b{display:block;margin-bottom:4px}
-.info p{margin:0;color:var(--ink2);font-size:14px}
-.foot{padding:20px 0 30px;color:var(--ink2);font-size:13px;text-align:center}
-.foot a{color:var(--ink)}
-/* bottom bar */
-.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(11,11,12,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);transform:translateY(110%);transition:transform .3s}
-.dock.on{transform:none}
-.dock .wrap{display:flex;align-items:center;gap:12px;padding:0}
-.dock .m{flex:1;min-width:0}
-.dock .m b{display:block;font-size:18px}
-.dock .m small{color:var(--ink2);font-size:12.5px;font-weight:700}
-.dock .cta{height:50px;padding:0 22px}
-/* checkout sheet */
-.ck{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
-.ck.on{opacity:1;pointer-events:auto}
-.ck-in{width:100%;max-width:520px;max-height:92vh;overflow:auto;background:var(--card);border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));transform:translateY(30px);transition:transform .25s}
-.ck.on .ck-in{transform:none}
-@media(min-width:620px){.ck{align-items:center}.ck-in{border-radius:24px}}
-.ck-hd{display:flex;justify-content:space-between;align-items:center}
-.ck-hd b{font-size:19px}
-.ck-x{width:36px;height:36px;border:0;border-radius:18px;background:var(--card2);cursor:pointer}
-.ck-sum{margin:12px 0 4px;padding:12px 14px;border-radius:14px;background:var(--card2);font-size:14px}
-.ck-sum div{display:flex;justify-content:space-between;padding:2px 0}
+.sh .cta{width:100%;margin-top:14px}
+.more{display:block;width:100%;margin-top:8px;height:44px;border:0;background:none;color:var(--ink2);font-weight:700;cursor:pointer}
+.ck-sum{margin:6px 0 4px;padding:12px 14px;border-radius:14px;background:var(--card2);font-size:14px}
+.ck-sum div{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
 .ck-sum .tot{font-weight:800;font-size:17px;border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
-.ck label{display:block;margin-top:13px;font-size:13px;font-weight:800}
-.ck input{width:100%;height:50px;margin-top:6px;padding:0 14px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font:16px 'Plus Jakarta Sans',sans-serif}
-.ck input:focus{outline:0;border-color:var(--r)}
-.opt{display:grid;gap:8px;margin-top:6px}
-.opt.two{grid-template-columns:1fr 1fr}
+.sh label{display:block;margin-top:14px;font-size:13px;font-weight:800}
+.sh input{width:100%;height:50px;margin-top:6px;padding:0 14px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font:16px 'Plus Jakarta Sans',sans-serif}
+.sh input:focus{outline:0;border-color:var(--r)}
+.getrow{display:flex;gap:10px;align-items:center;margin-top:6px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--bg);font-size:14px;font-weight:700}
+.getrow .ic{color:var(--r2)}
+.getrow small{display:block;color:var(--ink2);font-weight:600;font-size:12.5px}
+.opt{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
 .opt button{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;min-height:62px;padding:10px 14px;border:2px solid var(--line);border-radius:15px;background:var(--bg);cursor:pointer;text-align:left}
 .opt button b{font-size:15px}
 .opt button small{color:var(--ink2);font-size:12.5px;font-weight:600}
 .opt button.on{border-color:var(--r);background:rgba(229,35,58,.12)}
-.opt button:disabled{opacity:.45;cursor:default}
-.ck .cta{width:100%;margin-top:8px}
-.ck-note{margin-top:10px;color:var(--ink2);font-size:12.5px;text-align:center}
-.ck-help{display:block;margin-top:8px;text-align:center;color:var(--ink);font-size:13px;font-weight:700}
+.ck-note{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;color:var(--ink2);font-size:12.5px}
+.ck-note .ic{width:14px;height:14px}
+.ck-help{display:block;margin-top:8px;text-align:center;font-size:13px;font-weight:700}
 .toast{position:fixed;left:50%;top:70px;z-index:60;transform:translate(-50%,-20px);opacity:0;padding:10px 16px;border-radius:999px;background:var(--ok);color:#06210f;font-weight:800;font-size:14px;transition:all .25s;pointer-events:none;white-space:nowrap}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></symbol>
+  <symbol id="i-ruler" viewBox="0 0 24 24"><path d="M3 17 17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
+
 <header class="top"><div class="wrap">
-  <div class="logo disp">HIT<i>FAT</i></div>
-  <button class="cartb" type="button" id="go-cart" aria-label="Lihat troli">Troli <b id="cart-n">0</b></button>
+  <a class="logo disp" href="/shop/">HIT<i>FAT</i></a>
+  <button class="cartb" type="button" id="go-cart" aria-label="Lihat troli"><svg class="ic"><use href="#i-bag"/></svg>Troli <b id="cart-n">0</b></button>
 </div></header>
 
 <main class="wrap">
   <section class="prod">
     <div class="gal" id="gal">
-      <div class="tag">3 helai · RM59 sehelai</div>
+      <div class="tag">Beli 3 · RM59 sehelai</div>
       <img class="on" data-c="hitam-merah" src="img/hitam-merah.jpg" alt="Baju HITFAT Performance warna hitam merah">
       <img data-c="merah-putih" src="img/merah-putih.jpg" alt="Baju HITFAT Performance warna merah putih" loading="lazy">
       <img data-c="hitam-teal" src="img/hitam-teal.jpg" alt="Baju HITFAT Performance warna hitam teal" loading="lazy">
     </div>
+
     <div>
       <div class="kick">HITFAT Performance</div>
-      <h1 class="disp">Performance<br>Tee</h1>
-      <div class="price"><span class="now">RM69</span><span class="per">sehelai</span></div>
-      <div class="deal">
-        <div><small>1 helai</small><b>RM69</b></div>
-        <div class="hot"><small>3 helai atau lebih</small><b>RM59</b> <span class="per">sehelai</span><em>Jimat RM30 untuk 3 helai</em></div>
-      </div>
+      <h1 class="disp">Performance Tee</h1>
+      <div class="price"><span class="now">RM69</span><span class="per">sehelai</span><span class="pill r">3 helai+ · RM59 sehelai</span></div>
+      <div class="pick"><svg class="ic"><use href="#i-pin"/></svg><div>Ambil di HITFAT Kota Bharu<small>Tiada caj pos. Kami WhatsApp bila baju sedia.</small></div></div>
 
       <div class="lbl">Warna <span id="col-name">Hitam Merah</span></div>
       <div class="cols" id="cols"></div>
@@ -179,7 +208,7 @@ h1{margin:6px 0 10px;font-size:clamp(40px,11vw,64px)}
       <div class="lbl">Saiz <span id="sz-name">Pilih saiz</span></div>
       <div class="sizes" id="sizes"></div>
       <details class="chart" id="chart">
-        <summary>Carta saiz <span>(inci)</span></summary>
+        <summary><svg class="ic"><use href="#i-ruler"/></svg>Carta saiz <span>(inci)</span></summary>
         <table><thead><tr><th>Saiz</th><th>Dada</th><th>Panjang</th><th>Bahu</th><th>Lengan</th></tr></thead><tbody id="chart-b"></tbody></table>
         <p>Dada: ukur lilit dada (keliling). Panjang: dari bahu ke hujung baju. Bahu: hujung ke hujung. Lengan: panjang lengan pendek. Toleransi ±0.5 inci.</p>
       </details>
@@ -193,48 +222,70 @@ h1{margin:6px 0 10px;font-size:clamp(40px,11vw,64px)}
     </div>
   </section>
 
-  <section class="cart" id="cart">
-    <h2 class="disp">Troli anda</h2>
-    <div id="lines"></div>
-    <div id="nudge"></div>
-    <div class="sum" id="sum"></div>
-    <button class="cta" type="button" id="checkout">Bayar sekarang</button>
-    <div class="pays"><span>FPX Online Banking</span><span>DuitNow QR</span></div>
+  <section class="sec">
+    <h2 class="disp">Lebih banyak, lebih jimat</h2>
+    <div class="tiers" id="tiers"></div>
+    <p class="note">Campur warna dan saiz pun boleh. Harga RM59 dikira untuk semua baju dalam troli bila cukup 3 helai.</p>
   </section>
 
-  <section class="info">
-    <div><b>Campur warna &amp; saiz</b><p>Harga RM59 sehelai dikira untuk semua baju dalam troli. Contoh: 2 Hitam Merah + 1 Merah Putih = RM177.</p></div>
-    <div><b>Bayar mudah</b><p>FPX Online Banking atau DuitNow QR melalui Bayarcash. Resit terus ke emel anda.</p></div>
-    <div><b>Ambil di HITFAT</b><p>Lot 154, Seksyen 48, Jalan Sultan Yahya Petra, 15200 Kota Bharu. Kami WhatsApp anda bila baju sedia.</p></div>
+  <section class="sec">
+    <h2 class="disp">Cara beli</h2>
+    <div class="steps">
+      <div><i>1</i><div><b>Pilih warna &amp; saiz</b><p>Tambah ke troli. Satu troli boleh campur warna dan saiz.</p></div></div>
+      <div><i>2</i><div><b>Bayar FPX atau DuitNow QR</b><p>Melalui Bayarcash. Resit terus ke emel anda.</p></div></div>
+      <div><i>3</i><div><b>Ambil di HITFAT</b><p>Kami WhatsApp anda bila baju sedia untuk diambil.</p></div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="place">
+      <div><b>HITFAT Functional Gym</b><p>Lot 154, Seksyen 48, Jalan Sultan Yahya Petra, 15200 Kota Bharu, Kelantan</p></div>
+      <div class="row">
+        <a class="cta ghost" id="map" href="https://www.google.com/maps/search/?api=1&amp;query=HITFAT+Functional+Gym+Kota+Bharu" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>Peta</a>
+        <a class="cta ghost" href="#" data-wa>WhatsApp</a>
+      </div>
+    </div>
   </section>
 </main>
-<footer class="foot">HITFAT Functional Gym · Kota Bharu, Kelantan · <a href="#" data-wa>WhatsApp</a></footer>
+<footer class="foot"><b>HITFAT</b> Functional Gym · Kota Bharu, Kelantan</footer>
 
 <div class="dock" id="dock"><div class="wrap">
   <div class="m"><b id="dock-t">RM0</b><small id="dock-s">0 helai</small></div>
-  <button class="cta" type="button" id="dock-go">Bayar</button>
+  <button class="cta" type="button" id="dock-go">Lihat troli</button>
 </div></div>
 
 <div class="toast" id="toast">Ditambah ke troli</div>
 
-<!-- checkout: who, how it reaches them, how they pay, then Bayarcash -->
-<div class="ck" id="ck" role="dialog" aria-modal="true" aria-labelledby="ck-t">
-  <form class="ck-in" id="ck-f" novalidate>
-    <div class="ck-hd"><b id="ck-t">Bayar</b><button type="button" class="ck-x" aria-label="Tutup" id="ck-x">✕</button></div>
+<!-- the cart -->
+<div class="sh" id="cart" role="dialog" aria-modal="true" aria-labelledby="cart-t">
+  <div class="sh-in">
+    <div class="sh-hd"><b id="cart-t">Troli anda</b><button type="button" class="x" data-close aria-label="Tutup"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div id="lines"></div>
+    <div id="nudge"></div>
+    <div class="sum" id="sum"></div>
+    <button class="cta" type="button" id="checkout">Teruskan</button>
+    <button class="more" type="button" data-close>Tambah baju lain</button>
+  </div>
+</div>
+
+<!-- checkout: who, then how they pay, then Bayarcash -->
+<div class="sh" id="ck" role="dialog" aria-modal="true" aria-labelledby="ck-t">
+  <form class="sh-in" id="ck-f" novalidate>
+    <div class="sh-hd"><b id="ck-t">Bayar</b><button type="button" class="x" data-close aria-label="Tutup"><svg class="ic"><use href="#i-x"/></svg></button></div>
     <div class="ck-sum" id="ck-sum"></div>
     <label for="ck-n">Nama</label><input id="ck-n" autocomplete="name" placeholder="Nama penuh">
     <label for="ck-ph">No. telefon (WhatsApp)</label><input id="ck-ph" type="tel" autocomplete="tel" inputmode="tel" placeholder="012-345 6789">
     <label for="ck-e">Emel (untuk resit)</label><input id="ck-e" type="email" autocomplete="email" inputmode="email" placeholder="nama@contoh.com">
     <label>Cara terima</label>
-    <div class="opt" id="ck-dv"></div>
+    <div class="getrow"><svg class="ic"><use href="#i-pin"/></svg><div>Ambil di HITFAT Kota Bharu<small>Tiada caj pos · kami WhatsApp bila sedia</small></div></div>
     <label>Cara bayar</label>
-    <div class="opt two" id="ck-ch">
+    <div class="opt" id="ck-ch">
       <button type="button" class="on" data-ch="1"><b>FPX</b><small>Online banking</small></button>
       <button type="button" data-ch="6"><b>DuitNow QR</b><small>Imbas dengan app bank</small></button>
     </div>
     <div class="err" id="ck-err"></div>
     <button class="cta" id="ck-go" type="submit">Bayar</button>
-    <div class="ck-note">Pembayaran selamat melalui Bayarcash.</div>
+    <div class="ck-note"><svg class="ic"><use href="#i-lock"/></svg>Pembayaran selamat melalui Bayarcash</div>
     <a class="ck-help" href="#" data-wa>Masalah bayaran? WhatsApp kami</a>
   </form>
 </div>
@@ -252,31 +303,37 @@ var SIZES = ['XS','S','M','L','XL','2XL','3XL','4XL','5XL','6XL'];
 /* Seth's size chart (26 Nov 2026), inches: chest, length, shoulder, short sleeve */
 var CHART = {XS:[36,25,15,8], S:[38,26,16,8.5], M:[40,27,17,9], L:[42,28,18,9.5], XL:[44,29,19,10], '2XL':[46,29,20,10.5],
   '3XL':[48,30,21,11], '4XL':[50,31,22,11.5], '5XL':[52,32,23,12], '6XL':[54,33,24,12.5]};
-/* (26 Nov 2026, Seth) collect at HITFAT only for now; postage comes later.
-   To open it: add {id:'pos', name:'Pos ke rumah', sub:'…', fee:N} here and set
-   DELIVERY.pos.fee in shop-pay, plus the address fields. */
-var DELIVERY = [
-  {id:'ambil', name:'Ambil di HITFAT', sub:'Kota Bharu · tiada caj', fee:0}
-];
+/* (26 Nov 2026, Seth) collect at HITFAT only. Postage later: add a choice in the
+   checkout ('Cara terima'), send delivery:'pos' + address, and set DELIVERY.pos.fee in shop-pay. */
+var DELIVERY = 'ambil';
 var WA = '60189174656';
 var WA_TEXT = 'Hai HITFAT, saya nak tanya tentang baju HITFAT Performance.';
 
 /* ── state ── */
-var sel = {c:'hitam-merah', s:'', q:1}, cart = [], ch = 1, dv = 'ambil';
+var sel = {c:'hitam-merah', s:'', q:1}, cart = [], ch = 1;
 try{ cart = JSON.parse(localStorage.getItem('hf_shop_cart')||'[]') || []; }catch(e){ cart = []; }
 function save(){ try{ localStorage.setItem('hf_shop_cart', JSON.stringify(cart)); }catch(e){} }
 function $(id){ return document.getElementById(id); }
 function colName(id){ for(var i=0;i<COLOURS.length;i++) if(COLOURS[i].id===id) return COLOURS[i].name; return id; }
 function qty(){ var n=0; for(var i=0;i<cart.length;i++) n+=cart[i].q; return n; }
 function unit(n){ return n>=BULK_FROM ? PRICE_BULK : PRICE_ONE; }
-function fee(){ for(var i=0;i<DELIVERY.length;i++) if(DELIVERY[i].id===dv) return DELIVERY[i].fee||0; return 0; }
-function total(){ var n=qty(); return n*unit(n) + fee(); }
+function total(){ var n=qty(); return n*unit(n); }
 function rm(x){ return 'RM' + (x%1 ? x.toFixed(2) : x); }
+
+/* ── price tiers, worked out from the prices above ── */
+(function(){
+  var h='';
+  [1,2,3,4,5].forEach(function(n){
+    var u=unit(n), save=n*(PRICE_ONE-u);
+    h+='<div'+(n>=BULK_FROM?' class="hot"':'')+'><span>'+n+' helai<small>'+rm(u)+' sehelai</small></span><span><b>'+rm(n*u)+'</b>'+(save?'<em>jimat '+rm(save)+'</em>':'')+'</span></div>';
+  });
+  $('tiers').innerHTML=h;
+})();
 
 /* ── picker ── */
 var colsEl = $('cols');
 COLOURS.forEach(function(c){
-  var b = document.createElement('button'); b.type='button'; b.className='col'+(c.id===sel.c?' on':''); b.setAttribute('data-c',c.id);
+  var b = document.createElement('button'); b.type='button'; b.className='col'+(c.id===sel.c?' on':'');
   b.innerHTML = '<img src="img/'+c.id+'.jpg" alt="" loading="lazy"><span>'+c.name+'</span>';
   b.onclick = function(){ sel.c=c.id; [].forEach.call(colsEl.children,function(x){ x.classList.toggle('on', x===b); });
     $('col-name').textContent=c.name; [].forEach.call($('gal').querySelectorAll('img'),function(im){ im.classList.toggle('on', im.getAttribute('data-c')===c.id); }); };
@@ -300,16 +357,16 @@ $('add').onclick = function(){
   if(qty()+sel.q>MAX_QTY){ $('add-err').textContent='Lebih '+MAX_QTY+' helai? WhatsApp kami untuk tempahan pukal.'; return; }
   var hit=null; for(var i=0;i<cart.length;i++) if(cart[i].c===sel.c && cart[i].s===sel.s) hit=cart[i];
   if(hit) hit.q+=sel.q; else cart.push({c:sel.c, s:sel.s, q:sel.q});
+  var t=$('toast'); t.textContent=sel.q+' × '+colName(sel.c)+' · '+sel.s+' ditambah'; t.classList.add('on'); setTimeout(function(){ t.classList.remove('on'); },1600);
   save(); render(); sel.q=1; $('q').textContent=1;
-  var t=$('toast'); t.textContent=colName(sel.c)+' · '+sel.s+' ditambah'; t.classList.add('on'); setTimeout(function(){ t.classList.remove('on'); },1600);
 };
 
 /* ── cart ── */
 function render(){
   var n=qty(), u=unit(n), L=$('lines');
-  $('cart-n').textContent=n;
+  $('cart-n').textContent=n; $('go-cart').classList.toggle('has', n>0);
   L.innerHTML='';
-  if(!n){ L.innerHTML='<p class="empty">Troli kosong. Pilih warna dan saiz di atas.</p>'; }
+  if(!n) L.innerHTML='<p class="empty">Troli kosong. Pilih warna dan saiz dulu.</p>';
   cart.forEach(function(it, i){
     var d=document.createElement('div'); d.className='ln';
     d.innerHTML='<img src="img/'+it.c+'.jpg" alt=""><div class="t">'+colName(it.c)+'<small>Saiz '+it.s+' · '+rm(u)+' sehelai</small></div>'+
@@ -323,39 +380,35 @@ function render(){
   if(n>0 && n<BULK_FROM){ var need=BULK_FROM-n;
     N.innerHTML='<div class="nudge">Tambah <b>'+need+' helai lagi</b> (apa-apa warna), semua jadi <b>RM59 sehelai</b>.<div class="bar"><i style="width:'+(n/BULK_FROM*100)+'%"></i></div></div>';
   } else if(n>=BULK_FROM){
-    N.innerHTML='<div class="nudge ok">Harga 3 helai dah aktif: <b>RM59 sehelai</b>. Anda jimat <b>'+rm(n*(PRICE_ONE-PRICE_BULK))+'</b>.<div class="bar"><i style="width:100%"></i></div></div>';
+    N.innerHTML='<div class="nudge ok">Harga 3 helai aktif: <b>RM59 sehelai</b>. Anda jimat <b>'+rm(n*(PRICE_ONE-PRICE_BULK))+'</b>.<div class="bar"><i style="width:100%"></i></div></div>';
   } else N.innerHTML='';
   $('sum').innerHTML = n ? '<div><span>'+n+' helai × '+rm(u)+'</span><span>'+rm(n*u)+'</span></div>'+
     '<div class="tot"><span>Jumlah</span><span>'+(n>=BULK_FROM?'<s>'+rm(n*PRICE_ONE)+'</s>':'')+rm(n*u)+'</span></div>' : '';
-  $('checkout').disabled = !n; $('checkout').textContent = n ? 'Bayar '+rm(n*u) : 'Bayar sekarang';
+  $('checkout').disabled = !n; $('checkout').textContent = n ? 'Teruskan · '+rm(n*u) : 'Teruskan';
   $('dock-t').textContent = rm(n*u); $('dock-s').textContent = n+' helai'+(n>=BULK_FROM?' · RM59 sehelai':'');
-  $('dock').classList.toggle('on', n>0);
+  $('dock').classList.toggle('on', n>0); document.body.classList.toggle('has-cart', n>0);
+  if(!n && $('ck').classList.contains('on')) shClose($('ck'));
 }
-$('go-cart').onclick = function(){ $('cart').scrollIntoView({behavior:'smooth'}); };
 
-/* ── checkout sheet ── */
-var dvEl=$('ck-dv');
-DELIVERY.forEach(function(o){
-  var b=document.createElement('button'); b.type='button'; b.innerHTML='<b>'+o.name+'</b><small>'+o.sub+'</small>';
-  if(o.fee===null) b.disabled=true;
-  b.className = o.id===dv ? 'on' : '';
-  b.onclick=function(){ dv=o.id; [].forEach.call(dvEl.children,function(x){ x.classList.toggle('on', x===b); }); ckSum(); };
-  dvEl.appendChild(b);
+/* ── sheets ── */
+function shOpen(el){ document.querySelectorAll('.sh.on').forEach(function(x){ x.classList.remove('on'); }); el.classList.add('on'); }
+function shClose(el){ el.classList.remove('on'); }
+document.querySelectorAll('.sh').forEach(function(sh){
+  sh.addEventListener('click', function(e){ if(e.target===sh) shClose(sh); });
+  sh.querySelectorAll('[data-close]').forEach(function(b){ b.onclick=function(){ shClose(sh); }; });
 });
+$('go-cart').onclick = function(){ shOpen($('cart')); };
+$('dock-go').onclick = function(){ shOpen($('cart')); };
+$('checkout').onclick = function(){ if(!qty()) return; ckSum(); shOpen($('ck')); setTimeout(function(){ try{ $('ck-n').focus(); }catch(e){} },200); };
 [].forEach.call($('ck-ch').children, function(b){
   b.onclick=function(){ ch=+b.getAttribute('data-ch'); [].forEach.call($('ck-ch').children,function(x){ x.classList.toggle('on', x===b); }); };
 });
 function ckSum(){
   var n=qty(), u=unit(n), rows='';
   cart.forEach(function(it){ rows+='<div><span>'+it.q+' × '+colName(it.c)+' · '+it.s+'</span><span>'+rm(it.q*u)+'</span></div>'; });
-  if(fee()) rows+='<div><span>Penghantaran</span><span>'+rm(fee())+'</span></div>';
   $('ck-sum').innerHTML = rows + '<div class="tot"><span>Jumlah</span><span>'+rm(total())+'</span></div>';
-  $('ck-go').textContent='Bayar '+rm(total()); $('ck-t').textContent=n+' helai baju';
+  $('ck-go').textContent='Bayar '+rm(total()); $('ck-t').textContent='Bayar · '+n+' helai';
 }
-function ckOpen(){ if(!qty()) return; ckSum(); $('ck').classList.add('on'); }
-function ckClose(){ $('ck').classList.remove('on'); }
-$('checkout').onclick = ckOpen; $('dock-go').onclick = ckOpen; $('ck-x').onclick = ckClose;
-$('ck').addEventListener('click', function(e){ if(e.target===$('ck')) ckClose(); });
 $('ck-f').addEventListener('submit', function(e){
   e.preventDefault();
   var n=$('ck-n').value.trim(), ph=$('ck-ph').value.trim(), em=$('ck-e').value.trim(), er=$('ck-err'), go=$('ck-go');
@@ -364,7 +417,7 @@ $('ck-f').addEventListener('submit', function(e){
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){ er.textContent='Semak emel anda.'; return; }
   er.textContent=''; go.disabled=true; go.textContent='Membuka halaman bayaran…';
   fetch(PAY_FN+'?action=create',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({items:cart, name:n, phone:ph, email:em, channel:ch, delivery:dv})})
+    body:JSON.stringify({items:cart, name:n, phone:ph, email:em, channel:ch, delivery:DELIVERY})})
     .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
     .then(function(x){
       if(x.ok && x.d && x.d.url){ try{ localStorage.setItem('hf_shop_last', x.d.order_number); }catch(e){} location.href=x.d.url; return; }
