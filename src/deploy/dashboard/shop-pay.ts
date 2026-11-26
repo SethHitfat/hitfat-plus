@@ -249,7 +249,7 @@ Deno.serve(async (req: Request) => {
       if (!TOKEN || !PORTAL) return json({ error: 'Bayaran belum tersedia.' }, 500);
       let b: any = {}; try { b = await req.json(); } catch { /* checked below */ }
       const items = cleanItems(b?.items);
-      if (!items) return json({ error: 'Troli tidak sah. Pilih warna dan saiz semula.' }, 400);
+      if (!items) return json({ error: 'Cart tidak sah. Pilih warna dan saiz semula.' }, 400);
       const qty = items.reduce((n, x) => n + x.q, 0);
       if (qty > MAX_QTY) return json({ error: 'Lebih ' + MAX_QTY + ' helai? WhatsApp kami untuk tempahan pukal.' }, 400);
       const name = String(b?.name || '').replace(/\s+/g, ' ').trim().slice(0, 60);
