@@ -58,10 +58,10 @@ h1{margin:8px 0 14px;font-size:clamp(34px,9.6vw,58px)}
 
 .lbl{display:flex;justify-content:space-between;gap:10px;margin:24px 0 10px;font-weight:800;font-size:14px}
 .lbl span{color:var(--ink2);font-weight:600;text-align:right}
-.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .col{border:2px solid var(--line);border-radius:16px;background:var(--card);padding:5px 5px 9px;cursor:pointer;text-align:center}
 .col img{display:block;width:100%;aspect-ratio:1;object-fit:cover;object-position:50% 38%;border-radius:11px}
-.col span{display:block;margin-top:7px;font-size:12.5px;font-weight:800}
+.col span{display:block;margin-top:7px;font-size:12px;font-weight:800;line-height:1.2}
 .col.on{border-color:var(--r)}
 .sizes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
 .sz{height:48px;border:2px solid var(--line);border-radius:13px;background:var(--card);font-weight:800;font-size:15px;cursor:pointer}
@@ -194,6 +194,7 @@ h1{margin:8px 0 14px;font-size:clamp(34px,9.6vw,58px)}
       <img class="on" data-c="hitam-merah" src="img/hitam-merah.jpg" alt="Baju HITFAT Performance warna hitam merah">
       <img data-c="merah-putih" src="img/merah-putih.jpg" alt="Baju HITFAT Performance warna merah putih" loading="lazy">
       <img data-c="hitam-teal" src="img/hitam-teal.jpg" alt="Baju HITFAT Performance warna hitam teal" loading="lazy">
+      <img data-c="hitam-neon" src="img/hitam-neon.jpg" alt="Baju HITFAT Performance warna hitam neon" loading="lazy">
     </div>
 
     <div>
@@ -297,7 +298,8 @@ var PRICE_ONE = 69, PRICE_BULK = 59, BULK_FROM = 3, MAX_QTY = 30;
 var COLOURS = [
   {id:'hitam-merah', name:'Hitam Merah'},
   {id:'merah-putih', name:'Merah Putih'},
-  {id:'hitam-teal',  name:'Hitam Teal'}
+  {id:'hitam-teal',  name:'Hitam Teal'},
+  {id:'hitam-neon',  name:'Hitam Neon'}
 ];
 var SIZES = ['XS','S','M','L','XL','2XL','3XL','4XL','5XL','6XL'];
 /* Seth's size chart (26 Nov 2026), inches: chest, length, shoulder, short sleeve */

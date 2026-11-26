@@ -169,6 +169,7 @@ const COLOURS: Record<string, string> = {
   'merah-putih': 'Merah Putih',
   'hitam-teal': 'Hitam Teal',
   'hitam-merah': 'Hitam Merah',
+  'hitam-neon': 'Hitam Neon',
 };
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'];
 /* How it reaches the buyer. Postage is null until Seth gives the rate, and an
