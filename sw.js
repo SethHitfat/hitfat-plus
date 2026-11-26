@@ -26,6 +26,8 @@ self.addEventListener('notificationclick', function (e) {
   /* a sale alert (30 Oct 2026, Seth): opens the HITFAT+ report in HITFAT OS,
      not the app */
   if (url === '/os') { e.waitUntil(self.clients.openWindow('https://os.hitfat.io/?v=apps')); return; }
+  /* a HITFAT Store (tee shop) sale (26 Nov 2026): the Store page in OS, not the HITFAT+ report */
+  if (url === '/os-store') { e.waitUntil(self.clients.openWindow('https://os.hitfat.io/?v=store')); return; }
   /* the app already open: bring it up and tell it where to go (a comment
      opens the class group); closed: open it at that address */
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (ws) {
