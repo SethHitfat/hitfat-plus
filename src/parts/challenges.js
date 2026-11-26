@@ -89,7 +89,7 @@ const HF={
     weight:[],meals:{},burn:{},favs:[],custom:null,nutrition:{},scanQuota:{used:0,month:''},owned:{},purchases:[],
     streak:0,lastISO:null,weekGoal:5,note:'',mealPlans:[],wc:0,
     body:[],goalKg:null,
-    challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{},ifs:{},daily:{},sc:{},quits:[],kelas:{},
+    challengeJoined:{},badges:{},wl30:{},lb30:{},d6:{},coach:{},academy:{},ifs:{},ram:{},daily:{},sc:{},quits:[],kelas:{},
     goalText:'',mpAte:{},myWeek:{},rbFavs:[],rbAte:{} }; },
   cacheKey(){ return this.KEY+(this.userId?'_'+this.userId:''); },
   setUser(id,email){ this.userId=id||null; this.email=email||null; },
@@ -117,6 +117,8 @@ const HF={
       d.academy=(o.academy&&typeof o.academy==='object')?JSON.parse(JSON.stringify(o.academy)):{};
       /* IF HITFAT and the daily habits of the HITFAT Score — kept like the rest, or a reload loses them */
       d.ifs=(o.ifs&&typeof o.ifs==='object')?JSON.parse(JSON.stringify(o.ifs)):{};
+      /* Ramadhan HITFAT (ramadhan.js): level, time, state, the day's ticks, puasa enam */
+      d.ram=(o.ram&&typeof o.ram==='object')?JSON.parse(JSON.stringify(o.ram)):{};
       d.daily=(o.daily&&typeof o.daily==='object')?JSON.parse(JSON.stringify(o.daily)):{};
       d.sc=(o.sc&&typeof o.sc==='object')?JSON.parse(JSON.stringify(o.sc)):{};
       /* why a workout was ended early (the player asks) */
@@ -186,7 +188,7 @@ function daysThisWeek(){ const ws=weekStartISO(), seen={};
 function doneToday(){ const t=iso(0); return Object.values(HF.data.sessions).some(s=>sessionISO(s)===t); }
 
 /* ── PANELS — never hand-write a hide list ── */
-const PANELS=['home','train','eat','progress','me','progdetail','daydetail','library','mealplan','store','monthly','club','t42','aicoach','academy','d6c','ifp','kelas','recipes','myweek'];
+const PANELS=['home','train','eat','progress','me','progdetail','daydetail','library','mealplan','store','monthly','club','t42','aicoach','academy','d6c','ifp','ramp','kelas','recipes','myweek'];
 function hidePanels(){ if(typeof lbLang==='function') lbLang(false); PANELS.forEach(id=>{ const e=$(id); if(e) e.style.display='none'; }); }
 let curTab='home';
 function switchTab(tab){

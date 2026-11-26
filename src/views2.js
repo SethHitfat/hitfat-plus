@@ -376,6 +376,8 @@ function homeRow(){
   const t=[], sex=homeSex(), P=o=>typeof hpoTile==='function'?hpoTile(o):'';
   const sq=(p,kick,len,go)=>hpoCard(p,{cls:'hpo-sq hpo-br',kick:kick,len:len,go:go});
   if(typeof syHomeTile==='function') t.push(syHomeTile());   /* HITFAT SYNC 30 first: testers only until it has a price */
+  const rfT=(typeof rfHomeTile==='function')?rfHomeTile():'';   /* RAMADHAN FIT 30 (27 Nov 2026): sold on its own, so the row no longer says all of it is in HITFAT+ */
+  if(rfT) t.push(rfT);
   if(typeof mfLive==='function'){ mfEnsure();
     if(mfLive() && !mfDone()) t.push(sq(MF,mfOwned()?'Baru':'RM'+MF_PRICE,MF.len||'12 sesi')); }
   if(typeof ayLive==='function' && sex!=='female'){ ayEnsure();
@@ -392,7 +394,7 @@ function homeRow(){
   }
   const tl=t.filter(Boolean);
   if(!tl.length) return '';
-  return fsec('Program',tl.length>2?'Leret untuk tengok semua.'+(contentOpen()?' Semua termasuk dalam HITFAT+ anda.':''):'')+
+  return fsec('Program',tl.length>2?'Leret untuk tengok semua.'+(contentOpen()&&!rfT?' Semua termasuk dalam HITFAT+ anda.':''):'')+
     '<div class="hrow">'+tl.join('')+'</div>';
 }
 /* Home: the courses not yet started (a course under way shows its own

@@ -206,9 +206,11 @@ function scPlanNext(){
    two equal calls one above the other left a new member unsure which */
 function scBurnIsPlan(){ return !scPlanNext() && typeof wlOwned==='function' && wlOwned() && wlKept() && wlNext()<WL30_DAYS.length; }
 function scPlanHTML(){
+  /* (26 Nov 2026) Ramadhan HITFAT's red band sits right above the plan */
+  var ramTop=(typeof ramHomeCard==='function')?ramHomeCard():'';
   var rows=[], dy=scDaily(), pn=scPlanNext(), p=pn&&pn.p, gi=pn&&pn.gi, at=pn&&pn.at;
   if(scBurnIsPlan())
-    return '<div class="scx-plan">'+fsec("Today's Plan",'')+wlHomeCard()+
+    return '<div class="scx-plan">'+ramTop+fsec("Today's Plan",'')+wlHomeCard()+
       '<button class="scx-alt" onclick="'+(typeof openFinder==='function'?'openFinder()':"switchTab('train')")+'">Or find a plan matched to your goal →</button>'+
       (typeof ckPlanHTML==='function'?ckPlanHTML():'')+'</div>';
   /* (16 Oct) one way into today's workout: the plan's next day, or finding a
@@ -218,13 +220,16 @@ function scPlanHTML(){
     rows.push({ic:'workout', t:(at.day.name||'Workout'), s:'Day '+(gi+1)+' of '+progDays(p)+' · '+p.name+' · '+p.dur+' min', done:scWorkouts(iso(0))>0, go:"openDay('"+p.id+"',"+gi+")", b:'Start'});
   /* (9 Nov 2026) not for someone with one program and no HITFAT+: her program's card is right below, and the finder leads to HITFAT+ */
   else if(!pn && !(typeof packProg==='function' && packProg())) rows.push({ic:'target', t:'Find your first plan', s:'Four questions, matched to your goal and level', done:scWorkouts(iso(0))>0, go:(typeof openFinder==='function'?'openFinder()':"switchTab('train')"), b:'Find'});
-  if(!SC_FAST_LIVE){}
+  /* (26 Nov 2026) Ramadhan HITFAT brings its own rows: water, iftar, the session, fasting today */
+  var ramRows=(typeof ramPlanRows==='function')?ramPlanRows():[];
+  if(ramRows.length){ rows=rows.concat(ramRows); }
+  else if(!SC_FAST_LIVE){}
   else if(scRamadan()) rows.push({ic:'moon', t:dy.ram?'Fasting today ✓':'Ramadan fast', s:'Sahur, iftar, and water in between', done:!!dy.ram, go:'scRamToggle()', b:dy.ram?'':'Mark'});
   else if(scHasIF() && typeof ifWindow==='function'){
     var w=ifWindow(), f=HF.data.ifs||{};
     rows.push({ic:'clock', t:'Eat '+scClock(w.start)+' – '+scClock(w.end), s:f.active?'Fasting now · end it in IF HITFAT':'Then fast for '+ifProto().f+' hours', done:false, go:f.active?'openIF()':'scFastTap()', b:f.active?'View':'Start'});
   }
-  return '<div class="scx-plan">'+fsec("Today's Plan",'')+strip+'<div class="scx-rows'+(rows.length?'':' empty')+'">'+rows.map(function(r){
+  return '<div class="scx-plan">'+ramTop+fsec("Today's Plan",'')+strip+'<div class="scx-rows'+(rows.length?'':' empty')+'">'+rows.map(function(r){
     return '<div class="scx-row'+(r.done?' done':'')+'" onclick="'+r.go+'"><span class="ic">'+glyph(r.ic)+'</span><div class="tx"><b>'+hesc(r.t)+'</b><span>'+hesc(r.s)+'</span></div>'+
       (r.done?'<span class="ok">✓</span>':(r.b?'<button onclick="event.stopPropagation();'+r.go+'">'+r.b+'</button>':''))+'</div>'; }).join('')+'</div>'+
     (typeof ckPlanHTML==='function'?ckPlanHTML():'')+'</div>';

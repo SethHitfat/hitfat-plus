@@ -8112,3 +8112,109 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .sy-mv-c{flex:0 0 40px;height:40px;border-radius:50%;background:#222 center/cover no-repeat;}
 .sy-npb>span{flex:0 0 40px;}
 .sy-mv em.sy-mv-k{font-size:12px;font-weight:700;color:rgba(255,255,255,.5);white-space:nowrap;}
+
+/* ═══ Ramadhan HITFAT 2027 (ramadhan.js, 26 Nov 2026) ═══ */
+.ramh{margin:4px 0 14px}
+.ramb{position:relative;overflow:hidden;border-radius:22px;padding:16px 16px 14px;color:#fff;background:linear-gradient(160deg,#F0392B,#C8102E);cursor:pointer}
+.ramb-moon{position:absolute;right:-18px;top:-18px;width:110px;height:110px;border-radius:50%;box-shadow:-22px 14px 0 0 rgba(255,255,255,.22);pointer-events:none}
+.ramb-k{font-size:11px;letter-spacing:1.4px;font-weight:700;opacity:.88;text-transform:uppercase}
+.ramb-big{font-family:'Oswald',sans-serif;font-size:28px;font-weight:600;line-height:1.15;margin:3px 0 2px}
+.ramb-sub{font-size:12.5px;opacity:.92}
+.ramb-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ramb-pills span{background:rgba(255,255,255,.18);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:600}
+.ramh-bara,.ram-bara{display:flex;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:10px 12px;margin-top:10px;font-size:13px;line-height:1.4;color:var(--txt)}
+.ramh-bara img,.ram-bara img{width:54px;height:54px;flex:none;object-fit:contain}
+.ramh-bara b,.ram-bara b{display:block;font-size:11px;color:#E30613;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.ramp-top{margin:6px 0 12px}
+.ram-segs{margin-bottom:14px}
+.ram-h{font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;color:var(--txt)}
+.ram-p{font-size:12.5px;color:var(--dim);line-height:1.45;margin:2px 0 8px}
+.ram-p b{color:var(--txt)}
+.ram-sec{font-size:11px;letter-spacing:1.3px;font-weight:700;color:var(--dim);text-transform:uppercase;margin:16px 2px 6px}
+.ram-lvl{border-radius:18px;padding:13px 14px;margin-top:9px;color:#fff;cursor:pointer;border:2px solid transparent}
+.ram-lvl.on{border-color:var(--txt);box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.ram-g{background:linear-gradient(150deg,#2EA36B,#1B7F52)}.ram-o{background:linear-gradient(150deg,#F2A33A,#D9791A)}.ram-r{background:linear-gradient(150deg,#F0392B,#B5121B)}
+.ram-lvl-e{font-size:10.5px;font-weight:700;letter-spacing:1.4px;opacity:.9}
+.ram-lvl-n{font-family:'Oswald',sans-serif;font-size:21px;font-weight:600}
+.ram-lvl-d{font-size:12.5px;opacity:.94;margin-top:3px;line-height:1.4}
+.ram-lvl-m{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ram-lvl-m span{background:rgba(255,255,255,.2);border-radius:999px;padding:4px 9px;font-size:11px;font-weight:600}
+.ram-opt{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--line);background:var(--surface);border-radius:16px;padding:12px;margin-top:8px;cursor:pointer;color:var(--txt)}
+.ram-opt.on{border-color:#F0392B;box-shadow:0 0 0 3px rgba(240,57,43,.12)}
+.ram-radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:2px}
+.ram-opt.on .ram-radio{border:6px solid #F0392B}
+.ram-opt-b{flex:1;min-width:0}
+.ram-opt-b b{display:block;font-size:14px}
+.ram-opt-b span{display:block;font-size:12px;color:var(--dim);margin-top:2px;line-height:1.4}
+.ram-opt-b em{display:block;font-style:normal;font-size:11.5px;color:#E30613;font-weight:600;margin-top:4px}
+.ram-tag{font-size:10.5px;font-weight:700;padding:4px 8px;border-radius:999px;white-space:nowrap;flex:none}
+.ram-t-ok{background:#E3F7EE;color:#1B8A57}.ram-t-am{background:#FDF3E1;color:#B7791F}.ram-t-red{background:#FDECEA;color:#E30613}.ram-t-gr{background:var(--surface2);color:var(--dim)}
+.ram-warn{background:#FDF3E1;color:#7A4E0E;border-radius:14px;padding:10px 12px;font-size:12px;line-height:1.45;margin-top:12px}
+.ram-warn-r{background:#FDECEA;color:#8F1B12;cursor:pointer}
+.ram-note{font-size:12.5px;color:var(--dim);margin-top:12px;line-height:1.45}
+.ram-note a{color:#E30613;font-weight:600;text-decoration:underline;cursor:pointer}
+.ram-go,.ram-go2{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:14px;padding:14px;font:700 15px 'Inter',sans-serif;margin-top:12px;cursor:pointer}
+.ram-go{background:#F0392B;color:#fff}.ram-go2{background:var(--surface2);color:var(--txt);font-weight:600}
+.ram-go svg{width:18px;height:18px}
+.ram-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:4px 14px 12px;margin-top:10px;color:var(--txt)}
+.ram-li,.ram-step{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.ram-li:last-child{border-bottom:0}
+.ram-li-b{flex:1;min-width:0}
+.ram-li-b b{display:block;font-size:14px;font-weight:600}
+.ram-li-b span{display:block;font-size:12px;color:var(--dim);margin-top:1px;line-height:1.35}
+.ram-chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);flex:none;position:relative}
+.ram-chk.on{background:#2EC27E;border-color:#2EC27E}
+.ram-chk.on:after{content:'';position:absolute;left:7px;top:3px;width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.ram-ico{width:36px;height:36px;border-radius:12px;background:#FDECEA;display:flex;align-items:center;justify-content:center;font-size:17px;flex:none}
+.ram-no{width:30px;height:30px;border-radius:50%;background:#F0392B;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
+.ram-no-g{background:var(--surface2);color:var(--dim)}.ram-no svg{width:16px;height:16px}
+.ram-timer{font-family:'Oswald',sans-serif;font-size:28px;font-weight:600;color:#E30613}
+.ram-plate-row{display:flex;gap:14px;align-items:center;margin-top:12px}
+.ram-plate{width:110px;height:110px;border-radius:50%;flex:none;border:6px solid var(--surface);box-shadow:0 0 0 1px var(--line);background:conic-gradient(#7BC47F 0 50%,#F4C36B 50% 75%,#E57B5B 75% 100%)}
+.ram-legend div{font-size:12px;margin:4px 0;display:flex;align-items:center;gap:7px;color:var(--txt)}
+.ram-legend i{width:11px;height:11px;border-radius:3px;display:block}
+.ram-legend .g{background:#7BC47F}.ram-legend .y{background:#F4C36B}.ram-legend .r{background:#E57B5B}
+.ram-ring{position:relative;width:130px;height:130px;margin:6px auto 2px}
+.ram-ring svg{width:130px;height:130px}
+.ram-ring circle,.ram-ring path{fill:none;stroke-width:13}
+.ram-ring-bg{stroke:var(--surface2)}.ram-ring-fg{stroke:#3BA3E8;stroke-linecap:round}
+.ram-ring>div{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--txt)}
+.ram-ring b{font-family:'Oswald',sans-serif;font-size:32px;font-weight:600}
+.ram-ring span{font-size:12px;color:var(--dim)}
+.ram-dots{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.ram-six{grid-template-columns:repeat(6,1fr)}
+.ram-d{height:36px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--dim)}
+.ram-d.p{background:#FFD9D4;color:#E30613}
+.ram-d.x{background:#F0392B;color:#fff}
+.ram-d.now{outline:2.5px solid #F0392B;outline-offset:1px}
+.ram-d.r{background:#E8F5EE;color:#1B8A57}.ram-d.rx{background:#2EC27E;color:#fff}
+.ram-set{margin-top:22px;padding-top:6px;border-top:1px solid var(--line)}
+.ram-demo{display:flex;flex-wrap:wrap;gap:6px}
+.ram-demo button{border:1px solid var(--line);background:var(--surface);color:var(--txt);border-radius:999px;padding:7px 11px;font:600 12px 'Inter',sans-serif;cursor:pointer}
+.ram-demo button.on{background:#F0392B;border-color:#F0392B;color:#fff}
+/* RAMADHAN FIT 30, the program (27 Nov 2026) */
+.rf-name{display:flex;align-items:center;gap:8px;font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;letter-spacing:1.5px;color:#E30613;margin:4px 2px 8px}
+.rf-name span svg{width:16px;height:16px}
+.ram-segs button{font-size:13px;padding-left:4px;padding-right:4px}
+.rf-nav{display:flex;align-items:center;justify-content:space-between;margin:2px 0 8px;color:var(--txt)}
+.rf-nav b{font-size:13px;letter-spacing:.3px}
+.rf-nav button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--txt);font-size:20px;line-height:1;cursor:pointer}
+.rf-nav span{width:36px}
+.rf-day{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;color:var(--txt)}
+.rf-day-k{font-size:11px;letter-spacing:1.3px;font-weight:700;color:#E30613;text-transform:uppercase}
+.rf-day-t{font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;margin:2px 0 4px}
+.rf-day-p{font-size:13.5px;line-height:1.5;color:var(--txt)}
+.rf-mis{display:flex;gap:10px;align-items:flex-start;background:#FDECEA;border-radius:14px;padding:10px 12px;margin-top:12px;font-size:13px;line-height:1.4;color:#5E070C}
+.rf-mis b{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#E30613;margin-bottom:2px}
+.rf-sess{display:flex;align-items:center;gap:12px;background:linear-gradient(150deg,#F0392B,#B5121B);color:#fff;border-radius:18px;padding:14px;cursor:pointer}
+.rf-sess>div{flex:1;min-width:0}
+.rf-sess b{display:block;font-family:'Oswald',sans-serif;font-size:19px;font-weight:600}
+.rf-sess span{display:block;font-size:12px;opacity:.92;margin-top:2px}
+.rf-sess button{display:flex;align-items:center;gap:6px;border:0;border-radius:999px;background:#fff;color:#E30613;font:700 13px 'Inter',sans-serif;padding:9px 14px;cursor:pointer}
+.rf-sess button svg{width:14px;height:14px}
+.rf-sess em{font-style:normal;font-weight:700;font-size:13px}
+.rf-hero{position:relative;overflow:hidden;border-radius:22px;padding:22px 18px;color:#fff;background:linear-gradient(160deg,#F0392B,#8E0B14);margin:6px 0 12px}
+.rf-hero-k{font-size:11px;letter-spacing:1.4px;font-weight:700;opacity:.9;text-transform:uppercase}
+.rf-hero-t{font-family:'Oswald',sans-serif;font-size:34px;font-weight:700;letter-spacing:.5px;margin:4px 0}
+.rf-hero-s{font-size:13.5px;line-height:1.45;opacity:.95}
+.rf-has .ram-li{cursor:default}
