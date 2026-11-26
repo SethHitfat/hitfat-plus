@@ -184,7 +184,7 @@ h1{margin:8px 0 14px;font-size:clamp(34px,9.6vw,58px)}
 
 <header class="top"><div class="wrap">
   <a class="logo disp" href="/shop/">HIT<i>FAT</i></a>
-  <button class="cartb" type="button" id="go-cart" aria-label="Lihat troli"><svg class="ic"><use href="#i-bag"/></svg>Troli <b id="cart-n">0</b></button>
+  <button class="cartb" type="button" id="go-cart" aria-label="Lihat cart"><svg class="ic"><use href="#i-bag"/></svg>Cart <b id="cart-n">0</b></button>
 </div></header>
 
 <main class="wrap">
@@ -217,7 +217,7 @@ h1{margin:8px 0 14px;font-size:clamp(34px,9.6vw,58px)}
 
       <div class="add">
         <div class="step"><button type="button" id="q-" aria-label="Kurang">−</button><b id="q">1</b><button type="button" id="q+" aria-label="Tambah">+</button></div>
-        <button class="cta" type="button" id="add">Tambah ke troli</button>
+        <button class="cta" type="button" id="add">Tambah ke cart</button>
       </div>
       <div class="err" id="add-err"></div>
     </div>
@@ -226,13 +226,13 @@ h1{margin:8px 0 14px;font-size:clamp(34px,9.6vw,58px)}
   <section class="sec">
     <h2 class="disp">Lebih banyak, lebih jimat</h2>
     <div class="tiers" id="tiers"></div>
-    <p class="note">Campur warna dan saiz pun boleh. Harga RM59 dikira untuk semua baju dalam troli bila cukup 3 helai.</p>
+    <p class="note">Campur warna dan saiz pun boleh. Harga RM59 dikira untuk semua baju dalam cart bila cukup 3 helai.</p>
   </section>
 
   <section class="sec">
     <h2 class="disp">Cara beli</h2>
     <div class="steps">
-      <div><i>1</i><div><b>Pilih warna &amp; saiz</b><p>Tambah ke troli. Satu troli boleh campur warna dan saiz.</p></div></div>
+      <div><i>1</i><div><b>Pilih warna &amp; saiz</b><p>Tambah ke cart. Satu cart boleh campur warna dan saiz.</p></div></div>
       <div><i>2</i><div><b>Bayar FPX atau DuitNow QR</b><p>Melalui Bayarcash. Resit terus ke emel anda.</p></div></div>
       <div><i>3</i><div><b>Ambil di HITFAT</b><p>Kami WhatsApp anda bila baju sedia untuk diambil.</p></div></div>
     </div>
@@ -252,15 +252,15 @@ h1{margin:8px 0 14px;font-size:clamp(34px,9.6vw,58px)}
 
 <div class="dock" id="dock"><div class="wrap">
   <div class="m"><b id="dock-t">RM0</b><small id="dock-s">0 helai</small></div>
-  <button class="cta" type="button" id="dock-go">Lihat troli</button>
+  <button class="cta" type="button" id="dock-go">Lihat cart</button>
 </div></div>
 
-<div class="toast" id="toast">Ditambah ke troli</div>
+<div class="toast" id="toast">Ditambah ke cart</div>
 
 <!-- the cart -->
 <div class="sh" id="cart" role="dialog" aria-modal="true" aria-labelledby="cart-t">
   <div class="sh-in">
-    <div class="sh-hd"><b id="cart-t">Troli anda</b><button type="button" class="x" data-close aria-label="Tutup"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="sh-hd"><b id="cart-t">Cart anda</b><button type="button" class="x" data-close aria-label="Tutup"><svg class="ic"><use href="#i-x"/></svg></button></div>
     <div id="lines"></div>
     <div id="nudge"></div>
     <div class="sum" id="sum"></div>
@@ -368,7 +368,7 @@ function render(){
   var n=qty(), u=unit(n), L=$('lines');
   $('cart-n').textContent=n; $('go-cart').classList.toggle('has', n>0);
   L.innerHTML='';
-  if(!n) L.innerHTML='<p class="empty">Troli kosong. Pilih warna dan saiz dulu.</p>';
+  if(!n) L.innerHTML='<p class="empty">Cart kosong. Pilih warna dan saiz dulu.</p>';
   cart.forEach(function(it, i){
     var d=document.createElement('div'); d.className='ln';
     d.innerHTML='<img src="img/'+it.c+'.jpg" alt=""><div class="t">'+colName(it.c)+'<small>Saiz '+it.s+' · '+rm(u)+' sehelai</small></div>'+

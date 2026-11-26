@@ -60,7 +60,7 @@ function show(kind, d){
     wa('Hai HITFAT, saya dah bayar baju HITFAT Performance. No. pesanan: '+order);
   } else if(kind==='no'){
     $('ic').textContent='!'; $('h').textContent='Bayaran tidak berjaya';
-    $('p').textContent='Tiada wang ditolak untuk pesanan ini. Troli anda masih ada, cuba bayar sekali lagi.';
+    $('p').textContent='Tiada wang ditolak untuk pesanan ini. Cart anda masih ada, cuba bayar sekali lagi.';
     wa('Hai HITFAT, bayaran baju saya tidak berjaya. No. pesanan: '+order);
   }
   if(d && d.items){ $('box').innerHTML=lines(d); $('box').classList.remove('on-hide'); }
