@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pesanan baju HITFAT</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0B0B0C">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,100..125,800..900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B0B0C;--card:#151517;--card2:#1D1D20;--line:#2A2A2E;--ink:#F5F5F6;--ink2:#A3A3AA;--r:#E5233A;--ok:#2ED47A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 'Plus Jakarta Sans',-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+.w{max-width:520px;margin:0 auto;padding:28px 16px 40px}
+.disp{font-family:'Archivo',sans-serif;font-style:italic;font-weight:900;font-stretch:112%;text-transform:uppercase;line-height:.95}
+.ic{width:64px;height:64px;border-radius:32px;display:grid;place-items:center;font-size:30px;font-weight:900;margin:10px 0 14px}
+.ok .ic{background:rgba(46,212,122,.15);color:var(--ok)}
+.no .ic{background:rgba(229,35,58,.15);color:var(--r)}
+.wait .ic{background:var(--card2);color:var(--ink2)}
+h1{font-size:40px;margin:0 0 10px}
+p{color:var(--ink2);margin:0 0 14px}
+.box{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:14px 16px;margin:14px 0}
+.box div{display:flex;justify-content:space-between;padding:3px 0;font-size:14.5px}
+.box .tot{font-weight:800;border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
+.btn{display:block;text-align:center;height:54px;line-height:54px;border-radius:16px;background:var(--r);color:#fff;font-weight:800;text-decoration:none;margin-top:10px}
+.btn.g{background:var(--card2)}
+.on-hide{display:none}
+</style>
+</head>
+<body>
+<div class="w wait" id="w">
+  <div class="disp" style="font-size:22px">HIT<span style="color:var(--r)">FAT</span></div>
+  <div class="ic" id="ic">…</div>
+  <h1 class="disp" id="h">Menyemak bayaran</h1>
+  <p id="p">Sekejap ya, kami sedang sahkan bayaran anda dengan Bayarcash.</p>
+  <div class="box on-hide" id="box"></div>
+  <a class="btn on-hide" id="wa" href="#">WhatsApp HITFAT</a>
+  <a class="btn g" href="/shop/">Kembali ke kedai</a>
+</div>
+<script>
+var PAY_FN='https://ercvaagznsndvrewlvgt.supabase.co/functions/v1/shop-pay', WA='60189174656';
+function $(id){ return document.getElementById(id); }
+function q(k){ var m=location.search.match(new RegExp('[?&]'+k+'=([^&]+)')); return m?decodeURIComponent(m[1]):''; }
+var order=q('order_number')||q('order')||'';
+if(!order){ try{ order=localStorage.getItem('hf_shop_last')||''; }catch(e){} }
+function rm(x){ x=Number(x); return 'RM'+(x%1?x.toFixed(2):x); }
+function lines(d){
+  if(!d.items) return '';
+  var u=Number(d.unit), h='';
+  d.items.forEach(function(it){ h+='<div><span>'+it.q+' × '+(it.warna||it.c)+' · '+it.s+'</span><span>'+rm(it.q*u)+'</span></div>'; });
+  return h+'<div class="tot"><span>Jumlah dibayar</span><span>'+rm(d.amount)+'</span></div><div><span>No. pesanan</span><span>'+order+'</span></div>';
+}
+function wa(text){ var a=$('wa'); a.href='https://wa.me/'+WA+'?text='+encodeURIComponent(text); a.classList.remove('on-hide'); }
+function show(kind, d){
+  $('w').className='w '+kind;
+  if(kind==='ok'){
+    $('ic').textContent='✓'; $('h').textContent='Terima kasih!';
+    $('p').textContent='Bayaran berjaya. Kami akan WhatsApp anda bila baju sedia untuk diambil di HITFAT Kota Bharu. Resit Bayarcash ada dalam emel anda.';
+    try{ localStorage.removeItem('hf_shop_cart'); }catch(e){}
+    wa('Hai HITFAT, saya dah bayar baju HITFAT Performance. No. pesanan: '+order);
+  } else if(kind==='no'){
+    $('ic').textContent='!'; $('h').textContent='Bayaran tidak berjaya';
+    $('p').textContent='Tiada wang ditolak untuk pesanan ini. Troli anda masih ada, cuba bayar sekali lagi.';
+    wa('Hai HITFAT, bayaran baju saya tidak berjaya. No. pesanan: '+order);
+  }
+  if(d && d.items){ $('box').innerHTML=lines(d); $('box').classList.remove('on-hide'); }
+}
+var tries=0;
+function check(){
+  if(!/^HS[A-Z0-9]+$/.test(order)){ $('h').textContent='Pesanan tidak dijumpai'; $('p').textContent='Jika anda sudah bayar, WhatsApp kami bersama resit Bayarcash.'; wa('Hai HITFAT, saya nak semak pesanan baju saya.'); return; }
+  fetch(PAY_FN+'?action=status&order='+encodeURIComponent(order)).then(function(r){ return r.json(); }).then(function(d){
+    if(d.status==='paid') return show('ok', d);
+    if(d.status==='failed') return show('no', d);
+    if(++tries<20) return setTimeout(check, 3000);
+    $('p').textContent='Bayaran masih belum disahkan. Jika wang sudah ditolak, ia akan disahkan sendiri dalam beberapa minit. Simpan no. pesanan: '+order+'.';
+    wa('Hai HITFAT, bayaran baju saya belum disahkan. No. pesanan: '+order);
+  })['catch'](function(){ if(++tries<20) setTimeout(check, 3000); });
+}
+check();
+</script>
+</body>
+</html>
