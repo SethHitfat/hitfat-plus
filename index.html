@@ -8048,6 +8048,41 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .lbx-ghost{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:8px;padding:13px;border:none;border-radius:14px;background:transparent;
   color:var(--dim);font:inherit;font-size:14.5px;font-weight:700;cursor:pointer;}
 .lbx-ghost .gly{width:16px;height:16px;}
+/* MAK2FIT: how to use it (27 Nov 2026): the "Cara guna" card, Start Here's videos, the video sheet, the tour */
+.lbhow{display:flex;align-items:center;gap:14px;padding:12px 40px 12px 12px;cursor:pointer;border:1.5px solid var(--lbl2);}
+.lbhow-th{position:relative;flex:none;width:64px;height:92px;border-radius:14px;background:#2a0b1f center/cover no-repeat;overflow:hidden;}
+.lbhow-th span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(28,8,20,.28);}
+.lbhow-th span .gly{width:30px;height:30px;padding:8px;border-radius:50%;background:rgba(255,255,255,.94);color:#C02A7C;box-sizing:border-box;}
+.lbhow-tx{min-width:0;display:flex;flex-direction:column;gap:2px;}
+.lbhow-tx b{font-size:17px;font-weight:800;letter-spacing:-.2px;line-height:1.25;}
+.lbhow-tx small{font-size:13.5px;color:var(--dim);line-height:1.35;}
+.lbhow-x{position:absolute;top:8px;right:8px;width:30px;height:30px;border:none;border-radius:50%;background:transparent;color:var(--dim);font-size:15px;cursor:pointer;}
+.lbhow-list{display:flex;flex-direction:column;gap:10px;margin-bottom:6px;}
+.lbhow-row{display:flex;align-items:center;gap:14px;padding:10px;border-radius:18px;background:var(--lcard);cursor:pointer;}
+.lbhow-row .lbhow-th{width:52px;height:74px;border-radius:12px;}
+.lbhow-row .lbhow-th span .gly{width:26px;height:26px;padding:7px;}
+.lbhow-v{margin:52px auto 0;max-width:330px;border-radius:22px;overflow:hidden;background:#000;aspect-ratio:9/16;}
+.lbhow-v video{display:block;width:100%;height:100%;object-fit:contain;background:#000;}
+.lbhow-vt{text-align:center;margin:14px 0 2px;display:flex;flex-direction:column;gap:2px;}
+.lbhow-vt b{font-size:18px;font-weight:800;}
+.lbhow-vt span{font-size:13.5px;opacity:.65;}
+#pwm .lbhow-ok{max-width:330px;margin:14px auto 28px;background:linear-gradient(135deg,#F0509E,#C02A7C 55%,#8E1460);}
+.lbtour{position:fixed;inset:0;z-index:100000;}
+.lbtour-hole{position:fixed;border-radius:24px;box-shadow:0 0 0 200vmax rgba(18,4,12,.74);outline:2.5px solid #E8B4A0;outline-offset:2px;
+  transition:top .25s,left .25s,width .25s,height .25s;pointer-events:none;}
+.lbtour-b{position:fixed;left:16px;right:16px;max-width:420px;margin:0 auto;padding:16px 16px 14px;border-radius:20px;background:#fff;color:#2A0B1F;
+  box-shadow:0 18px 40px rgba(0,0,0,.35);animation:lbtourIn .28s ease-out;}
+.lbtour-b b{display:block;font-size:18px;font-weight:800;letter-spacing:-.2px;}
+.lbtour-b p{margin:5px 0 0;font-size:15px;line-height:1.45;color:#5B3A4C;}
+.lbtour-b p b{display:inline;font-size:inherit;color:#C02A7C;}
+.lbtour-n{display:flex;gap:5px;margin-bottom:9px;}
+.lbtour-n i{width:7px;height:7px;border-radius:9px;background:rgba(192,42,124,.22);}
+.lbtour-n i.on{width:20px;background:#C02A7C;}
+.lbtour-a{display:flex;gap:8px;margin-top:14px;}
+.lbtour-a button{flex:1;padding:13px;border:none;border-radius:14px;font:inherit;font-size:15px;font-weight:800;cursor:pointer;}
+.lbtour-skip{background:rgba(192,42,124,.09);color:#8E1460;flex:.7 !important;}
+.lbtour-go{background:linear-gradient(135deg,#F0509E,#C02A7C 55%,#8E1460);color:#fff;}
+@keyframes lbtourIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 /* MAK2FIT: "Kongsi cerita anda" (15 Nov 2026), the card and its sheet */
 .lbst{background:linear-gradient(160deg,var(--lcard) 55%,rgba(201,148,127,.16));border:1.5px solid rgba(201,148,127,.45);}
 .lbst .lbx-k,.lbst-sh .lbx-k{display:flex;align-items:center;gap:6px;}
@@ -17408,6 +17443,102 @@ function lbInstLater(after){
   closeProduct();
   if(!after) openProgram(LB30_ID);
 }
+/* ── how to use it (27 Nov 2026, Seth: a buyer had just paid and "tak faham
+   macam mana nak guna"). The /panduan videos had only been linked from the
+   welcome email. Now the 1-minute "Cara guna" sits on a card above the tabs
+   until Day 3 is done or she hides it, and both videos stay in Start Here.
+   Once her plan is built, a three-step tour points at the real screen:
+   today's card, the checklist, the tabs. The card's ✕ and the tour are
+   remembered on her account (lb30.howx, lb30.tour), so each happens once. ── */
+var LB30_HOW={
+  cara:  {src:'/panduan/cara-guna.mp4',  img:'/panduan/cara-guna.jpg',  t:'Cara guna MAK2FIT 30', m:'1 minit · 10 langkah'},
+  simpan:{src:'/panduan/simpan-app.mp4', img:'/panduan/simpan-app.jpg', t:'Simpan app di telefon', m:'37 saat'}
+};
+function lbHowDue(){ return lbOwned() && lbDone()<3 && !lbData().howx; }
+function lbHowCard(){
+  return '<div class="lbx-card lbhow" onclick="lbHowPlay(\'cara\')">'+
+    '<div class="lbhow-th" style="background-image:url(\''+LB30_HOW.cara.img+'\')"><span>'+glyph('play')+'</span></div>'+
+    '<div class="lbhow-tx"><div class="lbx-k">Baru mula?</div><b>Tengok cara guna dulu</b>'+
+    '<small>1 minit, dari log masuk sampai Hari 2</small></div>'+
+    '<button class="lbhow-x" aria-label="Sembunyi" onclick="event.stopPropagation();lbHowHide()">✕</button></div>';
+}
+function lbHowHide(){ lbData().howx=1; HF.save(); renderLB30(); toast('Video ini ada di tab Start Here'); }
+/* both videos, for Start Here */
+function lbHowList(){
+  return '<div class="lbhow-list">'+['cara','simpan'].map(function(k){ var v=LB30_HOW[k];
+    return '<div class="lbhow-row" onclick="lbHowPlay(\''+k+'\')"><div class="lbhow-th" style="background-image:url(\''+v.img+'\')"><span>'+glyph('play')+'</span></div>'+
+      '<div class="lbhow-tx"><b>'+v.t+'</b><small>'+v.m+'</small></div></div>'; }).join('')+'</div>';
+}
+/* a tap starts it, so it plays even where autoplay is blocked (Low Power Mode) */
+function lbHowPlay(k){
+  var v=LB30_HOW[k]||LB30_HOW.cara;
+  $('pw-body').innerHTML='<div class="pwtop"><span></span><button class="pwx" aria-label="Tutup" onclick="lbHowClose()">✕</button></div>'+
+    '<div class="lbhow-v"><video id="lbhow-vid" controls playsinline preload="auto" poster="'+v.img+'" src="'+v.src+'"></video></div>'+
+    '<div class="lbhow-vt"><b>'+v.t+'</b><span>'+v.m+'</span></div>'+
+    '<button class="lbx-go lbhow-ok" onclick="lbHowClose()">Faham, jom mula</button>';
+  $('pwm').classList.add('on');
+  var el=$('lbhow-vid');
+  if(el){ try{ var p=el.play(); if(p && p.catch) p.catch(function(){}); }catch(e){} }
+}
+function lbHowClose(){
+  var el=$('lbhow-vid'); if(el){ try{ el.pause(); }catch(e){} el.removeAttribute('src'); }
+  closeProduct();
+}
+/* the tour: a hole cut round the real element, a bubble beside it */
+var LB30_TOUR=[
+  {q:'.lbx-now', t:'Ini hari anda', s:'Tekan butang merah <b>Start</b>. Video coach terus main, ikut je gerakan dia. Pemasa kira untuk anda.'},
+  {q:'.lbx-cl',  t:'Senarai hari ini', s:'Lepas workout, tanda apa yang anda dah buat: langkah, air, makan ikut pelan.'},
+  {q:'#lb-tabs', t:'Menu, scan & panduan', s:'<b>Nutrition</b>: menu dan scan makanan. <b>Start Here</b>: video cara guna, bila-bila masa.'}
+];
+var lbTourAt=-1;
+function lbTourDue(){
+  if(lbTourAt>=0 || lbQ>=0 || lbTab!=='plan' || !lbOwned() || !lbMe() || lbDone()>=LB30_DAYS.length) return false;
+  if(lbData().tour || lbFirst()==='phone') return false;
+  if($('pwm') && $('pwm').classList.contains('on')) return false;
+  if($('scc') && $('scc').style.display==='flex') return false;
+  return !!document.querySelector('#pgd-body .lbx-now');
+}
+/* the program page is on top: not under the sign-in screen, a sheet or another tab */
+function lbTourSeen(){
+  var at=document.elementFromPoint(window.innerWidth/2, window.innerHeight/2), body=$('pgd-body');
+  return !!(at && body && body.contains(at));
+}
+function lbTourStart(){
+  if(!lbTourDue() || !lbTourSeen()) return;
+  lbTourAt=0; lbTourShow();
+}
+function lbTourShow(){
+  var s=LB30_TOUR[lbTourAt], el=s && document.querySelector('#pgd-body '+s.q);
+  if(!el){ if(s && lbTourAt<LB30_TOUR.length-1){ lbTourAt++; return lbTourShow(); } return lbTourEnd(); }
+  var ov=$('lbtour');
+  if(!ov){ ov=document.createElement('div'); ov.id='lbtour'; document.body.appendChild(ov); }
+  ov.className='lbtour on'; ov.innerHTML='';
+  /* a plain jump, not a smooth scroll: smooth scrolling is not reliable in
+     every phone browser, and under the dim the jump does not show */
+  var r=el.getBoundingClientRect(), sc=$('screen');
+  var want=84;   /* near the top, so the bubble fits below it */
+  if(sc) sc.scrollTop+=r.top-want; else el.scrollIntoView();
+  setTimeout(function(){ lbTourPlace(el,s); },80);
+}
+function lbTourPlace(el,s){
+  var ov=$('lbtour'); if(!ov || lbTourAt<0) return;
+  var r=el.getBoundingClientRect(), vh=window.innerHeight, pad=8;
+  var top=Math.max(r.top-pad,8), bot=Math.min(r.bottom+pad,vh-8);
+  if(bot-top<24) return lbTourNext();   /* not on screen after all: the next step */
+  var last=lbTourAt===LB30_TOUR.length-1;
+  var room=vh-bot, place=room>230 ? 'top:'+(bot+12)+'px' : (top>230 ? 'bottom:'+(vh-top+12)+'px' : 'bottom:16px');
+  ov.innerHTML='<div class="lbtour-hole" style="top:'+top+'px;left:'+(r.left-pad)+'px;width:'+(r.width+pad*2)+'px;height:'+(bot-top)+'px"></div>'+
+    '<div class="lbtour-b" style="'+place+'"><div class="lbtour-n">'+LB30_TOUR.map(function(x,i){ return '<i class="'+(i===lbTourAt?'on':'')+'"></i>'; }).join('')+'</div>'+
+    '<b>'+s.t+'</b><p>'+s.s+'</p><div class="lbtour-a">'+
+    (last?'':'<button class="lbtour-skip" onclick="lbTourEnd()">Langkau</button>')+
+    '<button class="lbtour-go" onclick="lbTourNext()">'+(last?'Faham, jom mula':'Seterusnya')+'</button></div></div>';
+}
+function lbTourNext(){ if(lbTourAt>=LB30_TOUR.length-1) return lbTourEnd(); lbTourAt++; lbTourShow(); }
+function lbTourEnd(){
+  var ov=$('lbtour'); if(ov) ov.parentNode.removeChild(ov);
+  lbTourAt=-1; lbData().tour=1; HF.save();
+  if($('screen')) $('screen').scrollTop=0;   /* back to today's Start */
+}
 /* ── Bara's reminders, asked when a day is done (31 Oct 2026). Home's ask waits
    for the app on the Home Screen and for Kenali Bara, which most buyers never
    reach: 1 of 11 had them on. Same limits as Home: 3 times, 3 days apart, and
@@ -17746,6 +17877,7 @@ function renderLB30(){
       '<div class="lbx-h">30 days complete</div><div class="lbx-p">Lihat sejauh mana anda sudah pergi.</div>'+
       '<button class="lbx-go" onclick="lbSetTab(\'progress\')">'+glyph('trophy')+'See Your Results</button></div>';
   }
+  if(lbHowDue()) h+=lbHowCard();
   var story=owned && !scan1 ? lbStoryDue() : null;
   if(story) h+=lbStoryCard(story);
   if(owned && !scan1) h+=lbScanHero();
@@ -17758,6 +17890,7 @@ function renderLB30(){
   else h+=lbPlan();
   h+='</div>';
   $('pgd-body').innerHTML=h;
+  if(lbTourDue()) setTimeout(lbTourStart,600);
 }
 /* the MAK2FIT 30 logo (Seth's, 26 Oct 2026): '' plum and rose gold for light
    grounds, 'w' white and rose gold on photographs, 'ww' all white on magenta */
@@ -18505,7 +18638,8 @@ function lbProgress(){
 
 /* ── start here ── */
 function lbGuide(){
-  var h=LB30_SETH.intro?lbVideoCard(LB30_SETH.intro,'Program intro with Coach Seth'):'';
+  var h=fsec('Video Guide','Tengok sekali, terus faham.')+lbHowList();
+  h+=LB30_SETH.intro?lbVideoCard(LB30_SETH.intro,'Program intro with Coach Seth'):'';
   h+='<div class="lb-safe">'+ic('warning')+'<div><div class="t">Before you start</div>'+
     '<div class="s">Jika anda baru bersalin (kurang 6 minggu), selepas pembedahan caesarean, hamil, atau ada masalah kesihatan, '+
     'dapatkan nasihat doktor sebelum mula.</div></div></div>';
