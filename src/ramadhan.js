@@ -118,7 +118,15 @@ var RAM_SESS={
   after:{n:'After Iftar 20', r:3, w:40, rest:20, warm:true, min:20, v:[
     ['Bodyweight Squat','Knee Push Ups','Backpack Deadlift','Bottle Bent Over Row','High Knee','Plank'],
     ['Squat Pause','Incline Wide Push Up','Towel Squat Press','Towel Shoulder Back Pull','Butt Kick','Side Plank'],
-    ['Towel Squat Overhead','Knee Push Ups','Backpack Good Morning','Towel Upright Row','Fast Feet','Bird Dog']]}};
+    ['Towel Squat Overhead','Knee Push Ups','Backpack Good Morning','Towel Upright Row','Fast Feet','Bird Dog']]},
+  /* the easy days in the week, and a bonus after terawih: slow, seated or standing */
+  stretch:{n:'Terawih Stretch 8', r:2, w:35, rest:5, warm:false, min:8, v:[
+    ['Towel Rotation Shoulder','Towel Side Bend','Seated Twist','Seated Knee To Chest','Towel Wide Front Bend','Towel Sliding Fold'],
+    ['Towel Shoulder Back Pull','Towel Side Bend','Seated Twist','Chair Calf Raises','Towel Wide Front Bend','Seated Knee To Chest'],
+    ['Towel Rotation Shoulder','Seated Twist','Towel Sliding Fold','Seated Knee To Chest','Towel Side Bend','Chair Calf Raises']]}};
+/* the week (Beachbody-style calendar): 1 = the level's session, 0 = Terawih Stretch 8.
+   Medium 3 sessions a week, Hard 4, as the levels say */
+var RF_WEEK={medium:[1,0,1,0,1,0,0], hard:[1,1,0,1,1,0,0]};
 
 /* the six water points: [name, when, glasses] */
 var RAM_WATER=[['Bangun sahur','imsak',1],['Lepas sahur','imsak',1],['Berbuka','maghrib',1],['Makan malam','maghrib',1],['Bawa botol ke terawih','isyak',1],['Sebelum tidur','tidur',1]];
@@ -176,11 +184,13 @@ function ramTier(){ return ramData().tier||''; }
 function ramSlot(){ var k=ramData().slot||'maghrib'; for(var i=0;i<RAM_SLOTS.length;i++) if(RAM_SLOTS[i].k===k) return RAM_SLOTS[i]; return RAM_SLOTS[1]; }
 /* Hard is never done fasting: before berbuka it is Iftar Ready 12 */
 function ramSessKey(k){
+  if(k==null) k=ramK();
   var ph=ramPhase(k);
   if(ph==='prep') return 'prep';
   if(ph!=='ram') return '';
-  var t=ramTier();
-  return t==='medium' ? 'ready' : t==='hard' ? (ramSlot().k==='pre'?'ready':'after') : '';
+  var t=ramTier(); if(!RF_WEEK[t]) return '';
+  if(!RF_WEEK[t][((k%7)+7)%7]) return 'stretch';
+  return t==='medium' ? 'ready' : (ramSlot().k==='pre'?'ready':'after');
 }
 function ramEx(n,dur,rest){
   if(typeof mfEx==='function') return mfEx(n,dur,rest,'');
@@ -298,7 +308,7 @@ var ramSeg='hari', ramPick=null, _ramTick=null;
 function openRam(seg){
   if(!ramLive()) return;
   hidePanels(); $('ramp').style.display='block';
-  ramSeg=seg||(ramTier()?'hari':'latih'); ramPick=null;
+  ramSeg=seg||(ramTier()?'hari':'mula'); ramPick=null;
   renderRam(); $('screen').scrollTop=0;
 }
 function ramBack(){ switchTab(curTab||'home'); }
@@ -310,11 +320,15 @@ function ramRefresh(){
 function renderRam(){
   var el=$('ramp-body'); if(!el) return;
   if(!rfOwned()){ el.innerHTML=rfSalesHTML(); return; }
-  var h='<div class="rf-name"><span>'+glyph('moon')+'</span>'+RF_NAME+'</div><div class="ramp-top">'+ramBand()+'</div>';
-  h+='<div class="obseg d6-segs ram-segs">'+[['hari','Today'],['latih','Training'],['air','Water'],['buka','Iftar'],['kal','Calendar']].map(function(x){
-    return '<button class="'+(ramSeg===x[0]?'on':'')+'" onclick="ramSet(\''+x[0]+'\')">'+x[1]+'</button>'; }).join('')+'</div>';
-  h+= ramSeg==='hari' ? rfTodayHTML() : ramSeg==='air' ? ramWaterHTML() : ramSeg==='buka' ? ramIftarHTML() : ramSeg==='kal' ? ramCalHTML() : ramTrainHTML();
-  h+=ramSettingsHTML();
+  var top=rfParent(ramSeg), h='<div class="rf-name"><span>'+glyph('moon')+'</span>'+RF_NAME+'</div><div class="ramp-top">'+ramBand()+'</div>';
+  h+='<div class="rf-tabs ram-noprint">'+RF_TABS.map(function(x){
+    return '<button class="'+(top===x[0]?'on':'')+'" onclick="ramSet(\''+x[0]+'\')">'+x[1]+'</button>'; }).join('')+'</div>';
+  if(top!==ramSeg) h+='<button class="rf-back ram-noprint" onclick="ramSet(\''+top+'\')">‹ '+rfTabName(top)+'</button>';
+  var sg=ramSeg;
+  h+= sg==='mula' ? rfStartHTML() : sg==='hari' ? rfTodayHTML() : sg==='wk' ? rfWorkoutsHTML() : sg.indexOf('w:')===0 ? rfWkHTML(sg.slice(2)) :
+      sg==='kal' ? ramCalHTML() : sg==='makan' ? rfNutriHTML() : sg==='menu' ? rfMenuHTML() : sg==='bahan' ? rfMatHTML() : sg==='cetak' ? rfPrintHTML() :
+      sg.indexOf('g:')===0 ? rfGuideHTML(sg.slice(2)) : sg==='air' ? ramWaterHTML() : sg==='buka' ? ramIftarHTML() : ramTrainHTML();
+  if(/^(mula|latih|hari|kal)$/.test(sg)) h+=ramSettingsHTML();
   el.innerHTML=h;
   ramTickStart();
 }
@@ -382,21 +396,30 @@ function ramIftarHTML(){
 }
 
 function ramCalHTML(){
-  var b=ramBase(), k=ramK(), all=HF.data.daily||{}, r=ramData(), h='', i, d, cls;
-  h+='<div class="ram-h">Calendar</div><div class="ram-p">Prep 2 minggu (bonus) · 30 hari · Syawal. Tekan hari untuk buka pelajarannya.</div>';
-  h+='<div class="ram-sec">Prep · 2 minggu sebelum puasa</div><div class="ram-dots">';
-  for(i=-RAM_PREP;i<0;i++){ d=ramAdd(b,i); cls=d>ramToday()?'':ramTrained(d)?'p':'';
-    h+='<div class="ram-d '+cls+(i===k?' now':'')+'" onclick="rfOpenDay('+i+')">'+(cls==='p'?'✓':(RAM_PREP+i+1))+'</div>'; }
-  h+='</div><div class="ram-sec">Ramadhan · 30 hari</div><div class="ram-dots">';
-  for(i=0;i<RAM_DAYS;i++){ d=ramAdd(b,i); cls=(all[d]&&all[d].ram)?'x':'';
-    h+='<div class="ram-d '+cls+(i===k?' now':'')+'" onclick="rfOpenDay('+i+')">'+(i+1)+'</div>'; }
-  h+='</div><div class="ram-sec">Raya Mode · Syawal</div><div class="ram-card"><div class="ram-p" style="margin:0 0 8px"><b>Puasa enam</b> · tanda bila dah puasa</div><div class="ram-dots ram-six">';
+  var b=ramBase(), k=ramK(), all=HF.data.daily||{}, r=ramData(), h='', i, w, d, cls;
+  function cell(i,inner,cls,lab){ return '<div class="ram-d '+cls+(i===k?' now':'')+'" onclick="rfOpenDay('+i+')"><b>'+inner+'</b>'+(lab?'<i>'+lab+'</i>':'')+'</div>'; }
+  h+='<div class="ram-h">Program Calendar</div><div class="ram-p">Prep 2 minggu (bonus) · 30 hari · Syawal. Tekan hari untuk buka pelajaran dan sesinya.</div>';
+  for(w=0;w<2;w++){
+    h+='<div class="ram-sec">Prep · Minggu '+(w+1)+'</div><div class="ram-dots rf-week">';
+    for(i=-RAM_PREP+w*7;i<-RAM_PREP+w*7+7;i++){ d=ramAdd(b,i); cls=d>ramToday()?'':ramTrained(d)?'p':''; h+=cell(i,cls==='p'?'✓':(RAM_PREP+i+1),cls,'Prep 5'); }
+    h+='</div>';
+  }
+  for(w=0;w<5;w++){
+    h+='<div class="ram-sec">Ramadhan · Minggu '+(w+1)+(w===4?' (akhir)':'')+'</div><div class="ram-dots rf-week">';
+    for(i=w*7;i<Math.min(RAM_DAYS,w*7+7);i++){ d=ramAdd(b,i); cls=(all[d]&&all[d].ram)?'x':''; h+=cell(i,i+1,cls,rfShort(ramSessKey(i))); }
+    h+='</div>';
+  }
+  h+='<div class="rf-key"><span><i class="x"></i>Puasa ditanda</span><span><i class="p"></i>Prep siap</span><span><i class="n"></i>Hari ini</span></div>';
+  h+='<div class="ram-sec">Raya Mode · Syawal</div><div class="ram-card"><div class="ram-p" style="margin:0 0 8px"><b>Puasa enam</b> · tanda bila dah puasa</div><div class="ram-dots ram-six">';
   for(i=0;i<6;i++) h+='<div class="ram-d '+(i<r.six.length?'rx':'r')+'">'+(i<r.six.length?'✓':(i+1))+'</div>';
   h+='</div>'+(ramPhase()==='syawal'?'<button class="ram-go2" onclick="ramSixTap()">'+(r.six.indexOf(ramToday())>=0?'Batal tanda hari ini':'Saya puasa hari ini')+'</button>':'')+
     '<div class="ram-p" style="margin-top:10px">🏠 Rumah terbuka? Peraturan Satu: 1 pinggan, 1 kuih.</div></div>';
+  h+='<button class="ram-go2 ram-noprint" onclick="ramSet(\'cetak\')">'+glyph('calendar')+' Kalendar untuk dicetak</button>';
   h+=ramBaraHTML('calendar', 'Satu kotak sehari. Awak dah '+ramFasted()+' hari puasa bulan ni.');
   return h;
 }
+/* the session's short name on a calendar day */
+function rfShort(key){ return key==='ready'?'12 min':key==='after'?'20 min':key==='stretch'?'Stretch':key==='prep'?'Prep 5':ramTier()==='easy'?'Jalan':''; }
 
 function ramBaraHTML(pose,txt){ return '<div class="ram-bara"><img src="'+ramImg(pose)+'" alt=""><div><b>Bara</b>'+hesc(txt)+'</div></div>'; }
 function ramSettingsHTML(){
@@ -443,15 +466,222 @@ function rfTodayHTML(){
   return h+ramBaraHTML(ramPose(), today?ramBara():'Hari '+(k<0?(RAM_PREP+k+1)+' Prep':(k+1))+': '+L[2]);
 }
 
+/* ══ The program laid out like a streaming program page (Seth, 27 Nov 2026:
+   "konsep penyusunan semua kita tiru macam Beachbody on demand"): Start Here,
+   Today, Workouts, Calendar, Nutrition, Materials. Only the way it is laid
+   out is borrowed; the names, look and words are HITFAT's. Every move plays
+   the filmed HITFAT+ library clip (Seth: "kan ada video database yang
+   hitfat+ sebelum ni"). ══ */
+var RF_TABS=[['mula','Start Here'],['hari','Today'],['wk','Workouts'],['kal','Calendar'],['makan','Nutrition'],['bahan','Materials']];
+var RF_NUTRI_G=['sahur','porsi','bazar','manis','tidur'];
+function rfParent(sg){
+  if(sg==='latih') return 'mula';
+  if(sg.indexOf('w:')===0) return 'wk';
+  if(sg==='air' || sg==='buka' || sg==='menu') return 'makan';
+  if(sg==='cetak') return 'kal';
+  if(sg.indexOf('g:')===0) return RF_NUTRI_G.indexOf(sg.slice(2))>=0 ? 'makan' : 'bahan';
+  return sg;
+}
+function rfTabName(k){ for(var i=0;i<RF_TABS.length;i++) if(RF_TABS[i][0]===k) return RF_TABS[i][1]; return 'Back'; }
+
+/* ── Start Here ── */
+var RF_VIDEO={v:'1235197860', t:'Puasa & pemakanan', s:'Nutrition Academy · 3 minit', pic:'/img/academy/m5.jpg'}, rfVidOn=false;
+function rfVid(){ rfVidOn=true; renderRam(); }
+function rfStartHTML(){
+  var t=ramTier(), tr=RAM_TIERS.filter(function(x){ return x.k===t; })[0], sl=ramSlot(), h='';
+  h+='<div class="rf-wel"><div class="rf-wel-k">Start Here</div><div class="rf-wel-t">Selamat datang ke '+RF_NAME+'</div>'+
+     '<div class="rf-wel-p">30 hari kekal aktif masa puasa, di rumah. Setiap hari ada satu pelajaran, satu misi dan satu sesi pendek ikut tahap awak. Mula dengan 3 langkah di bawah.</div></div>';
+  h+='<div class="ram-sec">Tonton dulu</div>';
+  h+= rfVidOn && RF_VIDEO.v
+    ? '<div class="rf-vid"><iframe src="'+(typeof acVimeo==='function'?acVimeo(RF_VIDEO.v):'https://player.vimeo.com/video/'+RF_VIDEO.v)+'&autoplay=1" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>'
+    : '<div class="rf-vcard" onclick="rfVid()"><span class="ph" style="background-image:url(\''+RF_VIDEO.pic+'\')"><i>'+glyph('play')+'</i></span><div><b>'+RF_VIDEO.t+'</b><span>'+RF_VIDEO.s+'</span></div></div>';
+  h+='<div class="ram-sec">3 langkah untuk mula</div><div class="ram-card">';
+  h+='<div class="ram-step" onclick="ramSet(\'latih\')"><span class="ram-no">1</span><div class="ram-li-b"><b>Pilih tahap dan waktu</b><span>'+(tr?tr.n+(t!=='easy'?' · '+hesc(sl.t.toLowerCase()):''):'Move Daily, Iftar Ready 12 atau After Iftar 20')+'</span></div><span class="ram-chk'+(t?' on':'')+'"></span></div>';
+  h+='<div class="ram-step" onclick="ramSet(\'hari\')"><span class="ram-no">2</span><div class="ram-li-b"><b>Buka Today setiap hari</b><span>Pelajaran, misi dan sesi hari itu</span></div></div>';
+  h+='<div class="ram-step" onclick="ramSet(\'makan\')"><span class="ram-no">3</span><div class="ram-li-b"><b>Ikut Nutrition</b><span>Air 6 titik, berbuka 2 langkah, menu 30 hari</span></div></div></div>';
+  h+='<div class="ram-sec">Program Materials</div><div class="rf-mats">'+RF_MATS.slice(0,3).map(rfMatTile).join('')+'</div>';
+  h+='<div class="ram-warn">☀️ Masa berpuasa, latihan ringan sahaja dan dalam rumah. Pening, loya atau berdebar: berhenti dan duduk. Ada penyakit, hamil atau makan ubat? Tanya doktor dulu. <a onclick="ramSet(\'g:selamat\')">Panduan keselamatan</a></div>';
+  return h+ramBaraHTML('walk', t?'Awak dah sedia! Jumpa di Today ya.':'Jom mula dengan pilih tahap awak dulu.');
+}
+
+/* ── Workouts: every session, three versions each, plus the bonus ── */
+var RF_WK=[
+  {id:'p0',key:'prep',v:0,pic:'rh2'},{id:'p1',key:'prep',v:1,pic:'act-recovery'},{id:'p2',key:'prep',v:2,pic:'rh1'},
+  {id:'r0',key:'ready',v:0,pic:'tw1'},{id:'r1',key:'ready',v:1,pic:'rh3'},{id:'r2',key:'ready',v:2,pic:'min3'},
+  {id:'a0',key:'after',v:0,pic:'tw2'},{id:'a1',key:'after',v:1,pic:'br-beginner'},{id:'a2',key:'after',v:2,pic:'m1'},
+  {id:'s0',key:'stretch',v:0,pic:'br-recovery'},{id:'s1',key:'stretch',v:1,pic:'rh2'},{id:'s2',key:'stretch',v:2,pic:'act-recovery'}];
+var RF_WK_SEC=[
+  ['ready','Iftar Ready 12','MEDIUM · sebelum atau lepas berbuka · tiada lompat'],
+  ['after','After Iftar 20','HARD · lepas berbuka atau lepas terawih sahaja'],
+  ['stretch','Terawih Stretch 8','Bonus · hari rehat atau lepas terawih'],
+  ['prep','Ramadhan Prep 5','Bonus · 2 minggu sebelum puasa']];
+function rfWk(id){ for(var i=0;i<RF_WK.length;i++) if(RF_WK[i].id===id) return RF_WK[i]; return null; }
+function rfWkName(w){ return RAM_SESS[w.key].n+' '+'ABC'.charAt(w.v); }
+function rfWkPic(w){ return '/img/p/'+w.pic+'.jpg'; }
+function rfWkTile(w){
+  var tk=ramSessKey(), today=(tk===w.key && ((ramK()%3)+3)%3===w.v);
+  return '<div class="rf-wk" onclick="ramSet(\'w:'+w.id+'\')"><span class="ph" style="background-image:url(\''+rfWkPic(w)+'\')">'+(today?'<em>Hari ini</em>':'')+'<i>'+glyph('play')+'</i></span>'+
+    '<b>'+hesc(rfWkName(w))+'</b><span>'+ramMinutes(w.key,w.v)+' min · '+RAM_SESS[w.key].v[w.v].length+' gerakan</span></div>';
+}
+function rfWorkoutsHTML(){
+  var h='<div class="ram-h">Workouts</div><div class="ram-p">Semua sesi program. Setiap gerakan ada video coach HITFAT+. Ruang kecil, tuala, kerusi, botol air dan beg galas sahaja.</div>';
+  RF_WK_SEC.forEach(function(sc){
+    h+='<div class="ram-sec">'+sc[1]+'</div><div class="ram-p" style="margin-top:-4px">'+sc[2]+'</div><div class="rf-wks">'+RF_WK.filter(function(w){ return w.key===sc[0]; }).map(rfWkTile).join('')+'</div>';
+  });
+  return h;
+}
+function rfWkHTML(id){
+  var w=rfWk(id); if(!w) return rfWorkoutsHTML();
+  var S=RAM_SESS[w.key], L=S.v[w.v], warm=S.warm?RAM_WARM[w.v]:[], h='';
+  h+='<div class="rf-wkh" style="background-image:url(\''+rfWkPic(w)+'\')"><div><div class="rf-wel-k">'+(w.key==='after'?'Hard':w.key==='ready'?'Medium':'Bonus')+'</div><div class="rf-wkh-t">'+hesc(rfWkName(w))+'</div>'+
+     '<div class="rf-wkh-m"><span>'+ramMinutes(w.key,w.v)+' min</span><span>'+S.r+' pusingan</span><span>'+S.w+'s kerja · '+S.rest+'s rehat</span></div></div></div>';
+  h+='<button class="ram-go" onclick="rfPlayWk(\''+w.id+'\')">'+glyph('play')+'Start · '+ramMinutes(w.key,w.v)+' min</button>';
+  if(warm.length) h+='<div class="ram-sec">Memanaskan badan · 30s setiap satu</div><div class="ram-card">'+warm.map(rfMoveRow).join('')+'</div>';
+  h+='<div class="ram-sec">Gerakan · '+S.r+' pusingan</div><div class="ram-card">'+L.map(rfMoveRow).join('')+'</div>';
+  h+='<div class="ram-note">Tekan ▶ untuk tengok video gerakan dulu.'+(w.key==='after'?' Sesi ini untuk lepas berbuka sahaja: boleh minum air sepanjang sesi.':'')+'</div>';
+  return h;
+}
+function rfMoveRow(n){
+  var e=DB.filter(function(x){ return x.n===n && x.v; })[0]||{};
+  return '<div class="ram-li" onclick="rfPreview(\''+String(n).replace(/'/g,"\\'")+'\')"><span class="rf-mv">'+glyph('play')+'</span><div class="ram-li-b"><b>'+hesc(n)+'</b><span>'+hesc((e.m||'')+(e.eq&&e.eq!=='Bodyweight'?' · '+e.eq:''))+'</span></div></div>';
+}
+/* one move on its own: part of the program, so no HITFAT+ needed */
+function rfPreview(n){ var e=ramEx(n,30,0); if(!e.v){ toast('Video akan datang'); return; } startWorkout([e],{rounds:1, name:n, key:'ramx-'+n+'-'+ramToday()}); }
+function rfPlayWk(id){ var w=rfWk(id); if(!w) return; startWorkout(ramExercises(w.key,w.v),{rounds:1, name:rfWkName(w), key:'ram-'+w.id+'-'+ramToday()}); }
+
+/* ── Nutrition ── */
+function rfNutriHTML(){
+  var day=Math.min(RAM_DAYS-1,Math.max(0,ramK())), m=rfMenuDay(day), h='';
+  h+='<div class="ram-h">Nutrition</div><div class="ram-p">Tak perlu kira kalori. Ikut susunan berbuka, air dan pinggan, dengan makanan biasa Malaysia.</div>';
+  h+='<div class="rf-menu1" onclick="ramSet(\'menu\')"><div class="rf-wel-k">Menu hari '+(day+1)+'</div><div class="rf-m-r"><i>Sahur</i>'+hesc(m[0])+'</div><div class="rf-m-r"><i>Berbuka</i>'+hesc(m[1]+' → '+m[2])+'</div><div class="rf-m-r"><i>Malam</i>'+hesc(m[3])+'</div><span class="rf-more">Menu 30 hari ›</span></div>';
+  h+='<div class="rf-mats">'+[
+    ['buka','🍽️','Iftar in 2 Steps','Buka kecil, Maghrib, makan utama'],
+    ['air','💧','Water 6 points','Dari sahur sampai tidur'],
+    ['g:sahur','🍳','Sahur Kilat','5 pilihan siap dalam 10 minit'],
+    ['g:porsi','✋','Porsi 3 cara','Tapak tangan, pinggan, sukatan'],
+    ['g:bazar','🛍️','Bazar & moreh','Peraturan Satu'],
+    ['g:manis','🧋','Kurangkan manis','Pelan 2 minggu sebelum puasa'],
+    ['g:tidur','😴','Tidur & rehat','Bila sahur dan terawih potong tidur']].map(function(x){
+      return '<div class="rf-mat" onclick="ramSet(\''+x[0]+'\')"><span>'+x[1]+'</span><b>'+x[2]+'</b><em>'+x[3]+'</em></div>'; }).join('')+'</div>';
+  return h+ramBaraHTML('meal','Satu pinggan, makan perlahan. Bara pun ikut!');
+}
+/* the 30-day menu: everyday Malaysian food, one plate. Four lists turned at
+   different steps so no two days are the same */
+var RF_M_SAHUR=['Nasi 1 genggam, telur dadar sayur, air kosong','Roti mil 2 keping, telur rebus 2 biji, pisang','Oat susu, kurma 2 biji, segenggam kacang','Nasi 1 genggam, ayam masak kicap, timun',
+  'Bubur nasi ayam, telur rebus','Nasi 1 genggam, ikan kukus, bayam','Lempeng pisang, telur, susu suam','Nasi 1 genggam, tempe, sup sayur','Sandwic tuna, epal','Nasi 1 genggam, sardin, ulam'];
+var RF_M_BUKA=['Kurma 3 biji, air kosong','Kurma 2 biji, air, sup kosong','Kurma 2 biji, tembikai','Kurma 2 biji, air, bubur kacang hijau (mangkuk kecil)','Kurma 1 biji, air, betik','Kurma 2 biji, air, sup sayur'];
+var RF_M_MAIN=['Nasi, ayam panggang, ulam','Nasi, ikan bakar, kangkung','Mi sup ayam','Nasi, daging masak merah (sedikit kuah), sayur','Nasi, asam pedas ikan, timun','Nasi, gulai ayam (kuah sedikit), sayur',
+  'Nasi, ikan kukus halia, sawi','Nasi, tauhu sumbat, sup sayur','Bihun sup','Nasi, udang masak merah, taugeh','Nasi, sotong sambal kurang minyak, kacang panjang','Nasi, ayam masak halia, kailan',
+  'Nasi, telur bistik, sayur','Nasi ayam, sup','Nasi, sup daging, sayur'];
+var RF_M_MALAM=['Betik sepotong','Susu suam segelas','Yogurt asli','Jagung rebus','Ubi keledek rebus','Kurma 2 biji, air','Moreh: satu kuih sahaja','Tembikai sepotong'];
+function rfMenuDay(i){ return [RF_M_SAHUR[(i*3)%10], RF_M_BUKA[i%6], RF_M_MAIN[(i*7)%15], RF_M_MALAM[(i*5)%8]]; }
+var rfMenuPick=null;
+function rfMenuGo(i){ rfMenuPick=i; renderRam(); }
+function rfMenuHTML(){
+  var now=Math.min(RAM_DAYS-1,Math.max(0,ramK())), d=(rfMenuPick===null?now:rfMenuPick), m=rfMenuDay(d), h='', i;
+  h+='<div class="ram-h">Menu 30 hari</div><div class="ram-p">Satu pinggan setiap kali makan: separuh sayur, suku nasi (1 genggam), suku lauk (1 tapak tangan).</div><div class="rf-chips">';
+  for(i=0;i<RAM_DAYS;i++) h+='<button class="'+(i===d?'on':'')+(i===now?' now':'')+'" onclick="rfMenuGo('+i+')">'+(i+1)+'</button>';
+  h+='</div><div class="ram-card">'+[['🌙','Sahur',m[0]],['🌅','Buka kecil',m[1]],['🍽️','Lepas Maghrib',m[2]],['🌃','Malam / moreh',m[3]]].map(function(x){
+    return '<div class="ram-li"><span class="ram-ico">'+x[0]+'</span><div class="ram-li-b"><b>'+x[1]+'</b><span>'+hesc(x[2])+'</span></div></div>'; }).join('')+'</div>';
+  h+='<div class="ram-note">Air: 6 titik sehari (tab Water). Air manis? Satu gelas, kurang manis. <a onclick="ramSet(\'g:barang\')">Senarai barang dapur</a></div>';
+  h+='<button class="ram-go2" onclick="openScan(\'meal\')">'+glyph('photo')+' Scan pinggan saya</button>';
+  return h;
+}
+
+/* ── guides: Nutrition and Materials. HITFAT's own words, no health claims ── */
+var RF_GUIDE={
+  mula:{ic:'📘',t:'Quick Start Guide',p:'Semua yang awak perlu tahu dalam 1 minit.',L:[
+    ['Pilih tahap','Move Daily (langkah sahaja), Iftar Ready 12 (3× seminggu) atau After Iftar 20 (4× seminggu). Boleh tukar bila-bila.'],
+    ['Pilih waktu','Lima pilihan. Masa berpuasa, ringan sahaja. Sesi Hard hanya lepas berbuka.'],
+    ['Setiap hari','Buka Today: pelajaran, misi dan sesi. Tanda air, berbuka 2 langkah dan puasa.'],
+    ['Hari rehat','Hari tanpa sesi: Terawih Stretch 8 atau jalan kaki.'],
+    ['Terlepas sehari?','Tak apa. Sambung esok. Kalendar kekal.'],
+    ['Alat','Ruang kecil, tuala, kerusi, botol air dan beg galas.']]},
+  selamat:{ic:'🛟',t:'Panduan keselamatan',p:'Puasa di cuaca panas. Selamat dulu, baru laju.',L:[
+    ['Berhenti terus','Jika pening, loya, berdebar, sesak nafas atau rasa nak pitam: berhenti, duduk, dan berbuka jika perlu.'],
+    ['Tanya doktor dulu','Kencing manis, darah tinggi, sakit jantung atau buah pinggang, hamil, menyusu, atau makan ubat.'],
+    ['Masa berpuasa','Ringan dan dalam rumah sahaja. Tiada sesi berat sebelum berbuka.'],
+    ['Lepas berbuka','Tunggu sekejap lepas makan utama. Minum air sepanjang sesi.'],
+    ['Wanita yang uzur','Boleh teruskan sesi ringan, dan minum air semasa latihan.'],
+    ['Waktu solat','Waktu dalam app ialah anggaran. Ikut azan masjid atau JAKIM.']]},
+  sahur:{ic:'🍳',t:'Sahur Kilat',p:'Bangun lambat? Lima pilihan siap dalam 10 minit. Minum segelas air dulu.',L:[
+    ['Telur rebus + roti mil','Rebus telur malam sebelumnya. Tambah pisang.'],
+    ['Oat + kurma','Oat dengan susu atau air panas, 2 biji kurma, sedikit kacang.'],
+    ['Nasi semalam + lauk','Panaskan nasi 1 genggam dengan lauk berbuka semalam dan sayur.'],
+    ['Sandwic tuna','Tuna tin, roti mil, timun atau salad.'],
+    ['Yogurt + buah','Yogurt asli dengan pisang atau betik, kalau tak lalu makan berat.'],
+    ['Jangan tinggal sahur','Kalau sangat lambat, sekurang-kurangnya air dan kurma.']]},
+  porsi:{ic:'✋',t:'Porsi 3 cara',p:'Pilih cara yang paling senang untuk awak.',L:[
+    ['Cara 1: tangan','Lauk 1 tapak tangan · nasi 1 genggam · sayur 2 genggam · minyak atau santan 1 ibu jari.'],
+    ['Cara 2: pinggan','Separuh pinggan sayur atau ulam, suku nasi, suku lauk.'],
+    ['Cara 3: sukat','Nasi 1 cawan · lauk sebesar dek kad · sayur 2 cawan · kuah 1 senduk.'],
+    ['Air manis','Segelas sahaja, pilih kurang manis.'],
+    ['Kuih','Satu atau dua ketul kecil, dalam piring.']]},
+  bazar:{ic:'🛍️',t:'Bazar & moreh',p:'Bazar Ramadhan dan moreh lepas terawih: nikmati, tapi ada had.',L:[
+    ['Peraturan Satu','1 kuih, 1 lauk, 1 air. Pilih yang paling awak nak.'],
+    ['Pergi dengan rancangan','Fikir dulu apa nak beli sebelum sampai bazar. Elak beli sebab lapar.'],
+    ['Pilih cara masak','Bakar, panggang, rebus atau sup lebih kerap. Gorengan sekali-sekala.'],
+    ['Air','Pilih kurang manis, air kelapa atau air kosong.'],
+    ['Moreh','Ambil satu. Scan supaya Bara tahu.'],
+    ['Majlis berbuka','Satu pinggan. Mula dengan sayur dan lauk.']]},
+  manis:{ic:'🧋',t:'Kurangkan manis: pelan 2 minggu',p:'Mula semasa Prep, supaya Ramadhan lebih senang. Sedikit demi sedikit.',L:[
+    ['Hari 1–4','Tukar teh tarik atau kopi ke "kurang manis".'],
+    ['Hari 5–9','Satu daripada minuman manis sehari ditukar ke air kosong.'],
+    ['Hari 10–14','Teh O atau kopi O kurang manis, atau tanpa gula.'],
+    ['Kopi','Kurangkan perlahan-lahan. Ada orang rasa tak selesa bila berhenti mengejut.'],
+    ['Masa Ramadhan','Segelas air manis masa berbuka cukup. Rekod dalam tab Water.']]},
+  tidur:{ic:'😴',t:'Tidur & rehat',p:'Sahur dan terawih memendekkan tidur malam.',L:[
+    ['Tidur awal','Lepas terawih, kurangkan skrin dan tidur lebih awal.'],
+    ['Lelap sekejap','Kalau boleh, lelap 15–20 minit selepas Zohor.'],
+    ['Hari letih','Pilih Terawih Stretch 8 atau jalan sahaja. Itu pun dikira.'],
+    ['10 malam terakhir','Tidur kurang? Pilih sesi pendek. Tak apa.']]},
+  barang:{ic:'🛒',t:'Senarai barang dapur',p:'Untuk menu 30 hari. Beli ikut keperluan seminggu.',L:[
+    ['Protein','Telur, ayam, ikan, sardin atau tuna tin, tempe, tauhu, susu, yogurt asli.'],
+    ['Nasi & karbohidrat','Beras, roti mil, oat, bihun atau mi, ubi keledek, jagung.'],
+    ['Sayur','Bayam, kangkung, sawi, kailan, kacang panjang, taugeh, timun, tomato, ulam.'],
+    ['Buah','Kurma, tembikai, betik, pisang, epal.'],
+    ['Lain-lain','Kacang tanah atau badam, sup kosong, botol air untuk terawih.']]},
+  faq:{ic:'❓',t:'Soalan lazim',p:'',L:[
+    ['Boleh latihan masa puasa?','Ringan sahaja, dalam rumah, 30–45 minit sebelum berbuka. Sesi berat lepas berbuka.'],
+    ['Saya terlepas beberapa hari.','Sambung dari hari ini. Program ikut tarikh Ramadhan, bukan "hari ke-" awak.'],
+    ['Lutut saya tak boleh lompat.','Iftar Ready 12 tiada lompat. Pilih tahap Medium.'],
+    ['Perlu alat?','Tuala, kerusi, botol air dan beg galas sahaja.'],
+    ['Ahli HITFAT+ dapat program ini?','Tidak. RAMADHAN FIT 30 dijual berasingan.'],
+    ['Waktu solat tepat?','Anggaran (beza 1–2 minit). Ikut azan masjid atau JAKIM.']]}};
+function rfGuideHTML(id){
+  var g=RF_GUIDE[id]; if(!g) return rfMatHTML();
+  return '<div class="rf-gh"><span>'+g.ic+'</span><div><div class="ram-h">'+g.t+'</div>'+(g.p?'<div class="ram-p">'+hesc(g.p)+'</div>':'')+'</div></div>'+
+    '<div class="ram-card">'+g.L.map(function(x){ return '<div class="ram-li rf-gl"><div class="ram-li-b"><b>'+hesc(x[0])+'</b><span>'+hesc(x[1])+'</span></div></div>'; }).join('')+'</div>';
+}
+
+/* ── Materials ── */
+var RF_MATS=[['g:mula','📘','Quick Start Guide','Cara guna dalam 1 minit'],['cetak','🗓️','Kalendar cetak','Tampal di peti ais'],['g:barang','🛒','Senarai barang','Untuk menu 30 hari'],
+  ['g:selamat','🛟','Panduan keselamatan','Bila perlu berhenti'],['menu','🍽️','Menu 30 hari','Sahur, berbuka, malam'],['g:faq','❓','Soalan lazim','Jawapan ringkas']];
+function rfMatTile(x){ return '<div class="rf-mat" onclick="ramSet(\''+x[0]+'\')"><span>'+x[1]+'</span><b>'+x[2]+'</b><em>'+x[3]+'</em></div>'; }
+function rfMatHTML(){
+  return '<div class="ram-h">Program Materials</div><div class="ram-p">Panduan program. Semua boleh dibaca dalam app.</div><div class="rf-mats">'+RF_MATS.map(rfMatTile).join('')+'</div>'+
+    ramBaraHTML('walk','Kalendar cetak tu tampal di peti ais. Pangkah setiap hari!');
+}
+function rfPrintHTML(){
+  var b=ramBase(), h='<div class="rf-print"><div class="rf-print-t">'+RF_NAME+' · Kalendar</div><div class="ram-p">Pangkah setiap hari. Ramadhan bermula '+ramNice(b)+' (anggaran).</div><table><tr>';
+  for(var i=0;i<RAM_DAYS;i++){ if(i && i%6===0) h+='</tr><tr>';
+    h+='<td><b>'+(i+1)+'</b><span>'+ramNice(ramAdd(b,i))+'</span><i>'+(rfShort(ramSessKey(i))||'Jalan')+'</i><em>□ Puasa □ Air 6 □ Latih</em></td>'; }
+  h+='</tr></table></div><button class="ram-go ram-noprint" onclick="rfPrint()">'+glyph('doc')+'Cetak / simpan PDF</button>';
+  return h;
+}
+function rfPrint(){ try{ document.body.classList.add('ramprint'); window.print(); }catch(e){} setTimeout(function(){ document.body.classList.remove('ramprint'); },800); }
+
 /* ── RAMADHAN FIT 30: for someone who has not bought it ── */
 function rfSalesHTML(){
   var h='<div class="rf-hero"><div class="ramb-moon"></div><div class="rf-hero-k">Program baru · Ramadhan 2027</div><div class="rf-hero-t">'+RF_NAME+'</div>'+
     '<div class="rf-hero-s">'+hesc(RF_SUB)+'. Untuk lelaki dan wanita, di rumah.</div></div>';
+  h+='<div class="rf-wks rf-wks-s">'+['r0','a1','s0'].map(function(id){ var w=rfWk(id); return '<div class="rf-wk"><span class="ph" style="background-image:url(\''+rfWkPic(w)+'\')"></span><b>'+hesc(RAM_SESS[w.key].n)+'</b><span>'+ramMinutes(w.key,w.v)+' min</span></div>'; }).join('')+'</div>';
   h+='<div class="ram-card rf-has">'+[
+    ['▶️','Start Here','Video, 3 langkah untuk mula, pilih tahap dan waktu'],
     ['🗓️','30 hari, satu pelajaran dan satu misi sehari','Ditambah Prep 2 minggu sebelum puasa (bonus)'],
-    ['🏃','3 tahap, waktu pilihan awak','Move Daily · Iftar Ready 12 · After Iftar 20. Latihan berat tak dibuat masa berpuasa'],
-    ['💧','Air 6 titik dari sahur ke tidur','Dengan kiraan gula air manis masa berbuka'],
-    ['🍽️','Iftar in 2 Steps','Buka kecil, Maghrib, makan utama. Peraturan Satu untuk bazar dan moreh'],
+    ['🏃','12 sesi video, 3 tahap','Move Daily · Iftar Ready 12 · After Iftar 20 · Terawih Stretch 8. Latihan berat tak dibuat masa berpuasa'],
+    ['🍽️','Menu 30 hari makanan Malaysia','Berbuka 2 langkah, air 6 titik, Sahur Kilat, porsi, bazar dan moreh'],
+    ['📘','Program Materials','Kalendar cetak, senarai barang dapur, panduan keselamatan'],
     ['🕌','Waktu imsak dan berbuka ikut negeri','Kira detik terus di Home (anggaran)'],
     ['🌙','Raya Mode','Rumah terbuka dan puasa enam dalam Syawal']].map(function(x){
       return '<div class="ram-li"><span class="ram-ico">'+x[0]+'</span><div class="ram-li-b"><b>'+x[1]+'</b><span>'+x[2]+'</span></div></div>'; }).join('')+'</div>';

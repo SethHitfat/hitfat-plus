@@ -8218,3 +8218,62 @@ button.kl-tile.kl-tgo{display:block;width:100%;border:0;font:inherit;text-align:
 .rf-hero-t{font-family:'Oswald',sans-serif;font-size:34px;font-weight:700;letter-spacing:.5px;margin:4px 0}
 .rf-hero-s{font-size:13.5px;line-height:1.45;opacity:.95}
 .rf-has .ram-li{cursor:default}
+/* RAMADHAN FIT 30 laid out like a streaming program page (27 Nov 2026) */
+.rf-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0 14px}
+.rf-tabs::-webkit-scrollbar{display:none}
+.rf-tabs button{border:1px solid var(--line);background:var(--surface);color:var(--txt);border-radius:999px;padding:8px 14px;font:600 13px 'Inter',sans-serif;cursor:pointer;white-space:nowrap}
+.rf-tabs button.on{background:#E30613;border-color:#E30613;color:#fff}
+.rf-back{border:0;background:none;color:#E30613;font:700 13px 'Inter',sans-serif;padding:2px 0 10px;cursor:pointer}
+.rf-wel{border-radius:20px;padding:16px;background:linear-gradient(150deg,#1D1D1F,#3A0A0E);color:#fff;margin-bottom:6px}
+.rf-wel-k{font-size:11px;letter-spacing:1.4px;font-weight:700;text-transform:uppercase;color:#FF6B6B}
+.rf-wel-t{font-family:'Oswald',sans-serif;font-size:23px;font-weight:600;margin:3px 0 6px;line-height:1.15}
+.rf-wel-p{font-size:13.5px;line-height:1.5;opacity:.92}
+.rf-vcard{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:10px;cursor:pointer;color:var(--txt)}
+.rf-vcard .ph{position:relative;flex:0 0 96px;height:72px;border-radius:12px;background:#222 center/cover}
+.rf-vcard .ph i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff}
+.rf-vcard .ph i svg{width:28px;height:28px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+.rf-vcard b{display:block;font-size:15px}.rf-vcard span{display:block;font-size:12px;color:var(--mut,#8E8E93);margin-top:2px}
+.rf-vid{position:relative;width:100%;max-width:320px;margin:0 auto;aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#000}
+.rf-vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.rf-mats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.rf-mat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;cursor:pointer;color:var(--txt);min-height:92px}
+.rf-mat span{font-size:22px;display:block}.rf-mat b{display:block;font-size:14px;margin-top:6px}.rf-mat em{display:block;font-style:normal;font-size:12px;color:var(--mut,#8E8E93);margin-top:2px;line-height:1.35}
+.rf-wks{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -2px 6px;padding:0 2px 6px}
+.rf-wks::-webkit-scrollbar{display:none}
+.rf-wk{flex:0 0 150px;cursor:pointer;color:var(--txt)}
+.rf-wk .ph{position:relative;display:block;height:190px;border-radius:16px;background:#ddd center/cover}
+.rf-wk .ph i{position:absolute;right:8px;bottom:8px;width:34px;height:34px;border-radius:50%;background:rgba(227,6,19,.95);color:#fff;display:flex;align-items:center;justify-content:center}
+.rf-wk .ph i svg{width:15px;height:15px}
+.rf-wk .ph em{position:absolute;left:8px;top:8px;font-style:normal;font-size:11px;font-weight:700;background:#fff;color:#E30613;border-radius:999px;padding:3px 8px}
+.rf-wk b{display:block;font-size:14px;margin-top:7px}.rf-wk>span:last-child{display:block;font-size:12px;color:var(--mut,#8E8E93)}
+.rf-wks-s{margin-bottom:12px}.rf-wks-s .rf-wk{flex-basis:31%;cursor:default}.rf-wks-s .rf-wk .ph{height:140px}
+.rf-wkh{border-radius:22px;min-height:230px;background:#333 center 20%/cover;display:flex;align-items:flex-end;overflow:hidden;margin-bottom:12px}
+.rf-wkh>div{width:100%;padding:60px 16px 14px;background:linear-gradient(transparent,rgba(0,0,0,.78));color:#fff}
+.rf-wkh-t{font-family:'Oswald',sans-serif;font-size:26px;font-weight:600}
+.rf-wkh-m{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.rf-wkh-m span{font-size:11.5px;background:rgba(255,255,255,.18);border-radius:999px;padding:3px 9px}
+.rf-mv{flex:0 0 32px;height:32px;border-radius:50%;background:#FDECEA;color:#E30613;display:flex;align-items:center;justify-content:center}
+.rf-mv svg{width:13px;height:13px}
+.rf-week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.rf-week .ram-d{width:auto;height:auto;min-height:46px;flex-direction:column;padding:4px 0;border-radius:10px}
+.rf-week .ram-d b{font-size:14px}.rf-week .ram-d i{font-style:normal;font-size:8.5px;opacity:.75;margin-top:1px;white-space:nowrap}
+.rf-key{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--mut,#8E8E93);margin:8px 0 4px}
+.rf-key i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.rf-key i.x{background:#E30613}.rf-key i.p{background:#2E9D5B}.rf-key i.n{border:2px solid #E30613}
+.rf-menu1{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px;cursor:pointer;color:var(--txt)}
+.rf-m-r{font-size:13px;line-height:1.4;margin-top:6px}.rf-m-r i{display:inline-block;width:62px;font-style:normal;font-weight:700;color:#E30613;font-size:11.5px}
+.rf-more{display:block;margin-top:10px;font-size:13px;font-weight:700;color:#E30613}
+.rf-chips{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin:4px 0 12px}
+.rf-chips button{border:1px solid var(--line);background:var(--surface);color:var(--txt);border-radius:8px;padding:6px 0;font:600 12px 'Inter',sans-serif;cursor:pointer}
+.rf-chips button.now{border-color:#E30613}.rf-chips button.on{background:#E30613;border-color:#E30613;color:#fff}
+.rf-gh{display:flex;gap:12px;align-items:flex-start}.rf-gh>span{font-size:30px;line-height:1.2}
+.rf-gl{cursor:default}
+.rf-print table{width:100%;border-collapse:collapse;margin-top:8px}
+.rf-print td{border:1px solid var(--line);padding:5px 4px;vertical-align:top;width:16.6%}
+.rf-print td b{display:block;font-size:15px}.rf-print td span,.rf-print td i,.rf-print td em{display:block;font-size:9.5px;font-style:normal;color:var(--mut,#8E8E93)}
+.rf-print td em{margin-top:3px;color:var(--txt)}
+.rf-print-t{font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;color:#E30613}
+@media print{
+  body.ramprint *{visibility:hidden}
+  body.ramprint .rf-print,body.ramprint .rf-print *{visibility:visible}
+  body.ramprint .rf-print{position:absolute;left:0;top:0;width:100%}
+}
